@@ -199,7 +199,10 @@ var xmppchat = (function ($, console) {
             that = this;
 
         jarnxmpp.Presence.getUserInfo(user_id, function (data) {
-            var chat = $('#'+that.hash(jid));
+            var chat = $('#'+that.hash(jid)),
+                chat_content = chat.find(".chat-content"),
+                now = new Date(),
+                time = now.toLocaleTimeString().substring(0,5);
             if (chat.length <= 0) {
                 chat = that.createChat(jid, 0);
             }
@@ -207,16 +210,15 @@ var xmppchat = (function ($, console) {
                 chat.css('display','block');
                 that.reorderChats();
             }
-            var chat_content = chat.find(".chat-content");
             if (user_id == that.username) {
                 message_html = '<div class="chat-message">' + 
-                                    '<span class="chat-message-me">me:&nbsp;&nbsp;</span>' + 
+                                    '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
                                     '<span class="chat-message-content">'+text+'</span>' + 
                                 '</div>';
             } 
             else {
                 message_html = '<div class="chat-message">' + 
-                                    '<span class="chat-message-them">'+data.fullname+':&nbsp;&nbsp;</span>' + 
+                                    '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
                                     '<span class="chat-message-content">'+text+'</span>' + 
                                 '</div>';
             }
@@ -234,7 +236,7 @@ var xmppchat = (function ($, console) {
         });
     };
 
-    obj.closeChat = function (jid, audience) {
+    obj.closeChat = function (jid) {
         var chat_id = this.hash(jid);
         jQuery('#'+chat_id).css('display','none');
         xmppchat.reorderChats();
@@ -259,6 +261,9 @@ var xmppchat = (function ($, console) {
     };
 
     obj.toggleChat = function (jid) {
+        /* Minimize or maximize a chat box and record it in a cookie so that we
+         * remember the configuration after page loads.
+         */
         var chat_id = this.hash(jid),
             minimized_chats = xmppchat.getMinimizedChats(),
             new_cookie;
@@ -357,8 +362,7 @@ $(document).ready(function () {
             xmppchat.chats.push('online-users-container');
         });
     $('a.user-details-toggle').live('click', function (e) {
-        var userid = $(this).parent().attr('data-userid'),
-            $field = $('[name="message"]:input', $(this).parent()[0]),
+        var $field = $('[name="message"]:input', $(this).parent()[0]),
             recipient = $field.attr('data-recipient');
         xmppchat.startChat(recipient);
         e.preventDefault();

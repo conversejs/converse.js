@@ -50,35 +50,36 @@ var xmppchat = (function ($, console) {
     };
 
     obj.handleChatEvents =  function (chat_id) {
-        var chat_area = $("#"+xmppchat.hash(chat_id)+" .chat-textarea"),
+        var chat_area = $("#"+chat_id+" .chat-textarea"),
             chat_type = chat_id.split('_')[0],
             that = this;
 
         that.chat_focus[chat_id] = false;
-        chat_area.blur(function(){
+        chat_area.blur(function () {
             that.chat_focus[chat_id] = false;
             chat_area.removeClass('chat-textarea-'+chat_type+'-selected');
-        }).focus(function(){
+        }).focus(function (){
             that.chat_focus[chat_id] = true;
             chat_area.addClass('chat-textarea-'+chat_type+'-selected');
         });
-        var chatbox = $("#"+xmppchat.hash(chat_id));
-        chatbox.click(function() {
+        var chatbox = $("#"+chat_id);
+        chatbox.click(function () {
             if (chatbox.find('.chat-content').css('display') != 'none') {
                 chatbox.find('.chat-textarea').focus();
             }
         });
     };
 
-    obj.createChatBox =  function (chat_id, jid) {
-        var path = xmppchat.sanitizePath('/@@render_chat_box');
+    obj.createChatBox = function (jid) {
+        var path = xmppchat.sanitizePath('/@@render_chat_box'),
+            chat_id = this.hash(jid);
         $.ajax({
             url: path,
             cache: false,
             async: false,
             data: {
-                chat_id: chat_id,
-                box_id: xmppchat.hash(chat_id),
+                chat_id: 'chatbox_'+jid,
+                box_id: chat_id,
                 jid: jid,
                 tzoffset: -(new Date().getTimezoneOffset())
             },
@@ -105,16 +106,20 @@ var xmppchat = (function ($, console) {
                 }
             }
         });
-        return $('#'+xmppchat.hash(chat_id));
+        return $('#'+chat_id);
     };
 
-    obj.createChat =  function (chat_id, minimize, jid) {
+    obj.createChat =  function (jid, minimize) {
+        if (typeof(jid) === undefined) {
+            return;
+        }
         var cookie = $.cookie('chats-open-'+this.username),
-            chat_content, chatbox;
+            chat_content, 
+            chatbox,
+            chat_id = this.hash(jid);
+        this.addChatToCookie(jid);
 
-        this.addChatToCookie(chat_id);
-
-        chatbox = $("#"+this.hash(chat_id));
+        chatbox = $("#"+chat_id);
         if (chatbox.length > 0) {
             // The chatbox exists, merely hidden
             if (chatbox.css('display') == 'none') {
@@ -126,11 +131,7 @@ var xmppchat = (function ($, console) {
             chat_content.scrollTop(chat_content[0].scrollHeight);
             return;
         }
-        chatbox = this.createChatBox(chat_id, jid);
-        if (chatbox.length === 0) {
-            console.log('Could not create chatbox with id: ' + chat_id);
-            return;
-        }
+        chatbox = this.createChatBox(jid);
         this.positionNewChat(chatbox);
         this.chats.push(chat_id);
         if (minimize == 1) {
@@ -150,9 +151,10 @@ var xmppchat = (function ($, console) {
         return chatbox;
     };
 
-    obj.startChat =  function (chat_id, jid) {
-        this.createChat(chat_id, 0, jid);
-        $("#"+this.hash(chat_id)+" .chat-textarea").focus();
+    obj.startChat = function (jid) {
+    
+        this.createChat(jid, 0);
+        $("#"+this.hash(jid)+" .chat-textarea").focus();
     };
 
     obj.reorderChats =  function () {
@@ -197,10 +199,9 @@ var xmppchat = (function ($, console) {
             that = this;
 
         jarnxmpp.Presence.getUserInfo(user_id, function (data) {
-            var chat_id = 'chatbox_'+user_id;
-            var chat = $('#'+that.hash(chat_id));
+            var chat = $('#'+that.hash(jid));
             if (chat.length <= 0) {
-                chat = that.createChat(chat_id, 0, jid);
+                chat = that.createChat(jid, 0);
             }
             if (chat.css('display') == 'none') {
                 chat.css('display','block');
@@ -233,9 +234,9 @@ var xmppchat = (function ($, console) {
         });
     };
 
- 
-    obj.closeChat = function (chat_id, audience) {
-        jQuery('#'+xmppchat.hash(chat_id)).css('display','none');
+    obj.closeChat = function (jid, audience) {
+        var chat_id = this.hash(jid);
+        jQuery('#'+chat_id).css('display','none');
         xmppchat.reorderChats();
         var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
             open_chats = [],
@@ -244,7 +245,7 @@ var xmppchat = (function ($, console) {
             open_chats = cookie.split('|');
         }
         for (var i=0; i < open_chats.length; i++) {
-            if (open_chats[i] != chat_id) {
+            if (open_chats[i] != jid) {
                 new_chats.push(open_chats[i]);
             }
         }
@@ -257,11 +258,12 @@ var xmppchat = (function ($, console) {
         this.chats.pop(chat_id);
     };
 
-    obj.toggleChat = function (chat_id) {
-        var minimized_chats = xmppchat.getMinimizedChats();
-        var hashed_id = xmppchat.hash(chat_id); 
-        var new_cookie;
-        if (jQuery('#'+hashed_id+' .chat-content').css('display') == 'none') {  
+    obj.toggleChat = function (jid) {
+        var chat_id = this.hash(jid),
+            minimized_chats = xmppchat.getMinimizedChats(),
+            new_cookie;
+
+        if (jQuery('#'+chat_id+' .chat-content').css('display') == 'none') {  
             // Chat will be maximized
             new_cookie = [];
             for (var i=0; i < minimized_chats.length; i++) {
@@ -270,11 +272,11 @@ var xmppchat = (function ($, console) {
                 }
             }
             jQuery.cookie('chats_minimized_'+xmppchat.username, new_cookie.join('|'));
-            var chat_content = jQuery('#'+hashed_id+' .chat-content');
+            var chat_content = jQuery('#'+chat_id+' .chat-content');
             chat_content.css('display','block');
             chat_content.scrollTop(chat_content[0].scrollHeight);
-            jQuery('#'+hashed_id+' .chat-head').removeClass('chat-head-minimized-with-messages');
-            jQuery('#'+hashed_id+' .chat-input').css('display','block');
+            jQuery('#'+chat_id+' .chat-head').removeClass('chat-head-minimized-with-messages');
+            jQuery('#'+chat_id+' .chat-input').css('display','block');
         } 
         else {
             // Chat will be minimized
@@ -283,12 +285,12 @@ var xmppchat = (function ($, console) {
                 new_cookie += '|'+minimized_chats.join('|');
                 jQuery.cookie('chats_minimized_'+xmppchat.username, new_cookie);
             }
-            jQuery('#'+hashed_id+' .chat-content').css('display','none');
-            jQuery('#'+hashed_id+' .chat-input').css('display','none');
+            jQuery('#'+chat_id+' .chat-content').css('display','none');
+            jQuery('#'+chat_id+' .chat-input').css('display','none');
         }
     };
 
-    obj.keyPressed = function (event, textarea, audience, hashed_id, chat_type) {
+    obj.keyPressed = function (event, textarea, audience, chat_id, chat_type) {
         if(event.keyCode == 13 && !event.shiftKey) {
             var textbox = jQuery(textarea);
             var message = textbox.val();
@@ -308,7 +310,7 @@ var xmppchat = (function ($, console) {
                 var minutes = now.getMinutes().toString();
                 if (minutes.length==1) {minutes = '0'+minutes;}
                 var time = now.toLocaleTimeString().substring(0,5);
-                var chat_content = jQuery('#'+hashed_id+' .chat-content');
+                var chat_content = jQuery('#'+chat_id+' .chat-content');
                 chat_content.append(
                     '<div class="chat-message">' + 
                         '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
@@ -345,36 +347,29 @@ $(document).ready(function () {
     var chatdata = jQuery('span#babble-client-chatdata');
     var cookie = jQuery.cookie('chats-open-'+chatdata.attr('username'));
     var open_chats = [], chat_id;
-    
     xmppchat.username = chatdata.attr('username');
     xmppchat.base_url = chatdata.attr('base_url');
 
     $.hook(['show', 'hide']);
-    chat_id = 'online-users-container';
-    $("div#"+chat_id)
+    $("div#online-users-container")
         .bind('onaftershow', function (e) { 
-            xmppchat.addChatToCookie(chat_id);
-            xmppchat.chats.push(chat_id);
+            xmppchat.addChatToCookie('online-users-container');
+            xmppchat.chats.push('online-users-container');
         });
     $('a.user-details-toggle').live('click', function (e) {
         var userid = $(this).parent().attr('data-userid'),
             $field = $('[name="message"]:input', $(this).parent()[0]),
             recipient = $field.attr('data-recipient');
-        xmppchat.startChat('chatbox_'+userid, recipient);
+        xmppchat.startChat(recipient);
         e.preventDefault();
     });
 
-    /* 
-    jQuery.cookie('chats-open-'+username, null, {path: '/'});
+    jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
     if (cookie) {
         open_chats = cookie.split('|');
         for (var i=0; i<open_chats.length; i++) {
-            chat_id = open_chats[i];
-            if (chat_id) { 
-                createChat(chat_id, 1);
-            }
+            xmppchat.createChat(open_chats[i], 1);
         }
     }
-    */
 });
 

@@ -70,9 +70,34 @@ var xmppchat = (function ($, console) {
         });
     };
 
+    obj.handleCollectionRetrieval = function (iq) {
+        // Get the last collection.
+        return false; 
+    };
+
+    obj.retrieveCollections = function () {
+        /*
+        * FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
+        * add-on for ejabberd wants the URL below. This might break for other
+        * Jabber servers.
+        */
+        var uri = 'http://www.xmpp.org/extensions/xep-0136.html#ns';
+        var iq = $iq({'type':'get'})
+                    .c('list', {'start': '1469-07-21T02:00:00Z',
+                                'xmlns': uri
+                                })
+                    .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
+                    .c('max')
+                    .t('30');
+        jarnxmpp.connection.addHandler(this.handleCollectionRetrieval, uri, "iq");
+        jarnxmpp.connection.send(iq);
+    };
+
     obj.createChatBox = function (jid) {
         var path = xmppchat.sanitizePath('/@@render_chat_box'),
-            chat_id = this.hash(jid);
+            chat_id = this.hash(jid),
+            that = this;
+
         $.ajax({
             url: path,
             cache: false,
@@ -99,11 +124,7 @@ var xmppchat = (function ($, console) {
                     date.setMinutes(minutes);
                     jthis.replaceWith(date.toLocaleTimeString().substring(0,5));
                 });
-                var last_msg_date = $('div#'+chat_id).attr('last_msg_date');
-                if ((last_msg_date !== undefined)&&(last_msg_date > global_received_date)) {
-                    global_received_date = last_msg_date;
-                    sent_since_date = [];
-                }
+                that.retrieveCollections();
             }
         });
         return $('#'+chat_id);
@@ -193,6 +214,11 @@ var xmppchat = (function ($, console) {
     };
 
     obj.receiveMessage =  function (event) {
+        /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
+            but I only seem to get 'text'. 
+
+            XXX: Some messages might be delayed, we must get the time from the event.
+        */
         var user_id = Strophe.getNodeFromJid(event.from),
             jid = Strophe.getBareJidFromJid(event.from),
             text = event.body.replace(/<br \/>/g, ""),
@@ -339,7 +365,6 @@ var xmppchat = (function ($, console) {
             jQuery(textarea).css('overflow','auto');
         }
     };
-
     return obj;
 })(jQuery, console || {log: function(){}} );
 
@@ -348,7 +373,7 @@ $(document).bind('jarnxmpp.message',  function (event) {
     xmppchat.receiveMessage(event);
 });
 
-$(document).ready(function () {
+$(document).bind('jarnxmpp.connected', function() {
     var chatdata = jQuery('span#babble-client-chatdata');
     var cookie = jQuery.cookie('chats-open-'+chatdata.attr('username'));
     var open_chats = [], chat_id;

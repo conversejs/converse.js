@@ -41,10 +41,10 @@ var xmppchat = (function ($, console) {
             }
         }
         if (open_chats === 0) {
-            chatbox.css('right', '20px');
+            chatbox.css('right', '15px');
         } 
         else {
-            width = (open_chats)*(225+7)+20;
+            width = (open_chats)*(225+7)+15;
             chatbox.css('right', width+'px');
         }
     };
@@ -70,7 +70,11 @@ var xmppchat = (function ($, console) {
         });
     };
 
-    obj.handleCollectionRetrieval = function (iq) {
+    obj.handleError = function (response) {
+        console.log(response);
+    };
+
+    obj.handleCollectionRetrieval = function (response) {
         // Get the last collection.
         return false; 
     };
@@ -89,8 +93,7 @@ var xmppchat = (function ($, console) {
                     .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
                     .c('max')
                     .t('30');
-        jarnxmpp.connection.addHandler(this.handleCollectionRetrieval, uri, "iq");
-        jarnxmpp.connection.send(iq);
+        jarnxmpp.connection.sendIQ(iq, this.handleCollectionRetrieval, this.handleError);
     };
 
     obj.createChatBox = function (jid) {
@@ -184,10 +187,10 @@ var xmppchat = (function ($, console) {
             var chatbox =  $("#"+this.hash(this.chats[i]));
             if (chatbox.css('display') != 'none') {
                 if (index === 0) {
-                    chatbox.css('right', '20px');
+                    chatbox.css('right', '15px');
                 } 
                 else {
-                    width = (index)*(225+7)+20;
+                    width = (index)*(225+7)+15;
                     chatbox.css('right', width+'px');
                 }
                 index++;
@@ -402,3 +405,6 @@ $(document).bind('jarnxmpp.connected', function() {
     }
 });
 
+$(document).ready(function () {
+    $('ul.tabs').tabs('div.panes > div');
+});

@@ -2,6 +2,7 @@ var xmppchat = (function ($, console) {
     var obj = {};
     obj.chats = [];
     obj.chat_focus  = [];
+    obj.chatbox_width = 205;
 
     obj.sanitizePath = function (call) { 
         return xmppchat.base_url + call; 
@@ -26,7 +27,8 @@ var xmppchat = (function ($, console) {
     };
 
     obj.positionNewChat =  function (chatbox) {
-        var open_chats = 0;
+        var open_chats = 0,
+            offset;
         for (var i=0; i<xmppchat.chats.length; i++) {
             if ($("#"+xmppchat.hash(xmppchat.chats[i])).css('display') != 'none') {
                 open_chats++;
@@ -36,8 +38,8 @@ var xmppchat = (function ($, console) {
             chatbox.css('right', '15px');
         } 
         else {
-            width = (open_chats)*(225+7)+15;
-            chatbox.css('right', width+'px');
+            offset = (open_chats)*(this.chatbox_width+7)+15;
+            chatbox.css('right', offset+'px');
         }
     };
 
@@ -146,11 +148,15 @@ var xmppchat = (function ($, console) {
             if (chat_content.length > 0) {
                 chat_content.scrollTop(chat_content[0].scrollHeight);
             }
+            if (!(jid in this.oc(this.chats))) {
+                // Initially the chat status box won't be in this.chats.
+                this.chats.push(jid);
+            }
             return;
         }
         chatbox = this.createChatBox(jid);
         this.positionNewChat(chatbox);
-        this.chats.push(chat_id);
+        this.chats.push(jid);
         this.handleChatEvents(chat_id);
         chatbox.show();
         chat_content = chatbox.find('.chat-content');
@@ -167,7 +173,8 @@ var xmppchat = (function ($, console) {
     };
 
     obj.reorderChats =  function () {
-        var index = 0;
+        var index = 0,
+            offset;
         for (var i=0; i < this.chats.length; i++) {
             var chatbox =  $("#"+this.hash(this.chats[i]));
             if (chatbox.css('display') != 'none') {
@@ -175,15 +182,15 @@ var xmppchat = (function ($, console) {
                     chatbox.css('right', '15px');
                 } 
                 else {
-                    width = (index)*(225+7)+15;
-                    chatbox.css('right', width+'px');
+                    offset = (index)*(this.chatbox_width+7)+15;
+                    chatbox.css('right', offset +'px');
                 }
                 index++;
             }
         }
     };
 
-    obj.addChatToCookie = function (chat_id) {
+    obj.addChatToCookie = function (jid) {
         var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
             new_cookie,
             open_chats = [];
@@ -191,14 +198,13 @@ var xmppchat = (function ($, console) {
         if (cookie) {
             open_chats = cookie.split('|');
         }
-        if (!(chat_id in this.oc(open_chats))) {
+        if (!(jid in this.oc(open_chats))) {
             // Update the cookie if this new chat is not yet in it.
-            open_chats.push(chat_id);
+            open_chats.push(jid);
             new_cookie = open_chats.join('|');
             jQuery.cookie('chats-open-'+xmppchat.username, new_cookie, {path: '/'});
             console.log('updated cookie = ' + new_cookie + '\n');
         }
-        this.chats.push(chat_id);
     };
 
     obj.receiveMessage =  function (event) {
@@ -264,7 +270,7 @@ var xmppchat = (function ($, console) {
         else {
             jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
         }
-        this.chats.pop(chat_id);
+        this.chats.pop(jid);
     };
 
     obj.keyPressed = function (event, textarea, audience, chat_id, chat_type) {

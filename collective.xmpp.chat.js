@@ -25,14 +25,6 @@ var xmppchat = (function ($, console) {
         return o;
     };
 
-    obj.getMinimizedChats =  function () {
-        var cookie = $.cookie('chats_minimized_'+xmppchat.username);
-        if (cookie) {
-            return cookie.split(/\|/);
-        }
-        return [];
-    };
-
     obj.positionNewChat =  function (chatbox) {
         var open_chats = 0;
         for (var i=0; i<xmppchat.chats.length; i++) {
@@ -133,12 +125,11 @@ var xmppchat = (function ($, console) {
         return $('#'+chat_id);
     };
 
-    obj.createChat =  function (jid, minimize) {
+    obj.createChat =  function (jid) {
         if (typeof(jid) === undefined) {
             return;
         }
-        var cookie = $.cookie('chats-open-'+this.username),
-            chat_content, 
+        var chat_content, 
             chatbox,
             chat_id = this.hash(jid);
         this.addChatToCookie(jid);
@@ -152,20 +143,14 @@ var xmppchat = (function ($, console) {
             }
             chatbox.find(".chat-textarea").focus();
             chat_content = chatbox.find('.chat-content');
-            chat_content.scrollTop(chat_content[0].scrollHeight);
+            if (chat_content.length > 0) {
+                chat_content.scrollTop(chat_content[0].scrollHeight);
+            }
             return;
         }
         chatbox = this.createChatBox(jid);
         this.positionNewChat(chatbox);
         this.chats.push(chat_id);
-        if (minimize == 1) {
-            // Minimize the chat if it's in the minimized_chats cookie
-            var minimized_chats = this.getMinimizedChats();
-            if (chat_id in this.oc(minimized_chats)) {
-                chatbox.find('.chat-content').css('display','none');
-                chatbox.find('.chat-input').css('display','none');
-            }
-        }
         this.handleChatEvents(chat_id);
         chatbox.show();
         chat_content = chatbox.find('.chat-content');
@@ -252,14 +237,7 @@ var xmppchat = (function ($, console) {
                                 '</div>';
             }
             chat_content.append(message_html);
-
-            if (chat_content.css('display') == 'none') {
-                // The chatbox is minimized, so we change it's header color to alert
-                // the user.
-                chat.find('.chat-head').addClass('chat-head-minimized-with-messages');
-            }
             chat_content.scrollTop(chat_content[0].scrollHeight);
-
             jarnxmpp.UI.msg_counter += 1;
             jarnxmpp.UI.updateMsgCounter();
         });
@@ -287,41 +265,6 @@ var xmppchat = (function ($, console) {
             jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
         }
         this.chats.pop(chat_id);
-    };
-
-    obj.toggleChat = function (jid) {
-        /* Minimize or maximize a chat box and record it in a cookie so that we
-         * remember the configuration after page loads.
-         */
-        var chat_id = this.hash(jid),
-            minimized_chats = xmppchat.getMinimizedChats(),
-            new_cookie;
-
-        if (jQuery('#'+chat_id+' .chat-content').css('display') == 'none') {  
-            // Chat will be maximized
-            new_cookie = [];
-            for (var i=0; i < minimized_chats.length; i++) {
-                if (minimized_chats[i] != chat_id) {
-                    new_cookie.push(minimized_chats[i]);
-                }
-            }
-            jQuery.cookie('chats_minimized_'+xmppchat.username, new_cookie.join('|'));
-            var chat_content = jQuery('#'+chat_id+' .chat-content');
-            chat_content.css('display','block');
-            chat_content.scrollTop(chat_content[0].scrollHeight);
-            jQuery('#'+chat_id+' .chat-head').removeClass('chat-head-minimized-with-messages');
-            jQuery('#'+chat_id+' .chat-input').css('display','block');
-        } 
-        else {
-            // Chat will be minimized
-            if (!(chat_id in xmppchat.oc(minimized_chats))) {
-                new_cookie = chat_id;
-                new_cookie += '|'+minimized_chats.join('|');
-                jQuery.cookie('chats_minimized_'+xmppchat.username, new_cookie);
-            }
-            jQuery('#'+chat_id+' .chat-content').css('display','none');
-            jQuery('#'+chat_id+' .chat-input').css('display','none');
-        }
     };
 
     obj.keyPressed = function (event, textarea, audience, chat_id, chat_type) {
@@ -377,9 +320,10 @@ $(document).bind('jarnxmpp.message',  function (event) {
 });
 
 $(document).bind('jarnxmpp.connected', function() {
-    var chatdata = jQuery('span#babble-client-chatdata');
-    var cookie = jQuery.cookie('chats-open-'+chatdata.attr('username'));
-    var open_chats = [], chat_id;
+    var chatdata = jQuery('span#babble-client-chatdata'),
+        cookie = jQuery.cookie('chats-open-'+chatdata.attr('username')),
+        open_chats = [], chat_id;
+
     xmppchat.username = chatdata.attr('username');
     xmppchat.base_url = chatdata.attr('base_url');
 

@@ -325,6 +325,10 @@ $(document).bind('jarnxmpp.message',  function (event) {
     xmppchat.receiveMessage(event);
 });
 
+$(document).bind('xmppchat.send_presence', function (event, jid, type) {
+    jarnxmpp.connection.send($pres({'type':type}));
+});
+
 $(document).bind('jarnxmpp.connected', function() {
     var chatdata = jQuery('span#babble-client-chatdata'),
         cookie = jQuery.cookie('chats-open-'+chatdata.attr('username')),
@@ -357,4 +361,8 @@ $(document).bind('jarnxmpp.connected', function() {
 
 $(document).ready(function () {
     $('ul.tabs').tabs('div.panes > div');
+    $('select#select-xmpp-status').bind('change', function (event) {
+        var jid = jarnxmpp.connection.jid;
+        $(document).trigger('xmppchat.send_presence', [jid, event.target.value]);
+    });
 });

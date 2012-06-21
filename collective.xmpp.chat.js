@@ -276,7 +276,7 @@ var xmppchat = (function ($, console) {
             that = this;
 
         jarnxmpp.Presence.getUserInfo(user_id, function (data) {
-            that.getChatbox(jid, function () {
+            that.getChatbox(jid, function ($chat) {
                 var chat_content = $chat.find(".chat-content"),
                     now = new Date(),
                     time = now.toLocaleTimeString().substring(0,5);
@@ -423,6 +423,13 @@ $(document).ready(function () {
         } else {
             xmppchat.getChatbox('online-users-container');
         }
+    });
+
+    $('a.user-details-toggle').live('click', function (e) {
+        var $field = $('[name="message"]:input', $(this).parent()[0]),
+            jid = $field.attr('data-recipient');
+        e.preventDefault();
+        xmppchat.getChatbox(jid);
     });
 
     $('ul.tabs').tabs('div.panes > div');

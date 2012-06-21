@@ -164,8 +164,8 @@ var xmppchat = (function ($, console) {
             } else {
                 // The chatbox exists, merely hidden
                 $chat.show('fast', function () {
-                    that.reorderChats();
                     that.prepNewChat(this, jid);
+                    that.reorderChats();
                     callback(this);
                     dfd.resolve();
                 });
@@ -235,6 +235,27 @@ var xmppchat = (function ($, console) {
         }
     };
 
+    obj.removeChatFromCookie = function (jid) {
+        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
+            open_chats = [],
+            new_chats = [];
+
+        if (cookie) {
+            open_chats = cookie.split('|');
+        }
+        for (var i=0; i < open_chats.length; i++) {
+            if (open_chats[i] != jid) {
+                new_chats.push(open_chats[i]);
+            }
+        }
+        if (new_chats.length) {
+            jQuery.cookie('chats-open-'+xmppchat.username, new_chats.join('|'), {path: '/'});
+        }
+        else {
+            jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
+        }
+    };
+
     obj.receiveMessage =  function (event) {
         /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
             but I only seem to get 'text'. 
@@ -272,27 +293,13 @@ var xmppchat = (function ($, console) {
     };
 
     obj.closeChat = function (jid) {
-        var chat_id = this.hash(jid);
-        jQuery('#'+chat_id).hide('fast');
-        xmppchat.reorderChats();
-        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-            open_chats = [],
-            new_chats = [];
-        if (cookie) {
-            open_chats = cookie.split('|');
-        }
-        for (var i=0; i < open_chats.length; i++) {
-            if (open_chats[i] != jid) {
-                new_chats.push(open_chats[i]);
-            }
-        }
-        if (new_chats.length) {
-            jQuery.cookie('chats-open-'+xmppchat.username, new_chats.join('|'), {path: '/'});
-        }
-        else {
-            jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
-        }
-        this.chats.pop(jid);
+        var chat_id = this.hash(jid),
+            that = this;
+        jQuery('#'+chat_id).hide('fast', function () {
+            that.chats.pop(jid);
+            that.removeChatFromCookie(jid);
+            that.reorderChats();
+        });
     };
 
     obj.keyPressed = function (event, textarea, audience, chat_id, chat_type) {
@@ -377,26 +384,16 @@ $(document).bind('jarnxmpp.connected', function() {
         cookie = jQuery.cookie('chats-open-'+chatdata.attr('username')),
         open_chats = [], chat_id;
 
+    // Perhaps this should be moved to $(document).ready ?
     xmppchat.username = chatdata.attr('username');
     xmppchat.base_url = chatdata.attr('base_url');
-
-    $.hook(['show', 'hide']);
-    $("div#online-users-container")
-        .bind('onaftershow', function (e) { 
-            xmppchat.addChatToCookie('online-users-container');
-        });
-    $('a.user-details-toggle').live('click', function (e) {
-        var $field = $('[name="message"]:input', $(this).parent()[0]),
-            jid = $field.attr('data-recipient');
-        e.preventDefault();
-        xmppchat.getChatbox(jid, function() {});
-    });
 
     jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
     if (cookie) {
         // We need to wait for chatbox creation to finish before we create the
         // next, so we use a task buffer to make sure the next task is only
         // executed after the previous is done.
+        // FIXME: Change this so that the online contacts box is always created first.
         open_chats = cookie.split('|');
         for (var i=0; i<open_chats.length; i++) {
             xmppchat.taskbuffer.tasks.push({'method':xmppchat.getChatbox, 'parameters':[open_chats[i]]});
@@ -406,6 +403,24 @@ $(document).bind('jarnxmpp.connected', function() {
 });
 
 $(document).ready(function () {
+    var $toggle = $('a#toggle-online-users');
+    $toggle.unbind('click');
+    $toggle.bind('click', function (e) {
+        e.preventDefault();
+        if ($("div#online-users-container").is(':visible')) {
+            xmppchat.closeChat('online-users-container');
+        } else {
+            xmppchat.getChatbox('online-users-container');
+        }
+    });
+
+    $('a.user-details-toggle').live('click', function (e) {
+        var $field = $('[name="message"]:input', $(this).parent()[0]),
+            jid = $field.attr('data-recipient');
+        e.preventDefault();
+        xmppchat.getChatbox(jid, function() {});
+    });
+
     $('ul.tabs').tabs('div.panes > div');
     $('select#select-xmpp-status').bind('change', function (event) {
         var jid = jarnxmpp.connection.jid;

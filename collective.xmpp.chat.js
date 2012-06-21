@@ -134,7 +134,7 @@ var xmppchat = (function ($, console) {
         var chat_content,
             value;
         if (jid === 'online-users-container') {
-            value = jarnxmpp.Storage.get('xmpp-status') || 'online';
+            value = jarnxmpp.Storage.get(xmppchat.username+'-xmpp-status') || 'online';
             $(chat).find('#select-xmpp-status').val(value);
         } else {
             chat_content = $(chat).find('.chat-content');
@@ -431,6 +431,6 @@ $(document).ready(function () {
             value = event.target.value;
 
         $(document).trigger('xmppchat.send_presence', [jid, value]);
-        jarnxmpp.Storage.set('xmpp-status', value);
+        jarnxmpp.Storage.set(xmppchat.username+'-xmpp-status', value);
     });
 });

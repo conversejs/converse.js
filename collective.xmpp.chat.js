@@ -26,7 +26,7 @@ var xmppchat = (function ($, console) {
         return o;
     };
 
-    obj.positionNewChat =  function (chatbox) {
+    obj.positionNewChat =  function ($chat) {
         var open_chats = 0,
             offset;
         for (var i=0; i<xmppchat.chats.length; i++) {
@@ -35,11 +35,11 @@ var xmppchat = (function ($, console) {
             }
         }
         if (open_chats === 0) {
-            chatbox.css('right', '15px');
+            $chat.animate({'right':'15px'});
         } 
         else {
             offset = (open_chats)*(this.chatbox_width+7)+15;
-            chatbox.css('right', offset+'px');
+            $chat.animate({'right': (offset+'px')});
         }
     };
 
@@ -195,7 +195,7 @@ var xmppchat = (function ($, console) {
             index = 1;
             $chat = $("#"+this.hash(this.oc(this.chats)['online-users-container']));
             if ($chat.is(':visible')) {
-                $chat.css('right', '15px');
+                $chat.animate({'right': '15px'});
             }
         }
 
@@ -207,11 +207,11 @@ var xmppchat = (function ($, console) {
             $chat = $("#"+this.hash(this.chats[i]));
             if ($chat.is(':visible')) {
                 if (index === 0) {
-                    $chat.css('right', '15px');
+                    $chat.animate({'right': '15px'});
                 } 
                 else {
                     offset = (index)*(this.chatbox_width+7)+15;
-                    $chat.css('right', offset +'px');
+                    $chat.animate({'right': offset +'px'});
                 }
                 index++;
             }
@@ -296,7 +296,10 @@ var xmppchat = (function ($, console) {
         var chat_id = this.hash(jid),
             that = this;
         jQuery('#'+chat_id).hide('fast', function () {
-            that.chats.pop(jid);
+            var idx = that.chats.indexOf(jid);
+            if (idx !== undefined) {
+                that.chats.splice(idx, 1);
+            }
             that.removeChatFromCookie(jid);
             that.reorderChats();
         });

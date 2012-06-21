@@ -30,7 +30,7 @@ var xmppchat = (function ($, console) {
         var open_chats = 0,
             offset;
         for (var i=0; i<xmppchat.chats.length; i++) {
-            if ($("#"+xmppchat.hash(xmppchat.chats[i])).css('display') != 'none') {
+            if ($("#"+xmppchat.hash(xmppchat.chats[i])).is(':visible')) {
                 open_chats++;
             }
         }
@@ -58,7 +58,7 @@ var xmppchat = (function ($, console) {
         });
         var chatbox = $("#"+chat_id);
         chatbox.click(function () {
-            if (chatbox.find('.chat-content').css('display') != 'none') {
+            if (chatbox.find('.chat-content').is(':visible')) {
                 chatbox.find('.chat-textarea').focus();
             }
         });
@@ -90,7 +90,7 @@ var xmppchat = (function ($, console) {
         jarnxmpp.connection.sendIQ(iq, this.handleCollectionRetrieval, this.handleError);
     };
 
-    obj.createChatBox = function (jid) {
+    obj.createChatbox = function (jid, callback) {
         var path = xmppchat.sanitizePath('/@@render_chat_box'),
             chat_id = this.hash(jid),
             that = this;
@@ -111,7 +111,9 @@ var xmppchat = (function ($, console) {
                 return;
             },
             success: function(data) {
-                $('body').append(data).find('.chat-message .time').each(function (){
+                var chat_id = $(data).attr('id');
+                var $chat = $('body').append(data).find('#'+chat_id);
+                $chat.find('.chat-message .time').each(function () {
                     var jthis = $(this);
                     var time = jthis.text().split(':');
                     var hour = time[0];
@@ -121,69 +123,95 @@ var xmppchat = (function ($, console) {
                     date.setMinutes(minutes);
                     jthis.replaceWith(date.toLocaleTimeString().substring(0,5));
                 });
-                that.retrieveCollections();
+                callback($chat);
             }
         });
-        return $('#'+chat_id);
     };
 
-    obj.createChat =  function (jid) {
-        if (typeof(jid) === undefined) {
-            return;
-        }
-        var chat_content, 
-            chatbox,
-            chat_id = this.hash(jid);
-        this.addChatToCookie(jid);
-
-        chatbox = $("#"+chat_id);
-        if (chatbox.length > 0) {
-            // The chatbox exists, merely hidden
-            if (chatbox.css('display') == 'none') {
-                chatbox.css('display','block');
-                this.reorderChats();
-            }
-            chatbox.find(".chat-textarea").focus();
-            chat_content = chatbox.find('.chat-content');
-            if (chat_content.length > 0) {
-                chat_content.scrollTop(chat_content[0].scrollHeight);
-            }
-            if (!(jid in this.oc(this.chats))) {
-                // Initially the chat status box won't be in this.chats.
-                this.chats.push(jid);
-            }
-            return;
-        }
-        chatbox = this.createChatBox(jid);
-        this.positionNewChat(chatbox);
-        this.chats.push(jid);
-        this.handleChatEvents(chat_id);
-        chatbox.show();
-        chat_content = chatbox.find('.chat-content');
-        if (chat_content.length) {
+    obj.prepNewChat = function (chat, jid) {
+        // Some operations that need to be applied on a chatbox
+        // after it has been created.
+        var chat_content = $(chat).find('.chat-content');
+        $(chat).find(".chat-textarea").focus();
+        if (chat_content.length > 0) {
             chat_content.scrollTop(chat_content[0].scrollHeight);
         }
-        return chatbox;
+        if (!(jid in this.oc(this.chats))) {
+            this.chats.push(jid);
+        }
+        this.addChatToCookie(jid);
     };
 
-    obj.startChat = function (jid) {
-    
-        this.createChat(jid, 0);
-        $("#"+this.hash(jid)+" .chat-textarea").focus();
+    obj.getChatbox =  function (jid, callback) {
+        // Get a chatbox. Either it exists, then just ensure 
+        // that it's visible and return it. Otherwise, create it.
+        //
+        // This method can be deferred.
+        // http://www.erichynds.com/jquery/using-deferreds-in-jquery/
+        var chat_content, 
+            chat_id = this.hash(jid),
+            $chat = $("#"+chat_id),
+            that = this,
+            dfd = $.Deferred();
+
+        if (callback === undefined) {
+            callback = function () {};
+        }
+        if ($chat.length > 0) {
+            if ($chat.is(':visible')) {
+                callback($chat);
+                dfd.resolve();
+            } else {
+                // The chatbox exists, merely hidden
+                $chat.show('fast', function () {
+                    that.reorderChats();
+                    that.prepNewChat(this, jid);
+                    callback(this);
+                    dfd.resolve();
+                });
+            }
+        } else {
+             this.createChatbox(jid, function ($chat) {
+                // that.retrieveCollections();
+                that.positionNewChat($chat);
+                $chat.show('fast', function () {
+                    that.prepNewChat(this, jid);
+                    that.handleChatEvents(chat_id);
+                    callback(this);
+                    dfd.resolve();
+                });
+            });
+        }
+        return dfd.promise();
     };
 
     obj.reorderChats =  function () {
         var index = 0,
-            offset;
+            chat_id,
+            offset,
+            $chat;
+
+        if ('online-users-container' in this.oc(this.chats)) {
+            index = 1;
+            $chat = $("#"+this.hash(this.oc(this.chats)['online-users-container']));
+            if ($chat.is(':visible')) {
+                $chat.css('right', '15px');
+            }
+        }
+
         for (var i=0; i < this.chats.length; i++) {
-            var chatbox =  $("#"+this.hash(this.chats[i]));
-            if (chatbox.css('display') != 'none') {
+            chat_id = this.chats[i];
+            if (chat_id === 'online-users-container') {
+                continue;
+            }
+            $chat = $("#"+this.hash(this.chats[i]));
+            if ($chat.is(':visible')) {
                 if (index === 0) {
-                    chatbox.css('right', '15px');
+                    $chat.css('right', '15px');
                 } 
                 else {
                     offset = (index)*(this.chatbox_width+7)+15;
-                    chatbox.css('right', offset +'px');
+                    $chat.css('right', offset +'px');
                 }
                 index++;
             }
@@ -219,39 +247,33 @@ var xmppchat = (function ($, console) {
             that = this;
 
         jarnxmpp.Presence.getUserInfo(user_id, function (data) {
-            var chat = $('#'+that.hash(jid)),
-                chat_content = chat.find(".chat-content"),
-                now = new Date(),
-                time = now.toLocaleTimeString().substring(0,5);
-            if (chat.length <= 0) {
-                chat = that.createChat(jid, 0);
-            }
-            if (chat.css('display') == 'none') {
-                chat.css('display','block');
-                that.reorderChats();
-            }
-            if (user_id == that.username) {
-                message_html = '<div class="chat-message">' + 
-                                    '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
-                                    '<span class="chat-message-content">'+text+'</span>' + 
-                                '</div>';
-            } 
-            else {
-                message_html = '<div class="chat-message">' + 
-                                    '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
-                                    '<span class="chat-message-content">'+text+'</span>' + 
-                                '</div>';
-            }
-            chat_content.append(message_html);
-            chat_content.scrollTop(chat_content[0].scrollHeight);
-            jarnxmpp.UI.msg_counter += 1;
-            jarnxmpp.UI.updateMsgCounter();
+            that.getChatbox(jid, function () {
+                var chat_content = $chat.find(".chat-content"),
+                    now = new Date(),
+                    time = now.toLocaleTimeString().substring(0,5);
+
+                if (user_id == that.username) {
+                    message_html = '<div class="chat-message">' + 
+                                        '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
+                                        '<span class="chat-message-content">'+text+'</span>' + 
+                                    '</div>';
+                } else {
+                    message_html = '<div class="chat-message">' + 
+                                        '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
+                                        '<span class="chat-message-content">'+text+'</span>' + 
+                                    '</div>';
+                }
+                chat_content.append(message_html);
+                chat_content.scrollTop(chat_content[0].scrollHeight);
+                jarnxmpp.UI.msg_counter += 1;
+                jarnxmpp.UI.updateMsgCounter();
+            });
         });
     };
 
     obj.closeChat = function (jid) {
         var chat_id = this.hash(jid);
-        jQuery('#'+chat_id).css('display','none');
+        jQuery('#'+chat_id).hide('fast');
         xmppchat.reorderChats();
         var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
             open_chats = [],
@@ -280,7 +302,7 @@ var xmppchat = (function ($, console) {
             var form = textbox.parent();
             form.submit();
             message = message.replace(/^\s+|\s+jQuery/g,"");
-            textbox.val('').focus().css('height','44px');
+            textbox.val('').focus();
             if (message !== '') {
                 message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
                 list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
@@ -329,6 +351,27 @@ $(document).bind('xmppchat.send_presence', function (event, jid, type) {
     jarnxmpp.connection.send($pres({'type':type}));
 });
 
+xmppchat.taskbuffer = (function ($) {
+    obj = {};
+    obj.tasks = [];
+    obj.deferred = $.when();
+    obj.handleTasks = function () {
+        var task;
+        // If the current deferred task is resolved and there are more tasks
+        if (obj.deferred.isResolved() && obj.tasks.length > 0) {
+            // Get the next task in the queue and set the new deferred.
+            task = obj.tasks.shift();
+
+            obj.deferred = $.when(task.method.apply(xmppchat, task.parameters));
+
+            if (obj.tasks.length > 0) {
+                obj.deferred.done(obj.handleTasks);
+            }
+        }
+    };
+    return obj;
+})(jQuery);
+
 $(document).bind('jarnxmpp.connected', function() {
     var chatdata = jQuery('span#babble-client-chatdata'),
         cookie = jQuery.cookie('chats-open-'+chatdata.attr('username')),
@@ -341,21 +384,24 @@ $(document).bind('jarnxmpp.connected', function() {
     $("div#online-users-container")
         .bind('onaftershow', function (e) { 
             xmppchat.addChatToCookie('online-users-container');
-            xmppchat.chats.push('online-users-container');
         });
     $('a.user-details-toggle').live('click', function (e) {
         var $field = $('[name="message"]:input', $(this).parent()[0]),
-            recipient = $field.attr('data-recipient');
-        xmppchat.startChat(recipient);
+            jid = $field.attr('data-recipient');
         e.preventDefault();
+        xmppchat.getChatbox(jid, function() {});
     });
 
     jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
     if (cookie) {
+        // We need to wait for chatbox creation to finish before we create the
+        // next, so we use a task buffer to make sure the next task is only
+        // executed after the previous is done.
         open_chats = cookie.split('|');
         for (var i=0; i<open_chats.length; i++) {
-            xmppchat.createChat(open_chats[i], 1);
+            xmppchat.taskbuffer.tasks.push({'method':xmppchat.getChatbox, 'parameters':[open_chats[i]]});
         }
+        xmppchat.taskbuffer.handleTasks();
     }
 });
 

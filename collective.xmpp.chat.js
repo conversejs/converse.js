@@ -131,11 +131,19 @@ var xmppchat = (function ($, console) {
     obj.prepNewChat = function (chat, jid) {
         // Some operations that need to be applied on a chatbox
         // after it has been created.
-        var chat_content = $(chat).find('.chat-content');
-        $(chat).find(".chat-textarea").focus();
-        if (chat_content.length > 0) {
-            chat_content.scrollTop(chat_content[0].scrollHeight);
+        var chat_content,
+            value;
+        if (jid === 'online-users-container') {
+            value = jarnxmpp.Storage.get('xmpp-status') || 'online';
+            $(chat).find('#select-xmpp-status').val(value);
+        } else {
+            chat_content = $(chat).find('.chat-content');
+            $(chat).find(".chat-textarea").focus();
+            if (chat_content.length > 0) {
+                chat_content.scrollTop(chat_content[0].scrollHeight);
+            }
         }
+
         if (!(jid in this.oc(this.chats))) {
             this.chats.push(jid);
         }
@@ -417,16 +425,12 @@ $(document).ready(function () {
         }
     });
 
-    $('a.user-details-toggle').live('click', function (e) {
-        var $field = $('[name="message"]:input', $(this).parent()[0]),
-            jid = $field.attr('data-recipient');
-        e.preventDefault();
-        xmppchat.getChatbox(jid, function() {});
-    });
-
     $('ul.tabs').tabs('div.panes > div');
     $('select#select-xmpp-status').bind('change', function (event) {
-        var jid = jarnxmpp.connection.jid;
-        $(document).trigger('xmppchat.send_presence', [jid, event.target.value]);
+        var jid = jarnxmpp.connection.jid,
+            value = event.target.value;
+
+        $(document).trigger('xmppchat.send_presence', [jid, value]);
+        jarnxmpp.Storage.set('xmpp-status', value);
     });
 });

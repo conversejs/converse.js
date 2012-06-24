@@ -7,7 +7,8 @@ var helpers = (function (helpers) {
         }
         return o;
     };
-    helpers.hash =function (str) {
+
+    helpers.hash = function (str) {
         // FIXME
         if (str == 'online-users-container') {
             return str;
@@ -15,6 +16,17 @@ var helpers = (function (helpers) {
         var shaobj = new jsSHA(str);
         return shaobj.getHash("HEX");
     };
+
+    helpers.size = function (obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                size++;
+            }
+        }
+        return size;
+    };
+
     return helpers;
 })(helpers || {});
 
@@ -50,6 +62,10 @@ var xmppchat = (function (jarnxmpp, $, console) {
                     }
                 }
             }
+        };
+
+        methods.getTotal = function () {
+            return helpers.size(storage);
         };
         return methods;
     })();
@@ -119,6 +135,10 @@ var xmppchat = (function (jarnxmpp, $, console) {
                     .c('max')
                     .t('30');
         xmppchat.connection.sendIQ(iq, this.handleCollectionRetrieval, this.handleError);
+    };
+
+    ob.Presence.onlineCount = function () {
+        return xmppchat.ChatPartners.getTotal();
     };
 
     ob.Presence.sendPresence = function (type) {

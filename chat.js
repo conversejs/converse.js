@@ -166,10 +166,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
                         .c('max')
                         .t('30');
             xmppchat.connection.sendIQ(iq, 
-                        function (result) {
-                            // TODO: Do stuff here...
-                            callback();
-                        },
+                        callback,
                         function (result) { 
                             console.log(iq.nodeTree); 
                             console.log($(result).find('error'));

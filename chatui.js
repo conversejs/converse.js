@@ -91,8 +91,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
             data: {
                 chat_id: 'chatbox_'+jid,
                 box_id: chat_id,
-                jid: jid,
-                tzoffset: -(new Date().getTimezoneOffset())
+                jid: jid
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 console.log(textStatus);
@@ -100,8 +99,8 @@ xmppchat.UI = (function (xmppUI, $, console) {
                 return;
             },
             success: function(data) {
-                var chat_id = $(data).attr('id');
-                var $chat = $('body').append(data).find('#'+chat_id);
+                var chat_id = $(data).attr('id'),
+                    $chat = $('body').append(data).find('#'+chat_id);
                 $chat.find('.chat-message .time').each(function () {
                     var jthis = $(this);
                     var time = jthis.text().split(':');
@@ -111,6 +110,34 @@ xmppchat.UI = (function (xmppUI, $, console) {
                     date.setHours(hour - date.getTimezoneOffset() / 60);
                     date.setMinutes(minutes);
                     jthis.replaceWith(date.toLocaleTimeString().substring(0,5));
+                });
+                xmppchat.Collections.getLastMessages(jid, function (result) {
+                    $(result).find('chat').children().each(function (idx, el) {
+                        if (el.tagName !== 'set') {
+                            // TODO: Calculate the time. We have the start time and the offset for each message...
+                            var chat_id = $(data).attr('id');
+                            var $chat = $('body').append(data).find('#'+chat_id);
+                            var $content = $chat.find(".chat-content");
+                            var text = $(el).find('body').text();
+                            var now = new Date();
+                            var time = now.toLocaleTimeString().substring(0,5),
+                                div = $('<div class="chat-message delayed"></div>');
+
+                            if (el.tagName == 'to') {
+                                message_html = div.append( 
+                                                    '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
+                                                    '<span class="chat-message-content">'+text+'</span>'
+                                                    );
+                            } else {
+                                message_html = div.append( 
+                                                    '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
+                                                    '<span class="chat-message-content">'+text+'</span>'
+                                                    );
+                            }
+                            $content.append(message_html);
+                            $content.scrollTop($content[0].scrollHeight);
+                        }
+                    });
                 });
                 callback($chat);
             }

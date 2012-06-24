@@ -26,24 +26,15 @@ xmppchat.UI = (function (xmppUI, $, console) {
             }
             existing_user_element.attr('class', status);
         } else {
-            if ($('#online-users-' + user_id).length > 0) {
-                return;
-            }
-            var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);
-            li.append($('<a></a>').addClass('user-details-toggle').text(user_id));
-            $('#online-users').append(li);
-            // Pre-fetch user info if we have a session storage.
-            if (xmppchat.Storage.storage !== null) {
-                xmppchat.Presence.getUserInfo(user_id, function (data) {});
-            }
+            if ($('#online-users-' + user_id).length > 0) { return; }
+            xmppchat.Presence.getUserInfo(user_id, function (data) {
+                if ($('#online-users-' + user_id).length > 0) { return; }
+                var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);
+                li.append($('<a></a>').addClass('user-details-toggle').text(data.fullname));
+                $('#online-users').append(li);
+            });
         }
-        online_count = xmppchat.Presence.onlineCount();
-        if (online_count > 0) {
-            $('#no-users-online').hide();
-        } else {
-            $('#no-users-online').show();
-        }
-        $('#online-count').text(online_count);
+        $('#online-count').text(xmppchat.Presence.onlineCount());
     };
 
     ob.positionNewChat =  function ($chat) {

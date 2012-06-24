@@ -9,7 +9,8 @@ xmppchat.UI = (function (xmppUI, $, console) {
     };
 
     ob.updateOnPresence = function (jid, status, presence) {
-        var user_id, bare_jid, resource, existing_user_element, online_count;
+        var user_id = Strophe.getNodeFromJid(jid),
+            bare_jid, resource, existing_user_element, online_count;
 
         if (xmppchat.isOwnUser(jid)) { return; }
 
@@ -29,7 +30,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
             if (existing_user_element.length > 0) {
                 existing_user_element.attr('class', status);
             } else {
-                user_id = Strophe.getNodeFromJid(jid);
                 xmppchat.Presence.getUserInfo(user_id, function (data) {
                     if ($('#online-users-' + user_id).length > 0) { return; }
                     var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);

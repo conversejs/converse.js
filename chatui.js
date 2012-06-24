@@ -13,36 +13,31 @@ xmppchat.UI = (function (xmppUI, $, console) {
         // gone offline, we need to look in the ChatPartners storage to see
         // if there are more storages before we mark the user as offline in the UI.
         var user_id = Strophe.getNodeFromJid(jid),
-            barejid = Strophe.getBareJidFromJid(jid),
+            bare_jid = Strophe.getBareJidFromJid(jid),
             existing_user_element = $('#online-users-' + user_id),
             online_count;
-        if (barejid === Strophe.getBareJidFromJid(jarnxmpp.connection.jid)) {
+        if (bare_jid === Strophe.getBareJidFromJid(xmppchat.connection.jid)) {
             return;
         }
         if (existing_user_element.length) {
-            if (status === 'offline' && jarnxmpp.Presence.online.hasOwnProperty(user_id)) {
+            if (status === 'offline' && xmppchat.Presence.online.hasOwnProperty(user_id)) {
                 existing_user_element.attr('class', status);
                 return;
             }
             existing_user_element.attr('class', status);
         } else {
-            $.get(portal_url + '/xmpp-userDetails?jid=' + barejid, function (user_details) {
-                // FIXME: this ajax call returns a bunch of unnecessary stuff...
-                if ($('#online-users-' + user_id).length > 0) {
-                    return;
-                }
-                user_details = $(user_details);
-                $('#online-users').append(user_details);
-                $('#online-users li[data-userid]').sortElements(function (a, b) {
-                    return $('a.user-details-toggle', a).text().trim() > $('a.user-details-toggle', b).text().trim() ? 1 : -1;
-                });
-            });
+            if ($('#online-users-' + user_id).length > 0) {
+                return;
+            }
+            var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);
+            li.append($('<a></a>').addClass('user-details-toggle').text(user_id));
+            $('#online-users').append(li);
             // Pre-fetch user info if we have a session storage.
-            if (jarnxmpp.Storage.storage !== null) {
-                jarnxmpp.Presence.getUserInfo(user_id, function (data) {});
+            if (xmppchat.Storage.storage !== null) {
+                xmppchat.Presence.getUserInfo(user_id, function (data) {});
             }
         }
-        online_count = jarnxmpp.Presence.onlineCount();
+        online_count = xmppchat.Presence.onlineCount();
         if (online_count > 0) {
             $('#no-users-online').hide();
         } else {
@@ -431,10 +426,8 @@ $(document).ready(function () {
     });
 
     $('a.user-details-toggle').live('click', function (e) {
-        var $field = $('[name="message"]:input', $(this).parent()[0]),
-            jid = $field.attr('data-recipient');
         e.preventDefault();
-        xmppchat.UI.getChatbox(jid);
+        xmppchat.UI.getChatbox($(this).parent().attr('data-recipient'));
     });
 
     $('textarea.chat-textarea').live('keypress', function (ev) {

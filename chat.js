@@ -32,7 +32,13 @@ var helpers = (function (helpers) {
 
 var xmppchat = (function (jarnxmpp, $, console) {
     var ob = jarnxmpp;
-    ob.Collections = {};
+    /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
+    *  add-on for ejabberd wants the URL below. This might break for other
+    *  Jabber servers.
+    */
+    ob.Collections = {
+        'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
+    };
     ob.Messages = jarnxmpp.Messages || {};
     ob.Presence = jarnxmpp.Presence || {};
 
@@ -126,30 +132,49 @@ var xmppchat = (function (jarnxmpp, $, console) {
         return true;
     };
 
-    ob.Collections.handleError = function (response) {
-        console.log(response);
-    };
-
-    ob.Collections.handleCollectionRetrieval = function (response) {
-        // Get the last collection.
-        return false; 
-    };
-
-    ob.Collections.retrieveCollections = function () {
-        /*
-        * FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
-        * add-on for ejabberd wants the URL below. This might break for other
-        * Jabber servers.
-        */
-        var uri = 'http://www.xmpp.org/extensions/xep-0136.html#ns';
-        var iq = $iq({'type':'get'})
-                    .c('list', {'start': '1469-07-21T02:00:00Z',
-                                'xmlns': uri
+    ob.Collections.getLastCollection = function (jid, callback) {
+        var bare_jid = Strophe.getBareJidFromJid(jid),
+            iq = $iq({'type':'get'})
+                    .c('list', {'xmlns': this.URI,
+                                'with': bare_jid
                                 })
                     .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
+                    .c('before').up()
                     .c('max')
-                    .t('30');
-        xmppchat.connection.sendIQ(iq, this.handleCollectionRetrieval, this.handleError);
+                    .t('1');
+
+        xmppchat.connection.sendIQ(iq, 
+                    callback,
+                    function () { 
+                        console.log('Error while retrieving collections'); 
+                    });
+    };
+
+    ob.Collections.getLastMessages = function (jid, callback) {
+        var that = this;
+        this.getLastCollection(jid, function (result) {
+            // Retrieve the last page of a collection (30 elements). 
+            var $collection = $(result).find('chat'),
+                jid = $collection.attr('with'),
+                start = $collection.attr('start'),
+                iq = $iq({'type':'get'})
+                        .c('retrieve', {'start': start,
+                                    'xmlns': that.URI,
+                                    'with': jid
+                                    })
+                        .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
+                        .c('max')
+                        .t('30');
+            xmppchat.connection.sendIQ(iq, 
+                        function (result) {
+                            // TODO: Do stuff here...
+                            callback();
+                        },
+                        function (result) { 
+                            console.log(iq.nodeTree); 
+                            console.log($(result).find('error'));
+                        });
+        });
     };
 
     ob.Presence.onlineCount = function () {

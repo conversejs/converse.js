@@ -9,30 +9,34 @@ xmppchat.UI = (function (xmppUI, $, console) {
     };
 
     ob.updateOnPresence = function (jid, status, presence) {
-        // TODO: When a presence indicator shows that a resource has
-        // gone offline, we need to look in the ChatPartners storage to see
-        // if there are more storages before we mark the user as offline in the UI.
-        var user_id = Strophe.getNodeFromJid(jid),
-            bare_jid = Strophe.getBareJidFromJid(jid),
-            existing_user_element = $('#online-users-' + user_id),
-            online_count;
-        if (bare_jid === Strophe.getBareJidFromJid(xmppchat.connection.jid)) {
-            return;
-        }
-        if (existing_user_element.length) {
-            if (status === 'offline' && xmppchat.Presence.online.hasOwnProperty(user_id)) {
-                existing_user_element.attr('class', status);
+        var user_id, bare_jid, resource, existing_user_element, online_count;
+
+        if (xmppchat.isOwnUser(jid)) { return; }
+
+        existing_user_element = $('#online-users-' + user_id);
+        if ((status === 'offline') || (status === 'unavailable')) {
+            // Remove the resource.
+            bare_jid = Strophe.getBareJidFromJid(jid);
+            resource = Strophe.getResourceFromJid(jid);
+            if (xmppchat.ChatPartners.remove(bare_jid, resource) === 0) {
+                // Only set the status offline if there aren't any other resources for that user
+                if (existing_user_element.length > 0) {
+                    existing_user_element.attr('class', status);
+                }
                 return;
             }
-            existing_user_element.attr('class', status);
         } else {
-            if ($('#online-users-' + user_id).length > 0) { return; }
-            xmppchat.Presence.getUserInfo(user_id, function (data) {
-                if ($('#online-users-' + user_id).length > 0) { return; }
-                var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);
-                li.append($('<a></a>').addClass('user-details-toggle').text(data.fullname));
-                $('#online-users').append(li);
-            });
+            if (existing_user_element.length > 0) {
+                existing_user_element.attr('class', status);
+            } else {
+                user_id = Strophe.getNodeFromJid(jid);
+                xmppchat.Presence.getUserInfo(user_id, function (data) {
+                    if ($('#online-users-' + user_id).length > 0) { return; }
+                    var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);
+                    li.append($('<a></a>').addClass('user-details-toggle').text(data.fullname));
+                    $('#online-users').append(li);
+                });
+            }
         }
         $('#online-count').text(xmppchat.Presence.onlineCount());
     };

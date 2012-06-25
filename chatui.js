@@ -32,7 +32,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
             } else {
                 xmppchat.Presence.getUserInfo(user_id, function (data) {
                     if ($('#online-users-' + user_id).length > 0) { return; }
-                    var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', jid);
+                    var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
                     li.append($('<a></a>').addClass('user-details-toggle').text(data.fullname));
                     $('#online-users').append(li);
                 });
@@ -173,8 +173,9 @@ xmppchat.UI = (function (xmppUI, $, console) {
         //
         // This method can be deferred.
         // http://www.erichynds.com/jquery/using-deferreds-in-jquery/
-        var chat_content, 
-            chat_id = helpers.hash(jid),
+        var bare_jid = Strophe.getBareJidFromJid(jid),
+            chat_content, 
+            chat_id = helpers.hash(bare_jid),
             $chat = $("#"+chat_id),
             that = this,
             dfd = $.Deferred();
@@ -189,18 +190,18 @@ xmppchat.UI = (function (xmppUI, $, console) {
             } else {
                 // The chatbox exists, merely hidden
                 $chat.show('fast', function () {
-                    that.prepNewChat(this, jid);
+                    that.prepNewChat(this, bare_jid);
                     that.reorderChats();
                     callback(this);
                     dfd.resolve();
                 });
             }
         } else {
-             this.createChatbox(jid, function ($chat) {
+             this.createChatbox(bare_jid, function ($chat) {
                 // that.retrieveCollections();
                 that.positionNewChat($chat);
                 $chat.show('fast', function () {
-                    that.prepNewChat(this, jid);
+                    that.prepNewChat(this, bare_jid);
                     that.handleChatEvents(chat_id);
                     callback(this);
                     dfd.resolve();

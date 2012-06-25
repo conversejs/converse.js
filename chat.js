@@ -153,7 +153,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
     ob.Collections.getLastMessages = function (jid, callback) {
         var that = this;
         this.getLastCollection(jid, function (result) {
-            // Retrieve the last page of a collection (30 elements). 
+            // Retrieve the last page of a collection (max 30 elements). 
             var $collection = $(result).find('chat'),
                 jid = $collection.attr('with'),
                 start = $collection.attr('start'),
@@ -165,12 +165,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
                         .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
                         .c('max')
                         .t('30');
-            xmppchat.connection.sendIQ(iq, 
-                        callback,
-                        function (result) { 
-                            console.log(iq.nodeTree); 
-                            console.log($(result).find('error'));
-                        });
+            xmppchat.connection.sendIQ(iq, callback);
         });
     };
 

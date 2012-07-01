@@ -91,14 +91,43 @@ var xmppchat = (function (jarnxmpp, $, console) {
         return methods;
     })();
 
+    ob.Messages.ClientStorage = (function () {
+        methods = {};
+
+        methods.addMessage = function (jid, msg, direction) {
+            var bare_jid = Strophe.getBareJidFromJid(jid),
+                now = new Date().toISOString(),
+                msgs = store.get(bare_jid) || [];
+            if (msgs.length >= 30) {
+                msgs.pop();
+            }
+            msgs.push(now+' '+direction+' '+msg);
+            store.set(bare_jid, msgs);
+        };
+
+        methods.getMessages = function (jid) {
+            return store.get(jid) || [];
+        };
+        return methods;
+    })();
+
+    ob.Messages.getMessages = function (jid, callback) {
+        var bare_jid = Strophe.getBareJidFromJid(jid),
+            msgs = this.ClientStorage.getMessages(bare_jid);
+        callback(msgs);
+    };
+
     ob.Messages.sendMessage = function (recipient, text, callback) {
         // TODO: Look in ChatPartners to see what resources we have for the recipient.
         // if we have one resource, we sent to only that resources, if we have multiple
         // we send to the bare jid.
-        var message;
+        // FIXME: see if @@content-transform is required
+        var message, 
+            that = this;
         $.getJSON(portal_url + '/content-transform?', {text: text}, function (data) {
             message = $msg({to: recipient, type: 'chat'}).c('body').t(data.text);
             xmppchat.connection.send(message);
+            that.ClientStorage.addMessage(recipient, data.text, 'to');
             callback();
         });
     };
@@ -119,6 +148,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
         var xhtml_body = $(message).find('html > body').contents(),
             event = jQuery.Event('jarnxmpp.message');
 
+
         event.from = jid;
         event.delayed = delayed;
         if (xhtml_body.length > 0) {
@@ -128,6 +158,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
             event.body = body;
             event.mtype = 'text';
         }
+        ob.Messages.ClientStorage.addMessage(jid, event.body, 'from');
         $(document).trigger(event);
         return true;
     };

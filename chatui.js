@@ -394,20 +394,23 @@ xmppchat.UI = (function (xmppUI, $, console) {
     };
 
     ob.keyPressed = function (ev, textarea) {
-        if(ev.keyCode == 13 && !ev.shiftKey) {
-            var $textarea = jQuery(textarea),
-                message = $textarea.val(),
-                jid = $textarea.attr('data-recipient'),
-                form = $textarea.parent(),
-                now, 
-                minutes, 
-                time, 
-                chat_content;
+        var $textarea = jQuery(textarea),
+            jid = $textarea.attr('data-recipient'), // FIXME: bare jid
+            $chat = $textarea.parent().parent(),
+            message,
+            notify,
+            composing;
 
+        if(ev.keyCode == 13) {
+            message = $textarea.val();
             message = message.replace(/^\s+|\s+jQuery/g,"");
             $textarea.val('').focus();
             if (message !== '') {
                 xmppchat.Messages.sendMessage(jid, message, function () {
+                    var time, 
+                        minutes,
+                        now,
+                        $chat_content;
 
                     message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
                     list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
@@ -420,14 +423,23 @@ xmppchat.UI = (function (xmppUI, $, console) {
                     minutes = now.getMinutes().toString();
                     if (minutes.length==1) {minutes = '0'+minutes;}
                     time = now.toLocaleTimeString().substring(0,5);
-                    chat_content = jQuery('#'+helpers.hash(jid)+' .chat-content');
-                    chat_content.append(
+                    $chat_content = $chat.find('.chat-content');
+                    $chat_content.append(
                         '<div class="chat-message">' + 
                             '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
                             '<span class="chat-message-content">'+message+'</span>' + 
                         '</div>');
-                    chat_content.scrollTop(chat_content[0].scrollHeight);
+                    $chat_content.scrollTop($chat_content[0].scrollHeight);
+                    $chat.data('composing', false);
                 });
+            }
+        } else {
+            composing = $chat.data('composing');
+            if (!composing) {
+                notify = $msg({'to':jid, 'type': 'chat'})
+                                .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
+                xmppchat.connection.send(notify);
+                $chat.data('composing', true);
             }
         }
     };

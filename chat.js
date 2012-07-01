@@ -67,7 +67,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
             // Removes the resource for a user and returns the number of 
             // resources left over.
             if (Object.prototype.hasOwnProperty.call(storage, bare_jid)) {
-                if (!(resource in helpers.oc(storage[bare_jid]))) {
+                if (resource in helpers.oc(storage[bare_jid])) {
                     var idx = storage[bare_jid].indexOf(resource);
                     if (idx !== undefined) {
                         storage[bare_jid].splice(idx, 1);
@@ -99,7 +99,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
                 now = new Date().toISOString(),
                 msgs = store.get(bare_jid) || [];
             if (msgs.length >= 30) {
-                msgs.pop();
+                msgs.shift();
             }
             msgs.push(now+' '+direction+' '+msg);
             store.set(bare_jid, msgs);
@@ -135,7 +135,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
     };
 
     ob.Messages.messageReceived = function (message) {
-        // FIXME: Requires refactor
         var jid = $(message).attr('from'),
             bare_jid = Strophe.getBareJidFromJid(jid),
             resource = Strophe.getResourceFromJid(jid),
@@ -160,7 +159,10 @@ var xmppchat = (function (jarnxmpp, $, console) {
         if (event.body) {
             ob.Messages.ClientStorage.addMessage(jid, event.body, 'from');
         }
-        $(document).trigger(event);
+        if ((xmppchat.Storage.get(xmppchat.username+'-xmpp-status') || 'online') !== 'offline') {
+            // Only trigger the UI event if the user is not offline.
+            $(document).trigger(event);
+        }
         return true;
     };
 
@@ -237,12 +239,15 @@ var xmppchat = (function (jarnxmpp, $, console) {
                 status = ($(presence).find('show').text() === '') ? 'online' : 'away';
             }
 
-            if ((status !== 'offline')&&(status !== 'unavilable')) {
+            if ((status !== 'offline')&&(status !== 'unavailable')) {
                 xmppchat.ChatPartners.add(bare_jid, resource);
+                $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
             } else {
-                xmppchat.ChatPartners.remove(bare_jid, resource);
+                if (xmppchat.ChatPartners.remove(bare_jid, resource) === 0) {
+                    // Only notify offline/unavailable if there aren't any other resources for that user
+                    $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
+                }
             }
-            $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
         }
         return true;
     };

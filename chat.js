@@ -135,32 +135,31 @@ var xmppchat = (function (jarnxmpp, $, console) {
     };
 
     ob.Messages.messageReceived = function (message) {
+        // FIXME: Requires refactor
         var jid = $(message).attr('from'),
             bare_jid = Strophe.getBareJidFromJid(jid),
             resource = Strophe.getResourceFromJid(jid),
-            delayed = $(message).find('delay').length > 0;
-
-        ob.ChatPartners.add(bare_jid, resource);
-
-        var body = $(message).children('body').text();
-        if (body === "") {
-            // TODO:
-            return true; // This is a typing notification, we do not handle it here...
-        }
-        var xhtml_body = $(message).find('html > body').contents(),
+            delayed = $(message).find('delay').length > 0,
+            body = $(message).children('body').text(),
             event = jQuery.Event('jarnxmpp.message');
 
-
+        if (body !== "") {
+            var xhtml_body = $(message).find('html > body').contents();
+            if (xhtml_body.length > 0) {
+                event.mtype = 'xhtml';
+                event.body = xhtml_body.html();
+            } else {
+                event.body = body;
+                event.mtype = 'text';
+            }
+        }
         event.from = jid;
         event.delayed = delayed;
-        if (xhtml_body.length > 0) {
-            event.mtype = 'xhtml';
-            event.body = xhtml_body.html();
-        } else {
-            event.body = body;
-            event.mtype = 'text';
+        event.message = message;
+        ob.ChatPartners.add(bare_jid, resource);
+        if (event.body) {
+            ob.Messages.ClientStorage.addMessage(jid, event.body, 'from');
         }
-        ob.Messages.ClientStorage.addMessage(jid, event.body, 'from');
         $(document).trigger(event);
         return true;
     };

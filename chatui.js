@@ -328,7 +328,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
         */
         var user_id = Strophe.getNodeFromJid(event.from),
             jid = Strophe.getBareJidFromJid(event.from),
-            text = event.body.replace(/<br \/>/g, ""),
             that = this;
 
         xmppchat.Presence.getUserInfo(user_id, function (data) {
@@ -336,26 +335,38 @@ xmppchat.UI = (function (xmppUI, $, console) {
                 var chat_content = $(chat).find(".chat-content"),
                     now = new Date(),
                     time = now.toLocaleTimeString().substring(0,5),
-                    div = $('<div class="chat-message"></div>');
+                    div = $('<div></div>'),
+                    composing = $(event.message).find('composing'),
+                    text;
 
-                if (event.delayed) {
-                    div.addClass('delayed');
+                if (event.body) {
+                    text = event.body.replace(/<br \/>/g, "");
+                    div.addClass('chat-message');
+
+                    if (event.delayed) {
+                        div.addClass('delayed');
+                    }
+                    if (user_id == that.username) {
+                        message_html = div.append( 
+                                            '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
+                                            '<span class="chat-message-content">'+text+'</span>'
+                                            );
+                    } else {
+                        message_html = div.append( 
+                                            '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
+                                            '<span class="chat-message-content">'+text+'</span>'
+                                            );
+                    }
+                    chat_content.find('div.chat-event').remove();
+                    chat_content.append(message_html);
+                    xmppchat.UI.msg_counter += 1;
+                    xmppchat.UI.updateMsgCounter();
+
+                } else if (composing.length > 0) {
+                    message_html = div.addClass('chat-event').text(data.fullname + ' is typing...');
+                    chat_content.find('div.chat-event').remove().end().append(message_html);
                 }
-                if (user_id == that.username) {
-                    message_html = div.append( 
-                                        '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
-                                        '<span class="chat-message-content">'+text+'</span>'
-                                        );
-                } else {
-                    message_html = div.append( 
-                                        '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
-                                        '<span class="chat-message-content">'+text+'</span>'
-                                        );
-                }
-                chat_content.append(message_html);
                 chat_content.scrollTop(chat_content[0].scrollHeight);
-                xmppchat.UI.msg_counter += 1;
-                xmppchat.UI.updateMsgCounter();
             });
         });
     };

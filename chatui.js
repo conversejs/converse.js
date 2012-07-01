@@ -157,7 +157,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
             var $form = $('<form class="sendXMPPMessage" action="" method="post">')
                         .append(
                             $('<textarea type="text" ' +
-                                'name="message" '+
                                 'class="chat-textarea" ' +
                                 'placeholder="Personal message"/>').attr('data-recipient', bare_jid));
             $chat.append($head).append($content).append($form);
@@ -521,6 +520,10 @@ $(document).ready(function () {
     $('a.close-chatbox-button').live('click', function (ev) {
         var jid = $(ev.target).attr('data-recipient');
         xmppchat.UI.closeChat(jid);
+    }); 
+
+    $('a.close-controlbox-button').live('click', function (ev) {
+        xmppchat.UI.closeChat('online-users-container');
     }); 
 
     $('ul.tabs').tabs('div.panes > div');

@@ -1,0 +1,27 @@
+v1.3.3
++ Fix IE keys beginning with numeric characters (nice find @pauldwaite)
+
+v1.3.2
++ Implement store.getAll() (patch by @blq)
+
+v1.3.0
++ Use uglify.js for minifying store.min.js and store+json.min.js
++ Add build script
+
+v1.2.0
++ Remove same-path restrictions in IE6/7! (Thanks @mjpizz!)
++ Support CommonJS and AMD module systems (Thanks @pereckerdal!)
++ Fix: store.set('foo', undefined); store.get('foo') no longer throws (Thanks @buger!)
+
+v1.1.1
++ Publish in npm as "store" rather than "store.js"
++ Add commonjs export for require support
++ Add supported browsers Chrome 6-11, Firefox 4.0
+
+v1.1.0
++ First versioned version.
++ API: store.set, store.get, store.remove, store.clear, store.transact
++ Minified versions are included: store.min.js for store.js only, and store+json2.min.js for store.js and json2.js
+
+TODO
+- Get around IE6/7 per-directory restrition. @lrbabe/@louis_remi had the idea of putting the store.js API in an anonymous iframe a la https://github.com/meebo/embed-code and see what directory restriction that would fall under

@@ -117,7 +117,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
         callback(msgs);
     };
 
-    ob.Messages.sendMessage = function (recipient, text, callback) {
+    ob.Messages.sendMessage = function (jid, text, callback) {
         // TODO: Look in ChatPartners to see what resources we have for the recipient.
         // if we have one resource, we sent to only that resources, if we have multiple
         // we send to the bare jid.
@@ -125,9 +125,11 @@ var xmppchat = (function (jarnxmpp, $, console) {
         var message, 
             that = this;
         $.getJSON(portal_url + '/content-transform?', {text: text}, function (data) {
-            message = $msg({to: recipient, type: 'chat'}).c('body').t(data.text);
+            message = $msg({to: jid, type: 'chat'})
+                        .c('body').t(data.text).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
             xmppchat.connection.send(message);
-            that.ClientStorage.addMessage(recipient, data.text, 'to');
+            that.ClientStorage.addMessage(jid, data.text, 'to');
             callback();
         });
     };

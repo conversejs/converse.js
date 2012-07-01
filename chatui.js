@@ -530,10 +530,48 @@ $(document).ready(function () {
     }); 
 
     $('ul.tabs').tabs('div.panes > div');
+
+    var select = $('select#select-xmpp-status'),
+        selected = select.find('option[selected]'),
+        chat_status = selected.val() || xmppchat.Presence.getOwnStatus() || 'online';
+        options = $('option', select);
+
+        // create <dl> and <dt> with selected value inside it
+        select.parent().append('<dl id="target" class="dropdown"></dl>');
+
+        $("#target").append('<dt id="fancy-xmpp-status-select"><a href="#" class="'+chat_status+'">I am '+chat_status + 
+            '<span class="value">' + chat_status + '</span></a></dt>');
+
+        $("#target").append('<dd><ul></ul></dd>');
+        // iterate through all the <option> elements and create UL
+        options.each(function(){
+            $("#target dd ul").append('<li><a href="#" class="'+$(this).val()+'">' + 
+                $(this).text() + '<span class="value">' + 
+                $(this).val() + '</span></a></li>').hide();
+        });
+        select.remove();
+
+    $('#fancy-xmpp-status-select').click(function (ev) {
+        ev.preventDefault();
+        $(this).siblings('dd').find('ul').toggle('fast');
+    });
+
+    $(".dropdown dd ul li a").click(function() {
+        var jid = xmppchat.connection.jid,
+            value = $(this).find('span').text();
+
+        $(".dropdown dt a").html('I am ' + value);
+        $(".dropdown dt a").attr('class', value);
+        $(".dropdown dd ul").hide();
+        $("#source").val($(this).find("span.value").html());
+
+        xmppchat.Presence.sendPresence(value);
+        xmppchat.Storage.set(xmppchat.username+'-xmpp-status', value);
+    });
+
     $('select#select-xmpp-status').bind('change', function (ev) {
         var jid = xmppchat.connection.jid,
             value = ev.target.value;
-
         xmppchat.Presence.sendPresence(value);
         xmppchat.Storage.set(xmppchat.username+'-xmpp-status', value);
     });

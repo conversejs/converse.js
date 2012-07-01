@@ -203,13 +203,17 @@ var xmppchat = (function (jarnxmpp, $, console) {
         });
     };
 
+    ob.Presence.getOwnStatus = function () {
+        return xmppchat.Storage.get(xmppchat.username+'-xmpp-status');
+    };
+
     ob.Presence.onlineCount = function () {
         return xmppchat.ChatPartners.getTotal();
     };
 
     ob.Presence.sendPresence = function (type) {
         if (type === undefined) {
-            type = xmppchat.Storage.get(xmppchat.username+'-xmpp-status') || 'online';
+            type = this.getOwnStatus() || 'online';
         }
         xmppchat.connection.send($pres({'type':type}));
     };

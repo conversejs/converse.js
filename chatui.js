@@ -8,6 +8,14 @@ xmppchat.UI = (function (xmppUI, $, console) {
         return xmppchat.base_url + call; 
     };
 
+    ob.addUserToRosterUI = function (user_id, bare_jid, fullname) {
+        if ($('#online-users-' + user_id).length > 0) { return; }
+        var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
+        li.append($('<a title="Click to chat with this contact"></a>').addClass('user-details-toggle').text(fullname));
+        li.append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
+        $('#xmpp-contacts').append(li);
+    };
+
     ob.updateOnPresence = function (jid, status, presence) {
         var user_id = Strophe.getNodeFromJid(jid),
             bare_jid = Strophe.getBareJidFromJid(jid),
@@ -27,6 +35,16 @@ xmppchat.UI = (function (xmppUI, $, console) {
                     $chat_content.append($('<div></div>').addClass('chat-event').text(data.fullname + ' has gone offline.'));
                     $chat_content.scrollTop($content[0].scrollHeight);
                 });
+            } else if (status === 'unsubscribe') {
+                xmppchat.Presence.getUserInfo(user_id, function (data) {
+                    $chat_content.append($('<div></div>').addClass('chat-event').text(data.fullname + ' has removed you as a contact.'));
+                    $chat_content.scrollTop($content[0].scrollHeight);
+                });
+                if (existing_user_element.length > 0) {
+                    existing_user_element.remove();
+                }
+                $('#online-count').text(xmppchat.Presence.onlineCount());
+                return;
             }
         }
 
@@ -34,10 +52,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
             existing_user_element.attr('class', status);
         } else if ((status !== 'offline') && (status !== 'unavailable')) {
             xmppchat.Presence.getUserInfo(user_id, function (data) {
-                if ($('#online-users-' + user_id).length > 0) { return; }
-                var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
-                li.append($('<a></a>').addClass('user-details-toggle').text(data.fullname));
-                $('#xmpp-contacts').append(li);
+                xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname);
             });
         } else { // status is offline and the user isn't shown as online
             return;
@@ -466,7 +481,8 @@ xmppchat.UI = (function (xmppUI, $, console) {
             // create <dl> and <dt> with selected value inside it
             select.parent().append('<dl id="target" class="dropdown"></dl>');
 
-            $("#target").append('<dt id="fancy-xmpp-status-select"><a href="#" class="'+chat_status+'">I am '+chat_status + 
+            $("#target").append('<dt id="fancy-xmpp-status-select"><a href="#" title="Click to change your chat status" class="' +
+                chat_status+'">I am ' + chat_status + 
                 '<span class="value">' + chat_status + '</span></a></dt>');
 
             $("#target").append('<dd><ul></ul></dd>');
@@ -513,10 +529,7 @@ $(document).ready(function () {
 
                 // FIXME: We should store the contact name on the jabber server!
                 xmppchat.Presence.getUserInfo(user_id, function (data) {
-                    if ($('#online-users-' + user_id).length > 0) { return; }
-                    var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
-                    li.append($('<a></a>').addClass('user-details-toggle').text(data.fullname));
-                    $('#xmpp-contacts').append(li);
+                    xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname);
                 });
             }
         });
@@ -566,6 +579,28 @@ $(document).ready(function () {
         $(this).parent().find('form.search-xmpp-contact').toggle().find('input.username').focus();
     });
 
+    $('a.remove-xmpp-contact').live('click', function (ev) {
+        var that = this;
+        ev.preventDefault();
+        $("<span></span>").dialog({
+            title: 'Are you sure you want to remove this contact?',
+            dialogClass: 'remove-xmpp-contact-dialog',
+            resizable: false,
+            width: 400,
+            modal: true,
+            buttons: {
+                "Yes, remove.": function() {
+                    $( this ).dialog( "close" );
+                    var jid = $(that).parent().attr('data-recipient');
+                    xmppchat.Roster.unsubscribe(jid);
+                },
+                "Cancel": function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        });
+    });
+
     $('form.search-xmpp-contact').submit(function (ev) {
         ev.preventDefault();
         $.getJSON(portal_url + "/search-users?q=" + $(this).find('input.username').val(), function (data) {
@@ -578,7 +613,7 @@ $(document).ready(function () {
                         $('<li></li>')
                             .attr('id', 'found-users-'+obj.id)
                             .append(
-                                $('<a class="subscribe-to-user" href="#"></a>')
+                                $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
                                     .attr('data-recipient', obj.id+'@'+xmppchat.connection.domain)
                                     .text(obj.fullname)
                             )

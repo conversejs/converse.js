@@ -84,6 +84,12 @@ var xmppchat = (function (jarnxmpp, $, console) {
             return 0;
         };
 
+        methods.removeAll = function (bare_jid) {
+            if (Object.prototype.hasOwnProperty.call(storage, bare_jid)) {
+                delete storage[bare_jid];
+            }
+        };
+
         methods.getTotal = function () {
             return helpers.size(storage);
         };
@@ -228,8 +234,14 @@ var xmppchat = (function (jarnxmpp, $, console) {
         if (ptype === 'subscribe') {
             // User wants to subscribe to us. Always approve and
             // ask to subscribe to him
-            jarnxmpp.connection.send($pres({to: jid, type: 'subscribed'}));
-            jarnxmpp.connection.send($pres({to: jid, type: 'subscribe'}));
+            xmppchat.Roster.authorize(jid);
+            xmppchat.Roster.subscribe(jid);
+
+        } else if (ptype === 'unsubscribe') {
+            xmppchat.ChatPartners.removeAll(bare_jid);
+            xmppchat.Roster.unauthorize(bare_jid);
+            $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
+
         } else if (ptype !== 'error') { // Presence has changed
             if (ptype === 'unavailable') {
                 status = 'unavailable';

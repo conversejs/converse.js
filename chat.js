@@ -281,3 +281,30 @@ var xmppchat = (function (jarnxmpp, $, console) {
 })(jarnxmpp || {}, jQuery, console || {log: function(){}});
 
 
+// Event handlers
+// --------------
+$(document).ready(function () {
+    $(document).unbind('jarnxmpp.connected');
+    $(document).bind('jarnxmpp.connected', function () {
+        // Logging
+        xmppchat.connection.rawInput = xmppchat.rawInput;
+        xmppchat.connection.rawOutput = xmppchat.rawOutput;
+        // Messages
+        xmppchat.connection.addHandler(xmppchat.Messages.messageReceived, null, 'message', 'chat');
+        //Roster
+        xmppchat.connection.addHandler(xmppchat.Roster.rosterResult, Strophe.NS.ROSTER, 'iq', 'result');
+        xmppchat.connection.addHandler(xmppchat.Roster.rosterSuggestedItem, 'http://jabber.org/protocol/rosterx', 'message', null);
+        // Presence
+        xmppchat.connection.addHandler(xmppchat.Presence.presenceReceived, null, 'presence', null);
+
+        xmppchat.UI.restoreOpenChats();
+
+        xmppchat.Roster = Strophe._connectionPlugins.roster;
+        xmppchat.Roster._connection = xmppchat.connection;
+        xmppchat.Roster.get(function (contacts) {
+            xmppchat.Roster.contacts = contacts;
+            $(document).trigger('xmppchat.roster_updated');
+        });
+        xmppchat.Presence.sendPresence();
+    });
+});

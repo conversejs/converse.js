@@ -472,6 +472,19 @@ xmppchat.UI = (function (xmppUI, $, console) {
         }
     };
 
+    ob.setOwnStatus = function (el) {
+        var jid = xmppchat.connection.jid,
+            value = $(el).find('span').text();
+
+        $(".dropdown dt a").html('I am ' + value);
+        $(".dropdown dt a").attr('class', value);
+        $(".dropdown dd ul").hide();
+        $("#source").val($(el).find("span.value").html());
+
+        xmppchat.Presence.sendPresence(value);
+        xmppchat.Storage.set(xmppchat.username+'-xmpp-status', value);
+    };
+
     ob.createStatusSelectWidget = function () {
         var select = $('select#select-xmpp-status'),
             selected = select.find('option[selected]'),
@@ -521,8 +534,8 @@ $(document).ready(function () {
     });
 
     $(document).bind('xmppchat.roster_updated', function (event) {
-        var contacts = xmppchat.Roster.contacts;
-        $(contacts).each(function (idx, contact) {
+        $('#xmpp-contacts').empty();
+        $(xmppchat.Roster.getCached()).each(function (idx, contact) {
             if (contact.subscription !== 'none') {
                 var user_id = Strophe.getNodeFromJid(contact.jid),
                     bare_jid = Strophe.getBareJidFromJid(contact.jid);
@@ -625,19 +638,13 @@ $(document).ready(function () {
     $("a.subscribe-to-user").live('click', function (ev) {
         ev.preventDefault();
         xmppchat.Roster.subscribe($(this).attr('data-recipient'));
+        $(this).remove();
+        $('form.search-xmpp-contact').hide();
     });
 
-    $(".dropdown dd ul li a").click(function() {
-        var jid = xmppchat.connection.jid,
-            value = $(this).find('span').text();
-
-        $(".dropdown dt a").html('I am ' + value);
-        $(".dropdown dt a").attr('class', value);
-        $(".dropdown dd ul").hide();
-        $("#source").val($(this).find("span.value").html());
-
-        xmppchat.Presence.sendPresence(value);
-        xmppchat.Storage.set(xmppchat.username+'-xmpp-status', value);
+    $(".dropdown dd ul li a").click(function(ev) {
+        ev.preventDefault();
+        xmppchat.UI.setOwnStatus(this);
     });
 
     $('select#select-xmpp-status').bind('change', function (ev) {

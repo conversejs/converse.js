@@ -234,13 +234,18 @@ var xmppchat = (function (jarnxmpp, $, console) {
         if (ptype === 'subscribe') {
             // User wants to subscribe to us. Always approve and
             // ask to subscribe to him
-            xmppchat.Roster.authorize(jid);
-            xmppchat.Roster.subscribe(jid);
+            xmppchat.Roster.authorize(bare_jid);
+            xmppchat.Roster.subscribe(bare_jid);
 
         } else if (ptype === 'unsubscribe') {
-            xmppchat.ChatPartners.removeAll(bare_jid);
-            xmppchat.Roster.unauthorize(bare_jid);
-            $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
+            if (_.indexOf(xmppchat.Roster.getCachedJids(), bare_jid) != -1) {
+                xmppchat.Roster.unauthorize(bare_jid);
+                xmppchat.Roster.unsubscribe(bare_jid);
+                $(document).trigger('jarnxmpp.presence', [jid, 'unsubscribe', presence]);
+            }
+
+        } else if (ptype === 'unsubscribed') {
+            return;
 
         } else if (ptype !== 'error') { // Presence has changed
             if (ptype === 'unavailable') {
@@ -269,7 +274,12 @@ var xmppchat = (function (jarnxmpp, $, console) {
     };
 
     ob.Taskbuffer = (function ($) {
+        // Executes tasks one after another (i.e next task is started only when
+        // the previous one has been completed).
         buffer = {};
+        // Tasks must be objects with keys: 'that', 'method' and 'parameters'
+        // 'that' the context for the method, while 'parameters' is the list of arguments 
+        // passed to it.
         buffer.tasks = [];
         buffer.deferred = $.when();
         buffer.handleTasks = function () {
@@ -292,6 +302,51 @@ var xmppchat = (function (jarnxmpp, $, console) {
     return ob;
 })(jarnxmpp || {}, jQuery, console || {log: function(){}});
 
+xmppchat.Roster = (function (roster, jquery, console) {
+    var contacts = {},
+        ob = roster;
+
+    _updateCache = function () {
+        if (this.subscription === 'none') {
+            delete contacts[this.jid];
+        } else {
+            contacts[this.jid] = this;
+        }
+    };
+
+    _triggerEvent = function () {
+        $(document).trigger('xmppchat.roster_updated');
+    };
+
+    ob._connection = xmppchat.connection;
+
+    ob.update = function (items, item) {
+        old_cache = ob.getCached();
+        for (var i=0; i<items.length; i++) {
+            if (items[i].subscription === 'none') {
+                delete contacts[items[i].jid];
+            } else {
+                contacts[items[i].jid] = items[i];
+            }
+        }        
+        console.log('update, size is: '+ _.size(contacts));
+        if (!_.isEqual(old_cache, ob.getCached())) {
+            console.log('triggering event');
+            $(document).trigger('xmppchat.roster_updated');
+        }
+        
+    };
+
+    ob.getCached = function () {
+        return _.values(contacts);
+    };
+
+    ob.getCachedJids = function () {
+        return _.keys(contacts);
+    };
+    return ob;
+});
+
 
 // Event handlers
 // --------------
@@ -311,12 +366,9 @@ $(document).ready(function () {
 
         xmppchat.UI.restoreOpenChats();
 
-        xmppchat.Roster = Strophe._connectionPlugins.roster;
-        xmppchat.Roster._connection = xmppchat.connection;
-        xmppchat.Roster.get(function (contacts) {
-            xmppchat.Roster.contacts = contacts;
-            $(document).trigger('xmppchat.roster_updated');
-        });
+        xmppchat.Roster = xmppchat.Roster(Strophe._connectionPlugins.roster, $, console);
+        xmppchat.Roster.registerCallback(xmppchat.Roster.update);
+        xmppchat.Roster.get();
         xmppchat.Presence.sendPresence();
     });
 });

@@ -8,9 +8,9 @@ xmppchat.UI = (function (xmppUI, $, console) {
         return xmppchat.base_url + call; 
     };
 
-    ob.addUserToRosterUI = function (user_id, bare_jid, fullname) {
+    ob.addUserToRosterUI = function (user_id, bare_jid, fullname, userstatus) {
         if ($('#online-users-' + user_id).length > 0) { return; }
-        var li = $('<li></li>').attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
+        var li = $('<li></li>').addClass(userstatus).attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
         li.append($('<a title="Click to chat with this contact"></a>').addClass('user-details-toggle').text(fullname));
         li.append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
         $('#xmpp-contacts').append(li);
@@ -52,7 +52,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
             existing_user_element.attr('class', status);
         } else if ((status !== 'offline') && (status !== 'unavailable')) {
             xmppchat.Presence.getUserInfo(user_id, function (data) {
-                xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname);
+                xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname, status);
             });
         } else { // status is offline and the user isn't shown as online
             return;
@@ -212,7 +212,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
             }
         }
 
-        if (!(jid in helpers.oc(this.chats))) {
+        if (_.indexOf(this.chats, jid) == -1) {
             this.chats.push(jid);
         }
         this.addChatToCookie(jid);
@@ -542,7 +542,7 @@ $(document).ready(function () {
 
                 // FIXME: We should store the contact name on the jabber server!
                 xmppchat.Presence.getUserInfo(user_id, function (data) {
-                    xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname);
+                    xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname, 'offline');
                 });
             }
         });
@@ -599,10 +599,15 @@ $(document).ready(function () {
             title: 'Are you sure you want to remove this contact?',
             dialogClass: 'remove-xmpp-contact-dialog',
             resizable: false,
-            width: 400,
+            width: 200,
+            position: {
+                my: 'center',
+                at: 'center',
+                of: '#online-users-container'
+                },
             modal: true,
             buttons: {
-                "Yes, remove.": function() {
+                "Remove": function() {
                     $( this ).dialog( "close" );
                     var jid = $(that).parent().attr('data-recipient');
                     xmppchat.Roster.unsubscribe(jid);

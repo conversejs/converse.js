@@ -16,17 +16,6 @@ var helpers = (function (helpers) {
         var shaobj = new jsSHA(str);
         return shaobj.getHash("HEX");
     };
-
-    helpers.size = function (obj) {
-        var size = 0, key;
-        for (key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                size++;
-            }
-        }
-        return size;
-    };
-
     return helpers;
 })(helpers || {});
 
@@ -55,7 +44,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
         
         methods.add = function (bare_jid, resource) {
             if (Object.prototype.hasOwnProperty.call(storage, bare_jid)) {
-                if (!(resource in helpers.oc(storage[bare_jid]))) {
+                if (_.indexOf(storage[bare_jid], resource) == -1) {
                     storage[bare_jid].push(resource);
                 }
             } else  {
@@ -66,18 +55,16 @@ var xmppchat = (function (jarnxmpp, $, console) {
         methods.remove = function (bare_jid, resource) {
             // Removes the resource for a user and returns the number of 
             // resources left over.
-            if (Object.prototype.hasOwnProperty.call(storage, bare_jid)) {
-                if (resource in helpers.oc(storage[bare_jid])) {
-                    var idx = storage[bare_jid].indexOf(resource);
-                    if (idx !== undefined) {
-                        storage[bare_jid].splice(idx, 1);
-                        if (storage[bare_jid].length === 0) {
-                            delete storage[bare_jid];
-                            return 0;
-                        }
-                        else {
-                            return storage[bare_jid].length;
-                        }
+            if (_.has(storage, bare_jid)) {
+                var idx = _.indexOf(storage[bare_jid], resource);
+                if (idx !== -1) {
+                    storage[bare_jid].splice(idx, 1);
+                    if (storage[bare_jid].length === 0) {
+                        delete storage[bare_jid];
+                        return 0;
+                    }
+                    else {
+                        return storage[bare_jid].length;
                     }
                 }
             }
@@ -91,7 +78,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
         };
 
         methods.getTotal = function () {
-            return helpers.size(storage);
+            return _.size(storage);
         };
 
         return methods;
@@ -230,6 +217,10 @@ var xmppchat = (function (jarnxmpp, $, console) {
             resource = Strophe.getResourceFromJid(jid),
             ptype = $(presence).attr('type'),
             status = '';
+
+        if (ob.isOwnUser(bare_jid)) {
+            return true;
+        }
 
         if (ptype === 'subscribe') {
             // User wants to subscribe to us. Always approve and

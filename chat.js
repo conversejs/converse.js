@@ -32,59 +32,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
     ob.Messages = jarnxmpp.Messages || {};
     ob.Presence = jarnxmpp.Presence || {};
 
-    ob.isOwnUser = function (jid) {
-        return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(xmppchat.connection.jid));
-    };
-
-    ob.ChatPartners = (function () {
-        /* A mapping of bare JIDs to resources, to keep track of 
-        *  how many resources we have per chat partner.
-        */
-        var storage = {};
-        var methods = {};
-        
-        methods.add = function (bare_jid, resource) {
-            if (Object.prototype.hasOwnProperty.call(storage, bare_jid)) {
-                if (_.indexOf(storage[bare_jid], resource) == -1) {
-                    storage[bare_jid].push(resource);
-                }
-            } else  {
-                storage[bare_jid] = [resource];
-            }
-        };
-
-        methods.remove = function (bare_jid, resource) {
-            // Removes the resource for a user and returns the number of 
-            // resources left over.
-            if (_.has(storage, bare_jid)) {
-                var idx = _.indexOf(storage[bare_jid], resource);
-                if (idx !== -1) {
-                    storage[bare_jid].splice(idx, 1);
-                    if (storage[bare_jid].length === 0) {
-                        delete storage[bare_jid];
-                        return 0;
-                    }
-                    else {
-                        return storage[bare_jid].length;
-                    }
-                }
-            }
-            return 0;
-        };
-
-        methods.removeAll = function (bare_jid) {
-            if (Object.prototype.hasOwnProperty.call(storage, bare_jid)) {
-                delete storage[bare_jid];
-            }
-        };
-
-        methods.getTotal = function () {
-            return _.size(storage);
-        };
-
-        return methods;
-    })();
-
     ob.Messages.ClientStorage = (function () {
         methods = {};
 
@@ -212,59 +159,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
         xmppchat.connection.send($pres({'type':type}));
     };
 
-    ob.Presence.presenceReceived = function (presence) {
-        var jid = $(presence).attr('from'),
-            bare_jid = Strophe.getBareJidFromJid(jid),
-            resource = Strophe.getResourceFromJid(jid),
-            ptype = $(presence).attr('type'),
-            status = '';
-
-        if (ob.isOwnUser(bare_jid)) {
-            return true;
-        }
-
-        if (ptype === 'subscribe') {
-            // User wants to subscribe to us. Always approve and
-            // ask to subscribe to him
-            xmppchat.Roster.authorize(bare_jid);
-            xmppchat.Roster.subscribe(bare_jid);
-
-        } else if (ptype === 'unsubscribe') {
-            if (_.indexOf(xmppchat.Roster.getCachedJids(), bare_jid) != -1) {
-                xmppchat.Roster.unauthorize(bare_jid);
-                xmppchat.Roster.unsubscribe(bare_jid);
-                $(document).trigger('jarnxmpp.presence', [jid, 'unsubscribe', presence]);
-            }
-
-        } else if (ptype === 'unsubscribed') {
-            return;
-
-        } else if (ptype !== 'error') { // Presence has changed
-            if (ptype === 'unavailable') {
-                status = 'unavailable';
-            } else if (ptype === 'offline') {
-                status = 'offline';
-            } else if (ptype === 'busy') {
-                status = 'busy';
-            } else if (ptype === 'away') {
-                status = 'away';
-            } else {
-                status = ($(presence).find('show').text() === '') ? 'online' : 'away';
-            }
-
-            if ((status !== 'offline')&&(status !== 'unavailable')) {
-                xmppchat.ChatPartners.add(bare_jid, resource);
-                $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
-            } else {
-                if (xmppchat.ChatPartners.remove(bare_jid, resource) === 0) {
-                    // Only notify offline/unavailable if there aren't any other resources for that user
-                    $(document).trigger('jarnxmpp.presence', [jid, status, presence]);
-                }
-            }
-        }
-        return true;
-    };
-
     ob.Taskbuffer = (function ($) {
         // Executes tasks one after another (i.e next task is started only when
         // the previous one has been completed).
@@ -295,6 +189,15 @@ var xmppchat = (function (jarnxmpp, $, console) {
 })(jarnxmpp || {}, jQuery, console || {log: function(){}});
 
 
+xmppchat.ChatBox = Backbone.Model.extend({
+});
+
+xmppchat.ChatBoxes = Backbone.Collection.extend({
+});
+
+xmppchat.ChatBoxView = Backbone.View.extend({
+});
+
 xmppchat.RosterItem = Backbone.Model.extend({
     /*
      *  RosterItem: {
@@ -315,10 +218,8 @@ xmppchat.RosterItem = Backbone.Model.extend({
 });
 
 xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
-    var contacts = {},
-        ob = _.clone(stropheRoster);
-
-    var Collection = Backbone.Collection.extend({
+    var ob = _.clone(stropheRoster),
+        Collection = Backbone.Collection.extend({
         model: xmppchat.RosterItem
     });
     var collection = new Collection();
@@ -349,6 +250,10 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
         return rank;
     };
 
+    ob.isSelf = function (jid) {
+        return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(xmppchat.connection.jid));
+    };
+
     ob.getRoster = function () {
         return stropheRoster.get();
     };
@@ -361,22 +266,43 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
         var user_id = Strophe.getNodeFromJid(item.jid),
             model = new xmppchat.RosterItem(item.jid, item.subscription);
         ob.add(model);
-        /*
-        if (!item.name) {
-            // TODO: I think after a user has been added to the roster,
-            // his nickname needs to be calculated. This is only
-            // feasible if the nickname is persisted. We cannot do this
-            // if we have to redo this upon every page load.
-            xmppchat.Presence.getUserInfo(user_id, function (data) {
-                ob.update(item.jid, data.fullname, [], function () {
-                    // TODO Store in the model item.
-                    model.fullname = data.fullname;
-                    ob.add(model);
-                });
-            });
-        } else {
-            ob.add(model);
-        }*/
+    };
+    
+    ob.addResource = function (bare_jid, resource) {
+        var item = ob.getItem(bare_jid);
+        if (item) {
+            if (_.indexOf(item.resources, resource) == -1) {
+                item.resources.push(resource);
+            }
+        } else  {
+            item.resources = [resource];
+        }
+    };
+
+    ob.removeResource = function (bare_jid, resource) {
+        var item = ob.getItem(bare_jid);
+        if (item) {
+            var idx = _.indexOf(item.resources, resource);
+            if (idx !== -1) {
+                item.resources.splice(idx, 1);
+                return item.resources.length;
+            }
+        }
+        return 0;
+    };
+
+    ob.clearResources = function (bare_jid) {
+        var item = ob.getItem(bare_jid);
+        if (item) {
+            item.resources = [];
+        }
+    };
+
+    ob.getTotalResources = function (bare_jid) {
+        var item = ob.getItem(bare_jid);
+        if (item) {
+            return _.size(item.resources);
+        }
     };
 
     ob.updateHandler = function (items) {
@@ -396,78 +322,123 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
             }
         }
     };
-    /* 
-    addResource: function (bare_jid, resource) {
-    },
 
-    removeResource: function (bare_jid, resource) {
-    },
+    ob.presenceHandler = function (presence) {
+        var jid = $(presence).attr('from'),
+            bare_jid = Strophe.getBareJidFromJid(jid),
+            resource = Strophe.getResourceFromJid(jid),
+            ptype = $(presence).attr('type'),
+            status = '';
 
-    removeAll: function (bare_jid) {
-        // Remove all resources for bare_jid
-    },
+        if (ob.isSelf(bare_jid)) { return true; }
 
-    getNumContacts: function () {
-    },
+        if (ptype === 'subscribe') {
+            // FIXME: User wants to subscribe to us. Always approve and
+            // ask to subscribe to him
+            stropheRoster.authorize(bare_jid);
+            stropheRoster.subscribe(bare_jid);
 
-    getJids: function () {
-        return _.keys(storage);
-    }*/
+        } else if (ptype === 'unsubscribe') {
+            if (_.indexOf(xmppchat.Roster.getCachedJids(), bare_jid) != -1) {
+                stropheRoster.unauthorize(bare_jid);
+                stropheRoster.unsubscribe(bare_jid);
+            }
+
+        } else if (ptype === 'unsubscribed') {
+            return;
+
+        } else if (ptype !== 'error') { // Presence has changed
+            if (_.indexOf(['unavailable', 'offline', 'busy', 'away'], ptype) != -1) {
+                status = ptype;
+            } else {
+                status = ($(presence).find('show').text() === '') ? 'online' : 'away';
+            }
+            if ((status !== 'offline')&&(status !== 'unavailable')) {
+                ob.addResource(bare_jid, resource);
+                model = ob.getItem(bare_jid);
+                model.set({'status': status});
+            } else {
+                if (ob.removeResource(bare_jid, resource) === 0) {
+                    model = ob.getItem(bare_jid);
+                    model.set({'status': status});
+                }
+            }
+        }
+        return true;
+    };
+
     return ob;
 });
 
 
 xmppchat.RosterItemView = Backbone.View.extend({
     tagName: 'li',
+
+    initialize: function () {
+        this.el = this.make('li');
+
+        $(this.el).bind('click', function (e) {
+            e.preventDefault();
+            xmppchat.UI.getChatbox($(this).attr('data-recipient'));
+        });
+
+        this.options.model.on('change', function (item, changed) {
+            if (_.has(changed.changes, 'status')) {
+                $(this.el).attr('class', item.changed.status);
+            }
+        }, this);
+    },
+
     render: function () {
         var item = this.model,
             jid = item.id,
             bare_jid = Strophe.getBareJidFromJid(jid),
             user_id = Strophe.getNodeFromJid(jid),
             fullname = (item.fullname) ? item.fullname : user_id;
-
-        // FIXME: Here comes underscore templating
-        this.el  = $('<li></li>').addClass(item.status).attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
-        this.el.append($('<a title="Click to chat with this contact"></a>').addClass('user-details-toggle').text(fullname));
-        this.el.append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
+        $(this.el).addClass(item.status).attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
+        $(this.el).append($('<a title="Click to chat with this contact"></a>').text(fullname));
+        $(this.el).append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
         return this;
     }
 });
 
 
 xmppchat.RosterViewClass = (function (roster, _, $, console) {
-    ob = {};
     var View = Backbone.View.extend({
         tagName: 'ul',
         el: $('#xmpp-contacts'),
         model: roster,
 
-        // XXX: See if you can use the "events:" thingy here instead of
-        // manually registering the event subscribers below.
+        initialize: function () {
+            this.model.on("add", function (item) {
+                var view = new xmppchat.RosterItemView({
+                    model: item
+                });
+                $(this.el).append(view.render().el);
+            }, this);
+
+            this.model.on('change', function (item) {
+                this.render();
+            }, this);
+
+            this.model.on("remove", function (msg) {
+                console.log('roster remove handler called!!!!!');
+            });
+        },
 
         render: function () {
-            this.el.html($el.html());
-            return this;
+            var models = this.model.sort().models,
+                children = $(this.el).children(),
+                that = this;
+
+            $(models).each(function (idx, model) {
+                var user_id = Strophe.getNodeFromJid(model.id);
+                $(that.el).append(children.filter('#online-users-'+user_id));
+            });
         }
     });
     var view = new View();
-    _.extend(ob, view);
-
-    // Event handlers
-    roster.on("add", function (item) {
-        console.log('roster add handler called');
-        var view = new xmppchat.RosterItemView({
-            model: item
-        });
-        $(ob.el).append(view.render().el);
-    });
-
-    roster.on("remove", function (msg) {
-        console.log('roster remove handler called!!!!!');
-        ob.render();
-    });
-
-    return ob;
+    return view;
 });
 
 // FIXME: Need to get some convention going for naming classes and instances of
@@ -478,21 +449,14 @@ xmppchat.RosterViewClass = (function (roster, _, $, console) {
 $(document).ready(function () {
     $(document).unbind('jarnxmpp.connected');
     $(document).bind('jarnxmpp.connected', function () {
-        // Logging
-        xmppchat.connection.rawInput = xmppchat.rawInput;
-        xmppchat.connection.rawOutput = xmppchat.rawOutput;
         // Messages
         xmppchat.connection.addHandler(xmppchat.Messages.messageReceived, null, 'message', 'chat');
-        //Roster
-        xmppchat.connection.addHandler(xmppchat.Roster.rosterResult, Strophe.NS.ROSTER, 'iq', 'result');
-        xmppchat.connection.addHandler(xmppchat.Roster.rosterSuggestedItem, 'http://jabber.org/protocol/rosterx', 'message', null);
-        // Presence
-        xmppchat.connection.addHandler(xmppchat.Presence.presenceReceived, null, 'presence', null);
-
         xmppchat.UI.restoreOpenChats();
 
         xmppchat.Roster = xmppchat.RosterClass(Strophe._connectionPlugins.roster, _, $, console);
         xmppchat.RosterView = Backbone.View.extend(xmppchat.RosterViewClass(xmppchat.Roster, _, $, console));
+
+        xmppchat.connection.addHandler(xmppchat.Roster.presenceHandler, null, 'presence', null);
         
         xmppchat.Roster.registerCallback(xmppchat.Roster.updateHandler);
         xmppchat.Roster.getRoster();

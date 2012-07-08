@@ -98,9 +98,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
         });
     };
 
-    ob.renderChatbox = function (bare_jid, callback) {
-    };
-
     ob.insertCollectionMessages = function ($chat, bare_jid, recipient_name) {
         xmppchat.Collections.getLastMessages(bare_jid, function (result) {
             $('body').append($chat);
@@ -533,21 +530,6 @@ $(document).ready(function () {
         }
     });
 
-    $(document).bind('xmppchat.roster_updated', function (event) {
-        $('#xmpp-contacts').empty();
-        $(xmppchat.Roster.getCached()).each(function (idx, contact) {
-            if (contact.subscription !== 'none') {
-                var user_id = Strophe.getNodeFromJid(contact.jid),
-                    bare_jid = Strophe.getBareJidFromJid(contact.jid);
-
-                // FIXME: We should store the contact name on the jabber server!
-                xmppchat.Presence.getUserInfo(user_id, function (data) {
-                    xmppchat.UI.addUserToRosterUI(user_id, bare_jid, data.fullname, 'offline');
-                });
-            }
-        });
-    });
-
     $(document).unbind('jarnxmpp.message');
     $(document).bind('jarnxmpp.message',  function (event) {
         xmppchat.UI.addMessageToChatbox(event);
@@ -560,11 +542,6 @@ $(document).ready(function () {
     $(document).unbind('jarnxmpp.presence');
     $(document).bind('jarnxmpp.presence', function (event, jid, status, presence) {
         xmppchat.UI.updateOnPresence(jid, status, presence);
-    });
-
-    $('a.user-details-toggle').live('click', function (e) {
-        e.preventDefault();
-        xmppchat.UI.getChatbox($(this).parent().attr('data-recipient'));
     });
 
     $('textarea.chat-textarea').live('keypress', function (ev) {

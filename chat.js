@@ -19,6 +19,7 @@ var helpers = (function (helpers) {
     return helpers;
 })(helpers || {});
 
+
 var xmppchat = (function (jarnxmpp, $, console) {
     var ob = jarnxmpp;
     /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
@@ -293,51 +294,184 @@ var xmppchat = (function (jarnxmpp, $, console) {
     return ob;
 })(jarnxmpp || {}, jQuery, console || {log: function(){}});
 
-xmppchat.Roster = (function (roster, jquery, console) {
+
+xmppchat.RosterItem = Backbone.Model.extend({
+    /*
+     *  RosterItem: {
+     *      'status': String, 
+     *      'subscription': String, 
+     *      'resources': Array,
+     *      'fullname': String 
+     *   }
+     */
+    initialize: function (jid, subscription) {
+        this.id = jid;
+        this.subscription = subscription;
+
+        this.fullname = '';
+        this.resources = [];
+        this.status = 'offline';
+    }
+});
+
+xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
     var contacts = {},
-        ob = roster;
+        ob = _.clone(stropheRoster);
 
-    _updateCache = function () {
-        if (this.subscription === 'none') {
-            delete contacts[this.jid];
-        } else {
-            contacts[this.jid] = this;
+    var Collection = Backbone.Collection.extend({
+        model: xmppchat.RosterItem
+    });
+    var collection = new Collection();
+    _.extend(ob, collection);
+    _.extend(ob, Backbone.Events);
+    stropheRoster._connection = xmppchat.connection;
+
+    ob.comparator = function (rosteritem) {
+        var status = rosteritem.get('status'),
+            rank = 4;
+        switch(status) {
+            case 'offline': 
+                rank = 4;
+                break;
+            case 'unavailable':
+                rank = 3;
+                break;
+            case 'away':
+                rank = 2;
+                break;
+            case 'busy':
+                rank = 1;
+                break;
+            case 'online':
+                rank = 0;
+                break;
         }
+        return rank;
     };
 
-    _triggerEvent = function () {
-        $(document).trigger('xmppchat.roster_updated');
+    ob.getRoster = function () {
+        return stropheRoster.get();
     };
 
-    ob._connection = xmppchat.connection;
+    ob.getItem = function (id) {
+        return Backbone.Collection.prototype.get.call(this, id);
+    };
 
-    ob.update = function (items, item) {
-        old_cache = ob.getCached();
+    ob.addRosterItem = function (item) {
+        var user_id = Strophe.getNodeFromJid(item.jid),
+            model = new xmppchat.RosterItem(item.jid, item.subscription);
+        ob.add(model);
+        /*
+        if (!item.name) {
+            // TODO: I think after a user has been added to the roster,
+            // his nickname needs to be calculated. This is only
+            // feasible if the nickname is persisted. We cannot do this
+            // if we have to redo this upon every page load.
+            xmppchat.Presence.getUserInfo(user_id, function (data) {
+                ob.update(item.jid, data.fullname, [], function () {
+                    // TODO Store in the model item.
+                    model.fullname = data.fullname;
+                    ob.add(model);
+                });
+            });
+        } else {
+            ob.add(model);
+        }*/
+    };
+
+    ob.updateHandler = function (items) {
+        var model;
         for (var i=0; i<items.length; i++) {
             if (items[i].subscription === 'none') {
-                delete contacts[items[i].jid];
+                model = ob.getItem(jid);
+                ob.remove(model);
             } else {
-                contacts[items[i].jid] = items[i];
+                if (ob.getItem(items[i].jid)) {
+                    // Update the model
+                    model = ob.getItem(jid);
+                    model.subscription = item.subscription;
+                } else {
+                    ob.addRosterItem(items[i]);
+                }
             }
-        }        
-        console.log('update, size is: '+ _.size(contacts));
-        if (!_.isEqual(old_cache, ob.getCached())) {
-            console.log('triggering event');
-            $(document).trigger('xmppchat.roster_updated');
         }
-        
     };
+    /* 
+    addResource: function (bare_jid, resource) {
+    },
 
-    ob.getCached = function () {
-        return _.values(contacts);
-    };
+    removeResource: function (bare_jid, resource) {
+    },
 
-    ob.getCachedJids = function () {
-        return _.keys(contacts);
-    };
+    removeAll: function (bare_jid) {
+        // Remove all resources for bare_jid
+    },
+
+    getNumContacts: function () {
+    },
+
+    getJids: function () {
+        return _.keys(storage);
+    }*/
     return ob;
 });
 
+
+xmppchat.RosterItemView = Backbone.View.extend({
+    tagName: 'li',
+    render: function () {
+        var item = this.model,
+            jid = item.id,
+            bare_jid = Strophe.getBareJidFromJid(jid),
+            user_id = Strophe.getNodeFromJid(jid),
+            fullname = (item.fullname) ? item.fullname : user_id;
+
+        // FIXME: Here comes underscore templating
+        this.el  = $('<li></li>').addClass(item.status).attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
+        this.el.append($('<a title="Click to chat with this contact"></a>').addClass('user-details-toggle').text(fullname));
+        this.el.append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
+        return this;
+    }
+});
+
+
+xmppchat.RosterViewClass = (function (roster, _, $, console) {
+    ob = {};
+    var View = Backbone.View.extend({
+        tagName: 'ul',
+        el: $('#xmpp-contacts'),
+        model: roster,
+
+        // XXX: See if you can use the "events:" thingy here instead of
+        // manually registering the event subscribers below.
+
+        render: function () {
+            this.el.html($el.html());
+            return this;
+        }
+    });
+    var view = new View();
+    _.extend(ob, view);
+
+    // Event handlers
+    roster.on("add", function (item) {
+        console.log('roster add handler called');
+        var view = new xmppchat.RosterItemView({
+            model: item
+        });
+        $(ob.el).append(view.render().el);
+    });
+
+    roster.on("remove", function (msg) {
+        console.log('roster remove handler called!!!!!');
+        ob.render();
+    });
+
+    return ob;
+});
+
+// FIXME: Need to get some convention going for naming classes and instances of
+// models and views.
 
 // Event handlers
 // --------------
@@ -357,9 +491,11 @@ $(document).ready(function () {
 
         xmppchat.UI.restoreOpenChats();
 
-        xmppchat.Roster = xmppchat.Roster(Strophe._connectionPlugins.roster, $, console);
-        xmppchat.Roster.registerCallback(xmppchat.Roster.update);
-        xmppchat.Roster.get();
+        xmppchat.Roster = xmppchat.RosterClass(Strophe._connectionPlugins.roster, _, $, console);
+        xmppchat.RosterView = Backbone.View.extend(xmppchat.RosterViewClass(xmppchat.Roster, _, $, console));
+        
+        xmppchat.Roster.registerCallback(xmppchat.Roster.updateHandler);
+        xmppchat.Roster.getRoster();
         xmppchat.Presence.sendPresence();
     });
 });

@@ -264,36 +264,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
     };
 
     ob.reorderChats =  function () {
-        var index = 0,
-            chat_id,
-            offset,
-            $chat;
-
-        if ('online-users-container' in helpers.oc(this.chats)) {
-            index = 1;
-            $chat = $("#"+helpers.hash(helpers.oc(this.chats)['online-users-container']));
-            if ($chat.is(':visible')) {
-                $chat.animate({'right': '15px'});
-            }
-        }
-
-        for (var i=0; i < this.chats.length; i++) {
-            chat_id = this.chats[i];
-            if (chat_id === 'online-users-container') {
-                continue;
-            }
-            $chat = $("#"+helpers.hash(this.chats[i]));
-            if ($chat.is(':visible')) {
-                if (index === 0) {
-                    $chat.animate({'right': '15px'});
-                } 
-                else {
-                    offset = (index)*(this.chatbox_width+7)+15;
-                    $chat.animate({'right': offset +'px'});
-                }
-                index++;
-            }
-        }
     };
 
     ob.addChatToCookie = function (jid) {
@@ -547,11 +517,6 @@ $(document).ready(function () {
     $('textarea.chat-textarea').live('keypress', function (ev) {
         xmppchat.UI.keyPressed(ev, this);
     });
-
-    $('a.close-chatbox-button').live('click', function (ev) {
-        var jid = $(ev.target).attr('data-recipient');
-        xmppchat.UI.closeChat(jid);
-    }); 
 
     $('a.close-controlbox-button').live('click', function (ev) {
         xmppchat.UI.closeChat('online-users-container');

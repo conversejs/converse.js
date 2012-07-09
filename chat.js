@@ -207,8 +207,22 @@ xmppchat.ChatBox = Backbone.Model.extend({
 
 xmppchat.ChatBoxView = Backbone.View.extend({
 
+    tagName: 'div',
+    className: 'chatbox',
+
+    events: {
+        'click .close-chatbox-button': 'closeChatBox'
+    },
+
+    closeChatBox: function () {
+        var that = this;
+        $('#'+this.model.get('chat_id')).hide('fast', function () {
+            // TODO: that.removeChatFromCookie(jid);
+            xmppchat.chatboxesview.reorderChatBoxes();
+        });
+    },
+
     initialize: function (){
-        this.el = this.make('div', {'class': 'chatbox'});
         $('body').append($(this.el).hide());
     },
 
@@ -230,8 +244,21 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         return this;
     },
 
-    show: function () {
-        $(this.el).show('fast');
+    isVisible: function () {
+        return $(this.el).is(':visible');
+    },
+
+    focus: function () {
+        $(this.el).find('.chat-textarea').focus();
+        return this;
+    },
+
+    show: function (callback) {
+        var that = this;
+        $(this.el).show('fast', function () {
+            that.focus();
+        });
+        return this;
     }
 });
 
@@ -239,42 +266,128 @@ xmppchat.ChatBoxes = Backbone.Collection.extend({
 });
 
 xmppchat.ChatBoxesView = Backbone.View.extend({
+    
+    chatbox_width: 205,
 
-    positionNewChat: function () {
-        // TODO:
+    positionNewChatBox: function (view) {
+        var open_chats = 0,
+            offset;
+        if ($('#online-users-container').is(':visible')) {
+            open_chats++;
+        }
+        for (var i=0; i<this.model.models.length; i++) {
+            if ($("#"+this.model.models[i].get('chat_id')).is(':visible')) {
+                open_chats++;
+            }
+        }
+        offset = (open_chats)*(this.chatbox_width+7)+15;
+        $(view.el).css({'right': (offset+'px')});
     },
 
-    initialize: function (){
+    reorderChatBoxes: function () {
+        var index = 0,
+            offset,
+            $chat;
+
+        if ($('#online-users-container').is(':visible')) {
+            index = 1;
+        }
+        for (var i=0; i<this.model.models.length; i++) {
+            $chat = $("#"+this.model.models[i].get('chat_id'));
+            if ($chat.is(':visible')) {
+                if (index === 0) {
+                    $chat.animate({'right': '15px'});
+                } 
+                else {
+                    offset = (index)*(this.chatbox_width+7)+15;
+                    $chat.animate({'right': offset +'px'});
+                }
+                index++;
+            }
+        }
+    },
+
+    initialize: function () {
+        this.views = {};
+
         this.options.model.on("add", function (item, x, y) {
             var view = new xmppchat.ChatBoxView({
                 model: item
             });
-            view.render();
-            this.positionNewChat();
-            view.show(); 
+            this.positionNewChatBox(view.render());
+            this.views[item.get('jid')] = view.show();
         }, this);
     }
 });
 
 
 xmppchat.RosterItem = Backbone.Model.extend({
-    /*
-     *  RosterItem: {
-     *      'status': String, 
-     *      'subscription': String, 
-     *      'resources': Array,
-     *      'fullname': String 
-     *   }
-     */
-    initialize: function (jid, subscription) {
-        this.id = jid;
-        this.subscription = subscription;
 
-        this.fullname = '';
-        this.resources = [];
-        this.status = 'offline';
+    initialize: function (jid, subscription) {
+        // FIXME: the fullname is set to user_id for now...
+        var user_id = Strophe.getNodeFromJid(jid);
+
+        this.set({
+            'id': jid,
+            'jid': jid,
+            'bare_jid': Strophe.getBareJidFromJid(jid),
+            'user_id': user_id,
+            'subscription': subscription,
+            'fullname': user_id, 
+            'resources': [],
+            'status': 'offline'
+        }, {'silent': true});
     }
 });
+
+
+xmppchat.RosterItemView = Backbone.View.extend({
+
+    tagName: 'li',
+    events: {
+        'click': 'toggleChatBox'
+    },
+
+    toggleChatBox: function (e) {
+        e.preventDefault();
+        var jid = this.model.get('jid');
+        if (!xmppchat.chatboxes.get(jid)) {
+            chatbox = new xmppchat.ChatBox({'id': jid, 'jid': jid});
+            xmppchat.chatboxes.add(chatbox);
+        } else {
+            var view = xmppchat.chatboxesview.views[jid];
+            if (view) {
+                if (view.isVisible()) {
+                    view.focus();
+                } else {
+                    view.show();
+                    xmppchat.chatboxesview.reorderChatBoxes();
+                }
+            }
+        }
+    },
+
+    initialize: function () {
+        var that = this;
+        this.options.model.on('change', function (item, changed) {
+            if (_.has(changed.changes, 'status')) {
+                $(this.el).attr('class', item.changed.status);
+            }
+        }, this);
+    },
+
+    template:   _.template(
+                    '<a title="Click to chat with this contact"><%= fullname %></a>' +
+                    '<a title="Click to remove this contact" class="remove-xmpp-contact" href="#"></a>'),
+
+    render: function () {
+        var item = this.model;
+        $(this.el).addClass(item.get('status')).attr('id', 'online-users-'+item.get('user_id'));
+        $(this.el).html(this.template(item.toJSON()));
+        return this;
+    }
+});
+
 
 xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
     var ob = _.clone(stropheRoster),
@@ -321,30 +434,36 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
                 return Backbone.Collection.prototype.get.call(this, id);
             },
 
-            addRosterItem: function (item) {
-                var user_id = Strophe.getNodeFromJid(item.jid),
-                    model = new xmppchat.RosterItem(item.jid, item.subscription);
+            addRosterItem: function (jid, subscription) {
+                var model = new xmppchat.RosterItem(jid, subscription);
                 this.add(model);
             },
                 
             addResource: function (bare_jid, resource) {
                 var item = this.getItem(bare_jid);
+                    resources;
                 if (item) {
-                    if (_.indexOf(item.resources, resource) == -1) {
-                        item.resources.push(resource);
+                    resources = item.get('resources');
+                    if (_.indexOf(resources, resource) == -1) {
+                        resources.push(resource);
+                        item.set({'resources': resources});
                     }
                 } else  {
-                    item.resources = [resource];
+                    item.set({'resources': [resource]});
                 }
             },
 
             removeResource: function (bare_jid, resource) {
-                var item = this.getItem(bare_jid);
+                var item = this.getItem(bare_jid),
+                    resources,
+                    idx;
                 if (item) {
-                    var idx = _.indexOf(item.resources, resource);
+                    resources = item.get('resources');
+                    idx = _.indexOf(resources, resource);
                     if (idx !== -1) {
-                        item.resources.splice(idx, 1);
-                        return item.resources.length;
+                        resources.splice(idx, 1);
+                        item.set({'resources': resources});
+                        return resources.length;
                     }
                 }
                 return 0;
@@ -353,14 +472,14 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
             clearResources: function (bare_jid) {
                 var item = this.getItem(bare_jid);
                 if (item) {
-                    item.resources = [];
+                    item.set({'resources': []});
                 }
             },
 
             getTotalResources: function (bare_jid) {
                 var item = this.getItem(bare_jid);
                 if (item) {
-                    return _.size(item.resources);
+                    return _.size(item.get('resources'));
                 }
             }
         });
@@ -381,7 +500,7 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
                     model = ob.getItem(jid);
                     model.subscription = item.subscription;
                 } else {
-                    ob.addRosterItem(items[i]);
+                    ob.addRosterItem(items[i].jid, items[i].subscription);
                 }
             }
         }
@@ -434,58 +553,15 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
 });
 
 
-xmppchat.RosterItemView = Backbone.View.extend({
-    tagName: 'li',
-
-    initialize: function () {
-        var that = this;
-        this.el = this.make('li');
-
-        $(this.el).bind('click', function (e) {
-            e.preventDefault();
-            var jid = $(this).attr('data-recipient');
-            if (!xmppchat.chatboxes.get(jid)) {
-                var chatbox = new xmppchat.ChatBox({
-                    'id': jid, 
-                    'jid': jid 
-                });
-                xmppchat.chatboxes.add(chatbox);
-            }
-        });
-
-        this.options.model.on('change', function (item, changed) {
-            if (_.has(changed.changes, 'status')) {
-                $(this.el).attr('class', item.changed.status);
-            }
-        }, this);
-    },
-
-    render: function () {
-        var item = this.model,
-            jid = item.id,
-            bare_jid = Strophe.getBareJidFromJid(jid),
-            user_id = Strophe.getNodeFromJid(jid),
-            fullname = (item.fullname) ? item.fullname : user_id;
-        $(this.el).addClass(item.status).attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
-        $(this.el).append($('<a title="Click to chat with this contact"></a>').text(fullname));
-        $(this.el).append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
-        return this;
-    }
-});
-
-
-xmppchat.RosterViewClass = (function (roster, _, $, console) {
+xmppchat.RosterView= (function (roster, _, $, console) {
     var View = Backbone.View.extend({
-        tagName: 'ul',
         el: $('#xmpp-contacts'),
         model: roster,
+        rosteritemviews: [],
 
         initialize: function () {
             this.model.on("add", function (item) {
-                var view = new xmppchat.RosterItemView({
-                    model: item
-                });
-                $(this.el).append(view.render().el);
+                $(this.el).append((new xmppchat.RosterItemView({model: item})).render().el);
             }, this);
 
             this.model.on('change', function (item) {
@@ -525,7 +601,7 @@ $(document).ready(function () {
         xmppchat.UI.restoreOpenChats();
 
         xmppchat.Roster = xmppchat.RosterClass(Strophe._connectionPlugins.roster, _, $, console);
-        xmppchat.RosterView = Backbone.View.extend(xmppchat.RosterViewClass(xmppchat.Roster, _, $, console));
+        xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.Roster, _, $, console));
 
         xmppchat.connection.addHandler(xmppchat.Roster.presenceHandler, null, 'presence', null);
         

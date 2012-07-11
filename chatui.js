@@ -225,108 +225,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
 
     ob.addChatToCookie = function (jid) {};
 
-    ob.addMessageToChatbox =  function (event) {
-        /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
-            but I only seem to get 'text'. 
-
-            XXX: Some messages might be delayed, we must get the time from the event.
-        */
-        var user_id = Strophe.getNodeFromJid(event.from),
-            jid = Strophe.getBareJidFromJid(event.from),
-            that = this;
-
-        xmppchat.Presence.getUserInfo(user_id, function (data) {
-            that.getChatbox(jid, function (chat) {
-                var chat_content = $(chat).find(".chat-content"),
-                    now = new Date(),
-                    time = now.toLocaleTimeString().substring(0,5),
-                    div = $('<div></div>'),
-                    composing = $(event.message).find('composing'),
-                    text;
-
-                if (event.body) {
-                    text = event.body.replace(/<br \/>/g, "");
-                    div.addClass('chat-message');
-
-                    if (event.delayed) {
-                        div.addClass('delayed');
-                    }
-                    if (user_id == that.username) {
-                        message_html = div.append( 
-                                            '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
-                                            '<span class="chat-message-content">'+text+'</span>'
-                                            );
-                    } else {
-                        message_html = div.append( 
-                                            '<span class="chat-message-them">'+time+' '+data.fullname+':&nbsp;&nbsp;</span>' + 
-                                            '<span class="chat-message-content">'+text+'</span>'
-                                            );
-                    }
-                    chat_content.find('div.chat-event').remove();
-                    chat_content.append(message_html);
-                    xmppchat.UI.msg_counter += 1;
-                    xmppchat.UI.updateMsgCounter();
-
-                } else if (composing.length > 0) {
-                    message_html = div.addClass('chat-event').text(data.fullname + ' is typing...');
-                    chat_content.find('div.chat-event').remove().end().append(message_html);
-                }
-                chat_content.scrollTop(chat_content[0].scrollHeight);
-            });
-        });
-    };
-
-    ob.keyPressed = function (ev, textarea) {
-        var $textarea = jQuery(textarea),
-            jid = $textarea.attr('data-recipient'), // FIXME: bare jid
-            $chat = $textarea.parent().parent(),
-            message,
-            notify,
-            composing;
-
-        if(ev.keyCode == 13) {
-            message = $textarea.val();
-            message = message.replace(/^\s+|\s+jQuery/g,"");
-            $textarea.val('').focus();
-            if (message !== '') {
-                xmppchat.Messages.sendMessage(jid, message, function () {
-                    var time, 
-                        minutes,
-                        now,
-                        $chat_content;
-
-                    message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
-                    list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
-                    if (list) {
-                        for (i = 0; i < list.length; i++) {
-                            message = message.replace( list[i], "<a target='_blank' href='" + escape( list[i] ) + "'>"+ list[i] + "</a>" );
-                        }
-                    }
-                    now = new Date();
-                    minutes = now.getMinutes().toString();
-                    if (minutes.length==1) {minutes = '0'+minutes;}
-                    time = now.toLocaleTimeString().substring(0,5);
-                    $chat_content = $chat.find('.chat-content');
-                    $chat_content.append(
-                        '<div class="chat-message">' + 
-                            '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
-                            '<span class="chat-message-content">'+message+'</span>' + 
-                        '</div>');
-                    $chat_content.scrollTop($chat_content[0].scrollHeight);
-                    $chat.data('composing', false);
-                });
-            }
-        } else {
-            composing = $chat.data('composing');
-            if (!composing) {
-                notify = $msg({'to':jid, 'type': 'chat'})
-                                .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
-                xmppchat.connection.send(notify);
-                $chat.data('composing', true);
-            }
-        }
-    };
-
     return ob;
 })(xmppchat.UI || {}, jQuery, console || {log: function(){}} );
 
@@ -334,22 +232,8 @@ xmppchat.UI = (function (xmppUI, $, console) {
 // Event handlers
 // --------------
 $(document).ready(function () {
-    $(document).unbind('jarnxmpp.message');
-    $(document).bind('jarnxmpp.message',  function (event) {
-        xmppchat.UI.addMessageToChatbox(event);
-    });
-
     $(document).bind('xmppchat.send_presence', function (event, jid, type) {
         xmppchat.connection.send($pres({'type':type}));
-    });
-
-    $(document).unbind('jarnxmpp.presence');
-    $(document).bind('jarnxmpp.presence', function (event, jid, status, presence) {
-        xmppchat.UI.updateOnPresence(jid, status, presence);
-    });
-
-    $('textarea.chat-textarea').live('keypress', function (ev) {
-        xmppchat.UI.keyPressed(ev, this);
     });
 
     $('ul.tabs').tabs('div.panes > div');

@@ -49,55 +49,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
         callback(msgs);
     };
 
-    ob.Messages.sendMessage = function (jid, text, callback) {
-        // TODO: Look in ChatPartners to see what resources we have for the recipient.
-        // if we have one resource, we sent to only that resources, if we have multiple
-        // we send to the bare jid.
-        // FIXME: see if @@content-transform is required
-        var message, 
-            that = this;
-        $.getJSON(portal_url + '/content-transform?', {text: text}, function (data) {
-            message = $msg({to: jid, type: 'chat'})
-                        .c('body').t(data.text).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
-            xmppchat.connection.send(message);
-            that.ClientStorage.addMessage(jid, data.text, 'to');
-            callback();
-        });
-    };
-
-    ob.Messages.messageReceived = function (message) {
-        var jid = $(message).attr('from'),
-            bare_jid = Strophe.getBareJidFromJid(jid),
-            resource = Strophe.getResourceFromJid(jid),
-            delayed = $(message).find('delay').length > 0,
-            body = $(message).children('body').text(),
-            event = jQuery.Event('jarnxmpp.message');
-
-        if (body !== "") {
-            var xhtml_body = $(message).find('html > body').contents();
-            if (xhtml_body.length > 0) {
-                event.mtype = 'xhtml';
-                event.body = xhtml_body.html();
-            } else {
-                event.body = body;
-                event.mtype = 'text';
-            }
-        }
-        event.from = jid;
-        event.delayed = delayed;
-        event.message = message;
-        ob.ChatPartners.add(bare_jid, resource);
-        if (event.body) {
-            ob.Messages.ClientStorage.addMessage(jid, event.body, 'from');
-        }
-        if ((xmppchat.Storage.get(xmppchat.username+'-xmpp-status') || 'online') !== 'offline') {
-            // Only trigger the UI event if the user is not offline.
-            $(document).trigger(event);
-        }
-        return true;
-    };
-
     ob.Collections.getLastCollection = function (jid, callback) {
         var bare_jid = Strophe.getBareJidFromJid(jid),
             iq = $iq({'type':'get'})
@@ -195,7 +146,118 @@ xmppchat.ChatBoxView = Backbone.View.extend({
     className: 'chatbox',
 
     events: {
-        'click .close-chatbox-button': 'closeChat'
+        'click .close-chatbox-button': 'closeChat',
+        'keypress textarea.chat-textarea': 'keyPressed'
+    },
+
+    appendMessage: function (message) {
+        var time, 
+            now = new Date(),
+            minutes = now.getMinutes().toString(),
+            list,
+            $chat_content;
+
+        message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
+        list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
+        if (list) {
+            for (i = 0; i < list.length; i++) {
+                message = message.replace( list[i], "<a target='_blank' href='" + escape( list[i] ) + "'>"+ list[i] + "</a>" );
+            }
+        }
+        if (minutes.length==1) {minutes = '0'+minutes;}
+        time = now.toLocaleTimeString().substring(0,5);
+        $chat_content = $(this.el).find('.chat-content');
+        $chat_content.append(
+            '<div class="chat-message">' + 
+                '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
+                '<span class="chat-message-content">'+message+'</span>' + 
+            '</div>');
+        $chat_content.scrollTop($chat_content[0].scrollHeight);
+    },
+
+    messageReceived: function (message) {
+        /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
+            but I only seem to get 'text'. 
+
+            XXX: Some messages might be delayed, we must get the time from the event.
+        */
+        var body = $(message).children('body').text(),
+            jid = $(message).attr('from'),
+            composing = $(message).find('composing'),
+            div = $('<div></div>'),
+            $chat_content = $(this.el).find('.chat-content'),
+            user_id = Strophe.getNodeFromJid(jid);
+
+        if (!body) {
+            if (composing.length > 0) {
+                message_html = div.addClass('chat-event').text(user_id+ ' is typing...');
+                $chat_content.find('div.chat-event').remove().end().append(message_html);
+            }
+        } else {
+            // TODO: ClientStorage 
+            xmppchat.Messages.ClientStorage.addMessage(jid, body, 'from');
+            if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
+                return;
+            }
+            // only update the UI if the user is not offline
+            var time = (new Date()).toLocaleTimeString().substring(0,5),
+                text = body.replace(/<br \/>/g, "");
+
+            div.addClass('chat-message');
+            if (($(message).find('delay').length > 0)) {
+                div.addClass('delayed');
+            }
+            $chat_content.find('div.chat-event').remove();
+            message_html = div.append( 
+                            '<span class="chat-message-them">'+time+' '+user_id+':&nbsp;&nbsp;</span>' + 
+                            '<span class="chat-message-content">'+text+'</span>'
+                            );
+            $chat_content.append(message_html);
+            // FIXME:
+            // xmppchat.UI.msg_counter += 1;
+            // xmppchat.UI.updateMsgCounter();
+        }
+        $chat_content.scrollTop($chat_content[0].scrollHeight);
+    },
+
+    sendMessage: function (text) {
+        // TODO: Look in ChatPartners to see what resources we have for the recipient.
+        // if we have one resource, we sent to only that resources, if we have multiple
+        // we send to the bare jid.
+        // FIXME: see if @@content-transform is required
+        var bare_jid = this.model.get('jid');
+        var message = $msg({to: bare_jid, type: 'chat'})
+            .c('body').t(text).up()
+            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
+        xmppchat.connection.send(message);
+        xmppchat.Messages.ClientStorage.addMessage(bare_jid, text, 'to');
+        this.appendMessage(text);
+    },
+
+    keyPressed: function (ev) {
+        var $textarea = $(ev.target),
+            message,
+            notify,
+            composing,
+            that = this;
+
+        if(ev.keyCode == 13) {
+            message = $textarea.val();
+            message = message.replace(/^\s+|\s+jQuery/g,"");
+            $textarea.val('').focus();
+            if (message !== '') {
+                this.sendMessage(message);
+            }
+            $(this.el).data('composing', false);
+        } else {
+            composing = $(this.el).data('composing');
+            if (!composing) {
+                notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                                .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
+                xmppchat.connection.send(notify);
+                $(this.el).data('composing', true);
+            }
+        }
     },
 
     addChatToCookie: function () {
@@ -358,6 +420,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         }
         this.views[jid] = view.render();
         this.options.model.add(chatbox);
+        return view;
     },
 
     closeChat: function (jid) {
@@ -443,6 +506,20 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         }
     },
 
+    messageReceived: function (message) {
+        var jid = $(message).attr('from'),
+            bare_jid = Strophe.getBareJidFromJid(jid),
+            resource = Strophe.getResourceFromJid(jid),
+            view = this.views[bare_jid];
+
+        if (!view) {
+            view = this.createChat(bare_jid);
+        }
+        view.messageReceived(message);
+        // XXX: Is this the right place for this? Perhaps an event?
+        xmppchat.Roster.addResource(bare_jid, resource);
+    },
+
     initialize: function () {
         this.options.model.on("add", function (item) {
             this.positionNewChat(item.get('id'));
@@ -450,7 +527,6 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
 
         this.views = {};
         this.restoreOpenChats();
-
     }
 });
 
@@ -805,7 +881,7 @@ $(document).ready(function () {
         xmppchat.connection.bare_jid = Strophe.getBareJidFromJid(xmppchat.connection.jid);
 
         // Messages
-        xmppchat.connection.addHandler(xmppchat.Messages.messageReceived, null, 'message', 'chat');
+
         xmppchat.Roster = xmppchat.RosterClass(Strophe._connectionPlugins.roster, _, $, console);
         xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.Roster, _, $, console));
 
@@ -819,6 +895,13 @@ $(document).ready(function () {
         xmppchat.chatboxesview = new xmppchat.ChatBoxesView({
             'model': xmppchat.chatboxes
         });
+
+        xmppchat.connection.addHandler(
+                function (message) { 
+                    xmppchat.chatboxesview.messageReceived(message);
+                    return true;
+                }, 
+                null, 'message', 'chat');
 
         // XMPP Status 
         xmppchat.xmppstatus = new xmppchat.XMPPStatus();

@@ -212,7 +212,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
         if (_.indexOf(this.chats, jid) == -1) {
             this.chats.push(jid);
         }
-        this.addChatToCookie(jid);
     };
 
     ob.getChatbox =  function (jid, callback) {
@@ -266,44 +265,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
     ob.reorderChats =  function () {
     };
 
-    ob.addChatToCookie = function (jid) {
-        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-            new_cookie,
-            open_chats = [];
-
-        if (cookie) {
-            open_chats = cookie.split('|');
-        }
-        if (!(jid in helpers.oc(open_chats))) {
-            // Update the cookie if this new chat is not yet in it.
-            open_chats.push(jid);
-            new_cookie = open_chats.join('|');
-            jQuery.cookie('chats-open-'+xmppchat.username, new_cookie, {path: '/'});
-            console.log('updated cookie = ' + new_cookie + '\n');
-        }
-    };
-
-    ob.removeChatFromCookie = function (jid) {
-        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-            open_chats = [],
-            new_chats = [];
-
-        if (cookie) {
-            open_chats = cookie.split('|');
-        }
-        for (var i=0; i < open_chats.length; i++) {
-            if (open_chats[i] != jid) {
-                new_chats.push(open_chats[i]);
-            }
-        }
-        if (new_chats.length) {
-            jQuery.cookie('chats-open-'+xmppchat.username, new_chats.join('|'), {path: '/'});
-        }
-        else {
-            jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
-        }
-    };
-
     ob.addMessageToChatbox =  function (event) {
         /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
             but I only seem to get 'text'. 
@@ -354,20 +315,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
             });
         });
     };
-
-    ob.closeChat = function (jid) {
-        var chat_id = helpers.hash(jid),
-            that = this;
-        jQuery('#'+chat_id).hide('fast', function () {
-            var idx = that.chats.indexOf(jid);
-            if (idx !== undefined) {
-                that.chats.splice(idx, 1);
-            }
-            that.removeChatFromCookie(jid);
-            that.reorderChats();
-        });
-    };
-
 
     ob.keyPressed = function (ev, textarea) {
         var $textarea = jQuery(textarea),

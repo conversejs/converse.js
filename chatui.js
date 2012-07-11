@@ -8,13 +8,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
         return xmppchat.base_url + call; 
     };
 
-    ob.addUserToRosterUI = function (user_id, bare_jid, fullname, userstatus) {
-        if ($('#online-users-' + user_id).length > 0) { return; }
-        var li = $('<li></li>').addClass(userstatus).attr('id', 'online-users-'+user_id).attr('data-recipient', bare_jid);
-        li.append($('<a title="Click to chat with this contact"></a>').addClass('user-details-toggle').text(fullname));
-        li.append($('<a title="Click to remove this contact" href="#"></a>').addClass('remove-xmpp-contact'));
-        $('#xmpp-contacts').append(li);
-    };
+    ob.addUserToRosterUI = function (user_id, bare_jid, fullname, userstatus) {};
 
     ob.updateOnPresence = function (jid, status, presence) {
         var user_id = Strophe.getNodeFromJid(jid),
@@ -60,22 +54,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
         $('#online-count').text(xmppchat.Presence.onlineCount());
     };
 
-    ob.positionNewChat =  function ($chat) {
-        var open_chats = 0,
-            offset;
-        for (var i=0; i<this.chats.length; i++) {
-            if ($("#"+helpers.hash(this.chats[i])).is(':visible')) {
-                open_chats++;
-            }
-        }
-        if (open_chats === 0) {
-            $chat.animate({'right':'15px'});
-        } 
-        else {
-            offset = (open_chats)*(this.chatbox_width+7)+15;
-            $chat.animate({'right': (offset+'px')});
-        }
-    };
+    ob.positionNewChat =  function ($chat) {};
 
     ob.handleChatEvents =  function (chat_id) {
         var chat_area = $("#"+chat_id+" .chat-textarea"),
@@ -157,28 +136,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
         });
     };
 
-    ob.createChatbox = function (bare_jid, callback) {
-        var user_id = Strophe.getNodeFromJid(bare_jid),
-            that = this;
-        xmppchat.Presence.getUserInfo(user_id, function (data) {
-            var chat_id = helpers.hash(bare_jid);
-            var $chat = $('<div class="chatbox"></div>').attr('id', chat_id).hide();
-            var $head = $('<div class="chat-head chat-head-chatbox"></div>')
-                    .append($('<div class="chat-title"></div>').text(data.fullname))
-                    .append($('<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>')
-                        .attr('data-recipient', bare_jid))
-                    .append('<br clear="all"/>'); 
-            var $content = $('<div class="chat-content"></div>');
-            var $form = $('<form class="sendXMPPMessage" action="" method="post">')
-                        .append(
-                            $('<textarea type="text" ' +
-                                'class="chat-textarea" ' +
-                                'placeholder="Personal message"/>').attr('data-recipient', bare_jid));
-            $chat.append($head).append($content).append($form);
-            $('body').append($chat);
-            callback($chat);
-        });
-    };
+    ob.createChatbox = function (bare_jid, callback) {};
     /*
     $chat.find('.chat-message .time').each(function () {
         var jthis = $(this);
@@ -212,6 +170,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
         if (_.indexOf(this.chats, jid) == -1) {
             this.chats.push(jid);
         }
+        this.addChatToCookie(jid);
     };
 
     ob.getChatbox =  function (jid, callback) {
@@ -262,8 +221,9 @@ xmppchat.UI = (function (xmppUI, $, console) {
         return dfd.promise();
     };
 
-    ob.reorderChats =  function () {
-    };
+    ob.reorderChats =  function () {};
+
+    ob.addChatToCookie = function (jid) {};
 
     ob.addMessageToChatbox =  function (event) {
         /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
@@ -367,42 +327,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
         }
     };
 
-    ob.setOwnStatus = function (el) {
-        var jid = xmppchat.connection.jid,
-            value = $(el).find('span').text();
-
-        $(".dropdown dt a").html('I am ' + value);
-        $(".dropdown dt a").attr('class', value);
-        $(".dropdown dd ul").hide();
-        $("#source").val($(el).find("span.value").html());
-
-        xmppchat.Presence.sendPresence(value);
-        xmppchat.Storage.set(xmppchat.username+'-xmpp-status', value);
-    };
-
-    ob.createStatusSelectWidget = function () {
-        var select = $('select#select-xmpp-status'),
-            selected = select.find('option[selected]'),
-            chat_status = selected.val() || xmppchat.Presence.getOwnStatus() || 'online';
-            options = $('option', select);
-
-            // create <dl> and <dt> with selected value inside it
-            select.parent().append('<dl id="target" class="dropdown"></dl>');
-
-            $("#target").append('<dt id="fancy-xmpp-status-select"><a href="#" title="Click to change your chat status" class="' +
-                chat_status+'">I am ' + chat_status + 
-                '<span class="value">' + chat_status + '</span></a></dt>');
-
-            $("#target").append('<dd><ul></ul></dd>');
-            // iterate through all the <option> elements and create UL
-            options.each(function(){
-                $("#target dd ul").append('<li><a href="#" class="'+$(this).val()+'">' + 
-                    $(this).text() + '<span class="value">' + 
-                    $(this).val() + '</span></a></li>').hide();
-            });
-            select.remove();
-    };
-
     return ob;
 })(xmppchat.UI || {}, jQuery, console || {log: function(){}} );
 
@@ -410,8 +334,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
 // Event handlers
 // --------------
 $(document).ready(function () {
-    xmppchat.UI.createStatusSelectWidget();
-
     $(document).unbind('jarnxmpp.message');
     $(document).bind('jarnxmpp.message',  function (event) {
         xmppchat.UI.addMessageToChatbox(event);
@@ -431,11 +353,6 @@ $(document).ready(function () {
     });
 
     $('ul.tabs').tabs('div.panes > div');
-
-    $('#fancy-xmpp-status-select').click(function (ev) {
-        ev.preventDefault();
-        $(this).siblings('dd').find('ul').toggle('fast');
-    });
 
     $('div.add-xmpp-contact').click(function (ev) {
         ev.preventDefault();
@@ -495,11 +412,6 @@ $(document).ready(function () {
         xmppchat.Roster.subscribe($(this).attr('data-recipient'));
         $(this).remove();
         $('form.search-xmpp-contact').hide();
-    });
-
-    $(".dropdown dd ul li a").click(function(ev) {
-        ev.preventDefault();
-        xmppchat.UI.setOwnStatus(this);
     });
 
     $('select#select-xmpp-status').bind('change', function (ev) {

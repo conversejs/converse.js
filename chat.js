@@ -143,13 +143,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
         return xmppchat.ChatPartners.getTotal();
     };
 
-    ob.Presence.sendPresence = function (type) {
-        if (type === undefined) {
-            type = this.getOwnStatus() || 'online';
-        }
-        xmppchat.connection.send($pres({'type':type}));
-    };
-
     ob.Taskbuffer = (function ($) {
         // Executes tasks one after another (i.e next task is started only when
         // the previous one has been completed).
@@ -568,7 +561,7 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
             },
                 
             addResource: function (bare_jid, resource) {
-                var item = this.getItem(bare_jid);
+                var item = this.getItem(bare_jid),
                     resources;
                 if (item) {
                     resources = item.get('resources');
@@ -641,7 +634,9 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
             ptype = $(presence).attr('type'),
             status = '';
 
-        if (ob.isSelf(bare_jid)) { return true; }
+        if (ob.isSelf(bare_jid)) { 
+            return true; 
+        }
 
         if (ptype === 'subscribe') {
             // FIXME: User wants to subscribe to us. Always approve and
@@ -716,6 +711,81 @@ xmppchat.RosterView= (function (roster, _, $, console) {
     return view;
 });
 
+xmppchat.XMPPStatus = Backbone.Model.extend({
+
+    sendPresence: function (type) {
+        if (type === undefined) {
+            type = this.getOwnStatus() || 'online';
+        }
+        xmppchat.connection.send($pres({'type':type}));
+    },
+
+    getOwnStatus: function () {
+        return store.get(xmppchat.connection.bare_jid+'-xmpp-status');
+    },
+
+    setOwnStatus: function (value) {
+        this.sendPresence(value);
+        store.set(xmppchat.connection.bare_jid+'-xmpp-status', value);
+    }
+});
+
+xmppchat.XMPPStatusView = Backbone.View.extend({
+    el: "span#xmpp-status-holder",
+
+    events: {
+        "click #fancy-xmpp-status-select": "toggleOptions",
+        "click .dropdown dd ul li a": "setOwnStatus"
+    },
+
+    toggleOptions: function (ev) {
+        ev.preventDefault();
+        $(ev.target).parent().siblings('dd').find('ul').toggle('fast');
+    },
+
+    setOwnStatus: function (ev) {
+        ev.preventDefault();
+        var $el = $(ev.target).find('span'),
+            value = $el.text();
+        $(this.el).find(".dropdown dt a").html('I am ' + value).attr('class', value);
+        $(this.el).find(".dropdown dd ul").hide();
+        $(this.el).find("#source").val($($el).find("span.value").html());
+        this.model.setOwnStatus(value);
+    },
+
+    choose_template: _.template('<dl id="target" class="dropdown">' +
+                    '<dt id="fancy-xmpp-status-select">'+
+                    '<a href="#" title="Click to change your chat status" class="<%= chat_status %>">' +
+                    'I am <%= chat_status %> <span class="value"><%= chat_status %></span>' +
+                    '</a></dt>' +
+                    '<dd><ul></ul></dd>'),
+
+    option_template: _.template(
+                            '<li>' +
+                                '<a href="#" class="<%= value %>">' +
+                                    '<%= text %>' +
+                                    '<span class="value"><%= value %></span>' +
+                                '</a>' +
+                            '</li>'),
+
+    initialize: function () {
+        var $select = $(this.el).find('select#select-xmpp-status'),
+            chat_status = this.model.getOwnStatus() || 'offline',
+            options = $('option', $select),
+            that = this;
+
+        $(this.el).html(this.choose_template({'chat_status': chat_status}));
+
+        // iterate through all the <option> elements and create UL
+        options.each(function(){
+            $(that.el).find("#target dd ul").append(that.option_template({
+                                                            'value': $(this).val(), 
+                                                            'text': $(this).text()
+                                                        })).hide();
+        });
+        $select.remove();
+    }
+});
 
 // Event handlers
 // --------------
@@ -732,6 +802,7 @@ $(document).ready(function () {
     $(document).bind('jarnxmpp.connected', function () {
         // FIXME: Need to get some convention going for naming classes and instances of
         // models and views.
+        xmppchat.connection.bare_jid = Strophe.getBareJidFromJid(xmppchat.connection.jid);
 
         // Messages
         xmppchat.connection.addHandler(xmppchat.Messages.messageReceived, null, 'message', 'chat');
@@ -742,7 +813,6 @@ $(document).ready(function () {
         
         xmppchat.Roster.registerCallback(xmppchat.Roster.updateHandler);
         xmppchat.Roster.getRoster();
-        xmppchat.Presence.sendPresence();
 
         xmppchat.chatboxes = new xmppchat.ChatBoxes();
         
@@ -750,6 +820,15 @@ $(document).ready(function () {
             'model': xmppchat.chatboxes
         });
 
+        // XMPP Status 
+        xmppchat.xmppstatus = new xmppchat.XMPPStatus();
+        xmppchat.xmppstatusview = new xmppchat.XMPPStatusView({
+            'model': xmppchat.xmppstatus
+        });
+
+        xmppchat.xmppstatus.sendPresence();
+
+        // Controlbox toggler
         $toggle.bind('click', function (e) {
             e.preventDefault();
             if ($("div#online-users-container").is(':visible')) {

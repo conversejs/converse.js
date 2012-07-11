@@ -211,14 +211,57 @@ xmppchat.ChatBoxView = Backbone.View.extend({
     className: 'chatbox',
 
     events: {
-        'click .close-chatbox-button': 'closeChatBox'
+        'click .close-chatbox-button': 'closeChat'
     },
 
-    closeChatBox: function () {
+    addChatToCookie: function () {
+        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
+            jid = this.model.get('jid'),
+            new_cookie,
+            open_chats = [];
+
+        if (cookie) {
+            open_chats = cookie.split('|');
+        }
+        if (!_.has(open_chats, jid)) {
+            // Update the cookie if this new chat is not yet in it.
+            open_chats.push(jid);
+            new_cookie = open_chats.join('|');
+            jQuery.cookie('chats-open-'+xmppchat.username, new_cookie, {path: '/'});
+            console.log('updated cookie = ' + new_cookie + '\n');
+        }
+    },
+
+    removeChatFromCookie: function () {
+        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
+            open_chats = [],
+            new_chats = [];
+
+        if (cookie) {
+            open_chats = cookie.split('|');
+        }
+        for (var i=0; i < open_chats.length; i++) {
+            if (open_chats[i] != this.model.get('jid')) {
+                new_chats.push(open_chats[i]);
+            }
+        }
+        if (new_chats.length) {
+            jQuery.cookie('chats-open-'+xmppchat.username, new_chats.join('|'), {path: '/'});
+        }
+        else {
+            jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
+        }
+    },
+
+    closeChat: function () {
         var that = this;
         $('#'+this.model.get('chat_id')).hide('fast', function () {
-            // TODO: that.removeChatFromCookie(jid);
-            xmppchat.chatboxesview.reorderChatBoxes();
+            that.removeChatFromCookie(that.model.get('id'));
+            // Only reorder chats if it wasn't the last chat being closed.
+            var offset = parseInt($(that.el).css('right'), 10) + xmppchat.chatboxesview.chatbox_width;
+            if ($("div[style*='right: "+offset+"px']").length > 0) {
+                xmppchat.chatboxesview.reorderChats();
+            }
         });
     },
 
@@ -253,11 +296,39 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         return this;
     },
 
-    show: function (callback) {
+    show: function () {
         var that = this;
         $(this.el).show('fast', function () {
             that.focus();
         });
+        return this;
+    }
+
+});
+
+xmppchat.ControlBox = xmppchat.ChatBox.extend({
+
+    initialize: function () {
+        this.set({
+            'chat_id' : 'online-users-container'
+        });
+    }
+
+});
+
+xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
+
+    el: '#online-users-container',
+    events: {
+        'click a.close-controlbox-button': 'closeChat'
+    },
+
+    render: function () {
+        return this;
+    },
+
+    show: function () {
+        $(this.el).show();
         return this;
     }
 });
@@ -267,39 +338,120 @@ xmppchat.ChatBoxes = Backbone.Collection.extend({
 
 xmppchat.ChatBoxesView = Backbone.View.extend({
     
-    chatbox_width: 205,
+    chatbox_width: 212,
+    chatbox_padding: 15,
 
-    positionNewChatBox: function (view) {
-        var open_chats = 0,
-            offset;
-        if ($('#online-users-container').is(':visible')) {
-            open_chats++;
-        }
-        for (var i=0; i<this.model.models.length; i++) {
-            if ($("#"+this.model.models[i].get('chat_id')).is(':visible')) {
-                open_chats++;
+    restoreOpenChats: function () {
+        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
+            open_chats = [];
+
+        jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
+        if (cookie) {
+            open_chats = cookie.split('|');
+            if (_.indexOf(open_chats, 'online-users-container') != -1) {
+                this.createChat('online-users-container');
+            }
+            for (var i=0; i<open_chats.length; i++) {
+                if (open_chats[i] === 'online-users-container') {
+                    continue;
+                }
+                this.createChat(open_chats[i]);
             }
         }
-        offset = (open_chats)*(this.chatbox_width+7)+15;
-        $(view.el).css({'right': (offset+'px')});
     },
 
-    reorderChatBoxes: function () {
+    createChat: function (jid) {
+        if (jid === 'online-users-container') {
+            chatbox = new xmppchat.ControlBox({'id': jid, 'jid': jid});
+            view = new xmppchat.ControlBoxView({
+                model: chatbox 
+            });
+        } else {
+            chatbox = new xmppchat.ChatBox({'id': jid, 'jid': jid});
+            view = new xmppchat.ChatBoxView({
+                model: chatbox 
+            });
+        }
+        this.views[jid] = view.render();
+        this.options.model.add(chatbox);
+    },
+
+    closeChat: function (jid) {
+        var view = this.views[jid];
+        if (view) {
+            view.closeChat();
+        }
+    },
+
+    openChat: function (jid) {
+        if (!this.model.get(jid)) {
+            this.createChat(jid);
+        } else {
+            this.positionNewChat(jid);
+        }
+    },
+
+    positionNewChat: function (jid) {
+        //FIXME: Sort the deferred stuff out
+        var view = this.views[jid],
+            that = this,
+            open_chats = 0,
+            offset;
+
+
+        if (view.isVisible()) {
+            view.focus();
+        } else {
+            if (jid === 'online-users-container') {
+                offset = this.chatbox_padding;
+                $(view.el).css({'right': (offset+'px')});
+                $(view.el).show('fast', function () {
+                    view.el.focus();
+                    that.reorderChats();
+                });
+            } else {
+                for (var i=0; i<this.model.models.length; i++) {
+                    if ($("#"+this.model.models[i].get('chat_id')).is(':visible')) {
+                        open_chats++;
+                    }
+                }
+                offset = (open_chats)*(this.chatbox_width)+this.chatbox_padding;
+                $(view.el).css({'right': (offset+'px')});
+                $(view.el).show('fast', function () {
+                    view.el.focus();
+                });
+            }
+            view.addChatToCookie();
+        }
+        return view;
+    },
+
+    reorderChats: function () {
         var index = 0,
             offset,
+            chat_id,
             $chat;
 
-        if ($('#online-users-container').is(':visible')) {
-            index = 1;
+        if (this.model.get('online-users-container')) {
+            $chat = $("#online-users-container");
+            if ($chat.is(':visible')) {
+                offset = (index)*(this.chatbox_width)+this.chatbox_padding;
+                $chat.animate({'right': offset +'px'});
+                index = 1;
+            }
         }
         for (var i=0; i<this.model.models.length; i++) {
-            $chat = $("#"+this.model.models[i].get('chat_id'));
+            chat_id = this.model.models[i].get('chat_id');
+            if (chat_id === 'online-users-container') {
+                continue;
+            }
+            $chat = $("#"+chat_id);
             if ($chat.is(':visible')) {
                 if (index === 0) {
                     $chat.animate({'right': '15px'});
                 } 
                 else {
-                    offset = (index)*(this.chatbox_width+7)+15;
+                    offset = (index)*(this.chatbox_width)+this.chatbox_padding;
                     $chat.animate({'right': offset +'px'});
                 }
                 index++;
@@ -308,15 +460,13 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
     },
 
     initialize: function () {
-        this.views = {};
-
-        this.options.model.on("add", function (item, x, y) {
-            var view = new xmppchat.ChatBoxView({
-                model: item
-            });
-            this.positionNewChatBox(view.render());
-            this.views[item.get('jid')] = view.show();
+        this.options.model.on("add", function (item) {
+            this.positionNewChat(item.get('id'));
         }, this);
+
+        this.views = {};
+        this.restoreOpenChats();
+
     }
 });
 
@@ -345,26 +495,13 @@ xmppchat.RosterItemView = Backbone.View.extend({
 
     tagName: 'li',
     events: {
-        'click': 'toggleChatBox'
+        'click': 'openChat'
     },
 
-    toggleChatBox: function (e) {
+    openChat: function (e) {
         e.preventDefault();
         var jid = this.model.get('jid');
-        if (!xmppchat.chatboxes.get(jid)) {
-            chatbox = new xmppchat.ChatBox({'id': jid, 'jid': jid});
-            xmppchat.chatboxes.add(chatbox);
-        } else {
-            var view = xmppchat.chatboxesview.views[jid];
-            if (view) {
-                if (view.isVisible()) {
-                    view.focus();
-                } else {
-                    view.show();
-                    xmppchat.chatboxesview.reorderChatBoxes();
-                }
-            }
-        }
+        xmppchat.chatboxesview.openChat(jid);
     },
 
     initialize: function () {
@@ -588,18 +725,25 @@ xmppchat.RosterView= (function (roster, _, $, console) {
     return view;
 });
 
-// FIXME: Need to get some convention going for naming classes and instances of
-// models and views.
 
 // Event handlers
 // --------------
 $(document).ready(function () {
+    var chatdata = jQuery('span#babble-client-chatdata'),
+        $toggle = $('a#toggle-online-users');
+
+    $toggle.unbind('click');
+
+    xmppchat.username = chatdata.attr('username');
+    xmppchat.base_url = chatdata.attr('base_url');
+
     $(document).unbind('jarnxmpp.connected');
     $(document).bind('jarnxmpp.connected', function () {
+        // FIXME: Need to get some convention going for naming classes and instances of
+        // models and views.
+
         // Messages
         xmppchat.connection.addHandler(xmppchat.Messages.messageReceived, null, 'message', 'chat');
-        xmppchat.UI.restoreOpenChats();
-
         xmppchat.Roster = xmppchat.RosterClass(Strophe._connectionPlugins.roster, _, $, console);
         xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.Roster, _, $, console));
 
@@ -613,6 +757,15 @@ $(document).ready(function () {
         
         xmppchat.chatboxesview = new xmppchat.ChatBoxesView({
             'model': xmppchat.chatboxes
+        });
+
+        $toggle.bind('click', function (e) {
+            e.preventDefault();
+            if ($("div#online-users-container").is(':visible')) {
+                xmppchat.chatboxesview.closeChat('online-users-container');
+            } else {
+                xmppchat.chatboxesview.openChat('online-users-container');
+            }
         });
     });
 });

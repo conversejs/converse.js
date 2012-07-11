@@ -368,25 +368,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
         });
     };
 
-    ob.restoreOpenChats = function () {
-        /* Check the open-chats cookie and re-open all the chatboxes it mentions.
-         * We need to wait for current chatbox creation to finish before we create the
-         * next, so we use a task buffer to make sure the next task is only
-         * executed after the previous is done.
-        */
-        var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-            open_chats = [];
-
-        jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
-        if (cookie) {
-            open_chats = cookie.split('|');
-            // FIXME: Change this so that the online contacts box is always created first.
-            for (var i=0; i<open_chats.length; i++) {
-                xmppchat.Taskbuffer.tasks.push({'that': this, 'method':this.getChatbox, 'parameters':[open_chats[i]]});
-            }
-            xmppchat.Taskbuffer.handleTasks();
-        }
-    };
 
     ob.keyPressed = function (ev, textarea) {
         var $textarea = jQuery(textarea),
@@ -482,23 +463,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
 // Event handlers
 // --------------
 $(document).ready(function () {
-    var chatdata = jQuery('span#babble-client-chatdata'),
-        $toggle = $('a#toggle-online-users');
-
-    xmppchat.username = chatdata.attr('username');
-    xmppchat.base_url = chatdata.attr('base_url');
-
     xmppchat.UI.createStatusSelectWidget();
-
-    $toggle.unbind('click');
-    $toggle.bind('click', function (e) {
-        e.preventDefault();
-        if ($("div#online-users-container").is(':visible')) {
-            xmppchat.UI.closeChat('online-users-container');
-        } else {
-            xmppchat.UI.getChatbox('online-users-container');
-        }
-    });
 
     $(document).unbind('jarnxmpp.message');
     $(document).bind('jarnxmpp.message',  function (event) {
@@ -517,10 +482,6 @@ $(document).ready(function () {
     $('textarea.chat-textarea').live('keypress', function (ev) {
         xmppchat.UI.keyPressed(ev, this);
     });
-
-    $('a.close-controlbox-button').live('click', function (ev) {
-        xmppchat.UI.closeChat('online-users-container');
-    }); 
 
     $('ul.tabs').tabs('div.panes > div');
 

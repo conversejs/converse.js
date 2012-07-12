@@ -141,7 +141,6 @@ xmppchat.ChatBox = Backbone.Model.extend({
 });
 
 xmppchat.ChatBoxView = Backbone.View.extend({
-
     tagName: 'div',
     className: 'chatbox',
 
@@ -149,6 +148,12 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         'click .close-chatbox-button': 'closeChat',
         'keypress textarea.chat-textarea': 'keyPressed'
     },
+
+    message_template: _.template(
+                        '<div class="chat-message <%=extra_classes%>">' + 
+                            '<span class="chat-message-<%=sender%>"><%=time%> <%=username%>:&nbsp;</span>' + 
+                            '<span class="chat-message-content"><%=message%></span>' + 
+                        '</div>'),
 
     appendMessage: function (message) {
         var time, 
@@ -161,17 +166,19 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
         if (list) {
             for (i = 0; i < list.length; i++) {
-                message = message.replace( list[i], "<a target='_blank' href='" + escape( list[i] ) + "'>"+ list[i] + "</a>" );
+                message = message.replace(list[i], "<a target='_blank' href='" + escape( list[i] ) + "'>"+ list[i] + "</a>" );
             }
         }
         if (minutes.length==1) {minutes = '0'+minutes;}
         time = now.toLocaleTimeString().substring(0,5);
         $chat_content = $(this.el).find('.chat-content');
-        $chat_content.append(
-            '<div class="chat-message">' + 
-                '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
-                '<span class="chat-message-content">'+message+'</span>' + 
-            '</div>');
+        $chat_content.append(this.message_template({
+                            'sender': 'me', 
+                            'time': time, 
+                            'message': message, 
+                            'username': 'me',
+                            'extra_classes': ''
+                        }));
         $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
@@ -184,47 +191,77 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         var body = $(message).children('body').text(),
             jid = $(message).attr('from'),
             composing = $(message).find('composing'),
-            div = $('<div></div>'),
             $chat_content = $(this.el).find('.chat-content'),
             user_id = Strophe.getNodeFromJid(jid);
 
         if (!body) {
             if (composing.length > 0) {
-                message_html = div.addClass('chat-event').text(user_id+ ' is typing...');
-                $chat_content.find('div.chat-event').remove().end().append(message_html);
+                $chat_content.find('div.chat-event').remove().end()
+                        .append($('<div class="chat-event"></div>').text(user_id+ ' is typing...'));
             }
         } else {
             // TODO: ClientStorage 
             xmppchat.Messages.ClientStorage.addMessage(jid, body, 'from');
             if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
+                // only update the UI if the user is not offline
                 return;
             }
-            // only update the UI if the user is not offline
-            var time = (new Date()).toLocaleTimeString().substring(0,5),
-                text = body.replace(/<br \/>/g, "");
-
-            div.addClass('chat-message');
-            if (($(message).find('delay').length > 0)) {
-                div.addClass('delayed');
-            }
             $chat_content.find('div.chat-event').remove();
-            message_html = div.append( 
-                            '<span class="chat-message-them">'+time+' '+user_id+':&nbsp;&nbsp;</span>' + 
-                            '<span class="chat-message-content">'+text+'</span>'
-                            );
-            $chat_content.append(message_html);
-            // FIXME:
+            $chat_content.append(
+                    this.message_template({
+                        'sender': 'them', 
+                        'time': (new Date()).toLocaleTimeString().substring(0,5),
+                        'message': body.replace(/<br \/>/g, ""),
+                        'username': user_id,
+                        'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                    }));
+
+            // TODO:
             // xmppchat.UI.msg_counter += 1;
             // xmppchat.UI.updateMsgCounter();
         }
         $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
+    insertClientStoredMessages: function () {
+        var that = this;
+        xmppchat.Messages.getMessages(this.model.get('jid'), function (msgs) {
+            var $content = that.$el.find('.chat-content');
+            for (var i=0; i<_.size(msgs); i++) {
+                var msg = msgs[i], 
+                    msg_array = msg.split(' ', 2),
+                    date = msg_array[0];
+
+                if (msg_array[1] == 'to') {
+                    $content.append(
+                            that.message_template({
+                                'sender': 'me', 
+                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                                'message': String(msg).replace(/(.*?\s.*?\s)/, ''),
+                                'username': 'me',
+                                'extra_classes': 'delayed'
+                            }));
+                } else {
+                    $content.append(
+                            that.message_template({
+                                'sender': 'them', 
+                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                                'message': String(msg).replace(/(.*?\s.*?\s)/, ''),
+                                'username': that.model.get('user_id'),
+                                'extra_classes': 'delayed'
+                            }));
+                }
+            }
+        });
+    },
+
     sendMessage: function (text) {
+        // TODO: Also send message to all my own connected resources, so that
+        // they can display it as well....
+    
         // TODO: Look in ChatPartners to see what resources we have for the recipient.
         // if we have one resource, we sent to only that resources, if we have multiple
         // we send to the bare jid.
-        // FIXME: see if @@content-transform is required
         var bare_jid = this.model.get('jid');
         var message = $msg({to: bare_jid, type: 'chat'})
             .c('body').t(text).up()
@@ -330,6 +367,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
     render: function () {
         $(this.el).attr('id', this.model.get('chat_id'));
         $(this.el).html(this.template(this.model.toJSON()));
+        this.insertClientStoredMessages();
         return this;
     },
 
@@ -348,8 +386,12 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             that.focus();
         });
         return this;
-    }
+    },
 
+    scrolldown: function () {
+        var  $content = this.$el.find('.chat-content');
+        $content.scrollTop($content[0].scrollHeight);
+    }
 });
 
 xmppchat.ControlBox = xmppchat.ChatBox.extend({
@@ -367,6 +409,10 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
     el: '#online-users-container',
     events: {
         'click a.close-controlbox-button': 'closeChat'
+    },
+
+    initialize: function () {
+        // Override to avoid chatbox's initialization.
     },
 
     render: function () {
@@ -439,12 +485,10 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
     },
 
     positionNewChat: function (jid) {
-        //FIXME: Sort the deferred stuff out
         var view = this.views[jid],
             that = this,
             open_chats = 0,
             offset;
-
 
         if (view.isVisible()) {
             view.focus();
@@ -466,6 +510,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
                 $(view.el).css({'right': (offset+'px')});
                 $(view.el).show('fast', function () {
                     view.el.focus();
+                    view.scrolldown();
                 });
             }
             view.addChatToCookie();

@@ -2,11 +2,6 @@ xmppchat.UI = (function (xmppUI, $, console) {
     var ob = xmppUI;
     ob.chats = [];
     ob.chat_focus  = [];
-    ob.chatbox_width = 205;
-
-    ob.sanitizePath = function (call) { 
-        return xmppchat.base_url + call; 
-    };
 
     ob.addUserToRosterUI = function (user_id, bare_jid, fullname, userstatus) {};
 
@@ -108,47 +103,8 @@ xmppchat.UI = (function (xmppUI, $, console) {
         });
     };
 
-    ob.insertClientStoredMessages = function ($chat, bare_jid, recipient_name) {
-        xmppchat.Messages.getMessages(bare_jid, function (msgs) {
-            $(msgs).each(function (idx, msg) {
-                var msg_array = msg.split(' ', 2),
-                    date = msg_array[0],
-                    time = new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                    direction = msg_array[1],
-                    text = String(msg).replace(/(.*?\s.*?\s)/, '');
-                    $content = $chat.find('.chat-content');
-                    div = $('<div class="chat-message delayed"></div>');
-
-                if (direction == 'to') {
-                    message_html = div.append( 
-                                        '<span class="chat-message-me">'+time+' me:&nbsp;&nbsp;</span>' + 
-                                        '<span class="chat-message-content">'+text+'</span>'
-                                        );
-                } else {
-                    message_html = div.append( 
-                                        '<span class="chat-message-them">'+time+' '+recipient_name+':&nbsp;&nbsp;</span>' + 
-                                        '<span class="chat-message-content">'+text+'</span>'
-                                        );
-                }
-                $content.append(message_html);
-                $content.scrollTop($content[0].scrollHeight);
-            });
-        });
-    };
-
+    ob.insertClientStoredMessages = function ($chat, bare_jid, recipient_name) {};
     ob.createChatbox = function (bare_jid, callback) {};
-    /*
-    $chat.find('.chat-message .time').each(function () {
-        var jthis = $(this);
-        var time = jthis.text().split(':');
-        var hour = time[0];
-        var minutes = time[1];
-        var date = new Date();
-        date.setHours(hour - date.getTimezoneOffset() / 60);
-        date.setMinutes(minutes);
-        jthis.replaceWith(date.toLocaleTimeString().substring(0,5));
-    });
-    */
 
     ob.prepNewChat = function (chat, jid) {
         // Some operations that need to be applied on a chatbox
@@ -173,56 +129,8 @@ xmppchat.UI = (function (xmppUI, $, console) {
         this.addChatToCookie(jid);
     };
 
-    ob.getChatbox =  function (jid, callback) {
-        // Get a chatbox. Either it exists, then just ensure 
-        // that it's visible and return it. Otherwise, create it.
-        //
-        // This method can be deferred.
-        // http://www.erichynds.com/jquery/using-deferreds-in-jquery/
-        var bare_jid = Strophe.getBareJidFromJid(jid),
-            chat_content, 
-            chat_id = helpers.hash(bare_jid),
-            $chat = $("#"+chat_id),
-            that = this,
-            dfd = $.Deferred();
-
-        if (callback === undefined) {
-            callback = function () {};
-        }
-        if ($chat.length > 0) {
-            if ($chat.is(':visible')) {
-                callback($chat);
-                dfd.resolve();
-            } else {
-                // The chatbox exists, merely hidden
-                $chat.show('fast', function () {
-                    that.prepNewChat(this, bare_jid);
-                    that.reorderChats();
-                    callback(this);
-                    dfd.resolve();
-                });
-            }
-        } else {
-             this.createChatbox(bare_jid, function ($chat) {
-                // that.retrieveCollections();
-                that.positionNewChat($chat);
-                $chat.show('fast', function () {
-                    that.prepNewChat(this, bare_jid);
-                    that.handleChatEvents(chat_id);
-                    callback(this);
-                    dfd.resolve();
-                    // FIXME: We need to check here whether local or remote storage
-                    // must be used. For now we just use local storage.
-                    // ob.insertCollectionMessages
-                    that.insertClientStoredMessages($chat, bare_jid, $chat.find('.chat-title').text());
-                });
-            });
-        }
-        return dfd.promise();
-    };
-
+    ob.getChatbox =  function (jid, callback) {};
     ob.reorderChats =  function () {};
-
     ob.addChatToCookie = function (jid) {};
 
     return ob;

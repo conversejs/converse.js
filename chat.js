@@ -175,6 +175,13 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
+    insertStatusNotification: function (message) {
+        var $chat_content = this.$el.find('.chat-content');
+        $chat_content.find('div.chat-event').remove().end()
+            .append($('<div class="chat-event"></div>').text(this.model.get('user_id')+' '+message));
+        $chat_content.scrollTop($chat_content[0].scrollHeight);
+    },
+
     messageReceived: function (message) {
         /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
             but I only seem to get 'text'. 
@@ -189,8 +196,8 @@ xmppchat.ChatBoxView = Backbone.View.extend({
 
         if (!body) {
             if (composing.length > 0) {
-                $chat_content.find('div.chat-event').remove().end()
-                        .append($('<div class="chat-event"></div>').text(user_id+ ' is typing...'));
+                this.insertStatusNotification('is typing');
+                return;
             }
         } else {
             // TODO: ClientStorage 
@@ -212,8 +219,8 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             // TODO:
             // xmppchat.UI.msg_counter += 1;
             // xmppchat.UI.updateMsgCounter();
+            $chat_content.scrollTop($chat_content[0].scrollHeight);
         }
-        $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
     insertClientStoredMessages: function () {
@@ -343,6 +350,22 @@ xmppchat.ChatBoxView = Backbone.View.extend({
 
     initialize: function (){
         $('body').append($(this.el).hide());
+
+        xmppchat.roster.on('change', function (item, changed) {
+            if (_.has(changed.changes, 'status')) {
+                if (this.$el.is(':visible')) {
+                    if (item.get('status') === 'offline') {
+                        this.insertStatusNotification('has gone offline');
+                    } else if (item.get('status') === 'away') {
+                        this.insertStatusNotification('has gone away');
+                    } else if (item.get('status') === 'busy') {
+                        this.insertStatusNotification('is busy');
+                    } else if (item.get('status') === 'online') {
+                        this.$el.find('div.chat-event').remove();
+                    }
+                }
+            }
+        }, this);
     },
 
     template:   _.template('<div class="chat-head chat-head-chatbox">' +
@@ -555,7 +578,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         }
         view.messageReceived(message);
         // XXX: Is this the right place for this? Perhaps an event?
-        xmppchat.Roster.addResource(bare_jid, resource);
+        xmppchat.roster.addResource(bare_jid, resource);
     },
 
     initialize: function () {
@@ -624,7 +647,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
 });
 
 
-xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
+xmppchat.Roster = (function (stropheRoster, _, $, console) {
     var ob = _.clone(stropheRoster),
         Collection = Backbone.Collection.extend({
             model: xmppchat.RosterItem,
@@ -769,7 +792,7 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
             stropheRoster.subscribe(bare_jid);
 
         } else if (ptype === 'unsubscribe') {
-            if (_.indexOf(xmppchat.Roster.getCachedJids(), bare_jid) != -1) {
+            if (_.indexOf(xmppchat.roster.getCachedJids(), bare_jid) != -1) {
                 stropheRoster.unauthorize(bare_jid);
                 stropheRoster.unsubscribe(bare_jid);
             }
@@ -925,19 +948,15 @@ $(document).ready(function () {
 
     $(document).unbind('jarnxmpp.connected');
     $(document).bind('jarnxmpp.connected', function () {
-        // FIXME: Need to get some convention going for naming classes and instances of
-        // models and views.
         xmppchat.connection.bare_jid = Strophe.getBareJidFromJid(xmppchat.connection.jid);
 
-        // Messages
+        xmppchat.roster = xmppchat.Roster(Strophe._connectionPlugins.roster, _, $, console);
+        xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.roster, _, $, console));
 
-        xmppchat.Roster = xmppchat.RosterClass(Strophe._connectionPlugins.roster, _, $, console);
-        xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.Roster, _, $, console));
-
-        xmppchat.connection.addHandler(xmppchat.Roster.presenceHandler, null, 'presence', null);
+        xmppchat.connection.addHandler(xmppchat.roster.presenceHandler, null, 'presence', null);
         
-        xmppchat.Roster.registerCallback(xmppchat.Roster.updateHandler);
-        xmppchat.Roster.getRoster();
+        xmppchat.roster.registerCallback(xmppchat.roster.updateHandler);
+        xmppchat.roster.getRoster();
 
         xmppchat.chatboxes = new xmppchat.ChatBoxes();
         

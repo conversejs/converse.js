@@ -24,6 +24,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
     ob.Presence = jarnxmpp.Presence || {};
 
     ob.Messages.ClientStorage = (function () {
+        // TODO: Messages must be encrypted with a key and salt
         methods = {};
 
         methods.addMessage = function (jid, msg, direction) {
@@ -84,14 +85,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
                         .t('30');
             xmppchat.connection.sendIQ(iq, callback);
         });
-    };
-
-    ob.Presence.getOwnStatus = function () {
-        return xmppchat.Storage.get(xmppchat.username+'-xmpp-status');
-    };
-
-    ob.Presence.onlineCount = function () {
-        return xmppchat.ChatPartners.getTotal();
     };
 
     ob.Taskbuffer = (function ($) {
@@ -723,6 +716,16 @@ xmppchat.RosterClass = (function (stropheRoster, _, $, console) {
                 if (item) {
                     return _.size(item.get('resources'));
                 }
+            },
+
+            getNumOnlineContacts: function () {
+                var count = 0;
+                for (var i=0; i<this.models.length; i++) {
+                    if (_.indexOf(['offline', 'unavailable'], this.models[i].get('status')) === -1) {
+                        count++;
+                    }
+                }
+                return count;
             }
         });
 
@@ -826,6 +829,7 @@ xmppchat.RosterView= (function (roster, _, $, console) {
                 var user_id = Strophe.getNodeFromJid(model.id);
                 $(that.el).append(children.filter('#online-users-'+user_id));
             });
+            $('#online-count').text(this.model.getNumOnlineContacts());
         }
     });
     var view = new View();

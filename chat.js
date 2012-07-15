@@ -459,10 +459,9 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
     subscribeToContact: function (ev) {
         ev.preventDefault();
         var jid = $(ev.target).attr('data-recipient');
-        xmppchat.roster.stropheRoster.add(jid, '', [], function (iq) {
+        xmppchat.connection.roster.add(jid, '', [], function (iq) {
             // XXX: We can set the name here!!!
-            //xmppchat.connection.send($pres({'type':'result', 'id': $(iq).attr('id')}));
-            xmppchat.roster.stropheRoster.subscribe(jid);
+            xmppchat.connection.roster.subscribe(jid);
         });
         $(ev.target).parent().remove();
         $('form.search-xmpp-contact').hide();
@@ -635,13 +634,14 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
 
 xmppchat.RosterItem = Backbone.Model.extend({
 
-    initialize: function (jid, subscription) {
+    initialize: function (jid, subscription, ask) {
         // FIXME: the fullname is set to user_id for now...
         var user_id = Strophe.getNodeFromJid(jid);
 
         this.set({
             'id': jid,
             'jid': jid,
+            'ask': ask,
             'bare_jid': Strophe.getBareJidFromJid(jid),
             'user_id': user_id,
             'subscription': subscription,
@@ -655,10 +655,12 @@ xmppchat.RosterItem = Backbone.Model.extend({
 
 xmppchat.RosterItemView = Backbone.View.extend({
 
-    tagName: 'li',
+    tagName: 'dd',
     events: {
         'click a.open-chat': 'openChat',
-        'click a.remove-xmpp-contact': 'removeContact'
+        'click a.remove-xmpp-contact': 'removeContact',
+        'click button.accept-xmpp-request': 'acceptRequest',
+        'click button.decline-xmpp-request': 'declineRequest'
     },
 
     openChat: function (e) {
@@ -693,6 +695,48 @@ xmppchat.RosterItemView = Backbone.View.extend({
         });
     },
 
+    acceptRequest: function () {
+        xmppchat.connection.roster.authorize(this.model.get('jid'));
+        xmppchat.connection.roster.subscribe(this.model.get('jid'));
+    },
+
+    declineRequest: function () {
+        var that = this;
+        xmppchat.connection.roster.unauthorize(this.model.get('jid'));
+        that.trigger('decline-request', that.model);
+    },
+
+    template: _.template(
+                '<a class="open-chat" title="Click to chat with this contact" href="#"><%= fullname %></a>' +
+                '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
+
+    request_template: _.template('<%= fullname %>' +
+                '<button type="button" class="accept-xmpp-request">' +
+                'Accept</button>' +
+                '<button type="button" class="decline-xmpp-request">' +
+                'Decline</button>' +
+                ''),
+
+    render: function () {
+        var item = this.model,
+            ask = item.get('ask'),
+            subscription = item.get('subscription');
+
+        $(this.el).addClass(item.get('status')).attr('id', 'online-users-'+item.get('user_id'));
+        
+        if (ask === 'subscribe') {
+            this.$el.addClass('pending-xmpp-contact');
+            $(this.el).html(this.template(item.toJSON()));
+        } else if (ask === 'request') {
+            this.$el.addClass('requesting-xmpp-contact');
+            $(this.el).html(this.request_template(item.toJSON()));
+        } else if (subscription === 'both') {
+            this.$el.addClass('current-xmpp-contact');
+            this.$el.html(this.template(item.toJSON()));
+        }
+        return this;
+    },
+
     initialize: function () {
         var that = this;
         this.options.model.on('change', function (item, changed) {
@@ -700,29 +744,18 @@ xmppchat.RosterItemView = Backbone.View.extend({
                 $(this.el).attr('class', item.changed.status);
             }
         }, this);
-    },
-
-    template: _.template(
-                '<a class="open-chat" title="Click to chat with this contact" href="#"><%= fullname %></a>' +
-                '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
-
-    render: function () {
-        var item = this.model;
-        $(this.el).addClass(item.get('status')).attr('id', 'online-users-'+item.get('user_id'));
-        $(this.el).html(this.template(item.toJSON()));
-        return this;
     }
 });
 
 
-xmppchat.Roster = (function (stropheRoster, _, $, console) {
-    var ob = _.clone(stropheRoster),
+xmppchat.Roster = (function (_, $, console) {
+    var ob = {},
         Collection = Backbone.Collection.extend({
             model: xmppchat.RosterItem,
-            stropheRoster: stropheRoster,
+            stropheRoster: xmppchat.connection.roster,
 
             initialize: function () {
-                this._connection = this.stropheRoster._connection = xmppchat.connection;
+                this._connection = xmppchat.connection;
             },
 
             comparator : function (rosteritem) {
@@ -753,15 +786,15 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
             },
 
             getRoster: function () {
-                return stropheRoster.get();
+                return xmppchat.connection.roster.get();
             },
 
             getItem: function (id) {
                 return Backbone.Collection.prototype.get.call(this, id);
             },
 
-            addRosterItem: function (jid, subscription) {
-                var model = new xmppchat.RosterItem(jid, subscription);
+            addRosterItem: function (jid, subscription, ask) {
+                var model = new xmppchat.RosterItem(jid, subscription, ask);
                 this.add(model);
             },
                 
@@ -818,104 +851,24 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
                 }
                 return count;
             }
+
         });
 
     var collection = new Collection();
     _.extend(ob, collection);
     _.extend(ob, Backbone.Events);
 
-    ob.updateHandler = function (items) {
+    ob.rosterHandler = function (items) {
         var model, item;
         for (var i=0; i<items.length; i++) {
             item = items[i];
-
-            if (item.ask === 'subscribe') {
-                // We are subscribing to them and have to wait for
-                // authorization
-                continue;
-            }
             model = ob.getItem(item.jid);
             if (!model) {
-                if (item.subscription === 'to') {
-                    ob.addRosterItem(item.jid, item.subscription);
-                }
-                if (item.subscription === 'both') {
-                    ob.addRosterItem(item.jid, item.subscription);
-                }
+                ob.addRosterItem(item.jid, item.subscription, item.ask);
             } else {
-                if (item.subscription === 'none') {
-                    ob.remove(model);
-                }
+                model.set({'subscription': item.subscription, 'ask': item.ask});
             }
-            /*
-            model = ob.getItem(item.jid);
-            if (model) {
-                if (model.get('subscription') === 'both') {
-                    if (item.subscription === 'to') {
-                        // Other user unsubscribed, so we unsubscribe as well.
-                        ob.unsubscribe(item.jid);
-                    } else if (item.subscription === 'from') {
-                        // We have just unsubscribed, remove user. 
-                        ob.unauthorize(item.jid);
-                        ob.remove(model);
-                    } else if (item.subscription === 'none') {
-                        if (item.ask === 'subscribe') {
-                            // We already authorized it, so must be something
-                            // wrong.
-                            ob.unauthorize(item.jid);
-                        }
-                        ob.remove(model);
-                    } else {
-                        // Update the model
-                        model = ob.getItem(item.jid);
-                        model.subscription = item.subscription;
-                    }
-                } else {
-                    if (item.subscription === 'none') {
-                        ob.remove(model);
-                    } else {
-                        // Update the model
-                        model = ob.getItem(item.jid);
-                        model.subscription = item.subscription;
-                    }
-                }
-            } else {
-                if (item.subscription === 'from') {
-                    ob.subscribe(item.jid);
-                } else if (item.subscription === 'both') {
-                    ob.addRosterItem(item.jid, item.subscription);
-                } else if (item.subscription === 'to') {
-                    ob.addRosterItem(item.jid, item.subscription);
-                } 
-            }
-            */
         }
-    };
-
-    ob.promptUserForSubscription = function (jid, approve_callback, decline_callback) {
-        var user_id = Strophe.getNodeFromJid(jid);
-        $("<span></span>").dialog({
-            title: user_id+ ' wants add you as a contact.',
-            dialogClass: 'approve-xmpp-contact-dialog',
-            resizable: false,
-            width: 200,
-            position: {
-                my: 'center',
-                at: 'center',
-                of: '#online-users-container'
-                },
-            modal: true,
-            buttons: {
-                "Approve": function() {
-                    $(this).dialog( "close" );
-                    approve_callback(jid);
-                },
-                "Decline": function() {
-                    $(this).dialog( "close" );
-                    decline_callback(jid);
-                }
-            }
-        });
     };
 
     ob.presenceHandler = function (presence) {
@@ -931,22 +884,26 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
         }
         if (ptype === 'subscribe') {
             if (ob.getItem(bare_jid)) { 
-                xmppchat.roster.authorize(bare_jid);
+                xmppchat.connection.roster.authorize(bare_jid);
             } else {
-                ob.promptUserForSubscription(bare_jid,
-                    function () { // Approved
-                        xmppchat.roster.authorize(bare_jid);
-                        xmppchat.roster.subscribe(bare_jid);
-                    },
-                    function () { // Declined
-                        xmppchat.roster.unauthorize(bare_jid);
-                    });
+                ob.addRosterItem(bare_jid, 'none', 'request');
             }
         } else if (ptype === 'subscribed') {
             return true;
         } else if (ptype === 'unsubscribe') {
             return true;
         } else if (ptype === 'unsubscribed') {
+            /* Upon receiving the presence stanza of type "unsubscribed", 
+             * the user SHOULD acknowledge receipt of that subscription state 
+             * notification by sending a presence stanza of type "unsubscribe" 
+             * this step lets the user's server know that it MUST no longer 
+             * send notification of the subscription state change to the user.
+             */
+            xmppchat.xmppstatus.sendPresence('unsubscribe');
+            if (xmppchat.connection.roster.findItem(bare_jid)) {
+                xmppchat.roster.remove(bare_jid);
+                xmppchat.connection.roster.remove(bare_jid);
+            }
             return true;
         } else if (ptype === 'error') {
             return true;
@@ -976,7 +933,7 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
 
 xmppchat.RosterView= (function (roster, _, $, console) {
     var View = Backbone.View.extend({
-        el: $('#xmpp-contacts'),
+        el: $('#xmppchat-roster'),
         model: roster,
         rosteritemviews: {},
 
@@ -984,7 +941,12 @@ xmppchat.RosterView= (function (roster, _, $, console) {
             this.model.on("add", function (item) {
                 var view = new xmppchat.RosterItemView({model: item});
                 this.rosteritemviews[item.id] = view;
-                $(this.el).append(view.render().el);
+                if (item.get('ask') === 'request') {
+                    view.on('decline-request', function (item) {
+                        this.model.remove(item.id);
+                    }, this);
+                }
+                this.render();
             }, this);
 
             this.model.on('change', function (item) {
@@ -992,22 +954,43 @@ xmppchat.RosterView= (function (roster, _, $, console) {
             }, this);
 
             this.model.on("remove", function (item) {
-                var view = this.rosteritemviews[item.id];
-                if (view) {
-                    view.remove();
-                }
+                delete this.rosteritemviews[item.id];
                 this.render();
             }, this);
         },
 
+        template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
+                            '<dt id="xmpp-contacts">My contacts</dt>' +
+                            '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
+
         render: function () {
+            this.$el.empty().html(this.template());
             var models = this.model.sort().models,
                 children = $(this.el).children(),
-                that = this;
+                my_contacts = this.$el.find('#xmpp-contacts').hide(),
+                contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
+                pending_contacts = this.$el.find('#pending-xmpp-contacts').hide();
 
-            $(models).each(function (idx, model) {
-                var user_id = Strophe.getNodeFromJid(model.id);
-                $(that.el).append(children.filter('#online-users-'+user_id));
+            for (var i=0; i<models.length; i++) {
+                var model = models[i],
+                    user_id = Strophe.getNodeFromJid(model.id),
+                    view = this.rosteritemviews[model.id],
+                    ask = model.get('ask'),
+                    subscription = model.get('subscription');
+
+                if (ask === 'subscribe') {
+                    pending_contacts.after(view.render().el);
+                } else if (ask === 'request') {
+                    contact_requests.after(view.render().el);
+                } else if (subscription === 'both') {
+                    my_contacts.after(view.render().el);
+                } 
+            }
+            // Hide the headings if there are no contacts under them
+            _.each([my_contacts, contact_requests, pending_contacts], function (h) {
+                if (h.nextUntil('dt').length > 0) {
+                    h.show();
+                }
             });
             $('#online-count').text(this.model.getNumOnlineContacts());
         }
@@ -1116,12 +1099,12 @@ $(document).ready(function () {
 
         xmppchat.connection.bare_jid = Strophe.getBareJidFromJid(xmppchat.connection.jid);
 
-        xmppchat.roster = xmppchat.Roster(Strophe._connectionPlugins.roster, _, $, console);
+        xmppchat.roster = xmppchat.Roster(_, $, console);
         xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.roster, _, $, console));
 
         xmppchat.connection.addHandler(xmppchat.roster.presenceHandler, null, 'presence', null);
         
-        xmppchat.roster.registerCallback(xmppchat.roster.updateHandler);
+        xmppchat.connection.roster.registerCallback(xmppchat.roster.rosterHandler);
         xmppchat.roster.getRoster();
 
         xmppchat.chatboxes = new xmppchat.ChatBoxes();

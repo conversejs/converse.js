@@ -654,24 +654,15 @@ xmppchat.RosterItem = Backbone.Model.extend({
 
 
 xmppchat.RosterItemView = Backbone.View.extend({
-
     tagName: 'dd',
-    events: {
-        'click a.open-chat': 'openChat',
-        'click a.remove-xmpp-contact': 'removeContact',
-        'click button.accept-xmpp-request': 'acceptRequest',
-        'click button.decline-xmpp-request': 'declineRequest'
-    },
 
-    openChat: function (e) {
-        e.preventDefault();
+    openChat: function () {
         var jid = this.model.get('jid');
         xmppchat.chatboxesview.openChat(jid);
     },
 
-    removeContact: function (e) {
+    removeContact: function () {
         var that = this;
-        e.preventDefault();
         $("<span></span>").dialog({
             title: 'Are you sure you want to remove this contact?',
             dialogClass: 'remove-xmpp-contact-dialog',
@@ -686,7 +677,9 @@ xmppchat.RosterItemView = Backbone.View.extend({
             buttons: {
                 "Remove": function() {
                     $(this).dialog( "close" );
-                    xmppchat.roster.unsubscribe(that.model.get('jid'));
+                    xmppchat.connection.roster.unauthorize(that.model.get('jid'));
+                    xmppchat.roster.remove(bare_jid);
+                    xmppchat.connection.roster.remove(bare_jid);
                 },
                 "Cancel": function() {
                     $(this).dialog( "close" );
@@ -720,6 +713,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
     render: function () {
         var item = this.model,
             ask = item.get('ask'),
+            that = this,
             subscription = item.get('subscription');
 
         $(this.el).addClass(item.get('status')).attr('id', 'online-users-'+item.get('user_id'));
@@ -730,15 +724,30 @@ xmppchat.RosterItemView = Backbone.View.extend({
         } else if (ask === 'request') {
             this.$el.addClass('requesting-xmpp-contact');
             $(this.el).html(this.request_template(item.toJSON()));
+            this.$el.find('button.accept-xmpp-request').on('click', function (ev) {
+                ev.preventDefault();
+                that.acceptRequest();
+            });
+            this.$el.find('button.decline-xmpp-request').on('click', function (ev) {
+                ev.preventDefault();
+                that.declineRequest();
+            });
         } else if (subscription === 'both') {
             this.$el.addClass('current-xmpp-contact');
             this.$el.html(this.template(item.toJSON()));
+            this.$el.find('a.open-chat').on('click', function (ev) {
+                ev.preventDefault();
+                that.openChat();
+            });
+            this.$el.find('a.remove-xmpp-contact').on('click', function (ev) {
+                ev.preventDefault();
+                that.removeContact();
+            });
         }
         return this;
     },
 
     initialize: function () {
-        var that = this;
         this.options.model.on('change', function (item, changed) {
             if (_.has(changed.changes, 'status')) {
                 $(this.el).attr('class', item.changed.status);

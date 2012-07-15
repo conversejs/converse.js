@@ -424,7 +424,48 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
 
     el: '#online-users-container',
     events: {
-        'click a.close-controlbox-button': 'closeChat'
+        'click a.close-controlbox-button': 'closeChat',
+        'click div.add-xmpp-contact': 'toggleContactForm',
+        'submit form.search-xmpp-contact': 'searchContacts',
+        'click a.subscribe-to-user': 'subscribeToContact'
+    },
+
+    toggleContactForm: function (ev) {
+        ev.preventDefault();
+        this.$el.find('form.search-xmpp-contact').fadeToggle('medium').find('input.username').focus();
+    },
+
+    searchContacts: function (ev) {
+        ev.preventDefault();
+        $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
+            var $results_el = $('#found-users');
+            $(data).each(function (idx, obj) {
+                if ($results_el.children().length > 0) {  
+                    $results_el.empty();
+                }
+                $results_el.append(
+                        $('<li></li>')
+                            .attr('id', 'found-users-'+obj.id)
+                            .append(
+                                $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
+                                    .attr('data-recipient', obj.id+'@'+xmppchat.connection.domain)
+                                    .text(obj.fullname)
+                            )
+                    );
+            });
+        });
+    },
+
+    subscribeToContact: function (ev) {
+        ev.preventDefault();
+        var jid = $(ev.target).attr('data-recipient');
+        xmppchat.roster.stropheRoster.add(jid, '', [], function (iq) {
+            // XXX: We can set the name here!!!
+            //xmppchat.connection.send($pres({'type':'result', 'id': $(iq).attr('id')}));
+            xmppchat.roster.stropheRoster.subscribe(jid);
+        });
+        $(ev.target).parent().remove();
+        $('form.search-xmpp-contact').hide();
     },
 
     initialize: function () {
@@ -616,13 +657,40 @@ xmppchat.RosterItemView = Backbone.View.extend({
 
     tagName: 'li',
     events: {
-        'click': 'openChat'
+        'click a.open-chat': 'openChat',
+        'click a.remove-xmpp-contact': 'removeContact'
     },
 
     openChat: function (e) {
         e.preventDefault();
         var jid = this.model.get('jid');
         xmppchat.chatboxesview.openChat(jid);
+    },
+
+    removeContact: function (e) {
+        var that = this;
+        e.preventDefault();
+        $("<span></span>").dialog({
+            title: 'Are you sure you want to remove this contact?',
+            dialogClass: 'remove-xmpp-contact-dialog',
+            resizable: false,
+            width: 200,
+            position: {
+                my: 'center',
+                at: 'center',
+                of: '#online-users-container'
+                },
+            modal: true,
+            buttons: {
+                "Remove": function() {
+                    $(this).dialog( "close" );
+                    xmppchat.roster.unsubscribe(that.model.get('jid'));
+                },
+                "Cancel": function() {
+                    $(this).dialog( "close" );
+                }
+            }
+        });
     },
 
     initialize: function () {
@@ -634,9 +702,9 @@ xmppchat.RosterItemView = Backbone.View.extend({
         }, this);
     },
 
-    template:   _.template(
-                    '<a title="Click to chat with this contact"><%= fullname %></a>' +
-                    '<a title="Click to remove this contact" class="remove-xmpp-contact" href="#"></a>'),
+    template: _.template(
+                '<a class="open-chat" title="Click to chat with this contact" href="#"><%= fullname %></a>' +
+                '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
     render: function () {
         var item = this.model;
@@ -654,7 +722,7 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
             stropheRoster: stropheRoster,
 
             initialize: function () {
-                this.stropheRoster._connection = xmppchat.connection;
+                this._connection = this.stropheRoster._connection = xmppchat.connection;
             },
 
             comparator : function (rosteritem) {
@@ -757,21 +825,97 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
     _.extend(ob, Backbone.Events);
 
     ob.updateHandler = function (items) {
-        var model;
+        var model, item;
         for (var i=0; i<items.length; i++) {
-            if (items[i].subscription === 'none') {
-                model = ob.getItem(jid);
-                ob.remove(model);
+            item = items[i];
+
+            if (item.ask === 'subscribe') {
+                // We are subscribing to them and have to wait for
+                // authorization
+                continue;
+            }
+            model = ob.getItem(item.jid);
+            if (!model) {
+                if (item.subscription === 'to') {
+                    ob.addRosterItem(item.jid, item.subscription);
+                }
+                if (item.subscription === 'both') {
+                    ob.addRosterItem(item.jid, item.subscription);
+                }
             } else {
-                if (ob.getItem(items[i].jid)) {
-                    // Update the model
-                    model = ob.getItem(jid);
-                    model.subscription = item.subscription;
-                } else {
-                    ob.addRosterItem(items[i].jid, items[i].subscription);
+                if (item.subscription === 'none') {
+                    ob.remove(model);
                 }
             }
+            /*
+            model = ob.getItem(item.jid);
+            if (model) {
+                if (model.get('subscription') === 'both') {
+                    if (item.subscription === 'to') {
+                        // Other user unsubscribed, so we unsubscribe as well.
+                        ob.unsubscribe(item.jid);
+                    } else if (item.subscription === 'from') {
+                        // We have just unsubscribed, remove user. 
+                        ob.unauthorize(item.jid);
+                        ob.remove(model);
+                    } else if (item.subscription === 'none') {
+                        if (item.ask === 'subscribe') {
+                            // We already authorized it, so must be something
+                            // wrong.
+                            ob.unauthorize(item.jid);
+                        }
+                        ob.remove(model);
+                    } else {
+                        // Update the model
+                        model = ob.getItem(item.jid);
+                        model.subscription = item.subscription;
+                    }
+                } else {
+                    if (item.subscription === 'none') {
+                        ob.remove(model);
+                    } else {
+                        // Update the model
+                        model = ob.getItem(item.jid);
+                        model.subscription = item.subscription;
+                    }
+                }
+            } else {
+                if (item.subscription === 'from') {
+                    ob.subscribe(item.jid);
+                } else if (item.subscription === 'both') {
+                    ob.addRosterItem(item.jid, item.subscription);
+                } else if (item.subscription === 'to') {
+                    ob.addRosterItem(item.jid, item.subscription);
+                } 
+            }
+            */
         }
+    };
+
+    ob.promptUserForSubscription = function (jid, approve_callback, decline_callback) {
+        var user_id = Strophe.getNodeFromJid(jid);
+        $("<span></span>").dialog({
+            title: user_id+ ' wants add you as a contact.',
+            dialogClass: 'approve-xmpp-contact-dialog',
+            resizable: false,
+            width: 200,
+            position: {
+                my: 'center',
+                at: 'center',
+                of: '#online-users-container'
+                },
+            modal: true,
+            buttons: {
+                "Approve": function() {
+                    $(this).dialog( "close" );
+                    approve_callback(jid);
+                },
+                "Decline": function() {
+                    $(this).dialog( "close" );
+                    decline_callback(jid);
+                }
+            }
+        });
     };
 
     ob.presenceHandler = function (presence) {
@@ -779,26 +923,33 @@ xmppchat.Roster = (function (stropheRoster, _, $, console) {
             bare_jid = Strophe.getBareJidFromJid(jid),
             resource = Strophe.getResourceFromJid(jid),
             ptype = $(presence).attr('type'),
+            item,
             status = '';
 
         if (ob.isSelf(bare_jid)) { 
             return true; 
         }
-
         if (ptype === 'subscribe') {
-            // FIXME: User wants to subscribe to us. Always approve and
-            // ask to subscribe to him
-            stropheRoster.authorize(bare_jid);
-            stropheRoster.subscribe(bare_jid);
-
-        } else if (ptype === 'unsubscribe') {
-            if (_.indexOf(xmppchat.roster.getCachedJids(), bare_jid) != -1) {
-                stropheRoster.unauthorize(bare_jid);
-                stropheRoster.unsubscribe(bare_jid);
+            if (ob.getItem(bare_jid)) { 
+                xmppchat.roster.authorize(bare_jid);
+            } else {
+                ob.promptUserForSubscription(bare_jid,
+                    function () { // Approved
+                        xmppchat.roster.authorize(bare_jid);
+                        xmppchat.roster.subscribe(bare_jid);
+                    },
+                    function () { // Declined
+                        xmppchat.roster.unauthorize(bare_jid);
+                    });
             }
-
+        } else if (ptype === 'subscribed') {
+            return true;
+        } else if (ptype === 'unsubscribe') {
+            return true;
         } else if (ptype === 'unsubscribed') {
-            return;
+            return true;
+        } else if (ptype === 'error') {
+            return true;
 
         } else if (ptype !== 'error') { // Presence has changed
             if (_.indexOf(['unavailable', 'offline', 'busy', 'away'], ptype) != -1) {
@@ -827,20 +978,26 @@ xmppchat.RosterView= (function (roster, _, $, console) {
     var View = Backbone.View.extend({
         el: $('#xmpp-contacts'),
         model: roster,
-        rosteritemviews: [],
+        rosteritemviews: {},
 
         initialize: function () {
             this.model.on("add", function (item) {
-                $(this.el).append((new xmppchat.RosterItemView({model: item})).render().el);
+                var view = new xmppchat.RosterItemView({model: item});
+                this.rosteritemviews[item.id] = view;
+                $(this.el).append(view.render().el);
             }, this);
 
             this.model.on('change', function (item) {
                 this.render();
             }, this);
 
-            this.model.on("remove", function (msg) {
-                console.log('roster remove handler called!!!!!');
-            });
+            this.model.on("remove", function (item) {
+                var view = this.rosteritemviews[item.id];
+                if (view) {
+                    view.remove();
+                }
+                this.render();
+            }, this);
         },
 
         render: function () {
@@ -948,6 +1105,15 @@ $(document).ready(function () {
 
     $(document).unbind('jarnxmpp.connected');
     $(document).bind('jarnxmpp.connected', function () {
+
+        xmppchat.connection.xmlInput = function (body) {
+            console.log(body);
+        };
+
+        xmppchat.connection.xmlOutput = function (body) {
+            console.log(body);
+        };
+
         xmppchat.connection.bare_jid = Strophe.getBareJidFromJid(xmppchat.connection.jid);
 
         xmppchat.roster = xmppchat.Roster(Strophe._connectionPlugins.roster, _, $, console);

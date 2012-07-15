@@ -140,71 +140,7 @@ xmppchat.UI = (function (xmppUI, $, console) {
 // Event handlers
 // --------------
 $(document).ready(function () {
-    $(document).bind('xmppchat.send_presence', function (event, jid, type) {
-        xmppchat.connection.send($pres({'type':type}));
-    });
-
     $('ul.tabs').tabs('div.panes > div');
-
-    $('div.add-xmpp-contact').click(function (ev) {
-        ev.preventDefault();
-        $(this).parent().find('form.search-xmpp-contact').toggle().find('input.username').focus();
-    });
-
-    $('a.remove-xmpp-contact').live('click', function (ev) {
-        var that = this;
-        ev.preventDefault();
-        $("<span></span>").dialog({
-            title: 'Are you sure you want to remove this contact?',
-            dialogClass: 'remove-xmpp-contact-dialog',
-            resizable: false,
-            width: 200,
-            position: {
-                my: 'center',
-                at: 'center',
-                of: '#online-users-container'
-                },
-            modal: true,
-            buttons: {
-                "Remove": function() {
-                    $( this ).dialog( "close" );
-                    var jid = $(that).parent().attr('data-recipient');
-                    xmppchat.Roster.unsubscribe(jid);
-                },
-                "Cancel": function() {
-                    $( this ).dialog( "close" );
-                }
-            }
-        });
-    });
-
-    $('form.search-xmpp-contact').submit(function (ev) {
-        ev.preventDefault();
-        $.getJSON(portal_url + "/search-users?q=" + $(this).find('input.username').val(), function (data) {
-            var $results_el = $('#found-users');
-            $(data).each(function (idx, obj) {
-                if ($results_el.children().length > 0) {  
-                    $results_el.empty();
-                }
-                $results_el.append(
-                        $('<li></li>')
-                            .attr('id', 'found-users-'+obj.id)
-                            .append(
-                                $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
-                                    .attr('data-recipient', obj.id+'@'+xmppchat.connection.domain)
-                                    .text(obj.fullname)
-                            )
-                    );
-            });
-        });
-    });
-
-    $("a.subscribe-to-user").live('click', function (ev) {
-        ev.preventDefault();
-        xmppchat.Roster.subscribe($(this).attr('data-recipient'));
-        $(this).remove();
-        $('form.search-xmpp-contact').hide();
-    });
 
     $('select#select-xmpp-status').bind('change', function (ev) {
         var jid = xmppchat.connection.jid,

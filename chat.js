@@ -215,10 +215,6 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                         'username': user_id,
                         'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
                     }));
-
-            // TODO:
-            // xmppchat.UI.msg_counter += 1;
-            // xmppchat.UI.updateMsgCounter();
             $chat_content.scrollTop($chat_content[0].scrollHeight);
         }
     },
@@ -1091,6 +1087,7 @@ $(document).ready(function () {
         $toggle = $('a#toggle-online-users');
 
     $toggle.unbind('click');
+    $('ul.tabs').tabs('div.panes > div');
 
     xmppchat.username = chatdata.attr('username');
     xmppchat.base_url = chatdata.attr('base_url');

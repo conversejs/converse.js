@@ -1,16 +1,3 @@
-var helpers = (function (helpers) {
-    helpers.hash = function (str) {
-        // FIXME
-        if (str == 'online-users-container') {
-            return str;
-        }
-        var shaobj = new jsSHA(str);
-        return shaobj.getHash("HEX");
-    };
-    return helpers;
-})(helpers || {});
-
-
 var xmppchat = (function (jarnxmpp, $, console) {
     var ob = jarnxmpp;
     /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
@@ -86,33 +73,6 @@ var xmppchat = (function (jarnxmpp, $, console) {
             xmppchat.connection.sendIQ(iq, callback);
         });
     };
-
-    ob.Taskbuffer = (function ($) {
-        // Executes tasks one after another (i.e next task is started only when
-        // the previous one has been completed).
-        buffer = {};
-        // Tasks must be objects with keys: 'that', 'method' and 'parameters'
-        // 'that' the context for the method, while 'parameters' is the list of arguments 
-        // passed to it.
-        buffer.tasks = [];
-        buffer.deferred = $.when();
-        buffer.handleTasks = function () {
-            var task;
-            // If the current deferred task is resolved and there are more tasks
-            if (buffer.deferred.isResolved() && buffer.tasks.length > 0) {
-                // Get the next task in the queue and set the new deferred.
-                task = buffer.tasks.shift();
-
-                buffer.deferred = $.when(task.method.apply(task.that, task.parameters));
-
-                if (buffer.tasks.length > 0) {
-                    buffer.deferred.done(buffer.handleTasks);
-                }
-            }
-        };
-        return buffer;
-    })(jQuery);
-
     return ob;
 })(jarnxmpp || {}, jQuery, console || {log: function(){}});
 
@@ -406,21 +366,9 @@ xmppchat.ChatBoxView = Backbone.View.extend({
     }
 });
 
-xmppchat.ControlBox = xmppchat.ChatBox.extend({
-
-    initialize: function () {
-        this.set({
-            'chat_id' : 'online-users-container'
-        });
-    }
-
-});
-
-xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
-
-    el: '#online-users-container',
+xmppchat.ContactsPanel = Backbone.View.extend({
+    el: '#users',
     events: {
-        'click a.close-controlbox-button': 'closeChat',
         'click div.add-xmpp-contact': 'toggleContactForm',
         'submit form.search-xmpp-contact': 'searchContacts',
         'click a.subscribe-to-user': 'subscribeToContact'
@@ -461,10 +409,41 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
         });
         $(ev.target).parent().remove();
         $('form.search-xmpp-contact').hide();
+    }
+
+});
+
+xmppchat.RoomsPanel = Backbone.View.extend({
+    el: '#chatrooms',
+    initialize: function () {
+    }
+});
+
+xmppchat.SettingsPanel = Backbone.View.extend({
+    el: '#settings'
+});
+
+
+xmppchat.ControlBox = xmppchat.ChatBox.extend({
+    initialize: function () {
+        this.set({
+            'chat_id' : 'online-users-container'
+        });
+    }
+});
+
+xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
+    el: '#online-users-container',
+    events: {
+        'click a.close-controlbox-button': 'closeChat'
     },
 
     initialize: function () {
-        // Override to avoid chatbox's initialization.
+        var userspanel; 
+        $('ul.tabs').tabs('div.panes > div');
+        this.contactspanel = new xmppchat.ContactsPanel();
+        this.roomspanel = new xmppchat.RoomsPanel();
+        this.settingspanel = new xmppchat.SettingsPanel();
     },
 
     render: function () {
@@ -477,8 +456,40 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
     }
 });
 
-xmppchat.ChatBoxes = Backbone.Collection.extend({
+xmppchat.ChatRoom = Backbone.Model.extend();
+
+xmppchat.ChatRoomView = Backbone.Model.extend({
+    tagName: 'div',
+    className: 'chatroom',
+
+    template: _.template(
+            '<div class="chat-head chat-head-chatroom">' +
+                '<div id="toolbar">' +
+                    '<input id="leave" type="button" value="Leave Room" disabled="disabled">' +
+                '</div>' +
+            '</div>' +
+            '<div>' +
+                '<div id="chat-area">' +
+                    '<div>' +
+                        '<div id="room-name"></div>' +
+                        '<div id="room-topic"></div>' +
+                    '</div>' +
+                    '<div id="chat">' +
+                    '</div>' +
+                    '<textarea ' +
+                        'type="text" ' +
+                        'class="chat-textarea" ' +
+                        'placeholder="Message"/>' +
+                '</div>' +
+                '<div id="participants">' +
+                    '<ul id="participant-list"></ul>' +
+                '</div>' +
+            '</div>')
+
 });
+
+
+xmppchat.ChatBoxes = Backbone.Collection.extend();
 
 xmppchat.ChatBoxesView = Backbone.View.extend({
     
@@ -505,6 +516,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
     },
 
     createChat: function (jid) {
+        var chatbox;
         if (jid === 'online-users-container') {
             chatbox = new xmppchat.ControlBox({'id': jid, 'jid': jid});
             view = new xmppchat.ControlBoxView({
@@ -1087,7 +1099,6 @@ $(document).ready(function () {
         $toggle = $('a#toggle-online-users');
 
     $toggle.unbind('click');
-    $('ul.tabs').tabs('div.panes > div');
 
     xmppchat.username = chatdata.attr('username');
     xmppchat.base_url = chatdata.attr('base_url');

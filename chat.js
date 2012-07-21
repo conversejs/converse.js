@@ -483,11 +483,39 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
     tagName: 'div',
     className: 'chatroom',
     events: {
-        'click .close-chatbox-button': 'closeChatRoom'
+        'click .close-chatbox-button': 'closeChatRoom',
+        'keypress textarea.chat-textarea': 'keyPressed'
     },
 
     closeChatRoom: function () {
         this.closeChat();
+        xmppchat.connection.muc.leave(
+                        this.model.get('jid'), 
+                        this.model.get('nick'), 
+                        function () {},
+                        undefined);
+    },
+
+    keyPressed: function (ev) {
+        var $textarea = $(ev.target),
+            message,
+            notify,
+            composing,
+            that = this;
+
+        if(ev.keyCode == 13) {
+            message = $textarea.val();
+            message = message.replace(/^\s+|\s+jQuery/g,"");
+            $textarea.val('').focus();
+            if (message !== '') {
+                this.sendGroupMessage(message);
+            }
+        } 
+    },
+
+    sendGroupMessage: function (text) {
+        this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), text);
+        this.appendMessage(text);
     },
 
     // XXX: add $participants to the template?
@@ -521,7 +549,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
                         this.model.get('nick'), 
                         $.proxy(this.onMessage, this), 
                         $.proxy(this.onPresence, this), 
-                        $.proxy(this.onRoomMessage, this));
+                        $.proxy(this.onRoster, this));
     },
 
     onPresence: function (presence, room) {
@@ -543,17 +571,50 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
                 }
             }
         }
-        this.$el.find('.participant-list').append('<li>' + nick + '</li>');
+        return true;
     },
 
-    onMessage: function (x,y,z) {
-        alert('onMessage');
+    onMessage: function (message) {
+        if ($(message).attr('id') === this.last_msgid) {
+            // Return if own message sent just now...
+            return true;
+        }
+        var body = $(message).children('body').text(),
+            jid = $(message).attr('from'),
+            composing = $(message).find('composing'),
+            $chat_content = $(this.el).find('.chat-content'),
+            sender = Strophe.getResourceFromJid(jid);
+
+        if (!body) {
+            if (composing.length > 0) {
+                this.insertStatusNotification('is typing');
+                return true;
+            }
+        } else {
+            if (sender === this.model.get('nick')) {
+                this.appendMessage(body);
+            } else {
+                $chat_content.append(
+                        this.message_template({
+                            'sender': 'them', 
+                            'time': (new Date()).toLocaleTimeString().substring(0,5),
+                            'message': body.replace(/<br \/>/g, ""),
+                            'username': sender,
+                            'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                        }));
+                $chat_content.scrollTop($chat_content[0].scrollHeight);
+            }
+        }
+        return true;
     },
 
-    onRoster: function (x,y,z) {
-        alert('onRoster');
+    onRoster: function (roster, room) {
+        this.$el.find('.participant-list').empty();
+        for (var i=0; i<_.size(roster); i++) {
+            this.$el.find('.participant-list').append('<li>' + _.keys(roster)[i] + '</li>');
+        }
+        return true;
     },
-
 
     render: function () {
         $(this.el).attr('id', this.model.get('box_id'));

@@ -464,28 +464,16 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
 });
 
 xmppchat.ChatRoom = xmppchat.ChatBox.extend({
-
-    onPresence: function (x,y,z) {
-        //alert('onPresence');
-    },
-
-    onMessage: function (x,y,z) {
-        alert('onMessage');
-    },
-
-    onRoster: function (x,y,z) {
-        alert('onRoster');
-    },
-
     initialize: function (jid) {
         var nick = Strophe.getNodeFromJid(xmppchat.connection.jid);
         this.set({
             'id': jid,
             'name': Strophe.getNodeFromJid(jid),
+            'nick': Strophe.getNodeFromJid(xmppchat.connection.jid),
             'jid': jid,
+            'participants': [],
             'box_id' : this.hash(jid)
         }, {'silent': true});
-        var result = xmppchat.connection.muc.join(jid, nick, this.onMessage, this.onPresence, this.onRoomMessage);
     }
 });
 
@@ -502,6 +490,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         this.closeChat();
     },
 
+    // XXX: add $participants to the template?
     template: _.template(
             '<div class="chat-head chat-head-chatroom">' +
                 '<div class="chat-title"> <%= name %> </div>' +
@@ -525,6 +514,46 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
                 '<ul class="participant-list"></ul>' +
             '</div>' +
             '</div>'),
+
+    initialize: function () {
+        xmppchat.connection.muc.join(
+                        this.model.get('jid'), 
+                        this.model.get('nick'), 
+                        $.proxy(this.onMessage, this), 
+                        $.proxy(this.onPresence, this), 
+                        $.proxy(this.onRoomMessage, this));
+    },
+
+    onPresence: function (presence, room) {
+        var nick = room.nick,
+            from = $(presence).attr('from'),
+            participants = this.model.get('participants');
+
+        if (!participants[nick] && $(presence).attr('type') !== 'unavailable') {
+            // add to participants list
+            participants[nick] = $(presence).attr('jid');
+            this.model.set({'participants':participants});
+        }
+        if ($(presence).attr('type') !== 'error') {
+            // check for status 110 to see if it's our own presence
+            if ($(presence).find("status[code='110']").length > 0) {
+                // check if server changed our nick
+                if ($(presence).find("status[code='210']").length > 0) {
+                    this.model.set({'nick': Strophe.getResourceFromJid(from)});
+                }
+            }
+        }
+        this.$el.find('.participant-list').append('<li>' + nick + '</li>');
+    },
+
+    onMessage: function (x,y,z) {
+        alert('onMessage');
+    },
+
+    onRoster: function (x,y,z) {
+        alert('onRoster');
+    },
+
 
     render: function () {
         $(this.el).attr('id', this.model.get('box_id'));

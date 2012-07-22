@@ -414,15 +414,43 @@ xmppchat.ContactsPanel = Backbone.View.extend({
 xmppchat.RoomsPanel = Backbone.View.extend({
     el: '#chatrooms',
     events: {
-        'submit form.add-chatroom': 'createChatRoom'
+        'submit form.add-chatroom': 'createChatRoom',
+        'click a.open-room': 'createChatRoom'
+    },
+    room_template: _.template(
+                        '<dd class="chatroom">' +
+                        '<a class="open-room" room-jid="<%=jid%>" title="Click to open this chatroom" href="#">' +
+                        '<%=name%></a></dd>'),
+
+    initialize: function () {
+        xmppchat.connection.muc.listRooms('conference.devbox', $.proxy(function (iq) {
+            var room, name, jid, 
+                rooms = $(iq).find('query').find('item');
+            if (rooms.length) {
+                this.$el.find('#available-chatrooms dt').show();
+            } else {
+                this.$el.find('#available-chatrooms dt').hide();
+            }
+            for (var i=0; i<rooms.length; i++) {
+                name = $(rooms[i]).attr('name');
+                jid = $(rooms[i]).attr('jid');
+                this.$el.find('#available-chatrooms').append(this.room_template({'name':name, 'jid':jid}));
+            }
+            return true;
+        }, this));
     },
 
     createChatRoom: function (ev) {
         ev.preventDefault();
-        // FIXME:
-        var name = $(ev.target).find('input.new-chatroom-name').val(),
+        var name, jid;
+        if (ev.type === 'click') {
+            jid = $(ev.target).attr('room-jid');
+        } else {
+            // FIXME: Hardcoded
+            name = $(ev.target).find('input.new-chatroom-name').val();
             jid = name + '@conference.devbox';
-        xmppchat.chatboxesview.renderChat(jid);
+        }
+        xmppchat.chatboxesview.openChat(jid);
     }
 });
 
@@ -471,7 +499,6 @@ xmppchat.ChatRoom = xmppchat.ChatBox.extend({
             'name': Strophe.getNodeFromJid(jid),
             'nick': Strophe.getNodeFromJid(xmppchat.connection.jid),
             'jid': jid,
-            'participants': [],
             'box_id' : this.hash(jid)
         }, {'silent': true});
     }
@@ -518,7 +545,6 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         this.appendMessage(text);
     },
 
-    // XXX: add $participants to the template?
     template: _.template(
             '<div class="chat-head chat-head-chatroom">' +
                 '<div class="chat-title"> <%= name %> </div>' +
@@ -554,14 +580,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
 
     onPresence: function (presence, room) {
         var nick = room.nick,
-            from = $(presence).attr('from'),
-            participants = this.model.get('participants');
-
-        if (!participants[nick] && $(presence).attr('type') !== 'unavailable') {
-            // add to participants list
-            participants[nick] = $(presence).attr('jid');
-            this.model.set({'participants':participants});
-        }
+            from = $(presence).attr('from');
         if ($(presence).attr('type') !== 'error') {
             // check for status 110 to see if it's our own presence
             if ($(presence).find("status[code='110']").length > 0) {

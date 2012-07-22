@@ -1043,19 +1043,21 @@ xmppchat.Roster = (function (_, $, console) {
             item,
             status = '';
 
-        if (ob.isSelf(bare_jid)) { 
+        if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+            // We don't take kindly to MUC stanzas around these here parts 
+            return true;
+        } else if ((ob.isSelf(bare_jid)) || (ptype === 'error')) { 
             return true; 
+        } else if ((ptype === 'subscribed') || (ptype === 'unsubscribe')) {
+            return true;
         }
+
         if (ptype === 'subscribe') {
             if (ob.getItem(bare_jid)) { 
                 xmppchat.connection.roster.authorize(bare_jid);
             } else {
                 ob.addRosterItem(bare_jid, 'none', 'request');
             }
-        } else if (ptype === 'subscribed') {
-            return true;
-        } else if (ptype === 'unsubscribe') {
-            return true;
         } else if (ptype === 'unsubscribed') {
             /* Upon receiving the presence stanza of type "unsubscribed", 
              * the user SHOULD acknowledge receipt of that subscription state 
@@ -1068,11 +1070,8 @@ xmppchat.Roster = (function (_, $, console) {
                 xmppchat.roster.remove(bare_jid);
                 xmppchat.connection.roster.remove(bare_jid);
             }
-            return true;
-        } else if (ptype === 'error') {
-            return true;
-
-        } else if (ptype !== 'error') { // Presence has changed
+        } else { 
+            // Presence has changed
             if (_.indexOf(['unavailable', 'offline', 'busy', 'away'], ptype) != -1) {
                 status = ptype;
             } else {
@@ -1266,7 +1265,10 @@ $(document).ready(function () {
         xmppchat.roster = xmppchat.Roster(_, $, console);
         xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.roster, _, $, console));
 
-        xmppchat.connection.addHandler(xmppchat.roster.presenceHandler, null, 'presence', null);
+        xmppchat.connection.addHandler(function (presence) {
+            xmppchat.roster.presenceHandler(presence);
+            return true;
+            }, null, 'presence', null);
         
         xmppchat.connection.roster.registerCallback(xmppchat.roster.rosterHandler);
         xmppchat.roster.getRoster();

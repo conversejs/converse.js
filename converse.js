@@ -1,5 +1,5 @@
 /*!
- * Converse.js (Web-based instant messaging with XMPP)
+ * Converse.js (XMPP-based instant messaging with Strophe.js and backbone.js)
  * http://opkode.com
  *
  * Copyright (c) 2012 Jan-Carel Brand
@@ -8,10 +8,6 @@
 
 var xmppchat = (function (jarnxmpp, $, console) {
     var ob = jarnxmpp;
-    /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
-    *  add-on for ejabberd wants the URL below. This might break for other
-    *  Jabber servers.
-    */
     ob.messages = {};
     ob.messages.ClientStorage = (function () {
         // TODO: Messages must be encrypted with a key and salt
@@ -41,6 +37,10 @@ var xmppchat = (function (jarnxmpp, $, console) {
     };
 
     ob.collections = {
+        /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
+        *  add-on for ejabberd wants the URL below. This might break for other
+        *  Jabber servers.
+        */
         'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
     };
     ob.collections.getLastCollection = function (jid, callback) {
@@ -132,6 +132,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         if (minutes.length==1) {minutes = '0'+minutes;}
         time = now.toLocaleTimeString().substring(0,5);
         $chat_content = $(this.el).find('.chat-content');
+        $chat_content.find('div.chat-event').remove();
         $chat_content.append(this.message_template({
                             'sender': 'me', 
                             'time': time, 
@@ -1240,67 +1241,63 @@ xmppchat.XMPPStatusView = Backbone.View.extend({
 
 // Event handlers
 // --------------
-$(document).ready(function () {
+$(document).ready($.proxy(function () {
     var chatdata = jQuery('div#collective-xmpp-chat-data'),
         $toggle = $('a#toggle-online-users');
-
     $toggle.unbind('click');
 
-    xmppchat.username = chatdata.attr('username');
-    xmppchat.base_url = chatdata.attr('base_url');
+    this.username = chatdata.attr('username');
+    this.base_url = chatdata.attr('base_url');
 
     $(document).unbind('jarnxmpp.connected');
-    $(document).bind('jarnxmpp.connected', function () {
+    $(document).bind('jarnxmpp.connected', $.proxy(function () {
+        this.connection.xmlInput = function (body) { console.log(body); };
+        this.connection.xmlOutput = function (body) { console.log(body); };
 
-        xmppchat.connection.xmlInput = function (body) {
-            console.log(body);
-        };
+        this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+        this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
+        // XXX: Better if configurable?
+        this.connection.muc_domain = 'conference.' +  this.connection.domain;
 
-        xmppchat.connection.xmlOutput = function (body) {
-            console.log(body);
-        };
+        this.roster = this.Roster(_, $, console);
+        this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
 
-        xmppchat.connection.bare_jid = Strophe.getBareJidFromJid(xmppchat.connection.jid);
-
-        xmppchat.roster = xmppchat.Roster(_, $, console);
-        xmppchat.rosterview = Backbone.View.extend(xmppchat.RosterView(xmppchat.roster, _, $, console));
-
-        xmppchat.connection.addHandler(function (presence) {
-            xmppchat.roster.presenceHandler(presence);
-            return true;
-            }, null, 'presence', null);
+        this.connection.addHandler(
+                $.proxy(function (presence) {
+                    this.roster.presenceHandler(presence);
+                    return true;
+                }, this), null, 'presence', null);
         
-        xmppchat.connection.roster.registerCallback(xmppchat.roster.rosterHandler);
-        xmppchat.roster.getRoster();
+        this.connection.roster.registerCallback(this.roster.rosterHandler);
+        this.roster.getRoster();
 
-        xmppchat.chatboxes = new xmppchat.ChatBoxes();
-        xmppchat.chatboxesview = new xmppchat.ChatBoxesView({
-            'model': xmppchat.chatboxes
+        this.chatboxes = new this.ChatBoxes();
+        this.chatboxesview = new this.ChatBoxesView({
+            'model': this.chatboxes
         });
 
-        xmppchat.connection.addHandler(
-                function (message) { 
-                    xmppchat.chatboxesview.messageReceived(message);
+        this.connection.addHandler(
+                $.proxy(function (message) { 
+                    this.chatboxesview.messageReceived(message);
                     return true;
-                }, 
-                null, 'message', 'chat');
+                }, this), null, 'message', 'chat');
 
         // XMPP Status 
-        xmppchat.xmppstatus = new xmppchat.XMPPStatus();
-        xmppchat.xmppstatusview = new xmppchat.XMPPStatusView({
-            'model': xmppchat.xmppstatus
+        this.xmppstatus = new this.XMPPStatus();
+        this.xmppstatusview = new this.XMPPStatusView({
+            'model': this.xmppstatus
         });
 
-        xmppchat.xmppstatus.sendPresence();
+        this.xmppstatus.sendPresence();
 
         // Controlbox toggler
         $toggle.bind('click', function (e) {
             e.preventDefault();
             if ($("div#online-users-container").is(':visible')) {
-                xmppchat.chatboxesview.closeChat('online-users-container');
+                this.chatboxesview.closeChat('online-users-container');
             } else {
-                xmppchat.chatboxesview.openChat('online-users-container');
+                this.chatboxesview.openChat('online-users-container');
             }
         });
-    });
-});
+    }, this));
+}, xmppchat));

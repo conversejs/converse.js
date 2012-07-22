@@ -1,16 +1,19 @@
+/*!
+ * Converse.js (Web-based instant messaging with XMPP)
+ * http://opkode.com
+ *
+ * Copyright (c) 2012 Jan-Carel Brand
+ * Dual licensed under the MIT and GPL Licenses
+ */
+
 var xmppchat = (function (jarnxmpp, $, console) {
     var ob = jarnxmpp;
     /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
     *  add-on for ejabberd wants the URL below. This might break for other
     *  Jabber servers.
     */
-    ob.Collections = {
-        'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
-    };
-
-    ob.Messages = {};
-
-    ob.Messages.ClientStorage = (function () {
+    ob.messages = {};
+    ob.messages.ClientStorage = (function () {
         // TODO: Messages must be encrypted with a key and salt
         methods = {};
 
@@ -31,13 +34,16 @@ var xmppchat = (function (jarnxmpp, $, console) {
         return methods;
     })();
 
-    ob.Messages.getMessages = function (jid, callback) {
+    ob.messages.getMessages = function (jid, callback) {
         var bare_jid = Strophe.getBareJidFromJid(jid),
             msgs = this.ClientStorage.getMessages(bare_jid);
         callback(msgs);
     };
 
-    ob.Collections.getLastCollection = function (jid, callback) {
+    ob.collections = {
+        'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
+    };
+    ob.collections.getLastCollection = function (jid, callback) {
         var bare_jid = Strophe.getBareJidFromJid(jid),
             iq = $iq({'type':'get'})
                     .c('list', {'xmlns': this.URI,
@@ -55,7 +61,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
                     });
     };
 
-    ob.Collections.getLastMessages = function (jid, callback) {
+    ob.collections.getLastMessages = function (jid, callback) {
         var that = this;
         this.getLastCollection(jid, function (result) {
             // Retrieve the last page of a collection (max 30 elements). 
@@ -155,6 +161,10 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             $chat_content = $(this.el).find('.chat-content'),
             user_id = Strophe.getNodeFromJid(jid);
 
+        if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
+            // only update the UI if the user is not offline
+            return;
+        }
         if (!body) {
             if (composing.length > 0) {
                 this.insertStatusNotification('is typing');
@@ -162,11 +172,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             }
         } else {
             // TODO: ClientStorage 
-            xmppchat.Messages.ClientStorage.addMessage(jid, body, 'from');
-            if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
-                // only update the UI if the user is not offline
-                return;
-            }
+            xmppchat.messages.ClientStorage.addMessage(jid, body, 'from');
             $chat_content.find('div.chat-event').remove();
             $chat_content.append(
                     this.message_template({
@@ -182,7 +188,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
 
     insertClientStoredMessages: function () {
         var that = this;
-        xmppchat.Messages.getMessages(this.model.get('jid'), function (msgs) {
+        xmppchat.messages.getMessages(this.model.get('jid'), function (msgs) {
             var $content = that.$el.find('.chat-content');
             for (var i=0; i<_.size(msgs); i++) {
                 var msg = msgs[i], 
@@ -224,7 +230,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             .c('body').t(text).up()
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
         xmppchat.connection.send(message);
-        xmppchat.Messages.ClientStorage.addMessage(bare_jid, text, 'to');
+        xmppchat.messages.ClientStorage.addMessage(bare_jid, text, 'to');
         this.appendMessage(text);
     },
 
@@ -423,9 +429,18 @@ xmppchat.RoomsPanel = Backbone.View.extend({
                         '<%=name%></a></dd>'),
 
     initialize: function () {
+        this.on('update-rooms-list', function (ev) {
+            this.updateRoomsList();
+        });
+        this.trigger('update-rooms-list');
+    },
+
+    updateRoomsList: function () {
+        // FIXME: Hardcoded
         xmppchat.connection.muc.listRooms('conference.devbox', $.proxy(function (iq) {
             var room, name, jid, 
                 rooms = $(iq).find('query').find('item');
+            this.$el.find('#available-chatrooms').find('dd.chatroom').remove();
             if (rooms.length) {
                 this.$el.find('#available-chatrooms dt').show();
             } else {
@@ -519,8 +534,11 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         xmppchat.connection.muc.leave(
                         this.model.get('jid'), 
                         this.model.get('nick'), 
-                        function () {},
+                        this.onLeave,
                         undefined);
+        delete xmppchat.chatboxesview.views[this.model.get('jid')];
+        xmppchat.chatboxesview.model.remove(this.model.get('jid'));
+        this.remove();
     },
 
     keyPressed: function (ev) {
@@ -578,6 +596,13 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
                         $.proxy(this.onRoster, this));
     },
 
+    onLeave: function () {
+        var controlboxview = xmppchat.chatboxesview.views['online-users-container'];
+        if (controlboxview) {
+            controlboxview.roomspanel.trigger('update-rooms-list');
+        }
+    },
+
     onPresence: function (presence, room) {
         var nick = room.nick,
             from = $(presence).attr('from');
@@ -628,6 +653,10 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
     },
 
     onRoster: function (roster, room) {
+        var controlboxview = xmppchat.chatboxesview.views['online-users-container'];
+        if (controlboxview) {
+            controlboxview.roomspanel.trigger('update-rooms-list');
+        }
         this.$el.find('.participant-list').empty();
         for (var i=0; i<_.size(roster); i++) {
             this.$el.find('.participant-list').append('<li>' + _.keys(roster)[i] + '</li>');

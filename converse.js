@@ -331,7 +331,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                 '<div class="chat-head chat-head-chatbox">' +
                     '<div class="chat-title"> <%= user_id %> </div>' +
                     '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
-                    '<br clear="all"/>' +
+                    '<p class="user-custom-message"><p/>' +
                 '</div>' +
                 '<div class="chat-content"></div>' + 
                 '<form class="sendXMPPMessage" action="" method="post">' +
@@ -559,16 +559,37 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         } 
     },
 
-    sendGroupMessage: function (text) {
-        this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), text);
-        this.appendMessage(text);
+    sendGroupMessage: function (body) {
+        var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/);
+        var args = null;
+        if (match) {
+            if (match[1] === "msg") {
+                // TODO: Private messages
+            } else if (match[1] === "topic") {
+                xmppchat.connection.muc.setTopic(this.model.get('jid'), match[2]);
+
+            } else if (match[1] === "kick") {
+                xmppchat.connection.muc.kick(this.model.get('jid'), match[2]);
+
+            } else if (match[1] === "ban") {
+                xmppchat.connection.muc.ban(this.model.get('jid'), match[2]);
+
+            } else if (match[1] === "op") {
+                xmppchat.connection.muc.op(this.model.get('jid'), match[2]);
+
+            } else if (match[1] === "deop") {
+                xmppchat.connection.muc.deop(this.model.get('jid'), match[2]);
+            } 
+        } else {
+            this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
+        }
     },
 
     template: _.template(
             '<div class="chat-head chat-head-chatroom">' +
                 '<div class="chat-title"> <%= name %> </div>' +
                 '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
-                '<br clear="all"/>' +
+                '<p class="chatroom-topic"><p/>' +
             '</div>' +
             '<div>' +
             '<div class="chat-area">' +
@@ -620,16 +641,16 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
     },
 
     onMessage: function (message) {
-        if ($(message).attr('id') === this.last_msgid) {
-            // Return if own message sent just now...
-            return true;
-        }
         var body = $(message).children('body').text(),
             jid = $(message).attr('from'),
             composing = $(message).find('composing'),
             $chat_content = $(this.el).find('.chat-content'),
-            sender = Strophe.getResourceFromJid(jid);
+            sender = Strophe.getResourceFromJid(jid),
+            subject = $(message).children('subject').text();
 
+        if (subject) {
+            this.$el.find('.chatroom-topic').text(subject);
+        }
         if (!body) {
             if (composing.length > 0) {
                 this.insertStatusNotification('is typing');
@@ -1291,13 +1312,13 @@ $(document).ready($.proxy(function () {
         this.xmppstatus.sendPresence();
 
         // Controlbox toggler
-        $toggle.bind('click', function (e) {
+        $toggle.bind('click', $.proxy(function (e) {
             e.preventDefault();
             if ($("div#online-users-container").is(':visible')) {
                 this.chatboxesview.closeChat('online-users-container');
             } else {
                 this.chatboxesview.openChat('online-users-container');
             }
-        });
+        }, this));
     }, this));
 }, xmppchat));

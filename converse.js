@@ -437,8 +437,7 @@ xmppchat.RoomsPanel = Backbone.View.extend({
     },
 
     updateRoomsList: function () {
-        // FIXME: Hardcoded
-        xmppchat.connection.muc.listRooms('conference.devbox', $.proxy(function (iq) {
+        xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
             var room, name, jid, 
                 rooms = $(iq).find('query').find('item');
             this.$el.find('#available-chatrooms').find('dd.chatroom').remove();
@@ -464,7 +463,7 @@ xmppchat.RoomsPanel = Backbone.View.extend({
         } else {
             // FIXME: Hardcoded
             name = $(ev.target).find('input.new-chatroom-name').val();
-            jid = name + '@conference.devbox';
+            jid = name + '@' + xmppchat.connection.muc_domain;
         }
         xmppchat.chatboxesview.openChat(jid);
     }
@@ -718,9 +717,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
     },
     
     isChatRoom: function (jid) {
-        // FIXME:
-        var domain = Strophe.getDomainFromJid(jid);
-        return domain === 'conference.devbox';
+        return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
     },
     
     renderChat: function (jid) {

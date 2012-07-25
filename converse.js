@@ -143,10 +143,10 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
-    insertStatusNotification: function (message) {
+    insertStatusNotification: function (user_id, message) {
         var $chat_content = this.$el.find('.chat-content');
         $chat_content.find('div.chat-event').remove().end()
-            .append($('<div class="chat-event"></div>').text(this.model.get('user_id')+' '+message));
+            .append($('<div class="chat-event"></div>').text(user_id+' '+message));
         $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
@@ -168,7 +168,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         }
         if (!body) {
             if (composing.length > 0) {
-                this.insertStatusNotification('is typing');
+                this.insertStatusNotification(user_id, 'is typing');
                 return;
             }
         } else {
@@ -314,11 +314,11 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             if (_.has(changed.changes, 'status')) {
                 if (this.$el.is(':visible')) {
                     if (item.get('status') === 'offline') {
-                        this.insertStatusNotification('has gone offline');
+                        this.insertStatusNotification(this.model.get('user_id'), 'has gone offline');
                     } else if (item.get('status') === 'away') {
-                        this.insertStatusNotification('has gone away');
+                        this.insertStatusNotification(this.model.get('user_id'), 'has gone away');
                     } else if (item.get('status') === 'busy') {
-                        this.insertStatusNotification('is busy');
+                        this.insertStatusNotification(this.model.get('user_id'), 'is busy');
                     } else if (item.get('status') === 'online') {
                         this.$el.find('div.chat-event').remove();
                     }
@@ -358,10 +358,11 @@ xmppchat.ChatBoxView = Backbone.View.extend({
     },
 
     show: function () {
-        var that = this;
-        $(this.el).show('fast', function () {
-            that.focus();
-        });
+        this.$el.css({'opacity': 0});
+        this.$el.css({'display': 'inline'});
+        this.$el.animate({
+            opacity: '1'
+        }, 200);
         return this;
     },
 
@@ -497,11 +498,6 @@ xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
     },
 
     render: function () {
-        return this;
-    },
-
-    show: function () {
-        $(this.el).show();
         return this;
     }
 });
@@ -652,13 +648,14 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         }
         if (!body) {
             if (composing.length > 0) {
-                this.insertStatusNotification('is typing');
+                this.insertStatusNotification(sender, 'is typing');
                 return true;
             }
         } else {
             if (sender === this.model.get('nick')) {
                 this.appendMessage(body);
             } else {
+                $chat_content.find('div.chat-event').remove();
                 $chat_content.append(
                         this.message_template({
                             'sender': 'them', 
@@ -683,6 +680,15 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
             this.$el.find('.participant-list').append('<li>' + _.keys(roster)[i] + '</li>');
         }
         return true;
+    },
+
+    show: function () {
+        this.$el.css({'opacity': 0});
+        this.$el.css({'display': 'inline'});
+        this.$el.animate({
+            opacity: '1'
+        }, 200);
+        return this;
     },
 
     render: function () {
@@ -766,15 +772,10 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         if (view.isVisible()) {
             view.focus();
         } else {
-            if (jid === 'online-users-container') {
-                $(view.el).show('fast', function () {
-                    view.el.focus();
-                });
-            } else {
-                $(view.el).show('fast', function () {
-                    view.el.focus();
-                    view.scrolldown();
-                });
+            view.show();
+            if (jid !== 'online-users-container') {
+                view.scrolldown();
+                view.focus();
             }
             view.addChatToCookie();
         }
@@ -850,6 +851,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
             modal: true,
             buttons: {
                 "Remove": function() {
+                    var bare_jid = that.model.get('bare_jid');
                     $(this).dialog( "close" );
                     xmppchat.connection.roster.unauthorize(that.model.get('jid'));
                     xmppchat.roster.remove(bare_jid);
@@ -913,11 +915,13 @@ xmppchat.RosterItemView = Backbone.View.extend({
                 ev.preventDefault();
                 that.openChat();
             });
-            this.$el.find('a.remove-xmpp-contact').on('click', function (ev) {
-                ev.preventDefault();
-                that.removeContact();
-            });
         }
+        
+        // Event handlers
+        this.$el.find('a.remove-xmpp-contact').on('click', function (ev) {
+            ev.preventDefault();
+            that.removeContact();
+        });
         return this;
     },
 

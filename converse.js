@@ -323,6 +323,8 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                         this.$el.find('div.chat-event').remove();
                     }
                 }
+            } else if (_.has(changed.changes, 'status')) {
+                this.$el.find('p.user-custom-message').text(item.get('status'));
             }
         }, this);
     },
@@ -1069,19 +1071,25 @@ xmppchat.Roster = (function (_, $, console) {
             bare_jid = Strophe.getBareJidFromJid(jid),
             resource = Strophe.getResourceFromJid(jid),
             presence_type = $(presence).attr('type'),
-            item, show;
+            show = $(presence).find('show'),
+            status_message = $(presence).find('status'),
+            item;
 
-        if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
-            // We don't take kindly to MUC stanzas around these here parts 
-            return true;
-        } else if ((ob.isSelf(bare_jid)) || 
-                (presence_type === 'error') || 
-                (presence_type === 'subscribed') || 
-                (presence_type === 'unsubscribe')) {
+        if ((($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) || (ob.isSelf(bare_jid))) {
+            // Ignore MUC or self-addressed stanzas
             return true;
         }
 
-        if (presence_type === 'subscribe') {
+        if (status_message.length > 0) {
+            model = ob.getItem(bare_jid);
+            model.set({'status': status_message.text()});
+        }
+
+        if ((presence_type === 'error') || 
+                (presence_type === 'subscribed') || 
+                (presence_type === 'unsubscribe')) {
+            return true;
+        } else if (presence_type === 'subscribe') {
             if (ob.getItem(bare_jid)) { 
                 xmppchat.connection.roster.authorize(bare_jid);
             } else {
@@ -1100,18 +1108,18 @@ xmppchat.Roster = (function (_, $, console) {
                 xmppchat.connection.roster.remove(bare_jid);
             }
         } else { 
-            if (presence_type === undefined) {
-                show = $(presence).find('show').text();
-                if (show === 'chat') {
+            if ((presence_type === undefined) && (show)) {
+                if (show.text() === 'chat') {
                     presence_type = 'online';
-                } else if (show === 'dnd') {
+                } else if (show.text() === 'dnd') {
                     presence_type = 'busy';
-                } else if (show === 'xa') {
+                } else if (show.text() === 'xa') {
                     presence_type = 'offline';
                 } else {
-                    presence_type = show;
+                    presence_type = show.text();
                 }
             }
+
             if ((presence_type !== 'offline')&&(presence_type !== 'unavailable')) {
                 ob.addResource(bare_jid, resource);
                 model = ob.getItem(bare_jid);
@@ -1220,47 +1228,87 @@ xmppchat.XMPPStatusView = Backbone.View.extend({
     el: "span#xmpp-status-holder",
 
     events: {
-        "click #fancy-xmpp-status-select": "toggleOptions",
+        "click a.choose-xmpp-status": "toggleOptions",
+        "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
+        "submit #set-custom-xmpp-status": "changeStatusMessage",
         "click .dropdown dd ul li a": "setOwnStatus"
     },
 
     toggleOptions: function (ev) {
         ev.preventDefault();
-        $(ev.target).parent().siblings('dd').find('ul').toggle('fast');
+        $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
+    },
+
+    change_status_message_template: _.template(
+        '<form id="set-custom-xmpp-status">' +
+            '<input type="text" class="custom-xmpp-status" <%= chat_status %>" placeholder="Custom status"/>' +
+            '<button type="submit">Save</button>' +
+        '</form>'),
+
+    status_template: _.template(
+        '<div class="xmpp-status">' +
+            '<a class="choose-xmpp-status <%= presence_type%>" href="#" title="Click to change your chat status">' +
+                '<%= chat_status %> <span class="value"><%= chat_status %></span>' +
+            '</a>' +
+            '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
+        '</div>'),
+
+
+    changeStatusMessage: function (ev) {
+        ev.preventDefault();
+        var chat_status = $(ev.target).find('input').attr('value');
+        var presence_type = this.model.getOwnStatus() || 'I am offline';
+        $(this.el).find('#fancy-xmpp-status-select').html(
+                this.status_template({
+                        'chat_status': chat_status,
+                        'presence_type': presence_type
+                        }));
+    },
+
+    renderStatusChangeForm: function (ev) {
+        ev.preventDefault();
+        var chat_status = this.model.getOwnStatus() || 'offline';
+        var input = this.change_status_message_template({'chat_status': chat_status});
+        this.$el.find('.xmpp-status').replaceWith(input);
+        this.$el.find('.custom-xmpp-status').focus().focus();
     },
 
     setOwnStatus: function (ev) {
         ev.preventDefault();
         var $el = $(ev.target).find('span'),
             value = $el.text();
-        $(this.el).find(".dropdown dt a").html('I am ' + value).attr('class', value);
+        $(this.el).find("div.xmpp-status a.choose-xmpp-status").html('I am ' + value).attr('class', value + ' choose-xmpp-status');
         $(this.el).find(".dropdown dd ul").hide();
         $(this.el).find("#source").val($($el).find("span.value").html());
         this.model.setOwnStatus(value);
     },
 
-    choose_template: _.template('<dl id="target" class="dropdown">' +
-                    '<dt id="fancy-xmpp-status-select">'+
-                    '<a href="#" title="Click to change your chat status" class="<%= chat_status %>">' +
-                    'I am <%= chat_status %> <span class="value"><%= chat_status %></span>' +
-                    '</a></dt>' +
-                    '<dd><ul></ul></dd>'),
+    choose_template: _.template(
+        '<dl id="target" class="dropdown">' +
+            '<dt id="fancy-xmpp-status-select"></dt>' +
+            '<dd><ul></ul></dd>' +
+        '</dl>'),
 
     option_template: _.template(
-                            '<li>' +
-                                '<a href="#" class="<%= value %>">' +
-                                    '<%= text %>' +
-                                    '<span class="value"><%= value %></span>' +
-                                '</a>' +
-                            '</li>'),
+        '<li>' +
+            '<a href="#" class="<%= value %>">' +
+                '<%= text %>' +
+                '<span class="value"><%= value %></span>' +
+            '</a>' +
+        '</li>'),
 
     initialize: function () {
         var $select = $(this.el).find('select#select-xmpp-status'),
-            chat_status = this.model.getOwnStatus() || 'offline',
+            presence_type = this.model.getOwnStatus() || 'offline',
             options = $('option', $select),
             that = this;
 
-        $(this.el).html(this.choose_template({'chat_status': chat_status}));
+        $(this.el).html(this.choose_template());
+        $(this.el).find('#fancy-xmpp-status-select')
+                .html(this.status_template({
+                        'chat_status': "I am " + presence_type,
+                        'presence_type': presence_type 
+                        }));
 
         // iterate through all the <option> elements and create UL
         options.each(function(){

@@ -115,31 +115,51 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                             '<span class="chat-message-content"><%=message%></span>' + 
                         '</div>'),
 
+    action_template: _.template(
+                        '<div class="chat-message <%=extra_classes%>">' + 
+                            '<span class="chat-message-<%=sender%>"><%=time%>:&nbsp;</span>' + 
+                            '<span class="chat-message-content"><%=message%></span>' + 
+                        '</div>'),
+
     appendMessage: function (message) {
         var time, 
             now = new Date(),
             minutes = now.getMinutes().toString(),
             list,
-            $chat_content;
-
-        message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;");
+            $chat_content,
+            match;
+        message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/^\s*/, "");
         list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
         if (list) {
             for (i = 0; i < list.length; i++) {
                 message = message.replace(list[i], "<a target='_blank' href='" + escape( list[i] ) + "'>"+ list[i] + "</a>" );
             }
         }
+
         if (minutes.length==1) {minutes = '0'+minutes;}
         time = now.toLocaleTimeString().substring(0,5);
         $chat_content = $(this.el).find('.chat-content');
         $chat_content.find('div.chat-event').remove();
-        $chat_content.append(this.message_template({
-                            'sender': 'me', 
-                            'time': time, 
-                            'message': message, 
-                            'username': 'me',
-                            'extra_classes': ''
-                        }));
+
+        match = message.match(/^\/(.*?)(?: (.*))?$/);
+        if ((match) && (match[1] === 'me')) {
+            message = message.replace(/^\/me/, '*'+xmppchat.username);
+            $chat_content.append(this.action_template({
+                                'sender': 'me', 
+                                'time': time, 
+                                'message': message, 
+                                'username': xmppchat.username,
+                                'extra_classes': ''
+                            }));
+        } else {
+            $chat_content.append(this.message_template({
+                                'sender': 'me', 
+                                'time': time, 
+                                'message': message, 
+                                'username': 'me',
+                                'extra_classes': ''
+                            }));
+        }
         $chat_content.scrollTop($chat_content[0].scrollHeight);
     },
 
@@ -175,48 +195,83 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             // TODO: ClientStorage 
             xmppchat.messages.ClientStorage.addMessage(jid, body, 'from');
             $chat_content.find('div.chat-event').remove();
-            $chat_content.append(
-                    this.message_template({
-                        'sender': 'them', 
-                        'time': (new Date()).toLocaleTimeString().substring(0,5),
-                        'message': body.replace(/<br \/>/g, ""),
-                        'username': user_id,
-                        'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
-                    }));
+
+            match = body.match(/^\/(.*?)(?: (.*))?$/);
+            if ((match) && (match[1] === 'me')) {
+                $chat_content.append(this.action_template({
+                            'sender': 'them', 
+                            'time': (new Date()).toLocaleTimeString().substring(0,5),
+                            'message': body.replace(/^\/me/, '*'+user_id).replace(/<br \/>/g, ""),
+                            'username': xmppchat.username,
+                            'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                        }));
+            } else {
+                $chat_content.append(
+                        this.message_template({
+                            'sender': 'them', 
+                            'time': (new Date()).toLocaleTimeString().substring(0,5),
+                            'message': body.replace(/<br \/>/g, ""),
+                            'username': user_id,
+                            'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                        }));
+            }
             $chat_content.scrollTop($chat_content[0].scrollHeight);
         }
     },
 
     insertClientStoredMessages: function () {
-        var that = this;
-        xmppchat.messages.getMessages(this.model.get('jid'), function (msgs) {
-            var $content = that.$el.find('.chat-content');
+        xmppchat.messages.getMessages(this.model.get('jid'), $.proxy(function (msgs) {
+            var $content = this.$el.find('.chat-content');
             for (var i=0; i<_.size(msgs); i++) {
                 var msg = msgs[i], 
                     msg_array = msg.split(' ', 2),
-                    date = msg_array[0];
-
+                    date = msg_array[0],
+                    match;
+                msg = String(msg).replace(/(.*?\s.*?\s)/, '');
+                match = msg.match(/^\/(.*?)(?: (.*))?$/);
                 if (msg_array[1] == 'to') {
-                    $content.append(
-                            that.message_template({
+                    if ((match) && (match[1] === 'me')) {
+                        $content.append(
+                            this.action_template({
                                 'sender': 'me', 
                                 'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                'message': String(msg).replace(/(.*?\s.*?\s)/, ''),
+                                'message': msg.replace(/^\/me/, '*'+xmppchat.username),
+                                'username': xmppchat.username,
+                                'extra_classes': 'delayed'
+                        }));
+                    } else {
+                        $content.append(
+                            this.message_template({
+                                'sender': 'me', 
+                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                                'message': msg, 
                                 'username': 'me',
                                 'extra_classes': 'delayed'
-                            }));
+                        }));
+                    }
                 } else {
-                    $content.append(
-                            that.message_template({
+                    if ((match) && (match[1] === 'me')) {
+                        $content.append(
+                            this.action_template({
                                 'sender': 'them', 
                                 'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                'message': String(msg).replace(/(.*?\s.*?\s)/, ''),
-                                'username': that.model.get('user_id'),
+                                'message': msg.replace(/^\/me/, '*'+this.model.get('user_id')),
+                                'username': this.model.get('user_id'),
                                 'extra_classes': 'delayed'
                             }));
+                    } else {
+                        $content.append(
+                            this.message_template({
+                                'sender': 'them', 
+                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                                'message': msg,
+                                'username': this.model.get('user_id'),
+                                'extra_classes': 'delayed'
+                            }));
+                    }
                 }
             }
-        });
+        }, this));
     },
 
     sendMessage: function (text) {
@@ -226,6 +281,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         // TODO: Look in ChatPartners to see what resources we have for the recipient.
         // if we have one resource, we sent to only that resources, if we have multiple
         // we send to the bare jid.
+        
         var bare_jid = this.model.get('jid');
         var message = $msg({to: bare_jid, type: 'chat'})
             .c('body').t(text).up()
@@ -576,7 +632,9 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
 
             } else if (match[1] === "deop") {
                 xmppchat.connection.muc.deop(this.model.get('jid'), match[2]);
-            } 
+            } else {
+                this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
+            }
         } else {
             this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
         }

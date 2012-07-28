@@ -311,15 +311,15 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         $('body').append($(this.el).hide());
 
         xmppchat.roster.on('change', function (item, changed) {
-            if (_.has(changed.changes, 'status')) {
+            if (_.has(changed.changes, 'presence_type')) {
                 if (this.$el.is(':visible')) {
-                    if (item.get('status') === 'offline') {
+                    if (item.get('presence_type') === 'offline') {
                         this.insertStatusNotification(this.model.get('user_id'), 'has gone offline');
-                    } else if (item.get('status') === 'away') {
+                    } else if (item.get('presence_type') === 'away') {
                         this.insertStatusNotification(this.model.get('user_id'), 'has gone away');
-                    } else if (item.get('status') === 'busy') {
+                    } else if ((item.get('presence_type') === 'busy') || (item.get('presence_type') === 'dnd')) {
                         this.insertStatusNotification(this.model.get('user_id'), 'is busy');
-                    } else if (item.get('status') === 'online') {
+                    } else if (item.get('presence_type') === 'online') {
                         this.$el.find('div.chat-event').remove();
                     }
                 }
@@ -822,6 +822,7 @@ xmppchat.RosterItem = Backbone.Model.extend({
             'subscription': subscription,
             'fullname': user_id, 
             'resources': [],
+            'presence_type': 'offline',
             'status': 'offline'
         }, {'silent': true});
     }
@@ -892,7 +893,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
             that = this,
             subscription = item.get('subscription');
 
-        $(this.el).addClass(item.get('status')).attr('id', 'online-users-'+item.get('user_id'));
+        $(this.el).addClass(item.get('presence_type')).attr('id', 'online-users-'+item.get('user_id'));
         
         if (ask === 'subscribe') {
             this.$el.addClass('pending-xmpp-contact');
@@ -927,8 +928,8 @@ xmppchat.RosterItemView = Backbone.View.extend({
 
     initialize: function () {
         this.options.model.on('change', function (item, changed) {
-            if (_.has(changed.changes, 'status')) {
-                $(this.el).attr('class', item.changed.status);
+            if (_.has(changed.changes, 'presence_type')) {
+                $(this.el).attr('class', item.changed.presence_type);
             }
         }, this);
     }
@@ -946,9 +947,9 @@ xmppchat.Roster = (function (_, $, console) {
             },
 
             comparator : function (rosteritem) {
-                var status = rosteritem.get('status'),
+                var presence_type = rosteritem.get('presence_type'),
                     rank = 4;
-                switch(status) {
+                switch(presence_type) {
                     case 'offline': 
                         rank = 4;
                         break;
@@ -959,6 +960,9 @@ xmppchat.Roster = (function (_, $, console) {
                         rank = 2;
                         break;
                     case 'busy':
+                        rank = 1;
+                        break;
+                    case 'dnd':
                         rank = 1;
                         break;
                     case 'online':
@@ -990,12 +994,14 @@ xmppchat.Roster = (function (_, $, console) {
                     resources;
                 if (item) {
                     resources = item.get('resources');
-                    if (_.indexOf(resources, resource) == -1) {
-                        resources.push(resource);
-                        item.set({'resources': resources});
+                    if (resources) {
+                        if (_.indexOf(resources, resource) == -1) {
+                            resources.push(resource);
+                            item.set({'resources': resources});
+                        }
+                    } else  {
+                        item.set({'resources': [resource]});
                     }
-                } else  {
-                    item.set({'resources': [resource]});
                 }
             },
 
@@ -1032,7 +1038,7 @@ xmppchat.Roster = (function (_, $, console) {
             getNumOnlineContacts: function () {
                 var count = 0;
                 for (var i=0; i<this.models.length; i++) {
-                    if (_.indexOf(['offline', 'unavailable'], this.models[i].get('status')) === -1) {
+                    if (_.indexOf(['offline', 'unavailable'], this.models[i].get('presence_type')) === -1) {
                         count++;
                     }
                 }
@@ -1062,26 +1068,26 @@ xmppchat.Roster = (function (_, $, console) {
         var jid = $(presence).attr('from'),
             bare_jid = Strophe.getBareJidFromJid(jid),
             resource = Strophe.getResourceFromJid(jid),
-            ptype = $(presence).attr('type'),
-            item,
-            status = '';
+            presence_type = $(presence).attr('type'),
+            item, show;
 
         if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
             // We don't take kindly to MUC stanzas around these here parts 
             return true;
-        } else if ((ob.isSelf(bare_jid)) || (ptype === 'error')) { 
-            return true; 
-        } else if ((ptype === 'subscribed') || (ptype === 'unsubscribe')) {
+        } else if ((ob.isSelf(bare_jid)) || 
+                (presence_type === 'error') || 
+                (presence_type === 'subscribed') || 
+                (presence_type === 'unsubscribe')) {
             return true;
         }
 
-        if (ptype === 'subscribe') {
+        if (presence_type === 'subscribe') {
             if (ob.getItem(bare_jid)) { 
                 xmppchat.connection.roster.authorize(bare_jid);
             } else {
                 ob.addRosterItem(bare_jid, 'none', 'request');
             }
-        } else if (ptype === 'unsubscribed') {
+        } else if (presence_type === 'unsubscribed') {
             /* Upon receiving the presence stanza of type "unsubscribed", 
              * the user SHOULD acknowledge receipt of that subscription state 
              * notification by sending a presence stanza of type "unsubscribe" 
@@ -1094,20 +1100,26 @@ xmppchat.Roster = (function (_, $, console) {
                 xmppchat.connection.roster.remove(bare_jid);
             }
         } else { 
-            // Presence has changed
-            if (_.indexOf(['unavailable', 'offline', 'busy', 'away'], ptype) != -1) {
-                status = ptype;
-            } else {
-                status = ($(presence).find('show').text() === '') ? 'online' : 'away';
+            if (presence_type === undefined) {
+                show = $(presence).find('show').text();
+                if (show === 'chat') {
+                    presence_type = 'online';
+                } else if (show === 'dnd') {
+                    presence_type = 'busy';
+                } else if (show === 'xa') {
+                    presence_type = 'offline';
+                } else {
+                    presence_type = show;
+                }
             }
-            if ((status !== 'offline')&&(status !== 'unavailable')) {
+            if ((presence_type !== 'offline')&&(presence_type !== 'unavailable')) {
                 ob.addResource(bare_jid, resource);
                 model = ob.getItem(bare_jid);
-                model.set({'status': status});
+                model.set({'presence_type': presence_type});
             } else {
                 if (ob.removeResource(bare_jid, resource) === 0) {
                     model = ob.getItem(bare_jid);
-                    model.set({'status': status});
+                    model.set({'presence_type': presence_type});
                 }
             }
         }

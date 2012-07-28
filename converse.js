@@ -1279,7 +1279,12 @@ xmppchat.XMPPStatus = Backbone.Model.extend({
     setOwnStatus: function (value) {
         this.sendPresence(value);
         store.set(xmppchat.connection.bare_jid+'-xmpp-status', value);
+    },
+
+    setCustomStatus: function (presence_type, custom_status) {
+        xmppchat.connection.send($pres({'type':presence_type}).c('status').t(custom_status));
     }
+
 });
 
 xmppchat.XMPPStatusView = Backbone.View.extend({
@@ -1321,6 +1326,7 @@ xmppchat.XMPPStatusView = Backbone.View.extend({
                         'chat_status': chat_status,
                         'presence_type': presence_type
                         }));
+        this.model.setCustomStatus(presence_type, chat_status);
     },
 
     renderStatusChangeForm: function (ev) {
@@ -1335,7 +1341,12 @@ xmppchat.XMPPStatusView = Backbone.View.extend({
         ev.preventDefault();
         var $el = $(ev.target).find('span'),
             value = $el.text();
-        $(this.el).find("div.xmpp-status a.choose-xmpp-status").html('I am ' + value).attr('class', value + ' choose-xmpp-status');
+
+        $(this.el).find('#fancy-xmpp-status-select').html(
+                this.status_template({
+                        'chat_status': 'I am ' + value,
+                        'presence_type': value 
+                        }));
         $(this.el).find(".dropdown dd ul").hide();
         $(this.el).find("#source").val($($el).find("span.value").html());
         this.model.setOwnStatus(value);

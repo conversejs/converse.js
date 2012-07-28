@@ -380,7 +380,9 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                     }
                 }
             } else if (_.has(changed.changes, 'status')) {
-                this.$el.find('p.user-custom-message').text(item.get('status'));
+                if (item.get('jid') ===  this.model.get('jid')) {
+                    this.$el.find('p.user-custom-message').text(item.get('status'));
+                }
             }
         }, this);
     },

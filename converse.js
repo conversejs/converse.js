@@ -300,7 +300,6 @@ xmppchat.ChatBoxView = Backbone.View.extend({
 
         if(ev.keyCode == 13) {
             message = $textarea.val();
-            message = message.replace(/^\s+|\s+jQuery/g,"");
             $textarea.val('').focus();
             if (message !== '') {
                 this.sendMessage(message);
@@ -435,7 +434,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
 xmppchat.ContactsPanel = Backbone.View.extend({
     el: '#users',
     events: {
-        'click div.add-xmpp-contact': 'toggleContactForm',
+        'click a.add-xmpp-contact': 'toggleContactForm',
         'submit form.search-xmpp-contact': 'searchContacts',
         'click a.subscribe-to-user': 'subscribeToContact'
     },
@@ -718,14 +717,28 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
                 this.appendMessage(body);
             } else {
                 $chat_content.find('div.chat-event').remove();
-                $chat_content.append(
-                        this.message_template({
-                            'sender': 'them', 
-                            'time': (new Date()).toLocaleTimeString().substring(0,5),
-                            'message': body.replace(/<br \/>/g, ""),
-                            'username': sender,
-                            'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
-                        }));
+
+                match = body.match(/^\/(.*?)(?: (.*))?$/);
+                if ((match) && (match[1] === 'me')) {
+                    body = body.replace(/^\/me/, '*'+sender);
+                    $chat_content.append(
+                            this.action_template({
+                                'sender': 'room', 
+                                'time': (new Date()).toLocaleTimeString().substring(0,5),
+                                'message': body, 
+                                'username': sender,
+                                'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                            }));
+                } else {
+                    $chat_content.append(
+                            this.message_template({
+                                'sender': 'room', 
+                                'time': (new Date()).toLocaleTimeString().substring(0,5),
+                                'message': body,
+                                'username': sender,
+                                'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                            }));
+                }
                 $chat_content.scrollTop($chat_content[0].scrollHeight);
             }
         }

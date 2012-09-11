@@ -955,6 +955,10 @@ xmppchat.RosterItemView = Backbone.View.extend({
                 '<a class="open-chat" title="Click to chat with this contact" href="#"><%= fullname %></a>' +
                 '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
+    pending_template: _.template(
+                '<%= fullname %>' +
+                '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
+
     request_template: _.template('<%= fullname %>' +
                 '<button type="button" class="accept-xmpp-request">' +
                 'Accept</button>' +
@@ -972,7 +976,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
         
         if (ask === 'subscribe') {
             this.$el.addClass('pending-xmpp-contact');
-            $(this.el).html(this.template(item.toJSON()));
+            $(this.el).html(this.pending_template(item.toJSON()));
         } else if (ask === 'request') {
             this.$el.addClass('requesting-xmpp-contact');
             $(this.el).html(this.request_template(item.toJSON()));

@@ -984,6 +984,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
                 ev.preventDefault();
                 that.declineRequest();
             });
+            xmppchat.chatboxesview.openChat('online-users-container');
         } else if (subscription === 'both') {
             this.$el.addClass('current-xmpp-contact');
             this.$el.html(this.template(item.toJSON()));

@@ -1167,7 +1167,8 @@ xmppchat.Roster = (function (_, $, console) {
                 (presence_type === 'unsubscribe')) {
             return true;
         } else if (presence_type === 'subscribe') {
-            if (ob.getItem(bare_jid)) { 
+            item = ob.getItem(bare_jid);
+            if ((item) && (item.get('subscription') != 'none')) {
                 xmppchat.connection.roster.authorize(bare_jid);
             } else {
                 ob.addRosterItem(bare_jid, 'none', 'request');

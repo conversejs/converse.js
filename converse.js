@@ -976,11 +976,11 @@ xmppchat.RosterItemView = Backbone.View.extend({
         } else if (ask === 'request') {
             this.$el.addClass('requesting-xmpp-contact');
             $(this.el).html(this.request_template(item.toJSON()));
-            this.$el.find('button.accept-xmpp-request').on('click', function (ev) {
+            this.$el.delegate('button.accept-xmpp-request', 'click', function (ev) {
                 ev.preventDefault();
                 that.acceptRequest();
             });
-            this.$el.find('button.decline-xmpp-request').on('click', function (ev) {
+            this.$el.delegate('button.decline-xmpp-request', 'click', function (ev) {
                 ev.preventDefault();
                 that.declineRequest();
             });
@@ -988,14 +988,14 @@ xmppchat.RosterItemView = Backbone.View.extend({
         } else if (subscription === 'both') {
             this.$el.addClass('current-xmpp-contact');
             this.$el.html(this.template(item.toJSON()));
-            this.$el.find('a.open-chat').on('click', function (ev) {
+            this.$el.delegate('a.open-chat', 'click', function (ev) {
                 ev.preventDefault();
                 that.openChat();
             });
         }
         
         // Event handlers
-        this.$el.find('a.remove-xmpp-contact').on('click', function (ev) {
+        this.$el.delegate('a.remove-xmpp-contact','click', function (ev) {
             ev.preventDefault();
             that.removeContact();
         });
@@ -1153,8 +1153,7 @@ xmppchat.Roster = (function (_, $, console) {
             // Ignore MUC or self-addressed stanzas
             return true;
         }
-
-        if (status_message.length > 0) {
+        if ((status_message.length > 0)&&(status_message.text())) {
             model = ob.getItem(bare_jid);
             model.set({'status': status_message.text()});
         }

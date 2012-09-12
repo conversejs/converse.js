@@ -467,6 +467,7 @@ xmppchat.ContactsPanel = Backbone.View.extend({
 
     subscribeToContact: function (ev) {
         ev.preventDefault();
+        // FIXME: Need to escape username
         var jid = $(ev.target).attr('data-recipient');
         xmppchat.connection.roster.add(jid, '', [], function (iq) {
             // XXX: We can set the name here!!!
@@ -507,7 +508,7 @@ xmppchat.RoomsPanel = Backbone.View.extend({
                 this.$el.find('#available-chatrooms dt').hide();
             }
             for (var i=0; i<rooms.length; i++) {
-                name = $(rooms[i]).attr('name');
+                name = Strophe.unescapeNode($(rooms[i]).attr('name'));
                 jid = $(rooms[i]).attr('jid');
                 this.$el.find('#available-chatrooms').append(this.room_template({'name':name, 'jid':jid}));
             }
@@ -521,9 +522,12 @@ xmppchat.RoomsPanel = Backbone.View.extend({
         if (ev.type === 'click') {
             jid = $(ev.target).attr('room-jid');
         } else {
-            // FIXME: Hardcoded
-            name = $(ev.target).find('input.new-chatroom-name').val();
-            jid = name + '@' + xmppchat.connection.muc_domain;
+            name = _.str.strip($(ev.target).find('input.new-chatroom-name').val()).toLowerCase();
+            if (name) {
+                jid = Strophe.escapeNode(name) + '@' + xmppchat.connection.muc_domain;
+            } else {
+                return;
+            }
         }
         xmppchat.chatboxesview.openChat(jid);
     }
@@ -566,8 +570,8 @@ xmppchat.ChatRoom = xmppchat.ChatBox.extend({
         var nick = Strophe.getNodeFromJid(xmppchat.connection.jid);
         this.set({
             'id': jid,
-            'name': Strophe.getNodeFromJid(jid),
-            'nick': Strophe.getNodeFromJid(xmppchat.connection.jid),
+            'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+            'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(xmppchat.connection.jid)),
             'jid': jid,
             'box_id' : this.hash(jid)
         }, {'silent': true});

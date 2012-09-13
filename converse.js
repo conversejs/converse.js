@@ -93,7 +93,8 @@ xmppchat.ChatBox = Backbone.Model.extend({
     initialize: function () {
         this.set({
             'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-            'box_id' : this.hash(this.get('jid'))
+            'box_id' : this.hash(this.get('jid')),
+            'fullname' : this.get('fullname') 
         });
     }
 
@@ -388,7 +389,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
 
     template:   _.template(
                 '<div class="chat-head chat-head-chatbox">' +
-                    '<div class="chat-title"> <%= user_id %> </div>' +
+                    '<div class="chat-title"> <%= fullname %> </div>' +
                     '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
                     '<p class="user-custom-message"><p/>' +
                 '</div>' +
@@ -457,7 +458,7 @@ xmppchat.ContactsPanel = Backbone.View.extend({
                             .attr('id', 'found-users-'+obj.id)
                             .append(
                                 $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
-                                    .attr('data-recipient', obj.id+'@'+xmppchat.connection.domain)
+                                    .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.connection.domain)
                                     .text(obj.fullname)
                             )
                     );
@@ -467,10 +468,9 @@ xmppchat.ContactsPanel = Backbone.View.extend({
 
     subscribeToContact: function (ev) {
         ev.preventDefault();
-        // FIXME: Need to escape username
-        var jid = $(ev.target).attr('data-recipient');
-        xmppchat.connection.roster.add(jid, '', [], function (iq) {
-            // XXX: We can set the name here!!!
+        var jid = $(ev.target).attr('data-recipient'),
+            name = $(ev.target).text();
+        xmppchat.connection.roster.add(jid, name, [], function (iq) {
             xmppchat.connection.roster.subscribe(jid);
         });
         $(ev.target).parent().remove();
@@ -784,7 +784,8 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
 
     restoreOpenChats: function () {
         var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-            open_chats = [];
+            open_chats = [],
+            that = this;
 
         jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
         if (cookie) {
@@ -792,12 +793,14 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
             if (_.indexOf(open_chats, 'online-users-container') != -1) {
                 this.renderChat('online-users-container');
             }
-            for (var i=0; i<open_chats.length; i++) {
-                if (open_chats[i] === 'online-users-container') {
-                    continue;
+            _.each(open_chats, function (jid) {
+                if (jid != 'online-users-container') {
+                    // XXX: Can this be optimised somehow?
+                    $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
+                        that.renderChat(jid, data.fullname);
+                    });
                 }
-                this.renderChat(open_chats[i]);
-            }
+            });
         }
     },
     
@@ -805,7 +808,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
     },
     
-    renderChat: function (jid) {
+    renderChat: function (jid, name) {
         var box, view;
         if (jid === 'online-users-container') {
             box = new xmppchat.ControlBox({'id': jid, 'jid': jid});
@@ -819,7 +822,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
                     'model': box
                 });
             } else {
-                box = new xmppchat.ChatBox({'id': jid, 'jid': jid});
+                box = new xmppchat.ChatBox({'id': jid, 'jid': jid, 'fullname': name});
                 view = new xmppchat.ChatBoxView({
                     model: box 
                 });
@@ -838,9 +841,9 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         }
     },
 
-    openChat: function (jid) {
+    openChat: function (jid, name) {
         if (!this.model.get(jid)) {
-            this.renderChat(jid);
+            this.renderChat(jid, name);
         } else {
             this.showChat(jid);
         }
@@ -888,10 +891,11 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
 
 xmppchat.RosterItem = Backbone.Model.extend({
 
-    initialize: function (jid, subscription, ask) {
-        // FIXME: the fullname is set to user_id for now...
+    initialize: function (jid, subscription, ask, name) {
         var user_id = Strophe.getNodeFromJid(jid);
-
+        if (!name) {
+            name = user_id;
+        }
         this.set({
             'id': jid,
             'jid': jid,
@@ -899,7 +903,7 @@ xmppchat.RosterItem = Backbone.Model.extend({
             'bare_jid': Strophe.getBareJidFromJid(jid),
             'user_id': user_id,
             'subscription': subscription,
-            'fullname': user_id, 
+            'fullname': name, 
             'resources': [],
             'presence_type': 'offline',
             'status': 'offline'
@@ -912,8 +916,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
     tagName: 'dd',
 
     openChat: function () {
-        var jid = this.model.get('jid');
-        xmppchat.chatboxesview.openChat(jid);
+        xmppchat.chatboxesview.openChat(this.model.get('jid'), this.model.get('fullname'));
     },
 
     removeContact: function () {
@@ -945,8 +948,11 @@ xmppchat.RosterItemView = Backbone.View.extend({
     },
 
     acceptRequest: function () {
-        xmppchat.connection.roster.authorize(this.model.get('jid'));
-        xmppchat.connection.roster.subscribe(this.model.get('jid'));
+        var jid = this.model.get('jid');
+        xmppchat.connection.roster.authorize(jid);
+        xmppchat.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
+            xmppchat.connection.roster.subscribe(jid);
+        }, this);
     },
 
     declineRequest: function () {
@@ -1068,8 +1074,8 @@ xmppchat.Roster = (function (_, $, console) {
                 return Backbone.Collection.prototype.get.call(this, id);
             },
 
-            addRosterItem: function (jid, subscription, ask) {
-                var model = new xmppchat.RosterItem(jid, subscription, ask);
+            addRosterItem: function (jid, subscription, ask, name) {
+                var model = new xmppchat.RosterItem(jid, subscription, ask, name);
                 this.add(model);
             },
                 
@@ -1141,7 +1147,7 @@ xmppchat.Roster = (function (_, $, console) {
             item = items[i];
             model = ob.getItem(item.jid);
             if (!model) {
-                ob.addRosterItem(item.jid, item.subscription, item.ask);
+                ob.addRosterItem(item.jid, item.subscription, item.ask, item.name);
             } else {
                 model.set({'subscription': item.subscription, 'ask': item.ask});
             }
@@ -1175,7 +1181,9 @@ xmppchat.Roster = (function (_, $, console) {
             if ((item) && (item.get('subscription') != 'none')) {
                 xmppchat.connection.roster.authorize(bare_jid);
             } else {
-                ob.addRosterItem(bare_jid, 'none', 'request');
+                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
+                    ob.addRosterItem(bare_jid, 'none', 'request', data.fullname);
+                });
             }
         } else if (presence_type === 'unsubscribed') {
             /* Upon receiving the presence stanza of type "unsubscribed", 

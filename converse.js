@@ -174,14 +174,13 @@ xmppchat.ChatBoxView = Backbone.View.extend({
     messageReceived: function (message) {
         /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
             but I only seem to get 'text'. 
-
-            XXX: Some messages might be delayed, we must get the time from the event.
         */
         var body = $(message).children('body').text(),
             jid = $(message).attr('from'),
             composing = $(message).find('composing'),
             $chat_content = $(this.el).find('.chat-content'),
-            user_id = Strophe.getNodeFromJid(jid);
+            user_id = Strophe.getNodeFromJid(jid),
+            fullname = this.model.get('fullname');
 
         if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
             // only update the UI if the user is not offline
@@ -193,7 +192,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                 return;
             }
         } else {
-            // TODO: ClientStorage 
+            // TODO: Some messages might be delayed, we must get the time from the event.
             xmppchat.messages.ClientStorage.addMessage(jid, body, 'from');
             $chat_content.find('div.chat-event').remove();
 
@@ -212,7 +211,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                             'sender': 'them', 
                             'time': (new Date()).toLocaleTimeString().substring(0,5),
                             'message': body.replace(/<br \/>/g, ""),
-                            'username': user_id,
+                            'username': fullname,
                             'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
                         }));
             }
@@ -257,7 +256,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                                 'sender': 'them', 
                                 'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
                                 'message': msg.replace(/^\/me/, '*'+this.model.get('user_id')),
-                                'username': this.model.get('user_id'),
+                                'username': this.model.get('fullname'),
                                 'extra_classes': 'delayed'
                             }));
                     } else {
@@ -266,7 +265,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
                                 'sender': 'them', 
                                 'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
                                 'message': msg,
-                                'username': this.model.get('user_id'),
+                                'username': this.model.get('fullname'),
                                 'extra_classes': 'delayed'
                             }));
                     }
@@ -282,7 +281,6 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         // TODO: Look in ChatPartners to see what resources we have for the recipient.
         // if we have one resource, we sent to only that resources, if we have multiple
         // we send to the bare jid.
-        
         var bare_jid = this.model.get('jid');
         var message = $msg({to: bare_jid, type: 'chat'})
             .c('body').t(text).up()
@@ -370,11 +368,11 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             if (_.has(changed.changes, 'presence_type')) {
                 if (this.$el.is(':visible')) {
                     if (item.get('presence_type') === 'offline') {
-                        this.insertStatusNotification(this.model.get('user_id'), 'has gone offline');
+                        this.insertStatusNotification(this.model.get('fullname'), 'has gone offline');
                     } else if (item.get('presence_type') === 'away') {
-                        this.insertStatusNotification(this.model.get('user_id'), 'has gone away');
+                        this.insertStatusNotification(this.model.get('fullname'), 'has gone away');
                     } else if ((item.get('presence_type') === 'busy') || (item.get('presence_type') === 'dnd')) {
-                        this.insertStatusNotification(this.model.get('user_id'), 'is busy');
+                        this.insertStatusNotification(this.model.get('fullname'), 'is busy');
                     } else if (item.get('presence_type') === 'online') {
                         this.$el.find('div.chat-event').remove();
                     }
@@ -793,14 +791,16 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
             if (_.indexOf(open_chats, 'online-users-container') != -1) {
                 this.renderChat('online-users-container');
             }
-            _.each(open_chats, function (jid) {
+            _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'online-users-container') {
-                    // XXX: Can this be optimised somehow?
+                    // XXX: Can this be optimised somehow? Would be nice to get
+                    // fullnames from xmppchat.Roster but it's not yet
+                    // populated at this stage...
                     $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
                         that.renderChat(jid, data.fullname);
                     });
                 }
-            });
+            }, this));
         }
     },
     

@@ -180,6 +180,7 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             composing = $(message).find('composing'),
             $chat_content = $(this.el).find('.chat-content'),
             user_id = Strophe.getNodeFromJid(jid),
+            delayed = $(message).find('delay').length > 0,
             fullname = this.model.get('fullname');
 
         if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
@@ -188,31 +189,36 @@ xmppchat.ChatBoxView = Backbone.View.extend({
         }
         if (!body) {
             if (composing.length > 0) {
-                this.insertStatusNotification(user_id, 'is typing');
+                this.insertStatusNotification(fullname, 'is typing');
                 return;
             }
         } else {
-            // TODO: Some messages might be delayed, we must get the time from the event.
             xmppchat.messages.ClientStorage.addMessage(jid, body, 'from');
             $chat_content.find('div.chat-event').remove();
-
+            if (delayed) {
+                // XXX: Test properly 
+                stamp = $(message).find('delay').attr('stamp');
+                time = (new Date(stamp)).toLocaleTimeString().substring(0,5); 
+            } else {
+                time = (new Date()).toLocaleTimeString().substring(0,5); 
+            }
             match = body.match(/^\/(.*?)(?: (.*))?$/);
             if ((match) && (match[1] === 'me')) {
                 $chat_content.append(this.action_template({
                             'sender': 'them', 
-                            'time': (new Date()).toLocaleTimeString().substring(0,5),
+                            'time': time,
                             'message': body.replace(/^\/me/, '*'+user_id).replace(/<br \/>/g, ""),
                             'username': xmppchat.username,
-                            'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                            'extra_classes': delayed && 'delayed' || ''
                         }));
             } else {
                 $chat_content.append(
                         this.message_template({
                             'sender': 'them', 
-                            'time': (new Date()).toLocaleTimeString().substring(0,5),
+                            'time': time,
                             'message': body.replace(/<br \/>/g, ""),
                             'username': fullname,
-                            'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                            'extra_classes': delayed && 'delayed' || ''
                         }));
             }
             $chat_content.scrollTop($chat_content[0].scrollHeight);

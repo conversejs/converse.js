@@ -86,8 +86,7 @@ var xmppchat = (function (jarnxmpp, $, console) {
 xmppchat.ChatBox = Backbone.Model.extend({
 
     hash: function (str) {
-        var shaobj = new jsSHA(str);
-        return shaobj.getHash("HEX");
+        return hex_sha1(str);
     },
 
     initialize: function () {
@@ -196,7 +195,8 @@ xmppchat.ChatBoxView = Backbone.View.extend({
             xmppchat.messages.ClientStorage.addMessage(jid, body, 'from');
             $chat_content.find('div.chat-event').remove();
             if (delayed) {
-                // XXX: Test properly 
+                // XXX: Test properly (for really old messages we somehow need to show
+                // their date as well)
                 stamp = $(message).find('delay').attr('stamp');
                 time = (new Date(stamp)).toLocaleTimeString().substring(0,5); 
             } else {
@@ -709,7 +709,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
             jid = $(message).attr('from'),
             composing = $(message).find('composing'),
             $chat_content = $(this.el).find('.chat-content'),
-            sender = Strophe.getResourceFromJid(jid),
+            sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
             subject = $(message).children('subject').text();
 
         if (subject) {
@@ -760,7 +760,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         }
         this.$el.find('.participant-list').empty();
         for (var i=0; i<_.size(roster); i++) {
-            this.$el.find('.participant-list').append('<li>' + _.keys(roster)[i] + '</li>');
+            this.$el.find('.participant-list').append('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
         }
         return true;
     },
@@ -799,12 +799,16 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
             }
             _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'online-users-container') {
-                    // XXX: Can this be optimised somehow? Would be nice to get
-                    // fullnames from xmppchat.Roster but it's not yet
-                    // populated at this stage...
-                    $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
-                        that.renderChat(jid, data.fullname);
-                    });
+                    if (_.str.include(jid, xmppchat.connection.muc_domain)) {
+                        this.renderChat(jid);
+                    } else {
+                        // XXX: Can this be optimised somehow? Would be nice to get
+                        // fullnames from xmppchat.Roster but it's not yet
+                        // populated at this stage...
+                        $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
+                            that.renderChat(jid, data.fullname);
+                        });
+                    }
                 }
             }, this));
         }
@@ -874,13 +878,23 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         var jid = $(message).attr('from'),
             bare_jid = Strophe.getBareJidFromJid(jid),
             resource = Strophe.getResourceFromJid(jid),
-            view = this.views[bare_jid];
+            view = this.views[bare_jid],
+            fullname;
 
         if (!view) {
-            view = this.renderChat(bare_jid);
+            if (xmppchat.roster.get(bare_jid)) {
+                fullname = xmppchat.roster.get(bare_jid).get('fullname');
+                view = this.renderChat(bare_jid, fullname);
+            } else {
+                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(bare_jid), $.proxy(function (data) {
+                    view = this.renderChat(bare_jid, data.fullname);
+                    view.messageReceived(message);
+                    xmppchat.roster.addResource(bare_jid, resource);
+                }, this));
+                return;
+            }
         }
         view.messageReceived(message);
-        // XXX: Is this the right place for this? Perhaps an event?
         xmppchat.roster.addResource(bare_jid, resource);
     },
 
@@ -1438,7 +1452,6 @@ $(document).ready($.proxy(function () {
     this.username = chatdata.attr('username');
     this.base_url = chatdata.attr('base_url');
 
-    $(document).unbind('jarnxmpp.connected');
     $(document).bind('jarnxmpp.connected', $.proxy(function () {
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };

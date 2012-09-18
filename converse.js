@@ -2,9 +2,12 @@
  * Converse.js (XMPP-based instant messaging with Strophe.js and backbone.js)
  * http://opkode.com
  *
- * Copyright (c) 2012 Jan-Carel Brand
+ * Copyright (c) 2012 Jan-Carel Brand (jc@opkode.com)
  * Dual licensed under the MIT and GPL Licenses
  */
+
+/* The following line defines global variables defined elsewhere. */
+/*globals jQuery, portal_url*/
 
 var xmppchat = (function (jarnxmpp, $, console) {
     var ob = jarnxmpp;

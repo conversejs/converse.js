@@ -548,13 +548,13 @@ xmppchat.SettingsPanel = Backbone.View.extend({
 xmppchat.ControlBox = xmppchat.ChatBox.extend({
     initialize: function () {
         this.set({
-            'box_id' : 'online-users-container'
+            'box_id' : 'controlbox'
         });
     }
 });
 
 xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
-    el: '#online-users-container',
+    el: '#controlbox',
     events: {
         'click a.close-controlbox-button': 'closeChat'
     },
@@ -686,7 +686,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
     },
 
     onLeave: function () {
-        var controlboxview = xmppchat.chatboxesview.views['online-users-container'];
+        var controlboxview = xmppchat.chatboxesview.views['controlbox'];
         if (controlboxview) {
             controlboxview.roomspanel.trigger('update-rooms-list');
         }
@@ -757,7 +757,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
     },
 
     onRoster: function (roster, room) {
-        var controlboxview = xmppchat.chatboxesview.views['online-users-container'];
+        var controlboxview = xmppchat.chatboxesview.views['controlbox'];
         if (controlboxview) {
             controlboxview.roomspanel.trigger('update-rooms-list');
         }
@@ -797,11 +797,11 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
         jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
         if (cookie) {
             open_chats = cookie.split('|');
-            if (_.indexOf(open_chats, 'online-users-container') != -1) {
-                this.renderChat('online-users-container');
+            if (_.indexOf(open_chats, 'controlbox') != -1) {
+                this.renderChat('controlbox');
             }
             _.each(open_chats, $.proxy(function (jid) {
-                if (jid != 'online-users-container') {
+                if (jid != 'controlbox') {
                     if (_.str.include(jid, xmppchat.connection.muc_domain)) {
                         this.renderChat(jid);
                     } else {
@@ -823,7 +823,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
     
     renderChat: function (jid, name) {
         var box, view;
-        if (jid === 'online-users-container') {
+        if (jid === 'controlbox') {
             box = new xmppchat.ControlBox({'id': jid, 'jid': jid});
             view = new xmppchat.ControlBoxView({
                 model: box 
@@ -868,7 +868,7 @@ xmppchat.ChatBoxesView = Backbone.View.extend({
             view.focus();
         } else {
             view.show();
-            if (jid !== 'online-users-container') {
+            if (jid !== 'controlbox') {
                 view.scrolldown();
                 view.focus();
             }
@@ -952,7 +952,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
             position: {
                 my: 'center',
                 at: 'center',
-                of: '#online-users-container'
+                of: '#controlbox'
                 },
             modal: true,
             buttons: {
@@ -1021,7 +1021,7 @@ xmppchat.RosterItemView = Backbone.View.extend({
                 ev.preventDefault();
                 that.declineRequest();
             });
-            xmppchat.chatboxesview.openChat('online-users-container');
+            xmppchat.chatboxesview.openChat('controlbox');
         } else if (subscription === 'both') {
             this.$el.addClass('current-xmpp-contact');
             this.$el.html(this.template(item.toJSON()));
@@ -1498,10 +1498,10 @@ $(document).ready($.proxy(function () {
         // Controlbox toggler
         $toggle.bind('click', $.proxy(function (e) {
             e.preventDefault();
-            if ($("div#online-users-container").is(':visible')) {
-                this.chatboxesview.closeChat('online-users-container');
+            if ($("div#controlbox").is(':visible')) {
+                this.chatboxesview.closeChat('controlbox');
             } else {
-                this.chatboxesview.openChat('online-users-container');
+                this.chatboxesview.openChat('controlbox');
             }
         }, this));
     }, this));

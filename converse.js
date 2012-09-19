@@ -660,10 +660,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
             '</div>' +
             '<div>' +
             '<div class="chat-area">' +
-                '<div class="chat-content">' +
-                    '<div class="room-name"></div>' +
-                    '<div class="room-topic"></div>' +
-                '</div>' +
+                '<div class="chat-content"></div>' +
                 '<form class="sendXMPPMessage" action="" method="post">' +
                     '<textarea ' +
                         'type="text" ' +
@@ -686,7 +683,7 @@ xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
     },
 
     onLeave: function () {
-        var controlboxview = xmppchat.chatboxesview.views['controlbox'];
+        var controlboxview = xmppchat.chatboxesview.views.controlbox;
         if (controlboxview) {
             controlboxview.roomspanel.trigger('update-rooms-list');
         }

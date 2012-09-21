@@ -17,6 +17,11 @@
             'burry.js/burry'
             ], function (Burry) {
                 var store = new Burry.Store('collective.xmpp.chat');
+                // Use Mustache style syntax for variable interpolation
+                _.templateSettings = {
+                    evaluate : /\{\[([\s\S]+?)\]\}/g,
+                    interpolate : /\{\{([\s\S]+?)\}\}/g
+                };
                 _.str = require('underscore.string');
                 return factory(jarnxmpp, jQuery, store, _, console);
             }
@@ -24,6 +29,10 @@
     } else { 
         // Browser globals
         var store = new Burry.Store('collective.xmpp.chat');
+        _.templateSettings = {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        };
         root.xmppchat = factory(jarnxmpp, jQuery, store, _, console || {log: function(){}});
     }
 }(this, function (jarnxmpp, $, store, _, console) {
@@ -121,15 +130,15 @@
         },
 
         message_template: _.template(
-                            '<div class="chat-message <%=extra_classes%>">' + 
-                                '<span class="chat-message-<%=sender%>"><%=time%> <%=username%>:&nbsp;</span>' + 
-                                '<span class="chat-message-content"><%=message%></span>' + 
+                            '<div class="chat-message {{extra_classes}}">' + 
+                                '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' + 
+                                '<span class="chat-message-content">{{message}}</span>' + 
                             '</div>'),
 
         action_template: _.template(
-                            '<div class="chat-message <%=extra_classes%>">' + 
-                                '<span class="chat-message-<%=sender%>"><%=time%>:&nbsp;</span>' + 
-                                '<span class="chat-message-content"><%=message%></span>' + 
+                            '<div class="chat-message {{extra_classes}}">' + 
+                                '<span class="chat-message-{{sender}}">{{time}}:&nbsp;</span>' + 
+                                '<span class="chat-message-content">{{message}}</span>' + 
                             '</div>'),
 
         appendMessage: function (message) {
@@ -404,7 +413,7 @@
 
         template:   _.template(
                     '<div class="chat-head chat-head-chatbox">' +
-                        '<div class="chat-title"> <%= fullname %> </div>' +
+                        '<div class="chat-title"> {{ fullname }} </div>' +
                         '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
                         '<p class="user-custom-message"><p/>' +
                     '</div>' +
@@ -502,8 +511,8 @@
         },
         room_template: _.template(
                             '<dd class="chatroom">' +
-                            '<a class="open-room" room-jid="<%=jid%>" title="Click to open this chatroom" href="#">' +
-                            '<%=name%></a></dd>'),
+                            '<a class="open-room" room-jid="{{jid}}" title="Click to open this chatroom" href="#">' +
+                            '{{name}}</a></dd>'),
 
         initialize: function () {
             this.on('update-rooms-list', function (ev) {
@@ -662,7 +671,7 @@
 
         template: _.template(
                 '<div class="chat-head chat-head-chatroom">' +
-                    '<div class="chat-title"> <%= name %> </div>' +
+                    '<div class="chat-title"> {{ name }} </div>' +
                     '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +
@@ -691,7 +700,7 @@
         },
 
         onLeave: function () {
-            var controlboxview = xmppchat.chatboxesview.views['controlbox'];
+            var controlboxview = xmppchat.chatboxesview.views.controlbox;
             if (controlboxview) {
                 controlboxview.roomspanel.trigger('update-rooms-list');
             }
@@ -990,14 +999,14 @@
         },
 
         template: _.template(
-                    '<a class="open-chat" title="Click to chat with this contact" href="#"><%= fullname %></a>' +
+                    '<a class="open-chat" title="Click to chat with this contact" href="#">{{ fullname }}</a>' +
                     '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
         pending_template: _.template(
-                    '<%= fullname %>' +
+                    '{{ fullname }}' +
                     '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
-        request_template: _.template('<%= fullname %>' +
+        request_template: _.template('{{ fullname }}' +
                     '<button type="button" class="accept-xmpp-request">' +
                     'Accept</button>' +
                     '<button type="button" class="decline-xmpp-request">' +
@@ -1364,14 +1373,14 @@
 
         change_status_message_template: _.template(
             '<form id="set-custom-xmpp-status">' +
-                '<input type="text" class="custom-xmpp-status" <%= chat_status %>" placeholder="Custom status"/>' +
+                '<input type="text" class="custom-xmpp-status" {{ chat_status }}" placeholder="Custom status"/>' +
                 '<button type="submit">Save</button>' +
             '</form>'),
 
         status_template: _.template(
             '<div class="xmpp-status">' +
-                '<a class="choose-xmpp-status <%= presence_type %>" href="#" title="Click to change your chat status">' +
-                    '<%= chat_status %> <span class="value"><%= chat_status %></span>' +
+                '<a class="choose-xmpp-status {{ presence_type }}" href="#" title="Click to change your chat status">' +
+                    '{{ chat_status }} <span class="value">{{ chat_status }}</span>' +
                 '</a>' +
                 '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
             '</div>'),
@@ -1420,9 +1429,9 @@
 
         option_template: _.template(
             '<li>' +
-                '<a href="#" class="<%= value %>">' +
-                    '<%= text %>' +
-                    '<span class="value"><%= value %></span>' +
+                '<a href="#" class="{{ value }}">' +
+                    '{{ text }}' +
+                    '<span class="value">{{ value }}</span>' +
                 '</a>' +
             '</li>'),
 

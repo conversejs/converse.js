@@ -200,7 +200,8 @@
                 $chat_content = $(this.el).find('.chat-content'),
                 user_id = Strophe.getNodeFromJid(jid),
                 delayed = $(message).find('delay').length > 0,
-                fullname = this.model.get('fullname');
+                fullname = this.model.get('fullname'),
+                time, stamp;
 
             if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
                 // only update the UI if the user is not offline

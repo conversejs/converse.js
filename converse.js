@@ -1468,7 +1468,6 @@
         $toggle.unbind('click');
 
         this.username = chatdata.attr('username');
-        this.base_url = chatdata.attr('base_url');
 
         $(document).bind('jarnxmpp.connected', $.proxy(function () {
             this.connection.xmlInput = function (body) { console.log(body); };

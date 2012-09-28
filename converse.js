@@ -1105,7 +1105,7 @@
                 },
 
                 getRoster: function () {
-                    return xmppchat.connection.roster.get();
+                    return xmppchat.connection.roster.get(xmppchat.roster.rosterHandler);
                 },
 
                 getItem: function (id) {

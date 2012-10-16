@@ -1470,8 +1470,8 @@
         this.username = chatdata.attr('username');
 
         $(document).bind('jarnxmpp.connected', $.proxy(function () {
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
+            // this.connection.xmlInput = function (body) { console.log(body); };
+            // this.connection.xmlOutput = function (body) { console.log(body); };
 
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);

@@ -1050,8 +1050,7 @@
             this.$el.delegate('a.remove-xmpp-contact','click', function (ev) {
                 ev.preventDefault();
                 that.removeContact();
-            });
-            return this;
+            }); return this;
         },
 
         initialize: function () {
@@ -1215,15 +1214,29 @@
                     (presence_type === 'subscribed') || 
                     (presence_type === 'unsubscribe')) {
                 return true;
+
             } else if (presence_type === 'subscribe') {
                 item = this.getItem(bare_jid);
-                if ((item) && (item.get('subscription') != 'none')) {
+
+                if (xmppchat.auto_subscribe) {
+                    //XXX: Probably need to get fullname support here...
                     xmppchat.connection.roster.authorize(bare_jid);
+                    if (!(item) || (item.get('subscription') == 'none')) {
+                        // Subscribe back
+                        xmppchat.connection.roster.add(jid, name, [], function (iq) {
+                            xmppchat.connection.roster.subscribe(jid);
+                        });
+                    }
                 } else {
-                    $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                        this.addRosterItem(bare_jid, 'none', 'request', data.fullname);
-                    }, this));
+                    if ((item) && (item.get('subscription') != 'none'))  {
+                        xmppchat.connection.roster.authorize(bare_jid);
+                    } else {
+                        $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
+                            this.addRosterItem(bare_jid, 'none', 'request', data.fullname);
+                        }, this));
+                    }
                 }
+
             } else if (presence_type === 'unsubscribed') {
                 /* Upon receiving the presence stanza of type "unsubscribed", 
                 * the user SHOULD acknowledge receipt of that subscription state 
@@ -1468,6 +1481,8 @@
         $toggle.unbind('click');
 
         this.username = chatdata.attr('username');
+        this.fullname = chatdata.attr('username');
+        this.auto_subscribe = chatdata.attr('auto_subscribe');
 
         $(document).unbind('jarnxmpp.connected');
 

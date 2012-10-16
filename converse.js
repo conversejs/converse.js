@@ -1062,137 +1062,138 @@
             }, this);
         }
     });
+    
+    RosterItems = Backbone.Collection.extend({
+        model: xmppchat.RosterItem,
+        initialize: function () {
+            this._connection = xmppchat.connection;
+        },
 
+        comparator : function (rosteritem) {
+            var presence_type = rosteritem.get('presence_type'),
+                rank = 4;
+            switch(presence_type) {
+                case 'offline': 
+                    rank = 4;
+                    break;
+                case 'unavailable':
+                    rank = 3;
+                    break;
+                case 'away':
+                    rank = 2;
+                    break;
+                case 'busy':
+                    rank = 1;
+                    break;
+                case 'dnd':
+                    rank = 1;
+                    break;
+                case 'online':
+                    rank = 0;
+                    break;
+            }
+            return rank;
+        },
 
-    xmppchat.Roster = (function (_, $, console) {
-        var ob = {},
-            Collection = Backbone.Collection.extend({
-                model: xmppchat.RosterItem,
-                stropheRoster: xmppchat.connection.roster,
-
-                initialize: function () {
-                    this._connection = xmppchat.connection;
-                },
-
-                comparator : function (rosteritem) {
-                    var presence_type = rosteritem.get('presence_type'),
-                        rank = 4;
-                    switch(presence_type) {
-                        case 'offline': 
-                            rank = 4;
-                            break;
-                        case 'unavailable':
-                            rank = 3;
-                            break;
-                        case 'away':
-                            rank = 2;
-                            break;
-                        case 'busy':
-                            rank = 1;
-                            break;
-                        case 'dnd':
-                            rank = 1;
-                            break;
-                        case 'online':
-                            rank = 0;
-                            break;
-                    }
-                    return rank;
-                },
-
-                isSelf: function (jid) {
-                    return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(xmppchat.connection.jid));
-                },
-
-                getRoster: function () {
-                    return xmppchat.connection.roster.get(xmppchat.roster.rosterHandler);
-                },
-
-                getItem: function (id) {
-                    return Backbone.Collection.prototype.get.call(this, id);
-                },
-
-                addRosterItem: function (jid, subscription, ask, name) {
-                    var model = new xmppchat.RosterItem(jid, subscription, ask, name);
-                    this.add(model);
-                },
-                    
-                addResource: function (bare_jid, resource) {
-                    var item = this.getItem(bare_jid),
-                        resources;
-                    if (item) {
-                        resources = item.get('resources');
-                        if (resources) {
-                            if (_.indexOf(resources, resource) == -1) {
-                                resources.push(resource);
-                                item.set({'resources': resources});
-                            }
-                        } else  {
-                            item.set({'resources': [resource]});
-                        }
-                    }
-                },
-
-                removeResource: function (bare_jid, resource) {
-                    var item = this.getItem(bare_jid),
-                        resources,
-                        idx;
-                    if (item) {
-                        resources = item.get('resources');
-                        idx = _.indexOf(resources, resource);
-                        if (idx !== -1) {
-                            resources.splice(idx, 1);
-                            item.set({'resources': resources});
-                            return resources.length;
-                        }
-                    }
-                    return 0;
-                },
-
-                clearResources: function (bare_jid) {
-                    var item = this.getItem(bare_jid);
-                    if (item) {
-                        item.set({'resources': []});
-                    }
-                },
-
-                getTotalResources: function (bare_jid) {
-                    var item = this.getItem(bare_jid);
-                    if (item) {
-                        return _.size(item.get('resources'));
-                    }
-                },
-
-                getNumOnlineContacts: function () {
-                    var count = 0;
-                    for (var i=0; i<this.models.length; i++) {
-                        if (_.indexOf(['offline', 'unavailable'], this.models[i].get('presence_type')) === -1) {
-                            count++;
-                        }
-                    }
-                    return count;
+        rosterSuggestedItem: function (msg) {
+            alert('hello');
+            $(msg).find('item').each(function () {
+                var jid = $(this).attr('jid');
+                var action = $(this).attr('action');
+                if (action === 'add') {
+                    xmppchat.connection.send($pres({to: jid, type: 'subscribe'}));
                 }
-
             });
+            return true;
+        },
 
-        var collection = new Collection();
-        _.extend(ob, collection);
-        _.extend(ob, Backbone.Events);
+        isSelf: function (jid) {
+            return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(xmppchat.connection.jid));
+        },
 
-        ob.rosterHandler = function (items) {
+        getRoster: function () {
+            return xmppchat.connection.roster.get($.proxy(this.rosterHandler, this));
+        },
+
+        getItem: function (id) {
+            return Backbone.Collection.prototype.get.call(this, id);
+        },
+
+        addRosterItem: function (jid, subscription, ask, name) {
+            var model = new xmppchat.RosterItem(jid, subscription, ask, name);
+            this.add(model);
+        },
+            
+        addResource: function (bare_jid, resource) {
+            var item = this.getItem(bare_jid),
+                resources;
+            if (item) {
+                resources = item.get('resources');
+                if (resources) {
+                    if (_.indexOf(resources, resource) == -1) {
+                        resources.push(resource);
+                        item.set({'resources': resources});
+                    }
+                } else  {
+                    item.set({'resources': [resource]});
+                }
+            }
+        },
+
+        removeResource: function (bare_jid, resource) {
+            var item = this.getItem(bare_jid),
+                resources,
+                idx;
+            if (item) {
+                resources = item.get('resources');
+                idx = _.indexOf(resources, resource);
+                if (idx !== -1) {
+                    resources.splice(idx, 1);
+                    item.set({'resources': resources});
+                    return resources.length;
+                }
+            }
+            return 0;
+        },
+
+        clearResources: function (bare_jid) {
+            var item = this.getItem(bare_jid);
+            if (item) {
+                item.set({'resources': []});
+            }
+        },
+
+        getTotalResources: function (bare_jid) {
+            var item = this.getItem(bare_jid);
+            if (item) {
+                return _.size(item.get('resources'));
+            }
+        },
+
+        getNumOnlineContacts: function () {
+            var count = 0;
+            for (var i=0; i<this.models.length; i++) {
+                if (_.indexOf(['offline', 'unavailable'], this.models[i].get('presence_type')) === -1) {
+                    count++;
+                }
+            }
+            return count;
+        },
+
+        rosterHandler: function (items) {
             var model, item;
             for (var i=0; i<items.length; i++) {
                 item = items[i];
-                model = ob.getItem(item.jid);
+                model = this.getItem(item.jid);
                 if (!model) {
-                    ob.addRosterItem(item.jid, item.subscription, item.ask, item.name);
+                    this.addRosterItem(item.jid, item.subscription, item.ask, item.name);
                 } else {
                     model.set({'subscription': item.subscription, 'ask': item.ask});
                 }
             }
-        };
+        },
 
-        ob.presenceHandler = function (presence) {
+        presenceHandler: function (presence) {
             var jid = $(presence).attr('from'),
                 bare_jid = Strophe.getBareJidFromJid(jid),
                 resource = Strophe.getResourceFromJid(jid),
@@ -1201,12 +1202,12 @@
                 status_message = $(presence).find('status'),
                 item;
 
-            if ((($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) || (ob.isSelf(bare_jid))) {
+            if ((($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) || (this.isSelf(bare_jid))) {
                 // Ignore MUC or self-addressed stanzas
                 return true;
             }
             if ((status_message.length > 0)&&(status_message.text())) {
-                model = ob.getItem(bare_jid);
+                model = this.getItem(bare_jid);
                 model.set({'status': status_message.text()});
             }
 
@@ -1215,13 +1216,13 @@
                     (presence_type === 'unsubscribe')) {
                 return true;
             } else if (presence_type === 'subscribe') {
-                item = ob.getItem(bare_jid);
+                item = this.getItem(bare_jid);
                 if ((item) && (item.get('subscription') != 'none')) {
                     xmppchat.connection.roster.authorize(bare_jid);
                 } else {
-                    $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
-                        ob.addRosterItem(bare_jid, 'none', 'request', data.fullname);
-                    });
+                    $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
+                        this.addRosterItem(bare_jid, 'none', 'request', data.fullname);
+                    }, this));
                 }
             } else if (presence_type === 'unsubscribed') {
                 /* Upon receiving the presence stanza of type "unsubscribed", 
@@ -1249,21 +1250,20 @@
                 }
 
                 if ((presence_type !== 'offline')&&(presence_type !== 'unavailable')) {
-                    ob.addResource(bare_jid, resource);
-                    model = ob.getItem(bare_jid);
+                    this.addResource(bare_jid, resource);
+                    model = this.getItem(bare_jid);
                     model.set({'presence_type': presence_type});
                 } else {
-                    if (ob.removeResource(bare_jid, resource) === 0) {
-                        model = ob.getItem(bare_jid);
+                    if (this.removeResource(bare_jid, resource) === 0) {
+                        model = this.getItem(bare_jid);
                         model.set({'presence_type': presence_type});
                     }
                 }
             }
             return true;
-        };
-        return ob;
-    });
+        },
 
+    });
 
     xmppchat.RosterView= (function (roster, _, $, console) {
         var View = Backbone.View.extend({
@@ -1469,6 +1469,8 @@
 
         this.username = chatdata.attr('username');
 
+        $(document).unbind('jarnxmpp.connected');
+
         $(document).bind('jarnxmpp.connected', $.proxy(function () {
             // this.connection.xmlInput = function (body) { console.log(body); };
             // this.connection.xmlOutput = function (body) { console.log(body); };
@@ -1478,16 +1480,24 @@
             // XXX: Better if configurable?
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
 
-            this.roster = this.Roster(_, $, console);
+            this.roster = new RosterItems();
+            _.extend(this.roster, this.Roster);
+
             this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
+            this.connection.addHandler(
+                    $.proxy(this.roster.rosterSuggestedItem, this.roster), 
+                    'http://jabber.org/protocol/rosterx', 'message', null);
 
             this.connection.addHandler(
                     $.proxy(function (presence) {
-                        this.roster.presenceHandler(presence);
+                        this.presenceHandler(presence);
                         return true;
-                    }, this), null, 'presence', null);
+                    }, this.roster), null, 'presence', null);
             
-            this.connection.roster.registerCallback(this.roster.rosterHandler);
+            this.connection.roster.registerCallback(
+                    $.proxy(this.roster.rosterHandler, this.roster), 
+                    null, 'presence', null);
+            
             this.roster.getRoster();
 
             this.chatboxes = new this.ChatBoxes();

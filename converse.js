@@ -1478,7 +1478,7 @@
 
         this.username = chatdata.attr('username');
         this.fullname = chatdata.attr('fullname');
-        this.auto_subscribe = chatdata.attr('auto_subscribe');
+        this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
 
         $(document).unbind('jarnxmpp.connected');
 

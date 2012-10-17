@@ -14,7 +14,20 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) { 
         define([
-            'burry.js/burry'
+            'Libraries/burry.js/burry',
+            "Libraries/jquery.gritter.min",
+            "Libraries/jquery.cookie",
+            "Libraries/jquery.ba-dotimeout.min",
+            "Libraries/underscore",
+            "Libraries/underscore.string/lib/underscore.string",
+            "Libraries/backbone",
+            "Libraries/strophe",
+            "Libraries/strophe.muc",
+            "Libraries/strophe.roster",
+            "Libraries/diff_match_patch",
+            "Libraries/jarnxmpp.core.handlers",
+            "Libraries/jarnxmpp.collaboration.protocol",
+            "Libraries/jarnxmpp.collaboration.collaborate"
             ], function (Burry) {
                 var store = new Burry.Store('collective.xmpp.chat');
                 // Use Mustache style syntax for variable interpolation
@@ -22,7 +35,6 @@
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                _.str = require('underscore.string');
                 return factory(jarnxmpp, jQuery, store, _, console);
             }
         );
@@ -223,25 +235,14 @@
                 } else {
                     time = (new Date()).toLocaleTimeString().substring(0,5); 
                 }
-                match = body.match(/^\/(.*?)(?: (.*))?$/);
-                if ((match) && (match[1] === 'me')) {
-                    $chat_content.append(this.action_template({
-                                'sender': 'them', 
-                                'time': time,
-                                'message': body.replace(/^\/me/, '*'+user_id).replace(/<br \/>/g, ""),
-                                'username': xmppchat.username,
-                                'extra_classes': delayed && 'delayed' || ''
-                            }));
-                } else {
-                    $chat_content.append(
-                            this.message_template({
-                                'sender': 'them', 
-                                'time': time,
-                                'message': body.replace(/<br \/>/g, ""),
-                                'username': fullname,
-                                'extra_classes': delayed && 'delayed' || ''
-                            }));
-                }
+                $chat_content.append(
+                        this.message_template({
+                            'sender': 'them', 
+                            'time': time,
+                            'message': body.replace(/<br \/>/g, ""),
+                            'username': fullname.split(' ')[0],
+                            'extra_classes': delayed && 'delayed' || ''
+                        }));
                 $chat_content.scrollTop($chat_content[0].scrollHeight);
             }
         },
@@ -257,45 +258,23 @@
                     msg = String(msg).replace(/(.*?\s.*?\s)/, '');
                     match = msg.match(/^\/(.*?)(?: (.*))?$/);
                     if (msg_array[1] == 'to') {
-                        if ((match) && (match[1] === 'me')) {
-                            $content.append(
-                                this.action_template({
-                                    'sender': 'me', 
-                                    'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                    'message': msg.replace(/^\/me/, '*'+xmppchat.username),
-                                    'username': xmppchat.username,
-                                    'extra_classes': 'delayed'
-                            }));
-                        } else {
-                            $content.append(
-                                this.message_template({
-                                    'sender': 'me', 
-                                    'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                    'message': msg, 
-                                    'username': 'me',
-                                    'extra_classes': 'delayed'
-                            }));
-                        }
+                        $content.append(
+                            this.message_template({
+                                'sender': 'me', 
+                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                                'message': msg, 
+                                'username': 'me',
+                                'extra_classes': 'delayed'
+                        }));
                     } else {
-                        if ((match) && (match[1] === 'me')) {
-                            $content.append(
-                                this.action_template({
-                                    'sender': 'them', 
-                                    'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                    'message': msg.replace(/^\/me/, '*'+this.model.get('user_id')),
-                                    'username': this.model.get('fullname'),
-                                    'extra_classes': 'delayed'
-                                }));
-                        } else {
-                            $content.append(
-                                this.message_template({
-                                    'sender': 'them', 
-                                    'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                    'message': msg,
-                                    'username': this.model.get('fullname'),
-                                    'extra_classes': 'delayed'
-                                }));
-                        }
+                        $content.append(
+                            this.message_template({
+                                'sender': 'them', 
+                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                                'message': msg,
+                                'username': this.model.get('fullname').split(' ')[0],
+                                'extra_classes': 'delayed'
+                            }));
                     }
                 }
             }, this));
@@ -554,7 +533,7 @@
                     return;
                 }
             }
-            xmppchat.chatboxesview.openChat(jid);
+            xmppchat.chatboxesview.openChat(jid, xmppchat.fullname);
         }
     });
 
@@ -591,12 +570,11 @@
     });
 
     xmppchat.ChatRoom = xmppchat.ChatBox.extend({
-        initialize: function (jid) {
-            var nick = Strophe.getNodeFromJid(xmppchat.connection.jid);
+        initialize: function (jid, nick) {
             this.set({
                 'id': jid,
                 'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(xmppchat.connection.jid)),
+                'nick': nick,
                 'jid': jid,
                 'box_id' : hex_sha1(jid)
             }, {'silent': true});
@@ -845,7 +823,7 @@
                 });
             } else {
                 if (this.isChatRoom(jid)) {
-                    box = new xmppchat.ChatRoom(jid);
+                    box = new xmppchat.ChatRoom(jid, xmppchat.fullname.split(' ')[0])
                     view = new xmppchat.ChatRoomView({
                         'model': box
                     });
@@ -1052,7 +1030,8 @@
             this.$el.delegate('a.remove-xmpp-contact','click', function (ev) {
                 ev.preventDefault();
                 that.removeContact();
-            }); return this;
+            });
+            return this;
         },
 
         initialize: function () {
@@ -1063,7 +1042,7 @@
             }, this);
         }
     });
-    
+
     RosterItems = Backbone.Collection.extend({
         model: xmppchat.RosterItem,
         initialize: function () {
@@ -1498,7 +1477,7 @@
         $toggle.unbind('click');
 
         this.username = chatdata.attr('username');
-        this.fullname = chatdata.attr('username');
+        this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe');
 
         $(document).unbind('jarnxmpp.connected');
@@ -1513,7 +1492,7 @@
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
 
             this.roster = new RosterItems();
-            _.extend(this.roster, this.Roster);
+            //_.extend(this.roster, this.Roster);
 
             this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
             this.connection.addHandler(
@@ -1525,7 +1504,7 @@
                         this.presenceHandler(presence);
                         return true;
                     }, this.roster), null, 'presence', null);
-            
+
             this.connection.roster.registerCallback(
                     $.proxy(this.roster.rosterHandler, this.roster), 
                     null, 'presence', null);

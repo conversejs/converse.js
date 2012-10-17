@@ -1096,13 +1096,15 @@
             return rank;
         },
 
-        rosterSuggestedItem: function (msg) {
-            alert('hello');
+        subscribeToSuggestedItems: function (msg) {
             $(msg).find('item').each(function () {
-                var jid = $(this).attr('jid');
-                var action = $(this).attr('action');
+                var jid = $(this).attr('jid'),
+                    action = $(this).attr('action'),
+                    fullname = $(this).attr('name');
                 if (action === 'add') {
-                    xmppchat.connection.send($pres({to: jid, type: 'subscribe'}));
+                    xmppchat.connection.roster.add(jid, fullname, [], function (iq) {
+                        xmppchat.connection.roster.subscribe(jid);
+                    });
                 }
             });
             return true;
@@ -1515,7 +1517,7 @@
 
             this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
             this.connection.addHandler(
-                    $.proxy(this.roster.rosterSuggestedItem, this.roster), 
+                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 
                     'http://jabber.org/protocol/rosterx', 'message', null);
 
             this.connection.addHandler(

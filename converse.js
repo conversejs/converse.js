@@ -911,6 +911,8 @@
                     }, this));
                     return;
                 }
+            } else if (!view.isVisible()) {
+                this.showChat(bare_jid);
             }
             view.messageReceived(message);
             xmppchat.roster.addResource(bare_jid, resource);
@@ -1219,13 +1221,24 @@
                 item = this.getItem(bare_jid);
 
                 if (xmppchat.auto_subscribe) {
-                    //XXX: Probably need to get fullname support here...
-                    xmppchat.connection.roster.authorize(bare_jid);
-                    if (!(item) || (item.get('subscription') == 'none')) {
-                        // Subscribe back
-                        xmppchat.connection.roster.add(jid, name, [], function (iq) {
-                            xmppchat.connection.roster.subscribe(jid);
-                        });
+                    if ((!item) || (item.get('subscription') != 'to')) {
+                        if (xmppchat.connection.roster.get(jid)) {
+                            $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
+                                xmppchat.connection.roster.update(jid, data.fullname, [], function (iq) {
+                                    xmppchat.connection.roster.authorize(bare_jid);
+                                    xmppchat.connection.roster.subscribe(jid);
+                                });
+                            }, this));
+                        } else {
+                            $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
+                                xmppchat.connection.roster.add(jid, data.fullname, [], function (iq) {
+                                    xmppchat.connection.roster.authorize(bare_jid);
+                                    xmppchat.connection.roster.subscribe(jid);
+                                });
+                            }, this));
+                        }
+                    } else {
+                        xmppchat.connection.roster.authorize(bare_jid);
                     }
                 } else {
                     if ((item) && (item.get('subscription') != 'none'))  {
@@ -1269,7 +1282,9 @@
                 } else {
                     if (this.removeResource(bare_jid, resource) === 0) {
                         model = this.getItem(bare_jid);
-                        model.set({'presence_type': presence_type});
+                        if (model) {
+                            model.set({'presence_type': presence_type});
+                        }
                     }
                 }
             }

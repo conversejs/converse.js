@@ -215,7 +215,7 @@
                 fullname = this.model.get('fullname'),
                 time, stamp;
 
-            if (xmppchat.xmppstatus.getOwnStatus() === 'offline') {
+            if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
                 return;
             }
@@ -1182,7 +1182,7 @@
                 presence_type = $(presence).attr('type'),
                 show = $(presence).find('show'),
                 status_message = $(presence).find('status'),
-                item;
+                item, model;
 
             if ((($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) || (this.isSelf(bare_jid))) {
                 // Ignore MUC or self-addressed stanzas
@@ -1344,24 +1344,49 @@
 
     xmppchat.XMPPStatus = Backbone.Model.extend({
 
-        sendPresence: function (type) {
-            if (type === undefined) {
-                type = this.getOwnStatus() || 'online';
+        initialize: function () {
+            this.set({
+                'status' : this.getStatus(),
+                'status_message' : this.getStatusMessage(),
+            });
+        },
+
+        initStatus: function () {
+            /* Called when the page is loaded and we aren't sure what the users
+             * status is. Will also cause the UI to be updated with the correct
+             * status.
+             */
+            var stat = this.getStatus();
+            if (stat === undefined) {
+                stat = 'online';
+                this.setStatus(stat);
+            } else {
+                this.sendPresence(stat);
             }
+        },
+
+        sendPresence: function (type) {
             xmppchat.connection.send($pres({'type':type}));
         },
 
-        getOwnStatus: function () {
+        getStatus: function () {
             return store.get(xmppchat.connection.bare_jid+'-xmpp-status');
         },
 
-        setOwnStatus: function (value) {
+        setStatus: function (value) {
             this.sendPresence(value);
+            this.set({'status': value});
             store.set(xmppchat.connection.bare_jid+'-xmpp-status', value);
         },
 
-        setCustomStatus: function (presence_type, custom_status) {
-            xmppchat.connection.send($pres({'type':presence_type}).c('status').t(custom_status));
+        setStatusMessage: function (status_message) {
+            xmppchat.connection.send($pres({'type':this.getStatus()}).c('status').t(status_message));
+            this.set({'status_message': status_message});
+            store.set(xmppchat.connection.bare_jid+'-xmpp-custom-status', status_message);
+        },
+
+        getStatusMessage: function () {
+            return store.get(xmppchat.connection.bare_jid+'-xmpp-custom-status');
         }
 
     });
@@ -1372,8 +1397,8 @@
         events: {
             "click a.choose-xmpp-status": "toggleOptions",
             "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-            "submit #set-custom-xmpp-status": "changeStatusMessage",
-            "click .dropdown dd ul li a": "setOwnStatus"
+            "submit #set-custom-xmpp-status": "setStatusMessage",
+            "click .dropdown dd ul li a": "setStatus"
         },
 
         toggleOptions: function (ev) {
@@ -1383,52 +1408,52 @@
 
         change_status_message_template: _.template(
             '<form id="set-custom-xmpp-status">' +
-                '<input type="text" class="custom-xmpp-status" {{ chat_status }}" placeholder="Custom status"/>' +
+                '<input type="text" class="custom-xmpp-status" {{ status_message }}" placeholder="Custom status"/>' +
                 '<button type="submit">Save</button>' +
             '</form>'),
 
         status_template: _.template(
             '<div class="xmpp-status">' +
                 '<a class="choose-xmpp-status {{ presence_type }}" href="#" title="Click to change your chat status">' +
-                    '{{ chat_status }} <span class="value">{{ chat_status }}</span>' +
+                    '{{ status_message }} <span class="value">{{ status_message }}</span>' +
                 '</a>' +
                 '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
             '</div>'),
 
 
-        changeStatusMessage: function (ev) {
-            ev.preventDefault();
-            var chat_status = $(ev.target).find('input').attr('value');
-            var presence_type = this.model.getOwnStatus() || 'I am offline';
-            $(this.el).find('#fancy-xmpp-status-select').html(
-                    this.status_template({
-                            'chat_status': chat_status,
-                            'presence_type': presence_type
-                            }));
-            this.model.setCustomStatus(presence_type, chat_status);
-        },
-
         renderStatusChangeForm: function (ev) {
             ev.preventDefault();
-            var chat_status = this.model.getOwnStatus() || 'offline';
-            var input = this.change_status_message_template({'chat_status': chat_status});
+            var status_message = this.model.getStatus() || 'offline';
+            var input = this.change_status_message_template({'status_message': status_message});
             this.$el.find('.xmpp-status').replaceWith(input);
             this.$el.find('.custom-xmpp-status').focus().focus();
         },
 
-        setOwnStatus: function (ev) {
+        setStatusMessage: function (ev) {
+            ev.preventDefault();
+            var status_message = $(ev.target).find('input').attr('value');
+            if (status_message === "") {
+            }
+            this.model.setStatusMessage(status_message);
+        },
+
+        setStatus: function (ev) {
             ev.preventDefault();
             var $el = $(ev.target).find('span'),
                 value = $el.text();
+            this.model.setStatus(value);
+            this.$el.find(".dropdown dd ul").hide();
+        },
 
+        updateStatusUI: function (ev) {
+            var stat = ev.get('status'),
+                status_message = ev.get('status_message') || "I am " + stat;
             $(this.el).find('#fancy-xmpp-status-select').html(
-                    this.status_template({
-                            'chat_status': 'I am ' + value,
-                            'presence_type': value 
-                            }));
-            $(this.el).find(".dropdown dd ul").hide();
-            $(this.el).find("#source").val($($el).find("span.value").html());
-            this.model.setOwnStatus(value);
+                this.status_template({
+                        'presence_type': stat,
+                        'status_message': status_message
+                        }));
+
         },
 
         choose_template: _.template(
@@ -1446,18 +1471,18 @@
             '</li>'),
 
         initialize: function () {
+            // Replace the default dropdown with something nicer
+            // -------------------------------------------------
             var $select = $(this.el).find('select#select-xmpp-status'),
-                presence_type = this.model.getOwnStatus() || 'offline',
+                presence_type = this.model.getStatus() || 'offline',
                 options = $('option', $select),
                 that = this;
-
             $(this.el).html(this.choose_template());
             $(this.el).find('#fancy-xmpp-status-select')
                     .html(this.status_template({
-                            'chat_status': "I am " + presence_type,
+                            'status_message': "I am " + presence_type,
                             'presence_type': presence_type 
                             }));
-
             // iterate through all the <option> elements and create UL
             options.each(function(){
                 $(that.el).find("#target dd ul").append(that.option_template({
@@ -1466,6 +1491,11 @@
                                                             })).hide();
             });
             $select.remove();
+
+            // Listen for status change on the model and initialize
+            // ----------------------------------------------------
+            this.options.model.on("change", $.proxy(this.updateStatusUI, this)); 
+            this.model.initStatus();
         }
     });
 
@@ -1527,8 +1557,6 @@
             this.xmppstatusview = new this.XMPPStatusView({
                 'model': this.xmppstatus
             });
-
-            this.xmppstatus.sendPresence();
 
             // Controlbox toggler
             $toggle.bind('click', $.proxy(function (e) {

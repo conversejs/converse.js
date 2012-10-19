@@ -109,13 +109,18 @@
             if (msgs.length >= 30) {
                 msgs.shift();
             }
-            msgs.push(now+' '+direction+' '+msg);
+            msgs.push(sjcl.encrypt(hex_sha1(this.get('own_jid')), now+' '+direction+' '+msg));
             store.set(hex_sha1(this.get('own_jid')+bare_jid), msgs);
         },
 
         getMessages: function (jid) {
-            var bare_jid = Strophe.getBareJidFromJid(jid);
-            return store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
+            var bare_jid = Strophe.getBareJidFromJid(jid),
+                decrypted_msgs = [];
+            var msgs =store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
+            for (var i=0; i<msgs.length; i++) {
+                decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
+            }
+            return decrypted_msgs
         }
     });
     

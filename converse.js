@@ -954,9 +954,10 @@
                     "Remove": function() {
                         var bare_jid = that.model.get('bare_jid');
                         $(this).dialog( "close" );
-                        xmppchat.connection.roster.unauthorize(that.model.get('jid'));
-                        xmppchat.roster.remove(bare_jid);
-                        xmppchat.connection.roster.remove(bare_jid);
+                        xmppchat.connection.roster.remove(bare_jid, function (iq) {
+                            xmppchat.connection.roster.unauthorize(bare_jid);
+                            xmppchat.roster.remove(bare_jid);
+                        });
                     },
                     "Cancel": function() {
                         $(this).dialog( "close" );
@@ -970,7 +971,7 @@
             xmppchat.connection.roster.authorize(jid);
             xmppchat.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
                 xmppchat.connection.roster.subscribe(jid);
-            }, this);
+            });
         },
 
         declineRequest: function () {

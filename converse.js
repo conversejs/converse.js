@@ -97,7 +97,7 @@
     };
 
     xmppchat.ClientStorage = Backbone.Model.extend({
-        // TODO: Messages must be encrypted with a key and salt
+
         initialize: function (own_jid) {
             this.set({ 'own_jid' : own_jid });
         },
@@ -115,12 +115,45 @@
 
         getMessages: function (jid) {
             var bare_jid = Strophe.getBareJidFromJid(jid),
-                decrypted_msgs = [];
+                decrypted_msgs = [], i;
             var msgs =store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
-            for (var i=0; i<msgs.length; i++) {
+            for (i=0; i<msgs.length; i++) {
                 decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
             }
-            return decrypted_msgs
+            return decrypted_msgs;
+        },
+
+        getOpenChats: function () {
+            var key = hex_sha1(this.get('own_jid')+'-open-chats'),
+                chats = store.get(key) || [], 
+                decrypted_chats = [],
+                i;
+
+            for (i=0; i<chats.length; i++) {
+                decrypted_chats.push(chats[i]);
+            }
+            return decrypted_chats;
+        },
+
+        addOpenChat: function (jid) {
+            // TODO: Hash stored chats?
+            var key = hex_sha1(this.get('own_jid')+'-open-chats'),
+                chats = store.get(key) || [];
+
+            if (_.indexOf(chats, jid) == -1) {
+                chats.push(jid);
+            }
+            store.set(key, chats);
+        },
+
+        removeOpenChat: function (jid) {
+            var key = hex_sha1(this.get('own_jid')+'-open-chats'),
+                chats = store.get(key) || [];
+
+            if (_.has(chats, jid) != -1) {
+                chats.splice(_.indexOf(chats, jid), 1);
+            }
+            store.set(key, chats);
         }
     });
     
@@ -324,49 +357,18 @@
             }
         },
 
-        addChatToCookie: function () {
-            var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-                jid = this.model.get('jid'),
-                new_cookie,
-                open_chats = [];
-
-            if (cookie) {
-                open_chats = cookie.split('|');
-            }
-            if (!_.has(open_chats, jid)) {
-                // Update the cookie if this new chat is not yet in it.
-                open_chats.push(jid);
-                new_cookie = open_chats.join('|');
-                jQuery.cookie('chats-open-'+xmppchat.username, new_cookie, {path: '/'});
-                console.log('updated cookie = ' + new_cookie + '\n');
-            }
+        saveChatToStorage: function () {
+            xmppchat.storage.addOpenChat(this.model.get('jid'));
         },
 
-        removeChatFromCookie: function () {
-            var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-                open_chats = [],
-                new_chats = [];
-
-            if (cookie) {
-                open_chats = cookie.split('|');
-            }
-            for (var i=0; i < open_chats.length; i++) {
-                if (open_chats[i] != this.model.get('jid')) {
-                    new_chats.push(open_chats[i]);
-                }
-            }
-            if (new_chats.length) {
-                jQuery.cookie('chats-open-'+xmppchat.username, new_chats.join('|'), {path: '/'});
-            }
-            else {
-                jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
-            }
+        removeChatFromStorage: function () {
+            xmppchat.storage.removeOpenChat(this.model.get('jid'));
         },
 
         closeChat: function () {
             var that = this;
             $('#'+this.model.get('box_id')).hide('fast', function () {
-                that.removeChatFromCookie(that.model.get('id'));
+                that.removeChatFromStorage(that.model.get('id'));
             });
         },
 
@@ -786,31 +788,26 @@
         el: '#collective-xmpp-chat-data',
 
         restoreOpenChats: function () {
-            var cookie = jQuery.cookie('chats-open-'+xmppchat.username),
-                open_chats = [],
+            var open_chats = xmppchat.storage.getOpenChats(),
                 that = this;
 
-            jQuery.cookie('chats-open-'+xmppchat.username, null, {path: '/'});
-            if (cookie) {
-                open_chats = cookie.split('|');
-                if (_.indexOf(open_chats, 'controlbox') != -1) {
-                    this.renderChat('controlbox');
-                }
-                _.each(open_chats, $.proxy(function (jid) {
-                    if (jid != 'controlbox') {
-                        if (_.str.include(jid, xmppchat.connection.muc_domain)) {
-                            this.renderChat(jid);
-                        } else {
-                            // XXX: Can this be optimised somehow? Would be nice to get
-                            // fullnames from xmppchat.Roster but it's not yet
-                            // populated at this stage...
-                            $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
-                                that.renderChat(jid, data.fullname);
-                            });
-                        }
-                    }
-                }, this));
+            if (_.indexOf(open_chats, 'controlbox') != -1) {
+                this.renderChat('controlbox');
             }
+            _.each(open_chats, $.proxy(function (jid) {
+                if (jid != 'controlbox') {
+                    if (_.str.include(jid, xmppchat.connection.muc_domain)) {
+                        this.renderChat(jid);
+                    } else {
+                        // XXX: Can this be optimised somehow? Would be nice to get
+                        // fullnames from xmppchat.Roster but it's not yet
+                        // populated at this stage...
+                        $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
+                            that.renderChat(jid, data.fullname);
+                        });
+                    }
+                }
+            }, this));
         },
         
         isChatRoom: function (jid) {
@@ -868,7 +865,7 @@
                     view.scrolldown();
                     view.focus();
                 }
-                view.addChatToCookie();
+                view.saveChatToStorage();
             }
             return view;
         },

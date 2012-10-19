@@ -50,32 +50,6 @@
 }(this, function (jarnxmpp, $, store, _, console) {
 
     var xmppchat = jarnxmpp;
-    xmppchat.messages = {};
-    xmppchat.messages.ClientStorage = (function () {
-        // TODO: Messages must be encrypted with a key and salt
-        methods = {};
-        methods.addMessage = function (jid, msg, direction) {
-            var bare_jid = Strophe.getBareJidFromJid(jid),
-                now = new Date().toISOString(),
-                msgs = store.get(bare_jid) || [];
-            if (msgs.length >= 30) {
-                msgs.shift();
-            }
-            msgs.push(now+' '+direction+' '+msg);
-            store.set(bare_jid, msgs);
-        };
-
-        methods.getMessages = function (jid) {
-            return store.get(jid) || [];
-        };
-        return methods;
-    })();
-
-    xmppchat.messages.getMessages = function (jid, callback) {
-        var bare_jid = Strophe.getBareJidFromJid(jid),
-            msgs = this.ClientStorage.getMessages(bare_jid);
-        callback(msgs);
-    };
 
     xmppchat.collections = {
         /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
@@ -84,6 +58,7 @@
         */
         'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
     };
+
     xmppchat.collections.getLastCollection = function (jid, callback) {
         var bare_jid = Strophe.getBareJidFromJid(jid),
             iq = $iq({'type':'get'})
@@ -121,6 +96,29 @@
         });
     };
 
+    xmppchat.ClientStorage = Backbone.Model.extend({
+        // TODO: Messages must be encrypted with a key and salt
+        initialize: function (own_jid) {
+            this.set({ 'own_jid' : own_jid });
+        },
+
+        addMessage: function (jid, msg, direction) {
+            var bare_jid = Strophe.getBareJidFromJid(jid),
+                now = new Date().toISOString(),
+                msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
+            if (msgs.length >= 30) {
+                msgs.shift();
+            }
+            msgs.push(now+' '+direction+' '+msg);
+            store.set(hex_sha1(this.get('own_jid')+bare_jid), msgs);
+        },
+
+        getMessages: function (jid) {
+            var bare_jid = Strophe.getBareJidFromJid(jid);
+            return store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
+        }
+    });
+    
     xmppchat.ChatBox = Backbone.Model.extend({
         initialize: function () {
             this.set({
@@ -225,7 +223,7 @@
                     return;
                 }
             } else {
-                xmppchat.messages.ClientStorage.addMessage(jid, body, 'from');
+                xmppchat.storage.addMessage(jid, body, 'from');
                 $chat_content.find('div.chat-event').remove();
                 if (delayed) {
                     // XXX: Test properly (for really old messages we somehow need to show
@@ -248,36 +246,36 @@
         },
 
         insertClientStoredMessages: function () {
-            xmppchat.messages.getMessages(this.model.get('jid'), $.proxy(function (msgs) {
-                var $content = this.$el.find('.chat-content');
-                for (var i=0; i<_.size(msgs); i++) {
-                    var msg = msgs[i], 
-                        msg_array = msg.split(' ', 2),
-                        date = msg_array[0],
-                        match;
-                    msg = String(msg).replace(/(.*?\s.*?\s)/, '');
-                    match = msg.match(/^\/(.*?)(?: (.*))?$/);
-                    if (msg_array[1] == 'to') {
-                        $content.append(
-                            this.message_template({
-                                'sender': 'me', 
-                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                'message': msg, 
-                                'username': 'me',
-                                'extra_classes': 'delayed'
+            var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
+                $content = this.$el.find('.chat-content');
+
+            for (var i=0; i<_.size(msgs); i++) {
+                var msg = msgs[i], 
+                    msg_array = msg.split(' ', 2),
+                    date = msg_array[0],
+                    match;
+                msg = String(msg).replace(/(.*?\s.*?\s)/, '');
+                match = msg.match(/^\/(.*?)(?: (.*))?$/);
+                if (msg_array[1] == 'to') {
+                    $content.append(
+                        this.message_template({
+                            'sender': 'me', 
+                            'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                            'message': msg, 
+                            'username': 'me',
+                            'extra_classes': 'delayed'
+                    }));
+                } else {
+                    $content.append(
+                        this.message_template({
+                            'sender': 'them', 
+                            'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                            'message': msg,
+                            'username': this.model.get('fullname').split(' ')[0],
+                            'extra_classes': 'delayed'
                         }));
-                    } else {
-                        $content.append(
-                            this.message_template({
-                                'sender': 'them', 
-                                'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
-                                'message': msg,
-                                'username': this.model.get('fullname').split(' ')[0],
-                                'extra_classes': 'delayed'
-                            }));
-                    }
                 }
-            }, this));
+            }
         },
 
         sendMessage: function (text) {
@@ -292,7 +290,7 @@
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
             xmppchat.connection.send(message);
-            xmppchat.messages.ClientStorage.addMessage(bare_jid, text, 'to');
+            xmppchat.storage.addMessage(bare_jid, text, 'to');
             this.appendMessage(text);
         },
 
@@ -1043,7 +1041,7 @@
         }
     });
 
-    RosterItems = Backbone.Collection.extend({
+    xmppchat.RosterItems = Backbone.Collection.extend({
         model: xmppchat.RosterItem,
         initialize: function () {
             this._connection = xmppchat.connection;
@@ -1521,9 +1519,9 @@
             // XXX: Better if configurable?
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
 
-            this.roster = new RosterItems();
-            //_.extend(this.roster, this.Roster);
+            this.storage = new this.ClientStorage(Strophe.getBareJidFromJid(this.connection.jid));
 
+            this.roster = new this.RosterItems();
             this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 

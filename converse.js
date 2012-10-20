@@ -162,7 +162,8 @@
             this.set({
                 'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                 'box_id' : hex_sha1(this.get('jid')),
-                'fullname' : this.get('fullname') 
+                'fullname' : this.get('fullname'),
+                'portrait_url': this.get('portrait_url')
             });
         }
     });
@@ -396,10 +397,13 @@
             }, this);
         },
 
-        template:   _.template(
+        template: _.template(
                     '<div class="chat-head chat-head-chatbox">' +
-                        '<div class="chat-title"> {{ fullname }} </div>' +
                         '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
+                        '<a href="#" class="user">' +
+                            '<img src="{{portrait_url}}" alt="Avatar of Freethan Meignaman" class="avatar" />' +
+                            '<div class="chat-title"> {{ fullname }} </div>' +
+		                '</a>' +
                         '<p class="user-custom-message"><p/>' +
                     '</div>' +
                     '<div class="chat-content"></div>' + 
@@ -538,7 +542,7 @@
                     return;
                 }
             }
-            xmppchat.chatboxesview.openChat(jid, xmppchat.fullname);
+            xmppchat.chatboxesview.openChat(jid);
         }
     });
 
@@ -755,12 +759,14 @@
         },
 
         onRoster: function (roster, room) {
-            var controlboxview = xmppchat.chatboxesview.views.controlbox;
+            var controlboxview = xmppchat.chatboxesview.views.controlbox,
+                i;
+
             if (controlboxview) {
                 controlboxview.roomspanel.trigger('update-rooms-list');
             }
             this.$el.find('.participant-list').empty();
-            for (var i=0; i<_.size(roster); i++) {
+            for (i=0; i<_.size(roster); i++) {
                 this.$el.find('.participant-list').append('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
             }
             return true;
@@ -792,19 +798,14 @@
                 that = this;
 
             if (_.indexOf(open_chats, 'controlbox') != -1) {
-                this.renderChat('controlbox');
+                this.createChatRoom('controlbox');
             }
             _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'controlbox') {
                     if (_.str.include(jid, xmppchat.connection.muc_domain)) {
-                        this.renderChat(jid);
+                        this.createChatRoom(jid);
                     } else {
-                        // XXX: Can this be optimised somehow? Would be nice to get
-                        // fullnames from xmppchat.Roster but it's not yet
-                        // populated at this stage...
-                        $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), function (data) {
-                            that.renderChat(jid, data.fullname);
-                        });
+                        this.openChat(jid);
                     }
                 }
             }, this));
@@ -814,7 +815,7 @@
             return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
         },
         
-        renderChat: function (jid, name) {
+        createChatRoom: function (jid, data) {
             var box, view;
             if (jid === 'controlbox') {
                 box = new xmppchat.ControlBox({'id': jid, 'jid': jid});
@@ -823,12 +824,12 @@
                 });
             } else {
                 if (this.isChatRoom(jid)) {
-                    box = new xmppchat.ChatRoom(jid, xmppchat.fullname.split(' ')[0])
+                    box = new xmppchat.ChatRoom(jid, xmppchat.fullname.split(' ')[0]);
                     view = new xmppchat.ChatRoomView({
                         'model': box
                     });
                 } else {
-                    box = new xmppchat.ChatBox({'id': jid, 'jid': jid, 'fullname': name});
+                    box = new xmppchat.ChatBox({'id': jid, 'jid': jid, 'fullname': data.fullname, 'portrait_url': data.portrait_url});
                     view = new xmppchat.ChatBoxView({
                         model: box 
                     });
@@ -847,9 +848,11 @@
             }
         },
 
-        openChat: function (jid, name) {
+        openChat: function (jid) {
             if (!this.model.get(jid)) {
-                this.renderChat(jid, name);
+                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
+                    view = this.createChatRoom(jid, data);
+                }, this));
             } else {
                 this.showChat(jid);
             }
@@ -878,17 +881,12 @@
                 fullname;
 
             if (!view) {
-                if (xmppchat.roster.get(bare_jid)) {
-                    fullname = xmppchat.roster.get(bare_jid).get('fullname');
-                    view = this.renderChat(bare_jid, fullname);
-                } else {
-                    $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(bare_jid), $.proxy(function (data) {
-                        view = this.renderChat(bare_jid, data.fullname);
-                        view.messageReceived(message);
-                        xmppchat.roster.addResource(bare_jid, resource);
-                    }, this));
-                    return;
-                }
+                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(bare_jid), $.proxy(function (data) {
+                    view = this.createChatRoom(jid, data);
+                    view.messageReceived(message);
+                    xmppchat.roster.addResource(bare_jid, resource);
+                }, this));
+                return;
             } else if (!view.isVisible()) {
                 this.showChat(bare_jid);
             }
@@ -934,7 +932,7 @@
         tagName: 'dd',
 
         openChat: function () {
-            xmppchat.chatboxesview.openChat(this.model.get('jid'), this.model.get('fullname'));
+            xmppchat.chatboxesview.openChat(this.model.get('jid'));
         },
 
         removeContact: function () {

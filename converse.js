@@ -163,7 +163,8 @@
                 'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                 'box_id' : hex_sha1(this.get('jid')),
                 'fullname' : this.get('fullname'),
-                'portrait_url': this.get('portrait_url')
+                'portrait_url': this.get('portrait_url'),
+                'user_profile_url': this.get('user_profile_url')
             });
         }
     });
@@ -400,7 +401,7 @@
         template: _.template(
                     '<div class="chat-head chat-head-chatbox">' +
                         '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
-                        '<a href="#" class="user">' +
+                        '<a href="{{user_profile_url}}" class="user">' +
                             '<img src="{{portrait_url}}" alt="Avatar of {{fullname}}" class="avatar" />' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
 		                '</a>' +
@@ -798,12 +799,12 @@
                 that = this;
 
             if (_.indexOf(open_chats, 'controlbox') != -1) {
-                this.createChatRoom('controlbox');
+                this.createChatBox('controlbox');
             }
             _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'controlbox') {
                     if (_.str.include(jid, xmppchat.connection.muc_domain)) {
-                        this.createChatRoom(jid);
+                        this.createChatBox(jid);
                     } else {
                         this.openChat(jid);
                     }
@@ -815,7 +816,7 @@
             return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
         },
         
-        createChatRoom: function (jid, data) {
+        createChatBox: function (jid, data) {
             var box, view;
             if (jid === 'controlbox') {
                 box = new xmppchat.ControlBox({'id': jid, 'jid': jid});
@@ -829,7 +830,13 @@
                         'model': box
                     });
                 } else {
-                    box = new xmppchat.ChatBox({'id': jid, 'jid': jid, 'fullname': data.fullname, 'portrait_url': data.portrait_url});
+                    box = new xmppchat.ChatBox({
+                                            'id': jid, 
+                                            'jid': jid, 
+                                            'fullname': data.fullname, 
+                                            'portrait_url': data.portrait_url,
+                                            'user_profile_url': data.user_profile_url
+                                        });
                     view = new xmppchat.ChatBoxView({
                         model: box 
                     });
@@ -851,7 +858,7 @@
         openChat: function (jid) {
             if (!this.model.get(jid)) {
                 $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                    view = this.createChatRoom(jid, data);
+                    view = this.createChatBox(jid, data);
                 }, this));
             } else {
                 this.showChat(jid);
@@ -882,7 +889,7 @@
 
             if (!view) {
                 $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(bare_jid), $.proxy(function (data) {
-                    view = this.createChatRoom(jid, data);
+                    view = this.createChatBox(jid, data);
                     view.messageReceived(message);
                     xmppchat.roster.addResource(bare_jid, resource);
                 }, this));

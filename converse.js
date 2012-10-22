@@ -392,6 +392,7 @@
                         }
                     } else if (_.has(changed.changes, 'status')) {
                         this.$el.find('p.user-custom-message').text(item.get('status'));
+                        this.$el.find('p.user-custom-message').attr('title', item.get('status'));
                     }
                 }
             }, this);
@@ -401,7 +402,7 @@
                     '<div class="chat-head chat-head-chatbox">' +
                         '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
                         '<a href="#" class="user">' +
-                            '<img src="{{portrait_url}}" alt="Avatar of Freethan Meignaman" class="avatar" />' +
+                            '<img src="{{portrait_url}}" alt="Avatar of {{fullname}}" class="avatar" />' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
 		                '</a>' +
                         '<p class="user-custom-message"><p/>' +

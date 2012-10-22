@@ -391,8 +391,7 @@
                             }
                         }
                     } else if (_.has(changed.changes, 'status')) {
-                        this.$el.find('p.user-custom-message').text(item.get('status'));
-                        this.$el.find('p.user-custom-message').attr('title', item.get('status'));
+                        this.$el.find('p.user-custom-message').text(item.get('status')).attr('title', item.get('status'));
                     }
                 }
             }, this);
@@ -660,8 +659,8 @@
 
         template: _.template(
                 '<div class="chat-head chat-head-chatroom">' +
-                    '<div class="chat-title"> {{ name }} </div>' +
                     '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
+                    '<div class="chat-title"> {{ name }} </div>' +
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +
                 '<div>' +
@@ -719,7 +718,7 @@
                 subject = $(message).children('subject').text();
 
             if (subject) {
-                this.$el.find('.chatroom-topic').text(subject);
+                this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
             }
             if (!body) {
                 if (composing.length > 0) {

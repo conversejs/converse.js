@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>burry.js</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id="background"></div>
+<div id='container'>
+  <div class='section'>
+    <div class='docs'><h1>burry.js</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Burry.js Storage v0.1</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>(c) 2012 Yiorgis Gozadinos, Riot AS.
+   Burry.js is distributed under the MIT license.
+   http://github.com/ggozad/burry.js</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>AMD/global registrations</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="nx">factory</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">define</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">define</span><span class="p">.</span><span class="nx">amd</span><span class="p">)</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>AMD. Register as an anonymous module.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">define</span><span class="p">([],</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">factory</span><span class="p">();</span>
+        <span class="p">});</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Browser globals</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">root</span><span class="p">.</span><span class="nx">Burry</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}(</span><span class="k">this</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Construct a new Burry store with an optional <code>namespace</code> and an optional default <code>ttl</code>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">Burry</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="nx">Store</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">ns</span><span class="p">,</span> <span class="nx">default_ttl</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">stores</span> <span class="o">=</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">stores</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">ns</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span> <span class="o">+</span> <span class="nx">ns</span><span class="p">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span> <span class="o">+</span> <span class="nx">ns</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">stores</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">ns</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="nx">stores</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">ns</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">&#39;_burry_stores_&#39;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">stores</span><span class="p">));</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">default_ttl</span> <span class="o">=</span> <span class="nx">default_ttl</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Time resolution in minutes</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_EXPIRY_UNITS</span><span class="o">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Calculate the time since Epoch in minutes</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_mEpoch</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">((</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">())</span><span class="o">/</span><span class="nx">Burry</span><span class="p">.</span><span class="nx">_EXPIRY_UNITS</span><span class="p">);</span>
+        <span class="p">},</span>
+
+        <span class="nx">stores</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">stores</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;_burry_stores_&#39;</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">stores</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">stores</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">stores</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">stores</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">stores</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Checks for localStorage &amp; JSON support.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">isSupported</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">&#39;_burry_&#39;</span><span class="p">,</span> <span class="s1">&#39;_burry_&#39;</span><span class="p">);</span>
+                <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">&#39;_burry_&#39;</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">JSON</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">},</span>
+
+        <span class="nx">flushExpired</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">ns</span><span class="p">,</span>
+                <span class="nx">remove</span> <span class="o">=</span> <span class="p">[],</span>
+                <span class="nx">now</span> <span class="o">=</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">_mEpoch</span><span class="p">();</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">key</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+                <span class="nx">match</span> <span class="o">=</span> <span class="nx">key</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/(.+)-_burry_exp_(.*)/</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">val</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">val</span> <span class="o">&lt;</span> <span class="nx">now</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="nx">key</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="nx">ns</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+                        <span class="nx">remove</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span> <span class="o">+</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">Store</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span> <span class="o">+</span> <span class="nx">ns</span><span class="p">);</span>
+                        <span class="nx">remove</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span> <span class="o">+</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">Store</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span> <span class="o">+</span> <span class="nx">ns</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span> <span class="nx">remove</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="nx">remove</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">};</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Instance methods</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="nx">Burry</span><span class="p">.</span><span class="nx">Store</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Suffix to all keys in the cache</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_CACHE_SUFFIX</span><span class="o">:</span> <span class="s1">&#39;-_burry_&#39;</span><span class="p">,</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>Key used to store expiration data</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_EXPIRY_KEY</span><span class="o">:</span> <span class="s1">&#39;-_burry_exp_&#39;</span><span class="p">,</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>Return the internally used suffixed key.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_internalKey</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">key</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Return the internally used suffixed expiration key.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_expirationKey</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">key</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>Check if a key is a valid internal key</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_isInternalKey</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="k">this</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">===</span> <span class="k">this</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nx">key</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="k">this</span><span class="p">.</span><span class="nx">_CACHE_SUFFIX</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>Check if a key is a valid expiration key</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_isExpirationKey</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="k">this</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">===</span> <span class="k">this</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nx">key</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="k">this</span><span class="p">.</span><span class="nx">_EXPIRY_KEY</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>Returns in how many minutes after Epoch the key expires,
+or <code>undefined</code> if it does not expire.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_expiresOn</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">expires</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_expirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">expires</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">expires</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>Parse the value of a key as an integer.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">_getCounter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">bkey</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">bkey</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+            <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>Returns the value of <code>key</code> from the cache, <code>undefined</code> if the <code>key</code> has
+expired or is not stored.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasExpired</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+                <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="nx">value</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>Sets a <code>key</code>/<code>value</code> on the cache. Optionally, sets the expiration in <code>ttl</code> minutes.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">set</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">ttl</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">bkey</span><span class="p">,</span> <span class="nx">expires</span> <span class="o">=</span> <span class="p">{};</span>
+            <span class="nx">ttl</span> <span class="o">=</span> <span class="nx">ttl</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">default_ttl</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">ttl</span><span class="p">)</span> <span class="nx">ttl</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">ttl</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">key</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+            <span class="nx">value</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="nx">value</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">ttl</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_expirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">_mEpoch</span><span class="p">()</span> <span class="o">+</span> <span class="nx">ttl</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_expirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+                <span class="p">}</span>
+            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;QUOTA_EXCEEDED_ERR&#39;</span> <span class="o">||</span> <span class="nx">e</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;NS_ERROR_DOM_QUOTA_REACHED&#39;</span><span class="p">)</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>No space left on localStorage, let's flush expired items and try agagin.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                    <span class="nx">Burry</span><span class="p">.</span><span class="nx">flushExpired</span><span class="p">();</span>
+                    <span class="k">try</span> <span class="p">{</span>
+                        <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="nx">value</span><span class="p">);</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">ttl</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_expirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">_mEpoch</span><span class="p">()</span> <span class="o">+</span> <span class="nx">ttl</span><span class="p">);</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_expirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>Oh well. Let's forget about it.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>Sets a <code>key</code>/<code>value</code> on the cache as does <strong>set</strong> but only if the key does not already exist or has expired.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">add</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">ttl</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">hasExpired</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">ttl</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>Sets a <code>key</code>/<code>value</code> on the cache as does <strong>set</strong> but only if the key already exist and has not expired.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">replace</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">ttl</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="o">!==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">hasExpired</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">ttl</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p>Removes an item from the cache.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_expirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>Increments the integer value of <code>key</code> by 1</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">incr</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">bkey</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span>
+                <span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getCounter</span><span class="p">(</span><span class="nx">bkey</span><span class="p">);</span>
+            <span class="nx">value</span><span class="o">++</span><span class="p">;</span>
+            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="nx">bkey</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <p>Decrements the integer value of <code>key</code> by 1</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">decr</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">bkey</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_internalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span>
+                <span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getCounter</span><span class="p">(</span><span class="nx">bkey</span><span class="p">);</span>
+            <span class="nx">value</span><span class="o">--</span><span class="p">;</span>
+            <span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="nx">bkey</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>Returns whether <code>key</code> has expired.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">hasExpired</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">expireson</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_expiresOn</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">expireson</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">expireson</span> <span class="o">&lt;</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">_mEpoch</span><span class="p">()))</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <p>Returns a list of all the cached keys</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">keys</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">bkey</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">length</span> <span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">bkey</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+                <span class="nx">key</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_isInternalKey</span><span class="p">(</span><span class="nx">bkey</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <p>Returns an object with all the expirable keys. The values are the ttl
+in minutes since Epoch.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">expirableKeys</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">bkey</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">{};</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">length</span> <span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">bkey</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+                <span class="nx">key</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_isExpirationKey</span><span class="p">(</span><span class="nx">bkey</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">results</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">bkey</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <p>Removes all Burry items from <code>localStorage</code>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">flush</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">remove</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">length</span> <span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">key</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">key</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_isInternalKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">_isExpirationKey</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="nx">remove</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">remove</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+                <span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="nx">remove</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="p">},</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <p>Removes all expired items.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="nx">flushExpired</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">expirable</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">expirableKeys</span><span class="p">(),</span> <span class="nx">now</span> <span class="o">=</span> <span class="nx">Burry</span><span class="p">.</span><span class="nx">_mEpoch</span><span class="p">(),</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">;</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">expirable</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">val</span> <span class="o">=</span> <span class="nx">expirable</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">val</span> <span class="o">&lt;</span> <span class="nx">now</span><span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+
+    <span class="k">return</span> <span class="nx">Burry</span><span class="p">;</span>
+<span class="p">}));</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

@@ -8,15 +8,15 @@ converse.js
 
 It has the following features:
 
-    * Manually or automically subscribe to other users. 
-    * With manual roster subscriptions, you can accept or decline contact requests.
-    * Chat statuses (online, busy, away, offline)
-    * Custom status message
-    * Typing notifications (i.e when the contact is typing)
-    * Third person messages (/me )
-    * Multi-user chat in chatrooms
-    * Topics can be set for chatrooms
-    * Full name and profile picture support 
+* Manually or automically subscribe to other users. 
+* With manual roster subscriptions, you can accept or decline contact requests.
+* Chat statuses (online, busy, away, offline)
+* Custom status message
+* Typing notifications (i.e when the contact is typing)
+* Third person messages (/me )
+* Multi-user chat in chatrooms
+* Topics can be set for chatrooms
+* Full name and profile picture support 
 
 Converse.js is used by collective.xmpp.chat_, which is a Plone_ instant
 messaging add-on.
@@ -28,7 +28,7 @@ backbone.js_ and require.js_.
 Licence
 -------
 
-``Converse.js`` is released under both the ``MIT`` and ``GPL`` licenses.
+``Converse.js`` is released under both the MIT_ and GPL_ licenses.
 
 .. _strophe.js: http://strophe.im/strophejs
 .. _backbone.js: http:/backbonejs.org

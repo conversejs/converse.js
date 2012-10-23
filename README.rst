@@ -25,6 +25,8 @@ It has the following features:
 Converse.js is used by collective.xmpp.chat_, which is a Plone_ instant
 messaging add-on.
 
+A screencast of ``Converse.js`` in action via ``collective.xmpp.chat`` can be seen here_.
+
 It depends on quite a few third party libraries, including strophe.js_,
 backbone.js_ and require.js_.
 
@@ -42,3 +44,4 @@ Licence
 .. _XMPP: http://xmpp.org
 .. _MIT: http://opensource.org/licenses/mit-license.php
 .. _GPL: http://opensource.org/licenses/gpl-license.php
+.. _here: http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp

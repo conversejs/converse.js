@@ -6,6 +6,10 @@ converse.js
 
 *Warning*: This library is still heavily under development!
 
+--------
+Features
+--------
+
 It has the following features:
 
 * Manually or automically subscribe to other users. 
@@ -38,6 +42,3 @@ Licence
 .. _XMPP: http://xmpp.org
 .. _MIT: http://opensource.org/licenses/mit-license.php
 .. _GPL: http://opensource.org/licenses/gpl-license.php
-
-
-

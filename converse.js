@@ -137,7 +137,7 @@
         getMessages: function (jid) {
             var bare_jid = Strophe.getBareJidFromJid(jid),
                 decrypted_msgs = [], i;
-            var msgs =store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
+            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
             for (i=0; i<msgs.length; i++) {
                 decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
             }
@@ -468,11 +468,42 @@
     });
 
     xmppchat.ContactsPanel = Backbone.View.extend({
-        el: '#users',
+        tagName: 'div',
+        className: 'oc-chat-content',
+        id: 'users',
         events: {
             'click a.add-xmpp-contact': 'toggleContactForm',
             'submit form.search-xmpp-contact': 'searchContacts',
             'click a.subscribe-to-user': 'subscribeToContact'
+        },
+
+        tab_template: _.template('<li><a class="s current" href="#users">Contacts</a></li>'),
+        template: _.template(
+            '<form class="set-xmpp-status" action="" method="post">'+
+                '<span id="xmpp-status-holder">'+
+                    '<select id="select-xmpp-status">'+
+                        '<option value="online">Online</option>'+
+                        '<option value="busy">Busy</option>'+
+                        '<option value="away">Away</option>'+
+                        '<option value="offline">Offline</option>'+
+                    '</select>'+
+                '</span>'+
+            '</form>'+
+            '<div class="add-xmpp-contact">'+
+                '<a class="add-xmpp-contact" href="#" title="Click to search for new users to add as chat contacts">Add a contact</a>'+
+                '<form class="search-xmpp-contact" style="display:none">'+
+                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>'+
+                    '<button type="submit">Search</button>'+
+                    '<ul id="found-users"></ul>'+
+                '</form>'+
+            '</div>'+
+            '<dl id="xmppchat-roster"></dl>'
+        ),
+
+        render: function () {
+            $('#controlbox-tabs').append(this.tab_template());
+            $('#controlbox-panes').append(this.$el.html(this.template()));
+            return this;
         },
 
         toggleContactForm: function (ev) {
@@ -521,9 +552,28 @@
             'click a.open-room': 'createChatRoom'
         },
         room_template: _.template(
-                            '<dd class="chatroom">' +
-                            '<a class="open-room" room-jid="{{jid}}" title="Click to open this chatroom" href="#">' +
-                            '{{name}}</a></dd>'),
+            '<dd class="chatroom">' +
+            '<a class="open-room" room-jid="{{jid}}" title="Click to open this chatroom" href="#">' +
+            '{{name}}</a></dd>'),
+
+        tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
+
+        template: _.template(
+            '<div id="chatrooms" style="display:None">'+
+                '<form class="add-chatroom" action="" method="post">'+
+                    '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Chat room name"/>'+
+                    '<button type="submit">Join</button>'+
+                '</form>'+
+                '<dl id="available-chatrooms">'+
+                    '<dt>Available chatrooms</dt>'+
+                '</dl>'+
+            '</div>'),
+
+        render: function () {
+            $('#controlbox-tabs').append(this.tab_template());
+            $('#controlbox-panes').append(this.template());
+            return this;
+        },
 
         initialize: function () {
             this.on('update-rooms-list', function (ev) {
@@ -590,51 +640,19 @@
         id: 'controlbox',
         events: {
             'click a.close-controlbox-button': 'closeChat',
-            'click ul.controlbox-tabs li a': 'switchTab'
+            'click ul#controlbox-tabs li a': 'switchTab'
+        },
+
+        initialize: function () {
+            $('body').append($(this.el).hide());
         },
 
         template: _.template(
             '<div class="chat-head oc-chat-head">'+
-                '<ul class="controlbox-tabs">'+
-                    '<li><a class="s current" href="#users">Contacts</a></li>'+
-                    '<li><a class="s" href="#chatrooms">Rooms</a></li>'+
-                    '<!--<li><a class="s" href="#settings">Config</a></li>-->'+
-                '</ul>'+
-                '<a href="javascript:void(0)" class="close-controlbox-button">X</a>'+
+                '<ul id="controlbox-tabs"></ul>'+
+                '<a class="close-controlbox-button">X</a>'+
             '</div>'+
-            '<!-- tab "panes" -->'+
-            '<div class="panes">'+
-                '<div id="users" class="oc-chat-content">'+
-                    '<form class="set-xmpp-status" action="" method="post">'+
-                        '<span id="xmpp-status-holder">'+
-                            '<select id="select-xmpp-status">'+
-                                '<option value="online">Online</option>'+
-                                '<option value="busy">Busy</option>'+
-                                '<option value="away">Away</option>'+
-                                '<option value="offline">Offline</option>'+
-                            '</select>'+
-                        '</span>'+
-                    '</form>'+
-                    '<div class="add-xmpp-contact">'+
-                        '<a class="add-xmpp-contact" href="#" title="Click to search for new users to add as chat contacts">Add a contact</a>'+
-                        '<form class="search-xmpp-contact" style="display:none">'+
-                            '<input type="text" name="identifier" class="username" placeholder="Contact name"/>'+
-                            '<button type="submit">Search</button>'+
-                            '<ul id="found-users"></ul>'+
-                        '</form>'+
-                    '</div>'+
-                    '<dl id="xmppchat-roster"></dl>'+
-                '</div>'+
-                '<div id="chatrooms" style="display:None">'+
-                    '<form class="add-chatroom" action="" method="post">'+
-                        '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Chat room name"/>'+
-                        '<button type="submit">Join</button>'+
-                    '</form>'+
-                    '<dl id="available-chatrooms">'+
-                        '<dt>Available chatrooms</dt>'+
-                    '</dl>'+
-                '</div>'+
-            '</div>'
+            '<div id="controlbox-panes"></div>'
         ),
 
         switchTab: function (ev) {
@@ -652,16 +670,10 @@
             });
         },
 
-        initialize: function () {
-            this.contactspanel = new xmppchat.ContactsPanel();
-            this.roomspanel = new xmppchat.RoomsPanel();
-            this.settingspanel = new xmppchat.SettingsPanel();
-        },
-
         render: function () {
             var that = this;
             this.$el.hide('fast', function () {
-                $(this).addClass('chatbox').html(that.template(that.model.toJSON()));
+                $(this).html(that.template(that.model.toJSON()));
             });
             return this;
         }
@@ -907,29 +919,22 @@
         
         createChatBox: function (jid, data) {
             var box, view;
-            if (jid === 'controlbox') {
-                box = new xmppchat.ControlBox({'id': jid, 'jid': jid});
-                view = new xmppchat.ControlBoxView({
-                    model: box 
+            if (this.isChatRoom(jid)) {
+                box = new xmppchat.ChatRoom(jid, xmppchat.fullname.split(' ')[0]);
+                view = new xmppchat.ChatRoomView({
+                    'model': box
                 });
             } else {
-                if (this.isChatRoom(jid)) {
-                    box = new xmppchat.ChatRoom(jid, xmppchat.fullname.split(' ')[0]);
-                    view = new xmppchat.ChatRoomView({
-                        'model': box
-                    });
-                } else {
-                    box = new xmppchat.ChatBox({
-                                            'id': jid, 
-                                            'jid': jid, 
-                                            'fullname': data.fullname, 
-                                            'portrait_url': data.portrait_url,
-                                            'user_profile_url': data.user_profile_url
-                                        });
-                    view = new xmppchat.ChatBoxView({
-                        model: box 
-                    });
-                }
+                box = new xmppchat.ChatBox({
+                                        'id': jid, 
+                                        'jid': jid, 
+                                        'fullname': data.fullname, 
+                                        'portrait_url': data.portrait_url,
+                                        'user_profile_url': data.user_profile_url
+                                    });
+                view = new xmppchat.ChatBoxView({
+                    model: box 
+                });
             }
             this.views[jid] = view.render();
             view.$el.appendTo(this.$el);
@@ -1001,7 +1006,17 @@
                 }
             }, this);
             this.views = {};
-            this.createChatBox('controlbox');
+            // Add the controlbox view and the panels.
+            this.views.controlbox = xmppchat.controlbox;
+            this.views.controlbox.$el.appendTo(this.$el);
+            this.views.controlbox.contactspanel = new xmppchat.ContactsPanel().render();
+            // TODO: Only add the rooms panel if the server supports MUC
+            this.views.controlbox.roomspanel = new xmppchat.RoomsPanel().render();
+            // Rebind events (necessary for click events on tabs inserted via the panels)
+            this.views.controlbox.delegateEvents();
+            // Add the controlbox model to this collection (will trigger showChat)
+            this.options.model.add(xmppchat.controlbox.options.model);
+
             this.restoreOpenChats();
         }
     });
@@ -1605,6 +1620,10 @@
         this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
 
+        this.controlbox = new xmppchat.ControlBoxView({
+            model: new xmppchat.ControlBox({'id':'controlbox', 'jid':'controlbox'})
+        }).render();
+
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, conn) {
             alert("Connection Failed :(");
         }, this));
@@ -1612,9 +1631,7 @@
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function () {
             this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { 
-                console.log(body); 
-                };
+            this.connection.xmlOutput = function (body) { console.log(body); };
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
@@ -1624,9 +1641,9 @@
             this.chatboxesview = new this.ChatBoxesView({
                 'model': this.chatboxes
             });
-
             this.roster = new this.RosterItems();
             this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
+
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 
                     'http://jabber.org/protocol/rosterx', 'message', null);

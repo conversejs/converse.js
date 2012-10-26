@@ -3,10 +3,22 @@
     <head>
         <title>Converse.js Demo Page</title>
         <!-- This is a special version of jQuery with RequireJS built-in -->
+        <link rel="stylesheet" href="css/smoothness/jquery-ui-1.9.0.custom.css" type="text/css" media="all">
+        <link rel="stylesheet" href="converse.css" type="text/css" media="all">
         <script data-main="main" src="Libraries/require-jquery.js"></script>
     </head>
     <body>
         <h1>Converse.js Demo Page</h1>
+
+        Log in with your Jabber/XMPP ID and password. If you don't have an XMPP
+        account, you can create one for free on <a href="http://register.jabber.org">jabber.org</a>.
+
+        <!-- login dialog -->
+        <div id='login_dialog' class='hidden'>
+            <label>Login ID:</label><input type='text' id='jid'>
+            <label>Password:</label><input type='password' id='password'>
+        </div>
+
         <div id="collective-xmpp-chat-data"></div>
     </body>
 </html>

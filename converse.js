@@ -421,7 +421,7 @@
 
         template: _.template(
                     '<div class="chat-head chat-head-chatbox">' +
-                        '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
+                        '<a class="close-chatbox-button">X</a>' +
                         '<a href="{{user_profile_url}}" class="user">' +
                             '<img src="{{portrait_url}}" alt="Avatar of {{fullname}}" class="avatar" />' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
@@ -546,32 +546,31 @@
     });
 
     xmppchat.RoomsPanel = Backbone.View.extend({
-        el: '#chatrooms',
+        tagName: 'div',
+        id: 'chatrooms',
         events: {
             'submit form.add-chatroom': 'createChatRoom',
             'click a.open-room': 'createChatRoom'
         },
         room_template: _.template(
-            '<dd class="chatroom">' +
+            '<dd class="available-chatroom">' +
             '<a class="open-room" room-jid="{{jid}}" title="Click to open this chatroom" href="#">' +
             '{{name}}</a></dd>'),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
 
         template: _.template(
-            '<div id="chatrooms" style="display:None">'+
-                '<form class="add-chatroom" action="" method="post">'+
-                    '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Chat room name"/>'+
-                    '<button type="submit">Join</button>'+
-                '</form>'+
-                '<dl id="available-chatrooms">'+
-                    '<dt>Available chatrooms</dt>'+
-                '</dl>'+
-            '</div>'),
+            '<form class="add-chatroom" action="" method="post">'+
+                '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Chat room name"/>'+
+                '<button type="submit">Join</button>'+
+            '</form>'+
+            '<dl id="available-chatrooms">'+
+                '<dt>Available chatrooms</dt>'+
+            '</dl>'),
 
         render: function () {
             $('#controlbox-tabs').append(this.tab_template());
-            $('#controlbox-panes').append(this.template());
+            $('#controlbox-panes').append(this.$el.html(this.template()).hide());
             return this;
         },
 
@@ -586,7 +585,7 @@
             xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
                 var room, name, jid, i, 
                     rooms = $(iq).find('query').find('item');
-                this.$el.find('#available-chatrooms').find('dd.chatroom').remove();
+                this.$el.find('#available-chatrooms').find('dd.available-chatroom').remove();
                 if (rooms.length) {
                     this.$el.find('#available-chatrooms dt').show();
                 } else {
@@ -639,7 +638,7 @@
         className: 'chatbox',
         id: 'controlbox',
         events: {
-            'click a.close-controlbox-button': 'closeChat',
+            'click a.close-chatbox-button': 'closeChat',
             'click ul#controlbox-tabs li a': 'switchTab'
         },
 
@@ -650,7 +649,7 @@
         template: _.template(
             '<div class="chat-head oc-chat-head">'+
                 '<ul id="controlbox-tabs"></ul>'+
-                '<a class="close-controlbox-button">X</a>'+
+                '<a class="close-chatbox-button">X</a>'+
             '</div>'+
             '<div id="controlbox-panes"></div>'
         ),
@@ -760,7 +759,7 @@
 
         template: _.template(
                 '<div class="chat-head chat-head-chatroom">' +
-                    '<a href="javascript:void(0)" class="chatbox-button close-chatbox-button">X</a>' +
+                    '<a class="close-chatbox-button">X</a>' +
                     '<div class="chat-title"> {{ name }} </div>' +
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +

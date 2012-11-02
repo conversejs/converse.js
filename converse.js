@@ -42,7 +42,7 @@
 
         define([
             "Libraries/burry.js/burry",
-            "Libraries/underscore",
+            "Libraries/underscore.string",
             "Libraries/sjcl",
             "Libraries/backbone",
             "Libraries/strophe.muc",
@@ -56,7 +56,7 @@
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory(jarnxmpp, jQuery, store, _, console);
+                return factory({}, jQuery, store, _, console);
             }
         );
     } else { 
@@ -66,7 +66,7 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.xmppchat = factory(jarnxmpp, jQuery, store, _, console || {log: function(){}});
+        root.xmppchat = factory({}, jQuery, store, _, console || {log: function(){}});
     }
 }(this, function (jarnxmpp, $, store, _, console) {
 
@@ -435,6 +435,7 @@
                         'class="chat-textarea" ' +
                         'placeholder="Personal message"/>'+
                     '</form>'),
+
 
         render: function () {
             $(this.el).attr('id', this.model.get('box_id'));

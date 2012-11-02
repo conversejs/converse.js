@@ -4,7 +4,7 @@ converse.js
 
 ``Converse.js`` implements an XMPP_ based instant messaging client in the browser.
 
-*Warning*: This library is still heavily under development!
+*Warning*: *This library is still heavily under development and not usable currently.*
 
 --------
 Features

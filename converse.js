@@ -1018,7 +1018,7 @@
             view = this.views[partner_jid];
             if (!view) {
                 $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(partner_jid), $.proxy(function (data) {
-                    view = this.createChatBox(jid, data);
+                    view = this.createChatBox(partner_jid, data);
                     view.messageReceived(message);
                     xmppchat.roster.addResource(partner_jid, resource);
                 }, this));
@@ -1670,7 +1670,7 @@
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
-            this.storage = new this.ClientStorage({'own_jid': this.connection.bare_jid});
+            this.storage = new this.ClientStorage(this.connection.bare_jid);
 
             this.chatboxes = new this.ChatBoxes();
             this.chatboxesview = new this.ChatBoxesView({

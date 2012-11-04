@@ -1329,18 +1329,24 @@
                 status_message = $(presence).find('status'),
                 item, model;
 
-            if ((($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) || (this.isSelf(bare_jid))) {
-                // Ignore MUC or self-addressed stanzas
+            if (this.isSelf(bare_jid)) {
+                if (xmppchat.connection.jid != jid) {
+                    // Another resource has changed it's status, we'll update ours as well.
+                    // FIXME: We should ideally differentiate between converse.js using 
+                    // resources and other resources (i.e Pidgin etc.)
+                    xmppchat.xmppstatus.set({'status': presence_type});
+                } 
                 return true;
+            } else if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                return true; // Ignore MUC 
             }
+
             if ((status_message.length > 0) && (status_message.text() && (presence_type !== 'unavailable'))) {
                 model = this.getItem(bare_jid);
                 model.set({'status': status_message.text()});
             }
 
-            if ((presence_type === 'error') || 
-                    (presence_type === 'subscribed') || 
-                    (presence_type === 'unsubscribe')) {
+            if ((presence_type === 'error') || (presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                 return true;
 
             } else if (presence_type === 'subscribe') {

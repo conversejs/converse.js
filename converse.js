@@ -56,7 +56,7 @@
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory({}, jQuery, store, _, console);
+                return factory(jQuery, store, _, console);
             }
         );
     } else { 
@@ -66,11 +66,11 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.xmppchat = factory({}, jQuery, store, _, console || {log: function(){}});
+        root.xmppchat = factory(jQuery, store, _, console || {log: function(){}});
     }
-}(this, function (jarnxmpp, $, store, _, console) {
+}(this, function ($, store, _, console) {
 
-    var xmppchat = jarnxmpp;
+    var xmppchat = {};
 
     xmppchat.collections = {
         /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
@@ -265,14 +265,14 @@
             /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
                 but I only seem to get 'text'. 
             */
-            var body = $(message).children('body').text(),
-                jid = $(message).attr('from'),
-                composing = $(message).find('composing'),
+            var body = $message.children('body').text(),
+                from = Strophe.getBareJidFromJid($message.attr('from')),
+                to = $message.attr('to'),
+                composing = $message.find('composing'),
                 $chat_content = $(this.el).find('.chat-content'),
-                user_id = Strophe.getNodeFromJid(jid),
-                delayed = $(message).find('delay').length > 0,
+                delayed = $message.find('delay').length > 0,
                 fullname = this.model.get('fullname'),
-                time, stamp;
+                time, stamp, username, sender;
 
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
@@ -284,22 +284,31 @@
                     return;
                 }
             } else {
-                xmppchat.storage.addMessage(jid, body, 'from');
-                $chat_content.find('div.chat-event').remove();
+                if (from == xmppchat.connection.bare_jid) {
+                    // I am the sender, so this must be a forwarded message...
+                    $chat_content.find('div.chat-event').remove();
+                    username = 'me';
+                    sender = 'me';
+                } else {
+                    xmppchat.storage.addMessage(from, body, 'from');
+                    $chat_content.find('div.chat-event').remove();
+                    username = fullname.split(' ')[0];
+                    sender = 'them';
+                }
                 if (delayed) {
                     // XXX: Test properly (for really old messages we somehow need to show
                     // their date as well)
-                    stamp = $(message).find('delay').attr('stamp');
+                    stamp = $message.find('delay').attr('stamp');
                     time = (new Date(stamp)).toLocaleTimeString().substring(0,5); 
                 } else {
                     time = (new Date()).toLocaleTimeString().substring(0,5); 
                 }
                 $chat_content.append(
                         this.message_template({
-                            'sender': 'them', 
+                            'sender': sender, 
                             'time': time,
-                            'message': body.replace(/<br \/>/g, ""),
-                            'username': fullname.split(' ')[0],
+                            'message': body,
+                            'username': username,
                             'extra_classes': delayed && 'delayed' || ''
                         }));
                 $chat_content.scrollTop($chat_content[0].scrollHeight);
@@ -340,17 +349,24 @@
         },
 
         sendMessage: function (text) {
-            // TODO: Also send message to all my own connected resources, so that
-            // they can display it as well....
-        
             // TODO: Look in ChatPartners to see what resources we have for the recipient.
             // if we have one resource, we sent to only that resources, if we have multiple
             // we send to the bare jid.
+            var timestamp = new Date().getTime();
             var bare_jid = this.model.get('jid');
-            var message = $msg({to: bare_jid, type: 'chat'})
+            var message = $msg({from: xmppchat.connection.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
+
+            // Forward the message, so that other connected resources are also aware of it.
+            // TODO: Forward the message only to other connected resources (inside the browser)
+            var forwarded = $msg({to:xmppchat.connection.bare_jid, type:'chat', id:timestamp})
+                            .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
+                            .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
+                            .cnode(message.tree());
+
             xmppchat.connection.send(message);
+            xmppchat.connection.send(forwarded);
             xmppchat.storage.addMessage(bare_jid, text, 'to');
             this.appendMessage(text);
         },
@@ -435,7 +451,6 @@
                         'class="chat-textarea" ' +
                         'placeholder="Personal message"/>'+
                     '</form>'),
-
 
         render: function () {
             $(this.el).attr('id', this.model.get('box_id'));
@@ -976,24 +991,43 @@
         },
 
         messageReceived: function (message) {
-            var jid = $(message).attr('from'),
-                bare_jid = Strophe.getBareJidFromJid(jid),
-                resource = Strophe.getResourceFromJid(jid),
-                view = this.views[bare_jid],
-                fullname;
+            if ($(message).attr('from') == xmppchat.connection.jid) {
+                // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
+                return true;
+            }
+            var $forwarded = $(message).children('forwarded');
+            if ($forwarded.length > 0) {
+                $message = $forwarded.children('message');
+            } else {
+                $message = $(message);
+            }
 
+            var from = Strophe.getBareJidFromJid($message.attr('from')),
+                to = Strophe.getBareJidFromJid($message.attr('to')),
+                view, resource;
+
+            if (from == xmppchat.connection.bare_jid) {
+                // I am the sender, so this must be a forwarded message...
+                partner_jid = to;
+                resource = Strophe.getResourceFromJid($message.attr('to'));
+            } else {
+                partner_jid = from;
+                resource = Strophe.getResourceFromJid($message.attr('from'));
+            }
+
+            view = this.views[partner_jid];
             if (!view) {
-                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(bare_jid), $.proxy(function (data) {
+                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(partner_jid), $.proxy(function (data) {
                     view = this.createChatBox(jid, data);
                     view.messageReceived(message);
-                    xmppchat.roster.addResource(bare_jid, resource);
+                    xmppchat.roster.addResource(partner_jid, resource);
                 }, this));
                 return;
             } else if (!view.isVisible()) {
-                this.showChat(bare_jid);
+                this.showChat(partner_jid);
             }
             view.messageReceived(message);
-            xmppchat.roster.addResource(bare_jid, resource);
+            xmppchat.roster.addResource(partner_jid, resource);
         },
 
         initialize: function () {
@@ -1006,7 +1040,7 @@
                 }
             }, this);
             this.views = {};
-            // Add the controlbox view and the panels.
+            // Add the controlbox view and the panels
             this.views.controlbox = xmppchat.controlbox;
             this.views.controlbox.$el.appendTo(this.$el);
             this.views.controlbox.contactspanel = new xmppchat.ContactsPanel().render();
@@ -1624,12 +1658,13 @@
             model: new xmppchat.ControlBox({'id':'controlbox', 'jid':'controlbox'})
         }).render();
 
-        $(document).bind('jarnxmpp.connected', $.proxy(function (ev, conn) {
-            alert("Connection Failed :(");
+        $(document).bind('xmpp.disconnected', $.proxy(function (ev, conn) {
+            console.log("Connection Failed :(");
         }, this));
 
-        $(document).unbind('jarnxmpp.connected');
-        $(document).bind('jarnxmpp.connected', $.proxy(function () {
+        $(document).unbind('xmpp.connected');
+        $(document).bind('xmpp.connected', $.proxy(function (ev, connection) {
+            this.connection = connection
             this.connection.xmlInput = function (body) { console.log(body); };
             this.connection.xmlOutput = function (body) { console.log(body); };
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);

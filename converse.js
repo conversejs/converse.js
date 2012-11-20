@@ -212,45 +212,28 @@
                                 '<span class="chat-message-content">{{message}}</span>' + 
                             '</div>'),
 
+        autoLink: function (text) {
+            // Convert URLs into hyperlinks
+            var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
+            return text.replace(re, '<a target="_blank" href="$1">$1</a>');
+        },
+
         appendMessage: function (message) {
-            var time, 
-                now = new Date(),
+            var now = new Date(),
+                time = now.toLocaleTimeString().substring(0,5),
                 minutes = now.getMinutes().toString(),
-                list,
-                $chat_content,
-                match;
-            message = message.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/^\s*/, "");
-            list = message.match(/\b(http:\/\/www\.\S+\.\w+|www\.\S+\.\w+|http:\/\/(?=[^w]){3}\S+[\.:]\S+)[^ ]+\b/g);
-            if (list) {
-                for (i = 0; i < list.length; i++) {
-                    message = message.replace(list[i], "<a target='_blank' href='" + escape( list[i] ) + "'>"+ list[i] + "</a>" );
-                }
-            }
+                $chat_content = $(this.el).find('.chat-content');
 
+            message = this.autoLink(message);
             if (minutes.length==1) {minutes = '0'+minutes;}
-            time = now.toLocaleTimeString().substring(0,5);
-            $chat_content = $(this.el).find('.chat-content');
             $chat_content.find('div.chat-event').remove();
-
-            match = message.match(/^\/(.*?)(?: (.*))?$/);
-            if ((match) && (match[1] === 'me')) {
-                message = message.replace(/^\/me/, '*'+xmppchat.username);
-                $chat_content.append(this.action_template({
-                                    'sender': 'me', 
-                                    'time': time, 
-                                    'message': message, 
-                                    'username': xmppchat.username,
-                                    'extra_classes': ''
-                                }));
-            } else {
-                $chat_content.append(this.message_template({
-                                    'sender': 'me', 
-                                    'time': time, 
-                                    'message': message, 
-                                    'username': 'me',
-                                    'extra_classes': ''
-                                }));
-            }
+            $chat_content.append(this.message_template({
+                                'sender': 'me', 
+                                'time': time, 
+                                'message': message, 
+                                'username': 'me',
+                                'extra_classes': ''
+                            }));
             $chat_content.scrollTop($chat_content[0].scrollHeight);
         },
 
@@ -265,7 +248,7 @@
             /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
                 but I only seem to get 'text'. 
             */
-            var body = $message.children('body').text(),
+            var body = this.autoLink($message.children('body').text()),
                 from = Strophe.getBareJidFromJid($message.attr('from')),
                 to = $message.attr('to'),
                 composing = $message.find('composing'),
@@ -318,14 +301,11 @@
         insertClientStoredMessages: function () {
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
                 $content = this.$el.find('.chat-content'), i;
-
             for (i=0; i<_.size(msgs); i++) {
                 var msg = msgs[i], 
                     msg_array = msg.split(' ', 2),
-                    date = msg_array[0],
-                    match;
-                msg = String(msg).replace(/(.*?\s.*?\s)/, '');
-                match = msg.match(/^\/(.*?)(?: (.*))?$/);
+                    date = msg_array[0];
+                msg = this.autoLink(String(msg).replace(/(.*?\s.*?\s)/, ''));
                 if (msg_array[1] == 'to') {
                     $content.append(
                         this.message_template({
@@ -343,7 +323,7 @@
                             'message': msg,
                             'username': this.model.get('fullname').split(' ')[0],
                             'extra_classes': 'delayed'
-                        }));
+                    }));
                 }
             }
         },

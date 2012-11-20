@@ -80,6 +80,22 @@
 
     var xmppchat = {};
 
+    // IE <= 8 Doesn't have toISOStringMethod
+    if (!Date.toISOString) {
+        Date.prototype.toISOString = function () {
+            var d = new Date();
+            pad = function (num) {
+                return (num < 10) ? '0' + num : '' + num;
+            };
+            return d.getUTCFullYear() + '-' + 
+                pad(d.getUTCMonth() + 1) + '-' + 
+                pad(d.getUTCDate()) + 'T' + 
+                pad(d.getUTCHours()) + ':' + 
+                pad(d.getUTCMinutes()) + ':' + 
+                pad(d.getUTCSeconds()) + '.000Z'; 
+        };
+    }
+
     xmppchat.collections = {
         /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
         *  add-on for ejabberd wants the URL below. This might break for other
@@ -133,7 +149,7 @@
 
         addMessage: function (jid, msg, direction) {
             var bare_jid = Strophe.getBareJidFromJid(jid),
-                now = new Date().toISOString(),
+                now = (new Date()).toISOString(),
                 msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
             if (msgs.length >= 30) {
                 msgs.shift();

@@ -43,6 +43,7 @@
         define([
             "Libraries/burry.js/burry",
             "Libraries/underscore.string",
+            "Libraries/jquery-ui-1.9.1.custom",
             "Libraries/sjcl",
             "Libraries/backbone",
             "Libraries/strophe.muc",
@@ -1693,14 +1694,18 @@
                 }, this));
 
             // Controlbox toggler
-            $toggle.bind('click', $.proxy(function (e) {
-                e.preventDefault();
-                if ($("div#controlbox").is(':visible')) {
-                    this.chatboxesview.closeChat('controlbox');
-                } else {
-                    this.chatboxesview.openChat('controlbox');
-                }
-            }, this));
+            if ($toggle.length) {
+                $toggle.bind('click', $.proxy(function (e) {
+                    e.preventDefault();
+                    if ($("div#controlbox").is(':visible')) {
+                        this.chatboxesview.closeChat('controlbox');
+                    } else {
+                        this.chatboxesview.openChat('controlbox');
+                    }
+                }, this));
+            } else {
+                this.chatboxesview.openChat('controlbox');
+            }
         }, this));
     }, xmppchat));
 }));

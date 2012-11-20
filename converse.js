@@ -48,7 +48,7 @@
             "Libraries/backbone",
             "Libraries/strophe.muc",
             "Libraries/strophe.roster"
-            ], function (Burry, _s) {
+            ], function (Burry, _s, logging) {
                 var store = new Burry.Store('collective.xmpp.chat');
                 // Init underscore.str
                 _.str = _s;
@@ -57,6 +57,10 @@
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
+
+                if (console===undefined || console.log===undefined) {
+                    console = { log: function () {}, error: function () {} };
+                }
                 return factory(jQuery, store, _, console);
             }
         );
@@ -67,6 +71,9 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
+        if (console===undefined || console.log===undefined) {
+            console = { log: function () {}, error: function () {} };
+        }
         root.xmppchat = factory(jQuery, store, _, console || {log: function(){}});
     }
 }(this, function ($, store, _, console) {

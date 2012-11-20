@@ -1354,7 +1354,7 @@
 
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
-                        if (xmppchat.connection.roster.get(jid)) {
+                        if (xmppchat.connection.roster.findItem(bare_jid)) {
                             $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
                                 xmppchat.connection.roster.update(jid, data.fullname, [], function (iq) {
                                     xmppchat.connection.roster.authorize(bare_jid);
@@ -1679,9 +1679,8 @@
             this.storage = new this.ClientStorage(this.connection.bare_jid);
 
             this.chatboxes = new this.ChatBoxes();
-            this.chatboxesview = new this.ChatBoxesView({
-                'model': this.chatboxes
-            });
+            this.chatboxesview = new this.ChatBoxesView({'model': this.chatboxes});
+
             this.roster = new this.RosterItems();
             this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
 

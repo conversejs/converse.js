@@ -79,22 +79,39 @@
 }(this, function ($, store, _, console) {
 
     var xmppchat = {};
+    xmppchat.msg_counter = 0;
 
-    // IE <= 8 Doesn't have toISOStringMethod
-    if (!Date.toISOString) {
-        Date.prototype.toISOString = function () {
-            var d = new Date();
+    xmppchat.toISOString = function (date) {
+        if (typeof date.toISOString !== 'undefined') {
+            return date.toISOString();
+        } else {
+            // IE <= 8 Doesn't have toISOStringMethod
             pad = function (num) {
                 return (num < 10) ? '0' + num : '' + num;
             };
-            return d.getUTCFullYear() + '-' + 
-                pad(d.getUTCMonth() + 1) + '-' + 
-                pad(d.getUTCDate()) + 'T' + 
-                pad(d.getUTCHours()) + ':' + 
-                pad(d.getUTCMinutes()) + ':' + 
-                pad(d.getUTCSeconds()) + '.000Z'; 
-        };
-    }
+            return date.getUTCFullYear() + '-' + 
+                pad(date.getUTCMonth() + 1) + '-' + 
+                pad(date.getUTCDate()) + 'T' + 
+                pad(date.getUTCHours()) + ':' + 
+                pad(date.getUTCMinutes()) + ':' + 
+                pad(date.getUTCSeconds()) + '.000Z'; 
+        }
+    };
+
+    xmppchat.updateMsgCounter = function () {
+        this.msg_counter += 1;
+        if (this.msg_counter > 0) {
+            if (document.title.search(/^Messages \(\d\) /) === -1) {
+                document.title = "Messages (" + this.msg_counter + ") " + document.title;
+            } else {
+                document.title = document.title.replace(/^Messages \(\d\) /, "Messages (" + this.msg_counter + ") ");
+            }
+            window.blur();
+            window.focus();
+        } else if (document.title.search(/^\(\d\) /) !== -1) {
+            document.title = document.title.replace(/^Messages \(\d\) /, "");
+        }
+    };
 
     xmppchat.collections = {
         /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
@@ -149,7 +166,7 @@
 
         addMessage: function (jid, msg, direction) {
             var bare_jid = Strophe.getBareJidFromJid(jid),
-                now = (new Date()).toISOString(),
+                now = xmppchat.toISOString(new Date()),
                 msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
             if (msgs.length >= 30) {
                 msgs.shift();
@@ -166,6 +183,14 @@
                 decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
             }
             return decrypted_msgs;
+        },
+
+        getLastMessage: function (jid) {
+            var bare_jid = Strophe.getBareJidFromJid(jid);
+            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
+            if (msgs.length) {
+                return sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[msgs.length-1]);
+            } 
         },
 
         getOpenChats: function () {
@@ -248,6 +273,14 @@
                 minutes = now.getMinutes().toString(),
                 $chat_content = $(this.el).find('.chat-content');
 
+            var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
+            if (typeof msg !== 'undefined') {
+                var prev_date = new Date(Date.parse(msg.split(' ', 2)[0]));
+                if (this.isDifferentDay(prev_date, now)) {
+                    $chat_content.append($('<div class="chat-date">&nbsp;</div>'));
+                    $chat_content.append($('<div class="chat-date"></div>').text(now.toString().substring(0,15)));
+                }
+            }
             message = this.autoLink(message);
             if (minutes.length==1) {minutes = '0'+minutes;}
             $chat_content.find('div.chat-event').remove();
@@ -261,10 +294,10 @@
             $chat_content.scrollTop($chat_content[0].scrollHeight);
         },
 
-        insertStatusNotification: function (user_id, message) {
+        insertStatusNotification: function (message, replace) {
             var $chat_content = this.$el.find('.chat-content');
             $chat_content.find('div.chat-event').remove().end()
-                .append($('<div class="chat-event"></div>').text(user_id+' '+message));
+                .append($('<div class="chat-event"></div>').text(message));
             $chat_content.scrollTop($chat_content[0].scrollHeight);
         },
 
@@ -287,7 +320,7 @@
             }
             if (!body) {
                 if (composing.length > 0) {
-                    this.insertStatusNotification(fullname, 'is typing');
+                    this.insertStatusNotification(fullname+' '+'is typing');
                     return;
                 }
             } else {
@@ -320,21 +353,44 @@
                         }));
                 $chat_content.scrollTop($chat_content[0].scrollHeight);
             }
+            xmppchat.updateMsgCounter();
+        },
+
+        isDifferentDay: function (prev_date, next_date) {
+            return ((next_date.getDate() != prev_date.getDate()) || (next_date.getFullYear() != prev_date.getFullYear()) || (next_date.getMonth() != prev_date.getMonth()));
         },
 
         insertClientStoredMessages: function () {
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
-                $content = this.$el.find('.chat-content'), i;
+                $content = this.$el.find('.chat-content'), 
+                prev_date, this_date, now, separator, i; 
+
+
+
             for (i=0; i<_.size(msgs); i++) {
                 var msg = msgs[i], 
                     msg_array = msg.split(' ', 2),
                     date = msg_array[0];
+
+                if (i === 0) {
+                    this_date = new Date(Date.parse(date));
+                    if (this.isDifferentDay(this_date, new Date())) {
+                        $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
+                    }
+                } else {
+                    prev_date = this_date;
+                    this_date = new Date(Date.parse(date));
+                    if (this.isDifferentDay(prev_date, this_date)) {
+                        $content.append($('<div class="chat-date">&nbsp;</div>'));
+                        $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
+                    }
+                }
                 msg = this.autoLink(String(msg).replace(/(.*?\s.*?\s)/, ''));
                 if (msg_array[1] == 'to') {
                     $content.append(
                         this.message_template({
                             'sender': 'me', 
-                            'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                            'time': this_date.toLocaleTimeString().substring(0,5),
                             'message': msg, 
                             'username': 'me',
                             'extra_classes': 'delayed'
@@ -343,7 +399,7 @@
                     $content.append(
                         this.message_template({
                             'sender': 'them', 
-                            'time': new Date(Date.parse(date)).toLocaleTimeString().substring(0,5),
+                            'time': this_date.toLocaleTimeString().substring(0,5),
                             'message': msg,
                             'username': this.model.get('fullname').split(' ')[0],
                             'extra_classes': 'delayed'
@@ -356,7 +412,7 @@
             // TODO: Look in ChatPartners to see what resources we have for the recipient.
             // if we have one resource, we sent to only that resources, if we have multiple
             // we send to the bare jid.
-            var timestamp = new Date().getTime();
+            var timestamp = (new Date()).getTime();
             var bare_jid = this.model.get('jid');
             var message = $msg({from: xmppchat.connection.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
@@ -371,8 +427,8 @@
 
             xmppchat.connection.send(message);
             xmppchat.connection.send(forwarded);
-            xmppchat.storage.addMessage(bare_jid, text, 'to');
             this.appendMessage(text);
+            xmppchat.storage.addMessage(bare_jid, text, 'to');
         },
 
         keyPressed: function (ev) {
@@ -423,11 +479,11 @@
                     if (_.has(changed.changes, 'presence_type')) {
                         if (this.$el.is(':visible')) {
                             if (item.get('presence_type') === 'offline') {
-                                this.insertStatusNotification(this.model.get('fullname'), 'has gone offline');
+                                this.insertStatusNotification(this.model.get('fullname')+' '+'has gone offline');
                             } else if (item.get('presence_type') === 'away') {
-                                this.insertStatusNotification(this.model.get('fullname'), 'has gone away');
+                                this.insertStatusNotification(this.model.get('fullname')+' '+'has gone away');
                             } else if ((item.get('presence_type') === 'busy') || (item.get('presence_type') === 'dnd')) {
-                                this.insertStatusNotification(this.model.get('fullname'), 'is busy');
+                                this.insertStatusNotification(this.model.get('fullname')+' '+'is busy');
                             } else if (item.get('presence_type') === 'online') {
                                 this.$el.find('div.chat-event').remove();
                             }
@@ -842,7 +898,7 @@
             }
             if (!body) {
                 if (composing.length > 0) {
-                    this.insertStatusNotification(sender, 'is typing');
+                    this.insertStatusNotification(sender+' '+'is typing');
                     return true;
                 }
             } else {
@@ -1425,7 +1481,7 @@
                 }
             }
             return true;
-        },
+        }
     });
 
     xmppchat.RosterView= (function (roster, _, $, console) {
@@ -1466,7 +1522,8 @@
                     children = $(this.el).children(),
                     my_contacts = this.$el.find('#xmpp-contacts').hide(),
                     contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
-                    pending_contacts = this.$el.find('#pending-xmpp-contacts').hide();
+                    pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
+                    $count, num;
 
                 for (var i=0; i<models.length; i++) {
                     var model = models[i],
@@ -1489,7 +1546,8 @@
                         h.show();
                     }
                 });
-                $('#online-count').text(this.model.getNumOnlineContacts());
+                $count = $('#online-count');
+                $count.text(this.model.getNumOnlineContacts());
             }
         });
         var view = new View();
@@ -1675,8 +1733,8 @@
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
             this.connection = connection
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
+            // this.connection.xmlInput = function (body) { console.log(body); };
+            // this.connection.xmlOutput = function (body) { console.log(body); };
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;

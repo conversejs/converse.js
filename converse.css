@@ -145,7 +145,7 @@ input.new-chatroom-name {
     white-space: nowrap;
 }
 
-.chat-event, .chat-date {
+.chat-event, .chat-date, .chat-help {
     color: #808080;
 }
 

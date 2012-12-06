@@ -193,6 +193,11 @@
             } 
         },
 
+        clearMessages: function (jid) {
+            var bare_jid = Strophe.getBareJidFromJid(jid);
+            store.set(hex_sha1(this.get('own_jid')+bare_jid), []);
+        },
+
         getOpenChats: function () {
             var key = hex_sha1(this.get('own_jid')+'-open-chats'),
                 chats = store.get(key) || [], 
@@ -412,8 +417,25 @@
             // TODO: Look in ChatPartners to see what resources we have for the recipient.
             // if we have one resource, we sent to only that resources, if we have multiple
             // we send to the bare jid.
-            var timestamp = (new Date()).getTime();
-            var bare_jid = this.model.get('jid');
+            var timestamp = (new Date()).getTime(),
+                bare_jid = this.model.get('jid'),
+                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), el, $chat_content;
+
+            if (match) {
+                if (match[1] === "clear") {
+                    $(this.el).find('.chat-content').empty();
+                    xmppchat.storage.clearMessages(bare_jid);
+                    return;
+                }
+                else if (match[1] === "help") {
+                    $chat_content = $(this.el).find('.chat-content');
+                    $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
+                    $chat_content.append($('<div class="chat-help"><strong>/clear</strong>: Remove messages</div>'));
+                    this.scrolldown();
+                    return;
+                }
+            }
+
             var message = $msg({from: xmppchat.connection.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
@@ -807,7 +829,6 @@
 
         sendGroupMessage: function (body) {
             var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/);
-            var args = null;
             if (match) {
                 if (match[1] === "msg") {
                     // TODO: Private messages
@@ -825,6 +846,18 @@
 
                 } else if (match[1] === "deop") {
                     xmppchat.connection.muc.deop(this.model.get('jid'), match[2]);
+
+                } else if (match[1] === "help") {
+                    $chat_content = $(this.el).find('.chat-content');
+                    $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
+                    $chat_content.append($('<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>'));
+                    /* TODO:
+                    $chat_content.append($('<div class="chat-help"><strong>/kick</strong>: Kick out user</div>'));
+                    $chat_content.append($('<div class="chat-help"><strong>/ban</strong>: Ban user</div>'));
+                    $chat_content.append($('<div class="chat-help"><strong>/op $user</strong>: Remove messages</div>'));
+                    $chat_content.append($('<div class="chat-help"><strong>/deop $user</strong>: Remove messages</div>'));
+                    */
+                    this.scrolldown();
                 } else {
                     this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
                 }

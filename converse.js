@@ -229,6 +229,12 @@
                 chats.splice(_.indexOf(chats, jid), 1);
             }
             store.set(key, chats);
+        },
+
+        flush: function () {
+            // Clears all localstorage content handled by burry.js
+            // Only used in tests
+            store.flush();
         }
     });
     
@@ -369,8 +375,6 @@
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
                 $content = this.$el.find('.chat-content'), 
                 prev_date, this_date, now, separator, i; 
-
-
 
             for (i=0; i<_.size(msgs); i++) {
                 var msg = msgs[i], 
@@ -1822,5 +1826,7 @@
             }
         }, this));
     }, xmppchat));
+
+    return xmppchat;
 }));
 

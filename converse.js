@@ -599,8 +599,7 @@
                     '<button type="submit">Search</button>'+
                     '<ul id="found-users"></ul>'+
                 '</form>'+
-            '</div>'+
-            '<dl id="xmppchat-roster"></dl>'
+            '</div>'
         ),
 
         render: function () {
@@ -1138,21 +1137,27 @@
                 }
             }, this);
             this.views = {};
+
             // Add the controlbox view and the panels
-            this.views.controlbox = xmppchat.controlbox;
-            this.views.controlbox.$el.appendTo(this.$el);
-            this.views.controlbox.contactspanel = new xmppchat.ContactsPanel().render();
-            // TODO: Only add the rooms panel if the server supports MUC
-            this.views.controlbox.roomspanel = new xmppchat.RoomsPanel().render();
+            var controlbox = xmppchat.controlbox;
+            controlbox.$el.appendTo(this.$el);
+            controlbox.contactspanel = new xmppchat.ContactsPanel().render();
+            controlbox.roomspanel = new xmppchat.RoomsPanel().render(); // TODO: Only add the rooms panel if the server supports MUC
+
+            // Add the roster
+            xmppchat.roster = new xmppchat.RosterItems();
+            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster}).render();
+            xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
+
             // Rebind events (necessary for click events on tabs inserted via the panels)
-            this.views.controlbox.delegateEvents();
+            controlbox.delegateEvents();
             // Add the controlbox model to this collection (will trigger showChat)
             this.options.model.add(xmppchat.controlbox.options.model);
 
+            this.views.controlbox = controlbox;
             this.restoreOpenChats();
         }
     });
-
 
     xmppchat.RosterItem = Backbone.Model.extend({
 
@@ -1202,7 +1207,7 @@
                         $(this).dialog( "close" );
                         xmppchat.connection.roster.remove(bare_jid, function (iq) {
                             xmppchat.connection.roster.unauthorize(bare_jid);
-                            xmppchat.roster.remove(bare_jid);
+                            xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
                         });
                     },
                     "Cancel": function() {
@@ -1489,7 +1494,7 @@
                 */
                 xmppchat.xmppstatus.sendPresence('unsubscribe');
                 if (xmppchat.connection.roster.findItem(bare_jid)) {
-                    xmppchat.roster.remove(bare_jid);
+                    xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
                     xmppchat.connection.roster.remove(bare_jid);
                 }
             } else { 
@@ -1522,82 +1527,79 @@
         }
     });
 
-    xmppchat.RosterView= (function (roster, _, $, console) {
-        var View = Backbone.View.extend({
-            el: $('#xmppchat-roster'),
-            model: roster,
-            rosteritemviews: {},
+    xmppchat.RosterView = Backbone.View.extend({
+        tagName: 'dl',
+        id: 'xmppchat-roster',
+        rosteritemviews: {},
 
-            initialize: function () {
-                this.model.on("add", function (item) {
-                    var view = new xmppchat.RosterItemView({model: item});
-                    this.rosteritemviews[item.id] = view;
-                    if (item.get('ask') === 'request') {
-                        view.on('decline-request', function (item) {
-                            this.model.remove(item.id);
-                        }, this);
-                    }
-                    this.render();
-                }, this);
-
-                this.model.on('change', function (item) {
-                    this.render();
-                }, this);
-
-                this.model.on("remove", function (item) {
-                    delete this.rosteritemviews[item.id];
-                    this.render();
-                }, this);
-            },
-
-            template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
-                                '<dt id="xmpp-contacts">My contacts</dt>' +
-                                '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
-
-            render: function () {
-                this.$el.empty().html(this.template());
-                var models = this.model.sort().models,
-                    children = $(this.el).children(),
-                    $my_contacts = this.$el.find('#xmpp-contacts').hide(),
-                    $contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
-                    $pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
-                    $count, num;
-
-                for (var i=0; i<models.length; i++) {
-                    var model = models[i],
-                        user_id = Strophe.getNodeFromJid(model.id),
-                        view = this.rosteritemviews[model.id],
-                        ask = model.get('ask'),
-                        subscription = model.get('subscription'),
-                        crit = {order:'asc'};
-
-                    if (ask === 'subscribe') {
-                        $pending_contacts.after(view.render().el);
-                        $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if (ask === 'request') {
-                        $contact_requests.after(view.render().el);
-                        $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
-                    } else if (subscription === 'both') {
-                        $my_contacts.after(view.render().el);
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
-                    } 
+        initialize: function () {
+            this.model.on("add", function (item) {
+                var view = new xmppchat.RosterItemView({model: item});
+                this.rosteritemviews[item.id] = view;
+                if (item.get('ask') === 'request') {
+                    view.on('decline-request', function (item) {
+                        this.model.remove(item.id);
+                    }, this);
                 }
-                // Hide the headings if there are no contacts under them
-                _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                    if (h.nextUntil('dt').length > 0) {
-                        h.show();
-                    }
-                });
-                $count = $('#online-count');
-                $count.text(this.model.getNumOnlineContacts());
+                this.render();
+            }, this);
+
+            this.model.on('change', function (item) {
+                this.render();
+            }, this);
+
+            this.model.on("remove", function (item) {
+                delete this.rosteritemviews[item.id];
+                this.render();
+            }, this);
+        },
+
+        template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
+                            '<dt id="xmpp-contacts">My contacts</dt>' +
+                            '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
+
+        render: function () {
+            this.$el.empty().html(this.template());
+            var models = this.model.sort().models,
+                children = $(this.el).children(),
+                $my_contacts = this.$el.find('#xmpp-contacts').hide(),
+                $contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
+                $pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
+                $count, num;
+
+            for (var i=0; i<models.length; i++) {
+                var model = models[i],
+                    user_id = Strophe.getNodeFromJid(model.id),
+                    view = this.rosteritemviews[model.id],
+                    ask = model.get('ask'),
+                    subscription = model.get('subscription'),
+                    crit = {order:'asc'};
+
+                if (ask === 'subscribe') {
+                    $pending_contacts.after(view.render().el);
+                    $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
+                } else if (ask === 'request') {
+                    $contact_requests.after(view.render().el);
+                    $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
+                } else if (subscription === 'both') {
+                    $my_contacts.after(view.render().el);
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
+                } 
             }
-        });
-        var view = new View();
-        return view;
+            // Hide the headings if there are no contacts under them
+            _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
+                if (h.nextUntil('dt').length > 0) {
+                    h.show();
+                }
+            });
+            $count = $('#online-count');
+            $count.text(this.model.getNumOnlineContacts());
+            return this;
+        }
     });
 
     xmppchat.XMPPStatus = Backbone.Model.extend({
@@ -1789,8 +1791,6 @@
             this.chatboxes = new this.ChatBoxes();
             this.chatboxesview = new this.ChatBoxesView({'model': this.chatboxes});
 
-            this.roster = new this.RosterItems();
-            this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
 
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 

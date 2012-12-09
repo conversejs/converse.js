@@ -10,13 +10,13 @@
         return (new Array(times + 1)).join(this+' ').replace(/\s$/, '');
     };
 
-    return describe("xmppchat.ClientStorage", function() {
+    return describe("Local storage of messages and open chats", function() {
 
         beforeEach(function() {
             this.storage = new xmppchat.ClientStorage('dummy@localhost');
         });
 
-        describe("storing open chats", function () {
+        describe("open chat storage", function () {
 
             beforeEach(function() {
                 // Removes all stored items
@@ -66,7 +66,7 @@
             });
         });
 
-        describe("storing messages", function () {
+        describe("message storage", function () {
 
             var iso_regex = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 
@@ -87,8 +87,7 @@
                     // First two space separated strings are ISO date and direction 
                     var msg_arr = msgs[i].split(' ', 2);
                     // Check that first string is ISO format
-                    var match = msg_arr[0].match(iso_regex);
-                    expect(match).toBeTruthy();
+                    expect(msg_arr[0]).toMatch(iso_regex);
                     expect(msg_arr[0]).toEqual(jasmine.any(String));
                     expect(msg_arr[1]).toEqual('to');
                     expect(msgs[i].replace(/(.*?\s.*?\s)/, '')).toEqual(msg);
@@ -97,10 +96,9 @@
 
             it("should be able to get last message", function () {
                 var msg = this.storage.getLastMessage('chat@localhost'),
-                    msg_arr = msg.split(' ', 2),
-                    match = msg_arr[0].match(iso_regex);
+                    msg_arr = msg.split(' ', 2);
 
-                expect(match).toBeTruthy();
+                expect(msg_arr[0]).toMatch(iso_regex);
                 expect(msg_arr[0]).toEqual(jasmine.any(String));
                 expect(msg_arr[1]).toEqual('to');
                 expect(msg.replace(/(.*?\s.*?\s)/, '')).toEqual('msg'.repeat(10));

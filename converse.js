@@ -43,12 +43,13 @@
         define([
             "Libraries/burry.js/burry",
             "Libraries/underscore.string",
+            "Libraries/jquery.tinysort",
             "Libraries/jquery-ui-1.9.1.custom",
             "Libraries/sjcl",
             "Libraries/backbone",
             "Libraries/strophe.muc",
             "Libraries/strophe.roster"
-            ], function (Burry, _s, logging) {
+            ], function (Burry, _s) {
                 var store = new Burry.Store('collective.xmpp.chat');
                 // Init underscore.str
                 _.str = _s;
@@ -1246,7 +1247,7 @@
                 that = this,
                 subscription = item.get('subscription');
 
-            $(this.el).addClass(item.get('presence_type')).attr('id', 'online-users-'+item.get('user_id'));
+            $(this.el).addClass(item.get('presence_type'));
             
             if (ask === 'subscribe') {
                 this.$el.addClass('pending-xmpp-contact');
@@ -1521,78 +1522,80 @@
         }
     });
 
-    xmppchat.RosterView= (function (roster, _, $, console) {
-        var View = Backbone.View.extend({
-            el: $('#xmppchat-roster'),
-            model: roster,
-            rosteritemviews: {},
+    xmppchat.RosterView = Backbone.View.extend({
+        el: $('#xmppchat-roster'),
+        rosteritemviews: {},
 
-            initialize: function () {
-                this.model.on("add", function (item) {
-                    var view = new xmppchat.RosterItemView({model: item});
-                    this.rosteritemviews[item.id] = view;
-                    if (item.get('ask') === 'request') {
-                        view.on('decline-request', function (item) {
-                            this.model.remove(item.id);
-                        }, this);
-                    }
-                    this.render();
-                }, this);
-
-                this.model.on('change', function (item) {
-                    this.render();
-                }, this);
-
-                this.model.on("remove", function (item) {
-                    delete this.rosteritemviews[item.id];
-                    this.render();
-                }, this);
-            },
-
-            template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
-                                '<dt id="xmpp-contacts">My contacts</dt>' +
-                                '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
-
-            render: function () {
-                this.$el.empty().html(this.template());
-                var models = this.model.sort().models,
-                    children = $(this.el).children(),
-                    my_contacts = this.$el.find('#xmpp-contacts').hide(),
-                    contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
-                    pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
-                    $count, num;
-
-                for (var i=0; i<models.length; i++) {
-                    var model = models[i],
-                        user_id = Strophe.getNodeFromJid(model.id),
-                        view = this.rosteritemviews[model.id],
-                        ask = model.get('ask'),
-                        subscription = model.get('subscription');
-
-                    if (ask === 'subscribe') {
-                        pending_contacts.after(view.render().el);
-                    } else if (ask === 'request') {
-                        contact_requests.after(view.render().el);
-                    } else if (subscription === 'both') {
-                        my_contacts.after(view.render().el);
-                    } 
+        initialize: function () {
+            this.model.on("add", function (item) {
+                var view = new xmppchat.RosterItemView({model: item});
+                this.rosteritemviews[item.id] = view;
+                if (item.get('ask') === 'request') {
+                    view.on('decline-request', function (item) {
+                        this.model.remove(item.id);
+                    }, this);
                 }
-                // Hide the headings if there are no contacts under them
-                _.each([my_contacts, contact_requests, pending_contacts], function (h) {
-                    if (h.nextUntil('dt').length > 0) {
-                        h.show();
-                    }
-                });
-                $count = $('#online-count');
-                $count.text(this.model.getNumOnlineContacts());
+                this.render();
+            }, this);
+
+            this.model.on('change', function (item) {
+                this.render();
+            }, this);
+
+            this.model.on("remove", function (item) {
+                delete this.rosteritemviews[item.id];
+                this.render();
+            }, this);
+        },
+
+        template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
+                            '<dt id="xmpp-contacts">My contacts</dt>' +
+                            '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
+
+        render: function () {
+            this.$el.empty().html(this.template());
+            var models = this.model.sort().models,
+                children = $(this.el).children(),
+                $my_contacts = this.$el.find('#xmpp-contacts').hide(),
+                $contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
+                $pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
+                $count, num;
+
+            for (var i=0; i<models.length; i++) {
+                var model = models[i],
+                    user_id = Strophe.getNodeFromJid(model.id),
+                    view = this.rosteritemviews[model.id],
+                    ask = model.get('ask'),
+                    subscription = model.get('subscription');
+                    crit = {order:'asc'};
+
+                if (ask === 'subscribe') {
+                    $pending_contacts.after(view.render().el);
+                    $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
+                } else if (ask === 'request') {
+                    $contact_requests.after(view.render().el);
+                    $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
+                } else if (subscription === 'both') {
+                    $my_contacts.after(view.render().el);
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
+                } 
             }
-        });
-        var view = new View();
-        return view;
+            // Hide the headings if there are no contacts under them
+            _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
+                if (h.nextUntil('dt').length > 0) {
+                    h.show();
+                }
+            });
+            $count = $('#online-count');
+            $count.text(this.model.getNumOnlineContacts());
+        }
     });
 
     xmppchat.XMPPStatus = Backbone.Model.extend({
-
         initialize: function () {
             this.set({
                 'status' : this.getStatus(),
@@ -1781,7 +1784,7 @@
             this.chatboxesview = new this.ChatBoxesView({'model': this.chatboxes});
 
             this.roster = new this.RosterItems();
-            this.rosterview = Backbone.View.extend(this.RosterView(this.roster, _, $, console));
+            this.rosterview = new this.RosterView({'model':this.roster});
 
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 

@@ -832,26 +832,27 @@
         },
 
         sendGroupMessage: function (body) {
-            var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/);
-            if (match) {
-                if (match[1] === "msg") {
+            var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false];
+            switch (match[1]) {
+                case 'msg':
                     // TODO: Private messages
-                } else if (match[1] === "topic") {
+                    break;
+                case 'topic':
                     xmppchat.connection.muc.setTopic(this.model.get('jid'), match[2]);
-
-                } else if (match[1] === "kick") {
+                    break;
+                case 'kick':
                     xmppchat.connection.muc.kick(this.model.get('jid'), match[2]);
-
-                } else if (match[1] === "ban") {
+                    break;
+                case 'ban':
                     xmppchat.connection.muc.ban(this.model.get('jid'), match[2]);
-
-                } else if (match[1] === "op") {
+                    break;
+                case 'op':
                     xmppchat.connection.muc.op(this.model.get('jid'), match[2]);
-
-                } else if (match[1] === "deop") {
+                    break;
+                case 'deop':
                     xmppchat.connection.muc.deop(this.model.get('jid'), match[2]);
-
-                } else if (match[1] === "help") {
+                    break;
+                case 'help':
                     $chat_content = $(this.el).find('.chat-content');
                     $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>'));
@@ -862,11 +863,10 @@
                     $chat_content.append($('<div class="chat-help"><strong>/deop $user</strong>: Remove messages</div>'));
                     */
                     this.scrolldown();
-                } else {
+                    break;
+                default:
                     this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
-                }
-            } else {
-                this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
+                break;
             }
         },
 

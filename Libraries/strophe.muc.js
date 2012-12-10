@@ -564,23 +564,17 @@ Strophe.addConnectionPlugin('muc', {
 
 XmppRoom = (function() {
 
-  XmppRoom.prototype.roster = {};
-
-  XmppRoom.prototype._message_handlers = {};
-
-  XmppRoom.prototype._presence_handlers = {};
-
-  XmppRoom.prototype._roster_handlers = {};
-
-  XmppRoom.prototype._handler_ids = 0;
-
   function XmppRoom(client, name, nick, password) {
+    this.roster = {};
+    this._message_handlers = {};
+    this._presence_handlers = {};
+    this._roster_handlers = {};
+    this._handler_ids = 0;
     this.client = client;
     this.name = name;
     this.nick = nick;
     this.password = password;
     this._roomRosterHandler = __bind(this._roomRosterHandler, this);
-
     this._addOccupant = __bind(this._addOccupant, this);
 
     if (client.muc) {

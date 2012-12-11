@@ -11,8 +11,10 @@
 
 // AMD/global registrations
 (function (root, factory) {
+    if (console===undefined || console.log===undefined) {
+        console = { log: function () {}, error: function () {} };
+    }
     if (typeof define === 'function' && define.amd) { 
-
         require.config({
             // paths: {
             //     "patterns": "Libraries/Patterns"
@@ -58,10 +60,6 @@
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-
-                if (console===undefined || console.log===undefined) {
-                    console = { log: function () {}, error: function () {} };
-                }
                 return factory(jQuery, store, _, console);
             }
         );
@@ -72,9 +70,6 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        if (console===undefined || console.log===undefined) {
-            console = { log: function () {}, error: function () {} };
-        }
         root.xmppchat = factory(jQuery, store, _, console || {log: function(){}});
     }
 }(this, function ($, store, _, console) {

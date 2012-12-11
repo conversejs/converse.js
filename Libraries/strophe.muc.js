@@ -12,7 +12,7 @@
 
 // AMD/global registrations
 (function (root, factory) {
-    if (console===undefined || console.log===undefined) {
+    if (typeof console === undefined || typeof console.log === undefined) {
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) { 
@@ -68,47 +68,51 @@
             }).c("x", {
                 xmlns: Strophe.NS.MUC
             });
-            if (password != null) {
+            if (password !== null) {
                 msg.cnode(Strophe.xmlElement("password", [], password));
             }
-            if (this._muc_handler == null) {
+            if (this._muc_handler === null) {
                 this._muc_handler = this._connection.addHandler(function(stanza) {
-                var from, handler, handlers, id, roomname, x, xmlns, xquery, _i, _len;
-                from = stanza.getAttribute('from');
-                roomname = from.split("/")[0];
-                if (!_this.rooms[roomname]) return true;
-                room = _this.rooms[roomname];
-                handlers = {};
-                if (stanza.nodeName === "message") {
-                    handlers = room._message_handlers;
-                } else if (stanza.nodeName === "presence") {
-                    xquery = stanza.getElementsByTagName("x");
-                    if (xquery.length > 0) {
-                    for (_i = 0, _len = xquery.length; _i < _len; _i++) {
-                        x = xquery[_i];
-                        xmlns = x.getAttribute("xmlns");
-                        if (xmlns && xmlns.match(Strophe.NS.MUC)) {
-                        handlers = room._presence_handlers;
-                        break;
+                    var from, handler, handlers, id, roomname, x, xmlns, xquery, _i, _len;
+                    from = stanza.getAttribute('from');
+                    roomname = from.split("/")[0];
+                    if (!_this.rooms[roomname]) { return true; }
+                    room = _this.rooms[roomname];
+                    handlers = {};
+                    if (stanza.nodeName === "message") {
+                        handlers = room._message_handlers;
+                    } else if (stanza.nodeName === "presence") {
+                        xquery = stanza.getElementsByTagName("x");
+                        if (xquery.length > 0) {
+                            for (_i = 0, _len = xquery.length; _i < _len; _i++) {
+                                x = xquery[_i];
+                                xmlns = x.getAttribute("xmlns");
+                                if (xmlns && xmlns.match(Strophe.NS.MUC)) {
+                                handlers = room._presence_handlers;
+                                break;
+                                }
+                            }
                         }
                     }
+                    for (id in handlers) {
+                        handler = handlers[id];
+                        if (!handler(stanza, room)) { delete handlers[id]; }
                     }
-                }
-                for (id in handlers) {
-                    handler = handlers[id];
-                    if (!handler(stanza, room)) delete handlers[id];
-                }
-                return true;
+                    return true;
                 });
             }
-            if ((_base = this.rooms)[room] == null) {
+            if ((_base = this.rooms)[room] === null) {
                 _base[room] = new XmppRoom(this, room, nick, password);
             }
             if (pres_handler_cb) {
                 this.rooms[room].addHandler('presence', pres_handler_cb);
             }
-            if (msg_handler_cb) this.rooms[room].addHandler('message', msg_handler_cb);
-            if (roster_cb) this.rooms[room].addHandler('roster', roster_cb);
+            if (msg_handler_cb) {
+                this.rooms[room].addHandler('message', msg_handler_cb);
+            }
+            if (roster_cb) {
+                this.rooms[room].addHandler('roster', roster_cb);
+            }
             return this._connection.send(msg);
         },
 
@@ -137,8 +141,10 @@
                 from: this._connection.jid,
                 to: room_nick
             });
-            if (exit_msg != null) presence.c("status", exit_msg);
-            if (handler_cb != null) {
+            if (exit_msg !== null) {
+                presence.c("status", exit_msg);
+            }
+            if (handler_cb !== null) {
                 this._connection.addHandler(handler_cb, null, "presence", null, presenceid);
             }
             this._connection.send(presence);
@@ -158,7 +164,7 @@
             */
             var msg, msgid, parent, room_nick;
             room_nick = this.test_append_nick(room, nick);
-            type = type || (nick != null ? "chat" : "groupchat");
+            type = type || (nick !== null ? "chat" : "groupchat");
             msgid = this._connection.getUniqueId();
             msg = $msg({
                 to: room_nick,
@@ -169,18 +175,15 @@
                 xmlns: Strophe.NS.CLIENT
             }).t(message);
             msg.up();
-            if (html_message != null) {
-                msg.c("html", {
-                xmlns: Strophe.NS.XHTML_IM
-                }).c("body", {
-                xmlns: Strophe.NS.XHTML
-                }).h(html_message);
+            if (html_message !== null) {
+                msg.c("html", {xmlns: Strophe.NS.XHTML_IM}).c("body", {xmlns: Strophe.NS.XHTML}).h(html_message);
+
                 if (msg.node.childNodes.length === 0) {
-                parent = msg.node.parentNode;
-                msg.up().up();
-                msg.node.removeChild(parent);
+                    parent = msg.node.parentNode;
+                    msg.up().up();
+                    msg.node.removeChild(parent);
                 } else {
-                msg.up().up();
+                    msg.up().up();
                 }
             }
             msg.c("x", {
@@ -222,7 +225,9 @@
             }).c('invite', {
                 to: receiver
             });
-            if (reason != null) invitation.c('reason', reason);
+            if (reason !== null) {
+                invitation.c('reason', reason);
+            }
             this._connection.send(invitation);
             return msgid;
         },
@@ -244,8 +249,8 @@
                 xmlns: 'jabber:x:conference',
                 jid: room
             };
-            if (reason != null) attrs.reason = reason;
-            if (password != null) attrs.password = password;
+            if (reason !== null) { attrs.reason = reason; }
+            if (password !== null) { attrs.password = password; }
             invitation = $msg({
                 from: this._connection.jid,
                 to: receiver,
@@ -293,7 +298,7 @@
             });
             stanza = config.tree();
             id = this._connection.sendIQ(stanza);
-            if (handler_cb != null) {
+            if (handler_cb !== null) {
                 this._connection.addHandler(function(stanza) { handler_cb(stanza);
                 return false;
                 }, Strophe.NS.MUC_OWNER, "iq", null, id);
@@ -405,7 +410,7 @@
             }).c("query", {
                 xmlns: Strophe.NS.MUC_ADMIN
             }).cnode(item.node);
-            if (reason != null) iq.c("reason", reason);
+            if (reason !== null) { iq.c("reason", reason); }
             return this._connection.sendIQ(iq.tree(), handler_cb, error_cb);
         },
 
@@ -515,8 +520,8 @@
                 from: this._connection.jid,
                 to: room_nick
             });
-            if (show != null) presence.c('show', show).up();
-            if (status != null) presence.c('status', status);
+            if (show !== null) { presence.c('show', show).up(); }
+            if (status !== null) { presence.c('status', status); }
             return this._connection.send(presence.tree());
         },
 
@@ -537,7 +542,7 @@
             return this._connection.sendIQ(iq, handle_cb);
             },
             test_append_nick: function(room, nick) {
-            return room + (nick != null ? "/" + (Strophe.escapeNode(nick)) : "");
+            return room + (nick !== null ? "/" + (Strophe.escapeNode(nick)) : "");
         }
     });
 
@@ -555,7 +560,7 @@
         this.password = password;
         this._roomRosterHandler = __bind(this._roomRosterHandler, this);
         this._addOccupant = __bind(this._addOccupant, this);
-        if (client.muc) this.client = client.muc;
+        if (client.muc) { this.client = client.muc; }
         this.name = Strophe.getBareJidFromJid(name);
         this.client.rooms[this.name] = this;
         this.addHandler('presence', this._roomRosterHandler);
@@ -753,7 +758,7 @@
             _ref = this._roster_handlers;
             for (id in _ref) {
                 handler = _ref[id];
-                if (!handler(this.roster, this)) delete this._roster_handlers[id];
+                if (!handler(this.roster, this)) { delete this._roster_handlers[id]; }
             }
             return true;
         };
@@ -825,33 +830,34 @@
                 child = query[_i];
                 attrs = child.attributes;
                 switch (child.nodeName) {
-                case "identity":
-                    identity = {};
-                    for (_j = 0, _len2 = attrs.length; _j < _len2; _j++) {
-                    attr = attrs[_j];
-                    identity[attr.name] = attr.textContent;
-                    }
-                    this.identities.push(identity);
-                    break;
-                case "feature":
-                    this.features.push(attrs["var"].textContent);
-                    break;
-                case "x":
-                    attrs = child.childNodes[0].attributes;
-                    if ((!attrs["var"].textContent === 'FORM_TYPE') || (!attrs.type.textContent === 'hidden')) {
-                    break;
-                    }
-                    _ref = child.childNodes;
-                    for (_k = 0, _len3 = _ref.length; _k < _len3; _k++) {
-                    field = _ref[_k];
-                    if (!(!field.attributes.type)) continue;
-                    attrs = field.attributes;
-                    this.x.push({
-                        "var": attrs["var"].textContent,
-                        label: attrs.label.textContent || "",
-                        value: field.firstChild.textContent || ""
-                    });
-                    }
+                    case "identity":
+                        identity = {};
+                        for (_j = 0, _len2 = attrs.length; _j < _len2; _j++) {
+                            attr = attrs[_j];
+                            identity[attr.name] = attr.textContent;
+                        }
+                        this.identities.push(identity);
+                        break;
+                    case "feature":
+                        this.features.push(attrs["var"].textContent);
+                        break;
+                    case "x":
+                        attrs = child.childNodes[0].attributes;
+                        if ((!attrs["var"].textContent === 'FORM_TYPE') || (!attrs.type.textContent === 'hidden')) {
+                            break;
+                        }
+                        _ref = child.childNodes;
+                        for (_k = 0, _len3 = _ref.length; _k < _len3; _k++) {
+                            field = _ref[_k];
+                            if (!(!field.attributes.type)) continue;
+
+                            attrs = field.attributes;
+                            this.x.push({
+                                "var": attrs["var"].textContent,
+                                label: attrs.label.textContent || "",
+                                value: field.firstChild.textContent || ""
+                            });
+                        }
                 }
             }
             return {
@@ -862,7 +868,6 @@
         };
 
         return RoomConfig;
-
     })();
 
     Occupant = (function() {

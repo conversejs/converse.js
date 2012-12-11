@@ -12,6 +12,9 @@
 
 // AMD/global registrations
 (function (root, factory) {
+    if (console===undefined || console.log===undefined) {
+        console = { log: function () {}, error: function () {} };
+    }
     if (typeof define === 'function' && define.amd) { 
         define([
             "Libraries/strophe"
@@ -22,6 +25,8 @@
                 return factory(jQuery, console);
             }
         );
+    } else { 
+        return factory(jQuery, console);
     }
 }(this, function ($, console) {
 

@@ -17,7 +17,8 @@
     }
     if (typeof define === 'function' && define.amd) { 
         define([
-            "Libraries/strophe"
+            "Libraries/strophe",
+            "Libraries/underscore"
             ], function () {
                 if (console===undefined || console.log===undefined) {
                     console = { log: function () {}, error: function () {} };
@@ -59,8 +60,8 @@
              *  (Function) pres_handler_cb - The function call back to handle presence in the chat room.
              *  (String) password - The optional password to use. (password protected rooms only)
             */
-            var msg, room_nick, _base,
-                _this = this;
+            var msg, room_nick, _this = this;
+
             room_nick = this.test_append_nick(room, nick);
             msg = $pres({
                 from: this._connection.jid,
@@ -94,15 +95,14 @@
                             }
                         }
                     }
-                    for (id in handlers) {
-                        handler = handlers[id];
+                    _.each(handlers, function (handler, id, handlers) {
                         if (!handler(stanza, room)) { delete handlers[id]; }
-                    }
+                    });
                     return true;
                 });
             }
-            if ((_base = this.rooms)[room] === null) {
-                _base[room] = new XmppRoom(this, room, nick, password);
+            if (!_.has(this.rooms, room)) {
+                this.rooms[room] = new XmppRoom(this, room, nick, password);
             }
             if (pres_handler_cb) {
                 this.rooms[room].addHandler('presence', pres_handler_cb);
@@ -734,26 +734,26 @@
             newnick = data.newnick || null;
             switch (data.type) {
                 case 'error':
-                return;
+                    return;
                 case 'unavailable':
-                if (newnick) {
-                    data.nick = newnick;
-                    if (this.roster[nick] && this.roster[newnick]) {
-                    this.roster[nick].update(this.roster[newnick]);
-                    this.roster[newnick] = this.roster[nick];
+                    if (newnick) {
+                        data.nick = newnick;
+                        if (this.roster[nick] && this.roster[newnick]) {
+                            this.roster[nick].update(this.roster[newnick]);
+                            this.roster[newnick] = this.roster[nick];
+                        }
+                        if (this.roster[nick] && !this.roster[newnick]) {
+                            this.roster[newnick] = this.roster[nick].update(data);
+                        }
                     }
-                    if (this.roster[nick] && !this.roster[newnick]) {
-                    this.roster[newnick] = this.roster[nick].update(data);
-                    }
-                }
-                delete this.roster[nick];
-                break;
+                    delete this.roster[nick];
+                    break;
                 default:
-                if (this.roster[nick]) {
-                    this.roster[nick].update(data);
-                } else {
-                    this._addOccupant(data);
-                }
+                    if (this.roster[nick]) {
+                        this.roster[nick].update(data);
+                    } else {
+                        this._addOccupant(data);
+                    }
             }
             _ref = this._roster_handlers;
             for (id in _ref) {
@@ -764,47 +764,49 @@
         };
 
         XmppRoom._parsePresence = function(pres) {
-            /* Parses a presence stanza
+            /* Parses a presence stanza into a map
              * Parameters:
+             * (Object) pres -  the presence stanza
+             * Returns:
              * (Object) data - the data extracted from the presence stanza
             */
-            var a, c, c2, data, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+            var $pres, data, i, j, children, item;
+            $pres = $(pres);
             data = {};
-            a = pres.attributes;
-            data.nick = Strophe.getResourceFromJid(a.from.textContent);
-            data.type = ((_ref = a.type) != null ? _ref.textContent : void 0) || null;
+            data.nick = Strophe.getResourceFromJid($pres.attr('from'));
+            data.type = $pres.attr('type');
             data.states = [];
-            _ref2 = pres.childNodes;
-            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                c = _ref2[_i];
-                switch (c.nodeName) {
-                case "status":
-                    data.status = c.textContent || null;
-                    break;
-                case "show":
-                    data.show = c.textContent || null;
-                    break;
-                case "x":
-                    a = c.attributes;
-                    if (((_ref3 = a.xmlns) != null ? _ref3.textContent : void 0) === Strophe.NS.MUC_USER) {
-                    _ref4 = c.childNodes;
-                    for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
-                        c2 = _ref4[_j];
-                        switch (c2.nodeName) {
-                        case "item":
-                            a = c2.attributes;
-                            data.affiliation = ((_ref5 = a.affiliation) != null ? _ref5.textContent : void 0) || null;
-                            data.role = ((_ref6 = a.role) != null ? _ref6.textContent : void 0) || null;
-                            data.jid = ((_ref7 = a.jid) != null ? _ref7.textContent : void 0) || null;
-                            data.newnick = ((_ref8 = a.nick) != null ? _ref8.textContent : void 0) || null;
-                            break;
-                        case "status":
-                            if (c2.attributes.code) {
-                            data.states.push(c2.attributes.code.textContent);
+            for (i=0; i < $pres.children().length; i++) {
+                child = $pres.children()[0];
+                switch (child.nodeName) {
+                    case 'status':
+                        data.status = child.textContent || null;
+                        break;
+                    case 'show':
+                        data.show = child.textContent || null;
+                        break;
+                    case 'x':
+                        if ($(child).attr('xmlns') === Strophe.NS.MUC_USER) {
+                            children = $(child).children();
+                            for (j=0; j < children.length; j++) {
+                                item = children[0];
+                                switch (item.nodeName) {
+                                    case "item":
+                                        a = item.attributes;
+                                        data.affiliation = $(item).attr('affiliation') || null;
+                                        data.role = $(item).attr('role') || null;
+                                        data.jid = $(item).attr('jid') || null;
+                                        data.newnick = $(item).attr('nick') || null;
+                                        break;
+                                    case "status":
+                                        if ($(item).attr('code')) {
+                                            data.states.push($(item).attr('code'));
+                                        }
+                                        break;
+                                }
                             }
                         }
-                    }
-                    }
+                        break;
                 }
             }
             return data;
@@ -817,7 +819,8 @@
     RoomConfig = (function() {
 
         function RoomConfig(info) {
-            this.parse = __bind(this.parse, this);      if (info != null) this.parse(info);
+            this.parse = __bind(this.parse, this);      
+            if (info !== null) { this.parse(info); }
         }
 
         RoomConfig.prototype.parse = function(result) {

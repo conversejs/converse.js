@@ -287,7 +287,7 @@
 
             var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
             if (typeof msg !== 'undefined') {
-                var prev_date = new Date(Date.parse(msg.split(' ', 2)[0]));
+                var prev_date = new Date(Date(msg.split(' ', 2)[0]));
                 if (this.isDifferentDay(prev_date, now)) {
                     $chat_content.append($('<div class="chat-date">&nbsp;</div>'));
                     $chat_content.append($('<div class="chat-date"></div>').text(now.toString().substring(0,15)));
@@ -383,13 +383,13 @@
                     date = msg_array[0];
 
                 if (i === 0) {
-                    this_date = new Date(Date.parse(date));
+                    this_date = new Date(Date(date));
                     if (this.isDifferentDay(this_date, new Date())) {
                         $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
                     }
                 } else {
                     prev_date = this_date;
-                    this_date = new Date(Date.parse(date));
+                    this_date = new Date(Date(date));
                     if (this.isDifferentDay(prev_date, this_date)) {
                         $content.append($('<div class="chat-date">&nbsp;</div>'));
                         $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
@@ -988,9 +988,7 @@
         show: function () {
             this.$el.css({'opacity': 0});
             this.$el.css({'display': 'inline'});
-            this.$el.animate({
-                opacity: '1'
-            }, 200);
+            this.$el.animate({opacity: '1'}, 200);
             return this;
         },
 
@@ -1062,14 +1060,17 @@
         },
 
         openChat: function (jid) {
+            var view;
             jid = Strophe.getBareJidFromJid(jid);
-            if (!this.model.get(jid)) {
+            if (this.model.get(jid)) {
+                this.showChat(jid);
+            } else if (this.isChatRoom(jid)) {
+                view = this.createChatBox(jid);
+            } else {
                 $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
                     view = this.createChatBox(jid, data);
                 }, this));
-            } else {
-                this.showChat(jid);
-            }
+            } 
         },
 
         showChat: function (jid) {
@@ -1607,7 +1608,7 @@
         initialize: function () {
             this.set({
                 'status' : this.getStatus(),
-                'status_message' : this.getStatusMessage(),
+                'status_message' : this.getStatusMessage()
             });
         },
 

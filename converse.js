@@ -523,7 +523,7 @@
                         '<a href="{{user_profile_url}}" class="user">' +
                             '<img src="{{portrait_url}}" alt="Avatar of {{fullname}}" class="avatar" />' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
-		                '</a>' +
+                        '</a>' +
                         '<p class="user-custom-message"><p/>' +
                     '</div>' +
                     '<div class="chat-content"></div>' + 
@@ -1548,6 +1548,8 @@
                 delete this.rosteritemviews[item.id];
                 this.render();
             }, this);
+
+            this.$el.html(this.template());
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
@@ -1555,7 +1557,6 @@
                             '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
 
         render: function () {
-            this.$el.empty().html(this.template());
             var models = this.model.sort().models,
                 children = $(this.el).children(),
                 $my_contacts = this.$el.find('#xmpp-contacts').hide(),

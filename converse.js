@@ -1537,16 +1537,16 @@
                         this.model.remove(item.id);
                     }, this);
                 }
-                this.render();
+                this.render(item);
             }, this);
 
             this.model.on('change', function (item) {
-                this.render();
+                this.render(item);
             }, this);
 
             this.model.on("remove", function (item) {
                 delete this.rosteritemviews[item.id];
-                this.render();
+                this.render(item);
             }, this);
 
             this.$el.html(this.template());
@@ -1556,20 +1556,19 @@
                             '<dt id="xmpp-contacts">My contacts</dt>' +
                             '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
 
-        render: function () {
-            var models = this.model.sort().models,
-                children = $(this.el).children(),
-                $my_contacts = this.$el.find('#xmpp-contacts').hide(),
-                $contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
-                $pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
+        render: function (item) {
+            if (!item) {
+                return this;
+            }
+            var
+                $my_contacts = this.$el.find('#xmpp-contacts').show(),
+                $contact_requests = this.$el.find('#xmpp-contact-requests').show(),
+                $pending_contacts = this.$el.find('#pending-xmpp-contacts').show(),
                 $count, num;
-
-            for (var i=0; i<models.length; i++) {
-                var model = models[i],
-                    user_id = Strophe.getNodeFromJid(model.id),
-                    view = this.rosteritemviews[model.id],
-                    ask = model.get('ask'),
-                    subscription = model.get('subscription'),
+            var user_id = Strophe.getNodeFromJid(item.id),
+                    view = this.rosteritemviews[item.id],
+                    ask = item.get('ask'),
+                    subscription = item.get('subscription'),
                     crit = {order:'asc'};
 
                 if (ask === 'subscribe') {
@@ -1586,11 +1585,10 @@
                     $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
                     $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
                 } 
-            }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                if (h.nextUntil('dt').length > 0) {
-                    h.show();
+                if (!h.nextUntil('dt').length) {
+                    h.hide();
                 }
             });
             $count = $('#online-count');

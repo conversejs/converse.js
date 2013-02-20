@@ -14,7 +14,7 @@
     if (console===undefined || console.log===undefined) {
         console = { log: function () {}, error: function () {} };
     }
-    if (typeof define === 'function' && define.amd) { 
+    if (typeof define === 'function' && define.amd) {
         require.config({
             // paths: {
             //     "patterns": "Libraries/Patterns"
@@ -25,7 +25,7 @@
                     //These script dependencies should be loaded before loading
                     //backbone.js
                     deps: [
-                        'Libraries/underscore', 
+                        'Libraries/underscore',
                         'jquery'],
                     //Once loaded, use the global 'Backbone' as the
                     //module value.
@@ -63,7 +63,7 @@
                 return factory(jQuery, store, _, console);
             }
         );
-    } else { 
+    } else {
         // Browser globals
         var store = new Burry.Store('collective.xmpp.chat');
         _.templateSettings = {
@@ -85,12 +85,12 @@
             pad = function (num) {
                 return (num < 10) ? '0' + num : '' + num;
             };
-            return date.getUTCFullYear() + '-' + 
-                pad(date.getUTCMonth() + 1) + '-' + 
-                pad(date.getUTCDate()) + 'T' + 
-                pad(date.getUTCHours()) + ':' + 
-                pad(date.getUTCMinutes()) + ':' + 
-                pad(date.getUTCSeconds()) + '.000Z'; 
+            return date.getUTCFullYear() + '-' +
+                pad(date.getUTCMonth() + 1) + '-' +
+                pad(date.getUTCDate()) + 'T' +
+                pad(date.getUTCHours()) + ':' +
+                pad(date.getUTCMinutes()) + ':' +
+                pad(date.getUTCSeconds()) + '.000Z';
         }
     };
 
@@ -110,7 +110,7 @@
     };
 
     xmppchat.collections = {
-        /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc 
+        /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc
         *  add-on for ejabberd wants the URL below. This might break for other
         *  Jabber servers.
         */
@@ -128,17 +128,17 @@
                     .c('max')
                     .t('1');
 
-        xmppchat.connection.sendIQ(iq, 
+        xmppchat.connection.sendIQ(iq,
                     callback,
-                    function () { 
-                        console.log('Error while retrieving collections'); 
+                    function () {
+                        console.log('Error while retrieving collections');
                     });
     };
 
     xmppchat.collections.getLastMessages = function (jid, callback) {
         var that = this;
         this.getLastCollection(jid, function (result) {
-            // Retrieve the last page of a collection (max 30 elements). 
+            // Retrieve the last page of a collection (max 30 elements).
             var $collection = $(result).find('chat'),
                 jid = $collection.attr('with'),
                 start = $collection.attr('start'),
@@ -186,7 +186,7 @@
             var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
             if (msgs.length) {
                 return sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[msgs.length-1]);
-            } 
+            }
         },
 
         clearMessages: function (jid) {
@@ -196,7 +196,7 @@
 
         getOpenChats: function () {
             var key = hex_sha1(this.get('own_jid')+'-open-chats'),
-                chats = store.get(key) || [], 
+                chats = store.get(key) || [],
                 decrypted_chats = [],
                 i;
 
@@ -233,7 +233,7 @@
             store.flush();
         }
     });
-    
+
     xmppchat.ChatBox = Backbone.Model.extend({
         initialize: function () {
             this.set({
@@ -257,15 +257,15 @@
         },
 
         message_template: _.template(
-                            '<div class="chat-message {{extra_classes}}">' + 
-                                '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' + 
-                                '<span class="chat-message-content">{{message}}</span>' + 
+                            '<div class="chat-message {{extra_classes}}">' +
+                                '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' +
+                                '<span class="chat-message-content">{{message}}</span>' +
                             '</div>'),
 
         action_template: _.template(
-                            '<div class="chat-message {{extra_classes}}">' + 
-                                '<span class="chat-message-{{sender}}">{{time}}:&nbsp;</span>' + 
-                                '<span class="chat-message-content">{{message}}</span>' + 
+                            '<div class="chat-message {{extra_classes}}">' +
+                                '<span class="chat-message-{{sender}}">{{time}}:&nbsp;</span>' +
+                                '<span class="chat-message-content">{{message}}</span>' +
                             '</div>'),
 
         autoLink: function (text) {
@@ -292,9 +292,9 @@
             if (minutes.length==1) {minutes = '0'+minutes;}
             $chat_content.find('div.chat-event').remove();
             $chat_content.append(this.message_template({
-                                'sender': 'me', 
-                                'time': time, 
-                                'message': message, 
+                                'sender': 'me',
+                                'time': time,
+                                'message': message,
                                 'username': 'me',
                                 'extra_classes': ''
                             }));
@@ -309,8 +309,8 @@
         },
 
         messageReceived: function (message) {
-            /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages, 
-                but I only seem to get 'text'. 
+            /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages,
+                but I only seem to get 'text'.
             */
             var body = this.autoLink($message.children('body').text()),
                 from = Strophe.getBareJidFromJid($message.attr('from')),
@@ -346,13 +346,13 @@
                     // XXX: Test properly (for really old messages we somehow need to show
                     // their date as well)
                     stamp = $message.find('delay').attr('stamp');
-                    time = (new Date(stamp)).toLocaleTimeString().substring(0,5); 
+                    time = (new Date(stamp)).toLocaleTimeString().substring(0,5);
                 } else {
-                    time = (new Date()).toLocaleTimeString().substring(0,5); 
+                    time = (new Date()).toLocaleTimeString().substring(0,5);
                 }
                 $chat_content.append(
                         this.message_template({
-                            'sender': sender, 
+                            'sender': sender,
                             'time': time,
                             'message': body,
                             'username': username,
@@ -369,11 +369,11 @@
 
         insertClientStoredMessages: function () {
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
-                $content = this.$el.find('.chat-content'), 
-                prev_date, this_date, now, separator, i; 
+                $content = this.$el.find('.chat-content'),
+                prev_date, this_date, now, separator, i;
 
             for (i=0; i<_.size(msgs); i++) {
-                var msg = msgs[i], 
+                var msg = msgs[i],
                     msg_array = msg.split(' ', 2),
                     date = msg_array[0];
 
@@ -394,16 +394,16 @@
                 if (msg_array[1] == 'to') {
                     $content.append(
                         this.message_template({
-                            'sender': 'me', 
+                            'sender': 'me',
                             'time': this_date.toLocaleTimeString().substring(0,5),
-                            'message': msg, 
+                            'message': msg,
                             'username': 'me',
                             'extra_classes': 'delayed'
                     }));
                 } else {
                     $content.append(
                         this.message_template({
-                            'sender': 'them', 
+                            'sender': 'them',
                             'time': this_date.toLocaleTimeString().substring(0,5),
                             'message': msg,
                             'username': this.model.get('fullname').split(' ')[0],
@@ -526,7 +526,7 @@
 		                '</a>' +
                         '<p class="user-custom-message"><p/>' +
                     '</div>' +
-                    '<div class="chat-content"></div>' + 
+                    '<div class="chat-content"></div>' +
                     '<form class="sendXMPPMessage" action="" method="post">' +
                     '<textarea ' +
                         'type="text" ' +
@@ -613,7 +613,7 @@
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
                 var $results_el = $('#found-users');
                 $(data).each(function (idx, obj) {
-                    if ($results_el.children().length > 0) {  
+                    if ($results_el.children().length > 0) {
                         $results_el.empty();
                     }
                     $results_el.append(
@@ -680,7 +680,7 @@
 
         updateRoomsList: function () {
             xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
-                var room, name, jid, i, 
+                var room, name, jid, i,
                     rooms = $(iq).find('query').find('item');
                 this.$el.find('#available-chatrooms').find('dd.available-chatroom').remove();
                 if (rooms.length) {
@@ -758,7 +758,7 @@
                 $tab_panel = $($tab.attr('href')),
                 $sibling_panel = $($sibling.attr('href'));
 
-            $sibling_panel.fadeOut('fast', function () { 
+            $sibling_panel.fadeOut('fast', function () {
                 $sibling.removeClass('current');
                 $tab.addClass('current');
                 $tab_panel.fadeIn('fast', function () {
@@ -800,8 +800,8 @@
         closeChatRoom: function () {
             this.closeChat();
             xmppchat.connection.muc.leave(
-                            this.model.get('jid'), 
-                            this.model.get('nick'), 
+                            this.model.get('jid'),
+                            this.model.get('nick'),
                             this.onLeave,
                             undefined);
             delete xmppchat.chatboxesview.views[this.model.get('jid')];
@@ -823,7 +823,7 @@
                 if (message !== '') {
                     this.sendGroupMessage(message);
                 }
-            } 
+            }
         },
 
         sendGroupMessage: function (body) {
@@ -888,10 +888,10 @@
 
         initialize: function () {
             xmppchat.connection.muc.join(
-                            this.model.get('jid'), 
-                            this.model.get('nick'), 
-                            $.proxy(this.onMessage, this), 
-                            $.proxy(this.onPresence, this), 
+                            this.model.get('jid'),
+                            this.model.get('nick'),
+                            $.proxy(this.onMessage, this),
+                            $.proxy(this.onPresence, this),
                             $.proxy(this.onRoster, this));
         },
 
@@ -944,16 +944,16 @@
                         body = body.replace(/^\/me/, '*'+sender);
                         $chat_content.append(
                                 this.action_template({
-                                    'sender': 'room', 
+                                    'sender': 'room',
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
-                                    'message': body, 
+                                    'message': body,
                                     'username': sender,
                                     'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
                                 }));
                     } else {
                         $chat_content.append(
                                 this.message_template({
-                                    'sender': 'room', 
+                                    'sender': 'room',
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
@@ -1017,11 +1017,11 @@
                 }
             }, this));
         },
-        
+
         isChatRoom: function (jid) {
             return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
         },
-        
+
         createChatBox: function (jid, data) {
             var box, view;
             if (this.isChatRoom(jid)) {
@@ -1031,14 +1031,14 @@
                 });
             } else {
                 box = new xmppchat.ChatBox({
-                                        'id': jid, 
-                                        'jid': jid, 
-                                        'fullname': data.fullname, 
+                                        'id': jid,
+                                        'jid': jid,
+                                        'fullname': data.fullname,
                                         'portrait_url': data.portrait_url,
                                         'user_profile_url': data.user_profile_url
                                     });
                 view = new xmppchat.ChatBoxView({
-                    model: box 
+                    model: box
                 });
             }
             this.views[jid] = view.render();
@@ -1065,7 +1065,7 @@
                 $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
                     view = this.createChatBox(jid, data);
                 }, this));
-            } 
+            }
         },
 
         showChat: function (jid) {
@@ -1168,7 +1168,7 @@
                 'bare_jid': Strophe.getBareJidFromJid(jid),
                 'user_id': user_id,
                 'subscription': subscription,
-                'fullname': name, 
+                'fullname': name,
                 'resources': [],
                 'presence_type': 'offline',
                 'status': 'offline'
@@ -1249,7 +1249,7 @@
                 subscription = item.get('subscription');
 
             $(this.el).addClass(item.get('presence_type'));
-            
+
             if (ask === 'subscribe') {
                 this.$el.addClass('pending-xmpp-contact');
                 $(this.el).html(this.pending_template(item.toJSON()));
@@ -1273,7 +1273,7 @@
                     that.openChat();
                 });
             }
-            
+
             // Event handlers
             this.$el.delegate('a.remove-xmpp-contact','click', function (ev) {
                 ev.preventDefault();
@@ -1301,7 +1301,7 @@
             var presence_type = rosteritem.get('presence_type'),
                 rank = 4;
             switch(presence_type) {
-                case 'offline': 
+                case 'offline':
                     rank = 0;
                     break;
                 case 'unavailable':
@@ -1349,7 +1349,7 @@
             var model = new xmppchat.RosterItem(jid, subscription, ask, name);
             this.add(model);
         },
-            
+
         addResource: function (bare_jid, resource) {
             var item = this.getItem(bare_jid),
                 resources;
@@ -1431,13 +1431,13 @@
             if (this.isSelf(bare_jid)) {
                 if (xmppchat.connection.jid != jid) {
                     // Another resource has changed it's status, we'll update ours as well.
-                    // FIXME: We should ideally differentiate between converse.js using 
+                    // FIXME: We should ideally differentiate between converse.js using
                     // resources and other resources (i.e Pidgin etc.)
                     xmppchat.xmppstatus.set({'status': presence_type});
-                } 
+                }
                 return true;
             } else if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
-                return true; // Ignore MUC 
+                return true; // Ignore MUC
             }
 
             if ((status_message.length > 0) && (status_message.text() && (presence_type !== 'unavailable'))) {
@@ -1482,10 +1482,10 @@
                 }
 
             } else if (presence_type === 'unsubscribed') {
-                /* Upon receiving the presence stanza of type "unsubscribed", 
-                * the user SHOULD acknowledge receipt of that subscription state 
-                * notification by sending a presence stanza of type "unsubscribe" 
-                * this step lets the user's server know that it MUST no longer 
+                /* Upon receiving the presence stanza of type "unsubscribed",
+                * the user SHOULD acknowledge receipt of that subscription state
+                * notification by sending a presence stanza of type "unsubscribe"
+                * this step lets the user's server know that it MUST no longer
                 * send notification of the subscription state change to the user.
                 */
                 xmppchat.xmppstatus.sendPresence('unsubscribe');
@@ -1493,7 +1493,7 @@
                     xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
                     xmppchat.connection.roster.remove(bare_jid);
                 }
-            } else { 
+            } else {
                 if ((presence_type === undefined) && (show)) {
                     if (show.text() === 'chat') {
                         presence_type = 'online';
@@ -1584,7 +1584,7 @@
                     $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
                     $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
                     $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
-                } 
+                }
             }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
@@ -1737,12 +1737,12 @@
             $(this.el).find('#fancy-xmpp-status-select')
                     .html(this.status_template({
                             'status_message': "I am " + presence_type,
-                            'presence_type': presence_type 
+                            'presence_type': presence_type
                             }));
             // iterate through all the <option> elements and create UL
             options.each(function(){
                 $(that.el).find("#target dd ul").append(that.option_template({
-                                                                'value': $(this).val(), 
+                                                                'value': $(this).val(),
                                                                 'text': $(this).text()
                                                             })).hide();
             });
@@ -1750,7 +1750,7 @@
 
             // Listen for status change on the model and initialize
             // ----------------------------------------------------
-            this.options.model.on("change", $.proxy(this.updateStatusUI, this)); 
+            this.options.model.on("change", $.proxy(this.updateStatusUI, this));
             this.model.initStatus();
         }
     });
@@ -1759,6 +1759,7 @@
     // --------------
     $(document).ready($.proxy(function () {
         var chatdata = jQuery('div#collective-xmpp-chat-data'),
+            $connecting = $('span#connecting-to-chat'),
             $toggle = $('a#toggle-online-users');
         $toggle.unbind('click');
 
@@ -1771,6 +1772,8 @@
         }).render();
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
+            $connecting.show();
+            $toggle.hide();
             console.log("Connection Failed :(");
         }, this));
 
@@ -1789,11 +1792,11 @@
 
 
             this.connection.addHandler(
-                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 
+                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                     'http://jabber.org/protocol/rosterx', 'message', null);
 
             this.connection.roster.registerCallback(
-                    $.proxy(this.roster.rosterHandler, this.roster), 
+                    $.proxy(this.roster.rosterHandler, this.roster),
                     null, 'presence', null);
 
             this.connection.roster.get($.proxy(function () {
@@ -1804,12 +1807,12 @@
                             }, this.roster), null, 'presence', null);
 
                     this.connection.addHandler(
-                            $.proxy(function (message) { 
+                            $.proxy(function (message) {
                                 this.chatboxesview.messageReceived(message);
                                 return true;
                             }, this), null, 'message', 'chat');
 
-                    // XMPP Status 
+                    // XMPP Status
                     this.xmppstatus = new this.XMPPStatus();
                     this.xmppstatusview = new this.XMPPStatusView({
                         'model': this.xmppstatus
@@ -1818,6 +1821,8 @@
 
             // Controlbox toggler
             if ($toggle.length) {
+                $connecting.hide();
+                $toggle.show();
                 $toggle.bind('click', $.proxy(function (e) {
                     e.preventDefault();
                     if ($("div#controlbox").is(':visible')) {

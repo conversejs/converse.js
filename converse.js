@@ -1146,7 +1146,7 @@
 
             // Add the roster
             xmppchat.roster = new xmppchat.RosterItems();
-            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster}).render();
+            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
 
             // Rebind events (necessary for click events on tabs inserted via the panels)

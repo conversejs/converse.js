@@ -44,7 +44,6 @@
 
         define([
             "Libraries/burry.js/burry",
-            "Libraries/underscore.string",
             "Libraries/jquery.tinysort",
             "Libraries/jquery-ui-1.9.1.custom",
             "Libraries/sjcl",
@@ -92,6 +91,29 @@
                 pad(date.getUTCMinutes()) + ':' + 
                 pad(date.getUTCSeconds()) + '.000Z'; 
         }
+    };
+
+    xmppchat.parseISO8601 = function (datestr) {
+        /* Parses string formatted as 2013-02-14T11:27:08.268Z to a Date obj.
+        */
+        var numericKeys = [1, 4, 5, 6, 7, 10, 11],
+            struct = /^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.?\d*)Z\s*$/.exec(datestr),
+            minutesOffset = 0;
+
+        for (var i = 0, k; (k = numericKeys[i]); ++i) {
+            struct[k] = +struct[k] || 0;
+        }
+        // allow undefined days and months
+        struct[2] = (+struct[2] || 1) - 1;
+        struct[3] = +struct[3] || 1;
+        if (struct[8] !== 'Z' && struct[9] !== undefined) {
+            minutesOffset = struct[10] * 60 + struct[11];
+
+            if (struct[9] === '+') {
+                minutesOffset = 0 - minutesOffset;
+            }
+        }
+        return new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
     };
 
     xmppchat.updateMsgCounter = function () {
@@ -278,7 +300,7 @@
             var now = new Date(),
                 time = now.toLocaleTimeString().substring(0,5),
                 minutes = now.getMinutes().toString(),
-                $chat_content = $(this.el).find('.chat-content');
+                $chat_content = this.$el.find('.chat-content');
 
             var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
             if (typeof msg !== 'undefined') {
@@ -316,7 +338,7 @@
                 from = Strophe.getBareJidFromJid($message.attr('from')),
                 to = $message.attr('to'),
                 composing = $message.find('composing'),
-                $chat_content = $(this.el).find('.chat-content'),
+                $chat_content = this.$el.find('.chat-content'),
                 delayed = $message.find('delay').length > 0,
                 fullname = this.model.get('fullname'),
                 time, stamp, username, sender;
@@ -413,25 +435,35 @@
             }
         },
 
+        addHelpMessages: function (msgs) {
+            var $chat_content = this.$el.find('.chat-content'), i;
+            for (i=0; i<msgs.length; i++) {
+                $chat_content.append($('<div class="chat-help">'+msgs[i]+'</div>'));
+            }
+            this.scrolldown();
+        },
+
         sendMessage: function (text) {
             // TODO: Look in ChatPartners to see what resources we have for the recipient.
             // if we have one resource, we sent to only that resources, if we have multiple
             // we send to the bare jid.
             var timestamp = (new Date()).getTime(),
                 bare_jid = this.model.get('jid'),
-                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), el, $chat_content;
+                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), el, $chat_content,
+                msgs;
 
             if (match) {
                 if (match[1] === "clear") {
-                    $(this.el).find('.chat-content').empty();
+                    this.$el.find('.chat-content').empty();
                     xmppchat.storage.clearMessages(bare_jid);
                     return;
                 }
                 else if (match[1] === "help") {
-                    $chat_content = $(this.el).find('.chat-content');
-                    $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
-                    $chat_content.append($('<div class="chat-help"><strong>/clear</strong>: Remove messages</div>'));
-                    this.scrolldown();
+                    msgs =  [
+                        '<strong>/help</strong>: Show this menu', 
+                        '<strong>/clear</strong>: Remove messages' 
+                        ];
+                    this.addHelpMessages(msgs);
                     return;
                 }
             }
@@ -466,14 +498,19 @@
                 if (message !== '') {
                     this.sendMessage(message);
                 }
-                $(this.el).data('composing', false);
+                this.$el.data('composing', false);
             } else {
-                composing = $(this.el).data('composing');
-                if (!composing) {
-                    notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                                    .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
-                    xmppchat.connection.send(notify);
-                    $(this.el).data('composing', true);
+                composing = this.$el.data('composing');
+                if (!composing) { 
+                    if (ev.keyCode != 47) {
+                        // We don't send composing messages if the message
+                        // starts with forward-slash.
+                        notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                                        .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
+                        xmppchat.connection.send(notify);
+                        this.$el.data('composing', true);
+                    }
+                    this.$el.data('composing', true);
                 }
             }
         },
@@ -535,18 +572,18 @@
                     '</form>'),
 
         render: function () {
-            $(this.el).attr('id', this.model.get('box_id'));
-            $(this.el).html(this.template(this.model.toJSON()));
+            this.$el.attr('id', this.model.get('box_id'));
+            this.$el.html(this.template(this.model.toJSON()));
             this.insertClientStoredMessages();
             return this;
         },
 
         isVisible: function () {
-            return $(this.el).is(':visible');
+            return this.$el.is(':visible');
         },
 
         focus: function () {
-            $(this.el).find('.chat-textarea').focus();
+            this.$el.find('.chat-textarea').focus();
             return this;
         },
 
@@ -703,7 +740,7 @@
             if (ev.type === 'click') {
                 jid = $(ev.target).attr('room-jid');
             } else {
-                name = _.str.strip($(ev.target).find('input.new-chatroom-name').val()).toLowerCase();
+                name = $(ev.target).find('input.new-chatroom-name').val().trim().toLowerCase();
                 if (name) {
                     jid = Strophe.escapeNode(name) + '@' + xmppchat.connection.muc_domain;
                 } else {
@@ -766,6 +803,11 @@
             });
         },
 
+        addHelpMessages: function (msgs) {
+            // Override addHelpMessages in ChatBoxView, for now do nothing.
+            return;
+        },
+
         render: function () {
             var that = this;
             this.$el.hide('fast', function () {
@@ -821,12 +863,13 @@
                 message = message.replace(/^\s+|\s+jQuery/g,"");
                 $textarea.val('').focus();
                 if (message !== '') {
-                    this.sendGroupMessage(message);
+                    this.sendChatRoomMessage(message);
                 }
             } 
         },
 
-        sendGroupMessage: function (body) {
+        sendChatRoomMessage: function (body) {
+            this.appendMessage(body);
             var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false];
             switch (match[1]) {
                 case 'msg':
@@ -848,7 +891,7 @@
                     xmppchat.connection.muc.deop(this.model.get('jid'), match[2]);
                     break;
                 case 'help':
-                    $chat_content = $(this.el).find('.chat-content');
+                    $chat_content = this.$el.find('.chat-content');
                     $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>'));
                     /* TODO:
@@ -890,9 +933,9 @@
             xmppchat.connection.muc.join(
                             this.model.get('jid'), 
                             this.model.get('nick'), 
-                            $.proxy(this.onMessage, this), 
-                            $.proxy(this.onPresence, this), 
-                            $.proxy(this.onRoster, this));
+                            $.proxy(this.onChatRoomMessage, this), 
+                            $.proxy(this.onChatRoomPresence, this), 
+                            $.proxy(this.onChatRoomRoster, this));
         },
 
         onLeave: function () {
@@ -902,7 +945,7 @@
             }
         },
 
-        onPresence: function (presence, room) {
+        onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
                 from = $(presence).attr('from');
             if ($(presence).attr('type') !== 'error') {
@@ -917,11 +960,11 @@
             return true;
         },
 
-        onMessage: function (message) {
+        onChatRoomMessage: function (message) {
             var body = $(message).children('body').text(),
                 jid = $(message).attr('from'),
                 composing = $(message).find('composing'),
-                $chat_content = $(this.el).find('.chat-content'),
+                $chat_content = this.$el.find('.chat-content'),
                 sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
                 subject = $(message).children('subject').text();
 
@@ -935,7 +978,8 @@
                 }
             } else {
                 if (sender === this.model.get('nick')) {
-                    this.appendMessage(body);
+                    // Our own message which is already appended 
+                    return true;
                 } else {
                     $chat_content.find('div.chat-event').remove();
 
@@ -966,7 +1010,7 @@
             return true;
         },
 
-        onRoster: function (roster, room) {
+        onChatRoomRoster: function (roster, room) {
             var controlboxview = xmppchat.chatboxesview.views.controlbox,
                 i;
 
@@ -988,8 +1032,8 @@
         },
 
         render: function () {
-            $(this.el).attr('id', this.model.get('box_id'));
-            $(this.el).html(this.template(this.model.toJSON()));
+            this.$el.attr('id', this.model.get('box_id'));
+            this.$el.html(this.template(this.model.toJSON()));
             return this;
         }
     });
@@ -1009,7 +1053,7 @@
             }
             _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'controlbox') {
-                    if (_.str.include(jid, xmppchat.connection.muc_domain)) {
+                    if (strinclude(jid, xmppchat.connection.muc_domain)) {
                         this.createChatBox(jid);
                     } else {
                         this.openChat(jid);
@@ -1078,8 +1122,8 @@
                     view.scrolldown();
                     view.focus();
                 }
-                view.saveChatToStorage();
             }
+            view.saveChatToStorage();
             return view;
         },
 
@@ -1248,14 +1292,14 @@
                 that = this,
                 subscription = item.get('subscription');
 
-            $(this.el).addClass(item.get('presence_type'));
+            this.$el.addClass(item.get('presence_type'));
             
             if (ask === 'subscribe') {
                 this.$el.addClass('pending-xmpp-contact');
-                $(this.el).html(this.pending_template(item.toJSON()));
+                this.$el.html(this.pending_template(item.toJSON()));
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
-                $(this.el).html(this.request_template(item.toJSON()));
+                this.$el.html(this.request_template(item.toJSON()));
                 this.$el.delegate('button.accept-xmpp-request', 'click', function (ev) {
                     ev.preventDefault();
                     that.acceptRequest();
@@ -1285,7 +1329,7 @@
         initialize: function () {
             this.options.model.on('change', function (item, changed) {
                 if (_.has(changed.changes, 'presence_type')) {
-                    $(this.el).attr('class', item.changed.presence_type);
+                    this.$el.attr('class', item.changed.presence_type);
                 }
             }, this);
         }
@@ -1557,7 +1601,7 @@
         render: function () {
             this.$el.empty().html(this.template());
             var models = this.model.sort().models,
-                children = $(this.el).children(),
+                children = this.$el.children(),
                 $my_contacts = this.$el.find('#xmpp-contacts').hide(),
                 $contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
                 $pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
@@ -1704,7 +1748,7 @@
         updateStatusUI: function (ev) {
             var stat = ev.get('status'),
                 status_message = ev.get('status_message') || "I am " + stat;
-            $(this.el).find('#fancy-xmpp-status-select').html(
+            this.$el.find('#fancy-xmpp-status-select').html(
                 this.status_template({
                         'presence_type': stat,
                         'status_message': status_message
@@ -1729,12 +1773,12 @@
         initialize: function () {
             // Replace the default dropdown with something nicer
             // -------------------------------------------------
-            var $select = $(this.el).find('select#select-xmpp-status'),
+            var $select = this.$el.find('select#select-xmpp-status'),
                 presence_type = this.model.getStatus() || 'offline',
                 options = $('option', $select),
                 that = this;
-            $(this.el).html(this.choose_template());
-            $(this.el).find('#fancy-xmpp-status-select')
+            this.$el.html(this.choose_template());
+            this.$el.find('#fancy-xmpp-status-select')
                     .html(this.status_template({
                             'status_message': "I am " + presence_type,
                             'presence_type': presence_type 
@@ -1758,7 +1802,7 @@
     // Event handlers
     // --------------
     $(document).ready($.proxy(function () {
-        var chatdata = jQuery('div#collective-xmpp-chat-data'),
+        var chatdata = $('div#collective-xmpp-chat-data'),
             $toggle = $('a#toggle-online-users');
         $toggle.unbind('click');
 
@@ -1786,7 +1830,6 @@
 
             this.chatboxes = new this.ChatBoxes();
             this.chatboxesview = new this.ChatBoxesView({'model': this.chatboxes});
-
 
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster), 

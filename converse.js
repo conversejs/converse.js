@@ -186,7 +186,8 @@
             var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
             if (msgs.length) {
                 return sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[msgs.length-1]);
-            } 
+            }
+            return undefined;
         },
 
         clearMessages: function (jid) {
@@ -651,7 +652,9 @@
         },
         room_template: _.template(
             '<dd class="available-chatroom">' +
-            '<a class="open-room" room-jid="{{jid}}" title="Click to open this chatroom" href="#">' +
+            '<a class="open-room" data-room-jid="{{jid}}"' +
+                ' title="Click to open this chatroom"' +
+                ' href="#">' +
             '{{name}}</a></dd>'),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
@@ -701,7 +704,7 @@
             ev.preventDefault();
             var name, jid;
             if (ev.type === 'click') {
-                jid = $(ev.target).attr('room-jid');
+                jid = $(ev.target).attr('data-room-jid');
             } else {
                 name = _.str.strip($(ev.target).find('input.new-chatroom-name').val()).toLowerCase();
                 if (name) {
@@ -1115,12 +1118,13 @@
                     view.messageReceived(message);
                     xmppchat.roster.addResource(partner_jid, resource);
                 }, this));
-                return;
+                return undefined;
             } else if (!view.isVisible()) {
                 this.showChat(partner_jid);
             }
             view.messageReceived(message);
             xmppchat.roster.addResource(partner_jid, resource);
+            return true;
         },
 
         initialize: function () {
@@ -1394,6 +1398,7 @@
             if (item) {
                 return _.size(item.get('resources'));
             }
+            return 0;
         },
 
         getNumOnlineContacts: function () {
@@ -1779,7 +1784,7 @@
 
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
-            this.connection = connection
+            this.connection = connection;
             // this.connection.xmlInput = function (body) { console.log(body); };
             // this.connection.xmlOutput = function (body) { console.log(body); };
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);

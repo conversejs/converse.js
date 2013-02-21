@@ -1349,8 +1349,9 @@
             return Backbone.Collection.prototype.get.call(this, id);
         },
 
-        addRosterItem: function (jid, subscription, ask, name) {
+        addRosterItem: function (jid, subscription, ask, name, options) {
             var model = new xmppchat.RosterItem(jid, subscription, ask, name);
+            model.options = options || {};
             this.add(model);
         },
             
@@ -1412,12 +1413,17 @@
         },
 
         rosterHandler: function (items) {
-            var model, item;
-            for (var i=0; i<items.length; i++) {
+            var model, item, i, items_length = items.length,
+                last_item = items[items_length - 1],
+                options = {};
+            for (i=0; i<items_length; i+=1) {
                 item = items[i];
                 model = this.getItem(item.jid);
                 if (!model) {
-                    this.addRosterItem(item.jid, item.subscription, item.ask, item.name);
+                    if (item === last_item) {
+                        options.isLast = true;
+                    }
+                    this.addRosterItem(item.jid, item.subscription, item.ask, item.name, options);
                 } else {
                     // only modify model attributes if they are different from the
                     // ones that were already set when the rosterItem was added

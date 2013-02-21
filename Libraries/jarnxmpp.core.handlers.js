@@ -2,7 +2,7 @@
 $msg:false, Strophe:false, setTimeout:false, navigator:false, jarn:false, google:false, jarnxmpp:false, jQuery:false, sessionStorage:false, $iq:false, $pres:false, Image:false, */
 
 (function (jarnxmpp, $, portal_url) {
-    
+
     portal_url = portal_url || '';
 
     jarnxmpp.Storage = {
@@ -230,9 +230,9 @@ $msg:false, Strophe:false, setTimeout:false, navigator:false, jarn:false, google
             data = {};
         }
         $.ajax({
-            'url':portal_url + '/@@xmpp-loader', 
+            'url':portal_url + '/@@xmpp-loader',
             'dataType': 'json',
-            'data': data, 
+            'data': data,
             'success': function (data) {
                 if (!(('rid' in data) && ('sid' in data) && ('BOSH_SERVICE' in data))) {
                     return;

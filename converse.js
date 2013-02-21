@@ -1414,7 +1414,11 @@
                 if (!model) {
                     this.addRosterItem(item.jid, item.subscription, item.ask, item.name);
                 } else {
-                    model.set({'subscription': item.subscription, 'ask': item.ask});
+                    // only modify model attributes if they are different from the
+                    // ones that were already set when the rosterItem was added
+                    if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
+                        model.set({'subscription': item.subscription, 'ask': item.ask});
+                    }
                 }
             }
         },

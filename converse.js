@@ -460,8 +460,8 @@
                 }
                 else if (match[1] === "help") {
                     msgs =  [
-                        '<strong>/help</strong>: Show this menu', 
-                        '<strong>/clear</strong>: Remove messages' 
+                        '<strong>/help</strong>: Show this menu',
+                        '<strong>/clear</strong>: Remove messages'
                         ];
                     this.addHelpMessages(msgs);
                     return;
@@ -501,7 +501,7 @@
                 this.$el.data('composing', false);
             } else {
                 composing = this.$el.data('composing');
-                if (!composing) { 
+                if (!composing) {
                     if (ev.keyCode != 47) {
                         // We don't send composing messages if the message
                         // starts with forward-slash.
@@ -931,10 +931,10 @@
 
         initialize: function () {
             xmppchat.connection.muc.join(
-                            this.model.get('jid'), 
-                            this.model.get('nick'), 
-                            $.proxy(this.onChatRoomMessage, this), 
-                            $.proxy(this.onChatRoomPresence, this), 
+                            this.model.get('jid'),
+                            this.model.get('nick'),
+                            $.proxy(this.onChatRoomMessage, this),
+                            $.proxy(this.onChatRoomPresence, this),
                             $.proxy(this.onChatRoomRoster, this));
         },
 
@@ -978,7 +978,7 @@
                 }
             } else {
                 if (sender === this.model.get('nick')) {
-                    // Our own message which is already appended 
+                    // Our own message which is already appended
                     return true;
                 } else {
                     $chat_content.find('div.chat-event').remove();
@@ -1292,7 +1292,7 @@
                 that = this,
                 subscription = item.get('subscription');
             this.$el.addClass(item.get('presence_type'));
-            
+
             if (ask === 'subscribe') {
                 this.$el.addClass('pending-xmpp-contact');
                 this.$el.html(this.pending_template(item.toJSON()));
@@ -1678,14 +1678,14 @@
             store.set(xmppchat.connection.bare_jid+'-xmpp-status', value);
         },
 
+        getStatusMessage: function () {
+            return store.get(xmppchat.connection.bare_jid+'-xmpp-custom-status');
+        },
+
         setStatusMessage: function (status_message) {
             xmppchat.connection.send($pres({'type':this.getStatus()}).c('status').t(status_message));
             this.set({'status_message': status_message});
             store.set(xmppchat.connection.bare_jid+'-xmpp-custom-status', status_message);
-        },
-
-        getStatusMessage: function () {
-            return store.get(xmppchat.connection.bare_jid+'-xmpp-custom-status');
         }
 
     });

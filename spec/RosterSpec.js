@@ -192,11 +192,11 @@
                     for (i=10; i<15; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('away');
                     }
-                    // The next five are unavailable 
+                    // The next five are unavailable
                     for (i=15; i<20; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('unavailable');
                     }
-                    // The next 20 are offline 
+                    // The next 20 are offline
                     for (i=20; i<40; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
                     }

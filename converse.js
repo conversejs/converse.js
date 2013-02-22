@@ -1815,8 +1815,10 @@
         }).render();
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
-            $connecting.show();
             $toggle.hide();
+            $connecting.show();
+            $connecting.html('Unable to communicate with chat server');
+            $connecting.css('background-image', "url('/error_icon.png')");
             console.log("Connection Failed :(");
         }, this));
 

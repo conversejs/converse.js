@@ -1564,6 +1564,7 @@
                 this.render(item);
             }, this);
 
+            this.$el.hide();
             this.$el.html(this.template());
         },
 
@@ -1575,11 +1576,10 @@
             if (!item) {
                 return this;
             }
-            var
-                $my_contacts = this.$el.find('#xmpp-contacts').show(),
+            var $my_contacts = this.$el.find('#xmpp-contacts').show(),
                 $contact_requests = this.$el.find('#xmpp-contact-requests').show(),
                 $pending_contacts = this.$el.find('#pending-xmpp-contacts').show(),
-                $count, num;
+                $count, num, presence_change;
             var user_id = Strophe.getNodeFromJid(item.id),
                     view = this.rosteritemviews[item.id],
                     ask = item.get('ask'),
@@ -1593,13 +1593,37 @@
                     $contact_requests.after(view.render().el);
                     $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                 } else if (subscription === 'both') {
-                    $my_contacts.after(view.render().el);
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
-                } 
+                    if (!item.options.sorted) {
+                        // this attribute will be true only after all of the elements have been added on the page
+                        // at this point all offline
+                        $my_contacts.after(view.render().el);
+                    }
+                    else {
+                        // just by calling render will be enough to change the icon of the existing item without
+                        // having to reinsert it and the sort will come from the presence change
+                        view.render();
+                    }
+                }
+            presence_change = view.model.changed['presence_type'];
+            if (presence_change) {
+                // resort all items only if the model has changed it's presence_type as this render
+                // is also triggered when the resource is changed which always comes before the presence change
+                // therefore we avoid resorting when the change doesn't affect the position of the item
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
+            }
+
+            if (item.options.isLast && !item.options.sorted) {
+                // this will be true after all of the roster items have been added with the default
+                // options where all of the items are offline and now we can show the rosterView
+                item.options.sorted = true;
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                this.$el.show();
+            }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
                 if (!h.nextUntil('dt').length) {

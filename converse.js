@@ -1610,7 +1610,7 @@
             this.model.on("remove", function (item) {
                 // remove element from the rosterView instance
                 this.rosteritemviews[item.id].$el.remove();
-                
+
                 delete this.rosteritemviews[item.id];
             }, this);
 
@@ -1626,9 +1626,9 @@
             if (!item) {
                 return this;
             }
-            var $my_contacts = this.$el.find('#xmpp-contacts').show(),
-                $contact_requests = this.$el.find('#xmpp-contact-requests').show(),
-                $pending_contacts = this.$el.find('#pending-xmpp-contacts').show(),
+            var $my_contacts = this.$el.find('#xmpp-contacts'),
+                $contact_requests = this.$el.find('#xmpp-contact-requests'),
+                $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
                 $count, num, presence_change;
             var user_id = Strophe.getNodeFromJid(item.id),
                     view = this.rosteritemviews[item.id],
@@ -1676,8 +1676,8 @@
             }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                if (!h.nextUntil('dt').length) {
-                    h.hide();
+                if (h.nextUntil('dt').length && !h.is('visible')) {
+                    h.show();
                 }
             });
             $count = $('#online-count');

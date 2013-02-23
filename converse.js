@@ -1251,7 +1251,12 @@
                         $(this).dialog( "close" );
                         xmppchat.connection.roster.remove(bare_jid, function (iq) {
                             xmppchat.connection.roster.unauthorize(bare_jid);
-                            xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
+                            // TODO inspect if chatboxes ever receives controlbox
+                            if (xmppchat.chatboxesview.controlbox) {
+                                xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
+                            }
+                            // remove model from view roster
+                            xmppchat.rosterview.model.remove(bare_jid);
                         });
                     },
                     "Cancel": function() {

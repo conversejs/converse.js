@@ -461,8 +461,8 @@
                 }
                 else if (match[1] === "help") {
                     msgs =  [
-                        '<strong>/help</strong>: Show this menu', 
-                        '<strong>/clear</strong>: Remove messages' 
+                        '<strong>/help</strong>: Show this menu',
+                        '<strong>/clear</strong>: Remove messages'
                         ];
                     this.addHelpMessages(msgs);
                     return;
@@ -502,7 +502,7 @@
                 this.$el.data('composing', false);
             } else {
                 composing = this.$el.data('composing');
-                if (!composing) { 
+                if (!composing) {
                     if (ev.keyCode != 47) {
                         // We don't send composing messages if the message
                         // starts with forward-slash.
@@ -934,10 +934,10 @@
 
         initialize: function () {
             xmppchat.connection.muc.join(
-                            this.model.get('jid'), 
-                            this.model.get('nick'), 
-                            $.proxy(this.onChatRoomMessage, this), 
-                            $.proxy(this.onChatRoomPresence, this), 
+                            this.model.get('jid'),
+                            this.model.get('nick'),
+                            $.proxy(this.onChatRoomMessage, this),
+                            $.proxy(this.onChatRoomPresence, this),
                             $.proxy(this.onChatRoomRoster, this));
         },
 
@@ -981,7 +981,7 @@
                 }
             } else {
                 if (sender === this.model.get('nick')) {
-                    // Our own message which is already appended 
+                    // Our own message which is already appended
                     return true;
                 } else {
                     $chat_content.find('div.chat-event').remove();
@@ -1228,8 +1228,16 @@
     xmppchat.RosterItemView = Backbone.View.extend({
         tagName: 'dd',
 
-        openChat: function () {
+        events: {
+            "click .accept-xmpp-request": "acceptRequest",
+            "click .decline-xmpp-request": "declineRequest",
+            "click .open-chat": "openChat",
+            "click .remove-xmpp-contact": "removeContact"
+        },
+
+        openChat: function (ev) {
             xmppchat.chatboxesview.openChat(this.model.get('jid'));
+            ev.preventDefault();
         },
 
         removeContact: function () {
@@ -1266,18 +1274,20 @@
             });
         },
 
-        acceptRequest: function () {
+        acceptRequest: function (ev) {
             var jid = this.model.get('jid');
             xmppchat.connection.roster.authorize(jid);
             xmppchat.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
                 xmppchat.connection.roster.subscribe(jid);
             });
+            ev.preventDefault();
         },
 
-        declineRequest: function () {
+        declineRequest: function (ev) {
             var that = this;
             xmppchat.connection.roster.unauthorize(this.model.get('jid'));
             that.trigger('decline-request', that.model);
+            ev.preventDefault();
         },
 
         template: _.template(
@@ -1301,36 +1311,19 @@
                 that = this,
                 subscription = item.get('subscription');
             this.$el.addClass(item.get('presence_type'));
-            
+
             if (ask === 'subscribe') {
                 this.$el.addClass('pending-xmpp-contact');
                 this.$el.html(this.pending_template(item.toJSON()));
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
-                this.$el.delegate('button.accept-xmpp-request', 'click', function (ev) {
-                    ev.preventDefault();
-                    that.acceptRequest();
-                });
-                this.$el.delegate('button.decline-xmpp-request', 'click', function (ev) {
-                    ev.preventDefault();
-                    that.declineRequest();
-                });
                 xmppchat.chatboxesview.openChat('controlbox');
             } else if (subscription === 'both') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
-                this.$el.delegate('a.open-chat', 'click', function (ev) {
-                    ev.preventDefault();
-                    that.openChat();
-                });
             }
 
-            // Event handlers
-            this.$el.find('.remove-xmpp-contact').one('click', function (ev) {
-                ev.preventDefault();
-                that.removeContact();
-            });
             return this;
         },
 
@@ -1926,4 +1919,3 @@
 
     return xmppchat;
 }));
-

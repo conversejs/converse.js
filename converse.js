@@ -1327,7 +1327,7 @@
             }
 
             // Event handlers
-            this.$el.delegate('a.remove-xmpp-contact','click', function (ev) {
+            this.$el.find('.remove-xmpp-contact').one('click', function (ev) {
                 ev.preventDefault();
                 that.removeContact();
             });
@@ -1608,8 +1608,10 @@
             }, this);
 
             this.model.on("remove", function (item) {
+                // remove element from the rosterView instance
+                this.rosteritemviews[item.id].$el.remove();
+                
                 delete this.rosteritemviews[item.id];
-                this.render(item);
             }, this);
 
             this.$el.hide();

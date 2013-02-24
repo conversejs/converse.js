@@ -1240,7 +1240,7 @@
             ev.preventDefault();
         },
 
-        removeContact: function () {
+        removeContact: function (ev) {
             var that = this;
             $("<span></span>").dialog({
                 title: 'Are you sure you want to remove this contact?',
@@ -1272,6 +1272,7 @@
                     }
                 }
             });
+            ev.preventDefault();
         },
 
         acceptRequest: function (ev) {
@@ -1669,7 +1670,7 @@
             }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                if (h.nextUntil('dt').length && !h.is('visible')) {
+                if (h.nextUntil('dt').length && !h.is(':visible')) {
                     h.show();
                 }
             });

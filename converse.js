@@ -1670,8 +1670,11 @@
             }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                if (h.nextUntil('dt').length && !h.is(':visible')) {
+                if (h.nextUntil('dt').length) {
                     h.show();
+                }
+                else {
+                    h.hide();
                 }
             });
             $count = $('#online-count');

@@ -1818,7 +1818,7 @@
             $toggle.hide();
             $connecting.show();
             $connecting.html('Unable to communicate with chat server');
-            $connecting.css('background-image', "url('/error_icon.png')");
+            $connecting.css('background-image', "url(images/error_icon.png)");
             console.log("Connection Failed :(");
         }, this));
 

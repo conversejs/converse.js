@@ -30,7 +30,7 @@
 }
 
 #connecting-to-chat {
-    background: url('/spinner.gif') no-repeat;
+    background: url(images/spinner.gif) no-repeat left;
     padding-left: 1.4em;
 }
 

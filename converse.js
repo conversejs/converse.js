@@ -1320,7 +1320,7 @@
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
                 xmppchat.chatboxesview.openChat('controlbox');
-            } else if (subscription === 'both') {
+            } else if (subscription === 'both' || subscription === 'to') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
             }
@@ -1636,7 +1636,7 @@
                 } else if (ask === 'request') {
                     $contact_requests.after(view.render().el);
                     $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
-                } else if (subscription === 'both') {
+                } else if (subscription === 'both' || subscription === 'to') {
                     if (!item.options.sorted) {
                         // this attribute will be true only after all of the elements have been added on the page
                         // at this point all offline

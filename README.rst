@@ -12,7 +12,7 @@ Features
 
 It has the following features:
 
-* Manually or automically subscribe to other users. 
+* Manually or automically subscribe to other users.
 * With manual roster subscriptions, you can accept or decline contact requests.
 * Chat statuses (online, busy, away, offline)
 * Custom status message
@@ -20,7 +20,7 @@ It has the following features:
 * Third person messages (/me )
 * Multi-user chat in chatrooms
 * Topics can be set for chatrooms
-* Full name and profile picture support 
+* Full name and profile picture support
 
 Converse.js is used by collective.xmpp.chat_, which is a Plone_ instant
 messaging add-on.

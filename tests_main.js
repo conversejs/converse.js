@@ -1,5 +1,5 @@
-require(["jquery", 
-         "spec/StorageSpec", 
+require(["jquery",
+         "spec/StorageSpec",
          "spec/RosterSpec"], function($) {
 
     $(function($) {

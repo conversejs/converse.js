@@ -35,7 +35,7 @@
                 expect(this.storage.getOpenChats()).toEqual(['chat1@localhost', 'chat2@localhost']);
 
                 this.storage.addOpenChat('chat3@localhost');
-                expect(this.storage.getOpenChats()).toEqual(['chat1@localhost', 
+                expect(this.storage.getOpenChats()).toEqual(['chat1@localhost',
                                                              'chat2@localhost',
                                                              'chat3@localhost']);
             });
@@ -47,12 +47,12 @@
                 this.storage.addOpenChat('chat1@localhost');
                 this.storage.addOpenChat('chat2@localhost');
                 this.storage.addOpenChat('chat3@localhost');
-                expect(this.storage.getOpenChats()).toEqual(['chat1@localhost', 
+                expect(this.storage.getOpenChats()).toEqual(['chat1@localhost',
                                                              'chat2@localhost',
                                                              'chat3@localhost']);
 
                 this.storage.removeOpenChat('chat2@localhost');
-                expect(this.storage.getOpenChats()).toEqual(['chat1@localhost', 
+                expect(this.storage.getOpenChats()).toEqual(['chat1@localhost',
                                                              'chat3@localhost']);
 
                 this.storage.removeOpenChat('chat1@localhost');
@@ -84,7 +84,7 @@
                     expect(msgs.length).toEqual(i+1);
                     expect(msgs[i]).toEqual(jasmine.any(String));
 
-                    // First two space separated strings are ISO date and direction 
+                    // First two space separated strings are ISO date and direction
                     var msg_arr = msgs[i].split(' ', 2);
                     // Check that first string is ISO format
                     expect(msg_arr[0]).toMatch(iso_regex);

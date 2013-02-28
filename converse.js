@@ -209,6 +209,7 @@
             if (msgs.length) {
                 return sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[msgs.length-1]);
             }
+            return undefined;
         },
 
         clearMessages: function (jid) {
@@ -560,7 +561,7 @@
                         '<a href="{{user_profile_url}}" class="user">' +
                             '<img src="{{portrait_url}}" alt="Avatar of {{fullname}}" class="avatar" />' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
-		                '</a>' +
+                        '</a>' +
                         '<p class="user-custom-message"><p/>' +
                     '</div>' +
                     '<div class="chat-content"></div>' +
@@ -688,7 +689,9 @@
         },
         room_template: _.template(
             '<dd class="available-chatroom">' +
-            '<a class="open-room" room-jid="{{jid}}" title="Click to open this chatroom" href="#">' +
+            '<a class="open-room" data-room-jid="{{jid}}"' +
+                ' title="Click to open this chatroom"' +
+                ' href="#">' +
             '{{name}}</a></dd>'),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
@@ -738,7 +741,7 @@
             ev.preventDefault();
             var name, jid;
             if (ev.type === 'click') {
-                jid = $(ev.target).attr('room-jid');
+                jid = $(ev.target).attr('data-room-jid');
             } else {
                 name = $(ev.target).find('input.new-chatroom-name').val().trim().toLowerCase();
                 if (name) {
@@ -1159,12 +1162,13 @@
                     view.messageReceived(message);
                     xmppchat.roster.addResource(partner_jid, resource);
                 }, this));
-                return;
+                return undefined;
             } else if (!view.isVisible()) {
                 this.showChat(partner_jid);
             }
             view.messageReceived(message);
             xmppchat.roster.addResource(partner_jid, resource);
+            return true;
         },
 
         initialize: function () {
@@ -1186,7 +1190,7 @@
 
             // Add the roster
             xmppchat.roster = new xmppchat.RosterItems();
-            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster}).render();
+            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
 
             // Rebind events (necessary for click events on tabs inserted via the panels)
@@ -1224,11 +1228,19 @@
     xmppchat.RosterItemView = Backbone.View.extend({
         tagName: 'dd',
 
-        openChat: function () {
-            xmppchat.chatboxesview.openChat(this.model.get('jid'));
+        events: {
+            "click .accept-xmpp-request": "acceptRequest",
+            "click .decline-xmpp-request": "declineRequest",
+            "click .open-chat": "openChat",
+            "click .remove-xmpp-contact": "removeContact"
         },
 
-        removeContact: function () {
+        openChat: function (ev) {
+            xmppchat.chatboxesview.openChat(this.model.get('jid'));
+            ev.preventDefault();
+        },
+
+        removeContact: function (ev) {
             var that = this;
             $("<span></span>").dialog({
                 title: 'Are you sure you want to remove this contact?',
@@ -1247,7 +1259,12 @@
                         $(this).dialog( "close" );
                         xmppchat.connection.roster.remove(bare_jid, function (iq) {
                             xmppchat.connection.roster.unauthorize(bare_jid);
-                            xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
+                            // TODO inspect if chatboxes ever receives controlbox
+                            if (xmppchat.chatboxesview.controlbox) {
+                                xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
+                            }
+                            // remove model from view roster
+                            xmppchat.rosterview.model.remove(bare_jid);
                         });
                     },
                     "Cancel": function() {
@@ -1255,20 +1272,23 @@
                     }
                 }
             });
+            ev.preventDefault();
         },
 
-        acceptRequest: function () {
+        acceptRequest: function (ev) {
             var jid = this.model.get('jid');
             xmppchat.connection.roster.authorize(jid);
             xmppchat.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
                 xmppchat.connection.roster.subscribe(jid);
             });
+            ev.preventDefault();
         },
 
-        declineRequest: function () {
+        declineRequest: function (ev) {
             var that = this;
             xmppchat.connection.roster.unauthorize(this.model.get('jid'));
             that.trigger('decline-request', that.model);
+            ev.preventDefault();
         },
 
         template: _.template(
@@ -1299,29 +1319,12 @@
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
-                this.$el.delegate('button.accept-xmpp-request', 'click', function (ev) {
-                    ev.preventDefault();
-                    that.acceptRequest();
-                });
-                this.$el.delegate('button.decline-xmpp-request', 'click', function (ev) {
-                    ev.preventDefault();
-                    that.declineRequest();
-                });
                 xmppchat.chatboxesview.openChat('controlbox');
-            } else if (subscription === 'both') {
+            } else if (subscription === 'both' || subscription === 'to') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
-                this.$el.delegate('a.open-chat', 'click', function (ev) {
-                    ev.preventDefault();
-                    that.openChat();
-                });
             }
 
-            // Event handlers
-            this.$el.delegate('a.remove-xmpp-contact','click', function (ev) {
-                ev.preventDefault();
-                that.removeContact();
-            });
             return this;
         },
 
@@ -1388,8 +1391,9 @@
             return Backbone.Collection.prototype.get.call(this, id);
         },
 
-        addRosterItem: function (jid, subscription, ask, name) {
+        addRosterItem: function (jid, subscription, ask, name, options) {
             var model = new xmppchat.RosterItem(jid, subscription, ask, name);
+            model.options = options || {};
             this.add(model);
         },
 
@@ -1437,6 +1441,7 @@
             if (item) {
                 return _.size(item.get('resources'));
             }
+            return 0;
         },
 
         getNumOnlineContacts: function () {
@@ -1450,14 +1455,23 @@
         },
 
         rosterHandler: function (items) {
-            var model, item;
-            for (var i=0; i<items.length; i++) {
+            var model, item, i, items_length = items.length,
+                last_item = items[items_length - 1],
+                options = {};
+            for (i=0; i<items_length; i+=1) {
                 item = items[i];
                 model = this.getItem(item.jid);
                 if (!model) {
-                    this.addRosterItem(item.jid, item.subscription, item.ask, item.name);
+                    if (item === last_item) {
+                        options.isLast = true;
+                    }
+                    this.addRosterItem(item.jid, item.subscription, item.ask, item.name, options);
                 } else {
-                    model.set({'subscription': item.subscription, 'ask': item.ask});
+                    // only modify model attributes if they are different from the
+                    // ones that were already set when the rosterItem was added
+                    if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
+                        model.set({'subscription': item.subscription, 'ask': item.ask});
+                    }
                 }
             }
         },
@@ -1580,38 +1594,40 @@
                         this.model.remove(item.id);
                     }, this);
                 }
-                this.render();
+                this.render(item);
             }, this);
 
             this.model.on('change', function (item) {
-                this.render();
+                this.render(item);
             }, this);
 
             this.model.on("remove", function (item) {
+                // remove element from the rosterView instance
+                this.rosteritemviews[item.id].$el.remove();
+
                 delete this.rosteritemviews[item.id];
-                this.render();
             }, this);
+
+            this.$el.hide();
+            this.$el.html(this.template());
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
                             '<dt id="xmpp-contacts">My contacts</dt>' +
                             '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
 
-        render: function () {
-            this.$el.empty().html(this.template());
-            var models = this.model.sort().models,
-                children = this.$el.children(),
-                $my_contacts = this.$el.find('#xmpp-contacts').hide(),
-                $contact_requests = this.$el.find('#xmpp-contact-requests').hide(),
-                $pending_contacts = this.$el.find('#pending-xmpp-contacts').hide(),
-                $count, num;
-
-            for (var i=0; i<models.length; i++) {
-                var model = models[i],
-                    user_id = Strophe.getNodeFromJid(model.id),
-                    view = this.rosteritemviews[model.id],
-                    ask = model.get('ask'),
-                    subscription = model.get('subscription'),
+        render: function (item) {
+            if (!item) {
+                return this;
+            }
+            var $my_contacts = this.$el.find('#xmpp-contacts'),
+                $contact_requests = this.$el.find('#xmpp-contact-requests'),
+                $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
+                $count, num, presence_change;
+            var user_id = Strophe.getNodeFromJid(item.id),
+                    view = this.rosteritemviews[item.id],
+                    ask = item.get('ask'),
+                    subscription = item.get('subscription'),
                     crit = {order:'asc'};
 
                 if (ask === 'subscribe') {
@@ -1620,19 +1636,45 @@
                 } else if (ask === 'request') {
                     $contact_requests.after(view.render().el);
                     $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
-                } else if (subscription === 'both') {
-                    $my_contacts.after(view.render().el);
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
-                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
+                } else if (subscription === 'both' || subscription === 'to') {
+                    if (!item.options.sorted) {
+                        // this attribute will be true only after all of the elements have been added on the page
+                        // at this point all offline
+                        $my_contacts.after(view.render().el);
+                    }
+                    else {
+                        // just by calling render will be enough to change the icon of the existing item without
+                        // having to reinsert it and the sort will come from the presence change
+                        view.render();
+                    }
                 }
+            presence_change = view.model.changed['presence_type'];
+            if (presence_change) {
+                // resort all items only if the model has changed it's presence_type as this render
+                // is also triggered when the resource is changed which always comes before the presence change
+                // therefore we avoid resorting when the change doesn't affect the position of the item
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
+            }
+
+            if (item.options.isLast && !item.options.sorted) {
+                // this will be true after all of the roster items have been added with the default
+                // options where all of the items are offline and now we can show the rosterView
+                item.options.sorted = true;
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                this.$el.show();
             }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                if (h.nextUntil('dt').length > 0) {
+                if (h.nextUntil('dt').length) {
                     h.show();
+                }
+                else {
+                    h.hide();
                 }
             });
             $count = $('#online-count');
@@ -1824,7 +1866,7 @@
 
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
-            this.connection = connection
+            this.connection = connection;
             // this.connection.xmlInput = function (body) { console.log(body); };
             // this.connection.xmlOutput = function (body) { console.log(body); };
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
@@ -1883,4 +1925,3 @@
 
     return xmppchat;
 }));
-

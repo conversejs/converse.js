@@ -31,12 +31,12 @@
             xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             // stub
             xmppchat.chatboxesview = {openChat: function () {} };
-            // Hack to make sure there is an element.
-            xmppchat.rosterview.$el = $('<dl id="xmppchat-roster"></dl>');
             xmppchat.rosterview.render();
 
+            // by default the dts are hidden from css class and only later they will be hidden
+            // by jQuery therefore for the first check we will see if visible instead of none
             it("should hide the requesting contacts heading if there aren't any", function () {
-                expect(xmppchat.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('none');
+                expect(xmppchat.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
             });
 
             it("should be able to add requesting contacts, and they should be sorted alphabetically", function () {

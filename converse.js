@@ -76,6 +76,12 @@
     var xmppchat = {};
     xmppchat.msg_counter = 0;
 
+    var strinclude = function(str, needle){
+      if (needle === '') { return true; }
+      if (str === null) { return false; }
+      return String(str).indexOf(needle) !== -1;
+    };
+
     xmppchat.toISOString = function (date) {
         if (typeof date.toISOString !== 'undefined') {
             return date.toISOString();

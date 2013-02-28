@@ -1062,7 +1062,7 @@
             }
             _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'controlbox') {
-                    if (strinclude(jid, xmppchat.connection.muc_domain)) {
+                    if (_.str.include(jid, xmppchat.connection.muc_domain)) {
                         this.createChatBox(jid);
                     } else {
                         this.openChat(jid);

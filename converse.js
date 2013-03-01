@@ -83,6 +83,7 @@
     };
 
     xmppchat.toISOString = function (date) {
+        var pad;
         if (typeof date.toISOString !== 'undefined') {
             return date.toISOString();
         } else {
@@ -318,6 +319,7 @@
                 }
             }
             message = this.autoLink(message);
+            // TODO use minutes logic or remove it
             if (minutes.length==1) {minutes = '0'+minutes;}
             $chat_content.find('div.chat-event').remove();
             $chat_content.append(this.message_template({
@@ -341,6 +343,7 @@
             /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages,
                 but I only seem to get 'text'.
             */
+            var $message = $(message);
             var body = this.autoLink($message.children('body').text()),
                 from = Strophe.getBareJidFromJid($message.attr('from')),
                 to = $message.attr('to'),
@@ -349,13 +352,12 @@
                 delayed = $message.find('delay').length > 0,
                 fullname = this.model.get('fullname'),
                 time, stamp, username, sender;
-
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
                 return;
             }
             if (!body) {
-                if (composing.length > 0) {
+                if (composing.length) {
                     this.insertStatusNotification(fullname+' '+'is typing');
                     return;
                 }
@@ -399,7 +401,7 @@
         insertClientStoredMessages: function () {
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
                 $content = this.$el.find('.chat-content'),
-                prev_date, this_date, now, separator, i;
+                prev_date, this_date, i;
 
             for (i=0; i<_.size(msgs); i++) {
                 var msg = msgs[i],
@@ -411,7 +413,7 @@
                     if (this.isDifferentDay(this_date, new Date())) {
                         $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
                     }
-                } else {
+                } else  {
                     prev_date = this_date;
                     this_date = new Date(Date(date));
                     if (this.isDifferentDay(prev_date, this_date)) {
@@ -447,7 +449,7 @@
             for (i=0; i<msgs.length; i++) {
                 $chat_content.append($('<div class="chat-help">'+msgs[i]+'</div>'));
             }
-            this.scrolldown();
+            this.scrollDown();
         },
 
         sendMessage: function (text) {
@@ -456,7 +458,7 @@
             // we send to the bare jid.
             var timestamp = (new Date()).getTime(),
                 bare_jid = this.model.get('jid'),
-                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), el, $chat_content,
+                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/),
                 msgs;
 
             if (match) {
@@ -496,8 +498,7 @@
             var $textarea = $(ev.target),
                 message,
                 notify,
-                composing,
-                that = this;
+                composing;
 
             if(ev.keyCode == 13) {
                 message = $textarea.val();
@@ -603,7 +604,7 @@
             return this;
         },
 
-        scrolldown: function () {
+        scrollDown: function () {
             var  $content = this.$el.find('.chat-content');
             $content.scrollTop($content[0].scrollHeight);
         }
@@ -726,7 +727,7 @@
 
         updateRoomsList: function () {
             xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
-                var room, name, jid, i,
+                var name, jid, i,
                     rooms = $(iq).find('query').find('item');
                 this.$el.find('#available-chatrooms').find('dd.available-chatroom').remove();
                 if (rooms.length) {
@@ -862,10 +863,7 @@
 
         keyPressed: function (ev) {
             var $textarea = $(ev.target),
-                message,
-                notify,
-                composing,
-                that = this;
+                message;
 
             if(ev.keyCode == 13) {
                 message = $textarea.val();
@@ -879,7 +877,8 @@
 
         sendChatRoomMessage: function (body) {
             this.appendMessage(body);
-            var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false];
+            var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
+                $chat_content;
             switch (match[1]) {
                 case 'msg':
                     // TODO: Private messages
@@ -909,9 +908,10 @@
                     $chat_content.append($('<div class="chat-help"><strong>/op $user</strong>: Remove messages</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/deop $user</strong>: Remove messages</div>'));
                     */
-                    this.scrolldown();
+                    this.scrollDown();
                     break;
                 default:
+                    // TODO see why muc is flagged as unresolved variable
                     this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
                 break;
             }
@@ -939,6 +939,7 @@
                 '</div>'),
 
         initialize: function () {
+            // TODO see why muc is flagged as unresolved variable
             xmppchat.connection.muc.join(
                             this.model.get('jid'),
                             this.model.get('nick'),
@@ -955,6 +956,7 @@
         },
 
         onChatRoomPresence: function (presence, room) {
+            // TODO see if nick is useful
             var nick = room.nick,
                 from = $(presence).attr('from');
             if ($(presence).attr('type') !== 'error') {
@@ -970,18 +972,20 @@
         },
 
         onChatRoomMessage: function (message) {
-            var body = $(message).children('body').text(),
-                jid = $(message).attr('from'),
-                composing = $(message).find('composing'),
+            var $message = $(message),
+                body = $message.children('body').text(),
+                jid = $message.attr('from'),
+                composing = $message.find('composing'),
                 $chat_content = this.$el.find('.chat-content'),
                 sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
-                subject = $(message).children('subject').text();
+                subject = $message.children('subject').text(),
+                match;
 
             if (subject) {
                 this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
             }
             if (!body) {
-                if (composing.length > 0) {
+                if (composing.length) {
                     this.insertStatusNotification(sender+' '+'is typing');
                     return true;
                 }
@@ -1053,8 +1057,7 @@
         el: '#collective-xmpp-chat-data',
 
         restoreOpenChats: function () {
-            var open_chats = xmppchat.storage.getOpenChats(),
-                that = this;
+            var open_chats = xmppchat.storage.getOpenChats();
 
             if (_.indexOf(open_chats, 'controlbox') != -1) {
                 // Controlbox already exists, we just need to show it.
@@ -1128,7 +1131,7 @@
             } else {
                 view.show();
                 if (jid !== 'controlbox') {
-                    view.scrolldown();
+                    view.scrollDown();
                     view.focus();
                 }
             }
@@ -1137,15 +1140,14 @@
         },
 
         messageReceived: function (message) {
-            if ($(message).attr('from') == xmppchat.connection.jid) {
+            var  partner_jid, $message = $(message);
+            if ($message.attr('from') == xmppchat.connection.jid) {
                 // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
                 return true;
             }
-            var $forwarded = $(message).children('forwarded');
-            if ($forwarded.length > 0) {
+            var $forwarded = $message.children('forwarded');
+            if ($forwarded.length) {
                 $message = $forwarded.children('message');
-            } else {
-                $message = $(message);
             }
 
             var from = Strophe.getBareJidFromJid($message.attr('from')),
@@ -1315,7 +1317,6 @@
         render: function () {
             var item = this.model,
                 ask = item.get('ask'),
-                that = this,
                 subscription = item.get('subscription');
             this.$el.addClass(item.get('presence_type'));
 
@@ -1496,6 +1497,7 @@
                     // Another resource has changed it's status, we'll update ours as well.
                     // FIXME: We should ideally differentiate between converse.js using
                     // resources and other resources (i.e Pidgin etc.)
+                    // TODO see if xmppstatus is truly unresolved
                     xmppchat.xmppstatus.set({'status': presence_type});
                 }
                 return true;
@@ -1551,6 +1553,7 @@
                 * this step lets the user's server know that it MUST no longer
                 * send notification of the subscription state change to the user.
                 */
+                // TODO see if xmppstatus is truly unresolved
                 xmppchat.xmppstatus.sendPresence('unsubscribe');
                 if (xmppchat.connection.roster.findItem(bare_jid)) {
                     xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
@@ -1629,7 +1632,8 @@
             var $my_contacts = this.$el.find('#xmpp-contacts'),
                 $contact_requests = this.$el.find('#xmpp-contact-requests'),
                 $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
-                $count, num, presence_change;
+                $count, presence_change;
+            // TODO see if user_id would be useful
             var user_id = Strophe.getNodeFromJid(item.id),
                     view = this.rosteritemviews[item.id],
                     ask = item.get('ask'),
@@ -1864,9 +1868,9 @@
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
             $toggle.hide();
-            $connecting.show();
-            $connecting.html('Unable to communicate with chat server');
-            $connecting.css('background-image', "url(images/error_icon.png)");
+            $connecting.html('Unable to communicate with chat server')
+                       .css('background-image', "url(images/error_icon.png)")
+                       .show();
             console.log("Connection Failed :(");
         }, this));
 
@@ -1886,7 +1890,8 @@
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                     'http://jabber.org/protocol/rosterx', 'message', null);
-
+            // TODO check this callback as pycharm returns a warning of invalid number
+            // of parameters
             this.connection.roster.registerCallback(
                     $.proxy(this.roster.rosterHandler, this.roster),
                     null, 'presence', null);

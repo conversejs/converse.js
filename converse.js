@@ -203,8 +203,9 @@
         getMessages: function (jid) {
             var bare_jid = Strophe.getBareJidFromJid(jid),
                 decrypted_msgs = [], i;
-            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
-            for (i=0; i<msgs.length; i++) {
+            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [],
+                msgs_length = msgs.length;
+            for (i=0; i<msgs_length; i++) {
                 decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
             }
             return decrypted_msgs;
@@ -227,10 +228,11 @@
         getOpenChats: function () {
             var key = hex_sha1(this.get('own_jid')+'-open-chats'),
                 chats = store.get(key) || [],
+                chats_length = chats.length,
                 decrypted_chats = [],
                 i;
 
-            for (i=0; i<chats.length; i++) {
+            for (i=0; i<chats_length; i++) {
                 decrypted_chats.push(chats[i]);
             }
             return decrypted_chats;
@@ -400,10 +402,10 @@
 
         insertClientStoredMessages: function () {
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
+                msgs_length = msgs.length,
                 $content = this.$el.find('.chat-content'),
                 prev_date, this_date, i;
-
-            for (i=0; i<_.size(msgs); i++) {
+            for (i=0; i<msgs_length; i++) {
                 var msg = msgs[i],
                     msg_array = msg.split(' ', 2),
                     date = msg_array[0];
@@ -413,7 +415,7 @@
                     if (this.isDifferentDay(this_date, new Date())) {
                         $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
                     }
-                } else  {
+                } else {
                     prev_date = this_date;
                     this_date = new Date(Date(date));
                     if (this.isDifferentDay(prev_date, this_date)) {
@@ -445,8 +447,9 @@
         },
 
         addHelpMessages: function (msgs) {
-            var $chat_content = this.$el.find('.chat-content'), i;
-            for (i=0; i<msgs.length; i++) {
+            var $chat_content = this.$el.find('.chat-content'), i,
+                msgs_length = msgs.length;
+            for (i=0; i<msgs_length; i++) {
                 $chat_content.append($('<div class="chat-help">'+msgs[i]+'</div>'));
             }
             this.scrollDown();
@@ -728,14 +731,15 @@
         updateRoomsList: function () {
             xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
-                    rooms = $(iq).find('query').find('item');
+                    rooms = $(iq).find('query').find('item'),
+                    rooms_length = rooms.length;
                 this.$el.find('#available-chatrooms').find('dd.available-chatroom').remove();
                 if (rooms.length) {
                     this.$el.find('#available-chatrooms dt').show();
                 } else {
                     this.$el.find('#available-chatrooms dt').hide();
                 }
-                for (i=0; i<rooms.length; i++) {
+                for (i=0; i<rooms_length; i++) {
                     name = Strophe.unescapeNode($(rooms[i]).attr('name'));
                     jid = $(rooms[i]).attr('jid');
                     this.$el.find('#available-chatrooms').append(this.room_template({'name':name, 'jid':jid}));
@@ -1024,14 +1028,16 @@
         },
 
         onChatRoomRoster: function (roster, room) {
+            // underscore size is needed because roster is on object
             var controlboxview = xmppchat.chatboxesview.views.controlbox,
+                roster_size = _.size(roster),
                 i;
 
             if (controlboxview) {
                 controlboxview.roomspanel.trigger('update-rooms-list');
             }
             this.$el.find('.participant-list').empty();
-            for (i=0; i<_.size(roster); i++) {
+            for (i=0; i<roster_size; i++) {
                 this.$el.find('.participant-list').append('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
             }
             return true;
@@ -1452,9 +1458,11 @@
         },
 
         getNumOnlineContacts: function () {
-            var count = 0;
-            for (var i=0; i<this.models.length; i++) {
-                if (_.indexOf(['offline', 'unavailable'], this.models[i].get('presence_type')) === -1) {
+            var count = 0,
+                models = this.models,
+                models_length = models.length;
+            for (var i=0; i<models_length; i++) {
+                if (_.indexOf(['offline', 'unavailable'], models[i].get('presence_type')) === -1) {
                     count++;
                 }
             }

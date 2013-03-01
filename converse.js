@@ -792,7 +792,7 @@
         },
 
         initialize: function () {
-            $('body').append($(this.el).hide());
+            $('body').append(this.$el.hide());
         },
 
         template: _.template(
@@ -905,8 +905,8 @@
                     break;
                 case 'help':
                     $chat_content = this.$el.find('.chat-content');
-                    $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
-                    $chat_content.append($('<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>'));
+                    $chat_content.append('<div class="chat-help"><strong>/help</strong>: Show this menu</div>' +
+                                         '<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>');
                     /* TODO:
                     $chat_content.append($('<div class="chat-help"><strong>/kick</strong>: Kick out user</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/ban</strong>: Ban user</div>'));

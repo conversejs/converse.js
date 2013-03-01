@@ -4,7 +4,16 @@ converse.js
 
 ``Converse.js`` implements an XMPP_ based instant messaging client in the browser.
 
-*Warning*: *This library is still heavily under development and not usable currently.*
+It is used by collective.xmpp.chat_, which is a Plone_ instant messaging add-on.
+
+The ultimate goal is to enable anyone to add Jabber chat functionality to their websites,
+regardless of the server backend.
+
+Currently this is not yet the case, as the code makes ajax calls to the (Plone) backend
+to fetch user info. This should be replaced with VCards (we're currently
+working on it).
+
+This library is therefore not (yet) usable independently.
 
 --------
 Features
@@ -21,9 +30,6 @@ It has the following features:
 * Multi-user chat in chatrooms
 * Topics can be set for chatrooms
 * Full name and profile picture support
-
-Converse.js is used by collective.xmpp.chat_, which is a Plone_ instant
-messaging add-on.
 
 A screencast of ``Converse.js`` in action via ``collective.xmpp.chat`` can be seen here_.
 

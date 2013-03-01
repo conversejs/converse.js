@@ -584,8 +584,8 @@
                     '</form>'),
 
         render: function () {
-            this.$el.attr('id', this.model.get('box_id'));
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
             this.insertClientStoredMessages();
             return this;
         },
@@ -600,11 +600,9 @@
         },
 
         show: function () {
-            this.$el.css({'opacity': 0});
-            this.$el.css({'display': 'inline'});
-            this.$el.animate({
-                opacity: '1'
-            }, 200);
+            this.$el.css({'opacity': 0,
+                          'display': 'inline'})
+                    .animate({opacity: '1'}, 200);
             return this;
         },
 
@@ -662,7 +660,7 @@
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
                 var $results_el = $('#found-users');
                 $(data).each(function (idx, obj) {
-                    if ($results_el.children().length > 0) {
+                    if ($results_el.children().length) {
                         $results_el.empty();
                     }
                     $results_el.append(
@@ -680,12 +678,13 @@
 
         subscribeToContact: function (ev) {
             ev.preventDefault();
-            var jid = $(ev.target).attr('data-recipient'),
-                name = $(ev.target).text();
+            var $target = $(ev.target),
+                jid = $target.attr('data-recipient'),
+                name = $target.text();
             xmppchat.connection.roster.add(jid, name, [], function (iq) {
                 xmppchat.connection.roster.subscribe(jid);
             });
-            $(ev.target).parent().remove();
+            $target.parent().remove();
             $('form.search-xmpp-contact').hide();
         }
 

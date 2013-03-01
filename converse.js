@@ -519,7 +519,6 @@
                         notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
                                         .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
                         xmppchat.connection.send(notify);
-                        this.$el.data('composing', true);
                     }
                     this.$el.data('composing', true);
                 }
@@ -542,19 +541,21 @@
         },
 
         initialize: function (){
-            $('body').append($(this.el).hide());
+            $('body').append(this.$el.hide());
 
             xmppchat.roster.on('change', function (item, changed) {
+                var fullname = this.model.get('fullname'),
+                    presence_type = item.get('presence_type');
                 if (item.get('jid') ===  this.model.get('jid')) {
                     if (_.has(changed.changes, 'presence_type')) {
                         if (this.$el.is(':visible')) {
-                            if (item.get('presence_type') === 'offline') {
-                                this.insertStatusNotification(this.model.get('fullname')+' '+'has gone offline');
-                            } else if (item.get('presence_type') === 'away') {
-                                this.insertStatusNotification(this.model.get('fullname')+' '+'has gone away');
-                            } else if ((item.get('presence_type') === 'busy') || (item.get('presence_type') === 'dnd')) {
-                                this.insertStatusNotification(this.model.get('fullname')+' '+'is busy');
-                            } else if (item.get('presence_type') === 'online') {
+                            if (presence_type === 'offline') {
+                                this.insertStatusNotification(fullname+' '+'has gone offline');
+                            } else if (presence_type === 'away') {
+                                this.insertStatusNotification(fullname+' '+'has gone away');
+                            } else if ((presence_type === 'busy') || (presence_type === 'dnd')) {
+                                this.insertStatusNotification(fullname+' '+'is busy');
+                            } else if (presence_type === 'online') {
                                 this.$el.find('div.chat-event').remove();
                             }
                         }

@@ -732,17 +732,18 @@
             xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
-                    rooms_length = rooms.length;
-                this.$el.find('#available-chatrooms').find('dd.available-chatroom').remove();
+                    rooms_length = rooms.length,
+                    $available_chatrooms = this.$el.find('#available-chatrooms');
+                $available_chatrooms.find('dd.available-chatroom').remove();
                 if (rooms.length) {
-                    this.$el.find('#available-chatrooms dt').show();
+                    $available_chatrooms.find('dt').show();
                 } else {
-                    this.$el.find('#available-chatrooms dt').hide();
+                    $available_chatrooms.find('dt').hide();
                 }
                 for (i=0; i<rooms_length; i++) {
                     name = Strophe.unescapeNode($(rooms[i]).attr('name'));
                     jid = $(rooms[i]).attr('jid');
-                    this.$el.find('#available-chatrooms').append(this.room_template({'name':name, 'jid':jid}));
+                    $available_chatrooms.append(this.room_template({'name':name, 'jid':jid}));
                 }
                 return true;
             }, this));

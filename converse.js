@@ -83,6 +83,7 @@
     };
 
     xmppchat.toISOString = function (date) {
+        var pad;
         if (typeof date.toISOString !== 'undefined') {
             return date.toISOString();
         } else {
@@ -202,8 +203,9 @@
         getMessages: function (jid) {
             var bare_jid = Strophe.getBareJidFromJid(jid),
                 decrypted_msgs = [], i;
-            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
-            for (i=0; i<msgs.length; i++) {
+            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [],
+                msgs_length = msgs.length;
+            for (i=0; i<msgs_length; i++) {
                 decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
             }
             return decrypted_msgs;
@@ -226,10 +228,11 @@
         getOpenChats: function () {
             var key = hex_sha1(this.get('own_jid')+'-open-chats'),
                 chats = store.get(key) || [],
+                chats_length = chats.length,
                 decrypted_chats = [],
                 i;
 
-            for (i=0; i<chats.length; i++) {
+            for (i=0; i<chats_length; i++) {
                 decrypted_chats.push(chats[i]);
             }
             return decrypted_chats;
@@ -318,6 +321,7 @@
                 }
             }
             message = this.autoLink(message);
+            // TODO use minutes logic or remove it
             if (minutes.length==1) {minutes = '0'+minutes;}
             $chat_content.find('div.chat-event').remove();
             $chat_content.append(this.message_template({
@@ -341,6 +345,7 @@
             /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages,
                 but I only seem to get 'text'.
             */
+            var $message = $(message);
             var body = this.autoLink($message.children('body').text()),
                 from = Strophe.getBareJidFromJid($message.attr('from')),
                 to = $message.attr('to'),
@@ -349,13 +354,12 @@
                 delayed = $message.find('delay').length > 0,
                 fullname = this.model.get('fullname'),
                 time, stamp, username, sender;
-
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
                 return;
             }
             if (!body) {
-                if (composing.length > 0) {
+                if (composing.length) {
                     this.insertStatusNotification(fullname+' '+'is typing');
                     return;
                 }
@@ -398,10 +402,10 @@
 
         insertClientStoredMessages: function () {
             var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
+                msgs_length = msgs.length,
                 $content = this.$el.find('.chat-content'),
-                prev_date, this_date, now, separator, i;
-
-            for (i=0; i<_.size(msgs); i++) {
+                prev_date, this_date, i;
+            for (i=0; i<msgs_length; i++) {
                 var msg = msgs[i],
                     msg_array = msg.split(' ', 2),
                     date = msg_array[0];
@@ -443,11 +447,12 @@
         },
 
         addHelpMessages: function (msgs) {
-            var $chat_content = this.$el.find('.chat-content'), i;
-            for (i=0; i<msgs.length; i++) {
+            var $chat_content = this.$el.find('.chat-content'), i,
+                msgs_length = msgs.length;
+            for (i=0; i<msgs_length; i++) {
                 $chat_content.append($('<div class="chat-help">'+msgs[i]+'</div>'));
             }
-            this.scrolldown();
+            this.scrollDown();
         },
 
         sendMessage: function (text) {
@@ -456,7 +461,7 @@
             // we send to the bare jid.
             var timestamp = (new Date()).getTime(),
                 bare_jid = this.model.get('jid'),
-                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), el, $chat_content,
+                match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/),
                 msgs;
 
             if (match) {
@@ -496,8 +501,7 @@
             var $textarea = $(ev.target),
                 message,
                 notify,
-                composing,
-                that = this;
+                composing;
 
             if(ev.keyCode == 13) {
                 message = $textarea.val();
@@ -515,7 +519,6 @@
                         notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
                                         .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
                         xmppchat.connection.send(notify);
-                        this.$el.data('composing', true);
                     }
                     this.$el.data('composing', true);
                 }
@@ -538,19 +541,21 @@
         },
 
         initialize: function (){
-            $('body').append($(this.el).hide());
+            $('body').append(this.$el.hide());
 
             xmppchat.roster.on('change', function (item, changed) {
+                var fullname = this.model.get('fullname'),
+                    presence_type = item.get('presence_type');
                 if (item.get('jid') ===  this.model.get('jid')) {
                     if (_.has(changed.changes, 'presence_type')) {
                         if (this.$el.is(':visible')) {
-                            if (item.get('presence_type') === 'offline') {
-                                this.insertStatusNotification(this.model.get('fullname')+' '+'has gone offline');
-                            } else if (item.get('presence_type') === 'away') {
-                                this.insertStatusNotification(this.model.get('fullname')+' '+'has gone away');
-                            } else if ((item.get('presence_type') === 'busy') || (item.get('presence_type') === 'dnd')) {
-                                this.insertStatusNotification(this.model.get('fullname')+' '+'is busy');
-                            } else if (item.get('presence_type') === 'online') {
+                            if (presence_type === 'offline') {
+                                this.insertStatusNotification(fullname+' '+'has gone offline');
+                            } else if (presence_type === 'away') {
+                                this.insertStatusNotification(fullname+' '+'has gone away');
+                            } else if ((presence_type === 'busy') || (presence_type === 'dnd')) {
+                                this.insertStatusNotification(fullname+' '+'is busy');
+                            } else if (presence_type === 'online') {
                                 this.$el.find('div.chat-event').remove();
                             }
                         }
@@ -579,8 +584,8 @@
                     '</form>'),
 
         render: function () {
-            this.$el.attr('id', this.model.get('box_id'));
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
             this.insertClientStoredMessages();
             return this;
         },
@@ -595,15 +600,13 @@
         },
 
         show: function () {
-            this.$el.css({'opacity': 0});
-            this.$el.css({'display': 'inline'});
-            this.$el.animate({
-                opacity: '1'
-            }, 200);
+            this.$el.css({'opacity': 0,
+                          'display': 'inline'})
+                    .animate({opacity: '1'}, 200);
             return this;
         },
 
-        scrolldown: function () {
+        scrollDown: function () {
             var  $content = this.$el.find('.chat-content');
             $content.scrollTop($content[0].scrollHeight);
         }
@@ -657,7 +660,7 @@
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
                 var $results_el = $('#found-users');
                 $(data).each(function (idx, obj) {
-                    if ($results_el.children().length > 0) {
+                    if ($results_el.children().length) {
                         $results_el.empty();
                     }
                     $results_el.append(
@@ -675,12 +678,13 @@
 
         subscribeToContact: function (ev) {
             ev.preventDefault();
-            var jid = $(ev.target).attr('data-recipient'),
-                name = $(ev.target).text();
+            var $target = $(ev.target),
+                jid = $target.attr('data-recipient'),
+                name = $target.text();
             xmppchat.connection.roster.add(jid, name, [], function (iq) {
                 xmppchat.connection.roster.subscribe(jid);
             });
-            $(ev.target).parent().remove();
+            $target.parent().remove();
             $('form.search-xmpp-contact').hide();
         }
 
@@ -726,18 +730,20 @@
 
         updateRoomsList: function () {
             xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
-                var room, name, jid, i,
-                    rooms = $(iq).find('query').find('item');
-                this.$el.find('#available-chatrooms').find('dd.available-chatroom').remove();
+                var name, jid, i,
+                    rooms = $(iq).find('query').find('item'),
+                    rooms_length = rooms.length,
+                    $available_chatrooms = this.$el.find('#available-chatrooms');
+                $available_chatrooms.find('dd.available-chatroom').remove();
                 if (rooms.length) {
-                    this.$el.find('#available-chatrooms dt').show();
+                    $available_chatrooms.find('dt').show();
                 } else {
-                    this.$el.find('#available-chatrooms dt').hide();
+                    $available_chatrooms.find('dt').hide();
                 }
-                for (i=0; i<rooms.length; i++) {
+                for (i=0; i<rooms_length; i++) {
                     name = Strophe.unescapeNode($(rooms[i]).attr('name'));
                     jid = $(rooms[i]).attr('jid');
-                    this.$el.find('#available-chatrooms').append(this.room_template({'name':name, 'jid':jid}));
+                    $available_chatrooms.append(this.room_template({'name':name, 'jid':jid}));
                 }
                 return true;
             }, this));
@@ -786,7 +792,7 @@
         },
 
         initialize: function () {
-            $('body').append($(this.el).hide());
+            $('body').append(this.$el.hide());
         },
 
         template: _.template(
@@ -862,10 +868,7 @@
 
         keyPressed: function (ev) {
             var $textarea = $(ev.target),
-                message,
-                notify,
-                composing,
-                that = this;
+                message;
 
             if(ev.keyCode == 13) {
                 message = $textarea.val();
@@ -879,7 +882,8 @@
 
         sendChatRoomMessage: function (body) {
             this.appendMessage(body);
-            var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false];
+            var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
+                $chat_content;
             switch (match[1]) {
                 case 'msg':
                     // TODO: Private messages
@@ -901,17 +905,18 @@
                     break;
                 case 'help':
                     $chat_content = this.$el.find('.chat-content');
-                    $chat_content.append($('<div class="chat-help"><strong>/help</strong>: Show this menu</div>'));
-                    $chat_content.append($('<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>'));
+                    $chat_content.append('<div class="chat-help"><strong>/help</strong>: Show this menu</div>' +
+                                         '<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>');
                     /* TODO:
                     $chat_content.append($('<div class="chat-help"><strong>/kick</strong>: Kick out user</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/ban</strong>: Ban user</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/op $user</strong>: Remove messages</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/deop $user</strong>: Remove messages</div>'));
                     */
-                    this.scrolldown();
+                    this.scrollDown();
                     break;
                 default:
+                    // TODO see why muc is flagged as unresolved variable
                     this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
                 break;
             }
@@ -939,6 +944,7 @@
                 '</div>'),
 
         initialize: function () {
+            // TODO see why muc is flagged as unresolved variable
             xmppchat.connection.muc.join(
                             this.model.get('jid'),
                             this.model.get('nick'),
@@ -955,13 +961,15 @@
         },
 
         onChatRoomPresence: function (presence, room) {
+            // TODO see if nick is useful
             var nick = room.nick,
-                from = $(presence).attr('from');
-            if ($(presence).attr('type') !== 'error') {
+                $presence = $(presence),
+                from = $presence.attr('from');
+            if ($presence.attr('type') !== 'error') {
                 // check for status 110 to see if it's our own presence
-                if ($(presence).find("status[code='110']").length > 0) {
+                if ($presence.find("status[code='110']").length) {
                     // check if server changed our nick
-                    if ($(presence).find("status[code='210']").length > 0) {
+                    if ($presence.find("status[code='210']").length) {
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
                 }
@@ -970,18 +978,20 @@
         },
 
         onChatRoomMessage: function (message) {
-            var body = $(message).children('body').text(),
-                jid = $(message).attr('from'),
-                composing = $(message).find('composing'),
+            var $message = $(message),
+                body = $message.children('body').text(),
+                jid = $message.attr('from'),
+                composing = $message.find('composing'),
                 $chat_content = this.$el.find('.chat-content'),
                 sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
-                subject = $(message).children('subject').text();
+                subject = $message.children('subject').text(),
+                match;
 
             if (subject) {
                 this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
             }
             if (!body) {
-                if (composing.length > 0) {
+                if (composing.length) {
                     this.insertStatusNotification(sender+' '+'is typing');
                     return true;
                 }
@@ -1001,7 +1011,7 @@
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
-                                    'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
                                 }));
                     } else {
                         $chat_content.append(
@@ -1010,7 +1020,7 @@
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
-                                    'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
                                 }));
                     }
                     $chat_content.scrollTop($chat_content[0].scrollHeight);
@@ -1020,29 +1030,34 @@
         },
 
         onChatRoomRoster: function (roster, room) {
+            // underscore size is needed because roster is on object
             var controlboxview = xmppchat.chatboxesview.views.controlbox,
+                roster_size = _.size(roster),
+                $participant_list = this.$el.find('.participant-list'),
+                participants = [],
                 i;
 
             if (controlboxview) {
                 controlboxview.roomspanel.trigger('update-rooms-list');
             }
             this.$el.find('.participant-list').empty();
-            for (i=0; i<_.size(roster); i++) {
-                this.$el.find('.participant-list').append('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
+            for (i=0; i<roster_size; i++) {
+                participants.push('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
             }
+            $participant_list.append(participants.join(""));
             return true;
         },
 
         show: function () {
-            this.$el.css({'opacity': 0});
-            this.$el.css({'display': 'inline'});
-            this.$el.animate({opacity: '1'}, 200);
+            this.$el.css({'opacity': 0,
+                          'display': 'inline'})
+                    .animate({opacity: '1'}, 200);
             return this;
         },
 
         render: function () {
-            this.$el.attr('id', this.model.get('box_id'));
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
             return this;
         }
     });
@@ -1053,8 +1068,7 @@
         el: '#collective-xmpp-chat-data',
 
         restoreOpenChats: function () {
-            var open_chats = xmppchat.storage.getOpenChats(),
-                that = this;
+            var open_chats = xmppchat.storage.getOpenChats();
 
             if (_.indexOf(open_chats, 'controlbox') != -1) {
                 // Controlbox already exists, we just need to show it.
@@ -1128,7 +1142,7 @@
             } else {
                 view.show();
                 if (jid !== 'controlbox') {
-                    view.scrolldown();
+                    view.scrollDown();
                     view.focus();
                 }
             }
@@ -1137,18 +1151,18 @@
         },
 
         messageReceived: function (message) {
-            if ($(message).attr('from') == xmppchat.connection.jid) {
+            var  partner_jid, $message = $(message),
+                 message_from = $message.attr('from');
+            if ( message_from == xmppchat.connection.jid) {
                 // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
                 return true;
             }
-            var $forwarded = $(message).children('forwarded');
-            if ($forwarded.length > 0) {
+            var $forwarded = $message.children('forwarded');
+            if ($forwarded.length) {
                 $message = $forwarded.children('message');
-            } else {
-                $message = $(message);
             }
 
-            var from = Strophe.getBareJidFromJid($message.attr('from')),
+            var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
                 view, resource;
 
@@ -1158,7 +1172,7 @@
                 resource = Strophe.getResourceFromJid($message.attr('to'));
             } else {
                 partner_jid = from;
-                resource = Strophe.getResourceFromJid($message.attr('from'));
+                resource = Strophe.getResourceFromJid(message_from);
             }
 
             view = this.views[partner_jid];
@@ -1315,7 +1329,6 @@
         render: function () {
             var item = this.model,
                 ask = item.get('ask'),
-                that = this,
                 subscription = item.get('subscription');
             this.$el.addClass(item.get('presence_type'));
 
@@ -1377,9 +1390,10 @@
 
         subscribeToSuggestedItems: function (msg) {
             $(msg).find('item').each(function () {
-                var jid = $(this).attr('jid'),
-                    action = $(this).attr('action'),
-                    fullname = $(this).attr('name');
+                var $this = $(this),
+                    jid = $this.attr('jid'),
+                    action = $this.attr('action'),
+                    fullname = $this.attr('name');
                 if (action === 'add') {
                     xmppchat.connection.roster.add(jid, fullname, [], function (iq) {
                         xmppchat.connection.roster.subscribe(jid);
@@ -1451,9 +1465,11 @@
         },
 
         getNumOnlineContacts: function () {
-            var count = 0;
-            for (var i=0; i<this.models.length; i++) {
-                if (_.indexOf(['offline', 'unavailable'], this.models[i].get('presence_type')) === -1) {
+            var count = 0,
+                models = this.models,
+                models_length = models.length;
+            for (var i=0; i<models_length; i++) {
+                if (_.indexOf(['offline', 'unavailable'], models[i].get('presence_type')) === -1) {
                     count++;
                 }
             }
@@ -1483,12 +1499,13 @@
         },
 
         presenceHandler: function (presence) {
-            var jid = $(presence).attr('from'),
+            var $presence = $(presence),
+                jid = $presence.attr('from'),
                 bare_jid = Strophe.getBareJidFromJid(jid),
                 resource = Strophe.getResourceFromJid(jid),
-                presence_type = $(presence).attr('type'),
-                show = $(presence).find('show'),
-                status_message = $(presence).find('status'),
+                presence_type = $presence.attr('type'),
+                show = $presence.find('show'),
+                status_message = $presence.find('status'),
                 item, model;
 
             if (this.isSelf(bare_jid)) {
@@ -1496,14 +1513,15 @@
                     // Another resource has changed it's status, we'll update ours as well.
                     // FIXME: We should ideally differentiate between converse.js using
                     // resources and other resources (i.e Pidgin etc.)
+                    // TODO see if xmppstatus is truly unresolved
                     xmppchat.xmppstatus.set({'status': presence_type});
                 }
                 return true;
-            } else if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+            } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                 return true; // Ignore MUC
             }
 
-            if ((status_message.length > 0) && (status_message.text() && (presence_type !== 'unavailable'))) {
+            if ((status_message.length) && (status_message.text() && (presence_type !== 'unavailable'))) {
                 model = this.getItem(bare_jid);
                 model.set({'status': status_message.text()});
             }
@@ -1513,7 +1531,7 @@
 
             } else if (presence_type === 'subscribe') {
                 item = this.getItem(bare_jid);
-
+                // TODO see if auto_subscribe is truly an unresolved variable
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
                         if (xmppchat.connection.roster.findItem(bare_jid)) {
@@ -1551,6 +1569,7 @@
                 * this step lets the user's server know that it MUST no longer
                 * send notification of the subscription state change to the user.
                 */
+                // TODO see if xmppstatus is truly unresolved
                 xmppchat.xmppstatus.sendPresence('unsubscribe');
                 if (xmppchat.connection.roster.findItem(bare_jid)) {
                     xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
@@ -1614,8 +1633,8 @@
                 delete this.rosteritemviews[item.id];
             }, this);
 
-            this.$el.hide();
-            this.$el.html(this.template());
+            this.$el.hide()
+                    .html(this.template());
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
@@ -1629,7 +1648,8 @@
             var $my_contacts = this.$el.find('#xmpp-contacts'),
                 $contact_requests = this.$el.find('#xmpp-contact-requests'),
                 $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
-                $count, num, presence_change;
+                $count, presence_change;
+            // TODO see if user_id would be useful
             var user_id = Strophe.getNodeFromJid(item.id),
                     view = this.rosteritemviews[item.id],
                     ask = item.get('ask'),
@@ -1823,6 +1843,8 @@
             var $select = this.$el.find('select#select-xmpp-status'),
                 presence_type = this.model.getStatus() || 'offline',
                 options = $('option', $select),
+                $options_target,
+                options_list = [],
                 that = this;
             this.$el.html(this.choose_template());
             this.$el.find('#fancy-xmpp-status-select')
@@ -1830,13 +1852,15 @@
                             'status_message': "I am " + presence_type,
                             'presence_type': presence_type
                             }));
-            // iterate through all the <option> elements and create UL
+            // iterate through all the <option> elements and add option values
             options.each(function(){
-                $(that.el).find("#target dd ul").append(that.option_template({
-                                                                'value': $(this).val(),
-                                                                'text': $(this).text()
-                                                            })).hide();
+                options_list.push(that.option_template({
+                                                        'value': $(this).val(),
+                                                        'text': $(this).text()
+                                                        }));
             });
+            $options_target = this.$el.find("#target dd ul").hide();
+            $options_target.append(options_list.join(''));
             $select.remove();
 
             // Listen for status change on the model and initialize
@@ -1864,9 +1888,9 @@
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
             $toggle.hide();
-            $connecting.show();
-            $connecting.html('Unable to communicate with chat server');
-            $connecting.css('background-image', "url(images/error_icon.png)");
+            $connecting.html('Unable to communicate with chat server')
+                       .css('background-image', "url(images/error_icon.png)")
+                       .show();
             console.log("Connection Failed :(");
         }, this));
 
@@ -1886,7 +1910,8 @@
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                     'http://jabber.org/protocol/rosterx', 'message', null);
-
+            // TODO check this callback as pycharm returns a warning of invalid number
+            // of parameters
             this.connection.roster.registerCallback(
                     $.proxy(this.roster.rosterHandler, this.roster),
                     null, 'presence', null);

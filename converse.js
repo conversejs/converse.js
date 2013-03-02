@@ -1151,8 +1151,9 @@
         },
 
         messageReceived: function (message) {
-            var  partner_jid, $message = $(message);
-            if ($message.attr('from') == xmppchat.connection.jid) {
+            var  partner_jid, $message = $(message),
+                 message_from = $message.attr('from');
+            if ( message_from == xmppchat.connection.jid) {
                 // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
                 return true;
             }
@@ -1161,7 +1162,7 @@
                 $message = $forwarded.children('message');
             }
 
-            var from = Strophe.getBareJidFromJid($message.attr('from')),
+            var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
                 view, resource;
 
@@ -1171,7 +1172,7 @@
                 resource = Strophe.getResourceFromJid($message.attr('to'));
             } else {
                 partner_jid = from;
-                resource = Strophe.getResourceFromJid($message.attr('from'));
+                resource = Strophe.getResourceFromJid(message_from);
             }
 
             view = this.views[partner_jid];

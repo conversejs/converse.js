@@ -1049,15 +1049,15 @@
         },
 
         show: function () {
-            this.$el.css({'opacity': 0});
-            this.$el.css({'display': 'inline'});
-            this.$el.animate({opacity: '1'}, 200);
+            this.$el.css({'opacity': 0,
+                          'display': 'inline'})
+                    .animate({opacity: '1'}, 200);
             return this;
         },
 
         render: function () {
-            this.$el.attr('id', this.model.get('box_id'));
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
             return this;
         }
     });

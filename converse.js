@@ -963,12 +963,13 @@
         onChatRoomPresence: function (presence, room) {
             // TODO see if nick is useful
             var nick = room.nick,
-                from = $(presence).attr('from');
-            if ($(presence).attr('type') !== 'error') {
+                $presence = $(presence),
+                from = $presence.attr('from');
+            if ($presence.attr('type') !== 'error') {
                 // check for status 110 to see if it's our own presence
-                if ($(presence).find("status[code='110']").length > 0) {
+                if ($presence.find("status[code='110']").length) {
                     // check if server changed our nick
-                    if ($(presence).find("status[code='210']").length > 0) {
+                    if ($presence.find("status[code='210']").length) {
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
                 }

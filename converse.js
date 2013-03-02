@@ -1011,7 +1011,7 @@
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
-                                    'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
                                 }));
                     } else {
                         $chat_content.append(
@@ -1020,7 +1020,7 @@
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
-                                    'extra_classes': ($(message).find('delay').length > 0) && 'delayed' || ''
+                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
                                 }));
                     }
                     $chat_content.scrollTop($chat_content[0].scrollHeight);
@@ -1033,6 +1033,8 @@
             // underscore size is needed because roster is on object
             var controlboxview = xmppchat.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
+                $participant_list = this.$el.find('.participant-list'),
+                participants = [],
                 i;
 
             if (controlboxview) {
@@ -1040,8 +1042,9 @@
             }
             this.$el.find('.participant-list').empty();
             for (i=0; i<roster_size; i++) {
-                this.$el.find('.participant-list').append('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
+                participants.push('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
             }
+            $participant_list.append(participants.join(""));
             return true;
         },
 

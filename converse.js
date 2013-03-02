@@ -1531,7 +1531,7 @@
 
             } else if (presence_type === 'subscribe') {
                 item = this.getItem(bare_jid);
-                // TODO see which auto_subscribe is seen as unresolved variable
+                // TODO see if auto_subscribe is truly an unresolved variable
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
                         if (xmppchat.connection.roster.findItem(bare_jid)) {
@@ -1633,8 +1633,8 @@
                 delete this.rosteritemviews[item.id];
             }, this);
 
-            this.$el.hide();
-            this.$el.html(this.template());
+            this.$el.hide()
+                    .html(this.template());
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
@@ -1843,6 +1843,8 @@
             var $select = this.$el.find('select#select-xmpp-status'),
                 presence_type = this.model.getStatus() || 'offline',
                 options = $('option', $select),
+                $options_target,
+                options_list = [],
                 that = this;
             this.$el.html(this.choose_template());
             this.$el.find('#fancy-xmpp-status-select')
@@ -1850,13 +1852,15 @@
                             'status_message': "I am " + presence_type,
                             'presence_type': presence_type
                             }));
-            // iterate through all the <option> elements and create UL
+            // iterate through all the <option> elements and add option values
             options.each(function(){
-                $(that.el).find("#target dd ul").append(that.option_template({
-                                                                'value': $(this).val(),
-                                                                'text': $(this).text()
-                                                            })).hide();
+                options_list.push(that.option_template({
+                                                        'value': $(this).val(),
+                                                        'text': $(this).text()
+                                                        }));
             });
+            $options_target = this.$el.find("#target dd ul").hide();
+            $options_target.append(options_list.join(''));
             $select.remove();
 
             // Listen for status change on the model and initialize

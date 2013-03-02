@@ -1390,9 +1390,10 @@
 
         subscribeToSuggestedItems: function (msg) {
             $(msg).find('item').each(function () {
-                var jid = $(this).attr('jid'),
-                    action = $(this).attr('action'),
-                    fullname = $(this).attr('name');
+                var $this = $(this),
+                    jid = $this.attr('jid'),
+                    action = $this.attr('action'),
+                    fullname = $this.attr('name');
                 if (action === 'add') {
                     xmppchat.connection.roster.add(jid, fullname, [], function (iq) {
                         xmppchat.connection.roster.subscribe(jid);
@@ -1498,12 +1499,13 @@
         },
 
         presenceHandler: function (presence) {
-            var jid = $(presence).attr('from'),
+            var $presence = $(presence),
+                jid = $presence.attr('from'),
                 bare_jid = Strophe.getBareJidFromJid(jid),
                 resource = Strophe.getResourceFromJid(jid),
-                presence_type = $(presence).attr('type'),
-                show = $(presence).find('show'),
-                status_message = $(presence).find('status'),
+                presence_type = $presence.attr('type'),
+                show = $presence.find('show'),
+                status_message = $presence.find('status'),
                 item, model;
 
             if (this.isSelf(bare_jid)) {
@@ -1515,11 +1517,11 @@
                     xmppchat.xmppstatus.set({'status': presence_type});
                 }
                 return true;
-            } else if (($(presence).find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+            } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                 return true; // Ignore MUC
             }
 
-            if ((status_message.length > 0) && (status_message.text() && (presence_type !== 'unavailable'))) {
+            if ((status_message.length) && (status_message.text() && (presence_type !== 'unavailable'))) {
                 model = this.getItem(bare_jid);
                 model.set({'status': status_message.text()});
             }
@@ -1529,7 +1531,7 @@
 
             } else if (presence_type === 'subscribe') {
                 item = this.getItem(bare_jid);
-
+                // TODO see which auto_subscribe is seen as unresolved variable
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
                         if (xmppchat.connection.roster.findItem(bare_jid)) {

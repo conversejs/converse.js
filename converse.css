@@ -227,7 +227,7 @@ p.chatroom-topic {
 
 a.subscribe-to-user {
     padding-left: 2em;
-    background: url('/add_icon.png') no-repeat 3px top;
+    background: url('images/add_icon.png') no-repeat 3px top;
     font-weight: bold;
 }
 
@@ -237,7 +237,7 @@ div.add-xmpp-contact {
     padding: 3px 3px 3px 3px;
     margin: 0 0.5em;
     clear: both;
-    background: url('/add_icon.png') no-repeat 3px 3px;
+    background: url('images/add_icon.png') no-repeat 3px 3px;
     font-weight: bold;
 }
 

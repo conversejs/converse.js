@@ -1081,10 +1081,16 @@
             }
             _.each(open_chats, $.proxy(function (jid) {
                 if (jid != 'controlbox') {
-                    if (strinclude(jid, xmppchat.connection.muc_domain)) {
-                        this.createChatBox(jid);
+                    if (this.isChatRoom(jid)) {
+                        this.createChatRoom(jid);
                     } else {
-                        this.openChat(jid);
+                        xmppchat.connection.vcard.get($.proxy(function (iq) {
+                            $vcard = $(iq).find('vCard');
+                            var fullname = $vcard.find('BINVAL').text();
+                            var img = $vcard.find('BINVAL').text();
+                            var img_type = $vcard.find('TYPE').text();
+                            this.openRestoredChat(jid, fullname, img, img_type);
+                        }, this), jid);
                     }
                 }
             }, this));
@@ -1105,12 +1111,11 @@
             return view;
         },
 
-        createChatBox: function (roster_item) {
-            var jid = roster_item.get('jid');
+        createChatBox: function (jid, fullname) {
             var box = new xmppchat.ChatBox({
                                 'id': jid,
                                 'jid': jid,
-                                'fullname': roster_item.get('fullname'),
+                                'fullname': fullname,
                                 'portrait_url': '',
                                 'user_profile_url': '',
                                 });
@@ -1128,15 +1133,19 @@
             }
         },
 
+        openRestoredChat: function (bare_jid, fullname, img, img_type) {
+            this.createChatBox(jid, fullname)
+        },
+
         openChat: function (roster_item) {
-            var view, jid = roster_item.get('jid');
+            var jid = roster_item.get('jid');
             jid = Strophe.getBareJidFromJid(jid);
             if (this.model.get(jid)) {
                 this.showChat(jid);
             } else if (this.isChatRoom(jid)) {
-                view = this.createChatRoom(jid);
+                this.createChatRoom(jid);
             } else {
-                view = this.createChatBox(roster_item);
+                this.createChatBox(jid, roster_item.get('fullname'));
             }
         },
 
@@ -1433,9 +1442,6 @@
             var model = new xmppchat.RosterItem(jid, subscription, ask, name, img, img_type);
             model.options = options || {};
             this.add(model);
-        },
-
-        getRosterItem: function (jid) {
         },
 
         addResource: function (bare_jid, resource) {

@@ -597,8 +597,8 @@
             var ctx = this.$el.find('canvas').get(0).getContext('2d');
             var img = new Image();   // Create new Image object
             img.onload = function(){
-                // execute drawImage statements here
-                ctx.drawImage(img,0,0, 35, 35)
+                var ratio = img.width/img.height;
+                ctx.drawImage(img,0,0, 35*ratio, 35)
             }
             img.src = img_src;
 

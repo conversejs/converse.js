@@ -278,7 +278,9 @@
                 'box_id' : hex_sha1(this.get('jid')),
                 'fullname' : this.get('fullname'),
                 'portrait_url': this.get('portrait_url'),
-                'user_profile_url': this.get('user_profile_url')
+                'user_profile_url': this.get('user_profile_url'),
+                'image_type': this.get('image_type'),
+                'image_src': this.get('image_src')
             });
         }
     });
@@ -1085,11 +1087,13 @@
                         this.createChatRoom(jid);
                     } else {
                         xmppchat.connection.vcard.get($.proxy(function (iq) {
-                            $vcard = $(iq).find('vCard');
-                            var fullname = $vcard.find('BINVAL').text();
-                            var img = $vcard.find('BINVAL').text();
-                            var img_type = $vcard.find('TYPE').text();
-                            this.openRestoredChat(jid, fullname, img, img_type);
+                            var $vcard = $(iq).find('vCard');
+                            this.createChatBox({
+                                'jid': jid,
+                                'fullname': $vcard.find('FN').text(),
+                                'image': $vcard.find('BINVAL').text(),
+                                'image_type': $vcard.find('TYPE').text(),
+                                })
                         }, this), jid);
                     }
                 }
@@ -1111,13 +1115,16 @@
             return view;
         },
 
-        createChatBox: function (jid, fullname) {
+        createChatBox: function (data) {
+            var jid = data['jid'];
             var box = new xmppchat.ChatBox({
                                 'id': jid,
                                 'jid': jid,
-                                'fullname': fullname,
+                                'fullname': data['fullname'],
                                 'portrait_url': '',
                                 'user_profile_url': '',
+                                'image_type': data['image_type'],
+                                'image': data['image'],
                                 });
             var view = new xmppchat.ChatBoxView({model: box});
             this.views[jid] = view.render();
@@ -1133,10 +1140,6 @@
             }
         },
 
-        openRestoredChat: function (bare_jid, fullname, img, img_type) {
-            this.createChatBox(jid, fullname)
-        },
-
         openChat: function (roster_item) {
             var jid = roster_item.get('jid');
             jid = Strophe.getBareJidFromJid(jid);
@@ -1145,7 +1148,12 @@
             } else if (this.isChatRoom(jid)) {
                 this.createChatRoom(jid);
             } else {
-                this.createChatBox(jid, roster_item.get('fullname'));
+                this.createChatBox({
+                    'jid': jid,
+                    'fullname': roster_item.get('fullname'),
+                    'image': $vcard.find('BINVAL').text(),
+                    'image_type': $vcard.find('TYPE').text(),
+                    })
             }
         },
 
@@ -1191,6 +1199,7 @@
 
             view = this.views[partner_jid];
             if (!view) {
+                // FIXME Should use VCard
                 $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(partner_jid), $.proxy(function (data) {
                     view = this.createChatBox(partner_jid, data);
                     view.messageReceived(message);
@@ -1238,7 +1247,7 @@
     });
 
     xmppchat.RosterItem = Backbone.Model.extend({
-        /*
+        /*  YYY
         var img = $vcard.find('BINVAL').text();
         var type = $vcard.find('TYPE').text();
         img_src = 'data:'+type+';base64,'+img;

@@ -38,6 +38,10 @@
 
                 'Libraries/strophe.roster': {
                     deps: ['Libraries/strophe', 'jquery']
+                },
+
+                'Libraries/strophe.vcard': {
+                    deps: ['Libraries/strophe', 'jquery']
                 }
             }
         });
@@ -49,7 +53,8 @@
             "Libraries/sjcl",
             "Libraries/backbone",
             "Libraries/strophe.muc",
-            "Libraries/strophe.roster"
+            "Libraries/strophe.roster",
+            "Libraries/strophe.vcard"
             ], function (Burry, _s) {
                 var store = new Burry.Store('collective.xmpp.chat');
                 // Init underscore.str
@@ -1089,25 +1094,27 @@
             return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
         },
 
-        createChatBox: function (jid, data) {
-            var box, view;
-            if (this.isChatRoom(jid)) {
-                box = new xmppchat.ChatRoom(jid, xmppchat.fullname);
-                view = new xmppchat.ChatRoomView({
-                    'model': box
-                });
-            } else {
-                box = new xmppchat.ChatBox({
-                                        'id': jid,
-                                        'jid': jid,
-                                        'fullname': data.fullname,
-                                        'portrait_url': data.portrait_url,
-                                        'user_profile_url': data.user_profile_url
-                                    });
-                view = new xmppchat.ChatBoxView({
-                    model: box
-                });
-            }
+        createChatRoom: function (jid) {
+            var box = new xmppchat.ChatRoom(jid, xmppchat.fullname);
+            var view = new xmppchat.ChatRoomView({
+                'model': box
+            });
+            this.views[jid] = view.render();
+            view.$el.appendTo(this.$el);
+            this.options.model.add(box);
+            return view;
+        },
+
+        createChatBox: function (roster_item) {
+            var jid = roster_item.get('jid');
+            var box = new xmppchat.ChatBox({
+                                'id': jid,
+                                'jid': jid,
+                                'fullname': roster_item.get('fullname'),
+                                'portrait_url': '',
+                                'user_profile_url': '',
+                                });
+            var view = new xmppchat.ChatBoxView({model: box});
             this.views[jid] = view.render();
             view.$el.appendTo(this.$el);
             this.options.model.add(box);
@@ -1121,17 +1128,15 @@
             }
         },
 
-        openChat: function (jid) {
-            var view;
+        openChat: function (roster_item) {
+            var view, jid = roster_item.get('jid');
             jid = Strophe.getBareJidFromJid(jid);
             if (this.model.get(jid)) {
                 this.showChat(jid);
             } else if (this.isChatRoom(jid)) {
-                view = this.createChatBox(jid);
+                view = this.createChatRoom(jid);
             } else {
-                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                    view = this.createChatBox(jid, data);
-                }, this));
+                view = this.createChatBox(roster_item);
             }
         },
 
@@ -1224,8 +1229,21 @@
     });
 
     xmppchat.RosterItem = Backbone.Model.extend({
+        /*
+        var img = $vcard.find('BINVAL').text();
+        var type = $vcard.find('TYPE').text();
+        img_src = 'data:'+type+';base64,'+img;
+        //display image using localStorage
+        var ctx = $('#example').get(0).getContext('2d');
+        var img = new Image();   // Create new Image object
+        img.onload = function(){
+            // execute drawImage statements here
+            ctx.drawImage(img,0,0)
+        }
+        img.src = img_src;
+        */
 
-        initialize: function (jid, subscription, ask, name) {
+        initialize: function (jid, subscription, ask, name, img, img_type) {
             var user_id = Strophe.getNodeFromJid(jid);
             if (!name) {
                 name = user_id;
@@ -1256,7 +1274,7 @@
         },
 
         openChat: function (ev) {
-            xmppchat.chatboxesview.openChat(this.model.get('jid'));
+            xmppchat.chatboxesview.openChat(this.model);
             ev.preventDefault();
         },
 
@@ -1411,10 +1429,13 @@
             return Backbone.Collection.prototype.get.call(this, id);
         },
 
-        addRosterItem: function (jid, subscription, ask, name, options) {
-            var model = new xmppchat.RosterItem(jid, subscription, ask, name);
+        addRosterItem: function (jid, subscription, ask, name, img, img_type, options) {
+            var model = new xmppchat.RosterItem(jid, subscription, ask, name, img, img_type);
             model.options = options || {};
             this.add(model);
+        },
+
+        getRosterItem: function (jid) {
         },
 
         addResource: function (bare_jid, resource) {
@@ -1479,7 +1500,7 @@
         rosterHandler: function (items) {
             var model, item, i, items_length = items.length,
                 last_item = items[items_length - 1],
-                options = {};
+                options = {}, vcard, img_src;
             for (i=0; i<items_length; i+=1) {
                 item = items[i];
                 model = this.getItem(item.jid);
@@ -1487,7 +1508,13 @@
                     if (item === last_item) {
                         options.isLast = true;
                     }
-                    this.addRosterItem(item.jid, item.subscription, item.ask, item.name, options);
+                    xmppchat.connection.vcard.get($.proxy(function (iq) {
+                        $vcard = $(iq).find('vCard');
+                        var fullname = $vcard.find('FN').text();
+                        var img = $vcard.find('BINVAL').text();
+                        var img_type = $vcard.find('TYPE').text();
+                        this.addRosterItem(item.jid, item.subscription, item.ask, fullname, img, img_type, options);
+                    }, this), item.jid)
                 } else {
                     // only modify model attributes if they are different from the
                     // ones that were already set when the rosterItem was added
@@ -1556,9 +1583,13 @@
                     if ((item) && (item.get('subscription') != 'none'))  {
                         xmppchat.connection.roster.authorize(bare_jid);
                     } else {
-                        $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                            this.addRosterItem(bare_jid, 'none', 'request', data.fullname);
-                        }, this));
+                        xmppchat.connection.vcard.get($.proxy(function (iq) {
+                            $vcard = $(iq).find('vCard');
+                            var fullname = $vcard.find('BINVAL').text();
+                            var img = $vcard.find('BINVAL').text();
+                            var img_type = $vcard.find('TYPE').text();
+                            this.addRosterItem(bare_jid, 'none', 'request', fullname, img, img_type, options);
+                        }, this), jid)
                     }
                 }
 
@@ -1897,8 +1928,8 @@
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
             this.connection = connection;
-            // this.connection.xmlInput = function (body) { console.log(body); };
-            // this.connection.xmlOutput = function (body) { console.log(body); };
+            this.connection.xmlInput = function (body) { console.log(body); };
+            this.connection.xmlOutput = function (body) { console.log(body); };
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;

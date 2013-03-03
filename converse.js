@@ -277,8 +277,7 @@
                 'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                 'box_id' : hex_sha1(this.get('jid')),
                 'fullname' : this.get('fullname'),
-                'portrait_url': this.get('portrait_url'),
-                'user_profile_url': this.get('user_profile_url'),
+                'url': this.get('url'),
                 'image_type': this.get('image_type'),
                 'image_src': this.get('image_src')
             });
@@ -576,8 +575,8 @@
         template: _.template(
                     '<div class="chat-head chat-head-chatbox">' +
                         '<a class="close-chatbox-button">X</a>' +
-                        '<a href="{{user_profile_url}}" class="user">' +
-                            '<img src="{{portrait_url}}" alt="Avatar of {{fullname}}" class="avatar" />' +
+                        '<a href="{{url}}" target="_blank" class="user">' +
+                            '<canvas height="35px" width="35px" class="avatar"></canvas>' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
                         '</a>' +
                         '<p class="user-custom-message"><p/>' +
@@ -593,6 +592,16 @@
         render: function () {
             this.$el.attr('id', this.model.get('box_id'))
                     .html(this.template(this.model.toJSON()));
+
+            var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image');
+            var ctx = this.$el.find('canvas').get(0).getContext('2d');
+            var img = new Image();   // Create new Image object
+            img.onload = function(){
+                // execute drawImage statements here
+                ctx.drawImage(img,0,0, 35, 35)
+            }
+            img.src = img_src;
+
             this.insertClientStoredMessages();
             return this;
         },
@@ -1093,6 +1102,7 @@
                                 'fullname': $vcard.find('FN').text(),
                                 'image': $vcard.find('BINVAL').text(),
                                 'image_type': $vcard.find('TYPE').text(),
+                                'url': $vcard.find('URL').text(),
                                 })
                         }, this), jid);
                     }
@@ -1121,10 +1131,9 @@
                                 'id': jid,
                                 'jid': jid,
                                 'fullname': data['fullname'],
-                                'portrait_url': '',
-                                'user_profile_url': '',
                                 'image_type': data['image_type'],
                                 'image': data['image'],
+                                'url': data['url'],
                                 });
             var view = new xmppchat.ChatBoxView({model: box});
             this.views[jid] = view.render();
@@ -1151,8 +1160,9 @@
                 this.createChatBox({
                     'jid': jid,
                     'fullname': roster_item.get('fullname'),
-                    'image': $vcard.find('BINVAL').text(),
-                    'image_type': $vcard.find('TYPE').text(),
+                    'image': roster_item.get('image'),
+                    'image_type': roster_item.get('image_type'),
+                    'url': roster_item.get('url'),
                     })
             }
         },
@@ -1247,20 +1257,6 @@
     });
 
     xmppchat.RosterItem = Backbone.Model.extend({
-        /*  YYY
-        var img = $vcard.find('BINVAL').text();
-        var type = $vcard.find('TYPE').text();
-        img_src = 'data:'+type+';base64,'+img;
-        //display image using localStorage
-        var ctx = $('#example').get(0).getContext('2d');
-        var img = new Image();   // Create new Image object
-        img.onload = function(){
-            // execute drawImage statements here
-            ctx.drawImage(img,0,0)
-        }
-        img.src = img_src;
-        */
-
         initialize: function (jid, subscription, ask, name, img, img_type) {
             var user_id = Strophe.getNodeFromJid(jid);
             if (!name) {

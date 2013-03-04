@@ -1269,6 +1269,8 @@
                 'user_id': user_id,
                 'subscription': subscription,
                 'fullname': name,
+                'image': img,
+                'image_type': img_type,
                 'resources': [],
                 'presence_type': 'offline',
                 'status': 'offline'

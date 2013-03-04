@@ -43,6 +43,10 @@
     padding: 3px 0 3px 7px;
 }
 
+.chatbox a {
+    text-decoration: none;
+}
+
 .chat-head-chatbox {
     background-color: rgb(89, 106, 114);
     background-color: rgba(89, 106, 114, 1);

@@ -1524,14 +1524,11 @@
         },
 
         rosterHandler: function (items) {
-            var model, item, i, items_length = items.length,
-                last_item = items[items_length - 1],
-                options = {}, vcard, img_src;
-            for (i=0; i<items_length; i+=1) {
-                item = items[i];
-                model = this.getItem(item.jid);
+            _.each(items, function (item, index, items) {
+                var model = this.getItem(item.jid),
+                    options = {};
                 if (!model) {
-                    if (item === last_item) {
+                    if (index === (items.length-1)) {
                         options.isLast = true;
                     }
                     xmppchat.getVCard(item.jid, $.proxy(function (jid, fullname, img, img_type, url) {
@@ -1545,7 +1542,8 @@
                         model.set({'subscription': item.subscription, 'ask': item.ask});
                     }
                 }
-            }
+
+            }, this);
         },
 
         presenceHandler: function (presence) {

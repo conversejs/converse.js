@@ -1511,6 +1511,20 @@
             return 0;
         },
 
+        subscribeBack: function (jid) {
+            // XXX: Why the distinction between jid and bare_jid?
+            var bare_jid = Strophe.getBareJidFromJid(jid)
+            if (xmppchat.connection.roster.findItem(bare_jid)) {
+                xmppchat.connection.roster.authorize(bare_jid);
+                xmppchat.connection.roster.subscribe(jid);
+            } else {
+                xmppchat.connection.roster.add(jid, '', [], function (iq) {
+                    xmppchat.connection.roster.authorize(bare_jid);
+                    xmppchat.connection.roster.subscribe(jid);
+                });
+            }
+        },
+
         getNumOnlineContacts: function () {
             var count = 0,
                 models = this.models,
@@ -1582,15 +1596,7 @@
                 // TODO see if auto_subscribe is truly an unresolved variable
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
-                        if (xmppchat.connection.roster.findItem(bare_jid)) {
-                            xmppchat.connection.roster.authorize(bare_jid);
-                            xmppchat.connection.roster.subscribe(jid);
-                        } else {
-                            xmppchat.connection.roster.add(jid, '', [], function (iq) {
-                                xmppchat.connection.roster.authorize(bare_jid);
-                                xmppchat.connection.roster.subscribe(jid);
-                            });
-                        }
+                        this.subscribeBack(jid);
                     } else {
                         xmppchat.connection.roster.authorize(bare_jid);
                     }
@@ -1675,8 +1681,7 @@
                 delete this.rosteritemviews[item.id];
             }, this);
 
-            this.$el.hide()
-                    .html(this.template());
+            this.$el.html(this.template());
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
@@ -1692,11 +1697,12 @@
                 $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
                 $count, presence_change;
             // TODO see if user_id would be useful
-            var user_id = Strophe.getNodeFromJid(item.id),
-                    view = this.rosteritemviews[item.id],
-                    ask = item.get('ask'),
-                    subscription = item.get('subscription'),
-                    crit = {order:'asc'};
+            var jid = item.id,
+                user_id = Strophe.getNodeFromJid(jid),
+                view = this.rosteritemviews[item.id],
+                ask = item.get('ask'),
+                subscription = item.get('subscription'),
+                crit = {order:'asc'};
 
                 if (ask === 'subscribe') {
                     $pending_contacts.after(view.render().el);

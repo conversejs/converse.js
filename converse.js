@@ -1192,11 +1192,9 @@
             if ($forwarded.length) {
                 $message = $forwarded.children('message');
             }
-
             var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
                 view, resource;
-
             if (from == xmppchat.connection.bare_jid) {
                 // I am the sender, so this must be a forwarded message...
                 partner_jid = to;
@@ -1208,9 +1206,14 @@
 
             view = this.views[partner_jid];
             if (!view) {
-                // FIXME Should use VCard
-                $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(partner_jid), $.proxy(function (data) {
-                    view = this.createChatBox(partner_jid, data);
+                xmppchat.getVCard(partner_jid, $.proxy(function (jid, fullname, img, img_type, url) {
+                    view = this.createChatBox({
+                        'jid': jid,
+                        'fullname': fullname,
+                        'image': img,
+                        'image_type': img_type,
+                        'url': url,
+                        })
                     view.messageReceived(message);
                     xmppchat.roster.addResource(partner_jid, resource);
                 }, this));

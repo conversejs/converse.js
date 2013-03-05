@@ -43,10 +43,6 @@
     padding: 3px 0 3px 7px;
 }
 
-.chatbox a {
-    text-decoration: none;
-}
-
 .chat-head-chatbox {
     background-color: rgb(89, 106, 114);
     background-color: rgba(89, 106, 114, 1);
@@ -356,8 +352,8 @@ form.search-xmpp-contact input {
     background: url(images/user_offline_panel.png) no-repeat 5px 2px;
 }
 
-#xmppchat-roster dd.current-xmpp-contact.busy,
-#xmppchat-roster dd.current-xmpp-contact.busy:hover {
+#xmppchat-roster dd.current-xmpp-contact.dnd,
+#xmppchat-roster dd.current-xmpp-contact.dnd:hover {
     background: url(images/user_busy_panel.png) no-repeat 5px 2px;
 }
 
@@ -634,7 +630,7 @@ input.custom-xmpp-status {
     background: url(images/user_offline_panel.png) no-repeat left;
 }
 
-.dropdown a.busy {
+.dropdown a.dnd {
     background: url(images/user_busy_panel.png) no-repeat left;
 }
 

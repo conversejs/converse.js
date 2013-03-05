@@ -559,7 +559,7 @@
                                 this.insertStatusNotification(fullname+' '+'has gone offline');
                             } else if (presence_type === 'away') {
                                 this.insertStatusNotification(fullname+' '+'has gone away');
-                            } else if ((presence_type === 'busy') || (presence_type === 'dnd')) {
+                            } else if ((presence_type === 'dnd')) {
                                 this.insertStatusNotification(fullname+' '+'is busy');
                             } else if (presence_type === 'online') {
                                 this.$el.find('div.chat-event').remove();
@@ -644,7 +644,7 @@
                 '<span id="xmpp-status-holder">'+
                     '<select id="select-xmpp-status">'+
                         '<option value="online">Online</option>'+
-                        '<option value="busy">Busy</option>'+
+                        '<option value="dnd">Busy</option>'+
                         '<option value="away">Away</option>'+
                         '<option value="offline">Offline</option>'+
                     '</select>'+
@@ -1419,10 +1419,10 @@
                 case 'unavailable':
                     rank = 1;
                     break;
-                case 'away':
+                case 'xa':
                     rank = 2;
                     break;
-                case 'busy':
+                case 'away':
                     rank = 3;
                     break;
                 case 'dnd':
@@ -1628,11 +1628,11 @@
                     if (show.text() === 'chat') {
                         presence_type = 'online';
                     } else if (show.text() === 'dnd') {
-                        presence_type = 'busy';
+                        presence_type = 'dnd';
                     } else if (show.text() === 'xa') {
                         presence_type = 'offline';
                     } else {
-                        presence_type = show.text();
+                        presence_type = show.text() || 'online';
                     }
                 }
 
@@ -1730,7 +1730,7 @@
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.busy').tsort('a', crit));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd').tsort('a', crit));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
             }
 
@@ -1781,7 +1781,13 @@
         },
 
         sendPresence: function (type) {
-            xmppchat.connection.send($pres({'type':type}));
+            if (type === 'unavailable') {
+                xmppchat.connection.send($pres({'type':type}));
+            } else if (type === 'online') {
+                xmppchat.connection.send($pres());
+            } else {
+                xmppchat.connection.send($pres().c('show').t(type));
+            }
         },
 
         getStatus: function () {

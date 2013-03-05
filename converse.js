@@ -1095,16 +1095,15 @@
                     if (this.isChatRoom(jid)) {
                         this.createChatRoom(jid);
                     } else {
-                        xmppchat.connection.vcard.get($.proxy(function (iq) {
-                            var $vcard = $(iq).find('vCard');
+                        xmppchat.getVCard(jid, $.proxy(function (jid, fullname, img, img_type, url) {
                             this.createChatBox({
                                 'jid': jid,
-                                'fullname': $vcard.find('FN').text(),
-                                'image': $vcard.find('BINVAL').text(),
-                                'image_type': $vcard.find('TYPE').text(),
-                                'url': $vcard.find('URL').text(),
+                                'fullname': fullname,
+                                'image': img,
+                                'image_type': img_type,
+                                'url': url,
                                 })
-                        }, this), jid);
+                        }, this));
                     }
                 }
             }, this));
@@ -1257,7 +1256,7 @@
     });
 
     xmppchat.RosterItem = Backbone.Model.extend({
-        initialize: function (jid, subscription, ask, name, img, img_type) {
+        initialize: function (jid, subscription, ask, name, img, img_type, url) {
             var user_id = Strophe.getNodeFromJid(jid);
             if (!name) {
                 name = user_id;
@@ -1271,6 +1270,7 @@
                 'fullname': name,
                 'image': img,
                 'image_type': img_type,
+                'url': url,
                 'resources': [],
                 'presence_type': 'offline',
                 'status': 'offline'
@@ -1390,6 +1390,18 @@
         }
     });
 
+    xmppchat.getVCard = function (jid, callback) {
+        // TODO: cache vcards
+        xmppchat.connection.vcard.get($.proxy(function (iq) {
+            $vcard = $(iq).find('vCard');
+            var fullname = $vcard.find('FN').text(),
+                img = $vcard.find('BINVAL').text(),
+                img_type = $vcard.find('TYPE').text(),
+                url = $vcard.find('URL').text();
+            callback(jid, fullname, img, img_type, url);
+        }, this), jid)
+    }
+
     xmppchat.RosterItems = Backbone.Collection.extend({
         model: xmppchat.RosterItem,
         initialize: function () {
@@ -1445,8 +1457,8 @@
             return Backbone.Collection.prototype.get.call(this, id);
         },
 
-        addRosterItem: function (jid, subscription, ask, name, img, img_type, options) {
-            var model = new xmppchat.RosterItem(jid, subscription, ask, name, img, img_type);
+        addRosterItem: function (jid, subscription, ask, name, img, img_type, url, options) {
+            var model = new xmppchat.RosterItem(jid, subscription, ask, name, img, img_type, url);
             model.options = options || {};
             this.add(model);
         },
@@ -1521,13 +1533,10 @@
                     if (item === last_item) {
                         options.isLast = true;
                     }
-                    xmppchat.connection.vcard.get($.proxy(function (iq) {
-                        $vcard = $(iq).find('vCard');
-                        var fullname = $vcard.find('FN').text();
-                        var img = $vcard.find('BINVAL').text();
-                        var img_type = $vcard.find('TYPE').text();
-                        this.addRosterItem(item.jid, item.subscription, item.ask, fullname, img, img_type, options);
-                    }, this), item.jid)
+                    xmppchat.getVCard(item.jid, $.proxy(function (jid, fullname, img, img_type, url) {
+                        this.addRosterItem(item.jid, item.subscription, item.ask, fullname, img, img_type, url, options);
+                    }, this));
+
                 } else {
                     // only modify model attributes if they are different from the
                     // ones that were already set when the rosterItem was added
@@ -1596,13 +1605,9 @@
                     if ((item) && (item.get('subscription') != 'none'))  {
                         xmppchat.connection.roster.authorize(bare_jid);
                     } else {
-                        xmppchat.connection.vcard.get($.proxy(function (iq) {
-                            $vcard = $(iq).find('vCard');
-                            var fullname = $vcard.find('BINVAL').text();
-                            var img = $vcard.find('BINVAL').text();
-                            var img_type = $vcard.find('TYPE').text();
-                            this.addRosterItem(bare_jid, 'none', 'request', fullname, img, img_type, options);
-                        }, this), jid)
+                        xmppchat.getVCard(bare_jid, $.proxy(function (jid, fullname, img, img_type, url) {
+                            this.addRosterItem(bare_jid, 'none', 'request', fullname, img, img_type, url, options);
+                        }, this));
                     }
                 }
 

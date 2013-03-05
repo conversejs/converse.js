@@ -778,7 +778,7 @@
                     return;
                 }
             }
-            xmppchat.chatboxesview.openChat(jid);
+            xmppchat.chatboxesview.createChatRoom(jid);
         }
     });
 
@@ -1153,8 +1153,6 @@
             jid = Strophe.getBareJidFromJid(jid);
             if (this.model.get(jid)) {
                 this.showChat(jid);
-            } else if (this.isChatRoom(jid)) {
-                this.createChatRoom(jid);
             } else {
                 this.createChatBox({
                     'jid': jid,
@@ -1375,7 +1373,7 @@
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
-                xmppchat.chatboxesview.openChat('controlbox');
+                xmppchat.chatboxesview.showChat('controlbox');
             } else if (subscription === 'both' || subscription === 'to') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
@@ -1587,19 +1585,13 @@
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
                         if (xmppchat.connection.roster.findItem(bare_jid)) {
-                            $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                                xmppchat.connection.roster.update(jid, data.fullname, [], function (iq) {
-                                    xmppchat.connection.roster.authorize(bare_jid);
-                                    xmppchat.connection.roster.subscribe(jid);
-                                });
-                            }, this));
+                            xmppchat.connection.roster.authorize(bare_jid);
+                            xmppchat.connection.roster.subscribe(jid);
                         } else {
-                            $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                                xmppchat.connection.roster.add(jid, data.fullname, [], function (iq) {
-                                    xmppchat.connection.roster.authorize(bare_jid);
-                                    xmppchat.connection.roster.subscribe(jid);
-                                });
-                            }, this));
+                            xmppchat.connection.roster.add(jid, '', [], function (iq) {
+                                xmppchat.connection.roster.authorize(bare_jid);
+                                xmppchat.connection.roster.subscribe(jid);
+                            });
                         }
                     } else {
                         xmppchat.connection.roster.authorize(bare_jid);
@@ -1609,7 +1601,7 @@
                         xmppchat.connection.roster.authorize(bare_jid);
                     } else {
                         xmppchat.getVCard(bare_jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                            this.addRosterItem(bare_jid, 'none', 'request', fullname, img, img_type, url, options);
+                            this.addRosterItem(bare_jid, 'none', 'request', fullname, img, img_type, url);
                         }, this));
                     }
                 }
@@ -1997,11 +1989,11 @@
                     if ($("div#controlbox").is(':visible')) {
                         this.chatboxesview.closeChat('controlbox');
                     } else {
-                        this.chatboxesview.openChat('controlbox');
+                        this.chatboxesview.showChat('controlbox');
                     }
                 }, this));
             } else {
-                this.chatboxesview.openChat('controlbox');
+                this.chatboxesview.showChat('controlbox');
             }
         }, this));
     }, xmppchat));

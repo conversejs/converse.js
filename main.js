@@ -8,15 +8,16 @@ require(["jquery", "converse"], function($) {
             buttons: {
                 "Connect": function () {
                     $(document).trigger('connect', {
-                        jid: 'opkode@jappix.com',
-                        password: 'jpwagw00rd!',
-                        bosh_service_url: 'https://bind.jappix.com/' 
+                        jid: $('#jid').val(),
+                        password: $('#password').val(),
+                        bosh_service_url: $('#bosh_service_url').val()
                     });
                     $('#password').val('');
                     $(this).dialog('close');
                 }
             }
         });
+
         $(document).bind('connect', function (ev, data) {
             var connection = new Strophe.Connection(data.bosh_service_url);
 

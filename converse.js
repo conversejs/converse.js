@@ -551,17 +551,17 @@
 
             xmppchat.roster.on('change', function (item, changed) {
                 var fullname = this.model.get('fullname'),
-                    presence_type = item.get('presence_type');
+                    chat_status = item.get('chat_status');
                 if (item.get('jid') ===  this.model.get('jid')) {
-                    if (_.has(changed.changes, 'presence_type')) {
+                    if (_.has(changed.changes, 'chat_status')) {
                         if (this.$el.is(':visible')) {
-                            if (presence_type === 'offline') {
+                            if (chat_status === 'offline') {
                                 this.insertStatusNotification(fullname+' '+'has gone offline');
-                            } else if (presence_type === 'away') {
+                            } else if (chat_status === 'away') {
                                 this.insertStatusNotification(fullname+' '+'has gone away');
-                            } else if ((presence_type === 'dnd')) {
+                            } else if ((chat_status === 'dnd')) {
                                 this.insertStatusNotification(fullname+' '+'is busy');
-                            } else if (presence_type === 'online') {
+                            } else if (chat_status === 'online') {
                                 this.$el.find('div.chat-event').remove();
                             }
                         }
@@ -1273,7 +1273,7 @@
                 'image_type': img_type,
                 'url': url,
                 'resources': [],
-                'presence_type': 'offline',
+                'chat_status': 'offline',
                 'status': 'offline'
             }, {'silent': true});
         }
@@ -1365,7 +1365,7 @@
             var item = this.model,
                 ask = item.get('ask'),
                 subscription = item.get('subscription');
-            this.$el.addClass(item.get('presence_type'));
+            this.$el.addClass(item.get('chat_status'));
 
             if (ask === 'subscribe') {
                 this.$el.addClass('pending-xmpp-contact');
@@ -1384,8 +1384,8 @@
 
         initialize: function () {
             this.options.model.on('change', function (item, changed) {
-                if (_.has(changed.changes, 'presence_type')) {
-                    this.$el.attr('class', item.changed.presence_type);
+                if (_.has(changed.changes, 'chat_status')) {
+                    this.$el.attr('class', item.changed.chat_status);
                 }
             }, this);
         }
@@ -1410,9 +1410,9 @@
         },
 
         comparator : function (rosteritem) {
-            var presence_type = rosteritem.get('presence_type'),
+            var chat_status = rosteritem.get('chat_status'),
                 rank = 4;
-            switch(presence_type) {
+            switch(chat_status) {
                 case 'offline':
                     rank = 0;
                     break;
@@ -1525,12 +1525,20 @@
             }
         },
 
+        unsubscribe: function (jid) {
+            xmppchat.xmppstatus.sendPresence('unsubscribe');
+            if (xmppchat.connection.roster.findItem(jid)) {
+                xmppchat.chatboxesview.controlbox.roster.remove(jid);
+                xmppchat.connection.roster.remove(jid);
+            }
+        },
+
         getNumOnlineContacts: function () {
             var count = 0,
                 models = this.models,
                 models_length = models.length;
             for (var i=0; i<models_length; i++) {
-                if (_.indexOf(['offline', 'unavailable'], models[i].get('presence_type')) === -1) {
+                if (_.indexOf(['offline', 'unavailable'], models[i].get('chat_status')) === -1) {
                     count++;
                 }
             }
@@ -1567,30 +1575,29 @@
                 resource = Strophe.getResourceFromJid(jid),
                 presence_type = $presence.attr('type'),
                 show = $presence.find('show'),
+                chat_status = show.text() || 'online',
                 status_message = $presence.find('status'),
                 item, model;
 
             if (this.isSelf(bare_jid)) {
-                if (xmppchat.connection.jid != jid) {
+                if ((xmppchat.connection.jid !== jid)&&(presence_type !== 'unavailabe')) {
                     // Another resource has changed it's status, we'll update ours as well.
                     // FIXME: We should ideally differentiate between converse.js using
                     // resources and other resources (i.e Pidgin etc.)
-                    // TODO see if xmppstatus is truly unresolved
-                    xmppchat.xmppstatus.set({'status': presence_type});
+                    xmppchat.xmppstatus.set({'status': chat_status});
                 }
                 return true;
             } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                 return true; // Ignore MUC
             }
 
-            if ((status_message.length) && (status_message.text() && (presence_type !== 'unavailable'))) {
+            if (status_message.text() && (presence_type !== 'unavailable')) {
                 model = this.getItem(bare_jid);
                 model.set({'status': status_message.text()});
             }
 
             if ((presence_type === 'error') || (presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                 return true;
-
             } else if (presence_type === 'subscribe') {
                 item = this.getItem(bare_jid);
                 // TODO see if auto_subscribe is truly an unresolved variable
@@ -1609,7 +1616,6 @@
                         }, this));
                     }
                 }
-
             } else if (presence_type === 'unsubscribed') {
                 /* Upon receiving the presence stanza of type "unsubscribed",
                 * the user SHOULD acknowledge receipt of that subscription state
@@ -1617,37 +1623,19 @@
                 * this step lets the user's server know that it MUST no longer
                 * send notification of the subscription state change to the user.
                 */
-                // TODO see if xmppstatus is truly unresolved
-                xmppchat.xmppstatus.sendPresence('unsubscribe');
-                if (xmppchat.connection.roster.findItem(bare_jid)) {
-                    xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
-                    xmppchat.connection.roster.remove(bare_jid);
+                this.unsubscribe(jid);
+            } else if (presence_type === 'unavailable') {
+                if (this.removeResource(bare_jid, resource) === 0) {
+                    model = this.getItem(bare_jid);
+                    if (model) {
+                        model.set({'chat_status': 'offline'});
+                    }
                 }
             } else {
-                if ((presence_type === undefined) && (show)) {
-                    if (show.text() === 'chat') {
-                        presence_type = 'online';
-                    } else if (show.text() === 'dnd') {
-                        presence_type = 'dnd';
-                    } else if (show.text() === 'xa') {
-                        presence_type = 'offline';
-                    } else {
-                        presence_type = show.text() || 'online';
-                    }
-                }
-
-                if ((presence_type !== 'offline')&&(presence_type !== 'unavailable')) {
-                    this.addResource(bare_jid, resource);
-                    model = this.getItem(bare_jid);
-                    model.set({'presence_type': presence_type});
-                } else {
-                    if (this.removeResource(bare_jid, resource) === 0) {
-                        model = this.getItem(bare_jid);
-                        if (model) {
-                            model.set({'presence_type': presence_type});
-                        }
-                    }
-                }
+                // presence_type is undefined
+                this.addResource(bare_jid, resource);
+                model = this.getItem(bare_jid);
+                model.set({'chat_status': chat_status});
             }
             return true;
         }
@@ -1722,9 +1710,9 @@
                         view.render();
                     }
                 }
-            presence_change = view.model.changed['presence_type'];
+            presence_change = view.model.changed['chat_status'];
             if (presence_change) {
-                // resort all items only if the model has changed it's presence_type as this render
+                // resort all items only if the model has changed it's chat_status as this render
                 // is also triggered when the resource is changed which always comes before the presence change
                 // therefore we avoid resorting when the change doesn't affect the position of the item
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
@@ -1773,21 +1761,28 @@
              */
             var stat = this.getStatus();
             if (stat === undefined) {
-                stat = 'online';
-                this.setStatus(stat);
+                this.setStatus('online');
             } else {
                 this.sendPresence(stat);
             }
         },
 
         sendPresence: function (type) {
+            var status_message = this.getStatusMessage(), 
+                presence;
             if (type === 'unavailable') {
-                xmppchat.connection.send($pres({'type':type}));
-            } else if (type === 'online') {
-                xmppchat.connection.send($pres());
+                presence = $pres({'type':type});
             } else {
-                xmppchat.connection.send($pres().c('show').t(type));
+                if (type === 'online') {
+                    presence = $pres();
+                } else {
+                    presence = $pres().c('show').t(type);
+                }
+                if (status_message) {
+                    presence.c('status').t(status_message)
+                }
             }
+            xmppchat.connection.send(presence);
         },
 
         getStatus: function () {
@@ -1805,7 +1800,7 @@
         },
 
         setStatusMessage: function (status_message) {
-            xmppchat.connection.send($pres({'type':this.getStatus()}).c('status').t(status_message));
+            xmppchat.connection.send($pres().c('show').t(this.getStatus()).up().c('status').t(status_message));
             this.set({'status_message': status_message});
             store.set(xmppchat.connection.bare_jid+'-xmpp-custom-status', status_message);
         }
@@ -1835,7 +1830,7 @@
 
         status_template: _.template(
             '<div class="xmpp-status">' +
-                '<a class="choose-xmpp-status {{ presence_type }}" href="#" title="Click to change your chat status">' +
+                '<a class="choose-xmpp-status {{ chat_status }}" href="#" title="Click to change your chat status">' +
                     '{{ status_message }} <span class="value">{{ status_message }}</span>' +
                 '</a>' +
                 '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
@@ -1866,15 +1861,28 @@
             this.$el.find(".dropdown dd ul").hide();
         },
 
+        getPrettyStatus: function (stat) {
+            if (stat === 'chat') {
+                pretty_status = 'online';
+            } else if (stat === 'dnd') {
+                pretty_status = 'busy';
+            } else if (stat === 'xa') {
+                pretty_status = 'away for long';
+            } else {
+                pretty_status = stat || 'online';
+            }
+            return pretty_status
+        },
+
         updateStatusUI: function (ev) {
-            var stat = ev.get('status'),
-                status_message = ev.get('status_message') || "I am " + stat;
+            var stat = ev.get('status'), 
+                status_message;
+            status_message = ev.get('status_message') || "I am " + this.getPrettyStatus(stat);
             this.$el.find('#fancy-xmpp-status-select').html(
                 this.status_template({
-                        'presence_type': stat,
+                        'chat_status': stat,
                         'status_message': status_message
                         }));
-
         },
 
         choose_template: _.template(
@@ -1895,7 +1903,7 @@
             // Replace the default dropdown with something nicer
             // -------------------------------------------------
             var $select = this.$el.find('select#select-xmpp-status'),
-                presence_type = this.model.getStatus() || 'offline',
+                chat_status = this.model.getStatus() || 'offline',
                 options = $('option', $select),
                 $options_target,
                 options_list = [],
@@ -1903,8 +1911,8 @@
             this.$el.html(this.choose_template());
             this.$el.find('#fancy-xmpp-status-select')
                     .html(this.status_template({
-                            'status_message': "I am " + presence_type,
-                            'presence_type': presence_type
+                            'status_message': "I am " + this.getPrettyStatus(chat_status),
+                            'chat_status': chat_status
                             }));
             // iterate through all the <option> elements and add option values
             options.each(function(){

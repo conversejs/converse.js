@@ -1235,7 +1235,7 @@
             }, this);
             this.views = {};
 
-            // Add the controlbox view and the panels
+            // Add the controlbox view and the panel
             var controlbox = xmppchat.controlbox;
             controlbox.$el.appendTo(this.$el);
             controlbox.contactspanel = new xmppchat.ContactsPanel().render();
@@ -1245,6 +1245,8 @@
             xmppchat.roster = new xmppchat.RosterItems();
             xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
+            xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
+            xmppchat.rosterview.initialSort();
 
             // Rebind events (necessary for click events on tabs inserted via the panels)
             controlbox.delegateEvents();
@@ -1257,25 +1259,17 @@
     });
 
     xmppchat.RosterItem = Backbone.Model.extend({
-        initialize: function (jid, subscription, ask, name, img, img_type, url) {
-            var user_id = Strophe.getNodeFromJid(jid);
-            if (!name) {
-                name = user_id;
-            }
-            this.set({ 'id': jid,
-                'jid': jid,
-                'ask': ask,
-                'bare_jid': Strophe.getBareJidFromJid(jid),
-                'user_id': user_id,
-                'subscription': subscription,
-                'fullname': name,
-                'image': img,
-                'image_type': img_type,
-                'url': url,
+        initialize: function (attributes, options) {
+            var jid = attributes['jid'];
+            _.extend(attributes, {
+                'id': jid,
+                'user_id': Strophe.getNodeFromJid(jid),
                 'resources': [],
                 'chat_status': 'offline',
-                'status': 'offline'
-            }, {'silent': true});
+                'status': 'offline',
+                'sorted': false,
+            });
+            this.set(attributes);
         }
     });
 
@@ -1404,11 +1398,8 @@
     }
 
     xmppchat.RosterItems = Backbone.Collection.extend({
+        localStorage: new Backbone.LocalStorage("conversejs.rosterItems"), 
         model: xmppchat.RosterItem,
-        initialize: function () {
-            this._connection = xmppchat.connection;
-        },
-
         comparator : function (rosteritem) {
             var chat_status = rosteritem.get('chat_status'),
                 rank = 4;
@@ -1458,10 +1449,10 @@
             return Backbone.Collection.prototype.get.call(this, id);
         },
 
-        addRosterItem: function (jid, subscription, ask, name, img, img_type, url, options) {
-            var model = new xmppchat.RosterItem(jid, subscription, ask, name, img, img_type, url);
-            model.options = options || {};
+        addRosterItem: function (attributes) {
+            var model = new xmppchat.RosterItem(attributes)
             this.add(model);
+            model.save();
         },
 
         addResource: function (bare_jid, resource) {
@@ -1547,14 +1538,23 @@
 
         rosterHandler: function (items) {
             _.each(items, function (item, index, items) {
-                var model = this.getItem(item.jid),
-                    options = {};
+                var model = this.getItem(item.jid);
                 if (!model) {
+                    is_last = false;
                     if (index === (items.length-1)) {
-                        options.isLast = true;
+                        is_last = true;
                     }
                     xmppchat.getVCard(item.jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                        this.addRosterItem(item.jid, item.subscription, item.ask, fullname, img, img_type, url, options);
+                        this.addRosterItem({
+                            jid: item.jid, 
+                            subscription: item.subscription,
+                            ask: item.ask,
+                            fullname: fullname,
+                            image: img,
+                            image_type: img_type,
+                            url: url,
+                            is_last: is_last,
+                        });
                     }, this));
 
                 } else {
@@ -1562,6 +1562,7 @@
                     // ones that were already set when the rosterItem was added
                     if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
                         model.set({'subscription': item.subscription, 'ask': item.ask});
+                        model.save();
                     }
                 }
 
@@ -1612,7 +1613,16 @@
                         xmppchat.connection.roster.authorize(bare_jid);
                     } else {
                         xmppchat.getVCard(bare_jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                            this.addRosterItem(bare_jid, 'none', 'request', fullname, img, img_type, url);
+                            this.addRosterItem({
+                                jid: bare_jid, 
+                                subscription: 'none',
+                                ask: 'request',
+                                fullname: fullname,
+                                image: img,
+                                image_type: img_type,
+                                url: url,
+                                is_last: false,
+                            });
                         }, this));
                     }
                 }
@@ -1669,7 +1679,7 @@
                 delete this.rosteritemviews[item.id];
             }, this);
 
-            this.$el.html(this.template());
+            this.$el.hide().html(this.template());
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
@@ -1699,7 +1709,7 @@
                     $contact_requests.after(view.render().el);
                     $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                 } else if (subscription === 'both' || subscription === 'to') {
-                    if (!item.options.sorted) {
+                    if (!item.get('sorted')) {
                         // this attribute will be true only after all of the elements have been added on the page
                         // at this point all offline
                         $my_contacts.after(view.render().el);
@@ -1722,12 +1732,11 @@
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
             }
 
-            if (item.options.isLast && !item.options.sorted) {
+            if (item.get('is_last') && !item.get('sorted')) {
                 // this will be true after all of the roster items have been added with the default
                 // options where all of the items are offline and now we can show the rosterView
-                item.options.sorted = true;
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                item.set('sorted', true)
+                this.initialSort();
                 this.$el.show();
             }
             // Hide the headings if there are no contacts under them
@@ -1742,7 +1751,15 @@
             $count = $('#online-count');
             $count.text(this.model.getNumOnlineContacts());
             return this;
-        }
+        },
+
+        initialSort: function () {
+            var $my_contacts = this.$el.find('#xmpp-contacts'),
+                crit = {order:'asc'};
+            $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+            $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+        },
+
     });
 
     xmppchat.XMPPStatus = Backbone.Model.extend({

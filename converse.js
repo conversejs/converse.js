@@ -1290,38 +1290,20 @@
         },
 
         removeContact: function (ev) {
-            var that = this;
-            $("<span></span>").dialog({
-                title: 'Are you sure you want to remove this contact?',
-                dialogClass: 'remove-xmpp-contact-dialog',
-                resizable: false,
-                width: 200,
-                position: {
-                    my: 'center',
-                    at: 'center',
-                    of: '#controlbox'
-                    },
-                modal: true,
-                buttons: {
-                    "Remove": function() {
-                        var bare_jid = that.model.get('bare_jid');
-                        $(this).dialog( "close" );
-                        xmppchat.connection.roster.remove(bare_jid, function (iq) {
-                            xmppchat.connection.roster.unauthorize(bare_jid);
-                            // TODO inspect if chatboxes ever receives controlbox
-                            if (xmppchat.chatboxesview.controlbox) {
-                                xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
-                            }
-                            // remove model from view roster
-                            xmppchat.rosterview.model.remove(bare_jid);
-                        });
-                    },
-                    "Cancel": function() {
-                        $(this).dialog( "close" );
-                    }
-                }
-            });
             ev.preventDefault();
+            var result = confirm("Are you sure you want to remove this contact?");
+            if (result==true) {
+                var bare_jid = this.model.get('jid');
+                xmppchat.connection.roster.remove(bare_jid, function (iq) {
+                    xmppchat.connection.roster.unauthorize(bare_jid);
+                    // TODO inspect if chatboxes ever receives controlbox
+                    if (xmppchat.chatboxesview.controlbox) {
+                        xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
+                    }
+                    // remove model from view roster
+                    xmppchat.rosterview.model.remove(bare_jid);
+                });
+            }
         },
 
         acceptRequest: function (ev) {
@@ -1536,8 +1518,30 @@
             return count;
         },
 
+        cleanCache: function (items) {
+            /* The localstorage cache containing roster contacts might contain
+             * some contacts that aren't actually in our roster anymore. We
+             * therefore need to remove them now.
+             */
+            var id,
+                roster_ids = [];
+            for (var i=0; i < items.length; ++i) {
+                roster_ids.push(items[i]['jid']);
+            }
+            for (var i=0; i < this.models.length; ++i) {
+                id = this.models[i].get('id')
+                if (_.indexOf(roster_ids, id) === -1) {
+                    this.getItem(id).destroy();
+                }
+            }
+        },
+
         rosterHandler: function (items) {
+            this.cleanCache(items);
             _.each(items, function (item, index, items) {
+                if (this.isSelf(item.jid)) {
+                    return;
+                }
                 var model = this.getItem(item.jid);
                 if (!model) {
                     is_last = false;
@@ -1558,14 +1562,16 @@
                     }, this));
 
                 } else {
-                    // only modify model attributes if they are different from the
-                    // ones that were already set when the rosterItem was added
-                    if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
+                    if ((item.subscription === 'none') && (item.ask === null)) {
+                        // This user is no longer in our roster
+                        model.destroy();
+                    } else if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
+                        // only modify model attributes if they are different from the
+                        // ones that were already set when the rosterItem was added
                         model.set({'subscription': item.subscription, 'ask': item.ask});
                         model.save();
                     }
                 }
-
             }, this);
         },
 
@@ -1656,6 +1662,14 @@
         id: 'xmppchat-roster',
         rosteritemviews: {},
 
+        removeRosterItem: function (item) {
+            var view = this.rosteritemviews[item.id];
+            if (view) {
+                view.$el.remove();
+                delete this.rosteritemviews[item.id];
+            }
+        },
+
         initialize: function () {
             this.model.on("add", function (item) {
                 var view = new xmppchat.RosterItemView({model: item});
@@ -1673,10 +1687,13 @@
             }, this);
 
             this.model.on("remove", function (item) {
-                // remove element from the rosterView instance
-                this.rosteritemviews[item.id].$el.remove();
+                this.removeRosterItem(item);
+            }, this);
 
-                delete this.rosteritemviews[item.id];
+            // XXX: Not completely sure if this is needed ('remove' might be
+            // enough).
+            this.model.on("destroy", function (item) {
+                this.removeRosterItem(item);
             }, this);
 
             this.$el.hide().html(this.template());

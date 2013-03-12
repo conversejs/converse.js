@@ -49,7 +49,6 @@
         define([
             "Libraries/burry.js/burry",
             "Libraries/jquery.tinysort",
-            "Libraries/jquery-ui-1.9.1.custom",
             "Libraries/sjcl",
             "Libraries/backbone",
             "Libraries/strophe.muc",

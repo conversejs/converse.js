@@ -1279,11 +1279,6 @@
                         $(this).dialog( "close" );
                         xmppchat.connection.roster.remove(bare_jid, function (iq) {
                             xmppchat.connection.roster.unauthorize(bare_jid);
-                            // TODO inspect if chatboxes ever receives controlbox
-                            if (xmppchat.chatboxesview.controlbox) {
-                                xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
-                            }
-                            // remove model from view roster
                             xmppchat.rosterview.model.remove(bare_jid);
                         });
                     },
@@ -1569,11 +1564,11 @@
                 * this step lets the user's server know that it MUST no longer
                 * send notification of the subscription state change to the user.
                 */
-                // TODO see if xmppstatus is truly unresolved
                 xmppchat.xmppstatus.sendPresence('unsubscribe');
                 if (xmppchat.connection.roster.findItem(bare_jid)) {
-                    xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
-                    xmppchat.connection.roster.remove(bare_jid);
+                    xmppchat.connection.roster.remove(bare_jid, function (iq) {
+                        xmppchat.rosterview.model.remove(bare_jid);
+                    });
                 }
             } else {
                 if ((presence_type === undefined) && (show)) {

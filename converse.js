@@ -1662,6 +1662,7 @@
             if (view) {
                 view.$el.remove();
                 delete this.rosteritemviews[item.id];
+                this.render();
             }
         },
 
@@ -1699,20 +1700,16 @@
                             '<dt id="pending-xmpp-contacts">Pending contacts</dt>'),
 
         render: function (item) {
-            if (!item) {
-                return this;
-            }
             var $my_contacts = this.$el.find('#xmpp-contacts'),
                 $contact_requests = this.$el.find('#xmpp-contact-requests'),
                 $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
                 $count, presence_change;
-            // TODO see if user_id would be useful
-            var jid = item.id,
-                user_id = Strophe.getNodeFromJid(jid),
-                view = this.rosteritemviews[item.id],
-                ask = item.get('ask'),
-                subscription = item.get('subscription'),
-                crit = {order:'asc'};
+            if (item) {
+                var jid = item.id,
+                    view = this.rosteritemviews[item.id],
+                    ask = item.get('ask'),
+                    subscription = item.get('subscription'),
+                    crit = {order:'asc'};
 
                 if (ask === 'subscribe') {
                     $pending_contacts.after(view.render().el);
@@ -1732,24 +1729,25 @@
                         view.render();
                     }
                 }
-            presence_change = view.model.changed['chat_status'];
-            if (presence_change) {
-                // resort all items only if the model has changed it's chat_status as this render
-                // is also triggered when the resource is changed which always comes before the presence change
-                // therefore we avoid resorting when the change doesn't affect the position of the item
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
-            }
+                presence_change = view.model.changed['chat_status'];
+                if (presence_change) {
+                    // resort all items only if the model has changed it's chat_status as this render
+                    // is also triggered when the resource is changed which always comes before the presence change
+                    // therefore we avoid resorting when the change doesn't affect the position of the item
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd').tsort('a', crit));
+                    $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
+                }
 
-            if (item.get('is_last') && !item.get('sorted')) {
-                // this will be true after all of the roster items have been added with the default
-                // options where all of the items are offline and now we can show the rosterView
-                item.set('sorted', true)
-                this.initialSort();
-                this.$el.show();
+                if (item.get('is_last') && !item.get('sorted')) {
+                    // this will be true after all of the roster items have been added with the default
+                    // options where all of the items are offline and now we can show the rosterView
+                    item.set('sorted', true)
+                    this.initialSort();
+                    this.$el.show();
+                }
             }
             // Hide the headings if there are no contacts under them
             _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {

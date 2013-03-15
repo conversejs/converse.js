@@ -1626,7 +1626,7 @@
                                 image: img,
                                 image_type: img_type,
                                 url: url,
-                                is_last: false,
+                                is_last: true,
                             });
                         }, this));
                     }

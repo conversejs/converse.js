@@ -1557,7 +1557,7 @@
                         xmppchat.connection.roster.authorize(bare_jid);
                     } else {
                         $.getJSON(portal_url + "/xmpp-userinfo?user_id=" + Strophe.getNodeFromJid(jid), $.proxy(function (data) {
-                            this.addRosterItem(bare_jid, 'none', 'request', data.fullname);
+                            this.addRosterItem(bare_jid, 'none', 'request', data.fullname, {'isLast': true});
                         }, this));
                     }
                 }

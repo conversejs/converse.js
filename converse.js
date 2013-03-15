@@ -1295,11 +1295,6 @@
                 var bare_jid = this.model.get('jid');
                 xmppchat.connection.roster.remove(bare_jid, function (iq) {
                     xmppchat.connection.roster.unauthorize(bare_jid);
-                    // TODO inspect if chatboxes ever receives controlbox
-                    if (xmppchat.chatboxesview.controlbox) {
-                        xmppchat.chatboxesview.controlbox.roster.remove(bare_jid);
-                    }
-                    // remove model from view roster
                     xmppchat.rosterview.model.remove(bare_jid);
                 });
             }
@@ -1498,10 +1493,17 @@
         },
 
         unsubscribe: function (jid) {
+            /* Upon receiving the presence stanza of type "unsubscribed",
+            * the user SHOULD acknowledge receipt of that subscription state
+            * notification by sending a presence stanza of type "unsubscribe"
+            * this step lets the user's server know that it MUST no longer
+            * send notification of the subscription state change to the user.
+            */
             xmppchat.xmppstatus.sendPresence('unsubscribe');
             if (xmppchat.connection.roster.findItem(jid)) {
-                xmppchat.chatboxesview.controlbox.roster.remove(jid);
-                xmppchat.connection.roster.remove(jid);
+                xmppchat.connection.roster.remove(bare_jid, function (iq) {
+                    xmppchat.rosterview.model.remove(bare_jid);
+                });
             }
         },
 
@@ -1632,12 +1634,6 @@
                     }
                 }
             } else if (presence_type === 'unsubscribed') {
-                /* Upon receiving the presence stanza of type "unsubscribed",
-                * the user SHOULD acknowledge receipt of that subscription state
-                * notification by sending a presence stanza of type "unsubscribe"
-                * this step lets the user's server know that it MUST no longer
-                * send notification of the subscription state change to the user.
-                */
                 this.unsubscribe(jid);
             } else if (presence_type === 'unavailable') {
                 if (this.removeResource(bare_jid, resource) === 0) {

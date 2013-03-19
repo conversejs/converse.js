@@ -600,7 +600,6 @@
                 ctx.drawImage(img,0,0, 35*ratio, 35)
             }
             img.src = img_src;
-
             this.insertClientStoredMessages();
             return this;
         },
@@ -1077,7 +1076,9 @@
         }
     });
 
-    xmppchat.ChatBoxes = Backbone.Collection.extend();
+    xmppchat.ChatBoxes = Backbone.Collection.extend({
+        model: xmppchat.ChatBox,
+    });
 
     xmppchat.ChatBoxesView = Backbone.View.extend({
         el: '#collective-xmpp-chat-data',
@@ -1214,7 +1215,7 @@
                     view.messageReceived(message);
                     xmppchat.roster.addResource(partner_jid, resource);
                 }, this));
-                return undefined;
+                return true;
             } else if (!view.isVisible()) {
                 this.showChat(partner_jid);
             }

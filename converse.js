@@ -701,7 +701,6 @@
             $target.parent().remove();
             $('form.search-xmpp-contact').hide();
         }
-
     });
 
     xmppchat.RoomsPanel = Backbone.View.extend({
@@ -1363,15 +1362,28 @@
     });
 
     xmppchat.getVCard = function (jid, callback) {
-        // TODO: cache vcards
-        xmppchat.connection.vcard.get($.proxy(function (iq) {
-            $vcard = $(iq).find('vCard');
-            var fullname = $vcard.find('FN').text(),
-                img = $vcard.find('BINVAL').text(),
-                img_type = $vcard.find('TYPE').text(),
-                url = $vcard.find('URL').text();
-            callback(jid, fullname, img, img_type, url);
-        }, this), jid)
+        /* First we check if we don't already have a RosterItem, since it will
+         * contain all the vCard details.
+         */
+        var model = xmppchat.roster.getItem(jid);
+        if (model) {
+            callback(
+                model.get('jid'), 
+                model.get('fullname'), 
+                model.get('image'),
+                model.get('image_type'), 
+                model.get('url')
+            )
+        } else {
+            xmppchat.connection.vcard.get($.proxy(function (iq) {
+                $vcard = $(iq).find('vCard');
+                var fullname = $vcard.find('FN').text(),
+                    img = $vcard.find('BINVAL').text(),
+                    img_type = $vcard.find('TYPE').text(),
+                    url = $vcard.find('URL').text();
+                callback(jid, fullname, img, img_type, url);
+            }, this), jid)
+        }
     }
 
     xmppchat.RosterItems = Backbone.Collection.extend({

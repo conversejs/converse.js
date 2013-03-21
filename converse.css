@@ -159,7 +159,8 @@ input.new-chatroom-name {
 }
 
 div#settings,
-div#chatrooms {
+div#chatrooms,
+div#login-dialog {
     height: 279px;
 }
 
@@ -477,6 +478,10 @@ div#controlbox-panes {
     width: 199px;
 }
 
+form#xmppchat-login {
+    padding: 2em 0 0.3em 0.5em;
+}
+
 form.set-xmpp-status,
 form.add-chatroom {
     padding: 0.5em 0 0.3em 0.5em;
@@ -544,6 +549,7 @@ ul#controlbox-tabs a.current, ul#controlbox-tabs a.current:hover {
 
 div#users,
 div#chatrooms,
+div#login-dialog,
 div#settings {
     border: 0;
     font-size: 14px;

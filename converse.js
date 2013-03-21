@@ -16,54 +16,67 @@
     }
     if (typeof define === 'function' && define.amd) {
         require.config({
-            // paths: {
-            //     "patterns": "Libraries/Patterns"
-            // },
+            paths: {
+                "burry": "Libraries/burry.js/burry",
+                "sjcl": "Libraries/sjcl",
+                "tinysort": "Libraries/jquery.tinysort",
+                "underscore": "Libraries/underscore",
+                "backbone": "Libraries/backbone",
+                "localstorage": "Libraries/backbone.localStorage",
+                "strophe": "Libraries/strophe",
+                "strophe.muc": "Libraries/strophe.muc",
+                "strophe.roster": "Libraries/strophe.roster",
+                "strophe.vcard": "Libraries/strophe.vcard"
+            },
+
             // define module dependencies for modules not using define
             shim: {
-                'Libraries/backbone': {
+                'backbone': {
                     //These script dependencies should be loaded before loading
                     //backbone.js
                     deps: [
-                        'Libraries/underscore',
-                        'jquery'],
+                        'underscore',
+                        'jquery'
+                        ],
                     //Once loaded, use the global 'Backbone' as the
                     //module value.
                     exports: 'Backbone'
                 },
 
-                'Libraries/strophe.muc': {
-                    deps: ['Libraries/strophe', 'jquery']
+                'underscore': {
+                    exports: '_'
                 },
 
-                'Libraries/strophe.roster': {
-                    deps: ['Libraries/strophe', 'jquery']
+                'strophe.muc': {
+                    deps: ['strophe', 'jquery']
                 },
 
-                'Libraries/strophe.vcard': {
-                    deps: ['Libraries/strophe', 'jquery']
+                'strophe.roster': {
+                    deps: ['strophe', 'jquery']
+                },
+
+                'strophe.vcard': {
+                    deps: ['strophe', 'jquery']
                 }
             }
         });
 
-        define([
-            "Libraries/burry.js/burry",
-            "Libraries/jquery.tinysort",
-            "Libraries/sjcl",
-            "Libraries/backbone",
-            "Libraries/strophe.muc",
-            "Libraries/strophe.roster",
-            "Libraries/strophe.vcard"
-            ], function (Burry, _s) {
-                var store = new Burry.Store('collective.xmpp.chat');
-                // Init underscore.str
-                _.str = _s;
-                // Use Mustache style syntax for variable interpolation
-                _.templateSettings = {
-                    evaluate : /\{\[([\s\S]+?)\]\}/g,
-                    interpolate : /\{\{([\s\S]+?)\}\}/g
-                };
-                return factory(jQuery, store, _, console);
+        define("converse", [
+            "burry",
+            "localstorage",
+            "tinysort",
+            "sjcl",
+            "strophe.muc",
+            "strophe.roster",
+            "strophe.vcard"
+            ], function(Burry) {
+                    var store = new Burry.Store('collective.xmpp.chat');
+                    // Use Mustache style syntax for variable interpolation
+                    _.templateSettings = {
+                        evaluate : /\{\[([\s\S]+?)\]\}/g,
+                        interpolate : /\{\{([\s\S]+?)\}\}/g
+                    };
+                    return factory(jQuery, store, _, console);
             }
         );
     } else {
@@ -531,11 +544,15 @@
         },
 
         saveChatToStorage: function () {
-            xmppchat.storage.addOpenChat(this.model.get('jid'));
+            if (xmppchat.storage) {
+                xmppchat.storage.addOpenChat(this.model.get('jid'));
+            }
         },
 
         removeChatFromStorage: function () {
-            xmppchat.storage.removeOpenChat(this.model.get('jid'));
+            if (xmppchat.storage) {
+                xmppchat.storage.removeOpenChat(this.model.get('jid'));
+            }
         },
 
         closeChat: function () {
@@ -856,7 +873,6 @@
             }, {'silent': true});
         }
     });
-
 
     xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         length: 300,
@@ -1223,37 +1239,46 @@
             return true;
         },
 
-        initialize: function () {
-            this.options.model.on("add", function (item) {
-                // The controlbox added automatically, but we don't show it
-                // automatically (only when it was open before page load or
-                // upon a click).
-                if (item.get('id') != 'controlbox') {
-                    this.showChat(item.get('id'));
-                }
-            }, this);
-            this.views = {};
-
-            // Add the controlbox view and the panel
-            var controlbox = xmppchat.controlbox;
-            controlbox.$el.appendTo(this.$el);
+        onConnected: function () {
+            this.$el.find('#controlbox-tabs').empty();
+            this.$el.find('#controlbox-panes').empty();
             controlbox.contactspanel = new xmppchat.ContactsPanel().render();
-            controlbox.roomspanel = new xmppchat.RoomsPanel().render(); // TODO: Only add the rooms panel if the server supports MUC
-
+            // TODO: Only add the rooms panel if the server supports MUC
+            controlbox.roomspanel = new xmppchat.RoomsPanel().render(); 
             // Add the roster
             xmppchat.roster = new xmppchat.RosterItems();
             xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
             xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
             xmppchat.rosterview.initialSort();
-
-            // Rebind events (necessary for click events on tabs inserted via the panels)
-            controlbox.delegateEvents();
-            // Add the controlbox model to this collection (will trigger showChat)
-            this.options.model.add(xmppchat.controlbox.options.model);
-
-            this.views.controlbox = controlbox;
+            // Restore previously open chatboxes
             this.restoreOpenChats();
+        },
+
+        initialize: function () {
+            this.options.model.on("add", function (item) {
+                // The controlbox added automatically, but we don't show it
+                // automatically (only when it was open before page load or
+                // upon a click).
+                if ((item.get('id') != 'controlbox') || (!xmppchat.username)) {
+                    this.showChat(item.get('id'));
+                }
+            }, this);
+            this.views = {};
+            // Add the controlbox view
+            this.views.controlbox = new xmppchat.ControlBoxView({
+                model: new xmppchat.ControlBox({'id':'controlbox', 'jid':'controlbox'})
+            }).render();
+
+            this.views.controlbox.$el.appendTo(this.$el);
+            // Add login panel if the user still has to authenticate
+            if (!xmppchat.username) {
+                this.views.controlbox.loginpanel = new xmppchat.LoginPanel().render();
+            }
+            // Rebind events (necessary for click events on tabs inserted via the panels)
+            this.views.controlbox.delegateEvents();
+            // Add the controlbox model to this collection (will trigger showChat)
+            this.options.model.add(this.views.controlbox.options.model);
         }
     });
 
@@ -1972,6 +1997,65 @@
         }
     });
 
+    xmppchat.LoginPanel = Backbone.View.extend({
+        tagName: 'div',
+        id: "login-dialog",
+        events: {
+            'submit form#xmppchat-login': 'authenticate',
+        },
+        tab_template: _.template(
+            '<li><a class="current" href="#login">Sign in</a></li>'),
+        template: _.template(
+            '<form id="xmppchat-login">' +
+            '<label>XMPP ID:</label>' +
+            '<input type="text" id="jid">' +
+            '<label>Password:</label>' +
+            '<input type="password" id="password">' +
+            '<label>BOSH Service URL:</label>' +
+            '<input type="text" id="bosh_service_url">' +
+            '<input type="submit" name="submit"/>' +
+            '</form">'),
+
+        authenticate: function (ev) {
+            ev.preventDefault()
+            var $form = $(ev.target),
+                bosh_service_url = $form.find('input#bosh_service_url').val(),
+                jid = $form.find('input#jid').val(),
+                password = $form.find('input#password').val(),
+                connection = new Strophe.Connection(bosh_service_url);
+
+            connection.connect(jid, password, function (status) {
+                if (status === Strophe.Status.CONNECTED) {
+                    console.log('Connected');
+                    $(document).trigger('jarnxmpp.connected', connection);
+                } else if (status === Strophe.Status.DISCONNECTED) {
+                    console.log('Disconnected');
+                    $(document).trigger('jarnxmpp.disconnected');
+                } else if (status === Strophe.Status.Error) {
+                    console.log('Error');
+                } else if (status === Strophe.Status.CONNECTING) {
+                    console.log('Connecting');
+                } else if (status === Strophe.Status.CONNFAIL) {
+                    console.log('Connection Failed');
+                } else if (status === Strophe.Status.AUTHENTICATING) {
+                    console.log('Authenticating');
+                } else if (status === Strophe.Status.AUTHFAIL) {
+                    console.log('Authenticating Failed');
+                } else if (status === Strophe.Status.DISCONNECTING) {
+                    console.log('Disconnecting');
+                } else if (status === Strophe.Status.ATTACHED) {
+                    console.log('Attached');
+                }
+            });
+        },
+
+        render: function () {
+            $('#controlbox-tabs').append(this.tab_template());
+            $('#controlbox-panes').append(this.$el.html(this.template()));
+            return this;
+        },
+    });
+
     // Event handlers
     // --------------
     $(document).ready($.proxy(function () {
@@ -1984,9 +2068,9 @@
         this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
 
-        this.controlbox = new xmppchat.ControlBoxView({
-            model: new xmppchat.ControlBox({'id':'controlbox', 'jid':'controlbox'})
-        }).render();
+        this.chatboxesview = new this.ChatBoxesView({
+            model: new this.ChatBoxes()
+        });
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
             $toggle.hide();
@@ -2006,8 +2090,7 @@
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
             this.storage = new this.ClientStorage(this.connection.bare_jid);
 
-            this.chatboxes = new this.ChatBoxes();
-            this.chatboxesview = new this.ChatBoxesView({'model': this.chatboxes});
+            this.chatboxesview.onConnected();
 
             this.connection.addHandler(
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster),

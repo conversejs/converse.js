@@ -17,8 +17,7 @@
     }
     if (typeof define === 'function' && define.amd) { 
         define([
-            "Libraries/strophe",
-            "Libraries/underscore"
+            "strophe"
             ], function () {
                 if (console===undefined || console.log===undefined) {
                     console = { log: function () {}, error: function () {} };

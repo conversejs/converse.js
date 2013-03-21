@@ -1110,15 +1110,22 @@
                     if (this.isChatRoom(jid)) {
                         this.createChatRoom(jid);
                     } else {
-                        xmppchat.getVCard(jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                            this.createChatBox({
-                                'jid': jid,
-                                'fullname': fullname,
-                                'image': img,
-                                'image_type': img_type,
-                                'url': url,
-                                })
-                        }, this));
+                        xmppchat.getVCard(
+                            jid, 
+                            $.proxy(function (jid, fullname, img, img_type, url) {
+                                this.createChatBox({
+                                    'jid': jid,
+                                    'fullname': fullname,
+                                    'image': img,
+                                    'image_type': img_type,
+                                    'url': url,
+                                    });
+                            }, this),
+                            $.proxy(function () {
+                                // Error occured while fetching vcard
+                                this.createChatBox({'jid': jid });
+                            }, this)
+                        )
                     }
                 }
             }, this));
@@ -1219,17 +1226,29 @@
 
             view = this.views[partner_jid];
             if (!view) {
-                xmppchat.getVCard(partner_jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                    view = this.createChatBox({
-                        'jid': jid,
-                        'fullname': fullname,
-                        'image': img,
-                        'image_type': img_type,
-                        'url': url,
-                        })
-                    view.messageReceived(message);
-                    xmppchat.roster.addResource(partner_jid, resource);
-                }, this));
+                xmppchat.getVCard(
+                    partner_jid, 
+                    $.proxy(function (jid, fullname, img, img_type, url) {
+                        view = this.createChatBox({
+                            'jid': jid,
+                            'fullname': fullname,
+                            'image': img,
+                            'image_type': img_type,
+                            'url': url,
+                            })
+                        view.messageReceived(message);
+                        xmppchat.roster.addResource(partner_jid, resource);
+                    }, this),
+                    $.proxy(function () {
+                        // Error occured while fetching vcard
+                        console.log("An error occured while fetching vcard");
+                        view = this.createChatBox({
+                            'jid': jid,
+                            'fullname': jid,
+                            })
+                        view.messageReceived(message);
+                        xmppchat.roster.addResource(partner_jid, resource);
+                    }, this));
                 return true;
             } else if (!view.isVisible()) {
                 this.showChat(partner_jid);
@@ -1286,6 +1305,9 @@
     xmppchat.RosterItem = Backbone.Model.extend({
         initialize: function (attributes, options) {
             var jid = attributes['jid'];
+            if (!attributes['fullname']) {
+                attributes['fullname'] = jid;
+            }
             _.extend(attributes, {
                 'id': jid,
                 'user_id': Strophe.getNodeFromJid(jid),
@@ -1295,7 +1317,7 @@
                 'sorted': false,
             });
             this.set(attributes);
-        }
+        },
     });
 
 
@@ -1387,7 +1409,7 @@
         }
     });
 
-    xmppchat.getVCard = function (jid, callback) {
+    xmppchat.getVCard = function (jid, callback, errback) {
         /* First we check if we don't already have a RosterItem, since it will
          * contain all the vCard details.
          */
@@ -1408,7 +1430,7 @@
                     img_type = $vcard.find('TYPE').text(),
                     url = $vcard.find('URL').text();
                 callback(jid, fullname, img, img_type, url);
-            }, this), jid)
+            }, this), jid, errback())
         }
     }
 
@@ -1587,18 +1609,32 @@
                     if (index === (items.length-1)) {
                         is_last = true;
                     }
-                    xmppchat.getVCard(item.jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                        this.addRosterItem({
-                            jid: item.jid, 
-                            subscription: item.subscription,
-                            ask: item.ask,
-                            fullname: fullname,
-                            image: img,
-                            image_type: img_type,
-                            url: url,
-                            is_last: is_last,
-                        });
-                    }, this));
+                    xmppchat.getVCard(
+                        item.jid, 
+                        $.proxy(function (jid, fullname, img, img_type, url) {
+                            this.addRosterItem({
+                                jid: item.jid, 
+                                subscription: item.subscription,
+                                ask: item.ask,
+                                fullname: fullname,
+                                image: img,
+                                image_type: img_type,
+                                url: url,
+                                is_last: is_last,
+                            });
+                        }, this),
+                        $.proxy(function () {
+                            // TODO: Better handling here
+                            // Error occured while fetching vcard
+                            console.log("An error occured while fetching vcard");
+                            this.addRosterItem({
+                                jid: item.jid, 
+                                subscription: item.subscription,
+                                ask: item.ask,
+                                is_last: is_last,
+                            });
+                        }, this));
+
 
                 } else {
                     if ((item.subscription === 'none') && (item.ask === null)) {
@@ -1657,18 +1693,30 @@
                     if ((item) && (item.get('subscription') != 'none'))  {
                         xmppchat.connection.roster.authorize(bare_jid);
                     } else {
-                        xmppchat.getVCard(bare_jid, $.proxy(function (jid, fullname, img, img_type, url) {
-                            this.addRosterItem({
-                                jid: bare_jid, 
-                                subscription: 'none',
-                                ask: 'request',
-                                fullname: fullname,
-                                image: img,
-                                image_type: img_type,
-                                url: url,
-                                is_last: true,
-                            });
-                        }, this));
+                        xmppchat.getVCard(
+                            bare_jid, 
+                            $.proxy(function (jid, fullname, img, img_type, url) {
+                                this.addRosterItem({
+                                    jid: bare_jid, 
+                                    subscription: 'none',
+                                    ask: 'request',
+                                    fullname: fullname,
+                                    image: img,
+                                    image_type: img_type,
+                                    url: url,
+                                    is_last: true,
+                                });
+                            }, this),
+                            $.proxy(function (jid, fullname, img, img_type, url) {
+                                console.log("Error while retrieving vcard");
+                                this.addRosterItem({
+                                    jid: bare_jid, 
+                                    subscription: 'none',
+                                    ask: 'request',
+                                    fullname: jid,
+                                    is_last: true,
+                                });
+                            }, this));
                     }
                 }
             } else if (presence_type === 'unsubscribed') {

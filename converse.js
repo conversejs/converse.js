@@ -99,6 +99,12 @@
       return String(str).indexOf(needle) !== -1;
     };
 
+    xmppchat.autoLink = function (text) {
+        // Convert URLs into hyperlinks
+        var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
+        return text.replace(re, '<a target="_blank" href="$1">$1</a>');
+    };
+
     xmppchat.toISOString = function (date) {
         var pad;
         if (typeof date.toISOString !== 'undefined') {
@@ -283,17 +289,73 @@
         }
     });
 
+    xmppchat.Message = Backbone.Model.extend();
+
+    xmppchat.Messages = Backbone.Collection.extend({
+        model: xmppchat.Message
+    });
+
     xmppchat.ChatBox = Backbone.Model.extend({
+        messages: new xmppchat.Messages(),
         initialize: function () {
-            this.set({
-                'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-                'box_id' : hex_sha1(this.get('jid')),
-                'fullname' : this.get('fullname'),
-                'url': this.get('url'),
-                'image_type': this.get('image_type'),
-                'image_src': this.get('image_src')
-            });
-        }
+            if (this.get('box_id') !== 'controlbox') {
+                this.set({
+                    'user_id' : Strophe.getNodeFromJid(this.get('jid')),
+                    'box_id' : hex_sha1(this.get('jid')),
+                    'fullname' : this.get('fullname'),
+                    'url': this.get('url'),
+                    'image_type': this.get('image_type'),
+                    'image_src': this.get('image_src')
+                });
+            }
+        },
+
+        messageReceived: function (message) {
+            var $message = $(message),
+                body = xmppchat.autoLink($message.children('body').text()),
+                from = Strophe.getBareJidFromJid($message.attr('from')),
+                composing = $message.find('composing'),
+                delayed = $message.find('delay').length > 0,
+                fullname = this.get('fullname').split(' ')[0],
+                stamp, time;
+
+
+            if (!body) {
+                if (composing.length) {
+                    this.messages.add({
+                        fullname: fullname,
+                        sender: 'them',
+                        delayed: delayed,
+                        composing: composing.length
+                    });
+                }
+            } else {
+                if (delayed) {
+                    stamp = $message.find('delay').attr('stamp');
+                    time = (new Date(stamp)).toLocaleTimeString().substring(0,5);
+                } else {
+                    time = (new Date()).toLocaleTimeString().substring(0,5);
+                }
+
+                if (from == xmppchat.connection.bare_jid) {
+                    this.messages.add({
+                        fullname: 'me',
+                        sender: 'me',
+                        delayed: delayed,
+                        time: time,
+                        message: body
+                    });
+                } else {
+                    this.messages.add({
+                        fullname: fullname,
+                        sender: 'them',
+                        delayed: delayed,
+                        time: time,
+                        message: body
+                    });
+                }
+            }
+        },
     });
 
     xmppchat.ChatBoxView = Backbone.View.extend({
@@ -318,12 +380,6 @@
                                 '<span class="chat-message-content">{{message}}</span>' +
                             '</div>'),
 
-        autoLink: function (text) {
-            // Convert URLs into hyperlinks
-            var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
-            return text.replace(re, '<a target="_blank" href="$1">$1</a>');
-        },
-
         appendMessage: function (message) {
             var now = new Date(),
                 time = now.toLocaleTimeString().substring(0,5),
@@ -338,7 +394,7 @@
                     $chat_content.append($('<div class="chat-date"></div>').text(now.toString().substring(0,15)));
                 }
             }
-            message = this.autoLink(message);
+            message = xmppchat.autoLink(message);
             // TODO use minutes logic or remove it
             if (minutes.length==1) {minutes = '0'+minutes;}
             $chat_content.find('div.chat-event').remove();
@@ -360,54 +416,25 @@
         },
 
         messageReceived: function (message) {
-            /* XXX: event.mtype should be 'xhtml' for XHTML-IM messages,
-                but I only seem to get 'text'.
-            */
-            var $message = $(message);
-            var body = this.autoLink($message.children('body').text()),
-                from = Strophe.getBareJidFromJid($message.attr('from')),
-                to = $message.attr('to'),
-                composing = $message.find('composing'),
-                $chat_content = this.$el.find('.chat-content'),
-                delayed = $message.find('delay').length > 0,
-                fullname = this.model.get('fullname'),
-                time, stamp, username, sender;
+            var $chat_content = this.$el.find('.chat-content');
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
                 return;
             }
-            if (!body) {
-                if (composing.length) {
-                    this.insertStatusNotification(fullname+' '+'is typing');
-                    return;
-                }
+            if (message.get('composing')) {
+                this.insertStatusNotification(message.get('fullname')+' '+'is typing');
+                return;
             } else {
-                if (from == xmppchat.connection.bare_jid) {
-                    // I am the sender, so this must be a forwarded message...
-                    $chat_content.find('div.chat-event').remove();
-                    username = 'me';
-                    sender = 'me';
-                } else {
-                    xmppchat.storage.addMessage(from, body, 'from');
-                    $chat_content.find('div.chat-event').remove();
-                    username = fullname.split(' ')[0];
-                    sender = 'them';
-                }
-                if (delayed) {
-                    // XXX: Test properly (for really old messages we somehow need to show
-                    // their date as well)
-                    stamp = $message.find('delay').attr('stamp');
-                    time = (new Date(stamp)).toLocaleTimeString().substring(0,5);
-                } else {
-                    time = (new Date()).toLocaleTimeString().substring(0,5);
-                }
+                // xmppchat.storage.addMessage(from, body, 'from');
+                $chat_content.find('div.chat-event').remove();
+                // TODO use toJSON here
                 $chat_content.append(
                         this.message_template({
-                            'sender': sender,
-                            'time': time,
-                            'message': body,
-                            'username': username,
-                            'extra_classes': delayed && 'delayed' || ''
+                            'sender': message.get('sender'),
+                            'time': message.get('time'),
+                            'message': message.get('message'),
+                            'username': message.get('fullname'),
+                            'extra_classes': message.get('delayed') && 'delayed' || ''
                         }));
                 $chat_content.scrollTop($chat_content[0].scrollHeight);
             }
@@ -441,7 +468,7 @@
                         $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
                     }
                 }
-                msg = this.autoLink(String(msg).replace(/(.*?\s.*?\s)/, ''));
+                msg = xmppchat.autoLink(String(msg).replace(/(.*?\s.*?\s)/, ''));
                 if (msg_array[1] == 'to') {
                     $content.append(
                         this.message_template({
@@ -564,6 +591,10 @@
 
         initialize: function (){
             $('body').append(this.$el.hide());
+
+            this.model.messages.on('add', function (item) {
+                this.messageReceived(item);
+            }, this);
 
             xmppchat.roster.on('change', function (item, changed) {
                 var fullname = this.model.get('fullname'),
@@ -801,6 +832,7 @@
     });
 
 
+    /*
     xmppchat.ControlBox = xmppchat.ChatBox.extend({
         initialize: function () {
             this.set({
@@ -808,6 +840,7 @@
             });
         }
     });
+    */
 
     xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
         // XXX: Options for the (still to be done) 'settings' tab:
@@ -822,7 +855,7 @@
         },
 
         initialize: function () {
-            $('body').append(this.$el.hide());
+            // Override the one in ChatBoxView
         },
 
         template: _.template(
@@ -854,10 +887,12 @@
         },
 
         render: function () {
-            var that = this;
-            this.$el.hide('fast', function () {
-                $(this).html(that.template(that.model.toJSON()));
-            });
+            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.appendTo(xmppchat.chatboxesview.$el);
+            // Add login panel if the user still has to authenticate
+            if (!xmppchat.username) {
+                this.loginpanel = new xmppchat.LoginPanel().render();
+            }
             return this;
         }
     });
@@ -1040,7 +1075,7 @@
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
-                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
+                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || '',
                                 }));
                     } else {
                         $chat_content.append(
@@ -1147,26 +1182,31 @@
         },
 
         createChatBox: function (data) {
-            var jid = data['jid'];
-            var box = new xmppchat.ChatBox({
-                                'id': jid,
-                                'jid': jid,
-                                'fullname': data['fullname'],
-                                'image_type': data['image_type'],
-                                'image': data['image'],
-                                'url': data['url'],
-                                });
-            var view = new xmppchat.ChatBoxView({model: box});
-            this.views[jid] = view.render();
-            view.$el.appendTo(this.$el);
-            this.options.model.add(box);
-            return view;
+            return this.options.model.add({
+                'id': data['jid'],
+                'jid': data['jid'],
+                'fullname': data['fullname'],
+                'image_type': data['image_type'],
+                'image': data['image'],
+                'url': data['url'],
+            });
         },
 
         closeChat: function (jid) {
             var view = this.views[jid];
             if (view) {
                 view.closeChat();
+            }
+        },
+
+        openControlBox: function () {
+            if (this.model.get('controlbox')) {
+                this.showChat('controlbox');
+            } else {
+                this.options.model.add({
+                    id: 'controlbox',
+                    box_id: 'controlbox'
+                });
             }
         },
 
@@ -1214,7 +1254,7 @@
             }
             var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
-                view, resource;
+                view, resource, chatboxes;
             if (from == xmppchat.connection.bare_jid) {
                 // I am the sender, so this must be a forwarded message...
                 partner_jid = to;
@@ -1229,31 +1269,28 @@
                 xmppchat.getVCard(
                     partner_jid, 
                     $.proxy(function (jid, fullname, img, img_type, url) {
-                        view = this.createChatBox({
+                        // FIXME: We don't get the view from createChatBox
+                        // anymore.
+                        // Instead, we should trigger an event on the model
+                        chatboxes = this.createChatBox({
                             'jid': jid,
                             'fullname': fullname,
                             'image': img,
                             'image_type': img_type,
                             'url': url,
                             })
-                        view.messageReceived(message);
+                        chatboxes.get(jid).messageReceived(message);
                         xmppchat.roster.addResource(partner_jid, resource);
                     }, this),
                     $.proxy(function () {
-                        // Error occured while fetching vcard
+                        // # TODO: call the function above
                         console.log("An error occured while fetching vcard");
-                        view = this.createChatBox({
-                            'jid': jid,
-                            'fullname': jid,
-                            })
-                        view.messageReceived(message);
-                        xmppchat.roster.addResource(partner_jid, resource);
                     }, this));
                 return true;
             } else if (!view.isVisible()) {
                 this.showChat(partner_jid);
             }
-            view.messageReceived(message);
+            view.model.messageReceived(message);
             xmppchat.roster.addResource(partner_jid, resource);
             return true;
         },
@@ -1266,39 +1303,33 @@
             controlbox.roomspanel = new xmppchat.RoomsPanel().render(); 
             // Add the roster
             xmppchat.roster = new xmppchat.RosterItems();
-            xmppchat.roster.localStorage = new Backbone.LocalStorage(hex_sha1(xmppchat.connection.bare_jid));
+            xmppchat.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
             xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
             xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
             xmppchat.rosterview.initialSort();
+            // TODO: we're going to use localStorage here
             // Restore previously open chatboxes
-            this.restoreOpenChats();
+            // this.restoreOpenChats();
         },
 
         initialize: function () {
-            this.options.model.on("add", function (item) {
-                // The controlbox added automatically, but we don't show it
-                // automatically (only when it was open before page load or
-                // upon a click).
-                if ((item.get('id') != 'controlbox') || (!xmppchat.username)) {
-                    this.showChat(item.get('id'));
-                }
-            }, this);
             this.views = {};
-            // Add the controlbox view
-            this.views.controlbox = new xmppchat.ControlBoxView({
-                model: new xmppchat.ControlBox({'id':'controlbox', 'jid':'controlbox'})
-            }).render();
-
-            this.views.controlbox.$el.appendTo(this.$el);
-            // Add login panel if the user still has to authenticate
-            if (!xmppchat.username) {
-                this.views.controlbox.loginpanel = new xmppchat.LoginPanel().render();
-            }
-            // Rebind events (necessary for click events on tabs inserted via the panels)
-            this.views.controlbox.delegateEvents();
-            // Add the controlbox model to this collection (will trigger showChat)
-            this.options.model.add(this.views.controlbox.options.model);
+            this.options.model.on("add", function (item) {
+                var view;
+                if (item.get('box_id') === 'controlbox') {
+                    view = new xmppchat.ControlBoxView({model: item});
+                } else {
+                    view = new xmppchat.ChatBoxView({model: item});
+                }
+                this.views[item.get('id')] = view.render();
+                this.showChat(item.get('id'));
+            }, this);
+            /*
+                // Rebind events (necessary for click events on tabs inserted via the panels)
+                this.views.controlbox.delegateEvents();
+            */
         }
     });
 
@@ -2115,15 +2146,16 @@
         this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
 
+        this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({
-            model: new this.ChatBoxes()
+            model: this.chatboxes
         });
         $toggle.bind('click', $.proxy(function (e) {
             e.preventDefault();
             if ($("div#controlbox").is(':visible')) {
                 this.chatboxesview.closeChat('controlbox');
             } else {
-                this.chatboxesview.showChat('controlbox');
+                this.chatboxesview.openControlBox();
             }
         }, this));
 
@@ -2151,6 +2183,8 @@
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
             this.storage = new this.ClientStorage(hex_sha1(this.connection.bare_jid));
 
+            this.chatboxes.localStorage = new Backbone.LocalStorage(
+                    hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
             this.chatboxesview.onConnected();
 
             this.connection.addHandler(

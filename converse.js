@@ -1247,6 +1247,7 @@
             controlbox.roomspanel = new xmppchat.RoomsPanel().render(); 
             // Add the roster
             xmppchat.roster = new xmppchat.RosterItems();
+            xmppchat.roster.localStorage = new Backbone.LocalStorage(hex_sha1(xmppchat.connection.bare_jid));
             xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
             xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
@@ -1412,7 +1413,6 @@
     }
 
     xmppchat.RosterItems = Backbone.Collection.extend({
-        localStorage: new Backbone.LocalStorage("conversejs.rosterItems"), 
         model: xmppchat.RosterItem,
         comparator : function (rosteritem) {
             var chat_status = rosteritem.get('chat_status'),
@@ -2035,6 +2035,7 @@
                     console.log('Error');
                 } else if (status === Strophe.Status.CONNECTING) {
                     console.log('Connecting');
+                    $(document).trigger('jarnxmpp.connecting');
                 } else if (status === Strophe.Status.CONNFAIL) {
                     console.log('Connection Failed');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
@@ -2060,10 +2061,8 @@
     // --------------
     $(document).ready($.proxy(function () {
         var chatdata = $('div#collective-xmpp-chat-data'),
-            $connecting = $('span#connecting-to-chat'),
+            $connecting = $('span#connecting-to-chat').hide(),
             $toggle = $('a#toggle-online-users');
-        $toggle.unbind('click');
-
         this.username = chatdata.attr('username');
         this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
@@ -2071,6 +2070,20 @@
         this.chatboxesview = new this.ChatBoxesView({
             model: new this.ChatBoxes()
         });
+        $toggle.bind('click', $.proxy(function (e) {
+            e.preventDefault();
+            if ($("div#controlbox").is(':visible')) {
+                this.chatboxesview.closeChat('controlbox');
+            } else {
+                this.chatboxesview.showChat('controlbox');
+            }
+        }, this));
+
+        $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {
+            $toggle.hide(function () {
+                $connecting.show();
+            });
+        }, this));
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
             $toggle.hide();
@@ -2088,7 +2101,7 @@
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
-            this.storage = new this.ClientStorage(this.connection.bare_jid);
+            this.storage = new this.ClientStorage(hex_sha1(this.connection.bare_jid));
 
             this.chatboxesview.onConnected();
 
@@ -2121,21 +2134,9 @@
                     });
                 }, this));
 
-            // Controlbox toggler
-            if ($toggle.length) {
-                $connecting.hide();
-                $toggle.show();
-                $toggle.bind('click', $.proxy(function (e) {
-                    e.preventDefault();
-                    if ($("div#controlbox").is(':visible')) {
-                        this.chatboxesview.closeChat('controlbox');
-                    } else {
-                        this.chatboxesview.showChat('controlbox');
-                    }
-                }, this));
-            } else {
-                this.chatboxesview.showChat('controlbox');
-            }
+            $connecting.hide();
+            $toggle.show();
+
         }, this));
     }, xmppchat));
 

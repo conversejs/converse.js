@@ -2,3 +2,7 @@ body {
     font: 100% Arial, FreeSans, sans-serif;
     font-family: "Helvetica Neue", Arial, FreeSans, sans-serif;
 }
+
+a {
+    text-decoration: none;
+}

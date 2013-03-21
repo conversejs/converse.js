@@ -25,10 +25,6 @@
     height: 1.1em;
 }
 
-#toggle-online-users {
-    display: none;
-}
-
 #connecting-to-chat {
     background: url(images/spinner.gif) no-repeat left;
     padding-left: 1.4em;

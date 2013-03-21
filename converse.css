@@ -364,8 +364,12 @@ form.search-xmpp-contact input {
 }
 
 #xmppchat-roster dd a {
-    margin-left: 2em;
+    margin-left: 1.5em;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
+    display: inline-block;
+    width: 113px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .remove-xmpp-contact-dialog .ui-dialog-buttonpane {
@@ -417,6 +421,7 @@ dd.available-chatroom,
     background: url('images/delete_icon.png') no-repeat right top;
     padding: 0 1em 1em 0;
     float: right;
+    width: 22px;
     margin: 0;
 }
 

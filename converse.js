@@ -302,10 +302,10 @@
                     time = (new Date()).toLocaleTimeString().substring(0,5);
                 }
                 if (from == xmppchat.connection.bare_jid) {
-                    fullname: 'me',
-                    sender: 'me',
-                else {
-                    sender: 'them',
+                    fullname = 'me';
+                    sender = 'me';
+                } else {
+                    sender = 'them';
                 }
                 var message = new xmppchat.Message({
                     fullname: fullname,

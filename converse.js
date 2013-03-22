@@ -782,24 +782,13 @@
     });
 
     xmppchat.SettingsPanel = Backbone.View.extend({
-        el: '#settings'
-    });
-
-
-    /*
-    xmppchat.ControlBox = xmppchat.ChatBox.extend({
-        initialize: function () {
-            this.set({
-                'box_id' : 'controlbox'
-            });
-        }
-    });
-    */
-
-    xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
         // XXX: Options for the (still to be done) 'settings' tab:
         // * Show offline users
         // * Auto-open chatbox when a message was received.
+        el: '#settings'
+    });
+
+    xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
         tagName: 'div',
         className: 'chatbox',
         id: 'controlbox',
@@ -2018,11 +2007,6 @@
                 jid = $form.find('input#jid').val(),
                 password = $form.find('input#password').val(),
                 connection = new Strophe.Connection(bosh_service_url);
-
-            jid = 'opkode@jappix.com'
-            password = 'jpwagw00rd!'
-            bosh_service_url = 'https://bind.jappix.com'
-            connection = new Strophe.Connection(bosh_service_url);
 
             connection.connect(jid, password, function (status) {
                 if (status === Strophe.Status.CONNECTED) {

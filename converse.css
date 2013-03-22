@@ -148,6 +148,10 @@ input.new-chatroom-name {
     font-weight: bold;
     color: #F62817;
     white-space: nowrap;
+    width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
 }
 
 .chat-event, .chat-date, .chat-help {
@@ -482,6 +486,10 @@ div#controlbox-panes {
 
 form#xmppchat-login {
     padding: 2em 0 0.3em 0.5em;
+}
+
+form#xmppchat-login input {
+    display: block;
 }
 
 form.set-xmpp-status,

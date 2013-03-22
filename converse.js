@@ -619,6 +619,7 @@
             this.$el.css({'opacity': 0,
                           'display': 'inline'})
                     .animate({opacity: '1'}, 200);
+            this.model.save();
             return this;
         },
 
@@ -661,8 +662,8 @@
         ),
 
         render: function () {
-            $('#controlbox-tabs').append(this.tab_template());
-            $('#controlbox-panes').append(this.$el.html(this.template()));
+            this.$parent.find('#controlbox-tabs').append(this.tab_template());
+            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
             return this;
         },
 
@@ -731,8 +732,8 @@
             '</dl>'),
 
         render: function () {
-            $('#controlbox-tabs').append(this.tab_template());
-            $('#controlbox-panes').append(this.$el.html(this.template()).hide());
+            this.$parent.find('#controlbox-tabs').append(this.tab_template());
+            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()).hide());
             return this;
         },
 
@@ -831,10 +832,17 @@
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
-            this.$el.appendTo(xmppchat.chatboxesview.$el);
-            // Add login panel if the user still has to authenticate
-            if (!xmppchat.username) {
+            if ((!xmppchat.username) && (!xmppchat.connection)) {
+                // Add login panel if the user still has to authenticate
                 this.loginpanel = new xmppchat.LoginPanel().render();
+            } else {
+                this.contactspanel = new xmppchat.ContactsPanel();
+                this.contactspanel.$parent = this.$el;
+                this.contactspanel.render();
+                // TODO: Only add the rooms panel if the server supports MUC
+                this.roomspanel = new xmppchat.RoomsPanel(); 
+                this.roomspanel.$parent = this.$el;
+                this.roomspanel.render();
             }
             return this;
         }
@@ -1150,7 +1158,6 @@
                     view.focus();
                 }
             }
-            // view.saveChatToStorage();
             return view;
         },
 
@@ -1206,21 +1213,23 @@
         },
 
         onConnected: function () {
-            this.$el.find('#controlbox-tabs').empty();
-            this.$el.find('#controlbox-panes').empty();
-            controlbox.contactspanel = new xmppchat.ContactsPanel().render();
-            // TODO: Only add the rooms panel if the server supports MUC
-            controlbox.roomspanel = new xmppchat.RoomsPanel().render(); 
-            // Add the roster
-            xmppchat.roster = new xmppchat.RosterItems();
-            xmppchat.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
-            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
-            xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
-            xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
-            xmppchat.rosterview.initialSort();
-            // Gets cached chatboxes from localstorage
-            this.model.fetch({add: true}); 
+            if (!this.model.get('controlbox')) {
+                this.model.add({
+                    id: 'controlbox',
+                    box_id: 'controlbox'
+                });
+            }
+            // Get cached chatboxes from localstorage
+            this.model.fetch({
+                add: true, success: 
+                $.proxy(function (collection, resp) {
+                    // If the controlbox was saved in localstorate, we must now
+                    // show it.
+                    if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
+                        this.showChat('controlbox');
+                    }
+                }, this) 
+            }); 
         },
 
         initialize: function () {
@@ -1228,12 +1237,26 @@
             this.options.model.on("add", function (item) {
                 var view;
                 if (item.get('box_id') === 'controlbox') {
+                    // Legwork to init the controlbox, but we don't show it
+                    // yet, that depends on whether a user clicks on $toggle,
+                    // or whether it was saved in localstorage
                     view = new xmppchat.ControlBoxView({model: item});
+                    this.views[item.get('id')] = view.render();
+                    view.$el.appendTo(this.$el);
+                    // Add the roster
+                    xmppchat.roster = new xmppchat.RosterItems();
+                    xmppchat.roster.localStorage = new Backbone.LocalStorage(
+                        hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
+                    xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
+                    xmppchat.rosterview.$el.appendTo(view.contactspanel.$el);
+                    xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
+                    xmppchat.rosterview.initialSort();
                 } else {
                     view = new xmppchat.ChatBoxView({model: item});
+                    this.views[item.get('id')] = view.render();
+                    view.$el.appendTo(this.$el);
+                    this.showChat(item.get('id'));
                 }
-                this.views[item.get('id')] = view.render();
-                this.showChat(item.get('id'));
             }, this);
         }
     });
@@ -1795,7 +1818,6 @@
     });
 
     xmppchat.XMPPStatus = Backbone.Model.extend({
-
         initialize: function () {
             this.set({
                 'status' : this.getStatus(),
@@ -1949,8 +1971,13 @@
             '</li>'),
 
         initialize: function () {
+            this.model.initStatus();
+            // Listen for status change on the model and initialize
+            this.options.model.on("change", $.proxy(this.updateStatusUI, this));
+        },
+
+        render: function () {
             // Replace the default dropdown with something nicer
-            // -------------------------------------------------
             var $select = this.$el.find('select#select-xmpp-status'),
                 chat_status = this.model.getStatus() || 'offline',
                 options = $('option', $select),
@@ -1973,11 +2000,6 @@
             $options_target = this.$el.find("#target dd ul").hide();
             $options_target.append(options_list.join(''));
             $select.remove();
-
-            // Listen for status change on the model and initialize
-            // ----------------------------------------------------
-            this.options.model.on("change", $.proxy(this.updateStatusUI, this));
-            this.model.initStatus();
         }
     });
 
@@ -2008,8 +2030,9 @@
                 password = $form.find('input#password').val(),
                 connection = new Strophe.Connection(bosh_service_url);
 
-            connection.connect(jid, password, function (status) {
+            connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
+                    this.remove(); // Remove the login panel
                     console.log('Connected');
                     $(document).trigger('jarnxmpp.connected', connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
@@ -2031,7 +2054,13 @@
                 } else if (status === Strophe.Status.ATTACHED) {
                     console.log('Attached');
                 }
-            });
+            }, this));
+        },
+
+        remove: function () {
+            $('#controlbox-tabs').empty();
+            $('#controlbox-panes').empty();
+            // TODO re-render controlbox
         },
 
         render: function () {
@@ -2090,6 +2119,7 @@
 
             this.chatboxes.localStorage = new Backbone.LocalStorage(
                     hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
+
             this.chatboxesview.onConnected();
 
             this.connection.addHandler(
@@ -2119,6 +2149,7 @@
                     this.xmppstatusview = new this.XMPPStatusView({
                         'model': this.xmppstatus
                     });
+                    this.xmppstatusview.render();
                 }, this));
 
             $connecting.hide();

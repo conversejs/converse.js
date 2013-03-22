@@ -262,9 +262,12 @@
     });
 
     xmppchat.ChatBox = Backbone.Model.extend({
-        messages: new xmppchat.Messages(),
         initialize: function () {
             if (this.get('box_id') !== 'controlbox') {
+                this.messages = new xmppchat.Messages();
+                this.messages.localStorage = new Backbone.LocalStorage(
+                    hex_sha1('converse.messages'+this.get('jid')));
+
                 this.set({
                     'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                     'box_id' : hex_sha1(this.get('jid')),
@@ -347,7 +350,6 @@
                 time = now.toLocaleTimeString().substring(0,5),
                 minutes = now.getMinutes().toString(),
                 $chat_content = this.$el.find('.chat-content');
-
             /*
              * FIXME: we don't use client storage anymore
             var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
@@ -407,52 +409,6 @@
 
         isDifferentDay: function (prev_date, next_date) {
             return ((next_date.getDate() != prev_date.getDate()) || (next_date.getFullYear() != prev_date.getFullYear()) || (next_date.getMonth() != prev_date.getMonth()));
-        },
-
-        insertClientStoredMessages: function () {
-            var msgs = xmppchat.storage.getMessages(this.model.get('jid')),
-                msgs_length = msgs.length,
-                $content = this.$el.find('.chat-content'),
-                prev_date, this_date, i;
-            for (i=0; i<msgs_length; i++) {
-                var msg = msgs[i],
-                    msg_array = msg.split(' ', 2),
-                    date = msg_array[0];
-
-                if (i === 0) {
-                    this_date = new Date(Date(date));
-                    if (this.isDifferentDay(this_date, new Date())) {
-                        $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
-                    }
-                } else {
-                    prev_date = this_date;
-                    this_date = new Date(Date(date));
-                    if (this.isDifferentDay(prev_date, this_date)) {
-                        $content.append($('<div class="chat-date">&nbsp;</div>'));
-                        $content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
-                    }
-                }
-                msg = xmppchat.autoLink(String(msg).replace(/(.*?\s.*?\s)/, ''));
-                if (msg_array[1] == 'to') {
-                    $content.append(
-                        this.message_template({
-                            'sender': 'me',
-                            'time': this_date.toLocaleTimeString().substring(0,5),
-                            'message': msg,
-                            'username': 'me',
-                            'extra_classes': 'delayed'
-                    }));
-                } else {
-                    $content.append(
-                        this.message_template({
-                            'sender': 'them',
-                            'time': this_date.toLocaleTimeString().substring(0,5),
-                            'message': msg,
-                            'username': this.model.get('fullname').split(' ')[0],
-                            'extra_classes': 'delayed'
-                    }));
-                }
-            }
         },
 
         addHelpMessages: function (msgs) {
@@ -545,11 +501,9 @@
 
         initialize: function (){
             $('body').append(this.$el.hide());
-
             this.model.messages.on('add', function (item) {
                 this.messageReceived(item);
             }, this);
-
             xmppchat.roster.on('change', function (item, changed) {
                 var fullname = this.model.get('fullname'),
                     chat_status = item.get('chat_status');
@@ -602,7 +556,6 @@
                 ctx.drawImage(img,0,0, 35*ratio, 35)
             }
             img.src = img_src;
-            // this.insertClientStoredMessages();
             return this;
         },
 

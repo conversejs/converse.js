@@ -267,7 +267,6 @@
                 this.messages = new xmppchat.Messages();
                 this.messages.localStorage = new Backbone.LocalStorage(
                     hex_sha1('converse.messages'+this.get('jid')));
-
                 this.set({
                     'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                     'box_id' : hex_sha1(this.get('jid')),
@@ -449,18 +448,24 @@
             var message = $msg({from: xmppchat.connection.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
-
             // Forward the message, so that other connected resources are also aware of it.
             // TODO: Forward the message only to other connected resources (inside the browser)
             var forwarded = $msg({to:xmppchat.connection.bare_jid, type:'chat', id:timestamp})
                             .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                             .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
                             .cnode(message.tree());
-
             xmppchat.connection.send(message);
             xmppchat.connection.send(forwarded);
-            this.appendMessage(text);
-            // xmppchat.storage.addMessage(bare_jid, text, 'to');
+
+            // Add the new message
+            var message = new xmppchat.Message({
+                    fullname: 'me',
+                    sender: 'me',
+                    time: (new Date()).toLocaleTimeString().substring(0,5),
+                    message: text 
+                });
+            this.model.messages.add(message);
+            message.save();
         },
 
         keyPressed: function (ev) {
@@ -470,6 +475,7 @@
                 composing;
 
             if(ev.keyCode == 13) {
+                ev.preventDefault();
                 message = $textarea.val();
                 $textarea.val('').focus();
                 if (message !== '') {
@@ -1206,8 +1212,10 @@
                     xmppchat.rosterview.initialSort();
                 } else {
                     view = new xmppchat.ChatBoxView({model: item});
+                    // Fetch messages from localstorage
                     this.views[item.get('id')] = view.render();
                     view.$el.appendTo(this.$el);
+                    view.model.messages.fetch({add: true});
                     this.showChat(item.get('id'));
                 }
             }, this);
@@ -2073,6 +2081,7 @@
             this.chatboxes.localStorage = new Backbone.LocalStorage(
                     hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
 
+            this.xmppstatus = new this.XMPPStatus();
             this.chatboxesview.onConnected();
 
             this.connection.addHandler(
@@ -2098,7 +2107,6 @@
                             }, this), null, 'message', 'chat');
 
                     // XMPP Status
-                    this.xmppstatus = new this.XMPPStatus();
                     this.xmppstatusview = new this.XMPPStatusView({
                         'model': this.xmppstatus
                     });

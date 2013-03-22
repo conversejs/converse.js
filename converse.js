@@ -448,11 +448,11 @@
         },
 
         closeChat: function () {
-            var that = this;
-            $('#'+this.model.get('box_id')).hide('fast', function () {
+            $('#'+this.model.get('box_id')).hide('fast', $.proxy(function () {
                 // TODO: Better is probably to just show that it's hidden
-                that.model.destroy();
-            });
+                this.model.set({'visible': false})
+                this.model.destroy();
+            }, this));
         },
 
         initialize: function (){
@@ -528,7 +528,12 @@
             this.$el.css({'opacity': 0,
                           'display': 'inline'})
                     .animate({opacity: '1'}, 200);
-            this.model.save();
+            this.model.set({'visible': true})
+            if (xmppchat.connection) {
+                // Without a connection, we haven't yet initialized
+                // localstorage
+                this.model.save();
+            }
             return this;
         },
 
@@ -709,6 +714,21 @@
 
         initialize: function () {
             // Override the one in ChatBoxView
+            this.model.on('change', $.proxy(function (item, changed) {
+                if (_.has(changed.changes, 'connected')) {
+                    this.render().setUpRoster();
+                }
+            }, this));
+        },
+
+        setUpRoster: function () {
+            xmppchat.roster = new xmppchat.RosterItems();
+            xmppchat.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
+            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
+            xmppchat.rosterview.$el.appendTo(this.contactspanel.$el);
+            xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
+            xmppchat.rosterview.initialSort();
         },
 
         template: _.template(
@@ -741,9 +761,11 @@
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
-            if ((!xmppchat.username) && (!xmppchat.connection)) {
+            if ((xmppchat.prebind) && (!xmppchat.connection)) {
                 // Add login panel if the user still has to authenticate
-                this.loginpanel = new xmppchat.LoginPanel().render();
+                this.loginpanel = new xmppchat.LoginPanel();
+                this.loginpanel.$parent = this.$el;
+                this.loginpanel.render();
             } else {
                 this.contactspanel = new xmppchat.ContactsPanel();
                 this.contactspanel.$parent = this.$el;
@@ -1035,7 +1057,8 @@
             } else {
                 this.options.model.add({
                     id: 'controlbox',
-                    box_id: 'controlbox'
+                    box_id: 'controlbox',
+                    visible: true
                 });
             }
         },
@@ -1127,6 +1150,8 @@
                     id: 'controlbox',
                     box_id: 'controlbox'
                 });
+            } else  {
+                this.model.get('controlbox').set('connected', true);
             }
             // Get cached chatboxes from localstorage
             this.model.fetch({
@@ -1146,20 +1171,15 @@
             this.options.model.on("add", function (item) {
                 var view;
                 if (item.get('box_id') === 'controlbox') {
-                    // Legwork to init the controlbox, but we don't show it
-                    // yet, that depends on whether a user clicks on $toggle,
-                    // or whether it was saved in localstorage
                     view = new xmppchat.ControlBoxView({model: item});
-                    this.views[item.get('id')] = view.render();
+                    this.views['controlbox'] = view.render();
                     view.$el.appendTo(this.$el);
-                    // Add the roster
-                    xmppchat.roster = new xmppchat.RosterItems();
-                    xmppchat.roster.localStorage = new Backbone.LocalStorage(
-                        hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
-                    xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
-                    xmppchat.rosterview.$el.appendTo(view.contactspanel.$el);
-                    xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
-                    xmppchat.rosterview.initialSort();
+                    if (xmppchat.connection) {
+                        view.setUpRoster();
+                    }
+                    if (item.get('visible')) {
+                        view.show();
+                    }
                 } else {
                     view = new xmppchat.ChatBoxView({model: item});
                     // Fetch messages from localstorage
@@ -1943,8 +1963,6 @@
 
             connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
-                    this.remove(); // Remove the login panel
-                    console.log('Connected');
                     $(document).trigger('jarnxmpp.connected', connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
                     console.log('Disconnected');
@@ -1969,14 +1987,13 @@
         },
 
         remove: function () {
-            $('#controlbox-tabs').empty();
-            $('#controlbox-panes').empty();
-            // TODO re-render controlbox
+            this.$parent.find('#controlbox-tabs').empty();
+            this.$parent.find('#controlbox-panes').empty();
         },
 
         render: function () {
-            $('#controlbox-tabs').append(this.tab_template());
-            $('#controlbox-panes').append(this.$el.html(this.template()));
+            this.$parent.find('#controlbox-tabs').append(this.tab_template());
+            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
             return this;
         },
     });
@@ -1987,7 +2004,7 @@
         var chatdata = $('div#collective-xmpp-chat-data'),
             $connecting = $('span#connecting-to-chat').hide(),
             $toggle = $('a#toggle-online-users');
-        this.username = chatdata.attr('username');
+        this.prebind = chatdata.attr('prebind');
         this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
 

@@ -761,7 +761,7 @@
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
-            if ((xmppchat.prebind) && (!xmppchat.connection)) {
+            if ((!xmppchat.prebind) && (!xmppchat.connection)) {
                 // Add login panel if the user still has to authenticate
                 this.loginpanel = new xmppchat.LoginPanel();
                 this.loginpanel.$parent = this.$el;

@@ -369,6 +369,7 @@ form.search-xmpp-contact input {
     display: inline-block;
     width: 113px;
     overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
 }
 

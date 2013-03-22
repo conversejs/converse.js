@@ -206,55 +206,6 @@
         });
     };
 
-    xmppchat.ClientStorage = Backbone.Model.extend({
-
-        initialize: function (own_jid) {
-            this.set({ 'own_jid' : own_jid });
-        },
-
-        addMessage: function (jid, msg, direction) {
-            var bare_jid = Strophe.getBareJidFromJid(jid),
-                now = xmppchat.toISOString(new Date()),
-                msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
-            if (msgs.length >= 30) {
-                msgs.shift();
-            }
-            msgs.push(sjcl.encrypt(hex_sha1(this.get('own_jid')), now+' '+direction+' '+msg));
-            store.set(hex_sha1(this.get('own_jid')+bare_jid), msgs);
-        },
-
-        getMessages: function (jid) {
-            var bare_jid = Strophe.getBareJidFromJid(jid),
-                decrypted_msgs = [], i;
-            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [],
-                msgs_length = msgs.length;
-            for (i=0; i<msgs_length; i++) {
-                decrypted_msgs.push(sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[i]));
-            }
-            return decrypted_msgs;
-        },
-
-        getLastMessage: function (jid) {
-            var bare_jid = Strophe.getBareJidFromJid(jid);
-            var msgs = store.get(hex_sha1(this.get('own_jid')+bare_jid)) || [];
-            if (msgs.length) {
-                return sjcl.decrypt(hex_sha1(this.get('own_jid')), msgs[msgs.length-1]);
-            }
-            return undefined;
-        },
-
-        clearMessages: function (jid) {
-            var bare_jid = Strophe.getBareJidFromJid(jid);
-            store.set(hex_sha1(this.get('own_jid')+bare_jid), []);
-        },
-
-        flush: function () {
-            // Clears all localstorage content handled by burry.js
-            // Only used in tests
-            store.flush();
-        }
-    });
-
     xmppchat.Message = Backbone.Model.extend();
 
     xmppchat.Messages = Backbone.Collection.extend({
@@ -432,7 +383,6 @@
                 if (match[1] === "clear") {
                     this.$el.find('.chat-content').empty();
                     this.model.messages.reset() 
-                    // xmppchat.storage.clearMessages(bare_jid);
                     return;
                 }
                 else if (match[1] === "help") {
@@ -2076,7 +2026,6 @@
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
-            this.storage = new this.ClientStorage(hex_sha1(this.connection.bare_jid));
 
             this.chatboxes.localStorage = new Backbone.LocalStorage(
                     hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));

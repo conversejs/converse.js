@@ -248,40 +248,6 @@
             store.set(hex_sha1(this.get('own_jid')+bare_jid), []);
         },
 
-        getOpenChats: function () {
-            var key = hex_sha1(this.get('own_jid')+'-open-chats'),
-                chats = store.get(key) || [],
-                chats_length = chats.length,
-                decrypted_chats = [],
-                i;
-
-            for (i=0; i<chats_length; i++) {
-                decrypted_chats.push(chats[i]);
-            }
-            return decrypted_chats;
-        },
-
-        addOpenChat: function (jid) {
-            // TODO: Hash stored chats?
-            var key = hex_sha1(this.get('own_jid')+'-open-chats'),
-                chats = store.get(key) || [];
-
-            if (_.indexOf(chats, jid) == -1) {
-                chats.push(jid);
-            }
-            store.set(key, chats);
-        },
-
-        removeOpenChat: function (jid) {
-            var key = hex_sha1(this.get('own_jid')+'-open-chats'),
-                chats = store.get(key) || [];
-
-            if (_.has(chats, jid) != -1) {
-                chats.splice(_.indexOf(chats, jid), 1);
-            }
-            store.set(key, chats);
-        },
-
         flush: function () {
             // Clears all localstorage content handled by burry.js
             // Only used in tests
@@ -317,8 +283,7 @@
                 composing = $message.find('composing'),
                 delayed = $message.find('delay').length > 0,
                 fullname = this.get('fullname').split(' ')[0],
-                stamp, time;
-
+                stamp, time, sender;
 
             if (!body) {
                 if (composing.length) {
@@ -336,24 +301,21 @@
                 } else {
                     time = (new Date()).toLocaleTimeString().substring(0,5);
                 }
-
                 if (from == xmppchat.connection.bare_jid) {
-                    this.messages.add({
-                        fullname: 'me',
-                        sender: 'me',
-                        delayed: delayed,
-                        time: time,
-                        message: body
-                    });
-                } else {
-                    this.messages.add({
-                        fullname: fullname,
-                        sender: 'them',
-                        delayed: delayed,
-                        time: time,
-                        message: body
-                    });
+                    fullname: 'me',
+                    sender: 'me',
+                else {
+                    sender: 'them',
                 }
+                var message = new xmppchat.Message({
+                    fullname: fullname,
+                    sender: sender,
+                    delayed: delayed,
+                    time: time,
+                    message: body
+                });
+                this.messages.add(message);
+                message.save();
             }
         },
     });
@@ -386,6 +348,8 @@
                 minutes = now.getMinutes().toString(),
                 $chat_content = this.$el.find('.chat-content');
 
+            /*
+             * FIXME: we don't use client storage anymore
             var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
             if (typeof msg !== 'undefined') {
                 var prev_date = new Date(Date(msg.split(' ', 2)[0]));
@@ -394,6 +358,7 @@
                     $chat_content.append($('<div class="chat-date"></div>').text(now.toString().substring(0,15)));
                 }
             }
+            */
             message = xmppchat.autoLink(message);
             // TODO use minutes logic or remove it
             if (minutes.length==1) {minutes = '0'+minutes;}
@@ -425,7 +390,6 @@
                 this.insertStatusNotification(message.get('fullname')+' '+'is typing');
                 return;
             } else {
-                // xmppchat.storage.addMessage(from, body, 'from');
                 $chat_content.find('div.chat-event').remove();
                 // TODO use toJSON here
                 $chat_content.append(
@@ -512,7 +476,8 @@
             if (match) {
                 if (match[1] === "clear") {
                     this.$el.find('.chat-content').empty();
-                    xmppchat.storage.clearMessages(bare_jid);
+                    this.model.messages.reset() 
+                    // xmppchat.storage.clearMessages(bare_jid);
                     return;
                 }
                 else if (match[1] === "help") {
@@ -539,7 +504,7 @@
             xmppchat.connection.send(message);
             xmppchat.connection.send(forwarded);
             this.appendMessage(text);
-            xmppchat.storage.addMessage(bare_jid, text, 'to');
+            // xmppchat.storage.addMessage(bare_jid, text, 'to');
         },
 
         keyPressed: function (ev) {
@@ -570,22 +535,11 @@
             }
         },
 
-        saveChatToStorage: function () {
-            if (xmppchat.storage) {
-                xmppchat.storage.addOpenChat(this.model.get('jid'));
-            }
-        },
-
-        removeChatFromStorage: function () {
-            if (xmppchat.storage) {
-                xmppchat.storage.removeOpenChat(this.model.get('jid'));
-            }
-        },
-
         closeChat: function () {
             var that = this;
             $('#'+this.model.get('box_id')).hide('fast', function () {
-                that.removeChatFromStorage(that.model.get('id'));
+                // TODO: Better is probably to just show that it's hidden
+                that.model.destroy();
             });
         },
 
@@ -648,7 +602,7 @@
                 ctx.drawImage(img,0,0, 35*ratio, 35)
             }
             img.src = img_src;
-            this.insertClientStoredMessages();
+            // this.insertClientStoredMessages();
             return this;
         },
 
@@ -1133,39 +1087,6 @@
     xmppchat.ChatBoxesView = Backbone.View.extend({
         el: '#collective-xmpp-chat-data',
 
-        restoreOpenChats: function () {
-            var open_chats = xmppchat.storage.getOpenChats();
-
-            if (_.indexOf(open_chats, 'controlbox') != -1) {
-                // Controlbox already exists, we just need to show it.
-                this.showChat('controlbox');
-            }
-            _.each(open_chats, $.proxy(function (jid) {
-                if (jid != 'controlbox') {
-                    if (this.isChatRoom(jid)) {
-                        this.createChatRoom(jid);
-                    } else {
-                        xmppchat.getVCard(
-                            jid, 
-                            $.proxy(function (jid, fullname, img, img_type, url) {
-                                this.createChatBox({
-                                    'jid': jid,
-                                    'fullname': fullname,
-                                    'image': img,
-                                    'image_type': img_type,
-                                    'url': url,
-                                    });
-                            }, this),
-                            $.proxy(function () {
-                                // Error occured while fetching vcard
-                                this.createChatBox({'jid': jid });
-                            }, this)
-                        )
-                    }
-                }
-            }, this));
-        },
-
         isChatRoom: function (jid) {
             return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
         },
@@ -1182,7 +1103,7 @@
         },
 
         createChatBox: function (data) {
-            return this.options.model.add({
+            var model = new xmppchat.ChatBox({
                 'id': data['jid'],
                 'jid': data['jid'],
                 'fullname': data['fullname'],
@@ -1190,6 +1111,9 @@
                 'image': data['image'],
                 'url': data['url'],
             });
+            var chatboxes = this.options.model.add(model);
+            model.save();
+            return model;
         },
 
         closeChat: function (jid) {
@@ -1237,7 +1161,7 @@
                     view.focus();
                 }
             }
-            view.saveChatToStorage();
+            // view.saveChatToStorage();
             return view;
         },
 
@@ -1254,7 +1178,7 @@
             }
             var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
-                view, resource, chatboxes;
+                view, resource, chatbox;
             if (from == xmppchat.connection.bare_jid) {
                 // I am the sender, so this must be a forwarded message...
                 partner_jid = to;
@@ -1269,17 +1193,14 @@
                 xmppchat.getVCard(
                     partner_jid, 
                     $.proxy(function (jid, fullname, img, img_type, url) {
-                        // FIXME: We don't get the view from createChatBox
-                        // anymore.
-                        // Instead, we should trigger an event on the model
-                        chatboxes = this.createChatBox({
+                        chatbox = this.createChatBox({
                             'jid': jid,
                             'fullname': fullname,
                             'image': img,
                             'image_type': img_type,
                             'url': url,
                             })
-                        chatboxes.get(jid).messageReceived(message);
+                        chatbox.messageReceived(message);
                         xmppchat.roster.addResource(partner_jid, resource);
                     }, this),
                     $.proxy(function () {
@@ -1309,9 +1230,8 @@
             xmppchat.rosterview.$el.appendTo(controlbox.contactspanel.$el);
             xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
             xmppchat.rosterview.initialSort();
-            // TODO: we're going to use localStorage here
-            // Restore previously open chatboxes
-            // this.restoreOpenChats();
+            // Gets cached chatboxes from localstorage
+            this.model.fetch({add: true}); 
         },
 
         initialize: function () {
@@ -1326,10 +1246,6 @@
                 this.views[item.get('id')] = view.render();
                 this.showChat(item.get('id'));
             }, this);
-            /*
-                // Rebind events (necessary for click events on tabs inserted via the panels)
-                this.views.controlbox.delegateEvents();
-            */
         }
     });
 
@@ -2102,6 +2018,11 @@
                 jid = $form.find('input#jid').val(),
                 password = $form.find('input#password').val(),
                 connection = new Strophe.Connection(bosh_service_url);
+
+            jid = 'opkode@jappix.com'
+            password = 'jpwagw00rd!'
+            bosh_service_url = 'https://bind.jappix.com'
+            connection = new Strophe.Connection(bosh_service_url);
 
             connection.connect(jid, password, function (status) {
                 if (status === Strophe.Status.CONNECTED) {

@@ -448,11 +448,7 @@
         },
 
         closeChat: function () {
-            $('#'+this.model.get('box_id')).hide('fast', $.proxy(function () {
-                // TODO: Better is probably to just show that it's hidden
-                this.model.set({'visible': false})
-                this.model.destroy();
-            }, this));
+            this.model.set({'visible': false})
         },
 
         initialize: function (){
@@ -460,6 +456,20 @@
             this.model.messages.on('add', function (item) {
                 this.messageReceived(item);
             }, this);
+
+            this.model.on('change', $.proxy(function (item, changed) {
+                if (_.has(item.changed, 'visible')) {
+                    if (item.changed['visible'] === true) {
+                        this.show();
+                    } else {
+                        this.$el.hide('fast', function () {
+                            this.remove();
+                            item.destroy();
+                        });
+                    }
+                }
+            }, this));
+
             xmppchat.roster.on('change', function (item, changed) {
                 var fullname = this.model.get('fullname'),
                     chat_status = item.get('chat_status');
@@ -715,8 +725,18 @@
         initialize: function () {
             // Override the one in ChatBoxView
             this.model.on('change', $.proxy(function (item, changed) {
-                if (_.has(changed.changes, 'connected')) {
+                if (_.has(item.changed, 'connected')) {
                     this.render().setUpRoster();
+                }
+                if (_.has(item.changed, 'visible')) {
+                    if (item.changed['visible'] === true) {
+                        this.show();
+                    } else {
+                        this.$el.hide('fast', function () {
+                            this.remove();
+                            item.destroy();
+                        });
+                    }
                 }
             }, this));
         },
@@ -727,7 +747,7 @@
                 hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
             xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
             xmppchat.rosterview.$el.appendTo(this.contactspanel.$el);
-            xmppchat.roster.fetch({add: true}); // Gets the cached roster items from localstorage
+            xmppchat.roster.fetch({add: true}); // Get the cached roster items from localstorage
             xmppchat.rosterview.initialSort();
         },
 
@@ -1010,6 +1030,30 @@
 
     xmppchat.ChatBoxes = Backbone.Collection.extend({
         model: xmppchat.ChatBox,
+
+        onConnected: function () {
+            this.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
+            if (!this.get('controlbox')) {
+                this.create({
+                    id: 'controlbox',
+                    box_id: 'controlbox'
+                });
+            }
+            // This will make sure the Roster is set up
+            this.get('controlbox').set({connected:true})
+            // Get cached chatboxes from localstorage
+            this.fetch({
+                add: true, success: 
+                $.proxy(function (collection, resp) {
+                    if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
+                        // FIXME:
+                        // If the controlbox was saved in localstorage, it must be visible
+                        this.get('controlbox').set({visible:true})
+                    }
+                }, this) 
+            }); 
+        },
     });
 
     xmppchat.ChatBoxesView = Backbone.View.extend({
@@ -1037,6 +1081,7 @@
                 'fullname': data['fullname'],
                 'image_type': data['image_type'],
                 'image': data['image'],
+                'visible': data['visible'],
                 'url': data['url'],
             });
             var chatboxes = this.options.model.add(model);
@@ -1074,6 +1119,7 @@
                     'fullname': roster_item.get('fullname'),
                     'image': roster_item.get('image'),
                     'image_type': roster_item.get('image_type'),
+                    'visible': true,
                     'url': roster_item.get('url'),
                     })
             }
@@ -1081,6 +1127,7 @@
 
         showChat: function (jid) {
             var view = this.views[jid];
+            view.model.set({visible:true})
             if (view.isVisible()) {
                 view.focus();
             } else {
@@ -1144,28 +1191,6 @@
             return true;
         },
 
-        onConnected: function () {
-            if (!this.model.get('controlbox')) {
-                this.model.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox'
-                });
-            } else  {
-                this.model.get('controlbox').set('connected', true);
-            }
-            // Get cached chatboxes from localstorage
-            this.model.fetch({
-                add: true, success: 
-                $.proxy(function (collection, resp) {
-                    // If the controlbox was saved in localstorate, we must now
-                    // show it.
-                    if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
-                        this.showChat('controlbox');
-                    }
-                }, this) 
-            }); 
-        },
-
         initialize: function () {
             this.views = {};
             this.options.model.on("add", function (item) {
@@ -1174,19 +1199,15 @@
                     view = new xmppchat.ControlBoxView({model: item});
                     this.views['controlbox'] = view.render();
                     view.$el.appendTo(this.$el);
-                    if (xmppchat.connection) {
-                        view.setUpRoster();
-                    }
-                    if (item.get('visible')) {
-                        view.show();
-                    }
                 } else {
                     view = new xmppchat.ChatBoxView({model: item});
                     // Fetch messages from localstorage
                     this.views[item.get('id')] = view.render();
                     view.$el.appendTo(this.$el);
                     view.model.messages.fetch({add: true});
-                    this.showChat(item.get('id'));
+                    if (item.get('visible')) {
+                        this.showChat(item.get('id'));
+                    }
                 }
             }, this);
         }
@@ -2044,44 +2065,38 @@
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
 
-            this.chatboxes.localStorage = new Backbone.LocalStorage(
-                    hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
-
             this.xmppstatus = new this.XMPPStatus();
-            this.chatboxesview.onConnected();
+            this.chatboxes.onConnected();
 
             this.connection.addHandler(
-                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                    'http://jabber.org/protocol/rosterx', 'message', null);
-            // TODO check this callback as pycharm returns a warning of invalid number
-            // of parameters
+                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                'http://jabber.org/protocol/rosterx', 'message', null);
+
             this.connection.roster.registerCallback(
-                    $.proxy(this.roster.rosterHandler, this.roster),
-                    null, 'presence', null);
+                $.proxy(this.roster.rosterHandler, this.roster),
+                null, 'presence', null);
 
             this.connection.roster.get($.proxy(function () {
-                    this.connection.addHandler(
-                            $.proxy(function (presence) {
-                                this.presenceHandler(presence);
-                                return true;
-                            }, this.roster), null, 'presence', null);
+                this.connection.addHandler(
+                        $.proxy(function (presence) {
+                            this.presenceHandler(presence);
+                            return true;
+                        }, this.roster), null, 'presence', null);
 
-                    this.connection.addHandler(
-                            $.proxy(function (message) {
-                                this.chatboxesview.messageReceived(message);
-                                return true;
-                            }, this), null, 'message', 'chat');
+                this.connection.addHandler(
+                        $.proxy(function (message) {
+                            this.chatboxesview.messageReceived(message);
+                            return true;
+                        }, this), null, 'message', 'chat');
 
-                    // XMPP Status
-                    this.xmppstatusview = new this.XMPPStatusView({
-                        'model': this.xmppstatus
-                    });
-                    this.xmppstatusview.render();
-                }, this));
-
+                // XMPP Status
+                this.xmppstatusview = new this.XMPPStatusView({
+                    'model': this.xmppstatus
+                });
+                this.xmppstatusview.render();
+            }, this));
             $connecting.hide();
             $toggle.show();
-
         }, this));
     }, xmppchat));
 

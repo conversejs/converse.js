@@ -332,7 +332,7 @@
             $chat_content.scrollTop($chat_content[0].scrollHeight);
         },
 
-        messageReceived: function (message) {
+        showMessage: function (message) {
             var $chat_content = this.$el.find('.chat-content');
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
@@ -479,7 +479,7 @@
         initialize: function (){
             // boxviewinit
             $('body').append(this.$el.hide());
-            this.model.messages.on('add', this.messageReceived, this);
+            this.model.messages.on('add', this.showMessage, this);
 
             this.model.on('show', function() { 
                 this.show();
@@ -1056,6 +1056,57 @@
                 }, this) 
             }); 
         },
+
+        messageReceived: function (message) {
+            var  partner_jid, $message = $(message),
+                 message_from = $message.attr('from');
+            if (message_from == xmppchat.connection.jid) {
+                // FIXME: Forwarded messages should be sent to specific resources, 
+                // not broadcasted
+                return true;
+            }
+            var $forwarded = $message.children('forwarded');
+            if ($forwarded.length) {
+                $message = $forwarded.children('message');
+            }
+            var from = Strophe.getBareJidFromJid(message_from),
+                to = Strophe.getBareJidFromJid($message.attr('to')),
+                resource, chatbox;
+            if (from == xmppchat.connection.bare_jid) {
+                // I am the sender, so this must be a forwarded message...
+                partner_jid = to;
+                resource = Strophe.getResourceFromJid($message.attr('to'));
+            } else {
+                partner_jid = from;
+                resource = Strophe.getResourceFromJid(message_from);
+            }
+
+            chatbox = this.get(partner_jid);
+            if (!chatbox) {
+                xmppchat.getVCard(
+                    partner_jid, 
+                    $.proxy(function (jid, fullname, image, image_type, url) {
+                        chatbox = this.create({
+                            'id': jid,
+                            'jid': jid,
+                            'fullname': fullname,
+                            'image_type': image_type,
+                            'image': image,
+                            'url': url,
+                        });
+                        chatbox.messageReceived(message);
+                        xmppchat.roster.addResource(partner_jid, resource);
+                    }, this),
+                    $.proxy(function () {
+                        // # FIXME
+                        console.log("An error occured while fetching vcard");
+                    }, this));
+                return true;
+            }
+            chatbox.messageReceived(message);
+            xmppchat.roster.addResource(partner_jid, resource);
+            return true;
+        },
     });
 
     xmppchat.ChatBoxesView = Backbone.View.extend({
@@ -1072,21 +1123,6 @@
             return view;
         },
 
-        createChatBox: function (data) {
-            var model = new xmppchat.ChatBox({
-                'id': data['jid'],
-                'jid': data['jid'],
-                'fullname': data['fullname'],
-                'image_type': data['image_type'],
-                'image': data['image'],
-                'visible': data['visible'],
-                'url': data['url'],
-            });
-            this.options.model.add(model);
-            model.save();
-            return model;
-        },
-
         openControlBox: function () {
             var controlbox = this.model.get('controlbox')
             if (controlbox) {
@@ -1098,57 +1134,6 @@
                     visible: true
                 });
             }
-        },
-
-        messageReceived: function (message) {
-            var  partner_jid, $message = $(message),
-                 message_from = $message.attr('from');
-            if ( message_from == xmppchat.connection.jid) {
-                // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
-                return true;
-            }
-            var $forwarded = $message.children('forwarded');
-            if ($forwarded.length) {
-                $message = $forwarded.children('message');
-            }
-            var from = Strophe.getBareJidFromJid(message_from),
-                to = Strophe.getBareJidFromJid($message.attr('to')),
-                view, resource, chatbox;
-            if (from == xmppchat.connection.bare_jid) {
-                // I am the sender, so this must be a forwarded message...
-                partner_jid = to;
-                resource = Strophe.getResourceFromJid($message.attr('to'));
-            } else {
-                partner_jid = from;
-                resource = Strophe.getResourceFromJid(message_from);
-            }
-
-            view = this.views[partner_jid];
-            if (!view) {
-                xmppchat.getVCard(
-                    partner_jid, 
-                    $.proxy(function (jid, fullname, img, img_type, url) {
-                        chatbox = this.createChatBox({
-                            'jid': jid,
-                            'fullname': fullname,
-                            'image': img,
-                            'image_type': img_type,
-                            'url': url,
-                            })
-                        chatbox.messageReceived(message);
-                        xmppchat.roster.addResource(partner_jid, resource);
-                    }, this),
-                    $.proxy(function () {
-                        // # TODO: call the function above
-                        console.log("An error occured while fetching vcard");
-                    }, this));
-                return true;
-            } else if (!view.isVisible()) {
-                this.model.get(partner_jid).trigger('show');
-            }
-            view.model.messageReceived(message);
-            xmppchat.roster.addResource(partner_jid, resource);
-            return true;
         },
 
         initialize: function () {
@@ -1203,14 +1188,14 @@
             if (chatbox) {
                 chatbox.trigger('show');
             } else {
-                xmppchat.chatboxesview.createChatBox({
-                    'jid': jid,
+                xmppchat.chatboxes.create({
+                    'id': this.model.get('jid'),
+                    'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),
-                    'image': this.model.get('image'),
                     'image_type': this.model.get('image_type'),
-                    'visible': true,
+                    'image': this.model.get('image'),
                     'url': this.model.get('url'),
-                    })
+                });
             }
         },
 
@@ -2052,7 +2037,7 @@
 
                 this.connection.addHandler(
                         $.proxy(function (message) {
-                            this.chatboxesview.messageReceived(message);
+                            this.chatboxes.messageReceived(message);
                             return true;
                         }, this), null, 'message', 'chat');
 

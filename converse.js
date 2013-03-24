@@ -128,9 +128,10 @@
         */
         var numericKeys = [1, 4, 5, 6, 7, 10, 11],
             struct = /^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.?\d*)Z\s*$/.exec(datestr),
-            minutesOffset = 0;
+            minutesOffset = 0,
+            i;
 
-        for (var i = 0, k; (k = numericKeys[i]); ++i) {
+        for (i = 0, k; (k = numericKeys[i]); ++i) {
             struct[k] = +struct[k] || 0;
         }
         // allow undefined days and months
@@ -260,17 +261,15 @@
                 } else {
                     sender = 'them';
                 }
-                var message = new xmppchat.Message({
+                this.messages.create({
                     fullname: fullname,
                     sender: sender,
                     delayed: delayed,
                     time: time,
                     message: body
                 });
-                this.messages.add(message);
-                message.save();
             }
-        },
+        }
     });
 
     xmppchat.ChatBoxView = Backbone.View.extend({
@@ -382,7 +381,7 @@
             if (match) {
                 if (match[1] === "clear") {
                     this.$el.find('.chat-content').empty();
-                    this.model.messages.reset() 
+                    this.model.messages.reset();
                     return;
                 }
                 else if (match[1] === "help") {
@@ -406,16 +405,13 @@
                             .cnode(message.tree());
             xmppchat.connection.send(message);
             xmppchat.connection.send(forwarded);
-
             // Add the new message
-            var message = new xmppchat.Message({
-                    fullname: 'me',
-                    sender: 'me',
-                    time: (new Date()).toLocaleTimeString().substring(0,5),
-                    message: text 
-                });
-            this.model.messages.add(message);
-            message.save();
+            this.model.messages.create({
+                fullname: 'me',
+                sender: 'me',
+                time: (new Date()).toLocaleTimeString().substring(0,5),
+                message: text 
+            });
         },
 
         keyPressed: function (ev) {
@@ -521,7 +517,7 @@
             var img = new Image();   // Create new Image object
             img.onload = function(){
                 var ratio = img.width/img.height;
-                ctx.drawImage(img,0,0, 35*ratio, 35)
+                ctx.drawImage(img,0,0, 35*ratio, 35);
             }
             img.src = img_src;
             return this;
@@ -540,7 +536,7 @@
             this.$el.css({'opacity': 0,
                           'display': 'inline'})
                     .animate({opacity: '1'}, 200);
-            this.model.set({'visible': true})
+            this.model.set({'visible': true});
             if (xmppchat.connection) {
                 // Without a connection, we haven't yet initialized
                 // localstorage
@@ -731,7 +727,7 @@
                     this.render().setUpRoster();
                 }
                 if (_.has(item.changed, 'visible')) {
-                    if (item.changed['visible'] === true) {
+                    if (item.changed.visible === true) {
                         this.show();
                     } 
                 }
@@ -980,7 +976,7 @@
                                     'time': (new Date()).toLocaleTimeString().substring(0,5),
                                     'message': body,
                                     'username': sender,
-                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || '',
+                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
                                 }));
                     } else {
                         $chat_content.append(
@@ -1044,16 +1040,16 @@
                 });
             }
             // This will make sure the Roster is set up
-            this.get('controlbox').set({connected:true})
+            this.get('controlbox').set({connected:true});
             // Get cached chatboxes from localstorage
             this.fetch({
                 add: true, success: 
                 $.proxy(function (collection, resp) {
                     if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
                         // If the controlbox was saved in localstorage, it must be visible
-                        this.get('controlbox').set({visible:true})
+                        this.get('controlbox').set({visible:true});
                     }
-                }, this) 
+                }, this)
             }); 
         },
 
@@ -1092,7 +1088,7 @@
                             'fullname': fullname,
                             'image_type': image_type,
                             'image': image,
-                            'url': url,
+                            'url': url
                         });
                         chatbox.messageReceived(message);
                         xmppchat.roster.addResource(partner_jid, resource);
@@ -1106,7 +1102,7 @@
             chatbox.messageReceived(message);
             xmppchat.roster.addResource(partner_jid, resource);
             return true;
-        },
+        }
     });
 
     xmppchat.ChatBoxesView = Backbone.View.extend({
@@ -1151,12 +1147,11 @@
                 'resources': [],
                 'chat_status': 'offline',
                 'status': 'offline',
-                'sorted': false,
+                'sorted': false
             });
             this.set(attributes);
-        },
+        }
     });
-
 
     xmppchat.RosterItemView = Backbone.View.extend({
         tagName: 'dd',
@@ -1181,7 +1176,7 @@
                     'fullname': this.model.get('fullname'),
                     'image_type': this.model.get('image_type'),
                     'image': this.model.get('image'),
-                    'url': this.model.get('url'),
+                    'url': this.model.get('url')
                 });
             }
         },
@@ -1271,7 +1266,7 @@
                 model.get('image'),
                 model.get('image_type'), 
                 model.get('url')
-            )
+            );
         } else {
             xmppchat.connection.vcard.get($.proxy(function (iq) {
                 $vcard = $(iq).find('vCard');
@@ -1280,7 +1275,7 @@
                     img_type = $vcard.find('TYPE').text(),
                     url = $vcard.find('URL').text();
                 callback(jid, fullname, img, img_type, url);
-            }, this), jid, errback())
+            }, this), jid, errback());
         }
     }
 
@@ -1336,7 +1331,7 @@
         },
 
         addRosterItem: function (attributes) {
-            var model = new xmppchat.RosterItem(attributes)
+            var model = new xmppchat.RosterItem(attributes);
             this.add(model);
             model.save();
         },
@@ -1390,7 +1385,7 @@
 
         subscribeBack: function (jid) {
             // XXX: Why the distinction between jid and bare_jid?
-            var bare_jid = Strophe.getBareJidFromJid(jid)
+            var bare_jid = Strophe.getBareJidFromJid(jid);
             if (xmppchat.connection.roster.findItem(bare_jid)) {
                 xmppchat.connection.roster.authorize(bare_jid);
                 xmppchat.connection.roster.subscribe(jid);
@@ -1420,8 +1415,9 @@
         getNumOnlineContacts: function () {
             var count = 0,
                 models = this.models,
-                models_length = models.length;
-            for (var i=0; i<models_length; i++) {
+                models_length = models.length,
+                i;
+            for (i=0; i<models_length; i++) {
                 if (_.indexOf(['offline', 'unavailable'], models[i].get('chat_status')) === -1) {
                     count++;
                 }
@@ -1434,13 +1430,13 @@
              * some contacts that aren't actually in our roster anymore. We
              * therefore need to remove them now.
              */
-            var id,
+            var id, i,
                 roster_ids = [];
-            for (var i=0; i < items.length; ++i) {
+            for (i=0; i < items.length; ++i) {
                 roster_ids.push(items[i]['jid']);
             }
-            for (var i=0; i < this.models.length; ++i) {
-                id = this.models[i].get('id')
+            for (i=0; i < this.models.length; ++i) {
+                id = this.models[i].get('id');
                 if (_.indexOf(roster_ids, id) === -1) {
                     this.getItem(id).destroy();
                 }
@@ -1470,7 +1466,7 @@
                                 image: img,
                                 image_type: img_type,
                                 url: url,
-                                is_last: is_last,
+                                is_last: is_last
                             });
                         }, this),
                         $.proxy(function () {
@@ -1481,7 +1477,7 @@
                                 jid: item.jid, 
                                 subscription: item.subscription,
                                 ask: item.ask,
-                                is_last: is_last,
+                                is_last: is_last
                             });
                         }, this));
 
@@ -1554,7 +1550,7 @@
                                     image: img,
                                     image_type: img_type,
                                     url: url,
-                                    is_last: true,
+                                    is_last: true
                                 });
                             }, this),
                             $.proxy(function (jid, fullname, img, img_type, url) {
@@ -1564,7 +1560,7 @@
                                     subscription: 'none',
                                     ask: 'request',
                                     fullname: jid,
-                                    is_last: true,
+                                    is_last: true
                                 });
                             }, this));
                     }
@@ -1680,7 +1676,7 @@
                 if (item.get('is_last') && !item.get('sorted')) {
                     // this will be true after all of the roster items have been added with the default
                     // options where all of the items are offline and now we can show the rosterView
-                    item.set('sorted', true)
+                    item.set('sorted', true);
                     this.initialSort();
                     this.$el.show();
                 }
@@ -1833,7 +1829,7 @@
             } else {
                 pretty_status = stat || 'online';
             }
-            return pretty_status
+            return pretty_status;
         },
 
         updateStatusUI: function (ev) {
@@ -1898,7 +1894,7 @@
         tagName: 'div',
         id: "login-dialog",
         events: {
-            'submit form#xmppchat-login': 'authenticate',
+            'submit form#xmppchat-login': 'authenticate'
         },
         tab_template: _.template(
             '<li><a class="current" href="#login">Sign in</a></li>'),
@@ -1914,7 +1910,7 @@
             '</form">'),
 
         authenticate: function (ev) {
-            ev.preventDefault()
+            ev.preventDefault();
             var $form = $(ev.target),
                 bosh_service_url = $form.find('input#bosh_service_url').val(),
                 jid = $form.find('input#jid').val(),
@@ -1955,7 +1951,7 @@
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
             this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
             return this;
-        },
+        }
     });
 
     // Event handlers
@@ -1969,24 +1965,24 @@
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
 
         this.chatboxes = new this.ChatBoxes();
-        this.chatboxesview = new this.ChatBoxesView({
-            model: this.chatboxes
-        });
+        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
+
         $toggle.bind('click', $.proxy(function (e) {
             e.preventDefault();
             if ($("div#controlbox").is(':visible')) {
                 this.chatboxes.get('controlbox').destroy();
             } else {
-                var controlbox = this.chatboxes.get('controlbox')
+                var controlbox = this.chatboxes.get('controlbox');
                 if (controlbox) {
                     controlbox.trigger('show');
                 } else {
-                    this.create({
+                    this.chatboxes.create({
                         id: 'controlbox',
                         box_id: 'controlbox',
                         visible: true
                     });
                 }
+            }
         }, this));
 
         $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {

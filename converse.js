@@ -447,7 +447,7 @@
             this.model.destroy();
         },
 
-        rosterChanged: function () {
+        rosterChanged: function (item, changed) {
             // FIXME: This event handler should go onto the roster itself, then it
             // will be called once (for the roster) and not once per open
             // chatbox
@@ -477,11 +477,7 @@
             $('body').append(this.$el.hide());
             this.model.messages.on('add', this.showMessage, this);
 
-            this.model.on('show', function() { 
-                this.show();
-                this.model.save();
-            }, this);
-
+            this.model.on('show', this.show, this);
             this.model.on('destroy', function (model, response, options) {
                 this.$el.hide('fast');
             }, this);
@@ -515,10 +511,10 @@
             var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image');
             var ctx = this.$el.find('canvas').get(0).getContext('2d');
             var img = new Image();   // Create new Image object
-            img.onload = function(){
+            img.onload = function() {
                 var ratio = img.width/img.height;
                 ctx.drawImage(img,0,0, 35*ratio, 35);
-            }
+            };
             img.src = img_src;
             return this;
         },
@@ -533,10 +529,7 @@
         },
 
         show: function () {
-            this.$el.css({'opacity': 0,
-                          'display': 'inline'})
-                    .animate({opacity: '1'}, 200);
-            this.model.set({'visible': true});
+            this.$el.css({'opacity': 0, 'display': 'inline'}) .animate({opacity: '1'}, 200);
             if (xmppchat.connection) {
                 // Without a connection, we haven't yet initialized
                 // localstorage
@@ -738,9 +731,16 @@
             this.model.on('destroy', $.proxy(function (model, response, options) {
                 this.$el.hide('fast');
             }, this));
+
+            if (this.model.get('visible')) {
+                this.show();
+            } 
         },
 
         setUpRoster: function () {
+            if (xmppchat.roster) {
+                return;
+            }
             xmppchat.roster = new xmppchat.RosterItems();
             xmppchat.roster.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
@@ -1123,14 +1123,24 @@
             // boxesviewinit
             this.views = {};
             this.options.model.on("add", function (item) {
-                var view;
-                if (item.get('box_id') === 'controlbox') {
-                    view = new xmppchat.ControlBoxView({model: item});
+                var view = this.views[item.get('id')];
+                if (!view) {
+                    if (item.get('box_id') === 'controlbox') {
+                        view = new xmppchat.ControlBoxView({model: item});
+                        view.render();
+                    } else {
+                        view = new xmppchat.ChatBoxView({model: item});
+                    }
+                    this.views[item.get('id')] = view;
+                    view.$el.appendTo(this.$el);
                 } else {
-                    view = new xmppchat.ChatBoxView({model: item});
+                    view.model = item;
+                    view.initialize();
+                    if (item.get('id') !== 'controlbox') {
+                        // FIXME: Why is it necessary to append chatboxes again?
+                        view.$el.appendTo(this.$el);
+                    }
                 }
-                this.views[item.get('id')] = view;
-                view.$el.appendTo(this.$el);
             }, this);
         }
     });
@@ -1973,10 +1983,8 @@
                 this.chatboxes.get('controlbox').destroy();
             } else {
                 var controlbox = this.chatboxes.get('controlbox');
-                if (controlbox) {
-                    controlbox.trigger('show');
-                } else {
-                    this.chatboxes.create({
+                if (!controlbox) {
+                    controlbox = this.chatboxes.create({
                         id: 'controlbox',
                         box_id: 'controlbox',
                         visible: true

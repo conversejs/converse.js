@@ -148,18 +148,27 @@
     };
 
     xmppchat.updateMsgCounter = function () {
-        this.msg_counter += 1;
         if (this.msg_counter > 0) {
-            if (document.title.search(/^Messages \(\d\) /) == -1) {
+            if (document.title.search(/^Messages \(\d+\) /) == -1) {
                 document.title = "Messages (" + this.msg_counter + ") " + document.title;
             } else {
-                document.title = document.title.replace(/^Messages \(\d\) /, "Messages (" + this.msg_counter + ") ");
+                document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + this.msg_counter + ") ");
             }
             window.blur();
             window.focus();
-        } else if (document.title.search(/^\(\d\) /) !== -1) {
-            document.title = document.title.replace(/^Messages \(\d\) /, "");
+        } else if (document.title.search(/^Messages \(\d+\) /) != -1) {
+            document.title = document.title.replace(/^Messages \(\d+\) /, "");
         }
+    };
+
+    xmppchat.incrementMsgCounter = function () {
+        this.msg_counter += 1;
+        this.updateMsgCounter();
+    };
+
+    xmppchat.clearMsgCounter = function () {
+        this.msg_counter = 0;
+        this.updateMsgCounter();
     };
 
     xmppchat.collections = {
@@ -333,7 +342,9 @@
                             'extra_classes': message.get('delayed') && 'delayed' || ''
                         }));
             }
-            xmppchat.updateMsgCounter();
+            if (message.get('sender') != 'me') {
+                xmppchat.incrementMsgCounter();
+            }
             this.scrollDown();
         },
 
@@ -470,6 +481,7 @@
 
             this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
+            xmppchat.clearMsgCounter();
         },
 
         template: _.template(
@@ -876,6 +888,7 @@
             this);
             this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
+            xmppchat.clearMsgCounter();
         },
 
         onLeave: function () {

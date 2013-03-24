@@ -448,49 +448,46 @@
         },
 
         closeChat: function () {
-            this.model.set({'visible': false})
+            this.model.destroy();
+        },
+
+        rosterChanged: function () {
+            // FIXME: This event handler should go onto the roster itself, then it
+            // will be called once (for the roster) and not once per open
+            // chatbox
+            var fullname = this.model.get('fullname'),
+                chat_status = item.get('chat_status');
+            if (item.get('jid') ===  this.model.get('jid')) {
+                if (_.has(changed.changes, 'chat_status')) {
+                    if (this.$el.is(':visible')) {
+                        if (chat_status === 'offline') {
+                            this.insertStatusNotification(fullname+' '+'has gone offline');
+                        } else if (chat_status === 'away') {
+                            this.insertStatusNotification(fullname+' '+'has gone away');
+                        } else if ((chat_status === 'dnd')) {
+                            this.insertStatusNotification(fullname+' '+'is busy');
+                        } else if (chat_status === 'online') {
+                            this.$el.find('div.chat-event').remove();
+                        }
+                    }
+                } else if (_.has(changed.changes, 'status')) {
+                    this.$el.find('p.user-custom-message').text(item.get('status')).attr('title', item.get('status'));
+                }
+            }
         },
 
         initialize: function (){
+            // boxviewinit
             $('body').append(this.$el.hide());
-            this.model.messages.on('add', function (item) {
-                this.messageReceived(item);
-            }, this);
+            this.model.messages.on('add', this.messageReceived, this);
 
-            this.model.on('change', $.proxy(function (item, changed) {
-                if (_.has(item.changed, 'visible')) {
-                    if (item.changed['visible'] === true) {
-                        this.show();
-                    } else {
-                        this.$el.hide('fast', function () {
-                            this.remove();
-                            item.destroy();
-                        });
-                    }
-                }
+            this.model.on('destroy', $.proxy(function (model, response, options) {
+                this.$el.hide('fast');
             }, this));
 
-            xmppchat.roster.on('change', function (item, changed) {
-                var fullname = this.model.get('fullname'),
-                    chat_status = item.get('chat_status');
-                if (item.get('jid') ===  this.model.get('jid')) {
-                    if (_.has(changed.changes, 'chat_status')) {
-                        if (this.$el.is(':visible')) {
-                            if (chat_status === 'offline') {
-                                this.insertStatusNotification(fullname+' '+'has gone offline');
-                            } else if (chat_status === 'away') {
-                                this.insertStatusNotification(fullname+' '+'has gone away');
-                            } else if ((chat_status === 'dnd')) {
-                                this.insertStatusNotification(fullname+' '+'is busy');
-                            } else if (chat_status === 'online') {
-                                this.$el.find('div.chat-event').remove();
-                            }
-                        }
-                    } else if (_.has(changed.changes, 'status')) {
-                        this.$el.find('p.user-custom-message').text(item.get('status')).attr('title', item.get('status'));
-                    }
-                }
-            }, this);
+            xmppchat.roster.on('change', this.rosterChanged, this);
+
+            this.render().show().model.messages.fetch({add: true});
         },
 
         template: _.template(
@@ -731,13 +728,12 @@
                 if (_.has(item.changed, 'visible')) {
                     if (item.changed['visible'] === true) {
                         this.show();
-                    } else {
-                        this.$el.hide('fast', function () {
-                            this.remove();
-                            item.destroy();
-                        });
-                    }
+                    } 
                 }
+            }, this));
+
+            this.model.on('destroy', $.proxy(function (model, response, options) {
+                this.$el.hide('fast');
             }, this));
         },
 
@@ -1047,7 +1043,6 @@
                 add: true, success: 
                 $.proxy(function (collection, resp) {
                     if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
-                        // FIXME:
                         // If the controlbox was saved in localstorage, it must be visible
                         this.get('controlbox').set({visible:true})
                     }
@@ -1087,13 +1082,6 @@
             var chatboxes = this.options.model.add(model);
             model.save();
             return model;
-        },
-
-        closeChat: function (jid) {
-            var view = this.views[jid];
-            if (view) {
-                view.closeChat();
-            }
         },
 
         openControlBox: function () {
@@ -1192,23 +1180,17 @@
         },
 
         initialize: function () {
+            // boxesviewinit
             this.views = {};
             this.options.model.on("add", function (item) {
                 var view;
                 if (item.get('box_id') === 'controlbox') {
                     view = new xmppchat.ControlBoxView({model: item});
-                    this.views['controlbox'] = view.render();
-                    view.$el.appendTo(this.$el);
                 } else {
                     view = new xmppchat.ChatBoxView({model: item});
-                    // Fetch messages from localstorage
-                    this.views[item.get('id')] = view.render();
-                    view.$el.appendTo(this.$el);
-                    view.model.messages.fetch({add: true});
-                    if (item.get('visible')) {
-                        this.showChat(item.get('id'));
-                    }
                 }
+                this.views[item.get('id')] = view;
+                view.$el.appendTo(this.$el);
             }, this);
         }
     });
@@ -2036,7 +2018,7 @@
         $toggle.bind('click', $.proxy(function (e) {
             e.preventDefault();
             if ($("div#controlbox").is(':visible')) {
-                this.chatboxesview.closeChat('controlbox');
+                this.chatboxes.get('controlbox').destroy();
             } else {
                 this.chatboxesview.openControlBox();
             }

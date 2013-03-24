@@ -321,7 +321,7 @@
                                 'username': 'me',
                                 'extra_classes': ''
                             }));
-            $chat_content.scrollTop($chat_content[0].scrollHeight);
+            this.scrollDown();
         },
 
         insertStatusNotification: function (message, replace) {
@@ -689,7 +689,14 @@
                     return;
                 }
             }
-            xmppchat.chatboxesview.createChatRoom(jid);
+            xmppchat.chatboxes.create({
+                'id': jid,
+                'jid': jid,
+                'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                'nick': xmppchat.fullname,
+                'chatroom': true,
+                'box_id' : hex_sha1(jid)
+            });
         }
     });
 
@@ -786,18 +793,6 @@
         }
     });
 
-    xmppchat.ChatRoom = xmppchat.ChatBox.extend({
-        initialize: function (jid, nick) {
-            this.set({
-                'id': jid,
-                'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                'nick': nick,
-                'jid': jid,
-                'box_id' : hex_sha1(jid)
-            }, {'silent': true});
-        }
-    });
-
     xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
         length: 300,
         tagName: 'div',
@@ -822,8 +817,8 @@
         keyPressed: function (ev) {
             var $textarea = $(ev.target),
                 message;
-
-            if(ev.keyCode == 13) {
+            if (ev.keyCode == 13) {
+                ev.preventDefault();
                 message = $textarea.val();
                 message = message.replace(/^\s+|\s+jQuery/g,"");
                 $textarea.val('').focus();
@@ -904,6 +899,8 @@
                             $.proxy(this.onChatRoomMessage, this),
                             $.proxy(this.onChatRoomPresence, this),
                             $.proxy(this.onChatRoomRoster, this));
+            this.$el.appendTo(xmppchat.chatboxesview.$el);
+            this.render().show();
         },
 
         onLeave: function () {
@@ -1096,24 +1093,15 @@
     xmppchat.ChatBoxesView = Backbone.View.extend({
         el: '#collective-xmpp-chat-data',
 
-        createChatRoom: function (jid) {
-            var box = new xmppchat.ChatRoom(jid, xmppchat.fullname);
-            var view = new xmppchat.ChatRoomView({
-                'model': box
-            });
-            this.views[jid] = view.render();
-            view.$el.appendTo(this.$el);
-            this.options.model.add(box);
-            return view;
-        },
-
         initialize: function () {
             // boxesviewinit
             this.views = {};
             this.options.model.on("add", function (item) {
                 var view = this.views[item.get('id')];
                 if (!view) {
-                    if (item.get('box_id') === 'controlbox') {
+                    if (item.get('chatroom')) {
+                        view = new xmppchat.ChatRoomView({'model': item});
+                    } else if (item.get('box_id') === 'controlbox') {
                         view = new xmppchat.ControlBoxView({model: item});
                         view.render();
                     } else {

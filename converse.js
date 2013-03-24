@@ -1123,19 +1123,6 @@
             return view;
         },
 
-        openControlBox: function () {
-            var controlbox = this.model.get('controlbox')
-            if (controlbox) {
-                controlbox.trigger('show');
-            } else {
-                this.options.model.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox',
-                    visible: true
-                });
-            }
-        },
-
         initialize: function () {
             // boxesviewinit
             this.views = {};
@@ -1990,8 +1977,16 @@
             if ($("div#controlbox").is(':visible')) {
                 this.chatboxes.get('controlbox').destroy();
             } else {
-                this.chatboxesview.openControlBox();
-            }
+                var controlbox = this.chatboxes.get('controlbox')
+                if (controlbox) {
+                    controlbox.trigger('show');
+                } else {
+                    this.create({
+                        id: 'controlbox',
+                        box_id: 'controlbox',
+                        visible: true
+                    });
+                }
         }, this));
 
         $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {

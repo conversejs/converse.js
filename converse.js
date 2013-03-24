@@ -804,20 +804,8 @@
         tagName: 'div',
         className: 'chatroom',
         events: {
-            'click .close-chatbox-button': 'closeChatRoom',
+            'click a.close-chatbox-button': 'closeChat',
             'keypress textarea.chat-textarea': 'keyPressed'
-        },
-
-        closeChatRoom: function () {
-            this.closeChat();
-            xmppchat.connection.muc.leave(
-                            this.model.get('jid'),
-                            this.model.get('nick'),
-                            this.onLeave,
-                            undefined);
-            delete xmppchat.chatboxesview.views[this.model.get('jid')];
-            xmppchat.chatboxesview.model.remove(this.model.get('jid'));
-            this.remove();
         },
 
         sendChatRoomMessage: function (body) {
@@ -891,6 +879,18 @@
                             $.proxy(this.onChatRoomMessage, this),
                             $.proxy(this.onChatRoomPresence, this),
                             $.proxy(this.onChatRoomRoster, this));
+
+
+            this.model.on('destroy', function (model, response, options) { 
+                this.$el.hide('fast'); 
+                xmppchat.connection.muc.leave(
+                    this.model.get('jid'),
+                    this.model.get('nick'),
+                    this.onLeave,
+                    undefined);
+            }, 
+            this);
+
             this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.render().show();
         },
@@ -988,13 +988,6 @@
             }
             $participant_list.append(participants.join(""));
             return true;
-        },
-
-        show: function () {
-            this.$el.css({'opacity': 0,
-                          'display': 'inline'})
-                    .animate({opacity: '1'}, 200);
-            return this;
         },
 
         render: function () {

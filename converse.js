@@ -150,7 +150,7 @@
     xmppchat.updateMsgCounter = function () {
         this.msg_counter += 1;
         if (this.msg_counter > 0) {
-            if (document.title.search(/^Messages \(\d\) /) === -1) {
+            if (document.title.search(/^Messages \(\d\) /) == -1) {
                 document.title = "Messages (" + this.msg_counter + ") " + document.title;
             } else {
                 document.title = document.title.replace(/^Messages \(\d\) /, "Messages (" + this.msg_counter + ") ");

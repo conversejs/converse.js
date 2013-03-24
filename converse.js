@@ -328,7 +328,7 @@
             var $chat_content = this.$el.find('.chat-content');
             $chat_content.find('div.chat-event').remove().end()
                 .append($('<div class="chat-event"></div>').text(message));
-            $chat_content.scrollTop($chat_content[0].scrollHeight);
+            this.scrollDown();
         },
 
         showMessage: function (message) {
@@ -351,9 +351,9 @@
                             'username': message.get('fullname'),
                             'extra_classes': message.get('delayed') && 'delayed' || ''
                         }));
-                $chat_content.scrollTop($chat_content[0].scrollHeight);
             }
             xmppchat.updateMsgCounter();
+            this.scrollDown();
         },
 
         isDifferentDay: function (prev_date, next_date) {
@@ -473,17 +473,12 @@
         },
 
         initialize: function (){
-            // boxviewinit
-            $('body').append(this.$el.hide());
             this.model.messages.on('add', this.showMessage, this);
-
             this.model.on('show', this.show, this);
-            this.model.on('destroy', function (model, response, options) {
-                this.$el.hide('fast');
-            }, this);
-
+            this.model.on('destroy', function (model, response, options) { this.$el.hide('fast'); }, this);
             xmppchat.roster.on('change', this.rosterChanged, this);
 
+            this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
         },
 
@@ -539,8 +534,9 @@
         },
 
         scrollDown: function () {
-            var  $content = this.$el.find('.chat-content');
+            var $content = this.$el.find('.chat-content');
             $content.scrollTop($content[0].scrollHeight);
+            return this;
         }
     });
 
@@ -715,6 +711,7 @@
 
         initialize: function () {
             // Override the one in ChatBoxView
+            this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.model.on('change', $.proxy(function (item, changed) {
                 if (_.has(item.changed, 'connected')) {
                     this.render().appendRoster();
@@ -1123,7 +1120,6 @@
                         view = new xmppchat.ChatBoxView({model: item});
                     }
                     this.views[item.get('id')] = view;
-                    view.$el.appendTo(this.$el);
                 } else {
                     view.model = item;
                     view.initialize();

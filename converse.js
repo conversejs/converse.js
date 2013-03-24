@@ -481,9 +481,14 @@
             $('body').append(this.$el.hide());
             this.model.messages.on('add', this.messageReceived, this);
 
-            this.model.on('destroy', $.proxy(function (model, response, options) {
+            this.model.on('show', function() { 
+                this.show();
+                this.model.save();
+            }, this);
+
+            this.model.on('destroy', function (model, response, options) {
                 this.$el.hide('fast');
-            }, this));
+            }, this);
 
             xmppchat.roster.on('change', this.rosterChanged, this);
 
@@ -731,6 +736,8 @@
                     } 
                 }
             }, this));
+
+            this.model.on('show', this.show, this);
 
             this.model.on('destroy', $.proxy(function (model, response, options) {
                 this.$el.hide('fast');
@@ -1075,14 +1082,15 @@
                 'visible': data['visible'],
                 'url': data['url'],
             });
-            var chatboxes = this.options.model.add(model);
+            this.options.model.add(model);
             model.save();
             return model;
         },
 
         openControlBox: function () {
-            if (this.model.get('controlbox')) {
-                this.showChat('controlbox');
+            var controlbox = this.model.get('controlbox')
+            if (controlbox) {
+                controlbox.trigger('show');
             } else {
                 this.options.model.add({
                     id: 'controlbox',
@@ -1090,38 +1098,6 @@
                     visible: true
                 });
             }
-        },
-
-        openChat: function (roster_item) {
-            var jid = roster_item.get('jid');
-            jid = Strophe.getBareJidFromJid(jid);
-            if (this.model.get(jid)) {
-                this.showChat(jid);
-            } else {
-                this.createChatBox({
-                    'jid': jid,
-                    'fullname': roster_item.get('fullname'),
-                    'image': roster_item.get('image'),
-                    'image_type': roster_item.get('image_type'),
-                    'visible': true,
-                    'url': roster_item.get('url'),
-                    })
-            }
-        },
-
-        showChat: function (jid) {
-            var view = this.views[jid];
-            view.model.set({visible:true})
-            if (view.isVisible()) {
-                view.focus();
-            } else {
-                view.show();
-                if (jid !== 'controlbox') {
-                    view.scrollDown();
-                    view.focus();
-                }
-            }
-            return view;
         },
 
         messageReceived: function (message) {
@@ -1168,7 +1144,7 @@
                     }, this));
                 return true;
             } else if (!view.isVisible()) {
-                this.showChat(partner_jid);
+                this.model.get(partner_jid).trigger('show');
             }
             view.model.messageReceived(message);
             xmppchat.roster.addResource(partner_jid, resource);
@@ -1221,8 +1197,21 @@
         },
 
         openChat: function (ev) {
-            xmppchat.chatboxesview.openChat(this.model);
             ev.preventDefault();
+            var jid = Strophe.getBareJidFromJid(this.model.get('jid')),
+                chatbox  = xmppchat.chatboxes.get(jid);
+            if (chatbox) {
+                chatbox.trigger('show');
+            } else {
+                xmppchat.chatboxesview.createChatBox({
+                    'jid': jid,
+                    'fullname': this.model.get('fullname'),
+                    'image': this.model.get('image'),
+                    'image_type': this.model.get('image_type'),
+                    'visible': true,
+                    'url': this.model.get('url'),
+                    })
+            }
         },
 
         removeContact: function (ev) {
@@ -1280,7 +1269,7 @@
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
-                xmppchat.chatboxesview.showChat('controlbox');
+                xmppchat.chatboxes.get('controlbox').trigger('show');
             } else if (subscription === 'both' || subscription === 'to') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));

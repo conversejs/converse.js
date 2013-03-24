@@ -425,10 +425,16 @@
                 message = $textarea.val();
                 $textarea.val('').focus();
                 if (message !== '') {
-                    this.sendMessage(message);
+                    if (this.model.get('chatroom')) {
+                        this.sendChatRoomMessage(message);
+                    } else {
+                        this.sendMessage(message);
+                    }
                 }
                 this.$el.data('composing', false);
-            } else {
+
+            } else if (!this.model.get('chatroom')) {
+                // composing data is only for single user chat
                 composing = this.$el.data('composing');
                 if (!composing) {
                     if (ev.keyCode != 47) {
@@ -812,20 +818,6 @@
             delete xmppchat.chatboxesview.views[this.model.get('jid')];
             xmppchat.chatboxesview.model.remove(this.model.get('jid'));
             this.remove();
-        },
-
-        keyPressed: function (ev) {
-            var $textarea = $(ev.target),
-                message;
-            if (ev.keyCode == 13) {
-                ev.preventDefault();
-                message = $textarea.val();
-                message = message.replace(/^\s+|\s+jQuery/g,"");
-                $textarea.val('').focus();
-                if (message !== '') {
-                    this.sendChatRoomMessage(message);
-                }
-            }
         },
 
         sendChatRoomMessage: function (body) {

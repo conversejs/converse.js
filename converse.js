@@ -294,11 +294,14 @@
                                 '<span class="chat-message-content">{{message}}</span>' +
                             '</div>'),
 
-        appendMessage: function (message) {
-            var now = new Date(),
-                time = now.toLocaleTimeString().substring(0,5),
-                minutes = now.getMinutes().toString(),
-                $chat_content = this.$el.find('.chat-content');
+        insertStatusNotification: function (message, replace) {
+            var $chat_content = this.$el.find('.chat-content');
+            $chat_content.find('div.chat-event').remove().end()
+                .append($('<div class="chat-event"></div>').text(message));
+            this.scrollDown();
+        },
+
+        showMessage: function (message) {
             /*
              * FIXME: we don't use client storage anymore
             var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
@@ -310,28 +313,6 @@
                 }
             }
             */
-            message = xmppchat.autoLink(message);
-            // TODO use minutes logic or remove it
-            if (minutes.length==1) {minutes = '0'+minutes;}
-            $chat_content.find('div.chat-event').remove();
-            $chat_content.append(this.message_template({
-                                'sender': 'me',
-                                'time': time,
-                                'message': message,
-                                'username': 'me',
-                                'extra_classes': ''
-                            }));
-            this.scrollDown();
-        },
-
-        insertStatusNotification: function (message, replace) {
-            var $chat_content = this.$el.find('.chat-content');
-            $chat_content.find('div.chat-event').remove().end()
-                .append($('<div class="chat-event"></div>').text(message));
-            this.scrollDown();
-        },
-
-        showMessage: function (message) {
             var $chat_content = this.$el.find('.chat-content');
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
@@ -357,7 +338,10 @@
         },
 
         isDifferentDay: function (prev_date, next_date) {
-            return ((next_date.getDate() != prev_date.getDate()) || (next_date.getFullYear() != prev_date.getFullYear()) || (next_date.getMonth() != prev_date.getMonth()));
+            return (
+                (next_date.getDate() != prev_date.getDate()) || 
+                (next_date.getFullYear() != prev_date.getFullYear()) || 
+                (next_date.getMonth() != prev_date.getMonth()));
         },
 
         addHelpMessages: function (msgs) {
@@ -518,10 +502,6 @@
             };
             img.src = img_src;
             return this;
-        },
-
-        isVisible: function () {
-            return this.$el.is(':visible');
         },
 
         focus: function () {
@@ -809,7 +789,6 @@
         },
 
         sendChatRoomMessage: function (body) {
-            this.appendMessage(body);
             var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
                 $chat_content;
             switch (match[1]) {
@@ -844,8 +823,13 @@
                     this.scrollDown();
                     break;
                 default:
-                    // TODO see why muc is flagged as unresolved variable
                     this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
+                    this.model.messages.create({
+                        fullname: 'me',
+                        sender: 'me',
+                        time: (new Date()).toLocaleTimeString().substring(0,5),
+                        message: body 
+                    });
                 break;
             }
         },
@@ -872,7 +856,6 @@
                 '</div>'),
 
         initialize: function () {
-            // TODO see why muc is flagged as unresolved variable
             xmppchat.connection.muc.join(
                             this.model.get('jid'),
                             this.model.get('nick'),
@@ -881,6 +864,7 @@
                             $.proxy(this.onChatRoomRoster, this));
 
 
+            this.model.messages.on('add', this.showMessage, this);
             this.model.on('destroy', function (model, response, options) { 
                 this.$el.hide('fast'); 
                 xmppchat.connection.muc.leave(
@@ -890,9 +874,8 @@
                     undefined);
             }, 
             this);
-
             this.$el.appendTo(xmppchat.chatboxesview.$el);
-            this.render().show();
+            this.render().show().model.messages.fetch({add: true});
         },
 
         onLeave: function () {

@@ -1054,10 +1054,6 @@
     xmppchat.ChatBoxesView = Backbone.View.extend({
         el: '#collective-xmpp-chat-data',
 
-        isChatRoom: function (jid) {
-            return Strophe.getDomainFromJid(jid) === xmppchat.connection.muc_domain;
-        },
-
         createChatRoom: function (jid) {
             var box = new xmppchat.ChatRoom(jid, xmppchat.fullname);
             var view = new xmppchat.ChatRoomView({

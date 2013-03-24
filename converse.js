@@ -717,7 +717,7 @@
             // Override the one in ChatBoxView
             this.model.on('change', $.proxy(function (item, changed) {
                 if (_.has(item.changed, 'connected')) {
-                    this.render().setUpRoster();
+                    this.render().appendRoster();
                 }
                 if (_.has(item.changed, 'visible')) {
                     if (item.changed.visible === true) {
@@ -737,17 +737,8 @@
             } 
         },
 
-        setUpRoster: function () {
-            if (xmppchat.roster) {
-                return;
-            }
-            xmppchat.roster = new xmppchat.RosterItems();
-            xmppchat.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+xmppchat.connection.bare_jid));
-            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
+        appendRoster: function () {
             xmppchat.rosterview.$el.appendTo(this.contactspanel.$el);
-            xmppchat.roster.fetch({add: true}); // Get the cached roster items from localstorage
-            xmppchat.rosterview.initialSort();
         },
 
         template: _.template(
@@ -1635,6 +1626,8 @@
             }, this);
 
             this.$el.hide().html(this.template());
+            this.model.fetch({add: true}); // Get the cached roster items from localstorage
+            this.initialSort();
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +
@@ -2015,6 +2008,12 @@
             this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.connection.muc_domain = 'conference.' +  this.connection.domain;
+
+            // Set up the roster
+            this.roster = new this.RosterItems();
+            this.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-'+this.connection.bare_jid));
+            this.rosterview = new this.RosterView({'model':this.roster});
 
             this.xmppstatus = new this.XMPPStatus();
             this.chatboxes.onConnected();

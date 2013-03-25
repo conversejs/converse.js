@@ -836,12 +836,6 @@
                     break;
                 default:
                     this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
-                    this.model.messages.create({
-                        fullname: 'me',
-                        sender: 'me',
-                        time: (new Date()).toLocaleTimeString().substring(0,5),
-                        message: body 
-                    });
                 break;
             }
         },
@@ -919,51 +913,41 @@
             var $message = $(message),
                 body = $message.children('body').text(),
                 jid = $message.attr('from'),
-                composing = $message.find('composing'),
                 $chat_content = this.$el.find('.chat-content'),
                 sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
+                delayed = $message.find('delay').length > 0,
                 subject = $message.children('subject').text(),
-                match;
-
+                match, template;
+            if (!body) { return true; } // XXX: Necessary?
             if (subject) {
                 this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
             }
-            if (!body) {
-                if (composing.length) {
-                    this.insertStatusNotification(sender+' '+'is typing');
-                    return true;
-                }
+            if (delayed) {
+                stamp = $message.find('delay').attr('stamp');
+                time = (new Date(stamp)).toLocaleTimeString().substring(0,5);
             } else {
-                if (sender === this.model.get('nick')) {
-                    // Our own message which is already appended
-                    return true;
-                } else {
-                    $chat_content.find('div.chat-event').remove();
-
-                    match = body.match(/^\/(.*?)(?: (.*))?$/);
-                    if ((match) && (match[1] === 'me')) {
-                        body = body.replace(/^\/me/, '*'+sender);
-                        $chat_content.append(
-                                this.action_template({
-                                    'sender': 'room',
-                                    'time': (new Date()).toLocaleTimeString().substring(0,5),
-                                    'message': body,
-                                    'username': sender,
-                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
-                                }));
-                    } else {
-                        $chat_content.append(
-                                this.message_template({
-                                    'sender': 'room',
-                                    'time': (new Date()).toLocaleTimeString().substring(0,5),
-                                    'message': body,
-                                    'username': sender,
-                                    'extra_classes': ($message.find('delay').length > 0) && 'delayed' || ''
-                                }));
-                    }
-                    $chat_content.scrollTop($chat_content[0].scrollHeight);
-                }
+                time = (new Date()).toLocaleTimeString().substring(0,5);
             }
+            match = body.match(/^\/(.*?)(?: (.*))?$/);
+            if ((match) && (match[1] === 'me')) {
+                body = body.replace(/^\/me/, '*'+sender);
+                template = this.action_template;
+            } else  {
+                template = this.message_template;
+            }
+            if (sender === this.model.get('nick')) {
+                sender = 'me';
+            }
+            $chat_content.append(
+                template({
+                    'sender': sender == 'me' && sender || 'room',
+                    'time': time,
+                    'message': body,
+                    'username': sender,
+                    'extra_classes': delayed && 'delayed' || ''
+                })
+            );
+            this.scrollDown();
             return true;
         },
 

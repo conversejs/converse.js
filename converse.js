@@ -444,43 +444,45 @@
             }
         },
 
-        closeChat: function () {
-            this.model.destroy();
+        onChange: function (item, changed) {
+            if (_.has(changed.changes, 'chat_status')) {
+                var chat_status = item.get('chat_status'),
+                    fullname = item.get('fullname');
+                if (this.$el.is(':visible')) {
+                    if (chat_status === 'offline') {
+                        this.insertStatusNotification(fullname+' '+'has gone offline');
+                    } else if (chat_status === 'away') {
+                        this.insertStatusNotification(fullname+' '+'has gone away');
+                    } else if ((chat_status === 'dnd')) {
+                        this.insertStatusNotification(fullname+' '+'is busy');
+                    } else if (chat_status === 'online') {
+                        this.$el.find('div.chat-event').remove();
+                    }
+                }
+            } if (_.has(changed.changes, 'status')) {
+                this.showStatusMessage(item.get('status'));
+            }
         },
 
-        rosterChanged: function (item, changed) {
-            // FIXME: This event handler should go onto the roster itself, then it
-            // will be called once (for the roster) and not once per open
-            // chatbox
-            var fullname = this.model.get('fullname'),
-                chat_status = item.get('chat_status');
-            if (item.get('jid') ===  this.model.get('jid')) {
-                if (_.has(changed.changes, 'chat_status')) {
-                    if (this.$el.is(':visible')) {
-                        if (chat_status === 'offline') {
-                            this.insertStatusNotification(fullname+' '+'has gone offline');
-                        } else if (chat_status === 'away') {
-                            this.insertStatusNotification(fullname+' '+'has gone away');
-                        } else if ((chat_status === 'dnd')) {
-                            this.insertStatusNotification(fullname+' '+'is busy');
-                        } else if (chat_status === 'online') {
-                            this.$el.find('div.chat-event').remove();
-                        }
-                    }
-                } else if (_.has(changed.changes, 'status')) {
-                    this.$el.find('p.user-custom-message').text(item.get('status')).attr('title', item.get('status'));
-                }
-            }
+        showStatusMessage: function (msg) {
+            this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
+        },
+
+        closeChat: function () {
+            this.model.destroy();
         },
 
         initialize: function (){
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('show', this.show, this);
             this.model.on('destroy', function (model, response, options) { this.$el.hide('fast'); }, this);
-            xmppchat.roster.on('change', this.rosterChanged, this);
+            this.model.on('change', this.onChange, this);
 
             this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
+            if (this.model.get('status')) {
+                this.showStatusMessage(this.model.get('status'));
+            }
             xmppchat.clearMsgCounter();
         },
 
@@ -1309,21 +1311,6 @@
             return 0;
         },
 
-        clearResources: function (bare_jid) {
-            var item = this.getItem(bare_jid);
-            if (item) {
-                item.set({'resources': []});
-            }
-        },
-
-        getTotalResources: function (bare_jid) {
-            var item = this.getItem(bare_jid);
-            if (item) {
-                return _.size(item.get('resources'));
-            }
-            return 0;
-        },
-
         subscribeBack: function (jid) {
             // XXX: Why the distinction between jid and bare_jid?
             var bare_jid = Strophe.getBareJidFromJid(jid);
@@ -1387,15 +1374,11 @@
         rosterHandler: function (items) {
             this.cleanCache(items);
             _.each(items, function (item, index, items) {
-                if (this.isSelf(item.jid)) {
-                    return;
-                }
+                if (this.isSelf(item.jid)) { return; }
                 var model = this.getItem(item.jid);
                 if (!model) {
                     is_last = false;
-                    if (index === (items.length-1)) {
-                        is_last = true;
-                    }
+                    if (index === (items.length-1)) { is_last = true; }
                     xmppchat.getVCard(
                         item.jid, 
                         $.proxy(function (jid, fullname, img, img_type, url) {
@@ -1421,8 +1404,6 @@
                                 is_last: is_last
                             });
                         }, this));
-
-
                 } else {
                     if ((item.subscription === 'none') && (item.ask === null)) {
                         // This user is no longer in our roster
@@ -1446,7 +1427,7 @@
                 show = $presence.find('show'),
                 chat_status = show.text() || 'online',
                 status_message = $presence.find('status'),
-                item, model;
+                item;
 
             if (this.isSelf(bare_jid)) {
                 if ((xmppchat.connection.jid !== jid)&&(presence_type !== 'unavailabe')) {
@@ -1460,16 +1441,14 @@
                 return true; // Ignore MUC
             }
 
-            if (status_message.text() && (presence_type !== 'unavailable')) {
-                model = this.getItem(bare_jid);
-                model.set({'status': status_message.text()});
+            item = this.getItem(bare_jid);
+            if (status_message.text() != item.get('status')) {
+                item.set({'status': status_message.text()});
             }
 
             if ((presence_type === 'error') || (presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                 return true;
             } else if (presence_type === 'subscribe') {
-                item = this.getItem(bare_jid);
-                // TODO see if auto_subscribe is truly an unresolved variable
                 if (xmppchat.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
                         this.subscribeBack(jid);
@@ -1510,16 +1489,14 @@
                 this.unsubscribe(jid);
             } else if (presence_type === 'unavailable') {
                 if (this.removeResource(bare_jid, resource) === 0) {
-                    model = this.getItem(bare_jid);
-                    if (model) {
-                        model.set({'chat_status': 'offline'});
+                    if (item) {
+                        item.set({'chat_status': 'offline'});
                     }
                 }
             } else {
                 // presence_type is undefined
                 this.addResource(bare_jid, resource);
-                model = this.getItem(bare_jid);
-                model.set({'chat_status': chat_status});
+                item.set({'chat_status': chat_status});
             }
             return true;
         }
@@ -1551,7 +1528,8 @@
                 this.render(item);
             }, this);
 
-            this.model.on('change', function (item) {
+            this.model.on('change', function (item, changed) {
+                this.updateChatBox(item, changed);
                 this.render(item);
             }, this);
 
@@ -1568,6 +1546,19 @@
             this.$el.hide().html(this.template());
             this.model.fetch({add: true}); // Get the cached roster items from localstorage
             this.initialSort();
+        },
+
+        updateChatBox: function (item, changed) {
+            var chatbox = xmppchat.chatboxes.get(item.get('jid')),
+                changes = {};
+            if (!chatbox) { return; }
+            if (_.has(changed.changes, 'chat_status')) {
+                changes.chat_status = item.get('chat_status');
+            }
+            if (_.has(changed.changes, 'status')) {
+                changes.status = item.get('status');
+            }
+            chatbox.save(changes);
         },
 
         template: _.template('<dt id="xmpp-contact-requests">Contact requests</dt>' +

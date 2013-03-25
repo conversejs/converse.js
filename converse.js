@@ -698,13 +698,6 @@
         }
     });
 
-    xmppchat.SettingsPanel = Backbone.View.extend({
-        // XXX: Options for the (still to be done) 'settings' tab:
-        // * Show offline users
-        // * Auto-open chatbox when a message was received.
-        el: '#settings'
-    });
-
     xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
         tagName: 'div',
         className: 'chatbox',
@@ -715,7 +708,6 @@
         },
 
         initialize: function () {
-            // Override the one in ChatBoxView
             this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.model.on('change', $.proxy(function (item, changed) {
                 if (_.has(item.changed, 'connected')) {
@@ -729,7 +721,6 @@
             }, this));
 
             this.model.on('show', this.show, this);
-
             this.model.on('destroy', $.proxy(function (model, response, options) {
                 this.$el.hide('fast');
             }, this));
@@ -984,7 +975,7 @@
             this.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
             if (!this.get('controlbox')) {
-                this.create({
+                this.add({
                     id: 'controlbox',
                     box_id: 'controlbox'
                 });
@@ -1931,6 +1922,8 @@
                         box_id: 'controlbox',
                         visible: true
                     });
+                } else {
+                    controlbox.trigger('show');
                 }
             }
         }, this));

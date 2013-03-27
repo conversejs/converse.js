@@ -311,18 +311,24 @@
         },
 
         showMessage: function (message) {
-            /*
-             * FIXME: we don't use client storage anymore
-            var msg = xmppchat.storage.getLastMessage(this.model.get('jid'));
-            if (typeof msg !== 'undefined') {
-                var prev_date = new Date(Date(msg.split(' ', 2)[0]));
-                if (this.isDifferentDay(prev_date, now)) {
+            var time = message.get('time'),
+                times = this.model.messages.pluck('time'),
+                this_date = xmppchat.parseISO8601(time),
+                $chat_content = this.$el.find('.chat-content'),
+                previous_message, idx, prev_date;
+
+            // If this message is on a different day than the one received
+            // prior, then indicate it on the chatbox.
+            idx = _.indexOf(times, time)-1;
+            if (idx >= 0) {
+                previous_message = this.model.messages.at(idx);
+                prev_date = xmppchat.parseISO8601(previous_message.get('time'));
+                if (this.isDifferentDay(prev_date, this_date)) {
                     $chat_content.append($('<div class="chat-date">&nbsp;</div>'));
-                    $chat_content.append($('<div class="chat-date"></div>').text(now.toString().substring(0,15)));
+                    $chat_content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
                 }
             }
-            */
-            var $chat_content = this.$el.find('.chat-content');
+
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
                 return;
@@ -332,12 +338,10 @@
                 return;
             } else {
                 $chat_content.find('div.chat-event').remove();
-                // TODO use toJSON here
-                var time = xmppchat.parseISO8601(message.get('time')).toLocaleTimeString().substring(0,5);
                 $chat_content.append(
                         this.message_template({
                             'sender': message.get('sender'),
-                            'time': time,
+                            'time': this_date.toLocaleTimeString().substring(0,5),
                             'message': message.get('message'),
                             'username': message.get('fullname'),
                             'extra_classes': message.get('delayed') && 'delayed' || ''
@@ -887,7 +891,6 @@
         },
 
         onChatRoomPresence: function (presence, room) {
-            // TODO see if nick is useful
             var nick = room.nick,
                 $presence = $(presence),
                 from = $presence.attr('from');

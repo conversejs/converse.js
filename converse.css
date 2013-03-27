@@ -158,6 +158,11 @@ input.new-chatroom-name {
     color: #808080;
 }
 
+.chat-date {
+    display: inline-block;
+    padding-top: 10px;
+}
+
 div#settings,
 div#chatrooms,
 div#login-dialog {

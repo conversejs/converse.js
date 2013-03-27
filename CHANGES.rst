@@ -11,6 +11,7 @@ Changelog
   chat messages. [jcbrand]
 - Fixed user status handling, which wasn't 100% according to the
   spec. [jcbrand]
+- Separate messages according to day in chats. [jcbrand]
 
 
 0.2 (unreleased)

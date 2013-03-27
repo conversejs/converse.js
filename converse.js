@@ -303,6 +303,10 @@
                                 '<span class="chat-message-content">{{message}}</span>' +
                             '</div>'),
 
+        new_day_template: _.template(
+                            '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
+                            ),
+
         insertStatusNotification: function (message, replace) {
             var $chat_content = this.$el.find('.chat-content');
             $chat_content.find('div.chat-event').remove().end()
@@ -315,7 +319,7 @@
                 times = this.model.messages.pluck('time'),
                 this_date = xmppchat.parseISO8601(time),
                 $chat_content = this.$el.find('.chat-content'),
-                previous_message, idx, prev_date;
+                previous_message, idx, prev_date, isodate;
 
             // If this message is on a different day than the one received
             // prior, then indicate it on the chatbox.
@@ -323,12 +327,16 @@
             if (idx >= 0) {
                 previous_message = this.model.messages.at(idx);
                 prev_date = xmppchat.parseISO8601(previous_message.get('time'));
+                isodate = this_date;
+                isodate.setUTCHours(0,0,0,0);
+                isodate = xmppchat.toISOString(isodate);
                 if (this.isDifferentDay(prev_date, this_date)) {
-                    $chat_content.append($('<div class="chat-date">&nbsp;</div>'));
-                    $chat_content.append($('<div class="chat-date"></div>').text(this_date.toString().substring(0,15)));
+                    $chat_content.append(this.new_day_template({
+                        isodate: isodate,
+                        datestring: this_date.toString().substring(0,15)
+                    }));
                 }
             }
-
             if (xmppchat.xmppstatus.getStatus() === 'offline') {
                 // only update the UI if the user is not offline
                 return;
@@ -914,17 +922,30 @@
                 sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
                 delayed = $message.find('delay').length > 0,
                 subject = $message.children('subject').text(),
-                match, template;
+                match, template, message_datetime, message_date, dates, isodate;
             if (!body) { return true; } // XXX: Necessary?
             if (subject) {
                 this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
             }
             if (delayed) {
                 stamp = $message.find('delay').attr('stamp');
-                time = (new Date(stamp)).toLocaleTimeString().substring(0,5);
+                message_datetime = xmppchat.parseISO8601(stamp);
             } else {
-                time = (new Date()).toLocaleTimeString().substring(0,5);
+                message_datetime = new Date();
             }
+            // If this message is on a different day than the one received
+            // prior, then indicate it on the chatbox.
+            dates = $chat_content.find("time").map(function(){return $(this).attr("datetime");}).get();
+            message_date = message_datetime;
+            message_date.setUTCHours(0,0,0,0);
+            isodate = xmppchat.toISOString(message_date);
+            if (_.indexOf(dates, isodate) == -1) {
+                $chat_content.append(this.new_day_template({
+                    isodate: isodate,
+                    datestring: message_date.toString().substring(0,15)
+                }));
+            }
+
             match = body.match(/^\/(.*?)(?: (.*))?$/);
             if ((match) && (match[1] === 'me')) {
                 body = body.replace(/^\/me/, '*'+sender);
@@ -938,7 +959,7 @@
             $chat_content.append(
                 template({
                     'sender': sender == 'me' && sender || 'room',
-                    'time': time,
+                    'time': message_date.toLocaleTimeString().substring(0,5),
                     'message': body,
                     'username': sender,
                     'extra_classes': delayed && 'delayed' || ''

@@ -254,6 +254,7 @@
                         fullname: fullname,
                         sender: 'them',
                         delayed: delayed,
+                        time: xmppchat.toISOString(new Date()),
                         composing: composing.length
                     });
                 }
@@ -1243,7 +1244,7 @@
                     img_type = $vcard.find('TYPE').text(),
                     url = $vcard.find('URL').text();
                 callback(jid, fullname, img, img_type, url);
-            }, this), jid, errback());
+            }, this), jid, errback);
         }
     }
 
@@ -1418,10 +1419,9 @@
                                 is_last: is_last
                             });
                         }, this),
-                        $.proxy(function () {
-                            // TODO: Better handling here
-                            // Error occured while fetching vcard
-                            console.log("An error occured while fetching vcard");
+                        $.proxy(function (stanza) {
+                            console.log("rosterHandler: Error occured while fetching vcard");
+                            console.log(stanza);
                             this.addRosterItem({
                                 jid: item.jid, 
                                 subscription: item.subscription,

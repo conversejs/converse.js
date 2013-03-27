@@ -129,9 +129,9 @@
         var numericKeys = [1, 4, 5, 6, 7, 10, 11],
             struct = /^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.?\d*)Z\s*$/.exec(datestr),
             minutesOffset = 0,
-            i;
+            i, k;
 
-        for (i = 0, k; (k = numericKeys[i]); ++i) {
+        for (i = 0; (k = numericKeys[i]); ++i) {
             struct[k] = +struct[k] || 0;
         }
         // allow undefined days and months
@@ -260,9 +260,9 @@
             } else {
                 if (delayed) {
                     stamp = $message.find('delay').attr('stamp');
-                    time = (new Date(stamp)).toLocaleTimeString().substring(0,5);
+                    time = stamp;
                 } else {
-                    time = (new Date()).toLocaleTimeString().substring(0,5);
+                    time = xmppchat.toISOString(new Date());
                 }
                 if (from == xmppchat.connection.bare_jid) {
                     fullname = 'me';
@@ -333,10 +333,11 @@
             } else {
                 $chat_content.find('div.chat-event').remove();
                 // TODO use toJSON here
+                var time = xmppchat.parseISO8601(message.get('time')).toLocaleTimeString().substring(0,5);
                 $chat_content.append(
                         this.message_template({
                             'sender': message.get('sender'),
-                            'time': message.get('time'),
+                            'time': time,
                             'message': message.get('message'),
                             'username': message.get('fullname'),
                             'extra_classes': message.get('delayed') && 'delayed' || ''
@@ -404,7 +405,7 @@
             this.model.messages.create({
                 fullname: 'me',
                 sender: 'me',
-                time: (new Date()).toLocaleTimeString().substring(0,5),
+                time: xmppchat.toISOString(new Date()),
                 message: text 
             });
         },

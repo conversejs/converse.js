@@ -17,7 +17,6 @@
     if (typeof define === 'function' && define.amd) {
         require.config({
             paths: {
-                "burry": "Libraries/burry.js/burry",
                 "sjcl": "Libraries/sjcl",
                 "tinysort": "Libraries/jquery.tinysort",
                 "underscore": "Libraries/underscore",
@@ -62,33 +61,30 @@
         });
 
         define("converse", [
-            "burry",
             "localstorage",
             "tinysort",
             "sjcl",
             "strophe.muc",
             "strophe.roster",
             "strophe.vcard"
-            ], function(Burry) {
-                    var store = new Burry.Store('collective.xmpp.chat');
-                    // Use Mustache style syntax for variable interpolation
-                    _.templateSettings = {
-                        evaluate : /\{\[([\s\S]+?)\]\}/g,
-                        interpolate : /\{\{([\s\S]+?)\}\}/g
-                    };
-                    return factory(jQuery, store, _, console);
+            ], function() {
+                // Use Mustache style syntax for variable interpolation
+                _.templateSettings = {
+                    evaluate : /\{\[([\s\S]+?)\]\}/g,
+                    interpolate : /\{\{([\s\S]+?)\}\}/g
+                };
+                return factory(jQuery, _, console);
             }
         );
     } else {
         // Browser globals
-        var store = new Burry.Store('collective.xmpp.chat');
         _.templateSettings = {
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.xmppchat = factory(jQuery, store, _, console || {log: function(){}});
+        root.xmppchat = factory(jQuery, _, console || {log: function(){}});
     }
-}(this, function ($, store, _, console) {
+}(this, function ($, _, console) {
 
     var xmppchat = {};
     xmppchat.msg_counter = 0;
@@ -338,7 +334,7 @@
                     }));
                 }
             }
-            if (xmppchat.xmppstatus.getStatus() === 'offline') {
+            if (xmppchat.xmppstatus.get('status') === 'offline') {
                 // only update the UI if the user is not offline
                 return;
             }
@@ -1106,9 +1102,9 @@
 
     xmppchat.RosterItem = Backbone.Model.extend({
         initialize: function (attributes, options) {
-            var jid = attributes['jid'];
-            if (!attributes['fullname']) {
-                attributes['fullname'] = jid;
+            var jid = attributes.jid;
+            if (!attributes.fullname) {
+                attributes.fullname = jid;
             }
             _.extend(attributes, {
                 'id': jid,
@@ -1666,8 +1662,8 @@
     xmppchat.XMPPStatus = Backbone.Model.extend({
         initialize: function () {
             this.set({
-                'status' : this.getStatus(),
-                'status_message' : this.getStatusMessage()
+                'status' : this.get('status'),
+                'status_message' : this.get('status_message')
             });
         },
 
@@ -1676,7 +1672,7 @@
              * status is. Will also cause the UI to be updated with the correct
              * status.
              */
-            var stat = this.getStatus();
+            var stat = this.get('status');
             if (stat === undefined) {
                 this.setStatus('online');
             } else {
@@ -1685,7 +1681,7 @@
         },
 
         sendPresence: function (type) {
-            var status_message = this.getStatusMessage(), 
+            var status_message = this.get('status_message'), 
                 presence;
             if (type === 'unavailable') {
                 presence = $pres({'type':type});
@@ -1696,30 +1692,20 @@
                     presence = $pres().c('show').t(type);
                 }
                 if (status_message) {
-                    presence.c('status').t(status_message)
+                    presence.c('status').t(status_message);
                 }
             }
             xmppchat.connection.send(presence);
         },
 
-        getStatus: function () {
-            return store.get(xmppchat.connection.bare_jid+'-xmpp-status');
-        },
-
         setStatus: function (value) {
             this.sendPresence(value);
-            this.set({'status': value});
-            store.set(xmppchat.connection.bare_jid+'-xmpp-status', value);
-        },
-
-        getStatusMessage: function () {
-            return store.get(xmppchat.connection.bare_jid+'-xmpp-custom-status');
+            this.save({'status': value});
         },
 
         setStatusMessage: function (status_message) {
-            xmppchat.connection.send($pres().c('show').t(this.getStatus()).up().c('status').t(status_message));
-            this.set({'status_message': status_message});
-            store.set(xmppchat.connection.bare_jid+'-xmpp-custom-status', status_message);
+            xmppchat.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
+            this.save({'status_message': status_message});
         }
 
     });
@@ -1756,7 +1742,7 @@
 
         renderStatusChangeForm: function (ev) {
             ev.preventDefault();
-            var status_message = this.model.getStatus() || 'offline';
+            var status_message = this.model.get('status') || 'offline';
             var input = this.change_status_message_template({'status_message': status_message});
             this.$el.find('.xmpp-status').replaceWith(input);
             this.$el.find('.custom-xmpp-status').focus().focus();
@@ -1825,7 +1811,7 @@
         render: function () {
             // Replace the default dropdown with something nicer
             var $select = this.$el.find('select#select-xmpp-status'),
-                chat_status = this.model.getStatus() || 'offline',
+                chat_status = this.model.get('status') || 'offline',
                 options = $('option', $select),
                 $options_target,
                 options_list = [],
@@ -1922,7 +1908,6 @@
         this.prebind = chatdata.attr('prebind');
         this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
-
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
 
@@ -1973,7 +1958,11 @@
                 hex_sha1('converse.rosteritems-'+this.connection.bare_jid));
             this.rosterview = new this.RosterView({'model':this.roster});
 
-            this.xmppstatus = new this.XMPPStatus();
+            this.xmppstatus = new this.XMPPStatus({id:1});
+            this.xmppstatus.localStorage = new Backbone.LocalStorage(
+                'converse.xmppstatus'+this.connection.bare_jid);
+            this.xmppstatus.fetch();
+
             this.chatboxes.onConnected();
 
             this.connection.addHandler(

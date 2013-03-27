@@ -148,7 +148,7 @@ input.new-chatroom-name {
     font-weight: bold;
     color: #F62817;
     white-space: nowrap;
-    width: 100px;
+    max-width: 100px;
     text-overflow: ellipsis;
     overflow: hidden;
     display: inline-block;

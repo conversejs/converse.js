@@ -458,7 +458,7 @@
         },
 
         onChange: function (item, changed) {
-            if (_.has(changed.changes, 'chat_status')) {
+            if (_.has(item.changed, 'chat_status')) {
                 var chat_status = item.get('chat_status'),
                     fullname = item.get('fullname');
                 if (this.$el.is(':visible')) {
@@ -472,7 +472,7 @@
                         this.$el.find('div.chat-event').remove();
                     }
                 }
-            } if (_.has(changed.changes, 'status')) {
+            } if (_.has(item.changed, 'status')) {
                 this.showStatusMessage(item.get('status'));
             }
         },
@@ -1215,7 +1215,7 @@
 
         initialize: function () {
             this.options.model.on('change', function (item, changed) {
-                if (_.has(changed.changes, 'chat_status')) {
+                if (_.has(item.changed, 'chat_status')) {
                     this.$el.attr('class', item.changed.chat_status);
                 }
             }, this);
@@ -1577,10 +1577,10 @@
             var chatbox = xmppchat.chatboxes.get(item.get('jid')),
                 changes = {};
             if (!chatbox) { return; }
-            if (_.has(changed.changes, 'chat_status')) {
+            if (_.has(item.changed, 'chat_status')) {
                 changes.chat_status = item.get('chat_status');
             }
-            if (_.has(changed.changes, 'status')) {
+            if (_.has(item.changed, 'status')) {
                 changes.status = item.get('status');
             }
             chatbox.save(changes);

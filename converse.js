@@ -1092,7 +1092,7 @@
                     view.model = item;
                     view.initialize();
                     if (item.get('id') !== 'controlbox') {
-                        // FIXME: Why is it necessary to append chatboxes again?
+                        // FIXME: Why is it necessary to again append chatboxes?
                         view.$el.appendTo(this.$el);
                     }
                 }
@@ -1667,19 +1667,6 @@
             });
         },
 
-        initStatus: function () {
-            /* Called when the page is loaded and we aren't sure what the users
-             * status is. Will also cause the UI to be updated with the correct
-             * status.
-             */
-            var stat = this.get('status');
-            if (stat === undefined) {
-                this.setStatus('online');
-            } else {
-                this.sendPresence(stat);
-            }
-        },
-
         sendPresence: function (type) {
             var status_message = this.get('status_message'), 
                 presence;
@@ -1777,15 +1764,14 @@
             return pretty_status;
         },
 
-        updateStatusUI: function (ev) {
-            var stat = ev.get('status'), 
-                status_message;
-            status_message = ev.get('status_message') || "I am " + this.getPrettyStatus(stat);
+        updateStatusUI: function (model) {
+            var stat = model.get('status'), 
+                status_message = model.get('status_message') || "I am " + this.getPrettyStatus(stat);
             this.$el.find('#fancy-xmpp-status-select').html(
                 this.status_template({
-                        'chat_status': stat,
-                        'status_message': status_message
-                        }));
+                    'chat_status': stat,
+                    'status_message': status_message
+                }));
         },
 
         choose_template: _.template(
@@ -1803,9 +1789,7 @@
             '</li>'),
 
         initialize: function () {
-            this.model.initStatus();
-            // Listen for status change on the model and initialize
-            this.options.model.on("change", $.proxy(this.updateStatusUI, this));
+            this.model.on("change", this.updateStatusUI, this);
         },
 
         render: function () {
@@ -1961,7 +1945,6 @@
             this.xmppstatus = new this.XMPPStatus({id:1});
             this.xmppstatus.localStorage = new Backbone.LocalStorage(
                 'converse.xmppstatus'+this.connection.bare_jid);
-            this.xmppstatus.fetch();
 
             this.chatboxes.onConnected();
 
@@ -1986,11 +1969,12 @@
                             return true;
                         }, this), null, 'message', 'chat');
 
-                // XMPP Status
                 this.xmppstatusview = new this.XMPPStatusView({
                     'model': this.xmppstatus
                 });
                 this.xmppstatusview.render();
+                this.xmppstatus.fetch();
+                this.xmppstatus.sendPresence(this.xmppstatus.get('status'));
             }, this));
             $connecting.hide();
             $toggle.show();

@@ -115,7 +115,6 @@ input.new-chatroom-name {
 .chat-textarea {
     border: 0;
     height: 50px;
-    width: 100%;
 }
 
 .chat-textarea-chatbox-selected {
@@ -446,7 +445,7 @@ dd.available-chatroom,
 }
 
 .chatbox {
-    width: 200px;
+    width: 201px;
 }
 
 .chatroom {
@@ -585,6 +584,7 @@ form.sendXMPPMessage {
     background-clip: padding-box;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+    height: 54px;
 }
 
 #set-custom-xmpp-status {

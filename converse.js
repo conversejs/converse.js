@@ -261,7 +261,7 @@
                 } else {
                     time = xmppchat.toISOString(new Date());
                 }
-                if (from == xmppchat.connection.bare_jid) {
+                if (from == xmppchat.bare_jid) {
                     fullname = 'me';
                     sender = 'me';
                 } else {
@@ -399,12 +399,12 @@
                 }
             }
 
-            var message = $msg({from: xmppchat.connection.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
+            var message = $msg({from: xmppchat.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
             // Forward the message, so that other connected resources are also aware of it.
             // TODO: Forward the message only to other connected resources (inside the browser)
-            var forwarded = $msg({to:xmppchat.connection.bare_jid, type:'chat', id:timestamp})
+            var forwarded = $msg({to:xmppchat.bare_jid, type:'chat', id:timestamp})
                             .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                             .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
                             .cnode(message.tree());
@@ -606,7 +606,7 @@
                                 .attr('id', 'found-users-'+obj.id)
                                 .append(
                                     $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
-                                        .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.connection.domain)
+                                        .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.domain)
                                         .text(obj.fullname)
                                 )
                         );
@@ -666,7 +666,7 @@
         },
 
         updateRoomsList: function () {
-            xmppchat.connection.muc.listRooms(xmppchat.connection.muc_domain, $.proxy(function (iq) {
+            xmppchat.connection.muc.listRooms(xmppchat.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
                     rooms_length = rooms.length,
@@ -694,7 +694,7 @@
             } else {
                 name = $(ev.target).find('input.new-chatroom-name').val().trim().toLowerCase();
                 if (name) {
-                    jid = Strophe.escapeNode(name) + '@' + xmppchat.connection.muc_domain;
+                    jid = Strophe.escapeNode(name) + '@' + xmppchat.muc_domain;
                 } else {
                     return;
                 }
@@ -703,7 +703,7 @@
                 'id': jid,
                 'jid': jid,
                 'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                'nick': xmppchat.fullname,
+                'nick': xmppchat.xmppstatus.get('fullname')||xmppchat.bare_jid,
                 'chatroom': true,
                 'box_id' : hex_sha1(jid)
             });
@@ -997,7 +997,7 @@
 
         onConnected: function () {
             this.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.chatboxes-'+xmppchat.connection.bare_jid));
+                hex_sha1('converse.chatboxes-'+xmppchat.bare_jid));
             if (!this.get('controlbox')) {
                 this.add({
                     id: 'controlbox',
@@ -1033,7 +1033,7 @@
             var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
                 resource, chatbox;
-            if (from == xmppchat.connection.bare_jid) {
+            if (from == xmppchat.bare_jid) {
                 // I am the sender, so this must be a forwarded message...
                 partner_jid = to;
                 resource = Strophe.getResourceFromJid($message.attr('to'));
@@ -1667,6 +1667,15 @@
             });
         },
 
+        initStatus: function () {
+            var stat = this.get('status');
+            if (stat === undefined) {
+                this.save({status: 'online'});
+            } else {
+                this.sendPresence(stat);
+            }
+        },
+
         sendPresence: function (type) {
             var status_message = this.get('status_message'), 
                 presence;
@@ -1765,6 +1774,9 @@
         },
 
         updateStatusUI: function (model) {
+            if (!(_.has(model.changed, 'status')) && !(_.has(model.changed, 'status_message'))) {
+                return;
+            }
             var stat = model.get('status'), 
                 status_message = model.get('status_message') || "I am " + this.getPrettyStatus(stat);
             this.$el.find('#fancy-xmpp-status-select').html(
@@ -1816,6 +1828,7 @@
             $options_target = this.$el.find("#target dd ul").hide();
             $options_target.append(options_list.join(''));
             $select.remove();
+            return this;
         }
     });
 
@@ -1848,6 +1861,7 @@
 
             connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
+                    // TODO: Get users fullname (probably via vCard) here
                     $(document).trigger('jarnxmpp.connected', connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
                     console.log('Disconnected');
@@ -1890,7 +1904,6 @@
             $connecting = $('span#connecting-to-chat').hide(),
             $toggle = $('a#toggle-online-users');
         this.prebind = chatdata.attr('prebind');
-        this.fullname = chatdata.attr('fullname');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
@@ -1932,19 +1945,19 @@
             this.connection = connection;
             this.connection.xmlInput = function (body) { console.log(body); };
             this.connection.xmlOutput = function (body) { console.log(body); };
-            this.connection.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.connection.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.connection.muc_domain = 'conference.' +  this.connection.domain;
+            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+            this.domain = Strophe.getDomainFromJid(this.connection.jid);
+            this.muc_domain = 'conference.' +  this.domain;
 
             // Set up the roster
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+this.connection.bare_jid));
+                hex_sha1('converse.rosteritems-'+this.bare_jid));
             this.rosterview = new this.RosterView({'model':this.roster});
 
             this.xmppstatus = new this.XMPPStatus({id:1});
             this.xmppstatus.localStorage = new Backbone.LocalStorage(
-                'converse.xmppstatus'+this.connection.bare_jid);
+                'converse.xmppstatus'+this.bare_jid);
 
             this.chatboxes.onConnected();
 
@@ -1969,12 +1982,9 @@
                             return true;
                         }, this), null, 'message', 'chat');
 
-                this.xmppstatusview = new this.XMPPStatusView({
-                    'model': this.xmppstatus
-                });
-                this.xmppstatusview.render();
+                this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
                 this.xmppstatus.fetch();
-                this.xmppstatus.sendPresence(this.xmppstatus.get('status'));
+                this.xmppstatus.initStatus();
             }, this));
             $connecting.hide();
             $toggle.show();

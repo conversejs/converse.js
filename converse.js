@@ -620,7 +620,7 @@
                 jid = $target.attr('data-recipient'),
                 name = $target.text();
             xmppchat.connection.roster.add(jid, name, [], function (iq) {
-                xmppchat.connection.roster.subscribe(jid);
+                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
             });
             $target.parent().remove();
             $('form.search-xmpp-contact').hide();
@@ -1149,7 +1149,7 @@
         removeContact: function (ev) {
             ev.preventDefault();
             var result = confirm("Are you sure you want to remove this contact?");
-            if (result==true) {
+            if (result === true) {
                 var bare_jid = this.model.get('jid');
                 xmppchat.connection.roster.remove(bare_jid, function (iq) {
                     xmppchat.connection.roster.unauthorize(bare_jid);
@@ -1162,7 +1162,7 @@
             var jid = this.model.get('jid');
             xmppchat.connection.roster.authorize(jid);
             xmppchat.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
-                xmppchat.connection.roster.subscribe(jid);
+                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
             });
             ev.preventDefault();
         },
@@ -1280,7 +1280,7 @@
                     fullname = $this.attr('name');
                 if (action === 'add') {
                     xmppchat.connection.roster.add(jid, fullname, [], function (iq) {
-                        xmppchat.connection.roster.subscribe(jid);
+                        xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
                     });
                 }
             });
@@ -1334,15 +1334,14 @@
         },
 
         subscribeBack: function (jid) {
-            // XXX: Why the distinction between jid and bare_jid?
             var bare_jid = Strophe.getBareJidFromJid(jid);
             if (xmppchat.connection.roster.findItem(bare_jid)) {
                 xmppchat.connection.roster.authorize(bare_jid);
-                xmppchat.connection.roster.subscribe(jid);
+                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
             } else {
                 xmppchat.connection.roster.add(jid, '', [], function (iq) {
                     xmppchat.connection.roster.authorize(bare_jid);
-                    xmppchat.connection.roster.subscribe(jid);
+                    xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
                 });
             }
         },
@@ -1383,7 +1382,7 @@
             var id, i,
                 roster_ids = [];
             for (i=0; i < items.length; ++i) {
-                roster_ids.push(items[i]['jid']);
+                roster_ids.push(items[i].jid);
             }
             for (i=0; i < this.models.length; ++i) {
                 id = this.models[i].get('id');
@@ -1463,7 +1462,7 @@
             }
 
             item = this.getItem(bare_jid);
-            if (status_message.text() != item.get('status')) {
+            if (item && (status_message.text() != item.get('status'))) {
                 item.set({'status': status_message.text()});
             }
 
@@ -1514,7 +1513,7 @@
                         item.set({'chat_status': 'offline'});
                     }
                 }
-            } else {
+            } else if (item) {
                 // presence_type is undefined
                 this.addResource(bare_jid, resource);
                 item.set({'chat_status': chat_status});
@@ -1903,6 +1902,7 @@
         var chatdata = $('div#collective-xmpp-chat-data'),
             $connecting = $('span#connecting-to-chat').hide(),
             $toggle = $('a#toggle-online-users');
+        this.fullname = chatdata.attr('fullname');
         this.prebind = chatdata.attr('prebind');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
         this.chatboxes = new this.ChatBoxes();

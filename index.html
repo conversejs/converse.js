@@ -2,19 +2,20 @@
 <html>
     <head>
         <title>Converse.js Demo Page</title>
-        <!-- This is a special version of jQuery with RequireJS built-in -->
         <link rel="stylesheet" href="base.css" type="text/css" media="all">
         <link rel="stylesheet" href="converse.css" type="text/css" media="all">
+        <!-- This is a special version of jQuery with RequireJS built-in -->
         <script data-main="main" src="Libraries/require-jquery.js"></script>
     </head>
     <body>
         <h1>Converse.js Demo Page</h1>
-        <div id="collective-xmpp-chat-data"></div>
-        <div id="toggle-controlbox">
-            <a href="#" class="chat" id="toggle-online-users">
-                <span i18n:translate="">Online Users</span> (<strong id="online-count">0</strong>)
-            </a>
-            <span id="connecting-to-chat" i18n:translate="">Connecting to chat ...</span>
+        <div id="chatpanel" i18n:domain="collective.xmpp.chat">
+            <div id="toggle-controlbox">
+                <a href="#" class="chat" id="toggle-online-users">
+                    <span i18n:translate="">Online Users</span> (<strong id="online-count">0</strong>)
+                </a>
+                <span id="connecting-to-chat" i18n:translate="">Connecting to chat ...</span>
+            </div>
         </div>
     </body>
 </html>

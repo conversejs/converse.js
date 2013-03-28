@@ -536,6 +536,9 @@
         },
 
         show: function () {
+            if (this.$el.is(':visible')) {
+                return this.focus();
+            }
             this.$el.css({'opacity': 0, 'display': 'inline'}) .animate({opacity: '1'}, 200);
             if (xmppchat.connection) {
                 // Without a connection, we haven't yet initialized
@@ -725,7 +728,7 @@
             this.$el.appendTo(xmppchat.chatboxesview.$el);
             this.model.on('change', $.proxy(function (item, changed) {
                 if (_.has(item.changed, 'connected')) {
-                    this.render().appendRoster();
+                    this.render();
                 }
                 if (_.has(item.changed, 'visible')) {
                     if (item.changed.visible === true) {
@@ -742,10 +745,6 @@
             if (this.model.get('visible')) {
                 this.show();
             } 
-        },
-
-        appendRoster: function () {
-            xmppchat.rosterview.$el.appendTo(this.contactspanel.$el);
         },
 
         template: _.template(
@@ -1001,7 +1000,7 @@
             this.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.chatboxes-'+xmppchat.bare_jid));
             if (!this.get('controlbox')) {
-                this.add({
+                this.create({
                     id: 'controlbox',
                     box_id: 'controlbox'
                 });
@@ -1282,12 +1281,6 @@
             return Backbone.Collection.prototype.get.call(this, id);
         },
 
-        addRosterItem: function (attributes) {
-            var model = new xmppchat.RosterItem(attributes);
-            this.add(model);
-            model.save();
-        },
-
         addResource: function (bare_jid, resource) {
             var item = this.getItem(bare_jid),
                 resources;
@@ -1342,8 +1335,8 @@
             */
             xmppchat.xmppstatus.sendPresence('unsubscribe');
             if (xmppchat.connection.roster.findItem(jid)) {
-                xmppchat.connection.roster.remove(bare_jid, function (iq) {
-                    xmppchat.rosterview.model.remove(bare_jid);
+                xmppchat.connection.roster.remove(jid, function (iq) {
+                    xmppchat.rosterview.model.remove(jid);
                 });
             }
         },
@@ -1387,7 +1380,7 @@
                 if (!model) {
                     is_last = false;
                     if (index === (items.length-1)) { is_last = true; }
-                    this.addRosterItem({
+                    this.create({
                         jid: item.jid, 
                         subscription: item.subscription,
                         ask: item.ask,
@@ -1452,7 +1445,7 @@
                         xmppchat.getVCard(
                             bare_jid, 
                             $.proxy(function (jid, fullname, img, img_type, url) {
-                                this.addRosterItem({
+                                this.add({
                                     jid: bare_jid, 
                                     subscription: 'none',
                                     ask: 'request',
@@ -1465,18 +1458,13 @@
                             }, this),
                             $.proxy(function (jid, fullname, img, img_type, url) {
                                 console.log("Error while retrieving vcard");
-                                this.addRosterItem({
-                                    jid: bare_jid, 
-                                    subscription: 'none',
-                                    ask: 'request',
-                                    fullname: jid,
-                                    is_last: true
-                                });
-                            }, this));
+                                this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                            }, this)
+                        );
                     }
                 }
             } else if (presence_type === 'unsubscribed') {
-                this.unsubscribe(jid);
+                this.unsubscribe(bare_jid);
             } else if (presence_type === 'unavailable') {
                 if (this.removeResource(bare_jid, resource) === 0) {
                     if (item) {
@@ -1536,6 +1524,7 @@
             this.$el.hide().html(this.template());
             this.model.fetch({add: true}); // Get the cached roster items from localstorage
             this.initialSort();
+            this.$el.appendTo(xmppchat.chatboxesview.views.controlbox.contactspanel.$el);
         },
 
         updateChatBox: function (item, changed) {
@@ -1585,7 +1574,7 @@
                         view.render();
                     }
                 }
-                presence_change = view.model.changed['chat_status'];
+                presence_change = view.model.changed.chat_status;
                 if (presence_change) {
                     // resort all items only if the model has changed it's chat_status as this render
                     // is also triggered when the resource is changed which always comes before the presence change
@@ -1923,13 +1912,13 @@
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.rosteritems-'+this.bare_jid));
-            this.rosterview = new this.RosterView({'model':this.roster});
 
             this.xmppstatus = new this.XMPPStatus({id:1});
             this.xmppstatus.localStorage = new Backbone.LocalStorage(
                 'converse.xmppstatus'+this.bare_jid);
 
             this.chatboxes.onConnected();
+            this.rosterview = new this.RosterView({'model':this.roster});
 
             this.connection.addHandler(
                 $.proxy(this.roster.subscribeToSuggestedItems, this.roster),

@@ -25,10 +25,6 @@
     height: 1.1em;
 }
 
-#toggle-online-users {
-    display: none;
-}
-
 #connecting-to-chat {
     background: url(images/spinner.gif) no-repeat left;
     padding-left: 1.4em;
@@ -119,7 +115,6 @@ input.new-chatroom-name {
 .chat-textarea {
     border: 0;
     height: 50px;
-    width: 100%;
 }
 
 .chat-textarea-chatbox-selected {
@@ -152,14 +147,24 @@ input.new-chatroom-name {
     font-weight: bold;
     color: #F62817;
     white-space: nowrap;
+    max-width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
 }
 
 .chat-event, .chat-date, .chat-help {
     color: #808080;
 }
 
+.chat-date {
+    display: inline-block;
+    padding-top: 10px;
+}
+
 div#settings,
-div#chatrooms {
+div#chatrooms,
+div#login-dialog {
     height: 279px;
 }
 
@@ -184,7 +189,6 @@ div.delayed .chat-message-me {
 }
 
 .chat-head .avatar {
-    height: 35px;
     float: left;
     margin-right: 6px;
 }
@@ -227,7 +231,7 @@ p.chatroom-topic {
 
 a.subscribe-to-user {
     padding-left: 2em;
-    background: url('/add_icon.png') no-repeat 3px top;
+    background: url('images/add_icon.png') no-repeat 3px top;
     font-weight: bold;
 }
 
@@ -237,7 +241,7 @@ div.add-xmpp-contact {
     padding: 3px 3px 3px 3px;
     margin: 0 0.5em;
     clear: both;
-    background: url('/add_icon.png') no-repeat 3px 3px;
+    background: url('images/add_icon.png') no-repeat 3px 3px;
     font-weight: bold;
 }
 
@@ -248,7 +252,7 @@ div.add-xmpp-contact a.add-xmpp-contact {
 
 #fancy-xmpp-status-select a.change-xmpp-status-message {
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
-    background: url('/pencil_icon.png') no-repeat right top;
+    background: url('images/pencil_icon.png') no-repeat right top;
     float: right;
     clear: right;
     width: 1em;
@@ -353,8 +357,8 @@ form.search-xmpp-contact input {
     background: url(images/user_offline_panel.png) no-repeat 5px 2px;
 }
 
-#xmppchat-roster dd.current-xmpp-contact.busy,
-#xmppchat-roster dd.current-xmpp-contact.busy:hover {
+#xmppchat-roster dd.current-xmpp-contact.dnd,
+#xmppchat-roster dd.current-xmpp-contact.dnd:hover {
     background: url(images/user_busy_panel.png) no-repeat 5px 2px;
 }
 
@@ -368,8 +372,13 @@ form.search-xmpp-contact input {
 }
 
 #xmppchat-roster dd a {
-    margin-left: 2em;
+    margin-left: 1.5em;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
+    display: inline-block;
+    width: 113px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .remove-xmpp-contact-dialog .ui-dialog-buttonpane {
@@ -418,9 +427,10 @@ dd.available-chatroom,
 }
 
 #xmppchat-roster dd a.remove-xmpp-contact {
-    background: url('/delete_icon.png') no-repeat right top;
+    background: url('images/delete_icon.png') no-repeat right top;
     padding: 0 1em 1em 0;
     float: right;
+    width: 22px;
     margin: 0;
 }
 
@@ -435,7 +445,7 @@ dd.available-chatroom,
 }
 
 .chatbox {
-    width: 200px;
+    width: 201px;
 }
 
 .chatroom {
@@ -476,6 +486,14 @@ div#controlbox-panes {
     border-bottom-right-radius: 4px;
     border: 1px solid #999;
     width: 199px;
+}
+
+form#xmppchat-login {
+    padding: 2em 0 0.3em 0.5em;
+}
+
+form#xmppchat-login input {
+    display: block;
 }
 
 form.set-xmpp-status,
@@ -545,6 +563,7 @@ ul#controlbox-tabs a.current, ul#controlbox-tabs a.current:hover {
 
 div#users,
 div#chatrooms,
+div#login-dialog,
 div#settings {
     border: 0;
     font-size: 14px;
@@ -565,6 +584,7 @@ form.sendXMPPMessage {
     background-clip: padding-box;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+    height: 54px;
 }
 
 #set-custom-xmpp-status {
@@ -631,7 +651,7 @@ input.custom-xmpp-status {
     background: url(images/user_offline_panel.png) no-repeat left;
 }
 
-.dropdown a.busy {
+.dropdown a.dnd {
     background: url(images/user_busy_panel.png) no-repeat left;
 }
 

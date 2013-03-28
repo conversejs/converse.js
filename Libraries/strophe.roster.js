@@ -98,6 +98,7 @@ Strophe.addConnectionPlugin('roster',
         };
 
         Strophe.addNamespace('ROSTER_VER', 'urn:xmpp:features:rosterver');
+        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
     },
     /** Function: supportVersioning
      * return true if roster versioning is enabled on server
@@ -183,13 +184,17 @@ Strophe.addConnectionPlugin('roster',
      *
      * Parameters:
      *     (String) jid
-     *     (String) message
+     *     (String) message (optional)
+     *     (String) nick  (optional)
      */
-    subscribe: function(jid, message)
-    {
+    subscribe: function(jid, message, nick) {
         var pres = $pres({to: jid, type: "subscribe"});
-        if (message && message != "")
+        if (message && message !== "") {
             pres.c("status").t(message);
+        } 
+        if (nick && nick !== "") {
+            pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick);
+        }
         this._connection.send(pres);
     },
     /** Function: unsubscribe

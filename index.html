@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Converse.js Demo Page</title>
-        <link rel="stylesheet" href="base.css" type="text/css" media="all">
-        <link rel="stylesheet" href="converse.css" type="text/css" media="all">
-        <!-- This is a special version of jQuery with RequireJS built-in -->
-        <script data-main="main" src="Libraries/require-jquery.js"></script>
-    </head>
-    <body>
-        <h1>Converse.js Demo Page</h1>
-        <div id="chatpanel" i18n:domain="collective.xmpp.chat">
-            <div id="toggle-controlbox">
-                <a href="#" class="chat" id="toggle-online-users">
-                    <span i18n:translate="">Online Users</span> (<strong id="online-count">0</strong>)
-                </a>
-                <span id="connecting-to-chat" i18n:translate="">Connecting to chat ...</span>
-            </div>
-        </div>
-    </body>
+<head>
+    <title>Converse.js Demo Page</title>
+    <link rel="stylesheet" href="base.css" type="text/css" media="all">
+    <link rel="stylesheet" href="converse.css" type="text/css" media="all">
+    <!-- This is a special version of jQuery with RequireJS built-in -->
+    <script data-main="main" src="Libraries/require-jquery.js"></script>
+</head>
+<body>
+    <article>
+    <h1>Converse.js</h1>
+    <div>
+        <p><tt>Converse.js</tt> implements an <a href="http://xmpp.org">XMPP</a> based instant messaging client in the browser.</p>
+        <p>It's used by <a href="http://github.com/collective/collective.xmpp.chat">collective.xmpp.chat</a>, which is a <a href="http://plone.org">Plone</a> instant messaging add-on.</p>
+        <p>The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the server backend.</p>
+        <p>Currently this is not yet 100% the case, as the code makes ajax calls to the (Plone) backend to fetch user info.</p>
+        <h2>Features</h2>
+        <ul>
+            <li>Manually or automically subscribe to other users.</li>
+            <li>Accept or decline contact requests</li>
+            <li>Chat status (online, busy, away, offline)</li>
+            <li>Custom status messages</li>
+            <li>Typing notifications</li>
+            <li>Third person messages (/me )</li>
+            <li>Multi-user chat in chatrooms</li>
+            <li>Chatroom Topics</li>
+            <li>vCard support</li>
+        </ul>
+        <p>A screencast of (a very old version of) <tt>Converse.js</tt> in action via <tt>collective.xmpp.chat</tt> 
+            can be seen <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp">here</a>.</p>
+        <h2>Dependencies</h2>
+        <p>It depends on quite a few third party libraries, including <a href="http://strophe.im/strophejs">strophe.js</a>,
+        <a href="http:/backbonejs.org">backbone.js</a> and <a href="http:/requirejs.org">require.js</a>.</p>
+        <h2>Licence</h2>
+        <p><tt>Converse.js</tt> is released under both the <a href="http://opensource.org/licenses/mit-license.php">MIT</a> 
+           and <a href="http://opensource.org/licenses/gpl-license.php">GPL</a> licenses.</p>
+        <h2>Download</h2>
+        Head on down to our <a href="https://github.com/jcbrand/converse.js">Github repo</a>.
+    </div>
+</article>
+<div id="chatpanel" i18n:domain="collective.xmpp.chat">
+    <div id="collective-xmpp-chat-data"></div>
+    <div id="toggle-controlbox">
+        <a href="#" class="chat" id="toggle-online-users">
+            <span i18n:translate="">Online Users</span> (<strong id="online-count">0</strong>)
+        </a>
+        <span id="connecting-to-chat" i18n:translate="">Connecting to chat ...</span>
+    </div>
+</div>
+</body>
 </html>

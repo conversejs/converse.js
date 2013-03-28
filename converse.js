@@ -500,7 +500,6 @@
                     '<div class="chat-head chat-head-chatbox">' +
                         '<a class="close-chatbox-button">X</a>' +
                         '<a href="{{url}}" target="_blank" class="user">' +
-                            '<canvas height="35px" width="35px" class="avatar"></canvas>' +
                             '<div class="chat-title"> {{ fullname }} </div>' +
                         '</a>' +
                         '<p class="user-custom-message"><p/>' +
@@ -516,15 +515,18 @@
         render: function () {
             this.$el.attr('id', this.model.get('box_id'))
                     .html(this.template(this.model.toJSON()));
-
-            var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image');
-            var ctx = this.$el.find('canvas').get(0).getContext('2d');
-            var img = new Image();   // Create new Image object
-            img.onload = function() {
-                var ratio = img.width/img.height;
-                ctx.drawImage(img,0,0, 35*ratio, 35);
-            };
-            img.src = img_src;
+            if (this.model.get('image')) {
+                var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
+                    canvas = $('<canvas height="35px" width="35px" class="avatar"></canvas>'),
+                    ctx = canvas.get(0).getContext('2d'),
+                    img = new Image();   // Create new Image object
+                img.onload = function() {
+                    var ratio = img.width/img.height;
+                    ctx.drawImage(img,0,0, 35*ratio, 35);
+                };
+                img.src = img_src;
+                this.$el.find('.chat-title').before(canvas);
+            }
             return this;
         },
 
@@ -1400,30 +1402,13 @@
                 if (!model) {
                     is_last = false;
                     if (index === (items.length-1)) { is_last = true; }
-                    xmppchat.getVCard(
-                        item.jid, 
-                        $.proxy(function (jid, fullname, img, img_type, url) {
-                            this.addRosterItem({
-                                jid: item.jid, 
-                                subscription: item.subscription,
-                                ask: item.ask,
-                                fullname: fullname,
-                                image: img,
-                                image_type: img_type,
-                                url: url,
-                                is_last: is_last
-                            });
-                        }, this),
-                        $.proxy(function (stanza) {
-                            console.log("rosterHandler: Error occured while fetching vcard");
-                            console.log(stanza);
-                            this.addRosterItem({
-                                jid: item.jid, 
-                                subscription: item.subscription,
-                                ask: item.ask,
-                                is_last: is_last
-                            });
-                        }, this));
+                    this.addRosterItem({
+                        jid: item.jid, 
+                        subscription: item.subscription,
+                        ask: item.ask,
+                        fullname: item.name,
+                        is_last: is_last
+                    });
                 } else {
                     if ((item.subscription === 'none') && (item.ask === null)) {
                         // This user is no longer in our roster

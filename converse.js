@@ -1004,6 +1004,8 @@
                     id: 'controlbox',
                     box_id: 'controlbox'
                 });
+            } else {
+                this.get('controlbox').save();
             }
             // This will make sure the Roster is set up
             this.get('controlbox').set({connected:true});
@@ -1874,11 +1876,14 @@
             } else {
                 var controlbox = this.chatboxes.get('controlbox');
                 if (!controlbox) {
-                    controlbox = this.chatboxes.create({
+                    controlbox = this.chatboxes.add({
                         id: 'controlbox',
                         box_id: 'controlbox',
                         visible: true
                     });
+                    if (this.connection) {
+                        controlbox.save();
+                    }
                 } else {
                     controlbox.trigger('show');
                 }

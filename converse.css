@@ -3,7 +3,7 @@
 }
 
 #chatpanel {
-    z-index: 4; /*--Keeps the panel on top of all other elements--*/
+    z-index: 99; /*--Keeps the panel on top of all other elements--*/
     position: fixed;
     bottom: 0; right: 0;
     height: 332px;
@@ -440,7 +440,7 @@ dd.available-chatroom,
     display:none;
     float: right;
     margin-right: 15px;
-    z-index: 3; /* So that it's higher than the content actions */
+    z-index: 20; /* So that it's higher than the content actions */
     border-radius: 4px;
 }
 
@@ -537,13 +537,6 @@ ul#controlbox-tabs li a {
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
     color:#666;
-    background-color:#EEE;
-    background: -moz-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
-    background: -ms-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(255,255,255,1) 100%); /* IE10+ */
-    background: -o-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(255,255,255,1) 100%); /* Opera 11.10+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(245,245,245,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(245,245,245,1) 0%, rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: linear-gradient(top, rgba(245,245,245,1) 0%, rgba(255,255,255,1) 100%); /* W3C */
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
@@ -629,7 +622,7 @@ input.custom-xmpp-status {
     border-top: 0;
     width: 99%;
     background-color: #FFF;
-    z-index: 4;
+    z-index: 21;
 }
 
 .dropdown dd ul li a:hover {

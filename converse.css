@@ -231,23 +231,34 @@ p.chatroom-topic {
 
 a.subscribe-to-user {
     padding-left: 2em;
-    background: url('images/add_icon.png') no-repeat 3px top;
     font-weight: bold;
 }
 
-div.add-xmpp-contact {
-    display: block;
-    border:1px solid #ddd;
-    padding: 3px 3px 3px 3px;
-    margin: 0 0.5em;
-    clear: both;
-    background: url('images/add_icon.png') no-repeat 3px 3px;
-    font-weight: bold;
+dl.add-xmpp-contact {
+    margin: 0 0 0 0.5em;
+    padding-top: 3px;
+    z-index: 21;
+    background: url('images/add_icon.png') no-repeat 3px;
 }
 
-div.add-xmpp-contact a.add-xmpp-contact {
+dt#xmpp-contact-search {
+    padding-top: 3px;
+}
+
+.fancy-dropdown a.choose-xmpp-status,
+.fancy-dropdown a.add-xmpp-contact {
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
     padding-left: 1.5em;
+    width: 140px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float: left;
+}
+
+#fancy-xmpp-status-select {
+    padding-bottom: 3px;
 }
 
 #fancy-xmpp-status-select a.change-xmpp-status-message {
@@ -259,24 +270,16 @@ div.add-xmpp-contact a.add-xmpp-contact {
     height: 1em;
 }
 
-#fancy-xmpp-status-select a.choose-xmpp-status {
-    text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
-    padding-left: 1.5em;
-    width: 140px;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    float: left;
-}
-
 ul#found-users {
-    padding-top: 0.5em;
+    padding: 10px 0 5px 5px;
+    border: 0; 
 }
 
 form.search-xmpp-contact {
     margin: 0;
-    padding: 1em 0 0 0;
+    padding-left: 5px;
+    padding: 1em 0 0 5px;
+    background: white;
 }
 
 form.search-xmpp-contact input {
@@ -459,11 +462,6 @@ dd.available-chatroom,
     padding: 0;
 }
 
-.oc-chat-content dl {
-    margin: 0;
-    padding: 0;
-}
-
 .oc-chat-content dd {
     margin-left: 0;
     margin-bottom: 0;
@@ -601,6 +599,7 @@ form.sendXMPPMessage {
 /* status dropdown styles */
 dl.dropdown {
     margin-right: 0.5em;
+    margin-bottom: 0;
 }
 .dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
 .dropdown dd { position:relative; }
@@ -613,7 +612,7 @@ input.custom-xmpp-status {
     height: 18px;
 }
 
-#fancy-xmpp-status-select {
+.fancy-dropdown {
     border:1px solid #ddd;
     height: 22px;
 }
@@ -624,7 +623,6 @@ input.custom-xmpp-status {
 
 .dropdown dd ul {
     list-style:none;
-    padding:5px 0;
     position:absolute; left:0; top:0;
     border:1px solid #ddd;
     border-top: 0;
@@ -647,18 +645,18 @@ input.custom-xmpp-status {
 }
 
 .dropdown a.online {
-    background: url(images/user_online_panel.png) no-repeat left;
+    background: url(images/user_online_panel.png) no-repeat left 3px;
 }
 
 .dropdown a.offline {
-    background: url(images/user_offline_panel.png) no-repeat left;
+    background: url(images/user_offline_panel.png) no-repeat left 3px;
 }
 
 .dropdown a.dnd {
-    background: url(images/user_busy_panel.png) no-repeat left;
+    background: url(images/user_busy_panel.png) no-repeat left 3px;
 }
 
 .dropdown a.away {
-    background: url(images/user_away_panel.png) no-repeat left;
+    background: url(images/user_away_panel.png) no-repeat left 3px;
 }
 

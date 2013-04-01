@@ -581,14 +581,18 @@
                     '</select>'+
                 '</span>'+
             '</form>'+
-            '<div class="add-xmpp-contact">'+
-                '<a class="add-xmpp-contact" href="#" title="Click to search for new users to add as chat contacts">Add a contact</a>'+
-                '<form class="search-xmpp-contact" style="display:none">'+
-                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>'+
-                    '<button type="submit">Search</button>'+
-                    '<ul id="found-users"></ul>'+
-                '</form>'+
-            '</div>'
+            '<dl class="add-xmpp-contact dropdown">' +
+                '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
+                    '<a class="add-xmpp-contact" href="#" title="Click to search for new users to add as chat contacts">Add a contact</a>' +
+                '</dt>' +
+                '<dd class="search-xmpp" style="display:none"><ul>' +
+                '<form class="search-xmpp-contact">' +
+                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
+                    '<button type="submit">Search</button>' +
+                    '<ul id="found-users"></ul>' +
+                '</form>' +
+                '</ul></dd>' +
+            '</dl>'
         ),
 
         render: function () {
@@ -599,29 +603,29 @@
 
         toggleContactForm: function (ev) {
             ev.preventDefault();
-            this.$el.find('form.search-xmpp-contact').fadeToggle('medium').find('input.username').focus();
+            this.$el.find('.search-xmpp').toggle().find('input.username').focus();
         },
 
         searchContacts: function (ev) {
             ev.preventDefault();
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
-                var $results_el = $('#found-users');
-                $(data).each(function (idx, obj) {
-                    if ($results_el.children().length) {
+                    var $results_el = $('#found-users');
+                    $(data).each(function (idx, obj) {
+                        if ($results_el.children().length) {
                         $results_el.empty();
-                    }
-                    $results_el.append(
+                        }
+                        $results_el.append(
                             $('<li></li>')
-                                .attr('id', 'found-users-'+obj.id)
-                                .append(
-                                    $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
-                                        .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.domain)
-                                        .text(obj.fullname)
+                            .attr('id', 'found-users-'+obj.id)
+                            .append(
+                                $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
+                                .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.domain)
+                                .text(obj.fullname)
                                 )
-                        );
-                });
-            });
-        },
+                            );
+                        });
+                    });
+            },
 
         subscribeToContact: function (ev) {
             ev.preventDefault();
@@ -629,10 +633,10 @@
                 jid = $target.attr('data-recipient'),
                 name = $target.text();
             xmppchat.connection.roster.add(jid, name, [], function (iq) {
-                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
-            });
+                    xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+                    });
             $target.parent().remove();
-            $('form.search-xmpp-contact').hide();
+            $('.search-xmpp').hide();
         }
     });
 
@@ -1758,7 +1762,7 @@
 
         choose_template: _.template(
             '<dl id="target" class="dropdown">' +
-                '<dt id="fancy-xmpp-status-select"></dt>' +
+                '<dt id="fancy-xmpp-status-select" class="fancy-dropdown"></dt>' +
                 '<dd><ul></ul></dd>' +
             '</dl>'),
 
@@ -1935,6 +1939,9 @@
             this.chatboxes.onConnected();
             this.rosterview = new this.RosterView({'model':this.roster});
 
+            this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
+            this.xmppstatus.fetch();
+
             this.connection.addHandler(
                 $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                 'http://jabber.org/protocol/rosterx', 'message', null);
@@ -1956,8 +1963,6 @@
                             return true;
                         }, this), null, 'message', 'chat');
 
-                this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
-                this.xmppstatus.fetch();
                 this.xmppstatus.initStatus();
             }, this));
             this.$feedback.text('Online Contacts');

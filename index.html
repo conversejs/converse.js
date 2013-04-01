@@ -1,52 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Converse.js Demo Page</title>
-    <link rel="stylesheet" href="base.css" type="text/css" media="all">
-    <link rel="stylesheet" href="converse.css" type="text/css" media="all">
-    <!-- This is a special version of jQuery with RequireJS built-in -->
-    <script data-main="main" src="Libraries/require-jquery.js"></script>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Converse.js : Browser-based Instant Messaging with Strophe.js and Backbone.js" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <title>Converse.js</title>
 </head>
+
 <body>
-    <article>
-    <h1>Converse.js</h1>
-    <div>
-        <p><tt>Converse.js</tt> implements an <a href="http://xmpp.org">XMPP</a> based instant messaging client in the browser.</p>
-        <p>It's used by <a href="http://github.com/collective/collective.xmpp.chat">collective.xmpp.chat</a>, which is a <a href="http://plone.org">Plone</a> instant messaging add-on.</p>
-        <p>The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the server backend.</p>
-        <p>Currently this is not yet 100% the case, as the code makes ajax calls to the (Plone) backend to fetch user info.</p>
-        <h2>Features</h2>
-        <ul>
-            <li>Manually or automically subscribe to other users.</li>
-            <li>Accept or decline contact requests</li>
-            <li>Chat status (online, busy, away, offline)</li>
-            <li>Custom status messages</li>
-            <li>Typing notifications</li>
-            <li>Third person messages (/me )</li>
-            <li>Multi-user chat in chatrooms</li>
-            <li>Chatroom Topics</li>
-            <li>vCard support</li>
-        </ul>
-        <p>A screencast of (a very old version of) <tt>Converse.js</tt> in action via <tt>collective.xmpp.chat</tt> 
-            can be seen <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp">here</a>.</p>
-        <h2>Dependencies</h2>
-        <p>It depends on quite a few third party libraries, including <a href="http://strophe.im/strophejs">strophe.js</a>,
-        <a href="http:/backbonejs.org">backbone.js</a> and <a href="http:/requirejs.org">require.js</a>.</p>
-        <h2>Licence</h2>
-        <p><tt>Converse.js</tt> is released under both the <a href="http://opensource.org/licenses/mit-license.php">MIT</a> 
-           and <a href="http://opensource.org/licenses/gpl-license.php">GPL</a> licenses.</p>
-        <h2>Download</h2>
-        Head on down to our <a href="https://github.com/jcbrand/converse.js">Github repo</a>.
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jcbrand/converse.js">View on GitHub</a>
+
+          <h1 id="project_title">Converse.js</h1>
+          <h2 id="project_tagline">Browser-based Instant Messaging with Strophe.js and Backbone.js</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jcbrand/converse.js/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jcbrand/converse.js/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
     </div>
-</article>
-<div id="chatpanel" i18n:domain="collective.xmpp.chat">
-    <div id="collective-xmpp-chat-data"></div>
-    <div id="toggle-controlbox">
-        <a href="#" class="chat" id="toggle-online-users">
-            <span i18n:translate="">Online Users</span> (<strong id="online-count">0</strong>)
-        </a>
-        <span id="connecting-to-chat" i18n:translate="">Connecting to chat ...</span>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><strong>Converse.js</strong> implements an <a href="http://xmpp.org">XMPP</a> based instant messaging client in the browser.</p>
+
+<p>It is used by <a href="http://github.com/collective/collective.xmpp.chat">collective.xmpp.chat</a>, which is a <a href="http://plone.org">Plone</a> instant messaging add-on.</p>
+
+<p>The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the backend.</p>
+
+<p>Currently this is not yet the case, as the code makes ajax calls to the (Plone) backend
+to fetch user info. </p>
+
+<h2>Features</h2>
+<ul>
+    <li>Manually or automically subscribe to other users.</li>
+    <li>Accept or decline contact requests</li>
+    <li>Chat status (online, busy, away, offline)</li>
+    <li>Custom status messages</li>
+    <li>Typing notifications</li>
+    <li>Third person messages (/me )</li>
+    <li>Multi-user chat in chatrooms</li>
+    <li>Chatroom Topics</li>
+    <li>vCard support</li>
+</ul>
+<p>A screencast of <strong>Converse.js</strong> in action via <strong>collective.xmpp.chat</strong> can be seen <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp">here</a>.</p>
+
+<h2>Dependencies</h2>
+<p><strong>Converse.js</strong> depends on a few third party libraries, including: 
+<ul>
+    <li><a href="http://strophe.im/strophejs">strophe.js</a></li>
+    <li><a href="http:/backbonejs.org">backbone.js</a></li>
+    <li><a href="http:/requirejs.org">require.js</a></li>
+</ul>
+</p>
+
+<h2>Licence</h2>
+
+<p><strong>Converse.js</strong> is released under both the <a href="http://opensource.org/licenses/mit-license.php">MIT</a> and <a href="http://opensource.org/licenses/gpl-license.php">GPL</a> licenses.</p>
+      </section>
     </div>
-</div>
-</body>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Converse.js maintained by <a href="https://github.com/jcbrand">jcbrand</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+  </body>
 </html>

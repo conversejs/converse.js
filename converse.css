@@ -503,6 +503,11 @@ form.add-chatroom {
     background: white;
 }
 
+.set-xmpp-status li {
+    list-style: none;
+    padding-left: 5px;
+}
+
 select#select-xmpp-status {
     float: right;
     margin-right: 0.5em;

@@ -324,7 +324,7 @@
             if (idx >= 0) {
                 previous_message = this.model.messages.at(idx);
                 prev_date = xmppchat.parseISO8601(previous_message.get('time'));
-                isodate = this_date;
+                isodate = new Date(this_date.getTime());
                 isodate.setUTCHours(0,0,0,0);
                 isodate = xmppchat.toISOString(isodate);
                 if (this.isDifferentDay(prev_date, this_date)) {

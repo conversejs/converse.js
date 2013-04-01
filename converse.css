@@ -489,6 +489,7 @@ div#controlbox-panes {
 }
 
 form#xmppchat-login {
+    background: white;
     padding: 2em 0 0.3em 0.5em;
 }
 
@@ -499,6 +500,7 @@ form#xmppchat-login input {
 form.set-xmpp-status,
 form.add-chatroom {
     padding: 0.5em 0 0.3em 0.5em;
+    background: white;
 }
 
 select#select-xmpp-status {
@@ -545,7 +547,7 @@ ul#controlbox-tabs li a {
 }
 
 .chat-head #controlbox-tabs li a {
-    background-color: rgba(240,240,240,1);
+    background-color: white;
     box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
 }
 
@@ -563,6 +565,7 @@ div#settings {
     border: 0;
     font-size: 14px;
     width: 199px;
+    background-color: white;
 }
 
 form.sendXMPPMessage {

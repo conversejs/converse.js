@@ -219,10 +219,10 @@ p.chatroom-topic {
     font-size: 80%;
     font-style: italic;
     height: 1.3em;
-    clear: right;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin: 0;
 }
 
 .activated{

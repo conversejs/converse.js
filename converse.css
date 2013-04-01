@@ -518,9 +518,11 @@ select#select-xmpp-status {
 
 /* single tab */
 .chat-head #controlbox-tabs li {
-    width: 40%;
     float:left;
+    list-style: none;
+    padding-left: 0;
     text-shadow: white 0 1px 0;
+    width: 40%;
 }
 
 ul#controlbox-tabs li a {

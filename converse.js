@@ -1606,7 +1606,10 @@
                 }
             });
             $count = $('#online-count');
-            $count.text(this.model.getNumOnlineContacts());
+            $count.text('('+this.model.getNumOnlineContacts()+')');
+            if (!$count.is(':visible')) {
+                $count.show();
+            }
             return this;
         },
 
@@ -1821,7 +1824,6 @@
 
             connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
-                    // TODO: Get users fullname (probably via vCard) here
                     $(document).trigger('jarnxmpp.connected', connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
                     console.log('Disconnected');
@@ -1835,8 +1837,10 @@
                     console.log('Connection Failed');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
                     console.log('Authenticating');
+                    xmppchat.$feedback.text('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
                     console.log('Authenticating Failed');
+                    xmppchat.$feedback.text('Authentication failed');
                 } else if (status === Strophe.Status.DISCONNECTING) {
                     console.log('Disconnecting');
                 } else if (status === Strophe.Status.ATTACHED) {
@@ -1861,8 +1865,8 @@
     // --------------
     $(document).ready($.proxy(function () {
         var chatdata = $('div#collective-xmpp-chat-data'),
-            $connecting = $('span#connecting-to-chat').hide(),
             $toggle = $('a#toggle-online-users');
+        this.$feedback = $('.conn-feedback');
         this.fullname = chatdata.attr('fullname');
         this.prebind = chatdata.attr('prebind');
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
@@ -1891,16 +1895,11 @@
         }, this));
 
         $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {
-            $toggle.hide(function () {
-                $connecting.show();
-            });
+            this.$feedback.text('Connecting to chat...');
         }, this));
 
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
-            $toggle.hide();
-            $connecting.html('Unable to communicate with chat server')
-                       .css('background-image', "url(images/error_icon.png)")
-                       .show();
+            this.$feedback.text('Unable to communicate with chat server').css('background-image', "url(images/error_icon.png)");
             console.log("Connection Failed :(");
         }, this));
 
@@ -1950,8 +1949,7 @@
                 this.xmppstatus.fetch();
                 this.xmppstatus.initStatus();
             }, this));
-            $connecting.hide();
-            $toggle.show();
+            this.$feedback.text('Online Contacts');
         }, this));
     }, xmppchat));
 

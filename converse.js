@@ -479,7 +479,11 @@
         },
 
         closeChat: function () {
-            this.model.destroy();
+            if (xmppchat.connection) {
+                this.model.destroy();
+            } else {
+                this.model.trigger('hide');
+            }
         },
 
         initialize: function (){
@@ -739,6 +743,9 @@
 
             this.model.on('show', this.show, this);
             this.model.on('destroy', $.proxy(function (model, response, options) {
+                this.$el.hide('fast');
+            }, this));
+            this.model.on('hide', $.proxy(function (model, response, options) {
                 this.$el.hide('fast');
             }, this));
 
@@ -1875,10 +1882,14 @@
 
         $toggle.bind('click', $.proxy(function (e) {
             e.preventDefault();
+            var controlbox = this.chatboxes.get('controlbox');
             if ($("div#controlbox").is(':visible')) {
-                this.chatboxes.get('controlbox').destroy();
+                if (this.connection) {
+                    controlbox.destroy();
+                } else {
+                    controlbox.trigger('hide');
+                }
             } else {
-                var controlbox = this.chatboxes.get('controlbox');
                 if (!controlbox) {
                     controlbox = this.chatboxes.add({
                         id: 'controlbox',

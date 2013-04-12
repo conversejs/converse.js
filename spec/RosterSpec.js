@@ -7,8 +7,7 @@
     );
 } (this, function (xmppchat) {
 
-    return describe("Roster", function() {
-
+    return describe("Roster", $.proxy(function() {
         // Names from http://www.fakenamegenerator.com/
         names = [
             'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer', 'Dirk Eichel', 'Marco Duerr', 'Ute Schiffer',
@@ -24,35 +23,42 @@
             'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers', 'Ben Zomer',
             'Leah Weiss', 'Francesca Disseldorp', 'Sven Bumgarner', 'Benjamin Zweig'
         ];
-
         mock_connection  = {
             'muc': {
                 'listRooms': function () {}
             }
         };
+        this.prebind = true;
+        this.connection = mock_connection;
+        this.chatboxes = new this.ChatBoxes();
+        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
+        this.roster = new this.RosterItems();
+        // Clear localStorage
+        var key = hex_sha1('converse.rosteritems-dummy@localhost');
+        window.localStorage.removeItem(key);
+        this.roster.localStorage = new Backbone.LocalStorage(key);
+
+        this.chatboxes.onConnected();
+        this.rosterview = new this.RosterView({'model':this.roster});
+        this.rosterview.render();
 
         describe("the contacts roster", $.proxy(function () {
-            this.prebind = true;
-            this.connection = mock_connection;
-            this.chatboxes = new this.ChatBoxes();
-            this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-            this.roster = new this.RosterItems();
-            // Clear localStorage
-            var key = hex_sha1('converse.rosteritems-dummy@localhost');
-            window.localStorage.removeItem(key);
-            this.roster.localStorage = new Backbone.LocalStorage(key);
-
-            this.chatboxes.onConnected();
-            this.rosterview = new this.RosterView({'model':this.roster});
-            this.rosterview.render();
 
             // by default the dts are hidden from css class and only later they will be hidden
             // by jQuery therefore for the first check we will see if visible instead of none
-            it("should hide the requesting contacts heading if there aren't any", $.proxy(function () {
+            it("hides the requesting contacts heading if there aren't any", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
             }, xmppchat));
 
-            it("should be able to add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
+            it("hides the current contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
+            }, xmppchat));
+
+            it("hides the pending contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
+            }, xmppchat));
+
+            it("can add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var i, t;
                 spyOn(this.rosterview, 'render').andCallThrough();
                 spyOn(this, 'showControlBox');
@@ -74,15 +80,11 @@
                 }
             }, xmppchat));
 
-            it("should show the requesting contacts heading after they have been added", $.proxy(function () {
+            it("shows the requesting contacts heading after they have been added", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
             }, xmppchat));
 
-            it("should hide the pending contacts heading if there aren't any", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
-            }, xmppchat));
-
-            it("should be able to add pending contacts, and they should be sorted alphabetically", $.proxy(function () {
+            it("can add pending contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var i, t;
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=10; i<20; i++) {
@@ -100,15 +102,11 @@
                 }
             }, xmppchat));
 
-            it("should show the pending contacts heading after they have been added", $.proxy(function () {
+            it("shows the pending contacts heading after they have been added", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
             }, xmppchat));
 
-            it("should hide the current contacts heading if there aren't any", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
-            }, xmppchat));
-
-            it("should be able to add existing contacts, and they should be sorted alphabetically", $.proxy(function () {
+            it("can add existing contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var i, t;
                 spyOn(this.rosterview, 'render').andCallThrough();
                 // Add 40 properly regisertered contacts (initially all offline) and check that they are sorted alphabetically
@@ -127,11 +125,39 @@
                 }
             }, xmppchat));
 
-            it("should show the current contacts heading if they have been added", $.proxy(function () {
+            it("shows the current contacts heading if they have been added", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
             }, xmppchat));
 
             describe("roster items", $.proxy(function () {
+
+                it("are saved to, and can be retrieved from, localStorage", $.proxy(function () {
+                    var new_attrs, old_attrs, attrs, old_roster;
+
+                    expect(this.roster.length).toEqual(60);
+                    old_roster = this.roster;
+                    this.roster = new this.RosterItems();
+                    expect(this.roster.length).toEqual(0);
+
+                    this.roster.localStorage = new Backbone.LocalStorage(
+                        hex_sha1('converse.rosteritems-dummy@localhost'));
+                    this.chatboxes.onConnected();
+
+                    spyOn(this.roster, 'fetch').andCallThrough();
+                    this.rosterview = new this.RosterView({'model':this.roster});
+                    expect(this.roster.fetch).toHaveBeenCalled();
+                    expect(this.roster.length).toEqual(60);
+
+                    // Check that the roster items retrieved from localStorage
+                    // have the same attributes values as the original ones.
+                    attrs = ['jid', 'fullname', 'subscription', 'ask'];
+                    for (i=0; i<attrs.length; i++) {
+                        new_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
+                        old_attrs = _.pluck(_.pluck(old_roster.models, 'attributes'), attrs[i]);
+                        expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
+                    }
+                    this.rosterview.render();
+                }, xmppchat));
 
                 it("can change their status to online and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid;
@@ -232,5 +258,5 @@
 
 
         }, xmppchat));
-    });
+    }, xmppchat));
 }));

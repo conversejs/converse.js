@@ -7,7 +7,7 @@
     );
 } (this, function (xmppchat) {
 
-    return describe("Contacts Roster", function() {
+    return describe("Roster", function() {
 
         // Names from http://www.fakenamegenerator.com/
         names = [
@@ -133,7 +133,7 @@
 
             describe("roster items", $.proxy(function () {
 
-                it("should be able to change their status to online and be sorted alphabetically", $.proxy(function () {
+                it("can change their status to online and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=59; i>54; i--) {
@@ -151,7 +151,7 @@
                     }
                 }, xmppchat));
 
-                it("should be able to change their status to busy and be sorted alphabetically", $.proxy(function () {
+                it("can change their status to busy and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=54; i>49; i--) {
@@ -168,7 +168,7 @@
                     }
                 }, xmppchat));
 
-                it("should be able to change their status to away and be sorted alphabetically", $.proxy(function () {
+                it("can change their status to away and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=49; i>44; i--) {
@@ -186,7 +186,7 @@
                     }
                 }, xmppchat));
 
-                it("should be able to change their status to unavailable and be sorted alphabetically", $.proxy(function () {
+                it("can change their status to unavailable and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=44; i>39; i--) {
@@ -204,7 +204,7 @@
                     }
                 }, xmppchat));
 
-                it("should be ordered according to status: online, busy, away, unavailable, offline", $.proxy(function () {
+                it("are ordered according to status: online, busy, away, unavailable, offline", $.proxy(function () {
                     var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                     var i;
                     // The first five contacts are online.
@@ -229,6 +229,7 @@
                     }
                 }, xmppchat));
             }, xmppchat));
+
 
         }, xmppchat));
     });

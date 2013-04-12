@@ -1011,7 +1011,7 @@
             this.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.chatboxes-'+xmppchat.bare_jid));
             if (!this.get('controlbox')) {
-                this.create({
+                this.add({
                     id: 'controlbox',
                     box_id: 'controlbox'
                 });
@@ -1022,11 +1022,11 @@
             this.get('controlbox').set({connected:true});
             // Get cached chatboxes from localstorage
             this.fetch({
-                add: true, success: 
-                $.proxy(function (collection, resp) {
+                add: true,
+                success: $.proxy(function (collection, resp) {
                     if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
                         // If the controlbox was saved in localstorage, it must be visible
-                        this.get('controlbox').set({visible:true});
+                        this.get('controlbox').set({visible:true}).save();
                     }
                 }, this)
             }); 
@@ -1214,7 +1214,7 @@
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
-                xmppchat.chatboxes.get('controlbox').trigger('show');
+                xmppchat.showControlBox();
             } else if (subscription === 'both' || subscription === 'to') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
@@ -1520,6 +1520,9 @@
             }, this);
 
             this.model.on('change', function (item, changed) {
+                if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
+                    return;
+                }
                 this.updateChatBox(item, changed);
                 this.render(item);
             }, this);
@@ -1880,6 +1883,35 @@
         }
     });
 
+    xmppchat.showControlBox = function () {
+        var controlbox = this.chatboxes.get('controlbox');
+        if (!controlbox) {
+            this.chatboxes.add({
+                id: 'controlbox',
+                box_id: 'controlbox',
+                visible: true
+            });
+            if (this.connection) {
+                this.chatboxes.get('controlbox').save();
+            }
+        } else {
+            controlbox.trigger('show');
+        }
+    }
+
+    xmppchat.toggleControlBox = function () {
+        if ($("div#controlbox").is(':visible')) {
+            var controlbox = this.chatboxes.get('controlbox');
+            if (this.connection) {
+                controlbox.destroy();
+            } else {
+                controlbox.trigger('hide');
+            }
+        } else {
+            this.showControlBox();
+        }
+    };
+
     // Event handlers
     // --------------
     $(document).ready($.proxy(function () {
@@ -1891,31 +1923,7 @@
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-
-        $toggle.bind('click', $.proxy(function (e) {
-            e.preventDefault();
-            var controlbox = this.chatboxes.get('controlbox');
-            if ($("div#controlbox").is(':visible')) {
-                if (this.connection) {
-                    controlbox.destroy();
-                } else {
-                    controlbox.trigger('hide');
-                }
-            } else {
-                if (!controlbox) {
-                    controlbox = this.chatboxes.add({
-                        id: 'controlbox',
-                        box_id: 'controlbox',
-                        visible: true
-                    });
-                    if (this.connection) {
-                        controlbox.save();
-                    }
-                } else {
-                    controlbox.trigger('show');
-                }
-            }
-        }, this));
+        $toggle.bind('click', $.proxy(function (e) { e.preventDefault(); this.toggleControlBox(); }, this));
 
         $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {
             this.$feedback.text('Connecting to chat...');

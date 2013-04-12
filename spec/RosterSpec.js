@@ -25,160 +25,178 @@
             'Leah Weiss', 'Francesca Disseldorp', 'Sven Bumgarner', 'Benjamin Zweig'
         ];
 
-        describe("contacts roster", function () {
+        mock_connection  = {
+            'muc': {
+                'listRooms': function () {}
+            }
+        }
 
-            xmppchat.roster = new xmppchat.RosterItems();
-            xmppchat.rosterview = new xmppchat.RosterView({'model':xmppchat.roster});
+        describe("the contacts roster", $.proxy(function () {
+            this.prebind = true;
+            this.connection = mock_connection;
+            this.chatboxes = new this.ChatBoxes();
+            this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
+            this.roster = new this.RosterItems();
+            this.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-dummy@localhost'));
+            this.chatboxes.onConnected();
+            this.rosterview = new this.RosterView({'model':this.roster});
+
             // stub
-            xmppchat.chatboxesview = {openChat: function () {} };
-            xmppchat.rosterview.render();
+            this.chatboxesview = {openChat: function () {} };
+            this.rosterview.render();
 
             // by default the dts are hidden from css class and only later they will be hidden
             // by jQuery therefore for the first check we will see if visible instead of none
-            it("should hide the requesting contacts heading if there aren't any", function () {
-                expect(xmppchat.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
-            });
+            it("should hide the requesting contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
+            }, xmppchat));
 
-            it("should be able to add requesting contacts, and they should be sorted alphabetically", function () {
-                var jid, i, t;
-                spyOn(xmppchat.rosterview, 'render').andCallThrough();
-                spyOn(xmppchat.chatboxesview, 'openChat');
+            it("should be able to add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
+                var i, t;
+                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.chatboxesview, 'openChat');
                 for (i=0; i<10; i++) {
-                    jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    xmppchat.roster.addRosterItem(jid, 'none', 'request', names[i]);
-                    expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                    this.roster.create({
+                        jid: names[i].replace(' ','.').toLowerCase() + '@localhost',
+                        subscription: 'none',
+                        ask: 'request',
+                        fullname: names[i],
+                        is_last: i<9
+                    });
+                    expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = xmppchat.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
+                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
                     expect(t).toEqual(names.slice(0,i+1).sort().join(''));
                     // When a requesting contact is added, the controlbox must
                     // be opened.
-                    expect(xmppchat.chatboxesview.openChat).toHaveBeenCalledWith('controlbox');
+                    expect(this.chatboxesview.openChat).toHaveBeenCalledWith('controlbox');
                 }
-            });
+            }, xmppchat));
 
-            it("should show the requesting contacts heading after they have been added", function () {
-                expect(xmppchat.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
-            });
+            it("should show the requesting contacts heading after they have been added", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
+            }, xmppchat));
 
-            it("should hide the pending contacts heading if there aren't any", function () {
-                expect(xmppchat.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
-            });
+            it("should hide the pending contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
+            }, xmppchat));
 
-            it("should be able to add pending contacts, and they should be sorted alphabetically", function () {
+            it("should be able to add pending contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var jid, i, t;
-                spyOn(xmppchat.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=10; i<20; i++) {
                     jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    xmppchat.roster.addRosterItem(jid, 'none', 'subscribe', names[i]);
-                    expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                    this.roster.addRosterItem(jid, 'none', 'subscribe', names[i]);
+                    expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = xmppchat.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
+                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
                     expect(t).toEqual(names.slice(10,i+1).sort().join(''));
                 }
-            });
+            }, xmppchat));
 
-            it("should show the pending contacts heading after they have been added", function () {
-                expect(xmppchat.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
-            });
+            it("should show the pending contacts heading after they have been added", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
+            }, xmppchat));
 
-            it("should hide the current contacts heading if there aren't any", function () {
-                expect(xmppchat.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
-            });
+            it("should hide the current contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
+            }, xmppchat));
 
-            it("should be able to add existing contacts, and they should be sorted alphabetically", function () {
+            it("should be able to add existing contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var jid, i, t;
-                spyOn(xmppchat.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'render').andCallThrough();
                 // Add 40 properly regisertered contacts (initially all offline) and check that they are sorted alphabetically
                 for (i=20; i<60; i++) {
                     jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    xmppchat.roster.addRosterItem(jid, 'both', null, names[i]);
-                    expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                    this.roster.addRosterItem(jid, 'both', null, names[i]);
+                    expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = xmppchat.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
                     expect(t).toEqual(names.slice(20,i+1).sort().join(''));
                 }
-            });
+            }, xmppchat));
 
-            it("should show the current contacts heading if they have been added", function () {
-                expect(xmppchat.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
-            });
+            it("should show the current contacts heading if they have been added", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
+            }, xmppchat));
 
-            describe("roster items", function () {
+            describe("roster items", $.proxy(function () {
 
                 it("should be able to change their status to online and be sorted alphabetically", function () {
                     var item, view, jid;
-                    spyOn(xmppchat.rosterview, 'render').andCallThrough();
+                    spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=59; i>54; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                        view = xmppchat.rosterview.rosteritemviews[jid];
+                        view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
                         item.set('presence_type', 'online');
                         expect(view.render).toHaveBeenCalled();
-                        expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                        expect(this.rosterview.render).toHaveBeenCalled();
 
                         // Check that they are sorted alphabetically
-                        t = xmppchat.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
+                        t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                         expect(t).toEqual(names.slice(-(60-i)).sort().join(''));
                     }
                 });
 
                 it("should be able to change their status to busy and be sorted alphabetically", function () {
                     var item, view, jid;
-                    spyOn(xmppchat.rosterview, 'render').andCallThrough();
+                    spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=54; i>49; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                        view = xmppchat.rosterview.rosteritemviews[jid];
+                        view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
                         item.set('presence_type', 'busy');
                         expect(view.render).toHaveBeenCalled();
-                        expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                        expect(this.rosterview.render).toHaveBeenCalled();
 
                         // Check that they are sorted alphabetically
-                        t = xmppchat.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.busy').find('a.open-chat').text();
+                        t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.busy').find('a.open-chat').text();
                         expect(t).toEqual(names.slice(-(60-i), -5).sort().join(''));
                     }
                 });
 
                 it("should be able to change their status to away and be sorted alphabetically", function () {
                     var item, view, jid;
-                    spyOn(xmppchat.rosterview, 'render').andCallThrough();
+                    spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=49; i>44; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                        view = xmppchat.rosterview.rosteritemviews[jid];
+                        view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
                         item.set('presence_type', 'away');
                         expect(view.render).toHaveBeenCalled();
-                        expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                        expect(this.rosterview.render).toHaveBeenCalled();
 
                         // Check that they are sorted alphabetically
-                        t = xmppchat.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
+                        t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
                         expect(t).toEqual(names.slice(-(60-i),-10).sort().join(''));
                     }
                 });
 
                 it("should be able to change their status to unavailable and be sorted alphabetically", function () {
                     var item, view, jid;
-                    spyOn(xmppchat.rosterview, 'render').andCallThrough();
+                    spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=44; i>39; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
-                        view = xmppchat.rosterview.rosteritemviews[jid];
+                        view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
                         item.set('presence_type', 'unavailable');
                         expect(view.render).toHaveBeenCalled();
-                        expect(xmppchat.rosterview.render).toHaveBeenCalled();
+                        expect(this.rosterview.render).toHaveBeenCalled();
 
                         // Check that they are sorted alphabetically
-                        t = xmppchat.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
+                        t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
                         expect(t).toEqual(names.slice(-(60-i), -15).sort().join(''));
                     }
                 });
 
                 it("should be ordered according to status: online, busy, away, unavailable, offline", function () {
-                    var contacts = xmppchat.rosterview.$el.find('dd.current-xmpp-contact');
+                    var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                     var i;
                     // The first five contacts are online.
                     for (i=0; i<5; i++) {
@@ -201,8 +219,8 @@
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
                     }
                 });
-            });
+            }, xmppchat));
 
-        });
+        }, xmppchat));
     });
 }));

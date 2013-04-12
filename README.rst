@@ -7,7 +7,7 @@ Converse.js_ implements an XMPP_ based instant messaging client in the browser.
 It is used by collective.xmpp.chat_, which is a Plone_ instant messaging add-on.
 
 The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the backend.
-<p>This is currently possible, except for adding new contacts, which still makes an XHR call to the (Plone) backend to fetch user info.
+This is currently possible, except for adding new contacts, which still makes an XHR call to the (Plone) backend to fetch user info.
 
 --------
 Features

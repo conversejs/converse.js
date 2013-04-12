@@ -29,11 +29,11 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
-        <p><strong>Converse.js</strong> implements an <a href="http://xmpp.org">XMPP</a> based instant messaging client in the browser.</p>
-        <p>It is used by <a href="http://github.com/collective/collective.xmpp.chat">collective.xmpp.chat</a>, which is a <a href="http://plone.org">Plone</a> instant messaging add-on.</p>
-        <p>The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the backend.</p>
-        <p>Currently this is not yet the case, as the code makes ajax calls to the (Plone) backend
-        to fetch user info. </p>
+    <p><strong>Converse.js</strong> implements an <a href="http://xmpp.org">XMPP</a> based instant messaging client in the browser.</p>
+    <p>It is used by <a href="http://github.com/collective/collective.xmpp.chat">collective.xmpp.chat</a>, which is a <a href="http://plone.org">Plone</a> instant messaging add-on.</p>
+    <p>The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the backend.</p>
+    <p>This is currently possible, except for adding new contacts, which still makes an XHR call to the (Plone) backend to fetch user info.</p>
+
     <h2>Features</h2>
     <ul>
         <li>Manually or automically subscribe to other users.</li>
@@ -46,7 +46,16 @@
         <li>Chatroom Topics</li>
         <li>vCard support</li>
     </ul>
-    <p>A screencast of <strong>Converse.js</strong> in action via <strong>collective.xmpp.chat</strong> can be seen <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp">here</a>.</p>
+
+    <h2>Screencasts</h2>
+    <ul>
+        <li><a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp">Screencast 1</a>:
+            Integrated into a Plone site via <strong>collective.xmpp.chat</strong>.
+        </li>
+        <li><a href="http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript">Screencast 2</a>:
+            A static HTML page with <em>Converse.js</em>. Here we chat to external XMPP accounts on Jabber.org and Gmail.
+        </li>
+    </ul>
 
     <h2>Dependencies</h2>
     <p><strong>Converse.js</strong> depends on a few third party libraries, including: 
@@ -58,10 +67,6 @@
     </p>
 
     <h2>Licence</h2>
-    <p><strong>Converse.js</strong> is released under both the <a href="http://opensource.org/licenses/mit-license.php">MIT</a> and <a href="http://opensource.org/licenses/gpl-license.php">GPL</a> licenses.</p>
-    </section>
-    </div>
-
     <div id="chatpanel">
         <div id="collective-xmpp-chat-data"></div>
         <div id="toggle-controlbox">
@@ -79,15 +84,10 @@
       </footer>
     </div>
 
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-2128260-8");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
   </body>
 </html>

@@ -1,6 +1,4 @@
-require(["jquery",
-         "spec/StorageSpec",
-         "spec/RosterSpec"], function($) {
+require(["jquery", "spec/RosterSpec"], function($) {
 
     $(function($) {
         var jasmineEnv = jasmine.getEnv();

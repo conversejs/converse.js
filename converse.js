@@ -1011,7 +1011,7 @@
             this.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.chatboxes-'+xmppchat.bare_jid));
             if (!this.get('controlbox')) {
-                this.create({
+                this.add({
                     id: 'controlbox',
                     box_id: 'controlbox'
                 });
@@ -1022,11 +1022,11 @@
             this.get('controlbox').set({connected:true});
             // Get cached chatboxes from localstorage
             this.fetch({
-                add: true, success: 
-                $.proxy(function (collection, resp) {
+                add: true,
+                success: $.proxy(function (collection, resp) {
                     if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
                         // If the controlbox was saved in localstorage, it must be visible
-                        this.get('controlbox').set({visible:true});
+                        this.get('controlbox').set({visible:true}).save();
                     }
                 }, this)
             }); 

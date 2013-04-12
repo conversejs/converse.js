@@ -1653,7 +1653,15 @@
         sendPresence: function (type) {
             var status_message = this.get('status_message'), 
                 presence;
-            if (type === 'unavailable') {
+            // Most of these presence types are actually not explicitly sent,
+            // but I add all of them here fore reference and future proofing.
+            if ((type === 'unavailable') ||
+                    (type === 'probe') ||
+                    (type === 'error') ||
+                    (type === 'unsubscribe') ||
+                    (type === 'unsubscribed') ||
+                    (type === 'subscribe') ||
+                    (type === 'subscribed')) {
                 presence = $pres({'type':type});
             } else {
                 if (type === 'online') {

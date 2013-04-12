@@ -132,7 +132,7 @@
                 expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
             }, xmppchat));
 
-            describe("roster items", $.proxy(function () {
+            describe("Roster items", $.proxy(function () {
 
                 it("are saved to, and can be retrieved from, localStorage", $.proxy(function () {
                     var new_attrs, old_attrs, attrs, old_roster;
@@ -274,9 +274,8 @@
                     jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
                     view = this.rosterview.rosteritemviews[jid];
                     spyOn(view, 'openChat').andCallThrough();
-                    // We need to rebind all events otherwise our spy won't work.
-                    view.delegateEvents();
-                    var ev = $el.click();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    $el.click();
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
                 }
@@ -300,6 +299,21 @@
                     expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
                 }
                 this.rosterview.render();
+            }, xmppchat));
+
+            it("can be closed again", $.proxy(function () {
+                var chatbox, view, $el;
+                for (i=0; i<this.chatboxes.length; i++) {
+                    chatbox = this.chatboxes.models[i];
+                    if (chatbox.get('id') == 'controlbox') {
+                        continue;
+                    }
+                    view = this.chatboxesview.views[chatbox.get('jid')];
+                    spyOn(view, 'closeChat').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    view.$el.find('.close-chatbox-button').click();
+                    expect(view.closeChat).toHaveBeenCalled();
+                }
             }, xmppchat));
         }, xmppchat));
 

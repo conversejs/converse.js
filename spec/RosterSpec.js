@@ -7,7 +7,7 @@
     );
 } (this, function (xmppchat) {
 
-    return describe("Roster", $.proxy(function() {
+    return describe("Converse.js", $.proxy(function() {
         // Names from http://www.fakenamegenerator.com/
         names = [
             'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer', 'Dirk Eichel', 'Marco Duerr', 'Ute Schiffer',
@@ -42,7 +42,7 @@
         this.rosterview = new this.RosterView({'model':this.roster});
         this.rosterview.render();
 
-        describe("the contacts roster", $.proxy(function () {
+        describe("The contacts roster", $.proxy(function () {
 
             // by default the dts are hidden from css class and only later they will be hidden
             // by jQuery therefore for the first check we will see if visible instead of none
@@ -160,7 +160,7 @@
                 }, xmppchat));
 
                 it("can change their status to online and be sorted alphabetically", $.proxy(function () {
-                    var item, view, jid;
+                    var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=59; i>54; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
@@ -178,7 +178,7 @@
                 }, xmppchat));
 
                 it("can change their status to busy and be sorted alphabetically", $.proxy(function () {
-                    var item, view, jid;
+                    var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=54; i>49; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
@@ -195,7 +195,7 @@
                 }, xmppchat));
 
                 it("can change their status to away and be sorted alphabetically", $.proxy(function () {
-                    var item, view, jid;
+                    var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=49; i>44; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
@@ -213,7 +213,7 @@
                 }, xmppchat));
 
                 it("can change their status to unavailable and be sorted alphabetically", $.proxy(function () {
-                    var item, view, jid;
+                    var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=44; i>39; i--) {
                         jid = names[i].replace(' ','.').toLowerCase() + '@localhost';
@@ -255,8 +255,21 @@
                     }
                 }, xmppchat));
             }, xmppchat));
-
-
         }, xmppchat));
+
+        describe("Chatboxes", $.proxy(function () {
+            it("are created when you click on a roster item", $.proxy(function () {
+                var $el = $(this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat')[0]);
+                var click = jQuery.Event("click", { target: $el });
+                var jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                var view = this.rosterview.rosteritemviews[jid];
+                spyOn(view, 'openChat');
+                // We need to rebind all events otherwise our spy won't work.
+                view.delegateEvents();
+                var ev = $el.click();
+                expect(view.openChat).toHaveBeenCalled();
+            }, xmppchat));
+        }, xmppchat));
+
     }, xmppchat));
 }));

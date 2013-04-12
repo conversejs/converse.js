@@ -281,6 +281,26 @@
                     expect(this.chatboxes.length).toEqual(i+2);
                 }
             }, xmppchat));
+
+            it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
+                var old_chatboxes = this.chatboxes;
+                expect(this.chatboxes.length).toEqual(6);
+                this.chatboxes = new this.ChatBoxes();
+                expect(this.chatboxes.length).toEqual(0);
+
+                this.chatboxes.onConnected();
+                expect(this.chatboxes.length).toEqual(6);
+
+                // Check that the roster items retrieved from localStorage
+                // have the same attributes values as the original ones.
+                attrs = ['id', 'box_id', 'visible'];
+                for (i=0; i<attrs.length; i++) {
+                    new_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
+                    old_attrs = _.pluck(_.pluck(old_chatboxes.models, 'attributes'), attrs[i]);
+                    expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
+                }
+                this.rosterview.render();
+            }, xmppchat));
         }, xmppchat));
 
     }, xmppchat));

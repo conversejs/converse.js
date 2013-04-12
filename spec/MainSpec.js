@@ -28,6 +28,7 @@
                 'listRooms': function () {}
             }
         };
+        this.bare_jid = 'dummy@localhost';
         this.prebind = true;
         this.connection = mock_connection;
         this.chatboxes = new this.ChatBoxes();
@@ -38,6 +39,8 @@
         window.localStorage.removeItem(key);
         this.roster.localStorage = new Backbone.LocalStorage(key);
 
+        window.localStorage.removeItem(
+            hex_sha1('converse.chatboxes-'+this.bare_jid));
         this.chatboxes.onConnected();
         this.rosterview = new this.RosterView({'model':this.roster});
         this.rosterview.render();
@@ -259,15 +262,24 @@
 
         describe("Chatboxes", $.proxy(function () {
             it("are created when you click on a roster item", $.proxy(function () {
-                var $el = $(this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat')[0]);
-                var click = jQuery.Event("click", { target: $el });
-                var jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
-                var view = this.rosterview.rosteritemviews[jid];
-                spyOn(view, 'openChat');
-                // We need to rebind all events otherwise our spy won't work.
-                view.delegateEvents();
-                var ev = $el.click();
-                expect(view.openChat).toHaveBeenCalled();
+                var i, $el, click, jid, view;
+                // showControlBox was called earlier, so the controlbox is
+                // visible, but no other chat boxes have been created.
+                expect(this.chatboxes.length).toEqual(1);
+
+                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat');
+                for (i=0; i<online_contacts.length; i++) {
+                    $el = $(online_contacts[i]);
+                    click = jQuery.Event("click", { target: $el });
+                    jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                    view = this.rosterview.rosteritemviews[jid];
+                    spyOn(view, 'openChat').andCallThrough();
+                    // We need to rebind all events otherwise our spy won't work.
+                    view.delegateEvents();
+                    var ev = $el.click();
+                    expect(view.openChat).toHaveBeenCalled();
+                    expect(this.chatboxes.length).toEqual(i+2);
+                }
             }, xmppchat));
         }, xmppchat));
 

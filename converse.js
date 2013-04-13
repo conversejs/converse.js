@@ -540,7 +540,7 @@
         },
 
         show: function () {
-            if (this.$el.is(':visible')) {
+            if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                 return this.focus();
             }
             this.$el.css({'opacity': 0, 'display': 'inline'}) .animate({opacity: '1'}, 200);
@@ -1912,6 +1912,55 @@
         }
     };
 
+    xmppchat.init = function () {
+        this.connection = connection;
+        this.connection.xmlInput = function (body) { console.log(body); };
+        this.connection.xmlOutput = function (body) { console.log(body); };
+        this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+        this.domain = Strophe.getDomainFromJid(this.connection.jid);
+        this.muc_domain = 'conference.' +  this.domain;
+
+        // Set up the roster
+        this.roster = new this.RosterItems();
+        this.roster.localStorage = new Backbone.LocalStorage(
+            hex_sha1('converse.rosteritems-'+this.bare_jid));
+
+        this.xmppstatus = new this.XMPPStatus({id:1});
+        this.xmppstatus.localStorage = new Backbone.LocalStorage(
+            'converse.xmppstatus'+this.bare_jid);
+
+        this.chatboxes.onConnected();
+        this.rosterview = new this.RosterView({'model':this.roster});
+
+        this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
+        this.xmppstatus.fetch();
+
+        this.connection.addHandler(
+            $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+            'http://jabber.org/protocol/rosterx', 'message', null);
+
+        this.connection.roster.registerCallback(
+            $.proxy(this.roster.rosterHandler, this.roster),
+            null, 'presence', null);
+
+        this.connection.roster.get($.proxy(function () {
+            this.connection.addHandler(
+                    $.proxy(function (presence) {
+                        this.presenceHandler(presence);
+                        return true;
+                    }, this.roster), null, 'presence', null);
+
+            this.connection.addHandler(
+                    $.proxy(function (message) {
+                        this.chatboxes.messageReceived(message);
+                        return true;
+                    }, this), null, 'message', 'chat');
+
+            this.xmppstatus.initStatus();
+        }, this));
+        this.$feedback.text('Online Contacts');
+    };
+
     // Event handlers
     // --------------
     $(document).ready($.proxy(function () {
@@ -1936,52 +1985,7 @@
 
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
-            this.connection = connection;
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
-            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.muc_domain = 'conference.' +  this.domain;
-
-            // Set up the roster
-            this.roster = new this.RosterItems();
-            this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+this.bare_jid));
-
-            this.xmppstatus = new this.XMPPStatus({id:1});
-            this.xmppstatus.localStorage = new Backbone.LocalStorage(
-                'converse.xmppstatus'+this.bare_jid);
-
-            this.chatboxes.onConnected();
-            this.rosterview = new this.RosterView({'model':this.roster});
-
-            this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
-            this.xmppstatus.fetch();
-
-            this.connection.addHandler(
-                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                'http://jabber.org/protocol/rosterx', 'message', null);
-
-            this.connection.roster.registerCallback(
-                $.proxy(this.roster.rosterHandler, this.roster),
-                null, 'presence', null);
-
-            this.connection.roster.get($.proxy(function () {
-                this.connection.addHandler(
-                        $.proxy(function (presence) {
-                            this.presenceHandler(presence);
-                            return true;
-                        }, this.roster), null, 'presence', null);
-
-                this.connection.addHandler(
-                        $.proxy(function (message) {
-                            this.chatboxes.messageReceived(message);
-                            return true;
-                        }, this), null, 'message', 'chat');
-
-                this.xmppstatus.initStatus();
-            }, this));
-            this.$feedback.text('Online Contacts');
+            this.init();
         }, this));
     }, xmppchat));
 

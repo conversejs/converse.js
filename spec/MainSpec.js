@@ -23,29 +23,41 @@
             'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers', 'Ben Zomer',
             'Leah Weiss', 'Francesca Disseldorp', 'Sven Bumgarner', 'Benjamin Zweig'
         ];
+        this.bare_jid = 'dummy@localhost';
         mock_connection  = {
             'muc': {
                 'listRooms': function () {}
+            },
+            'jid': this.bare_jid,
+            'addHandler': function (handler, ns, name, type, id, from, options) { 
+                return function () {};
+            },
+            'roster': {
+                'registerCallback': function () {},
+                'get': function () {}
             }
         };
-        this.bare_jid = 'dummy@localhost';
-        this.prebind = true;
-        this.connection = mock_connection;
-        this.chatboxes = new this.ChatBoxes();
-        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        this.roster = new this.RosterItems();
-        // Clear localStorage
-        var key = hex_sha1('converse.rosteritems-dummy@localhost');
-        window.localStorage.removeItem(key);
-        this.roster.localStorage = new Backbone.LocalStorage(key);
 
+        // Clear localStorage
+        window.localStorage.removeItem(
+            hex_sha1('converse.rosteritems-'+this.bare_jid));
         window.localStorage.removeItem(
             hex_sha1('converse.chatboxes-'+this.bare_jid));
-        this.chatboxes.onConnected();
-        this.rosterview = new this.RosterView({'model':this.roster});
-        this.rosterview.render();
+        window.localStorage.removeItem(
+            hex_sha1('converse.xmppstatus-'+this.bare_jid));
+
+        this.prebind = true;
+        this.initialize(mock_connection);
+
+        // The timeout is used to slow down the tests so that one can see
+        // visually what is happening in the page.
+        this.timeout = 1000;
 
         describe("The contacts roster", $.proxy(function () {
+
+            it("is not shown by default", $.proxy(function () {
+                expect(this.rosterview.$el.is(':visible')).toEqual(false);
+            }, xmppchat));
 
             // by default the dts are hidden from css class and only later they will be hidden
             // by jQuery therefore for the first check we will see if visible instead of none
@@ -53,18 +65,10 @@
                 expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
             }, xmppchat));
 
-            it("hides the current contacts heading if there aren't any", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
-            }, xmppchat));
-
-            it("hides the pending contacts heading if there aren't any", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
-            }, xmppchat));
-
             it("can add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var i, t;
                 spyOn(this.rosterview, 'render').andCallThrough();
-                spyOn(this, 'showControlBox');
+                spyOn(this, 'showControlBox').andCallThrough();
                 for (i=0; i<10; i++) {
                     this.roster.create({
                         jid: names[i].replace(' ','.').toLowerCase() + '@localhost',
@@ -87,6 +91,10 @@
                 expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
             }, xmppchat));
 
+            it("hides the pending contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
+            }, xmppchat));
+
             it("can add pending contacts, and they should be sorted alphabetically", $.proxy(function () {
                 var i, t;
                 spyOn(this.rosterview, 'render').andCallThrough();
@@ -107,6 +115,10 @@
 
             it("shows the pending contacts heading after they have been added", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
+            }, xmppchat));
+
+            it("hides the current contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
             }, xmppchat));
 
             it("can add existing contacts, and they should be sorted alphabetically", $.proxy(function () {
@@ -270,7 +282,6 @@
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
-                    click = jQuery.Event("click", { target: $el });
                     jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
                     view = this.rosterview.rosteritemviews[jid];
                     spyOn(view, 'openChat').andCallThrough();

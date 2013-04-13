@@ -305,15 +305,22 @@
                 var chatbox, view, $el;
                 for (i=0; i<this.chatboxes.length; i++) {
                     chatbox = this.chatboxes.models[i];
-                    if (chatbox.get('id') == 'controlbox') {
-                        continue;
-                    }
-                    view = this.chatboxesview.views[chatbox.get('jid')];
+                    view = this.chatboxesview.views[chatbox.get('id')];
                     spyOn(view, 'closeChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     view.$el.find('.close-chatbox-button').click();
                     expect(view.closeChat).toHaveBeenCalled();
                 }
+            }, xmppchat));
+
+            it("will be removed from localStorage when closed", $.proxy(function () {
+                var old_chatboxes = this.chatboxes;
+                expect(this.chatboxes.length).toEqual(6);
+                this.chatboxes = new this.ChatBoxes();
+                expect(this.chatboxes.length).toEqual(0);
+
+                this.chatboxes.onConnected();
+                expect(this.chatboxes.length).toEqual(0);
             }, xmppchat));
         }, xmppchat));
 

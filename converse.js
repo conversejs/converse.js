@@ -1912,7 +1912,7 @@
         }
     };
 
-    xmppchat.init = function () {
+    xmppchat.initialize = function (connection) {
         this.connection = connection;
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };
@@ -1927,7 +1927,7 @@
 
         this.xmppstatus = new this.XMPPStatus({id:1});
         this.xmppstatus.localStorage = new Backbone.LocalStorage(
-            'converse.xmppstatus'+this.bare_jid);
+            hex_sha1('converse.xmppstatus-'+this.bare_jid));
 
         this.chatboxes.onConnected();
         this.rosterview = new this.RosterView({'model':this.roster});
@@ -1985,7 +1985,7 @@
 
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
-            this.init();
+            this.initialize(connection);
         }, this));
     }, xmppchat));
 

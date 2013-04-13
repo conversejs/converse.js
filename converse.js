@@ -1859,10 +1859,10 @@
                     console.log('Connection Failed');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
                     console.log('Authenticating');
-                    xmppchat.$feedback.text('Authenticating');
+                    xmppchat.giveFeedback('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
                     console.log('Authenticating Failed');
-                    xmppchat.$feedback.text('Authentication failed');
+                    xmppchat.giveFeedback('Authentication failed');
                 } else if (status === Strophe.Status.DISCONNECTING) {
                     console.log('Disconnecting');
                 } else if (status === Strophe.Status.ATTACHED) {
@@ -1912,7 +1912,26 @@
         }
     };
 
-    xmppchat.initialize = function (connection) {
+    xmppchat.giveFeedback = function (message) {
+        $('.conn-feedback').text(message);
+    }
+
+    xmppchat.initialize = function () {
+        var chatdata = $('div#collective-xmpp-chat-data');
+        this.fullname = chatdata.attr('fullname');
+        this.prebind = chatdata.attr('prebind');
+        this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
+        this.chatboxes = new this.ChatBoxes();
+        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
+        $('a#toggle-online-users').bind(
+            'click', 
+            $.proxy(function (e) { 
+                e.preventDefault(); this.toggleControlBox(); 
+            }, this)
+        );
+    },
+
+    xmppchat.onConnected = function (connection) {
         this.connection = connection;
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };
@@ -1958,34 +1977,23 @@
 
             this.xmppstatus.initStatus();
         }, this));
-        this.$feedback.text('Online Contacts');
+        this.giveFeedback('Online Contacts');
     };
 
     // Event handlers
     // --------------
     $(document).ready($.proxy(function () {
-        var chatdata = $('div#collective-xmpp-chat-data'),
-            $toggle = $('a#toggle-online-users');
-        this.$feedback = $('.conn-feedback');
-        this.fullname = chatdata.attr('fullname');
-        this.prebind = chatdata.attr('prebind');
-        this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
-        this.chatboxes = new this.ChatBoxes();
-        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $toggle.bind('click', $.proxy(function (e) { e.preventDefault(); this.toggleControlBox(); }, this));
-
+        this.initialize();
         $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {
-            this.$feedback.text('Connecting to chat...');
+        this.giveFeedback('Connecting to chat...');
         }, this));
-
         $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
-            this.$feedback.text('Unable to communicate with chat server').css('background-image', "url(images/error_icon.png)");
+            this.giveFeedback('Unable to communicate with chat server').css('background-image', "url(images/error_icon.png)");
             console.log("Connection Failed :(");
         }, this));
-
         $(document).unbind('jarnxmpp.connected');
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
-            this.initialize(connection);
+            this.onConnected(connection);
         }, this));
     }, xmppchat));
 

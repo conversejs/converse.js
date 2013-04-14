@@ -52,10 +52,11 @@
 
         this.prebind = true;
         this.onConnected(mock_connection);
+        this.animate = false; // don't use animations
 
         // The timeout is used to slow down the tests so that one can see
         // visually what is happening in the page.
-        var timeout = 200;
+        var timeout = 0;
         var sleep = function (delay) {
             // Yes this is blocking and stupid, but these are tests and this is
             // the easiest way to delay execution without having to use
@@ -77,61 +78,35 @@
                 expect(this.toggleControlBox).toHaveBeenCalled();
             }, xmppchat));
 
-            // by default the dts are hidden from css class and only later they will be hidden
-            // by jQuery therefore for the first check we will see if visible instead of none
-            it("hides the requesting contacts heading if there aren't any", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
-            }, xmppchat));
-
-            it("can add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
-                sleep(timeout);
-                var i, t;
-                spyOn(this.rosterview, 'render').andCallThrough();
-                spyOn(this, 'showControlBox').andCallThrough();
-                for (i=0; i<req_names.length; i++) {
-                    this.roster.create({
-                        jid: req_names[i].replace(' ','.').toLowerCase() + '@localhost',
-                        subscription: 'none',
-                        ask: 'request',
-                        fullname: req_names[i],
-                        is_last: i==(req_names.length-1)
-                    });
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
-                    expect(t).toEqual(req_names.slice(0,i+1).sort().join(''));
-                    // When a requesting contact is added, the controlbox must
-                    // be opened.
-                    expect(this.showControlBox).toHaveBeenCalled();
-                    sleep(timeout);
-                }
-            }, xmppchat));
-
-            it("shows the requesting contacts heading after they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
-            }, xmppchat));
-
             it("hides the pending contacts heading if there aren't any", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
             }, xmppchat));
 
             it("can add pending contacts, and they should be sorted alphabetically", $.proxy(function () {
-                var i, t;
+                var i, t, is_last;
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=0; i<pend_names.length; i++) {
+                    is_last = i==(pend_names.length-1);
                     this.roster.create({
                         jid: pend_names[i].replace(' ','.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
                         fullname: pend_names[i],
-                        is_last: i==(pend_names-1)
+                        is_last: is_last
                     });
+                    // For performance reasons, the roster should only be shown once 
+                    // the last contact has been added.
+                    if (is_last) {
+                        expect(this.rosterview.$el.is(':visible')).toEqual(true);
+                    } else {
+                        expect(this.rosterview.$el.is(':visible')).toEqual(false);
+                    }
                     expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
                     expect(t).toEqual(pend_names.slice(0,i+1).sort().join(''));
-                    sleep(timeout);
                 }
+                sleep(timeout);
             }, xmppchat));
 
             it("shows the pending contacts heading after they have been added", $.proxy(function () {
@@ -151,18 +126,55 @@
                         subscription: 'both',
                         ask: null,
                         fullname: cur_names[i],
-                        is_last: i==(cur_names-1)
+                        is_last: i==(cur_names.length-1)
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
                     expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
-                    sleep(timeout);
                 }
+                sleep(timeout);
             }, xmppchat));
 
             it("shows the current contacts heading if they have been added", $.proxy(function () {
                 expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
+            }, xmppchat));
+
+            // by default the dts are hidden from css class and only later they will be hidden
+            // by jQuery therefore for the first check we will see if visible instead of none
+            it("hides the requesting contacts heading if there aren't any", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
+            }, xmppchat));
+
+            it("can add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
+                var i, t;
+                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this, 'showControlBox').andCallThrough();
+                for (i=0; i<req_names.length; i++) {
+                    this.roster.create({
+                        jid: req_names[i].replace(' ','.').toLowerCase() + '@localhost',
+                        subscription: 'none',
+                        ask: 'request',
+                        fullname: req_names[i],
+                        is_last: i==(req_names.length-1)
+                    });
+                    expect(this.rosterview.render).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
+                    expect(t).toEqual(req_names.slice(0,i+1).sort().join(''));
+                    // When a requesting contact is added, the controlbox must
+                    // be opened.
+                    expect(this.showControlBox).toHaveBeenCalled();
+                }
+                sleep(timeout);
+            }, xmppchat));
+
+            it("shows the requesting contacts heading after they have been added", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
+            }, xmppchat));
+
+            it("allows the user to accept or decline requesting contacts", $.proxy(function () {
+                // TODO
             }, xmppchat));
 
             describe("Roster items", $.proxy(function () {

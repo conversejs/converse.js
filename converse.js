@@ -543,7 +543,11 @@
             if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                 return this.focus();
             }
-            this.$el.css({'opacity': 0, 'display': 'inline'}) .animate({opacity: '1'}, 200);
+            if (xmppchat.animate) {
+                this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200);
+            } else {
+                this.$el.css({'opacity': 1, 'display': 'inline'});
+            }
             if (xmppchat.connection) {
                 // Without a connection, we haven't yet initialized
                 // localstorage
@@ -1932,6 +1936,7 @@
     },
 
     xmppchat.onConnected = function (connection) {
+        this.animate = true; // Use animations
         this.connection = connection;
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };

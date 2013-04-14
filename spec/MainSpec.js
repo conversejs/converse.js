@@ -55,10 +55,18 @@
 
         // The timeout is used to slow down the tests so that one can see
         // visually what is happening in the page.
-        this.timeout = 1000;
+        var timeout = 200;
+        var sleep = function (delay) {
+            // Yes this is blocking and stupid, but these are tests and this is
+            // the easiest way to delay execution without having to use
+            // callbacks.
+            var start = new Date().getTime();
+            while (new Date().getTime() < start + delay) {
+                continue;
+            }
+        };
 
         describe("The contacts roster", $.proxy(function () {
-
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, xmppchat));
@@ -76,6 +84,7 @@
             }, xmppchat));
 
             it("can add requesting contacts, and they should be sorted alphabetically", $.proxy(function () {
+                sleep(timeout);
                 var i, t;
                 spyOn(this.rosterview, 'render').andCallThrough();
                 spyOn(this, 'showControlBox').andCallThrough();
@@ -94,6 +103,7 @@
                     // When a requesting contact is added, the controlbox must
                     // be opened.
                     expect(this.showControlBox).toHaveBeenCalled();
+                    sleep(timeout);
                 }
             }, xmppchat));
 
@@ -120,6 +130,7 @@
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
                     expect(t).toEqual(pend_names.slice(0,i+1).sort().join(''));
+                    sleep(timeout);
                 }
             }, xmppchat));
 
@@ -146,6 +157,7 @@
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
                     expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
+                    sleep(timeout);
                 }
             }, xmppchat));
 
@@ -198,6 +210,7 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
+                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -215,6 +228,7 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(5,i+1).sort().join(''));
+                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -233,6 +247,7 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(10,i+1).sort().join(''));
+                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -251,6 +266,7 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(15, i+1).sort().join(''));
+                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -282,6 +298,7 @@
         }, xmppchat));
 
         describe("Chatboxes", $.proxy(function () {
+
             it("are created when you click on a roster item", $.proxy(function () {
                 var i, $el, click, jid, view;
                 // showControlBox was called earlier, so the controlbox is
@@ -298,6 +315,7 @@
                     $el.click();
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
+                    sleep(timeout);
                 }
             }, xmppchat));
 
@@ -330,6 +348,7 @@
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     view.$el.find('.close-chatbox-button').click();
                     expect(view.closeChat).toHaveBeenCalled();
+                    sleep(timeout);
                 }
             }, xmppchat));
 

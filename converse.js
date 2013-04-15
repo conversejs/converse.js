@@ -1185,10 +1185,9 @@
         },
 
         declineRequest: function (ev) {
-            var that = this;
-            xmppchat.connection.roster.unauthorize(this.model.get('jid'));
-            that.trigger('decline-request', that.model);
             ev.preventDefault();
+            xmppchat.connection.roster.unauthorize(this.model.get('jid'));
+            this.model.destroy();
         },
 
         template: _.template(
@@ -1515,11 +1514,6 @@
             this.model.on("add", function (item) {
                 var view = new xmppchat.RosterItemView({model: item});
                 this.rosteritemviews[item.id] = view;
-                if (item.get('ask') === 'request') {
-                    view.on('decline-request', function (item) {
-                        this.model.remove(item.id);
-                    }, this);
-                }
                 this.render(item);
             }, this);
 
@@ -1531,12 +1525,6 @@
                 this.render(item);
             }, this);
 
-            this.model.on("remove", function (item) {
-                this.removeRosterItem(item);
-            }, this);
-
-            // XXX: Not completely sure if this is needed ('remove' might be
-            // enough).
             this.model.on("destroy", function (item) {
                 this.removeRosterItem(item);
             }, this);

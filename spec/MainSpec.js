@@ -27,6 +27,7 @@
             'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers', 'Ben Zomer',
             'Leah Weiss', 'Francesca Disseldorp', 'Sven Bumgarner', 'Benjamin Zweig'
         ];
+        var num_contacts = req_names.length + pend_names.length + cur_names.length;
         this.bare_jid = 'dummy@localhost';
         mock_connection  = {
             'muc': {
@@ -37,8 +38,12 @@
                 return function () {};
             },
             'roster': {
-                'registerCallback': function () {},
-                'get': function () {}
+                'add': function () {},
+                'authorize': function () {},
+                'unauthorize': function () {},
+                'get': function () {},
+                'subscribe': function () {},
+                'registerCallback': function () {}
             }
         };
 
@@ -281,11 +286,36 @@
                 }, xmppchat));
 
                 it("can have their requests accepted by the user", $.proxy(function () {
-                    // TODO Simulate and test clicking of accept/deny
+                    // TODO: Testing can be more thorough here, the user is
+                    // actually not accepted/authorized because of
+                    // mock_connection.
+                    var jid = req_names.sort()[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var view = this.rosterview.rosteritemviews[jid];
+                    spyOn(this.connection.roster, 'authorize');
+                    spyOn(view, 'acceptRequest').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    var accept_button = view.$el.find('.accept-xmpp-request');
+                    accept_button.click();
+                    expect(view.acceptRequest).toHaveBeenCalled();
+                    expect(this.connection.roster.authorize).toHaveBeenCalled();
+                    sleep(timeout);
                 }, xmppchat));
 
                 it("can have their requests denied by the user", $.proxy(function () {
-                    // TODO Simulate and test clicking of accept/deny
+                    var jid = req_names.sort()[1].replace(' ','.').toLowerCase() + '@localhost';
+                    var view = this.rosterview.rosteritemviews[jid];
+                    spyOn(this.connection.roster, 'unauthorize');
+                    spyOn(this.rosterview, 'removeRosterItem').andCallThrough();
+                    spyOn(view, 'declineRequest').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    var accept_button = view.$el.find('.decline-xmpp-request');
+                    accept_button.click();
+                    expect(view.declineRequest).toHaveBeenCalled();
+                    expect(this.rosterview.removeRosterItem).toHaveBeenCalled();
+                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
+                    // There should now be one less contact
+                    expect(this.roster.length).toEqual(num_contacts-1); 
+                    sleep(timeout);
                 }, xmppchat));
             }, xmppchat));
 
@@ -293,8 +323,8 @@
 
                 it("are saved to, and can be retrieved from, localStorage", $.proxy(function () {
                     var new_attrs, old_attrs, attrs, old_roster;
-
-                    expect(this.roster.length).toEqual(60);
+                    // One contact was declined, so we have 1 less contact then originally
+                    expect(this.roster.length).toEqual(num_contacts-1); 
                     old_roster = this.roster;
                     this.roster = new this.RosterItems();
                     expect(this.roster.length).toEqual(0);
@@ -306,7 +336,7 @@
                     spyOn(this.roster, 'fetch').andCallThrough();
                     this.rosterview = new this.RosterView({'model':this.roster});
                     expect(this.roster.fetch).toHaveBeenCalled();
-                    expect(this.roster.length).toEqual(60);
+                    expect(this.roster.length).toEqual(num_contacts-1);
 
                     // Check that the roster items retrieved from localStorage
                     // have the same attributes values as the original ones.
@@ -378,7 +408,7 @@
                 this.rosterview.render();
             }, xmppchat));
 
-            it("can be closed again", $.proxy(function () {
+            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
                 var chatbox, view, $el;
                 for (i=0; i<this.chatboxes.length; i++) {
                     chatbox = this.chatboxes.models[i];

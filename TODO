@@ -1,0 +1,10 @@
+TODO:
+=====
+
+* Refresh Rooms panel every time the user goes to it
+* Add /leave command
+* Inform users of /help via placeholder in textarea
+* Create a single sprite image from the current images
+* Add "keep me logged in" feature when logging in manually
+* Add support for XMPP server feature detection
+* Implement "Fetch user vCard" feature.

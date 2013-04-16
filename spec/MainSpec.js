@@ -44,6 +44,9 @@
                 'get': function () {},
                 'subscribe': function () {},
                 'registerCallback': function () {}
+            },
+            'vcard': {
+                'get': function () {}
             }
         };
 
@@ -366,9 +369,9 @@
             }, xmppchat));
         }, xmppchat));
 
-        describe("Chatboxes", $.proxy(function () {
+        describe("A Chatbox", $.proxy(function () {
 
-            it("are created when you click on a roster item", $.proxy(function () {
+            it("is created when you click on a roster item", $.proxy(function () {
                 var i, $el, click, jid, view;
                 // showControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
@@ -429,6 +432,29 @@
 
                 this.chatboxes.onConnected();
                 expect(this.chatboxes.length).toEqual(0);
+            }, xmppchat));
+
+            describe("A Chat Message", $.proxy(function () {
+                it("received from a contact will open a chatbox and appear inside it", $.proxy(function () {
+                    var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var timestamp = (new Date()).getTime(),
+                        msg = $msg({
+                            from: sender_jid,
+                            to: this.bare_jid, 
+                            type: 'chat', 
+                            id: timestamp
+                        }).c('body').t('This is a received message').up()
+                          .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                    var chatbox = this.chatboxesview.views[sender_jid].model;
+                    spyOn(chatbox, 'messageReceived');
+                    this.chatboxes.messageReceived(msg);
+                    expect(chatbox.messageReceived).toHaveBeenCalled();
+                }, xmppchat));
+
+                it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
+                    var hello;
+                }, xmppchat));
             }, xmppchat));
         }, xmppchat));
 

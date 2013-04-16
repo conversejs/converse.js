@@ -489,7 +489,7 @@
         initialize: function (){
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('show', this.show, this);
-            this.model.on('destroy', function (model, response, options) { this.$el.hide('fast'); }, this);
+            this.model.on('destroy', this.hide, this);
             this.model.on('change', this.onChange, this);
 
             this.$el.appendTo(xmppchat.chatboxesview.$el);
@@ -537,6 +537,14 @@
         focus: function () {
             this.$el.find('.chat-textarea').focus();
             return this;
+        },
+
+        hide: function () {
+            if (xmppchat.animate) {
+                this.$el.hide('fast');
+            } else {
+                this.$el.hide();
+            }
         },
 
         show: function () {
@@ -750,13 +758,8 @@
             }, this));
 
             this.model.on('show', this.show, this);
-            this.model.on('destroy', $.proxy(function (model, response, options) {
-                this.$el.hide('fast');
-            }, this));
-            this.model.on('hide', $.proxy(function (model, response, options) {
-                this.$el.hide('fast');
-            }, this));
-
+            this.model.on('destroy', this.hide, this);
+            this.model.on('hide', this.hide, this);
             if (this.model.get('visible')) {
                 this.show();
             } 
@@ -1064,7 +1067,7 @@
                 xmppchat.getVCard(
                     partner_jid, 
                     $.proxy(function (jid, fullname, image, image_type, url) {
-                        chatbox = this.create({
+                        var chatbox = this.create({
                             'id': jid,
                             'jid': jid,
                             'fullname': fullname,
@@ -1093,7 +1096,7 @@
         initialize: function () {
             // boxesviewinit
             this.views = {};
-            this.options.model.on("add", function (item) {
+            this.model.on("add", function (item) {
                 var view = this.views[item.get('id')];
                 if (!view) {
                     if (item.get('chatroom')) {

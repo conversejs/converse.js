@@ -45,8 +45,15 @@
                 'subscribe': function () {},
                 'registerCallback': function () {}
             },
-            'vcard': {
-                'get': function () {}
+            'vcard': { 
+                'get': function (callback, jid) {
+                    var name = jid.split('@')[0].replace('.', ' ').split(' ');
+                    var firstname = name[0].charAt(0).toUpperCase()+name[0].slice(1);
+                    var lastname = name[1].charAt(0).toUpperCase()+name[1].slice(1);
+                    var fullname = firstname+' '+lastname;
+                    var vcard = $iq().c('vCard').c('FN').t(fullname);
+                    callback(vcard.tree());
+                } 
             }
         };
 
@@ -57,6 +64,8 @@
             hex_sha1('converse.chatboxes-'+this.bare_jid));
         window.localStorage.removeItem(
             hex_sha1('converse.xmppstatus-'+this.bare_jid));
+        window.localStorage.removeItem(
+            hex_sha1('converse.messages'+cur_names[0].replace(' ','.').toLowerCase() + '@localhost'));
 
         this.prebind = true;
         this.onConnected(mock_connection);
@@ -392,29 +401,30 @@
             }, xmppchat));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
-                var old_chatboxes = this.chatboxes;
-                expect(this.chatboxes.length).toEqual(6);
-                this.chatboxes = new this.ChatBoxes();
-                expect(this.chatboxes.length).toEqual(0);
-
-                this.chatboxes.onConnected();
-                expect(this.chatboxes.length).toEqual(6);
-
+                // We instantiate a new ChatBoxes collection, which by default
+                // will be empty.
+                this.newchatboxes = new this.ChatBoxes();
+                expect(this.newchatboxes.length).toEqual(0);
+                // The chatboxes will then be fetched from localStorage inside the
+                // onConnected method
+                this.newchatboxes.onConnected();
+                expect(this.newchatboxes.length).toEqual(6);
                 // Check that the roster items retrieved from localStorage
                 // have the same attributes values as the original ones.
                 attrs = ['id', 'box_id', 'visible'];
                 for (i=0; i<attrs.length; i++) {
-                    new_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
-                    old_attrs = _.pluck(_.pluck(old_chatboxes.models, 'attributes'), attrs[i]);
+                    new_attrs = _.pluck(_.pluck(this.newchatboxes.models, 'attributes'), attrs[i]);
+                    old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
                     expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
                 }
                 this.rosterview.render();
             }, xmppchat));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
-                var chatbox, view, $el;
-                for (i=0; i<this.chatboxes.length; i++) {
-                    chatbox = this.chatboxes.models[i];
+                var chatbox, view, $el,
+                    num_open_chats = this.chatboxes.length;
+                for (i=0; i<num_open_chats; i++) {
+                    chatbox = this.chatboxes.models[0];
                     view = this.chatboxesview.views[chatbox.get('id')];
                     spyOn(view, 'closeChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -425,35 +435,67 @@
             }, xmppchat));
 
             it("will be removed from localStorage when closed", $.proxy(function () {
-                var old_chatboxes = this.chatboxes;
-                expect(this.chatboxes.length).toEqual(6);
-                this.chatboxes = new this.ChatBoxes();
-                expect(this.chatboxes.length).toEqual(0);
-
+                this.newchatboxes = new this.ChatBoxes();
+                expect(this.newchatboxes.length).toEqual(0);
+                // onConnected will fetch chatboxes in localStorage, but
+                // because there aren't any open chatboxes, there won't be any
+                // in localStorage either.
                 this.chatboxes.onConnected();
                 expect(this.chatboxes.length).toEqual(0);
             }, xmppchat));
 
             describe("A Chat Message", $.proxy(function () {
-                it("received from a contact will open a chatbox and appear inside it", $.proxy(function () {
+                it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
+                    var message = 'This is a received message';
                     var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
-                    var timestamp = (new Date()).getTime(),
                         msg = $msg({
                             from: sender_jid,
                             to: this.bare_jid, 
                             type: 'chat', 
-                            id: timestamp
-                        }).c('body').t('This is a received message').up()
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
                           .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
-                    var chatbox = this.chatboxesview.views[sender_jid].model;
-                    spyOn(chatbox, 'messageReceived');
-                    this.chatboxes.messageReceived(msg);
-                    expect(chatbox.messageReceived).toHaveBeenCalled();
+                    spyOn(this, 'getVCard').andCallThrough();
+
+                    // We don't already have an open chatbox for this user
+                    expect(this.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                    runs($.proxy(function () {
+                        // messageReceived is a handler for received XMPP
+                        // messages
+                        this.chatboxes.messageReceived(msg);
+                    }, xmppchat));
+                    waits(500);
+                    runs($.proxy(function () {
+                        // Since we didn't already have an open chatbox, one
+                        // will asynchronously created inside a callback to
+                        // getVCard
+                        expect(this.getVCard).toHaveBeenCalled();
+                        // Check that the chatbox and its view now exist
+                        var chatbox = this.chatboxes.get(sender_jid);
+                        var chatboxview = this.chatboxesview.views[sender_jid];
+                        expect(chatbox).toBeDefined();
+                        expect(chatboxview).toBeDefined();
+                        // Check that the message was received and check the
+                        // message parameters
+                        expect(chatbox.messages.length).toEqual(1);
+                        var msg_obj = chatbox.messages.models[0];
+                        expect(msg_obj.get('message')).toEqual(message);
+                        // XXX: This is stupid, fullname is actually only the
+                        // users first name
+                        expect(msg_obj.get('fullname')).toEqual(cur_names[0].split(' ')[0]);
+                        expect(msg_obj.get('sender')).toEqual('them');
+                        expect(msg_obj.get('delayed')).toEqual(false);
+                        // Now check that the message appears inside the
+                        // chatbox in the DOM
+                        var txt = chatboxview.$el.find('.chat-content').find('.chat-message').find('.chat-message-content').text();
+                        expect(txt).toEqual(message);
+                    }, xmppchat));
                 }, xmppchat));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
-                    var hello;
+                    // TODO
                 }, xmppchat));
             }, xmppchat));
         }, xmppchat));

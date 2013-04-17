@@ -10,22 +10,15 @@
     return describe("Converse.js", $.proxy(function() {
         // Names from http://www.fakenamegenerator.com/
         var req_names = [
-            'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer', 'Dirk Eichel', 'Marco Duerr', 'Ute Schiffer',
-            'Billie Westerhuis', 'Sarah Kuester', 'Sabrina Loewe', 'Laura Duerr', 'Mathias Meyer',
-            'Tijm Keller', 'Lea Gerste', 'Martin Pfeffer', 'Ulrike Abt', 'Zoubida van Rooij',
-            'Maylin Hettema', 'Ruwan Bechan', 'Marco Beich', 'Karin Busch', 'Mathias Müller'
+            'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
         ];
         var pend_names = [
-            'Suleyman van Beusichem', 'Nicole Diederich', 'Nanja van Yperen', 'Delany Bloemendaal',
-            'Jannah Hofmeester', 'Christine Trommler', 'Martin Bumgarner', 'Emil Baeten', 'Farshad Brasser',
-            'Gabriele Fisher', 'Sofiane Schopman', 'Sky Wismans', 'Jeffery Stoelwinder', 'Ganesh Waaijenberg',
-            'Dani Boldewijn', 'Katrin Propst', 'Martina Kaiser', 'Philipp Kappel', 'Meeke Grootendorst'
+            'Suleyman van Beusichem', 'Nicole Diederich', 'Nanja van Yperen'
         ];
         var cur_names = [
             'Max Frankfurter', 'Candice van der Knijff', 'Irini Vlastuin', 'Rinse Sommer', 'Annegreet Gomez',
             'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
-            'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers', 'Ben Zomer',
-            'Leah Weiss', 'Francesca Disseldorp', 'Sven Bumgarner', 'Benjamin Zweig'
+            'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
         ];
         var num_contacts = req_names.length + pend_names.length + cur_names.length;
         this.bare_jid = 'dummy@localhost';
@@ -148,7 +141,7 @@
                 it("can change their status to online and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    for (i=0; i<5; i++) {
+                    for (i=0; i<3; i++) {
                         jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
@@ -166,7 +159,7 @@
                 it("can change their status to busy and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    for (i=5; i<10; i++) {
+                    for (i=3; i<6; i++) {
                         jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
@@ -176,14 +169,14 @@
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(5,i+1).sort().join(''));
+                        expect(t).toEqual(cur_names.slice(3,i+1).sort().join(''));
                     }
                 }, xmppchat));
 
                 it("can change their status to away and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    for (i=10; i<15; i++) {
+                    for (i=6; i<9; i++) {
                         jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
@@ -194,14 +187,14 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(10,i+1).sort().join(''));
+                        expect(t).toEqual(cur_names.slice(6,i+1).sort().join(''));
                     }
                 }, xmppchat));
 
                 it("can change their status to unavailable and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    for (i=15; i<20; i++) {
+                    for (i=9; i<12; i++) {
                         jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
@@ -212,7 +205,7 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(15, i+1).sort().join(''));
+                        expect(t).toEqual(cur_names.slice(9, i+1).sort().join(''));
                     }
                 }, xmppchat));
 
@@ -220,23 +213,23 @@
                     var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                     var i;
                     // The first five contacts are online.
-                    for (i=0; i<5; i++) {
+                    for (i=0; i<3; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('online');
                     }
                     // The next five are busy
-                    for (i=5; i<10; i++) {
+                    for (i=3; i<6; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('dnd');
                     }
                     // The next five are away
-                    for (i=10; i<15; i++) {
+                    for (i=6; i<9; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('away');
                     }
                     // The next five are unavailable
-                    for (i=15; i<20; i++) {
+                    for (i=9; i<12; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('unavailable');
                     }
                     // The next 20 are offline
-                    for (i=20; i<cur_names.length; i++) {
+                    for (i=12; i<cur_names.length; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
                     }
                 }, xmppchat));

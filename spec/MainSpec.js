@@ -30,6 +30,7 @@
             'addHandler': function (handler, ns, name, type, id, from, options) { 
                 return function () {};
             },
+            'send': function () {},
             'roster': {
                 'add': function () {},
                 'authorize': function () {},
@@ -464,7 +465,16 @@
                 }, xmppchat));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
-                    // TODO
+                    var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var view = this.chatboxesview.views[contact_jid];
+                    var message = 'This is a message sent from the chatbox';
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    view.$el.find('.chat-textarea').text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.messages.length, 2);
+                    var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
+                    expect(txt).toEqual(message);
                 }, xmppchat));
             }, xmppchat));
         }, xmppchat));

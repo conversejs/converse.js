@@ -1198,10 +1198,10 @@
                     '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
         pending_template: _.template(
-                    '{{ fullname }}' +
+                    '<span>{{ fullname }}</span>' +
                     '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
-        request_template: _.template('{{ fullname }}' +
+        request_template: _.template('<div>{{ fullname }}</div>' +
                     '<button type="button" class="accept-xmpp-request">' +
                     'Accept</button>' +
                     '<button type="button" class="decline-xmpp-request">' +

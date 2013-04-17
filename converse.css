@@ -374,14 +374,22 @@ form.search-xmpp-contact input {
     margin-left: 0.5em;
 }
 
-#xmppchat-roster dd a {
-    margin-left: 1.5em;
+#xmppchat-roster dd a,
+#xmppchat-roster dd span {
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
     display: inline-block;
-    width: 113px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+#xmppchat-roster dd a {
+    margin-left: 1.5em;
+    width: 113px;
+}
+
+#xmppchat-roster dd span {
+    width: 125px;
 }
 
 .remove-xmpp-contact-dialog .ui-dialog-buttonpane {

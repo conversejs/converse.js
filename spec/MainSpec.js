@@ -71,19 +71,6 @@
         this.onConnected(mock_connection);
         this.animate = false; // don't use animations
 
-        // The timeout is used to slow down the tests so that one can see
-        // visually what is happening in the page.
-        var timeout = 0;
-        var sleep = function (delay) {
-            // Yes this is blocking and stupid, but these are tests and this is
-            // the easiest way to delay execution without having to use
-            // callbacks.
-            var start = new Date().getTime();
-            while (new Date().getTime() < start + delay) {
-                continue;
-            }
-        };
-
         describe("The Contacts Roster", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
@@ -124,7 +111,6 @@
                         t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
                         expect(t).toEqual(pend_names.slice(0,i+1).sort().join(''));
                     }
-                    sleep(timeout);
                 }, xmppchat));
 
                 it("will have their own heading once they have been added", $.proxy(function () {
@@ -153,7 +139,6 @@
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
                     }
-                    sleep(timeout);
                 }, xmppchat));
 
                 it("will have their own heading once they have been added", $.proxy(function () {
@@ -175,7 +160,6 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
-                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -193,7 +177,6 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(5,i+1).sort().join(''));
-                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -212,7 +195,6 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(10,i+1).sort().join(''));
-                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -231,7 +213,6 @@
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
                         expect(t).toEqual(cur_names.slice(15, i+1).sort().join(''));
-                        sleep(timeout);
                     }
                 }, xmppchat));
 
@@ -290,7 +271,6 @@
                         // be opened.
                         expect(this.showControlBox).toHaveBeenCalled();
                     }
-                    sleep(timeout);
                 }, xmppchat));
 
                 it("will have their own heading once they have been added", $.proxy(function () {
@@ -310,7 +290,6 @@
                     accept_button.click();
                     expect(view.acceptRequest).toHaveBeenCalled();
                     expect(this.connection.roster.authorize).toHaveBeenCalled();
-                    sleep(timeout);
                 }, xmppchat));
 
                 it("can have their requests denied by the user", $.proxy(function () {
@@ -327,7 +306,6 @@
                     expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                     // There should now be one less contact
                     expect(this.roster.length).toEqual(num_contacts-1); 
-                    sleep(timeout);
                 }, xmppchat));
             }, xmppchat));
 
@@ -396,7 +374,6 @@
                     $el.click();
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
-                    sleep(timeout);
                 }
             }, xmppchat));
 
@@ -430,7 +407,6 @@
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     view.$el.find('.close-chatbox-button').click();
                     expect(view.closeChat).toHaveBeenCalled();
-                    sleep(timeout);
                 }
             }, xmppchat));
 

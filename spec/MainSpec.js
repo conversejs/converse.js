@@ -65,7 +65,7 @@
         this.onConnected(mock_connection);
         this.animate = false; // don't use animations
 
-        describe("The Contacts Roster", $.proxy(function () {
+        describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, xmppchat));
@@ -75,6 +75,20 @@
                 $('#toggle-online-users').click();
                 expect(this.toggleControlBox).toHaveBeenCalled();
             }, xmppchat));
+
+            describe("The Status Widget", $.proxy(function () {
+                it("can be used to set the current user's chat status", $.proxy(function () {
+                    // TODO
+                }, xmppchat));
+
+                it("can be used to set a custom status message", $.proxy(function () {
+                    // TODO
+                }, xmppchat));
+            }, xmppchat));
+
+        }, xmppchat));
+
+        describe("The Contacts Roster", $.proxy(function () {
 
             describe("Pending Contacts", $.proxy(function () {
                 it("do not have a heading if there aren't any", $.proxy(function () {
@@ -309,25 +323,21 @@
                     var new_attrs, old_attrs, attrs, old_roster;
                     // One contact was declined, so we have 1 less contact then originally
                     expect(this.roster.length).toEqual(num_contacts-1); 
-                    old_roster = this.roster;
-                    this.roster = new this.RosterItems();
-                    expect(this.roster.length).toEqual(0);
+                    new_roster = new this.RosterItems();
+                    // Roster items are yet to be fetched from localStorage
+                    expect(new_roster.length).toEqual(0);
 
-                    this.roster.localStorage = new Backbone.LocalStorage(
+                    new_roster.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.rosteritems-dummy@localhost'));
-                    this.chatboxes.onConnected();
 
-                    spyOn(this.roster, 'fetch').andCallThrough();
-                    this.rosterview = new this.RosterView({'model':this.roster});
-                    expect(this.roster.fetch).toHaveBeenCalled();
+                    new_roster.fetch();
                     expect(this.roster.length).toEqual(num_contacts-1);
-
                     // Check that the roster items retrieved from localStorage
                     // have the same attributes values as the original ones.
                     attrs = ['jid', 'fullname', 'subscription', 'ask'];
                     for (i=0; i<attrs.length; i++) {
-                        new_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
-                        old_attrs = _.pluck(_.pluck(old_roster.models, 'attributes'), attrs[i]);
+                        new_attrs = _.pluck(_.pluck(new_roster.models, 'attributes'), attrs[i]);
+                        old_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
                         // Roster items in storage are not necessarily sorted,
                         // so we have to sort them here to do a proper
                         // comparison

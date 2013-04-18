@@ -62,9 +62,9 @@
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, xmppchat));
 
-            it("can be opened by clicking a DOM element with id 'toggle-online-users'", $.proxy(function () {
+            it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
                 spyOn(this, 'toggleControlBox').andCallThrough();
-                $('#toggle-online-users').click();
+                $('.toggle-online-users').click();
                 expect(this.toggleControlBox).toHaveBeenCalled();
             }, xmppchat));
 

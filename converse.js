@@ -1,13 +1,10 @@
 /*!
  * Converse.js (XMPP-based instant messaging with Strophe.js and backbone.js)
- * http://opkode.com
+ * http://conversejs.org
  *
  * Copyright (c) 2012 Jan-Carel Brand (jc@opkode.com)
  * Dual licensed under the MIT and GPL Licenses
  */
-
-/* The following line defines global variables defined elsewhere. */
-/*globals jQuery, portal_url*/
 
 // AMD/global registrations
 (function (root, factory) {

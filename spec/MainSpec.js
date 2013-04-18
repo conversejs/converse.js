@@ -52,15 +52,7 @@
         };
 
         // Clear localStorage
-        window.localStorage.removeItem(
-            hex_sha1('converse.rosteritems-'+this.bare_jid));
-        window.localStorage.removeItem(
-            hex_sha1('converse.chatboxes-'+this.bare_jid));
-        window.localStorage.removeItem(
-            hex_sha1('converse.xmppstatus-'+this.bare_jid));
-        window.localStorage.removeItem(
-            hex_sha1('converse.messages'+cur_names[0].replace(' ','.').toLowerCase() + '@localhost'));
-
+        window.localStorage.clear();
         this.prebind = true;
         this.onConnected(mock_connection);
         this.animate = false; // don't use animations
@@ -78,11 +70,47 @@
 
             describe("The Status Widget", $.proxy(function () {
                 it("can be used to set the current user's chat status", $.proxy(function () {
-                    // TODO
+                    var view = this.xmppstatusview;
+                    spyOn(view, 'toggleOptions').andCallThrough();
+                    spyOn(view, 'setStatus').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
+                    view.$el.find('a.choose-xmpp-status').click();
+                    expect(view.toggleOptions).toHaveBeenCalled();
+                    expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
+
+                    runs(function () {
+                        spyOn(view, 'updateStatusUI').andCallThrough();
+                        view.initialize(); // Rebind events for spy
+                        view.$el.find('.dropdown dd ul li a').first().click();
+                        expect(view.setStatus).toHaveBeenCalled();
+                    });
+                    waits(100);
+                    runs($.proxy(function () {
+                        expect(view.updateStatusUI).toHaveBeenCalled();
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                        expect(view.$el.find('a.choose-xmpp-status span.value').text()).toBe('I am online');
+                    }, xmppchat));
                 }, xmppchat));
 
                 it("can be used to set a custom status message", $.proxy(function () {
-                    // TODO
+                    var view = this.xmppstatusview;
+                    spyOn(view, 'setStatusMessage').andCallThrough();
+                    spyOn(view, 'renderStatusChangeForm').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    runs(function () {
+                        view.$el.find('a.change-xmpp-status-message').click();
+                        expect(view.renderStatusChangeForm).toHaveBeenCalled();
+                    });
+                    waits(250);
+                    runs(function () {
+                        var msg = 'I am happy';
+                        view.$el.find('form input.custom-xmpp-status').val(msg);
+                        view.$el.find('form#set-custom-xmpp-status').submit();
+                        expect(view.setStatusMessage).toHaveBeenCalled();
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                        expect(view.$el.find('a.choose-xmpp-status span.value').text()).toBe(msg);
+                    });
                 }, xmppchat));
             }, xmppchat));
 
@@ -477,7 +505,7 @@
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
                     var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     var view = this.chatboxesview.views[contact_jid];
-                    var message = 'This is a message sent from the chatbox';
+                    var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
                     view.$el.find('.chat-textarea').text(message);
                     view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));

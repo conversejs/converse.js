@@ -1,13 +1,10 @@
 /*!
  * Converse.js (XMPP-based instant messaging with Strophe.js and backbone.js)
- * http://opkode.com
+ * http://conversejs.org
  *
  * Copyright (c) 2012 Jan-Carel Brand (jc@opkode.com)
  * Dual licensed under the MIT and GPL Licenses
  */
-
-/* The following line defines global variables defined elsewhere. */
-/*globals jQuery, portal_url*/
 
 // AMD/global registrations
 (function (root, factory) {
@@ -1198,10 +1195,10 @@
                     '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
         pending_template: _.template(
-                    '{{ fullname }}' +
+                    '<span>{{ fullname }}</span>' +
                     '<a class="remove-xmpp-contact" title="Click to remove this contact" href="#"></a>'),
 
-        request_template: _.template('{{ fullname }}' +
+        request_template: _.template('<div>{{ fullname }}</div>' +
                     '<button type="button" class="accept-xmpp-request">' +
                     'Accept</button>' +
                     '<button type="button" class="decline-xmpp-request">' +

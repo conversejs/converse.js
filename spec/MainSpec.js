@@ -30,6 +30,7 @@
             'addHandler': function (handler, ns, name, type, id, from, options) { 
                 return function () {};
             },
+            'send': function () {},
             'roster': {
                 'add': function () {},
                 'authorize': function () {},
@@ -51,20 +52,12 @@
         };
 
         // Clear localStorage
-        window.localStorage.removeItem(
-            hex_sha1('converse.rosteritems-'+this.bare_jid));
-        window.localStorage.removeItem(
-            hex_sha1('converse.chatboxes-'+this.bare_jid));
-        window.localStorage.removeItem(
-            hex_sha1('converse.xmppstatus-'+this.bare_jid));
-        window.localStorage.removeItem(
-            hex_sha1('converse.messages'+cur_names[0].replace(' ','.').toLowerCase() + '@localhost'));
-
+        window.localStorage.clear();
         this.prebind = true;
         this.onConnected(mock_connection);
         this.animate = false; // don't use animations
 
-        describe("The Contacts Roster", $.proxy(function () {
+        describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, xmppchat));
@@ -74,6 +67,56 @@
                 $('#toggle-online-users').click();
                 expect(this.toggleControlBox).toHaveBeenCalled();
             }, xmppchat));
+
+            describe("The Status Widget", $.proxy(function () {
+                it("can be used to set the current user's chat status", $.proxy(function () {
+                    var view = this.xmppstatusview;
+                    spyOn(view, 'toggleOptions').andCallThrough();
+                    spyOn(view, 'setStatus').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
+                    view.$el.find('a.choose-xmpp-status').click();
+                    expect(view.toggleOptions).toHaveBeenCalled();
+                    expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
+
+                    runs(function () {
+                        spyOn(view, 'updateStatusUI').andCallThrough();
+                        view.initialize(); // Rebind events for spy
+                        view.$el.find('.dropdown dd ul li a').first().click();
+                        expect(view.setStatus).toHaveBeenCalled();
+                    });
+                    waits(100);
+                    runs($.proxy(function () {
+                        expect(view.updateStatusUI).toHaveBeenCalled();
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                        expect(view.$el.find('a.choose-xmpp-status span.value').text()).toBe('I am online');
+                    }, xmppchat));
+                }, xmppchat));
+
+                it("can be used to set a custom status message", $.proxy(function () {
+                    var view = this.xmppstatusview;
+                    spyOn(view, 'setStatusMessage').andCallThrough();
+                    spyOn(view, 'renderStatusChangeForm').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    runs(function () {
+                        view.$el.find('a.change-xmpp-status-message').click();
+                        expect(view.renderStatusChangeForm).toHaveBeenCalled();
+                    });
+                    waits(250);
+                    runs(function () {
+                        var msg = 'I am happy';
+                        view.$el.find('form input.custom-xmpp-status').val(msg);
+                        view.$el.find('form#set-custom-xmpp-status').submit();
+                        expect(view.setStatusMessage).toHaveBeenCalled();
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                        expect(view.$el.find('a.choose-xmpp-status span.value').text()).toBe(msg);
+                    });
+                }, xmppchat));
+            }, xmppchat));
+
+        }, xmppchat));
+
+        describe("The Contacts Roster", $.proxy(function () {
 
             describe("Pending Contacts", $.proxy(function () {
                 it("do not have a heading if there aren't any", $.proxy(function () {
@@ -308,25 +351,21 @@
                     var new_attrs, old_attrs, attrs, old_roster;
                     // One contact was declined, so we have 1 less contact then originally
                     expect(this.roster.length).toEqual(num_contacts-1); 
-                    old_roster = this.roster;
-                    this.roster = new this.RosterItems();
-                    expect(this.roster.length).toEqual(0);
+                    new_roster = new this.RosterItems();
+                    // Roster items are yet to be fetched from localStorage
+                    expect(new_roster.length).toEqual(0);
 
-                    this.roster.localStorage = new Backbone.LocalStorage(
+                    new_roster.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.rosteritems-dummy@localhost'));
-                    this.chatboxes.onConnected();
 
-                    spyOn(this.roster, 'fetch').andCallThrough();
-                    this.rosterview = new this.RosterView({'model':this.roster});
-                    expect(this.roster.fetch).toHaveBeenCalled();
+                    new_roster.fetch();
                     expect(this.roster.length).toEqual(num_contacts-1);
-
                     // Check that the roster items retrieved from localStorage
                     // have the same attributes values as the original ones.
                     attrs = ['jid', 'fullname', 'subscription', 'ask'];
                     for (i=0; i<attrs.length; i++) {
-                        new_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
-                        old_attrs = _.pluck(_.pluck(old_roster.models, 'attributes'), attrs[i]);
+                        new_attrs = _.pluck(_.pluck(new_roster.models, 'attributes'), attrs[i]);
+                        old_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
                         // Roster items in storage are not necessarily sorted,
                         // so we have to sort them here to do a proper
                         // comparison
@@ -464,7 +503,16 @@
                 }, xmppchat));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
-                    // TODO
+                    var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var view = this.chatboxesview.views[contact_jid];
+                    var message = 'This message is sent from this chatbox';
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    view.$el.find('.chat-textarea').text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.messages.length, 2);
+                    var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
+                    expect(txt).toEqual(message);
                 }, xmppchat));
             }, xmppchat));
         }, xmppchat));

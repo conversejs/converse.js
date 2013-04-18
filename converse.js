@@ -1918,7 +1918,7 @@
         this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $('a#toggle-online-users').bind(
+        $('a.toggle-online-users').bind(
             'click', 
             $.proxy(function (e) { 
                 e.preventDefault(); this.toggleControlBox(); 

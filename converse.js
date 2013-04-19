@@ -710,11 +710,13 @@
 
         createChatRoom: function (ev) {
             ev.preventDefault();
-            var name, jid;
+            var name, jid, input;
             if (ev.type === 'click') {
                 jid = $(ev.target).attr('data-room-jid');
             } else {
-                name = $(ev.target).find('input.new-chatroom-name').val().trim().toLowerCase();
+                input = this.$el.find('input.new-chatroom-name');
+                name = input.val().trim().toLowerCase();
+                input.val(''); // Clear the input
                 if (name) {
                     jid = Strophe.escapeNode(name) + '@' + xmppchat.muc_domain;
                 } else {
@@ -882,11 +884,11 @@
 
         initialize: function () {
             xmppchat.connection.muc.join(
-                            this.model.get('jid'),
-                            this.model.get('nick'),
-                            $.proxy(this.onChatRoomMessage, this),
-                            $.proxy(this.onChatRoomPresence, this),
-                            $.proxy(this.onChatRoomRoster, this));
+                this.model.get('jid'),
+                this.model.get('nick'),
+                $.proxy(this.onChatRoomMessage, this),
+                $.proxy(this.onChatRoomPresence, this),
+                $.proxy(this.onChatRoomRoster, this));
 
 
             this.model.messages.on('add', this.showMessage, this);
@@ -983,7 +985,7 @@
         },
 
         onChatRoomRoster: function (roster, room) {
-            // underscore size is needed because roster is on object
+            // underscore size is needed because roster is an object
             var controlboxview = xmppchat.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),

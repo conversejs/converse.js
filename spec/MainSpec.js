@@ -24,7 +24,8 @@
         this.bare_jid = 'dummy@localhost';
         mock_connection  = {
             'muc': {
-                'listRooms': function () {}
+                'listRooms': function () {},
+                'join': function () {}
             },
             'jid': this.bare_jid,
             'addHandler': function (handler, ns, name, type, id, from, options) { 
@@ -57,35 +58,44 @@
         this.onConnected(mock_connection);
         this.animate = false; // don't use animations
 
+        // Variable declarations for specs
+        var open_controlbox;
+
         describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, xmppchat));
 
-            it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
+            open_controlbox = $.proxy(function () {
+                // This spec will only pass if the controlbox is not currently
+                // open yet.
+                expect($("div#controlbox").is(':visible')).toBe(false);
                 spyOn(this, 'toggleControlBox').andCallThrough();
                 $('.toggle-online-users').click();
                 expect(this.toggleControlBox).toHaveBeenCalled();
-            }, xmppchat));
-
+                expect($("div#controlbox").is(':visible')).toBe(true);
+            }, xmppchat);
+            it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
+            
             describe("The Status Widget", $.proxy(function () {
                 it("can be used to set the current user's chat status", $.proxy(function () {
                     var view = this.xmppstatusview;
                     spyOn(view, 'toggleOptions').andCallThrough();
                     spyOn(view, 'setStatus').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-
-                    view.$el.find('a.choose-xmpp-status').click();
-                    expect(view.toggleOptions).toHaveBeenCalled();
-                    expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
-
+                    runs(function () {
+                        view.$el.find('a.choose-xmpp-status').click();
+                        expect(view.toggleOptions).toHaveBeenCalled();
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
+                    });
+                    waits(250);
                     runs(function () {
                         spyOn(view, 'updateStatusUI').andCallThrough();
                         view.initialize(); // Rebind events for spy
                         view.$el.find('.dropdown dd ul li a').first().click();
                         expect(view.setStatus).toHaveBeenCalled();
                     });
-                    waits(100);
+                    waits(250);
                     runs($.proxy(function () {
                         expect(view.updateStatusUI).toHaveBeenCalled();
                         expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
@@ -98,14 +108,16 @@
                     spyOn(view, 'setStatusMessage').andCallThrough();
                     spyOn(view, 'renderStatusChangeForm').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    runs(function () {
-                        view.$el.find('a.change-xmpp-status-message').click();
-                        expect(view.renderStatusChangeForm).toHaveBeenCalled();
+                    view.$el.find('a.change-xmpp-status-message').click();
+                    expect(view.renderStatusChangeForm).toHaveBeenCalled();
+                    // The async testing here is used only to provide time for
+                    // visual feedback
+                    var msg = 'I am happy';
+                    runs (function () {
+                        view.$el.find('form input.custom-xmpp-status').val(msg);
                     });
                     waits(250);
-                    runs(function () {
-                        var msg = 'I am happy';
-                        view.$el.find('form input.custom-xmpp-status').val(msg);
+                    runs (function () {
                         view.$el.find('form#set-custom-xmpp-status').submit();
                         expect(view.setStatusMessage).toHaveBeenCalled();
                         expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
@@ -450,6 +462,9 @@
                 // in localStorage either.
                 newchatboxes.onConnected();
                 expect(newchatboxes.length).toEqual(0);
+
+                // Lets open the controlbox again, purely for visual feedback
+                open_controlbox(); 
             }, xmppchat));
 
             describe("A Chat Message", $.proxy(function () {
@@ -516,6 +531,64 @@
                 }, xmppchat));
             }, xmppchat));
         }, xmppchat));
+
+        describe("The Controlbox Tabs", $.proxy(function () {
+            it("consist of two tabs, 'Contacts' and 'ChatRooms', of which 'Contacts' is by default visible", $.proxy(function () {
+                var cbview = this.chatboxesview.views.controlbox;
+                var $panels = cbview.$el.find('#controlbox-panes');
+                expect($panels.children().length).toBe(2);
+                expect($panels.children().first().attr('id')).toBe('users');
+                expect($panels.children().first().is(':visible')).toBe(true);
+                expect($panels.children().last().attr('id')).toBe('chatrooms');
+                expect($panels.children().last().is(':visible')).toBe(false);
+            }, xmppchat));
+
+            describe("The Chatrooms Panel", $.proxy(function () {
+
+                it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
+                    var cbview = this.chatboxesview.views.controlbox;
+                    var $tabs = cbview.$el.find('#controlbox-tabs');
+                    var $panels = cbview.$el.find('#controlbox-panes');
+                    var $contacts = $panels.children().first();
+                    var $chatrooms = $panels.children().last();
+                    spyOn(cbview, 'switchTab').andCallThrough();
+                    cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    runs(function () {
+                        $tabs.find('li').last().find('a').click(); // Clicks the chatrooms tab
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect($contacts.is(':visible')).toBe(false);
+                        expect($chatrooms.is(':visible')).toBe(true);
+                        expect(cbview.switchTab).toHaveBeenCalled();
+                    });
+                }, xmppchat));
+
+                it("contains a form through which a new chatroom can be created", $.proxy(function () {
+                    var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
+                    var $input = roomspanel.$el.find('input.new-chatroom-name');
+                    expect($input.length).toBe(1);
+                    expect($('.chatroom').length).toBe(0); // There shouldn't be any chatrooms open currently
+                    spyOn(roomspanel, 'createChatRoom').andCallThrough();
+                    roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    runs(function () {
+                        $input.val('Lounge');
+                    });
+                    waits('250');
+                    runs(function () {
+                        roomspanel.$el.find('form').submit();
+                        expect(roomspanel.createChatRoom).toHaveBeenCalled();
+                    });
+                    waits('250');
+                    runs($.proxy(function () {
+                        expect($('.chatroom').length).toBe(1); // There should now be an open chatroom
+                    }, xmppchat));
+                }, xmppchat));
+
+
+            }, xmppchat));
+        }, xmppchat));
+
 
     }, xmppchat));
 }));

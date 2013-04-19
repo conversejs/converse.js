@@ -57,17 +57,25 @@
         this.onConnected(mock_connection);
         this.animate = false; // don't use animations
 
+        // Variable declarations for specs
+        var open_controlbox;
+
         describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, xmppchat));
 
-            it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
+            open_controlbox = $.proxy(function () {
+                // This spec will only pass if the controlbox is not currently
+                // open yet.
+                expect($("div#controlbox").is(':visible')).toBe(false);
                 spyOn(this, 'toggleControlBox').andCallThrough();
                 $('.toggle-online-users').click();
                 expect(this.toggleControlBox).toHaveBeenCalled();
-            }, xmppchat));
-
+                expect($("div#controlbox").is(':visible')).toBe(true);
+            }, xmppchat);
+            it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
+            
             describe("The Status Widget", $.proxy(function () {
                 it("can be used to set the current user's chat status", $.proxy(function () {
                     var view = this.xmppstatusview;
@@ -98,14 +106,16 @@
                     spyOn(view, 'setStatusMessage').andCallThrough();
                     spyOn(view, 'renderStatusChangeForm').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    runs(function () {
-                        view.$el.find('a.change-xmpp-status-message').click();
-                        expect(view.renderStatusChangeForm).toHaveBeenCalled();
-                    });
-                    waits(250);
-                    runs(function () {
-                        var msg = 'I am happy';
+                    view.$el.find('a.change-xmpp-status-message').click();
+                    expect(view.renderStatusChangeForm).toHaveBeenCalled();
+                    // The async testing here is used only to provide time for
+                    // visual feedback
+                    var msg = 'I am happy';
+                    runs (function () {
                         view.$el.find('form input.custom-xmpp-status').val(msg);
+                    });
+                    waits(500);
+                    runs (function () {
                         view.$el.find('form#set-custom-xmpp-status').submit();
                         expect(view.setStatusMessage).toHaveBeenCalled();
                         expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
@@ -450,6 +460,9 @@
                 // in localStorage either.
                 newchatboxes.onConnected();
                 expect(newchatboxes.length).toEqual(0);
+
+                // Lets open the controlbox again, purely for visual feedback
+                open_controlbox(); 
             }, xmppchat));
 
             describe("A Chat Message", $.proxy(function () {

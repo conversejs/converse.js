@@ -400,8 +400,20 @@
             }, xmppchat));
         }, xmppchat));
 
-        describe("A Chatbox", $.proxy(function () {
+        describe("The 'Add Contact' widget", $.proxy(function () {
+            it("opens up an add form when you click on it", $.proxy(function () {
+                var panel = this.chatboxesview.views.controlbox.contactspanel;
+                spyOn(panel, 'toggleContactForm').andCallThrough();
+                panel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                panel.$el.find('a.toggle-xmpp-contact-form').click();
+                expect(panel.toggleContactForm).toHaveBeenCalled();
+                // XXX: Awaiting more tests, close it again for now...
+                panel.$el.find('a.toggle-xmpp-contact-form').click();
+            }, xmppchat));
 
+        }, xmppchat));
+
+        describe("A Chatbox", $.proxy(function () {
             it("is created when you click on a roster item", $.proxy(function () {
                 var i, $el, click, jid, view;
                 // showControlBox was called earlier, so the controlbox is
@@ -585,10 +597,8 @@
                     }, xmppchat));
                 }, xmppchat));
 
-
             }, xmppchat));
         }, xmppchat));
-
 
     }, xmppchat));
 }));

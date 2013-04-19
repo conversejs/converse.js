@@ -573,9 +573,10 @@
         className: 'oc-chat-content',
         id: 'users',
         events: {
-            'click a.add-xmpp-contact': 'toggleContactForm',
+            'click a.toggle-xmpp-contact-form': 'toggleContactForm',
+            'submit form.add-xmpp-contact': 'addContactFromForm',
             'submit form.search-xmpp-contact': 'searchContacts',
-            'click a.subscribe-to-user': 'subscribeToContact'
+            'click a.subscribe-to-user': 'addContactFromList'
         },
 
         tab_template: _.template('<li><a class="s current" href="#users">Contacts</a></li>'),
@@ -590,23 +591,38 @@
                     '</select>'+
                 '</span>'+
             '</form>'+
-            '<dl class="add-xmpp-contact dropdown">' +
+            '<dl class="add-converse-contact dropdown">' +
                 '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
-                    '<a class="add-xmpp-contact" href="#" title="Click to search for new users to add as chat contacts">Add a contact</a>' +
+                    '<a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">Add a contact</a>' +
                 '</dt>' +
                 '<dd class="search-xmpp" style="display:none"><ul>' +
-                '<form class="search-xmpp-contact">' +
-                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
-                    '<button type="submit">Search</button>' +
-                    '<ul id="found-users"></ul>' +
-                '</form>' +
                 '</ul></dd>' +
             '</dl>'
         ),
 
+        add_contact_template: _.template(
+                '<form class="add-xmpp-contact">' +
+                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
+                    '<button type="submit">Add</button>' +
+                '</form>'),
+
+        search_contact_template: _.template(
+                '<form class="search-xmpp-contact">' +
+                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
+                    '<button type="submit">Search</button>' +
+                    '<ul id="found-users"></ul>' +
+                '</form>'),
+
         render: function () {
+            var markup;
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
             this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
+            if (xmppchat.xhr_user_search) {
+                markup = this.search_contact_template();
+            } else {
+                markup = this.add_contact_template();
+            }
+            this.$el.find('#xmpp-contact-search').siblings('.search-xmpp').append(markup);
             return this;
         },
 
@@ -618,34 +634,44 @@
         searchContacts: function (ev) {
             ev.preventDefault();
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
-                    var $results_el = $('#found-users');
-                    $(data).each(function (idx, obj) {
-                        if ($results_el.children().length) {
-                        $results_el.empty();
-                        }
-                        $results_el.append(
-                            $('<li></li>')
-                            .attr('id', 'found-users-'+obj.id)
-                            .append(
-                                $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
-                                .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.domain)
-                                .text(obj.fullname)
-                                )
-                            );
-                        });
-                    });
-            },
+                var $results_el = $('#found-users');
+                $(data).each(function (idx, obj) {
+                    if ($results_el.children().length) {
+                    $results_el.empty();
+                    }
+                    $results_el.append(
+                        $('<li></li>')
+                        .attr('id', 'found-users-'+obj.id)
+                        .append(
+                            $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
+                            .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.domain)
+                            .text(obj.fullname)
+                        )
+                    );
+                });
+            });
+        },
 
-        subscribeToContact: function (ev) {
+        addContactFromForm: function (ev) {
+            ev.preventDefault();
+            this.addContact($(ev.target).find('input').val());
+            $('.search-xmpp').hide();
+        },
+
+        addContactFromList: function (ev) {
             ev.preventDefault();
             var $target = $(ev.target),
                 jid = $target.attr('data-recipient'),
                 name = $target.text();
-            xmppchat.connection.roster.add(jid, name, [], function (iq) {
-                    xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
-                    });
+            this.addContact(jid, name);
             $target.parent().remove();
             $('.search-xmpp').hide();
+        },
+
+        addContact: function (jid, name) {
+            xmppchat.connection.roster.add(jid, name, [], function (iq) {
+                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+            });
         }
     });
 
@@ -1910,11 +1936,12 @@
         $('.conn-feedback').text(message);
     }
 
-    xmppchat.initialize = function () {
-        var chatdata = $('div#collective-xmpp-chat-data');
-        this.fullname = chatdata.attr('fullname');
-        this.prebind = chatdata.attr('prebind');
-        this.auto_subscribe = chatdata.attr('auto_subscribe') === "True" || false;
+    xmppchat.initialize = function (data) {
+        this.prebind = data.attr('prebind');
+        this.fullname = data.attr('fullname');
+        this.xhr_user_search = data.attr('xhr_user_search');
+        this.auto_subscribe = data.attr('auto_subscribe') === "True" || false;
+
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
         $('a.toggle-online-users').bind(
@@ -1978,7 +2005,9 @@
     // Event handlers
     // --------------
     $(document).ready($.proxy(function () {
-        this.initialize();
+        // TODO: This code is Plone specific and needs to be factored out
+        var data = $('div#collective-xmpp-chat-data');
+        this.initialize(data);
         $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {
         this.giveFeedback('Connecting to chat...');
         }, this));

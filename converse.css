@@ -596,12 +596,18 @@ form.sendXMPPMessage {
     height: 54px;
 }
 
-#set-custom-xmpp-status {
+form#set-custom-xmpp-status {
     float: left;
+    padding: 0;
+    background: none;
 }
 
 #set-custom-xmpp-status button {
     padding: 1px 2px 1px 1px;
+}
+
+input.custom-xmpp-status {
+    width: 138px;
 }
 
 /* status dropdown styles */
@@ -614,10 +620,6 @@ dl.dropdown {
 
 div.xmpp-status {
     padding: 3px;
-}
-
-input.custom-xmpp-status {
-    height: 18px;
 }
 
 .fancy-dropdown {

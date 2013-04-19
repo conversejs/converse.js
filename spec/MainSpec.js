@@ -412,17 +412,17 @@
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
-                this.newchatboxes = new this.ChatBoxes();
-                expect(this.newchatboxes.length).toEqual(0);
+                var newchatboxes = new this.ChatBoxes();
+                expect(newchatboxes.length).toEqual(0);
                 // The chatboxes will then be fetched from localStorage inside the
                 // onConnected method
-                this.newchatboxes.onConnected();
-                expect(this.newchatboxes.length).toEqual(6);
+                newchatboxes.onConnected();
+                expect(newchatboxes.length).toEqual(6);
                 // Check that the roster items retrieved from localStorage
                 // have the same attributes values as the original ones.
                 attrs = ['id', 'box_id', 'visible'];
                 for (i=0; i<attrs.length; i++) {
-                    new_attrs = _.pluck(_.pluck(this.newchatboxes.models, 'attributes'), attrs[i]);
+                    new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
                     old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
                     expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
                 }
@@ -443,13 +443,13 @@
             }, xmppchat));
 
             it("will be removed from localStorage when closed", $.proxy(function () {
-                this.newchatboxes = new this.ChatBoxes();
-                expect(this.newchatboxes.length).toEqual(0);
+                var newchatboxes = new this.ChatBoxes();
+                expect(newchatboxes.length).toEqual(0);
                 // onConnected will fetch chatboxes in localStorage, but
                 // because there aren't any open chatboxes, there won't be any
                 // in localStorage either.
-                this.chatboxes.onConnected();
-                expect(this.chatboxes.length).toEqual(0);
+                newchatboxes.onConnected();
+                expect(newchatboxes.length).toEqual(0);
             }, xmppchat));
 
             describe("A Chat Message", $.proxy(function () {

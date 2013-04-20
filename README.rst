@@ -2,12 +2,12 @@
 converse.js
 ===========
 
-Converse.js_ implements an XMPP_ based instant messaging client in the browser.
+Converse.js_ is a web based `XMPP/Jabber`_ instant messaging client.
 
 It is used by collective.xmpp.chat_, which is a Plone_ instant messaging add-on.
 
-The ultimate goal is to enable anyone to add chat functionality to their websites, regardless of the backend.
-This is currently possible, except for adding new contacts, which still makes an XHR call to the (Plone) backend to fetch user info.
+The ultimate goal is to enable anyone to add chat functionality to their websites, independent of any backend.
+You will however need an XMPP server to connect to, either your own, or a public one.
 
 --------
 Features
@@ -54,7 +54,7 @@ Licence
 .. _require.js: http:/requirejs.org
 .. _collective.xmpp.chat: http://github.com/collective/collective.xmpp.chat
 .. _Plone: http://plone.org
-.. _XMPP: http://xmpp.org
+.. _`XMPP/Jabber`: http://xmpp.org
 .. _MIT: http://opensource.org/licenses/mit-license.php
 .. _GPL: http://opensource.org/licenses/gpl-license.php
 .. _here: http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp

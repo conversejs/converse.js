@@ -654,7 +654,15 @@
 
         addContactFromForm: function (ev) {
             ev.preventDefault();
-            this.addContact($(ev.target).find('input').val());
+            converse.getVCard(
+                $(ev.target).find('input').val(),
+                $.proxy(function (jid, fullname, image, image_type, url) {
+                    // XXX: Should we perhaps create a roster item here?
+                    this.addContact(jid, fullname);
+                }, this),
+                $.proxy(function () {
+                    console.log("An error occured while fetching vcard");
+                }, this));
             $('.search-xmpp').hide();
         },
 
@@ -1428,7 +1436,7 @@
                         jid: item.jid,
                         subscription: item.subscription,
                         ask: item.ask,
-                        fullname: item.name,
+                        fullname: item.name || item.jid,
                         is_last: is_last
                     });
                 } else {

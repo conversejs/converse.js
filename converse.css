@@ -182,6 +182,10 @@ div.delayed .chat-message-me {
     color: #7EABBB;
 }
 
+input.error {
+    border: 1px solid red;
+}
+
 .chat-message-error {
     color:#76797C;
     font-size:90%;
@@ -272,7 +276,7 @@ dt#xmpp-contact-search {
 
 ul#found-users {
     padding: 10px 0 5px 5px;
-    border: 0; 
+    border: 0;
 }
 
 form.search-xmpp-contact {
@@ -596,8 +600,9 @@ form.sendXMPPMessage {
     height: 54px;
 }
 
-#set-custom-xmpp-status {
+form#set-custom-xmpp-status {
     float: left;
+    padding: 0;
 }
 
 #set-custom-xmpp-status button {
@@ -617,7 +622,16 @@ div.xmpp-status {
 }
 
 input.custom-xmpp-status {
-    height: 18px;
+    width: 138px;
+}
+
+form.add-xmpp-contact {
+    background: white;
+    padding: 5px;
+}
+
+form.add-xmpp-contact input {
+    width: 130px;
 }
 
 .fancy-dropdown {

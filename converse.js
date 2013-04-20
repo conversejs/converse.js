@@ -654,8 +654,15 @@
 
         addContactFromForm: function (ev) {
             ev.preventDefault();
+            var $input = $(ev.target).find('input');
+            var jid = $input.val();
+            if (jid.indexOf("@") < 0) {
+                // this is not a valid JID
+                $input.addClass('error');
+                return;
+            }
             converse.getVCard(
-                $(ev.target).find('input').val(),
+                jid,
                 $.proxy(function (jid, fullname, image, image_type, url) {
                     // XXX: Should we perhaps create a roster item here?
                     this.addContact(jid, fullname);

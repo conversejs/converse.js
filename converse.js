@@ -357,8 +357,8 @@
 
         isDifferentDay: function (prev_date, next_date) {
             return (
-                (next_date.getDate() != prev_date.getDate()) || 
-                (next_date.getFullYear() != prev_date.getFullYear()) || 
+                (next_date.getDate() != prev_date.getDate()) ||
+                (next_date.getFullYear() != prev_date.getFullYear()) ||
                 (next_date.getMonth() != prev_date.getMonth()));
         },
 
@@ -412,7 +412,7 @@
                 fullname: 'me',
                 sender: 'me',
                 time: converse.toISOString(new Date()),
-                message: text 
+                message: text
             });
         },
 
@@ -778,7 +778,7 @@
                 if (_.has(item.changed, 'visible')) {
                     if (item.changed.visible === true) {
                         this.show();
-                    } 
+                    }
                 }
             }, this));
 
@@ -787,7 +787,7 @@
             this.model.on('hide', this.hide, this);
             if (this.model.get('visible')) {
                 this.show();
-            } 
+            }
         },
 
         template: _.template(
@@ -830,7 +830,7 @@
                 this.contactspanel.$parent = this.$el;
                 this.contactspanel.render();
                 // TODO: Only add the rooms panel if the server supports MUC
-                this.roomspanel = new converse.RoomsPanel(); 
+                this.roomspanel = new converse.RoomsPanel();
                 this.roomspanel.$parent = this.$el;
                 this.roomspanel.render();
             }
@@ -918,14 +918,14 @@
 
 
             this.model.messages.on('add', this.showMessage, this);
-            this.model.on('destroy', function (model, response, options) { 
-                this.$el.hide('fast'); 
+            this.model.on('destroy', function (model, response, options) {
+                this.$el.hide('fast');
                 converse.connection.muc.leave(
                     this.model.get('jid'),
                     this.model.get('nick'),
                     this.onLeave,
                     undefined);
-            }, 
+            },
             this);
             this.$el.appendTo(converse.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
@@ -1061,14 +1061,14 @@
                         this.get('controlbox').set({visible:true}).save();
                     }
                 }, this)
-            }); 
+            });
         },
 
         messageReceived: function (message) {
             var  partner_jid, $message = $(message),
                  message_from = $message.attr('from');
             if (message_from == converse.connection.jid) {
-                // FIXME: Forwarded messages should be sent to specific resources, 
+                // FIXME: Forwarded messages should be sent to specific resources,
                 // not broadcasted
                 return true;
             }
@@ -1090,7 +1090,7 @@
             chatbox = this.get(partner_jid);
             if (!chatbox) {
                 converse.getVCard(
-                    partner_jid, 
+                    partner_jid,
                     $.proxy(function (jid, fullname, image, image_type, url) {
                         var chatbox = this.create({
                             'id': jid,
@@ -1425,7 +1425,7 @@
                     is_last = false;
                     if (index === (items.length-1)) { is_last = true; }
                     this.create({
-                        jid: item.jid, 
+                        jid: item.jid,
                         subscription: item.subscription,
                         ask: item.ask,
                         fullname: item.name,
@@ -1487,10 +1487,10 @@
                         converse.connection.roster.authorize(bare_jid);
                     } else {
                         converse.getVCard(
-                            bare_jid, 
+                            bare_jid,
                             $.proxy(function (jid, fullname, img, img_type, url) {
                                 this.add({
-                                    jid: bare_jid, 
+                                    jid: bare_jid,
                                     subscription: 'none',
                                     ask: 'request',
                                     fullname: fullname,
@@ -1652,8 +1652,7 @@
                 crit = {order:'asc'};
             $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
             $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-        },
-
+        }
     });
 
     converse.XMPPStatus = Backbone.Model.extend({
@@ -1674,7 +1673,7 @@
         },
 
         sendPresence: function (type) {
-            var status_message = this.get('status_message'), 
+            var status_message = this.get('status_message'),
                 presence;
             // Most of these presence types are actually not explicitly sent,
             // but I add all of them here fore reference and future proofing.
@@ -1782,7 +1781,7 @@
             if (!(_.has(model.changed, 'status')) && !(_.has(model.changed, 'status_message'))) {
                 return;
             }
-            var stat = model.get('status'), 
+            var stat = model.get('status'),
                 status_message = model.get('status_message') || "I am " + this.getPrettyStatus(stat);
             this.$el.find('#fancy-xmpp-status-select').html(
                 this.status_template({
@@ -1936,22 +1935,6 @@
         $('.conn-feedback').text(message);
     }
 
-    converse.initialize = function (data) {
-        this.prebind = data.attr('prebind');
-        this.fullname = data.attr('fullname');
-        this.xhr_user_search = data.attr('xhr_user_search');
-        this.auto_subscribe = data.attr('auto_subscribe') === "True" || false;
-
-        this.chatboxes = new this.ChatBoxes();
-        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $('a.toggle-online-users').bind(
-            'click', 
-            $.proxy(function (e) { 
-                e.preventDefault(); this.toggleControlBox(); 
-            }, this)
-        );
-    },
-
     converse.onConnected = function (connection) {
         this.animate = true; // Use animations
         this.connection = connection;
@@ -2002,24 +1985,22 @@
         this.giveFeedback('Online Contacts');
     };
 
-    // Event handlers
-    // --------------
-    $(document).ready($.proxy(function () {
-        // TODO: This code is Plone specific and needs to be factored out
-        var data = $('div#collective-xmpp-chat-data');
-        this.initialize(data);
-        $(document).bind('jarnxmpp.connecting', $.proxy(function (ev, conn) {
-        this.giveFeedback('Connecting to chat...');
-        }, this));
-        $(document).bind('jarnxmpp.disconnected', $.proxy(function (ev, conn) {
-            this.giveFeedback('Unable to communicate with chat server').css('background-image', "url(images/error_icon.png)");
-            console.log("Connection Failed :(");
-        }, this));
-        $(document).unbind('jarnxmpp.connected');
-        $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
-            this.onConnected(connection);
-        }, this));
-    }, converse));
+    converse.initialize = function (settings) {
+        this.prebind = settings.prebind;
+        this.fullname = settings.fullname;
+        this.xhr_user_search = settings.xhr_user_search;
+        this.auto_subscribe = settings.auto_subscribe;
+        this.animate = settings.animate;
+
+        this.chatboxes = new this.ChatBoxes();
+        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
+        $('a.toggle-online-users').bind(
+            'click',
+            $.proxy(function (e) {
+                e.preventDefault(); this.toggleControlBox();
+            }, this)
+        );
+    };
 
     return converse;
 }));

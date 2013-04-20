@@ -21,13 +21,12 @@
             'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
         ];
         var num_contacts = req_names.length + pend_names.length + cur_names.length;
-        this.bare_jid = 'dummy@localhost';
         mock_connection  = {
             'muc': {
                 'listRooms': function () {},
                 'join': function () {}
             },
-            'jid': this.bare_jid,
+            'jid': 'dummy@localhost',
             'addHandler': function (handler, ns, name, type, id, from, options) { 
                 return function () {};
             },
@@ -54,9 +53,13 @@
 
         // Clear localStorage
         window.localStorage.clear();
-        this.prebind = true;
+        this.initialize({
+            prebind: false,
+            xhr_user_search: false,
+            auto_subscribe: false,
+            animate: false
+        });
         this.onConnected(mock_connection);
-        this.animate = false; // don't use animations
 
         // Variable declarations for specs
         var open_controlbox;
@@ -485,7 +488,7 @@
                     var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                         msg = $msg({
                             from: sender_jid,
-                            to: this.bare_jid, 
+                            to: this.connection.jid, 
                             type: 'chat', 
                             id: (new Date()).getTime()
                         }).c('body').t(message).up()

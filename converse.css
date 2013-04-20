@@ -340,42 +340,42 @@ form.search-xmpp-contact input {
     padding-top: 0.5em;
 }
 
-#xmppchat-roster dd.odd {
+#converse-roster dd.odd {
     background-color: #DCEAC5; /* Make this difference */
 }
 
-#xmppchat-roster dd.current-xmpp-contact {
+#converse-roster dd.current-xmpp-contact {
     clear: both;
 }
 
-#xmppchat-roster dd.current-xmpp-contact,
-#xmppchat-roster dd.current-xmpp-contact:hover {
+#converse-roster dd.current-xmpp-contact,
+#converse-roster dd.current-xmpp-contact:hover {
     background: url(images/user_online_panel.png) no-repeat 5px 2px;
 }
 
-#xmppchat-roster dd.current-xmpp-contact.offline:hover,
-#xmppchat-roster dd.current-xmpp-contact.unavailable:hover,
-#xmppchat-roster dd.current-xmpp-contact.offline,
-#xmppchat-roster dd.current-xmpp-contact.unavailable {
+#converse-roster dd.current-xmpp-contact.offline:hover,
+#converse-roster dd.current-xmpp-contact.unavailable:hover,
+#converse-roster dd.current-xmpp-contact.offline,
+#converse-roster dd.current-xmpp-contact.unavailable {
     background: url(images/user_offline_panel.png) no-repeat 5px 2px;
 }
 
-#xmppchat-roster dd.current-xmpp-contact.dnd,
-#xmppchat-roster dd.current-xmpp-contact.dnd:hover {
+#converse-roster dd.current-xmpp-contact.dnd,
+#converse-roster dd.current-xmpp-contact.dnd:hover {
     background: url(images/user_busy_panel.png) no-repeat 5px 2px;
 }
 
-#xmppchat-roster dd.current-xmpp-contact.away,
-#xmppchat-roster dd.current-xmpp-contact.away:hover {
+#converse-roster dd.current-xmpp-contact.away,
+#converse-roster dd.current-xmpp-contact.away:hover {
     background: url(images/user_away_panel.png) no-repeat 5px 2px;
 }
 
-#xmppchat-roster dd.requesting-xmpp-contact button{
+#converse-roster dd.requesting-xmpp-contact button{
     margin-left: 0.5em;
 }
 
-#xmppchat-roster dd a,
-#xmppchat-roster dd span {
+#converse-roster dd a,
+#converse-roster dd span {
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
     display: inline-block;
     overflow: hidden;
@@ -383,12 +383,12 @@ form.search-xmpp-contact input {
     text-overflow: ellipsis;
 }
 
-#xmppchat-roster dd a {
+#converse-roster dd a {
     margin-left: 1.5em;
     width: 113px;
 }
 
-#xmppchat-roster dd span {
+#converse-roster dd span {
     width: 125px;
 }
 
@@ -396,7 +396,7 @@ form.search-xmpp-contact input {
     border: none;
 }
 
-#xmppchat-roster {
+#converse-roster {
     height: 200px;
     overflow-y: scroll;
     width: 100%;
@@ -408,7 +408,7 @@ form.search-xmpp-contact input {
 }
 
 #available-chatrooms dt,
-#xmppchat-roster dt {
+#converse-roster dt {
     font-weight: normal;
     display: none;
     font-size: 13px;
@@ -428,7 +428,7 @@ form.search-xmpp-contact input {
 
 
 dd.available-chatroom,
-#xmppchat-roster dd {
+#converse-roster dd {
     font-weight: bold;
     border: none;
     display: block;
@@ -437,7 +437,7 @@ dd.available-chatroom,
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
-#xmppchat-roster dd a.remove-xmpp-contact {
+#converse-roster dd a.remove-xmpp-contact {
     background: url('images/delete_icon.png') no-repeat right top;
     padding: 0 1em 1em 0;
     float: right;
@@ -494,12 +494,12 @@ div#controlbox-panes {
     width: 199px;
 }
 
-form#xmppchat-login {
+form#converse-login {
     background: white;
     padding: 2em 0 0.3em 0.5em;
 }
 
-form#xmppchat-login input {
+form#converse-login input {
     display: block;
 }
 

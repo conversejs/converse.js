@@ -79,12 +79,12 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.xmppchat = factory(jQuery, _, console || {log: function(){}});
+        root.converse = factory(jQuery, _, console || {log: function(){}});
     }
 }(this, function ($, _, console) {
 
-    var xmppchat = {};
-    xmppchat.msg_counter = 0;
+    var converse = {};
+    converse.msg_counter = 0;
 
     var strinclude = function(str, needle){
       if (needle === '') { return true; }
@@ -92,13 +92,13 @@
       return String(str).indexOf(needle) !== -1;
     };
 
-    xmppchat.autoLink = function (text) {
+    converse.autoLink = function (text) {
         // Convert URLs into hyperlinks
         var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
         return text.replace(re, '<a target="_blank" href="$1">$1</a>');
     };
 
-    xmppchat.toISOString = function (date) {
+    converse.toISOString = function (date) {
         var pad;
         if (typeof date.toISOString !== 'undefined') {
             return date.toISOString();
@@ -116,7 +116,7 @@
         }
     };
 
-    xmppchat.parseISO8601 = function (datestr) {
+    converse.parseISO8601 = function (datestr) {
         /* Parses string formatted as 2013-02-14T11:27:08.268Z to a Date obj.
         */
         var numericKeys = [1, 4, 5, 6, 7, 10, 11],
@@ -140,7 +140,7 @@
         return new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
     };
 
-    xmppchat.updateMsgCounter = function () {
+    converse.updateMsgCounter = function () {
         if (this.msg_counter > 0) {
             if (document.title.search(/^Messages \(\d+\) /) == -1) {
                 document.title = "Messages (" + this.msg_counter + ") " + document.title;
@@ -154,17 +154,17 @@
         }
     };
 
-    xmppchat.incrementMsgCounter = function () {
+    converse.incrementMsgCounter = function () {
         this.msg_counter += 1;
         this.updateMsgCounter();
     };
 
-    xmppchat.clearMsgCounter = function () {
+    converse.clearMsgCounter = function () {
         this.msg_counter = 0;
         this.updateMsgCounter();
     };
 
-    xmppchat.collections = {
+    converse.collections = {
         /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc
         *  add-on for ejabberd wants the URL below. This might break for other
         *  Jabber servers.
@@ -172,7 +172,7 @@
         'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
     };
 
-    xmppchat.collections.getLastCollection = function (jid, callback) {
+    converse.collections.getLastCollection = function (jid, callback) {
         var bare_jid = Strophe.getBareJidFromJid(jid),
             iq = $iq({'type':'get'})
                     .c('list', {'xmlns': this.URI,
@@ -183,14 +183,14 @@
                     .c('max')
                     .t('1');
 
-        xmppchat.connection.sendIQ(iq,
+        converse.connection.sendIQ(iq,
                     callback,
                     function () {
                         console.log('Error while retrieving collections');
                     });
     };
 
-    xmppchat.collections.getLastMessages = function (jid, callback) {
+    converse.collections.getLastMessages = function (jid, callback) {
         var that = this;
         this.getLastCollection(jid, function (result) {
             // Retrieve the last page of a collection (max 30 elements).
@@ -205,20 +205,20 @@
                         .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
                         .c('max')
                         .t('30');
-            xmppchat.connection.sendIQ(iq, callback);
+            converse.connection.sendIQ(iq, callback);
         });
     };
 
-    xmppchat.Message = Backbone.Model.extend();
+    converse.Message = Backbone.Model.extend();
 
-    xmppchat.Messages = Backbone.Collection.extend({
-        model: xmppchat.Message
+    converse.Messages = Backbone.Collection.extend({
+        model: converse.Message
     });
 
-    xmppchat.ChatBox = Backbone.Model.extend({
+    converse.ChatBox = Backbone.Model.extend({
         initialize: function () {
             if (this.get('box_id') !== 'controlbox') {
-                this.messages = new xmppchat.Messages();
+                this.messages = new converse.Messages();
                 this.messages.localStorage = new Backbone.LocalStorage(
                     hex_sha1('converse.messages'+this.get('jid')));
                 this.set({
@@ -234,7 +234,7 @@
 
         messageReceived: function (message) {
             var $message = $(message),
-                body = xmppchat.autoLink($message.children('body').text()),
+                body = converse.autoLink($message.children('body').text()),
                 from = Strophe.getBareJidFromJid($message.attr('from')),
                 composing = $message.find('composing'),
                 delayed = $message.find('delay').length > 0,
@@ -247,7 +247,7 @@
                         fullname: fullname,
                         sender: 'them',
                         delayed: delayed,
-                        time: xmppchat.toISOString(new Date()),
+                        time: converse.toISOString(new Date()),
                         composing: composing.length
                     });
                 }
@@ -256,9 +256,9 @@
                     stamp = $message.find('delay').attr('stamp');
                     time = stamp;
                 } else {
-                    time = xmppchat.toISOString(new Date());
+                    time = converse.toISOString(new Date());
                 }
-                if (from == xmppchat.bare_jid) {
+                if (from == converse.bare_jid) {
                     fullname = 'me';
                     sender = 'me';
                 } else {
@@ -275,7 +275,7 @@
         }
     });
 
-    xmppchat.ChatBoxView = Backbone.View.extend({
+    converse.ChatBoxView = Backbone.View.extend({
         length: 200,
         tagName: 'div',
         className: 'chatbox',
@@ -311,7 +311,7 @@
         showMessage: function (message) {
             var time = message.get('time'),
                 times = this.model.messages.pluck('time'),
-                this_date = xmppchat.parseISO8601(time),
+                this_date = converse.parseISO8601(time),
                 $chat_content = this.$el.find('.chat-content'),
                 previous_message, idx, prev_date, isodate;
 
@@ -320,10 +320,10 @@
             idx = _.indexOf(times, time)-1;
             if (idx >= 0) {
                 previous_message = this.model.messages.at(idx);
-                prev_date = xmppchat.parseISO8601(previous_message.get('time'));
+                prev_date = converse.parseISO8601(previous_message.get('time'));
                 isodate = new Date(this_date.getTime());
                 isodate.setUTCHours(0,0,0,0);
-                isodate = xmppchat.toISOString(isodate);
+                isodate = converse.toISOString(isodate);
                 if (this.isDifferentDay(prev_date, this_date)) {
                     $chat_content.append(this.new_day_template({
                         isodate: isodate,
@@ -331,7 +331,7 @@
                     }));
                 }
             }
-            if (xmppchat.xmppstatus.get('status') === 'offline') {
+            if (converse.xmppstatus.get('status') === 'offline') {
                 // only update the UI if the user is not offline
                 return;
             }
@@ -350,7 +350,7 @@
                         }));
             }
             if (message.get('sender') != 'me') {
-                xmppchat.incrementMsgCounter();
+                converse.incrementMsgCounter();
             }
             this.scrollDown();
         },
@@ -396,22 +396,22 @@
                 }
             }
 
-            var message = $msg({from: xmppchat.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
+            var message = $msg({from: converse.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
             // Forward the message, so that other connected resources are also aware of it.
             // TODO: Forward the message only to other connected resources (inside the browser)
-            var forwarded = $msg({to:xmppchat.bare_jid, type:'chat', id:timestamp})
+            var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
                             .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                             .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
                             .cnode(message.tree());
-            xmppchat.connection.send(message);
-            xmppchat.connection.send(forwarded);
+            converse.connection.send(message);
+            converse.connection.send(forwarded);
             // Add the new message
             this.model.messages.create({
                 fullname: 'me',
                 sender: 'me',
-                time: xmppchat.toISOString(new Date()),
+                time: converse.toISOString(new Date()),
                 message: text 
             });
         },
@@ -444,7 +444,7 @@
                         // starts with forward-slash.
                         notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
                                         .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
-                        xmppchat.connection.send(notify);
+                        converse.connection.send(notify);
                     }
                     this.$el.data('composing', true);
                 }
@@ -476,7 +476,7 @@
         },
 
         closeChat: function () {
-            if (xmppchat.connection) {
+            if (converse.connection) {
                 this.model.destroy();
             } else {
                 this.model.trigger('hide');
@@ -489,12 +489,12 @@
             this.model.on('destroy', this.hide, this);
             this.model.on('change', this.onChange, this);
 
-            this.$el.appendTo(xmppchat.chatboxesview.$el);
+            this.$el.appendTo(converse.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
             if (this.model.get('status')) {
                 this.showStatusMessage(this.model.get('status'));
             }
-            xmppchat.clearMsgCounter();
+            converse.clearMsgCounter();
         },
 
         template: _.template(
@@ -537,7 +537,7 @@
         },
 
         hide: function () {
-            if (xmppchat.animate) {
+            if (converse.animate) {
                 this.$el.hide('fast');
             } else {
                 this.$el.hide();
@@ -548,12 +548,12 @@
             if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                 return this.focus();
             }
-            if (xmppchat.animate) {
+            if (converse.animate) {
                 this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200);
             } else {
                 this.$el.css({'opacity': 1, 'display': 'inline'});
             }
-            if (xmppchat.connection) {
+            if (converse.connection) {
                 // Without a connection, we haven't yet initialized
                 // localstorage
                 this.model.save();
@@ -568,7 +568,7 @@
         }
     });
 
-    xmppchat.ContactsPanel = Backbone.View.extend({
+    converse.ContactsPanel = Backbone.View.extend({
         tagName: 'div',
         className: 'oc-chat-content',
         id: 'users',
@@ -617,7 +617,7 @@
             var markup;
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
             this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
-            if (xmppchat.xhr_user_search) {
+            if (converse.xhr_user_search) {
                 markup = this.search_contact_template();
             } else {
                 markup = this.add_contact_template();
@@ -644,7 +644,7 @@
                         .attr('id', 'found-users-'+obj.id)
                         .append(
                             $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
-                            .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+xmppchat.domain)
+                            .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+converse.domain)
                             .text(obj.fullname)
                         )
                     );
@@ -669,13 +669,13 @@
         },
 
         addContact: function (jid, name) {
-            xmppchat.connection.roster.add(jid, name, [], function (iq) {
-                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+            converse.connection.roster.add(jid, name, [], function (iq) {
+                converse.connection.roster.subscribe(jid, null, converse.fullname);
             });
         }
     });
 
-    xmppchat.RoomsPanel = Backbone.View.extend({
+    converse.RoomsPanel = Backbone.View.extend({
         tagName: 'div',
         id: 'chatrooms',
         events: {
@@ -714,7 +714,7 @@
         },
 
         updateRoomsList: function () {
-            xmppchat.connection.muc.listRooms(xmppchat.muc_domain, $.proxy(function (iq) {
+            converse.connection.muc.listRooms(converse.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
                     rooms_length = rooms.length,
@@ -744,23 +744,23 @@
                 name = input.val().trim().toLowerCase();
                 input.val(''); // Clear the input
                 if (name) {
-                    jid = Strophe.escapeNode(name) + '@' + xmppchat.muc_domain;
+                    jid = Strophe.escapeNode(name) + '@' + converse.muc_domain;
                 } else {
                     return;
                 }
             }
-            xmppchat.chatboxes.create({
+            converse.chatboxes.create({
                 'id': jid,
                 'jid': jid,
                 'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                'nick': xmppchat.xmppstatus.get('fullname')||xmppchat.bare_jid,
+                'nick': converse.xmppstatus.get('fullname')||converse.bare_jid,
                 'chatroom': true,
                 'box_id' : hex_sha1(jid)
             });
         }
     });
 
-    xmppchat.ControlBoxView = xmppchat.ChatBoxView.extend({
+    converse.ControlBoxView = converse.ChatBoxView.extend({
         tagName: 'div',
         className: 'chatbox',
         id: 'controlbox',
@@ -770,7 +770,7 @@
         },
 
         initialize: function () {
-            this.$el.appendTo(xmppchat.chatboxesview.$el);
+            this.$el.appendTo(converse.chatboxesview.$el);
             this.model.on('change', $.proxy(function (item, changed) {
                 if (_.has(item.changed, 'connected')) {
                     this.render();
@@ -820,17 +820,17 @@
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
-            if ((!xmppchat.prebind) && (!xmppchat.connection)) {
+            if ((!converse.prebind) && (!converse.connection)) {
                 // Add login panel if the user still has to authenticate
-                this.loginpanel = new xmppchat.LoginPanel();
+                this.loginpanel = new converse.LoginPanel();
                 this.loginpanel.$parent = this.$el;
                 this.loginpanel.render();
             } else {
-                this.contactspanel = new xmppchat.ContactsPanel();
+                this.contactspanel = new converse.ContactsPanel();
                 this.contactspanel.$parent = this.$el;
                 this.contactspanel.render();
                 // TODO: Only add the rooms panel if the server supports MUC
-                this.roomspanel = new xmppchat.RoomsPanel(); 
+                this.roomspanel = new converse.RoomsPanel(); 
                 this.roomspanel.$parent = this.$el;
                 this.roomspanel.render();
             }
@@ -838,7 +838,7 @@
         }
     });
 
-    xmppchat.ChatRoomView = xmppchat.ChatBoxView.extend({
+    converse.ChatRoomView = converse.ChatBoxView.extend({
         length: 300,
         tagName: 'div',
         className: 'chatroom',
@@ -855,19 +855,19 @@
                     // TODO: Private messages
                     break;
                 case 'topic':
-                    xmppchat.connection.muc.setTopic(this.model.get('jid'), match[2]);
+                    converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
                     break;
                 case 'kick':
-                    xmppchat.connection.muc.kick(this.model.get('jid'), match[2]);
+                    converse.connection.muc.kick(this.model.get('jid'), match[2]);
                     break;
                 case 'ban':
-                    xmppchat.connection.muc.ban(this.model.get('jid'), match[2]);
+                    converse.connection.muc.ban(this.model.get('jid'), match[2]);
                     break;
                 case 'op':
-                    xmppchat.connection.muc.op(this.model.get('jid'), match[2]);
+                    converse.connection.muc.op(this.model.get('jid'), match[2]);
                     break;
                 case 'deop':
-                    xmppchat.connection.muc.deop(this.model.get('jid'), match[2]);
+                    converse.connection.muc.deop(this.model.get('jid'), match[2]);
                     break;
                 case 'help':
                     $chat_content = this.$el.find('.chat-content');
@@ -882,7 +882,7 @@
                     this.scrollDown();
                     break;
                 default:
-                    this.last_msgid = xmppchat.connection.muc.groupchat(this.model.get('jid'), body);
+                    this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);
                 break;
             }
         },
@@ -909,7 +909,7 @@
                 '</div>'),
 
         initialize: function () {
-            xmppchat.connection.muc.join(
+            converse.connection.muc.join(
                 this.model.get('jid'),
                 this.model.get('nick'),
                 $.proxy(this.onChatRoomMessage, this),
@@ -920,20 +920,20 @@
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('destroy', function (model, response, options) { 
                 this.$el.hide('fast'); 
-                xmppchat.connection.muc.leave(
+                converse.connection.muc.leave(
                     this.model.get('jid'),
                     this.model.get('nick'),
                     this.onLeave,
                     undefined);
             }, 
             this);
-            this.$el.appendTo(xmppchat.chatboxesview.$el);
+            this.$el.appendTo(converse.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
-            xmppchat.clearMsgCounter();
+            converse.clearMsgCounter();
         },
 
         onLeave: function () {
-            var controlboxview = xmppchat.chatboxesview.views.controlbox;
+            var controlboxview = converse.chatboxesview.views.controlbox;
             if (controlboxview) {
                 controlboxview.roomspanel.trigger('update-rooms-list');
             }
@@ -970,7 +970,7 @@
             }
             if (delayed) {
                 stamp = $message.find('delay').attr('stamp');
-                message_datetime = xmppchat.parseISO8601(stamp);
+                message_datetime = converse.parseISO8601(stamp);
             } else {
                 message_datetime = new Date();
             }
@@ -979,7 +979,7 @@
             dates = $chat_content.find("time").map(function(){return $(this).attr("datetime");}).get();
             message_date = message_datetime;
             message_date.setUTCHours(0,0,0,0);
-            isodate = xmppchat.toISOString(message_date);
+            isodate = converse.toISOString(message_date);
             if (_.indexOf(dates, isodate) == -1) {
                 $chat_content.append(this.new_day_template({
                     isodate: isodate,
@@ -1012,7 +1012,7 @@
 
         onChatRoomRoster: function (roster, room) {
             // underscore size is needed because roster is an object
-            var controlboxview = xmppchat.chatboxesview.views.controlbox,
+            var controlboxview = converse.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),
                 participants = [],
@@ -1036,12 +1036,12 @@
         }
     });
 
-    xmppchat.ChatBoxes = Backbone.Collection.extend({
-        model: xmppchat.ChatBox,
+    converse.ChatBoxes = Backbone.Collection.extend({
+        model: converse.ChatBox,
 
         onConnected: function () {
             this.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.chatboxes-'+xmppchat.bare_jid));
+                hex_sha1('converse.chatboxes-'+converse.bare_jid));
             if (!this.get('controlbox')) {
                 this.add({
                     id: 'controlbox',
@@ -1067,7 +1067,7 @@
         messageReceived: function (message) {
             var  partner_jid, $message = $(message),
                  message_from = $message.attr('from');
-            if (message_from == xmppchat.connection.jid) {
+            if (message_from == converse.connection.jid) {
                 // FIXME: Forwarded messages should be sent to specific resources, 
                 // not broadcasted
                 return true;
@@ -1079,7 +1079,7 @@
             var from = Strophe.getBareJidFromJid(message_from),
                 to = Strophe.getBareJidFromJid($message.attr('to')),
                 resource, chatbox;
-            if (from == xmppchat.bare_jid) {
+            if (from == converse.bare_jid) {
                 // I am the sender, so this must be a forwarded message...
                 partner_jid = to;
                 resource = Strophe.getResourceFromJid($message.attr('to'));
@@ -1089,7 +1089,7 @@
             }
             chatbox = this.get(partner_jid);
             if (!chatbox) {
-                xmppchat.getVCard(
+                converse.getVCard(
                     partner_jid, 
                     $.proxy(function (jid, fullname, image, image_type, url) {
                         var chatbox = this.create({
@@ -1101,7 +1101,7 @@
                             'url': url
                         });
                         chatbox.messageReceived(message);
-                        xmppchat.roster.addResource(partner_jid, resource);
+                        converse.roster.addResource(partner_jid, resource);
                     }, this),
                     $.proxy(function () {
                         // # FIXME
@@ -1110,12 +1110,12 @@
                 return true;
             }
             chatbox.messageReceived(message);
-            xmppchat.roster.addResource(partner_jid, resource);
+            converse.roster.addResource(partner_jid, resource);
             return true;
         }
     });
 
-    xmppchat.ChatBoxesView = Backbone.View.extend({
+    converse.ChatBoxesView = Backbone.View.extend({
         el: '#collective-xmpp-chat-data',
 
         initialize: function () {
@@ -1125,12 +1125,12 @@
                 var view = this.views[item.get('id')];
                 if (!view) {
                     if (item.get('chatroom')) {
-                        view = new xmppchat.ChatRoomView({'model': item});
+                        view = new converse.ChatRoomView({'model': item});
                     } else if (item.get('box_id') === 'controlbox') {
-                        view = new xmppchat.ControlBoxView({model: item});
+                        view = new converse.ControlBoxView({model: item});
                         view.render();
                     } else {
-                        view = new xmppchat.ChatBoxView({model: item});
+                        view = new converse.ChatBoxView({model: item});
                     }
                     this.views[item.get('id')] = view;
                 } else {
@@ -1145,7 +1145,7 @@
         }
     });
 
-    xmppchat.RosterItem = Backbone.Model.extend({
+    converse.RosterItem = Backbone.Model.extend({
         initialize: function (attributes, options) {
             var jid = attributes.jid;
             if (!attributes.fullname) {
@@ -1163,7 +1163,7 @@
         }
     });
 
-    xmppchat.RosterItemView = Backbone.View.extend({
+    converse.RosterItemView = Backbone.View.extend({
         tagName: 'dd',
 
         events: {
@@ -1176,11 +1176,11 @@
         openChat: function (ev) {
             ev.preventDefault();
             var jid = Strophe.getBareJidFromJid(this.model.get('jid')),
-                chatbox  = xmppchat.chatboxes.get(jid);
+                chatbox  = converse.chatboxes.get(jid);
             if (chatbox) {
                 chatbox.trigger('show');
             } else {
-                xmppchat.chatboxes.create({
+                converse.chatboxes.create({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),
@@ -1196,25 +1196,25 @@
             var result = confirm("Are you sure you want to remove this contact?");
             if (result === true) {
                 var bare_jid = this.model.get('jid');
-                xmppchat.connection.roster.remove(bare_jid, function (iq) {
-                    xmppchat.connection.roster.unauthorize(bare_jid);
-                    xmppchat.rosterview.model.remove(bare_jid);
+                converse.connection.roster.remove(bare_jid, function (iq) {
+                    converse.connection.roster.unauthorize(bare_jid);
+                    converse.rosterview.model.remove(bare_jid);
                 });
             }
         },
 
         acceptRequest: function (ev) {
             var jid = this.model.get('jid');
-            xmppchat.connection.roster.authorize(jid);
-            xmppchat.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
-                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+            converse.connection.roster.authorize(jid);
+            converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
+                converse.connection.roster.subscribe(jid, null, converse.fullname);
             });
             ev.preventDefault();
         },
 
         declineRequest: function (ev) {
             ev.preventDefault();
-            xmppchat.connection.roster.unauthorize(this.model.get('jid'));
+            converse.connection.roster.unauthorize(this.model.get('jid'));
             this.model.destroy();
         },
 
@@ -1245,7 +1245,7 @@
             } else if (ask === 'request') {
                 this.$el.addClass('requesting-xmpp-contact');
                 this.$el.html(this.request_template(item.toJSON()));
-                xmppchat.showControlBox();
+                converse.showControlBox();
             } else if (subscription === 'both' || subscription === 'to') {
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
@@ -1263,8 +1263,8 @@
         }
     });
 
-    xmppchat.getVCard = function (jid, callback, errback) {
-        xmppchat.connection.vcard.get($.proxy(function (iq) {
+    converse.getVCard = function (jid, callback, errback) {
+        converse.connection.vcard.get($.proxy(function (iq) {
             $vcard = $(iq).find('vCard');
             var fullname = $vcard.find('FN').text(),
                 img = $vcard.find('BINVAL').text(),
@@ -1274,8 +1274,8 @@
         }, this), jid, errback);
     }
 
-    xmppchat.RosterItems = Backbone.Collection.extend({
-        model: xmppchat.RosterItem,
+    converse.RosterItems = Backbone.Collection.extend({
+        model: converse.RosterItem,
         comparator : function (rosteritem) {
             var chat_status = rosteritem.get('chat_status'),
                 rank = 4;
@@ -1309,8 +1309,8 @@
                     action = $this.attr('action'),
                     fullname = $this.attr('name');
                 if (action === 'add') {
-                    xmppchat.connection.roster.add(jid, fullname, [], function (iq) {
-                        xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+                    converse.connection.roster.add(jid, fullname, [], function (iq) {
+                        converse.connection.roster.subscribe(jid, null, converse.fullname);
                     });
                 }
             });
@@ -1318,7 +1318,7 @@
         },
 
         isSelf: function (jid) {
-            return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(xmppchat.connection.jid));
+            return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
         },
 
         getItem: function (id) {
@@ -1359,13 +1359,13 @@
 
         subscribeBack: function (jid) {
             var bare_jid = Strophe.getBareJidFromJid(jid);
-            if (xmppchat.connection.roster.findItem(bare_jid)) {
-                xmppchat.connection.roster.authorize(bare_jid);
-                xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+            if (converse.connection.roster.findItem(bare_jid)) {
+                converse.connection.roster.authorize(bare_jid);
+                converse.connection.roster.subscribe(jid, null, converse.fullname);
             } else {
-                xmppchat.connection.roster.add(jid, '', [], function (iq) {
-                    xmppchat.connection.roster.authorize(bare_jid);
-                    xmppchat.connection.roster.subscribe(jid, null, xmppchat.fullname);
+                converse.connection.roster.add(jid, '', [], function (iq) {
+                    converse.connection.roster.authorize(bare_jid);
+                    converse.connection.roster.subscribe(jid, null, converse.fullname);
                 });
             }
         },
@@ -1377,10 +1377,10 @@
             * this step lets the user's server know that it MUST no longer
             * send notification of the subscription state change to the user.
             */
-            xmppchat.xmppstatus.sendPresence('unsubscribe');
-            if (xmppchat.connection.roster.findItem(jid)) {
-                xmppchat.connection.roster.remove(jid, function (iq) {
-                    xmppchat.rosterview.model.remove(jid);
+            converse.xmppstatus.sendPresence('unsubscribe');
+            if (converse.connection.roster.findItem(jid)) {
+                converse.connection.roster.remove(jid, function (iq) {
+                    converse.rosterview.model.remove(jid);
                 });
             }
         },
@@ -1457,11 +1457,11 @@
                 item;
 
             if (this.isSelf(bare_jid)) {
-                if ((xmppchat.connection.jid !== jid)&&(presence_type !== 'unavailabe')) {
+                if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailabe')) {
                     // Another resource has changed it's status, we'll update ours as well.
                     // FIXME: We should ideally differentiate between converse.js using
                     // resources and other resources (i.e Pidgin etc.)
-                    xmppchat.xmppstatus.set({'status': chat_status});
+                    converse.xmppstatus.set({'status': chat_status});
                 }
                 return true;
             } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
@@ -1476,17 +1476,17 @@
             if ((presence_type === 'error') || (presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                 return true;
             } else if (presence_type === 'subscribe') {
-                if (xmppchat.auto_subscribe) {
+                if (converse.auto_subscribe) {
                     if ((!item) || (item.get('subscription') != 'to')) {
                         this.subscribeBack(jid);
                     } else {
-                        xmppchat.connection.roster.authorize(bare_jid);
+                        converse.connection.roster.authorize(bare_jid);
                     }
                 } else {
                     if ((item) && (item.get('subscription') != 'none'))  {
-                        xmppchat.connection.roster.authorize(bare_jid);
+                        converse.connection.roster.authorize(bare_jid);
                     } else {
-                        xmppchat.getVCard(
+                        converse.getVCard(
                             bare_jid, 
                             $.proxy(function (jid, fullname, img, img_type, url) {
                                 this.add({
@@ -1524,9 +1524,9 @@
         }
     });
 
-    xmppchat.RosterView = Backbone.View.extend({
+    converse.RosterView = Backbone.View.extend({
         tagName: 'dl',
-        id: 'xmppchat-roster',
+        id: 'converse-roster',
         rosteritemviews: {},
 
         removeRosterItem: function (item) {
@@ -1540,7 +1540,7 @@
 
         initialize: function () {
             this.model.on("add", function (item) {
-                var view = new xmppchat.RosterItemView({model: item});
+                var view = new converse.RosterItemView({model: item});
                 this.rosteritemviews[item.id] = view;
                 this.render(item);
             }, this);
@@ -1560,11 +1560,11 @@
             this.$el.hide().html(this.template());
             this.model.fetch({add: true}); // Get the cached roster items from localstorage
             this.initialSort();
-            this.$el.appendTo(xmppchat.chatboxesview.views.controlbox.contactspanel.$el);
+            this.$el.appendTo(converse.chatboxesview.views.controlbox.contactspanel.$el);
         },
 
         updateChatBox: function (item, changed) {
-            var chatbox = xmppchat.chatboxes.get(item.get('jid')),
+            var chatbox = converse.chatboxes.get(item.get('jid')),
                 changes = {};
             if (!chatbox) { return; }
             if (_.has(item.changed, 'chat_status')) {
@@ -1656,7 +1656,7 @@
 
     });
 
-    xmppchat.XMPPStatus = Backbone.Model.extend({
+    converse.XMPPStatus = Backbone.Model.extend({
         initialize: function () {
             this.set({
                 'status' : this.get('status'),
@@ -1696,7 +1696,7 @@
                     presence.c('status').t(status_message);
                 }
             }
-            xmppchat.connection.send(presence);
+            converse.connection.send(presence);
         },
 
         setStatus: function (value) {
@@ -1705,13 +1705,13 @@
         },
 
         setStatusMessage: function (status_message) {
-            xmppchat.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
+            converse.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
             this.save({'status_message': status_message});
         }
 
     });
 
-    xmppchat.XMPPStatusView = Backbone.View.extend({
+    converse.XMPPStatusView = Backbone.View.extend({
         el: "span#xmpp-status-holder",
 
         events: {
@@ -1837,16 +1837,16 @@
         }
     });
 
-    xmppchat.LoginPanel = Backbone.View.extend({
+    converse.LoginPanel = Backbone.View.extend({
         tagName: 'div',
         id: "login-dialog",
         events: {
-            'submit form#xmppchat-login': 'authenticate'
+            'submit form#converse-login': 'authenticate'
         },
         tab_template: _.template(
             '<li><a class="current" href="#login">Sign in</a></li>'),
         template: _.template(
-            '<form id="xmppchat-login">' +
+            '<form id="converse-login">' +
             '<label>XMPP ID:</label>' +
             '<input type="text" id="jid">' +
             '<label>Password:</label>' +
@@ -1879,10 +1879,10 @@
                     console.log('Connection Failed');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
                     console.log('Authenticating');
-                    xmppchat.giveFeedback('Authenticating');
+                    converse.giveFeedback('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
                     console.log('Authenticating Failed');
-                    xmppchat.giveFeedback('Authentication failed');
+                    converse.giveFeedback('Authentication failed');
                 } else if (status === Strophe.Status.DISCONNECTING) {
                     console.log('Disconnecting');
                 } else if (status === Strophe.Status.ATTACHED) {
@@ -1903,7 +1903,7 @@
         }
     });
 
-    xmppchat.showControlBox = function () {
+    converse.showControlBox = function () {
         var controlbox = this.chatboxes.get('controlbox');
         if (!controlbox) {
             this.chatboxes.add({
@@ -1919,7 +1919,7 @@
         }
     }
 
-    xmppchat.toggleControlBox = function () {
+    converse.toggleControlBox = function () {
         if ($("div#controlbox").is(':visible')) {
             var controlbox = this.chatboxes.get('controlbox');
             if (this.connection) {
@@ -1932,11 +1932,11 @@
         }
     };
 
-    xmppchat.giveFeedback = function (message) {
+    converse.giveFeedback = function (message) {
         $('.conn-feedback').text(message);
     }
 
-    xmppchat.initialize = function (data) {
+    converse.initialize = function (data) {
         this.prebind = data.attr('prebind');
         this.fullname = data.attr('fullname');
         this.xhr_user_search = data.attr('xhr_user_search');
@@ -1952,7 +1952,7 @@
         );
     },
 
-    xmppchat.onConnected = function (connection) {
+    converse.onConnected = function (connection) {
         this.animate = true; // Use animations
         this.connection = connection;
         this.connection.xmlInput = function (body) { console.log(body); };
@@ -2019,7 +2019,7 @@
         $(document).bind('jarnxmpp.connected', $.proxy(function (ev, connection) {
             this.onConnected(connection);
         }, this));
-    }, xmppchat));
+    }, converse));
 
-    return xmppchat;
+    return converse;
 }));

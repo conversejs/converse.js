@@ -1,8 +1,13 @@
+=========================
+Converse.js Documentation
+=========================
+
+------------------------------------
 Converse.js configuration variables:
-====================================
+------------------------------------
 
 Prebind
---------
+========
 
 Use this option if you don't want to render the login form on the chat control
 box.
@@ -24,13 +29,13 @@ have to write a Javascript snippet to attach to the set up connection::
         }
 
 fullname
---------
+========
 
 If you are using prebinding, you need to specify the fullname of the currently
 logged in user.
 
 xhr_user_search
----------------
+===============
 
 There are two ways to add users. 
 
@@ -42,11 +47,11 @@ This setting enables the second mechanism, otherwise by default the first will
 be used.
 
 auto_subscribe
---------------
+==============
 
 If true, the user will automatically subscribe back to any contact requests.
 
 animate
--------
+=======
 
 Show animations, for example when opening and closing chat boxes.

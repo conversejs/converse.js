@@ -240,13 +240,17 @@ a.subscribe-to-user {
 
 dl.add-converse-contact {
     margin: 0 0 0 0.5em;
-    padding-top: 3px;
     z-index: 21;
     background: url('images/add_icon.png') no-repeat 3px;
 }
 
 dt#xmpp-contact-search {
     padding-top: 3px;
+}
+
+.fancy-dropdown {
+    border:1px solid #ddd;
+    height: 22px;
 }
 
 .fancy-dropdown a.choose-xmpp-status,
@@ -631,12 +635,7 @@ form.add-xmpp-contact {
 }
 
 form.add-xmpp-contact input {
-    width: 130px;
-}
-
-.fancy-dropdown {
-    border:1px solid #ddd;
-    height: 22px;
+    width: 125px;
 }
 
 .dropdown dt a span {

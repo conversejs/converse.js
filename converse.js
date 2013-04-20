@@ -595,8 +595,7 @@
                 '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
                     '<a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">Add a contact</a>' +
                 '</dt>' +
-                '<dd class="search-xmpp" style="display:none"><ul>' +
-                '</ul></dd>' +
+                '<dd class="search-xmpp" style="display:none"><ul></ul></dd>' +
             '</dl>'
         ),
 
@@ -622,13 +621,17 @@
             } else {
                 markup = this.add_contact_template();
             }
-            this.$el.find('#xmpp-contact-search').siblings('.search-xmpp').append(markup);
+            this.$el.find('.search-xmpp ul').append(markup);
             return this;
         },
 
         toggleContactForm: function (ev) {
             ev.preventDefault();
-            this.$el.find('.search-xmpp').toggle().find('input.username').focus();
+            this.$el.find('.search-xmpp').toggle('fast', function () {
+                if ($(this).is(':visible')) {
+                    $(this).find('input.username').focus();
+                }
+            });
         },
 
         searchContacts: function (ev) {
@@ -637,7 +640,7 @@
                 var $results_el = $('#found-users');
                 $(data).each(function (idx, obj) {
                     if ($results_el.children().length) {
-                    $results_el.empty();
+                        $results_el.empty();
                     }
                     $results_el.append(
                         $('<li></li>')

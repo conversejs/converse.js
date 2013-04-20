@@ -1865,15 +1865,16 @@
 
             connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
-                    $(document).trigger('jarnxmpp.connected', connection);
+                    console.log('Connected');
+                    converse.onConnected(connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
                     console.log('Disconnected');
-                    $(document).trigger('jarnxmpp.disconnected');
+                    this.$feedback.text('Unable to communicate with chat server').css('background-image', "url(images/error_icon.png)");
                 } else if (status === Strophe.Status.Error) {
                     console.log('Error');
                 } else if (status === Strophe.Status.CONNECTING) {
                     console.log('Connecting');
-                    $(document).trigger('jarnxmpp.connecting');
+                    this.$feedback.text('Connecting to chat...');
                 } else if (status === Strophe.Status.CONNFAIL) {
                     console.log('Connection Failed');
                 } else if (status === Strophe.Status.AUTHENTICATING) {

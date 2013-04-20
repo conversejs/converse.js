@@ -659,7 +659,7 @@
             ev.preventDefault();
             var $input = $(ev.target).find('input');
             var jid = $input.val();
-            if (jid.indexOf("@") < 0) {
+            if (! jid) {
                 // this is not a valid JID
                 $input.addClass('error');
                 return;
@@ -1876,10 +1876,32 @@
         authenticate: function (ev) {
             ev.preventDefault();
             var $form = $(ev.target),
-                bosh_service_url = $form.find('input#bosh_service_url').val(),
-                jid = $form.find('input#jid').val(),
-                password = $form.find('input#password').val(),
+                $bsu_input = $form.find('input#bosh_service_url'),
+                bosh_service_url = $bsu_input.val(),
+                $jid_input = $form.find('input#jid'),
+                jid = $jid_input.val(),
+                $pw_input = $form.find('input#password'),
+                password = $pw_input.val(),
                 connection = new Strophe.Connection(bosh_service_url);
+
+            var errors = false;
+            if (! jid) {
+                errors = true;
+                $jid_input.addClass('error');
+            }
+            if (! password)  {
+                errors = true;
+                $pw_input.addClass('error');
+            }
+            if (! bosh_service_url)  {
+                errors = true;
+                $bsu_input.addClass('error');
+            }
+            if (errors) { return; }
+            // Clear the form's fields, so that it can't be submitted twice
+            $bsu_input.val('');
+            $jid_input.val('');
+            $pw_input.val('');
 
             connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
@@ -1955,8 +1977,9 @@
     }
 
     converse.onConnected = function (connection) {
-        this.animate = true; // Use animations
         this.connection = connection;
+
+        this.animate = true; // Use animations
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);

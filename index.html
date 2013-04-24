@@ -75,11 +75,7 @@
     </ul>
 
     <h2>Demo</h2>
-    <p>
-        <a href="#" class="chat toggle-online-users">Click this link</a> or
-        click the link on the bottom right corner of this page.
-        </a>
-    </p>
+    <p><a href="#" class="chat toggle-online-users">Click this link</a> or click the link on the bottom right corner of this page.</a></p>
     <p>
         You can log in with any existing federated Jabber/XMPP account, or create a new one at any of these providers:
         <ul>
@@ -88,6 +84,14 @@
             <li><a href="https://gmail.com" target="_blank">gmail.com</a></li>
         </ul>
    </p>
+
+    <h3>Is it secure?</h3>
+    <p>Yes. In this demo <strong>Converse.js</strong> makes an
+    <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer" target="_blank">SSL</a> encrypted connection to a secure connection manager. 
+    The connection manager then uses SSL and <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to connect to an XMPP server.</p>
+    That said, the developers don't assume any liability for any loss or damages as a result of using this software or demo. Use this demo at your own risk. 
+
+    <h3>Session support</h3>
     <p>
         The chat client will disconnect whenever you reload the page. If you
         want the user's session to persist across page reloads, you can
@@ -97,6 +101,7 @@
     <p><strong>Converse.js</strong> already supports this usecase, but you'll have to
     do more manual work yourself.
     </p>
+
 
     <h2>Tests</h2>
    </p>

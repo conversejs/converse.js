@@ -29,23 +29,40 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
-    <p><strong>Converse.js</strong> is a web based <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> instant messaging client.</p>
-    <p>It is used by <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">collective.xmpp.chat</a>, which is a <a href="http://plone.org" target="_blank">Plone</a> instant messaging add-on.</p>
-    <p>The ultimate goal is to enable anyone to add chat functionality to their websites, independent of any backend.
-       You will however need an XMPP server to connect to, either your own, or a public one.</p>
+    <p><strong>Converse.js</strong> is an open source, web based, <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> chat client, similar to 
+    <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a>, except for the added support of multi-user chatrooms.</p>
+
+    <p>It is a Javascript application that you can include in your
+    website, thereby providing it with instant messaging functionality.</p>
+
+    <p>You will however need access to an XMPP/Jabber server.</p>
+    
+    <p>You can connect to any public, federated XMPP server, or you could set one up
+    yourself, thereby maintaining stricter control of the user data (XMPP servers
+    usually don't archive chat messages).</p>
 
     <h2>Features</h2>
     <ul>
-        <li>Manually or automically subscribe to other users.</li>
+        <li>Single and multi-user chat</li>
+        <li>Contact rosters</li>
+        <li>Manually or automically subscribe to other contacts</li>
+        <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html">XEP 144</a>)</li>
         <li>Accept or decline contact requests</li>
         <li>Chat statuses (online, busy, away, offline)</li>
         <li>Custom status messages</li>
         <li>Typing notifications</li>
         <li>Third person messages (/me )</li>
-        <li>Multi-user chat in chatrooms</li>
+        <li>Multi-user chat in chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html">XEP 45</a>)</li>
         <li>Chatroom Topics</li>
-        <li>vCard support</li>
+        <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html">XEP 54</a>)</li>
     </ul>
+
+    <h2>CMS Integration</h2>
+
+    <p><strong>Converse.js</strong> is available as an add-on for the  <a href="http://plone.org" target="_blank">Plone</a> CMS, called <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">collective.xmpp.chat</a>.</p>
+
+    <p>If you have integrated Converse.js into any other CMS or framework,
+    <a href="http://opkode.com/contact" target="_blank">please let me know</a> and I'll mention it on this page.</p>
 
     <h2>Screencasts</h2>
     <ul>
@@ -59,39 +76,27 @@
 
     <h2>Demo</h2>
     <p>
-        The code in Converse.js is pretty solid and already used in production
-        in Plone installations. It's however not yet 100% ready for prime-time
-        as a standalone client.
-    </p>
-    <p>
-        Nevertheless, you can try out the current functionality on this page. 
-    </p>
-    <p>
         <a href="#" class="chat toggle-online-users">Click this link</a> or
-        click the link on the bottom right corner.
+        click the link on the bottom right corner of this page.
         </a>
     </p>
     <p>
-        Besides providing valid credentials for an XMPP/Jabber account, you'll also have to provide
-        the details of a <a target="_blank" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">BOSH Connection Manager</a>.
-        I intend to set up a connection manager for people to play with in the
-        near future, but for the moment I unfortunately can't help you there.
-   </p>
-    <p>
-        You can create a Jabber/XMPP account at any of these providers:
+        You can log in with any existing federated Jabber/XMPP account, or create a new one at any of these providers:
         <ul>
-            <li>
-                <a href="http://jabber.org" target="_blank">jabber.org</a>
-            </li>
-            </li>
-            <li>
-                <a href="https://jappix.com" target="_blank">jappix.com</a>
-            </li>
-            <li>
-                <a href="https://gmail.com" target="_blank">gmail.com</a>
-            </li>
+            <li><a href="http://jabber.org" target="_blank">jabber.org</a></li>
+            <li><a href="https://jappix.com" target="_blank">jappix.com</a></li>
+            <li><a href="https://gmail.com" target="_blank">gmail.com</a></li>
         </ul>
    </p>
+    <p>
+        The chat client will disconnect whenever you reload the page. If you
+        want the user's session to persist across page reloads, you can
+        establish an authenticated connection on the server side and then attach to
+        this connection in your browser.
+   </p>
+    <p><strong>Converse.js</strong> already supports this usecase, but you'll have to
+    do more manual work yourself.
+    </p>
 
     <h2>Tests</h2>
    </p>

@@ -12,6 +12,8 @@ Changelog
 - Fixed user status handling, which wasn't 100% according to the
   spec. [jcbrand]
 - Separate messages according to day in chats. [jcbrand]
+- Add support for specifying the BOSH bind URL as configuration setting.
+  [jcbrand]
 
 
 0.2 (2013-03-28)

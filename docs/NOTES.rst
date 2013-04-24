@@ -9,14 +9,14 @@ Converse.js configuration variables:
 Prebind
 ========
 
-Use this option if you don't want to render the login form on the chat control
-box.
+Use this option when you want to attach to an existing XMPP connection that was
+already authenticated (usually on the backend before page load).
 
-When set to true, the onConnected method needs to be called manually, together
-with a Strophe connection object.
+This is useful when you don't want to render the login form on the chat control
+box with each page load.
 
-The most likely usecase is if you want to already authenticate on the backend
-and merely attach to that connection in the browser.
+When set to true, you'll need to make sure that the onConnected method is 
+called, and passed to it a Strophe connection object.
 
 Besides requiring the back-end to authenticate you, you'll also 
 have to write a Javascript snippet to attach to the set up connection::
@@ -24,15 +24,27 @@ have to write a Javascript snippet to attach to the set up connection::
     $.JSON({
         'url': 'mysite.com/xmpp-authenticate',
         'success': function (data) {
-            connection = new Strophe.Connection(data.BOSH_SERVICE_URL);
+            connection = new Strophe.Connection(bosh_service_url);
             connection.attach(data.jid, data.sid, data.rid, converse.onConnected);
         }
+
+The backend must authenticate for you, and then return a SID (session ID) and
+RID (Request ID), which you use when you attach to the connection.
 
 fullname
 ========
 
 If you are using prebinding, you need to specify the fullname of the currently
 logged in user.
+
+bosh_service_url
+================
+
+Connections to an XMPP server depend on a BOSH connection manager which acts as
+a middle man between HTTP and XMPP.
+
+See `here`_ for more information.
+
 
 xhr_user_search
 ===============
@@ -55,3 +67,7 @@ animate
 =======
 
 Show animations, for example when opening and closing chat boxes.
+
+.. _`here`: http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l
+
+

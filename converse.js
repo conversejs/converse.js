@@ -1864,27 +1864,35 @@
             '<li><a class="current" href="#login">Sign in</a></li>'),
         template: _.template(
             '<form id="converse-login">' +
-            '<label>XMPP ID:</label>' +
+            '<label>XMPP/Jabber Username:</label>' +
             '<input type="text" id="jid">' +
             '<label>Password:</label>' +
             '<input type="password" id="password">' +
-            '<label>BOSH Service URL:</label>' +
-            '<input type="text" id="bosh_service_url">' +
             '<input type="submit" name="submit"/>' +
             '</form">'),
 
-        authenticate: function (ev) {
+        bosh_url_input: _.template(
+            '<label>BOSH Service URL:</label>' +
+            '<input type="text" id="bosh_service_url">'),
+
+        authenticate: $.proxy(function (ev) {
             ev.preventDefault();
             var $form = $(ev.target),
-                $bsu_input = $form.find('input#bosh_service_url'),
-                bosh_service_url = $bsu_input.val(),
                 $jid_input = $form.find('input#jid'),
                 jid = $jid_input.val(),
                 $pw_input = $form.find('input#password'),
                 password = $pw_input.val(),
-                connection = new Strophe.Connection(bosh_service_url);
+                $bsu_input = null,
+                errors = false;
 
-            var errors = false;
+            if (! this.bosh_service_url) {
+                $bsu_input = $form.find('input#bosh_service_url');
+                this.bosh_service_url = $bsu_input.val();
+                if (! this.bosh_service_url)  {
+                    errors = true;
+                    $bsu_input.addClass('error');
+                }
+            }
             if (! jid) {
                 errors = true;
                 $jid_input.addClass('error');
@@ -1893,43 +1901,38 @@
                 errors = true;
                 $pw_input.addClass('error');
             }
-            if (! bosh_service_url)  {
-                errors = true;
-                $bsu_input.addClass('error');
-            }
             if (errors) { return; }
             // Clear the form's fields, so that it can't be submitted twice
-            $bsu_input.val('');
+            if ($bsu_input) {
+                $bsu_input.val('');
+            }
             $jid_input.val('');
             $pw_input.val('');
 
+            var connection = new Strophe.Connection(this.bosh_service_url);
             connection.connect(jid, password, $.proxy(function (status) {
                 if (status === Strophe.Status.CONNECTED) {
                     console.log('Connected');
-                    converse.onConnected(connection);
+                    this.onConnected(connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
-                    console.log('Disconnected');
-                    this.$feedback.text('Unable to communicate with chat server').css('background-image', "url(images/error_icon.png)");
+                    this.giveFeedback('Disconnected').css('background-image', "url(images/error_icon.png)");
                 } else if (status === Strophe.Status.Error) {
-                    console.log('Error');
+                    this.giveFeedback('Error');
                 } else if (status === Strophe.Status.CONNECTING) {
-                    console.log('Connecting');
-                    this.$feedback.text('Connecting to chat...');
+                    this.giveFeedback('Connecting');
                 } else if (status === Strophe.Status.CONNFAIL) {
-                    console.log('Connection Failed');
+                    this.giveFeedback('Connection Failed');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
-                    console.log('Authenticating');
-                    converse.giveFeedback('Authenticating');
+                    this.giveFeedback('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
-                    console.log('Authenticating Failed');
-                    converse.giveFeedback('Authentication failed');
+                    this.giveFeedback('Authentication Failed');
                 } else if (status === Strophe.Status.DISCONNECTING) {
-                    console.log('Disconnecting');
+                    this.giveFeedback('Disconnecting');
                 } else if (status === Strophe.Status.ATTACHED) {
                     console.log('Attached');
                 }
-            }, this));
-        },
+            }, converse));
+        }, converse),
 
         remove: function () {
             this.$parent.find('#controlbox-tabs').empty();
@@ -1938,7 +1941,11 @@
 
         render: function () {
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
-            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
+            template = this.template();
+            if (! this.bosh_url_input) {
+                template.find('form').append(this.bosh_url_input);
+            }
+            this.$parent.find('#controlbox-panes').append(this.$el.html(template));
             return this;
         }
     });
@@ -1973,7 +1980,7 @@
     };
 
     converse.giveFeedback = function (message) {
-        $('.conn-feedback').text(message);
+        return $('.conn-feedback').text(message);
     }
 
     converse.onConnected = function (connection) {
@@ -2028,12 +2035,7 @@
     };
 
     converse.initialize = function (settings) {
-        this.prebind = settings.prebind;
-        this.fullname = settings.fullname;
-        this.xhr_user_search = settings.xhr_user_search;
-        this.auto_subscribe = settings.auto_subscribe;
-        this.animate = settings.animate;
-
+        _.extend(this, settings);
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
         $('a.toggle-online-users').bind(

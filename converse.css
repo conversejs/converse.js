@@ -415,6 +415,19 @@ form.search-xmpp-contact input {
     margin-top: 0.5em;
 }
 
+#available-chatrooms {
+    height: 225px;
+    overflow-y: scroll;
+}
+
+#available-chatrooms dd {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    width: 160px;
+}
+
 #available-chatrooms dt,
 #converse-roster dt {
     font-weight: normal;
@@ -429,11 +442,6 @@ form.search-xmpp-contact input {
 #available-chatrooms dt {
     padding-top: 1em;
 }
-
-#available-chatrooms li {
-    display: block;
-}
-
 
 dd.available-chatroom,
 #converse-roster dd {

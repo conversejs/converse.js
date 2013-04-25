@@ -1,8 +1,8 @@
 /*!
- * Converse.js (XMPP-based instant messaging with Strophe.js and backbone.js)
+ * Converse.js (Web-based XMPP instant messaging client)
  * http://conversejs.org
  *
- * Copyright (c) 2012 Jan-Carel Brand (jc@opkode.com)
+ * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
  * Dual licensed under the MIT and GPL Licenses
  */
 
@@ -22,7 +22,8 @@
                 "strophe": "Libraries/strophe",
                 "strophe.muc": "Libraries/strophe.muc",
                 "strophe.roster": "Libraries/strophe.roster",
-                "strophe.vcard": "Libraries/strophe.vcard"
+                "strophe.vcard": "Libraries/strophe.vcard",
+                "strophe.disco": "Libraries/strophe.disco"
             },
 
             // define module dependencies for modules not using define
@@ -38,22 +39,11 @@
                     //module value.
                     exports: 'Backbone'
                 },
-
-                'underscore': {
-                    exports: '_'
-                },
-
-                'strophe.muc': {
-                    deps: ['strophe', 'jquery']
-                },
-
-                'strophe.roster': {
-                    deps: ['strophe', 'jquery']
-                },
-
-                'strophe.vcard': {
-                    deps: ['strophe', 'jquery']
-                }
+                'underscore':   { exports: '_' },
+                'strophe.muc':  { deps: ['strophe', 'jquery'] },
+                'strophe.roster':   { deps: ['strophe', 'jquery'] },
+                'strophe.vcard':    { deps: ['strophe', 'jquery'] },
+                'strophe.disco':    { deps: ['strophe', 'jquery'] }
             }
         });
 
@@ -63,7 +53,8 @@
             "sjcl",
             "strophe.muc",
             "strophe.roster",
-            "strophe.vcard"
+            "strophe.vcard",
+            "strophe.disco"
             ], function() {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
@@ -82,7 +73,6 @@
         root.converse = factory(jQuery, _, console || {log: function(){}});
     }
 }(this, function ($, _, console) {
-
     var converse = {};
     converse.msg_counter = 0;
 
@@ -744,7 +734,7 @@
                     $available_chatrooms.find('dt').hide();
                 }
                 for (i=0; i<rooms_length; i++) {
-                    name = Strophe.unescapeNode($(rooms[i]).attr('name'));
+                    name = Strophe.unescapeNode($(rooms[i]).attr('name')||$(rooms[i]).attr('jid'));
                     jid = $(rooms[i]).attr('jid');
                     $available_chatrooms.append(this.room_template({'name':name, 'jid':jid}));
                 }
@@ -847,12 +837,17 @@
                 this.contactspanel = new converse.ContactsPanel();
                 this.contactspanel.$parent = this.$el;
                 this.contactspanel.render();
-                // TODO: Only add the rooms panel if the server supports MUC
+            }
+            return this;
+        },
+
+        addRoomsPanel: function () {
+            // XXX: We might to ensure that render was already called
+            if (!this.roomspanel) {
                 this.roomspanel = new converse.RoomsPanel();
                 this.roomspanel.$parent = this.$el;
                 this.roomspanel.render();
             }
-            return this;
         }
     });
 
@@ -1842,8 +1837,7 @@
                             }));
             // iterate through all the <option> elements and add option values
             options.each(function(){
-                options_list.push(that.option_template({
-                                                        'value': $(this).val(),
+                options_list.push(that.option_template({'value': $(this).val(),
                                                         'text': $(this).text()
                                                         }));
             });
@@ -1851,6 +1845,41 @@
             $options_target.append(options_list.join(''));
             $select.remove();
             return this;
+        }
+    });
+
+    converse.ServiceDiscovery = Backbone.Model.extend({
+        initialize: function () {
+            converse.connection.disco.info(converse.domain, null, this.onInfo, this.onError);
+            converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this), $.proxy(this.onError, this));
+        },
+
+        onItems: function (stanza) {
+            var that = this;
+            $(stanza).find('query item').each(function () {
+                converse.connection.disco.info($(this).attr('jid'), null, that.onInfo, that.onError);
+            });
+        },
+
+        onInfo: function (stanza) {
+            var $stanza = $(stanza);
+            if ($(stanza).find('identity[category=conference][type=text]').length < 1) {
+                // This isn't an IM server component
+                return;
+            }
+            $stanza.find('feature').each(function (idx, feature) {
+                if ($(this).attr('var') == 'http://jabber.org/protocol/muc') {
+                    // This component supports MUC
+                    converse.muc_domain = $stanza.attr('from');
+                    // XXX: It would probably make sense to refactor a
+                    // controlbox to be a Collection of Panel objects
+                    converse.chatboxesview.views.controlbox.addRoomsPanel();
+                }
+            });
+        },
+
+        onError: function (stanza) {
+            console.log("Error while doing service discovery");
         }
     });
 
@@ -1868,7 +1897,7 @@
             '<input type="text" id="jid">' +
             '<label>Password:</label>' +
             '<input type="password" id="password">' +
-            '<input type="submit" name="submit"/>' +
+            '<button type="submit">Log In</button>' +
             '</form">'),
 
         bosh_url_input: _.template(
@@ -1985,13 +2014,13 @@
 
     converse.onConnected = function (connection) {
         this.connection = connection;
-
-        this.animate = true; // Use animations
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
-        this.muc_domain = 'conference.' +  this.domain;
+
+        // Sevice discovery
+        this.disco = new this.ServiceDiscovery();
 
         // Set up the roster
         this.roster = new this.RosterItems();

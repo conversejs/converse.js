@@ -1,10 +1,23 @@
+.. Converse.js documentation master file, created by
+   sphinx-quickstart on Fri Apr 26 20:48:03 2013.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
 =========================
-Converse.js Documentation
+Converse.js documentation
 =========================
 
-------------------------------------
-Converse.js configuration variables:
-------------------------------------
+.. toctree::
+   :maxdepth: 2
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+
+
+------------------------
+Configuration variables:
+------------------------
 
 Prebind
 ========

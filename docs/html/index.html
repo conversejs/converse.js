@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Converse.js documentation &mdash; Converse.js 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Converse.js 0.3 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="#">Converse.js 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="converse-js-documentation">
+<h1>Converse.js documentation<a class="headerlink" href="#converse-js-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#configuration-variables" id="id1">Configuration variables:</a><ul>
+<li><a class="reference internal" href="#prebind" id="id2">Prebind</a></li>
+<li><a class="reference internal" href="#fullname" id="id3">fullname</a></li>
+<li><a class="reference internal" href="#bosh-service-url" id="id4">bosh_service_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id5">xhr_user_search</a></li>
+<li><a class="reference internal" href="#auto-subscribe" id="id6">auto_subscribe</a></li>
+<li><a class="reference internal" href="#animate" id="id7">animate</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="configuration-variables">
+<h2><a class="toc-backref" href="#id1">Configuration variables:</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prebind">
+<h3><a class="toc-backref" href="#id2">Prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<p>Use this option when you want to attach to an existing XMPP connection that was
+already authenticated (usually on the backend before page load).</p>
+<p>This is useful when you don&#8217;t want to render the login form on the chat control
+box with each page load.</p>
+<p>When set to true, you&#8217;ll need to make sure that the onConnected method is
+called, and passed to it a Strophe connection object.</p>
+<p>Besides requiring the back-end to authenticate you, you&#8217;ll also
+have to write a Javascript snippet to attach to the set up connection:</p>
+<div class="highlight-python"><pre>$.JSON({
+    'url': 'mysite.com/xmpp-authenticate',
+    'success': function (data) {
+        connection = new Strophe.Connection(bosh_service_url);
+        connection.attach(data.jid, data.sid, data.rid, converse.onConnected);
+    }</pre>
+</div>
+<p>The backend must authenticate for you, and then return a SID (session ID) and
+RID (Request ID), which you use when you attach to the connection.</p>
+</div>
+<div class="section" id="fullname">
+<h3><a class="toc-backref" href="#id3">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<p>If you are using prebinding, you need to specify the fullname of the currently
+logged in user.</p>
+</div>
+<div class="section" id="bosh-service-url">
+<h3><a class="toc-backref" href="#id4">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<p>Connections to an XMPP server depend on a BOSH connection manager which acts as
+a middle man between HTTP and XMPP.</p>
+<p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l">here</a> for more information.</p>
+</div>
+<div class="section" id="xhr-user-search">
+<h3><a class="toc-backref" href="#id5">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<p>There are two ways to add users.</p>
+<ul class="simple">
+<li>The user inputs a valid JID (Jabber ID), and the user is added as a pending</li>
+</ul>
+<p>contact.
+* The user inputs some text (for example part of a firstname or lastname), an XHR will be made to a backend, and a list of matches are returned. The user can then choose one of the matches to add as a contact.</p>
+<p>This setting enables the second mechanism, otherwise by default the first will
+be used.</p>
+</div>
+<div class="section" id="auto-subscribe">
+<h3><a class="toc-backref" href="#id6">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<p>If true, the user will automatically subscribe back to any contact requests.</p>
+</div>
+<div class="section" id="animate">
+<h3><a class="toc-backref" href="#id7">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<p>Show animations, for example when opening and closing chat boxes.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Converse.js documentation</a><ul>
+<li><a class="reference internal" href="#configuration-variables">Configuration variables:</a><ul>
+<li><a class="reference internal" href="#prebind">Prebind</a></li>
+<li><a class="reference internal" href="#fullname">fullname</a></li>
+<li><a class="reference internal" href="#bosh-service-url">bosh_service_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search">xhr_user_search</a></li>
+<li><a class="reference internal" href="#auto-subscribe">auto_subscribe</a></li>
+<li><a class="reference internal" href="#animate">animate</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="#">Converse.js 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, JC Brand.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

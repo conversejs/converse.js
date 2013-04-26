@@ -15,7 +15,7 @@
 Configuration variables:
 ========================
 
-Prebind
+prebind
 ========
 
 Use this option when you want to attach to an existing XMPP connection that was

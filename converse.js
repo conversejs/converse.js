@@ -718,11 +718,10 @@
             this.on('update-rooms-list', function (ev) {
                 this.updateRoomsList();
             });
-            this.trigger('update-rooms-list');
         },
 
         updateRoomsList: function () {
-            converse.connection.muc.listRooms(converse.muc_domain, $.proxy(function (iq) {
+            converse.connection.muc.listRooms(this.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
                     rooms_length = rooms.length,
@@ -752,7 +751,7 @@
                 name = input.val().trim().toLowerCase();
                 input.val(''); // Clear the input
                 if (name) {
-                    jid = Strophe.escapeNode(name) + '@' + converse.muc_domain;
+                    jid = Strophe.escapeNode(name) + '@' + this.muc_domain;
                 } else {
                     return;
                 }
@@ -780,8 +779,16 @@
         initialize: function () {
             this.$el.appendTo(converse.chatboxesview.$el);
             this.model.on('change', $.proxy(function (item, changed) {
+                var i;
                 if (_.has(item.changed, 'connected')) {
                     this.render();
+                    converse.features.on('add', $.proxy(this.featureAdded, this));
+                    // Features could have been added before the controlbox was
+                    // initialized. Currently we're only interested in MUC
+                    var feature = converse.features.findWhere({'var': 'http://jabber.org/protocol/muc'});
+                    if (feature) {
+                        this.featureAdded(feature);
+                    }
                 }
                 if (_.has(item.changed, 'visible')) {
                     if (item.changed.visible === true) {
@@ -789,12 +796,22 @@
                     }
                 }
             }, this));
-
             this.model.on('show', this.show, this);
             this.model.on('destroy', this.hide, this);
             this.model.on('hide', this.hide, this);
             if (this.model.get('visible')) {
                 this.show();
+            }
+        },
+
+        featureAdded: function (feature) {
+            if (feature.get('var') == 'http://jabber.org/protocol/muc') {
+                if (!this.roomspanel) {
+                    this.roomspanel = new converse.RoomsPanel();
+                    this.roomspanel.muc_domain = feature.get('from');
+                    this.roomspanel.$parent = this.$el;
+                    this.roomspanel.render().trigger('update-rooms-list');
+                }
             }
         },
 
@@ -839,15 +856,6 @@
                 this.contactspanel.render();
             }
             return this;
-        },
-
-        addRoomsPanel: function () {
-            // XXX: We might to ensure that render was already called
-            if (!this.roomspanel) {
-                this.roomspanel = new converse.RoomsPanel();
-                this.roomspanel.$parent = this.$el;
-                this.roomspanel.render();
-            }
         }
     });
 
@@ -1848,34 +1856,50 @@
         }
     });
 
-    converse.ServiceDiscovery = Backbone.Model.extend({
+    converse.Feature = Backbone.Model.extend();
+    converse.Features = Backbone.Collection.extend({
+        /* This collection stores Feature Models, representing features
+         * provided by available XMPP entities (e.g. servers)
+         *
+         * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
+         */
+        model: converse.Feature,
         initialize: function () {
-            converse.connection.disco.info(converse.domain, null, this.onInfo, this.onError);
-            converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this), $.proxy(this.onError, this));
+            this.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.features'+converse.bare_jid));
+            if (this.localStorage.records.length === 0) {
+                // localStorage is empty, so we've likely never queried this
+                // domain for features yet
+                converse.connection.disco.info(converse.domain, null, this.onInfo, this.onError);
+                converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this), $.proxy(this.onError, this));
+            } else {
+                this.fetch({add:true});
+            }
         },
 
         onItems: function (stanza) {
-            var that = this;
-            $(stanza).find('query item').each(function () {
-                converse.connection.disco.info($(this).attr('jid'), null, that.onInfo, that.onError);
-            });
+            $(stanza).find('query item').each($.proxy(function (idx, item) {
+                converse.connection.disco.info(
+                    $(item).attr('jid'),
+                    null,
+                    $.proxy(this.onInfo, this),
+                    $.proxy(this.onError, this));
+            }, this));
         },
 
         onInfo: function (stanza) {
             var $stanza = $(stanza);
-            if ($(stanza).find('identity[category=conference][type=text]').length < 1) {
+            if (($stanza.find('identity[category=server][type=im]').length === 0) &&
+                ($stanza.find('identity[category=conference][type=text]').length === 0)) {
                 // This isn't an IM server component
                 return;
             }
-            $stanza.find('feature').each(function (idx, feature) {
-                if ($(this).attr('var') == 'http://jabber.org/protocol/muc') {
-                    // This component supports MUC
-                    converse.muc_domain = $stanza.attr('from');
-                    // XXX: It would probably make sense to refactor a
-                    // controlbox to be a Collection of Panel objects
-                    converse.chatboxesview.views.controlbox.addRoomsPanel();
-                }
-            });
+            $stanza.find('feature').each($.proxy(function (idx, feature) {
+                this.create({
+                    'var': $(feature).attr('var'),
+                    'from': $stanza.attr('from')
+                });
+            }, this));
         },
 
         onError: function (stanza) {
@@ -1975,6 +1999,7 @@
                 template.find('form').append(this.bosh_url_input);
             }
             this.$parent.find('#controlbox-panes').append(this.$el.html(template));
+            this.$el.find('input#jid').focus();
             return this;
         }
     });
@@ -2018,9 +2043,7 @@
         this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
-
-        // Sevice discovery
-        this.disco = new this.ServiceDiscovery();
+        this.features = new this.Features();
 
         // Set up the roster
         this.roster = new this.RosterItems();

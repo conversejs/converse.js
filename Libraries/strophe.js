@@ -1917,7 +1917,6 @@ Strophe.Handler.prototype = {
         try {
             result = this.handler(elem);
         } catch (e) {
-            result = this.handler(elem);
             if (e.sourceURL) {
                 Strophe.fatal("error: " + this.handler +
                               " " + e.sourceURL + ":" +

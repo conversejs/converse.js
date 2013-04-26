@@ -1,8 +1,8 @@
 /*!
- * Converse.js (XMPP-based instant messaging with Strophe.js and backbone.js)
+ * Converse.js (Web-based XMPP instant messaging client)
  * http://conversejs.org
  *
- * Copyright (c) 2012 Jan-Carel Brand (jc@opkode.com)
+ * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
  * Dual licensed under the MIT and GPL Licenses
  */
 
@@ -22,7 +22,8 @@
                 "strophe": "Libraries/strophe",
                 "strophe.muc": "Libraries/strophe.muc",
                 "strophe.roster": "Libraries/strophe.roster",
-                "strophe.vcard": "Libraries/strophe.vcard"
+                "strophe.vcard": "Libraries/strophe.vcard",
+                "strophe.disco": "Libraries/strophe.disco"
             },
 
             // define module dependencies for modules not using define
@@ -38,22 +39,11 @@
                     //module value.
                     exports: 'Backbone'
                 },
-
-                'underscore': {
-                    exports: '_'
-                },
-
-                'strophe.muc': {
-                    deps: ['strophe', 'jquery']
-                },
-
-                'strophe.roster': {
-                    deps: ['strophe', 'jquery']
-                },
-
-                'strophe.vcard': {
-                    deps: ['strophe', 'jquery']
-                }
+                'underscore':   { exports: '_' },
+                'strophe.muc':  { deps: ['strophe', 'jquery'] },
+                'strophe.roster':   { deps: ['strophe', 'jquery'] },
+                'strophe.vcard':    { deps: ['strophe', 'jquery'] },
+                'strophe.disco':    { deps: ['strophe', 'jquery'] }
             }
         });
 
@@ -63,7 +53,8 @@
             "sjcl",
             "strophe.muc",
             "strophe.roster",
-            "strophe.vcard"
+            "strophe.vcard",
+            "strophe.disco"
             ], function() {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
@@ -82,7 +73,6 @@
         root.converse = factory(jQuery, _, console || {log: function(){}});
     }
 }(this, function ($, _, console) {
-
     var converse = {};
     converse.msg_counter = 0;
 
@@ -728,11 +718,10 @@
             this.on('update-rooms-list', function (ev) {
                 this.updateRoomsList();
             });
-            this.trigger('update-rooms-list');
         },
 
         updateRoomsList: function () {
-            converse.connection.muc.listRooms(converse.muc_domain, $.proxy(function (iq) {
+            converse.connection.muc.listRooms(this.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
                     rooms_length = rooms.length,
@@ -744,7 +733,7 @@
                     $available_chatrooms.find('dt').hide();
                 }
                 for (i=0; i<rooms_length; i++) {
-                    name = Strophe.unescapeNode($(rooms[i]).attr('name'));
+                    name = Strophe.unescapeNode($(rooms[i]).attr('name')||$(rooms[i]).attr('jid'));
                     jid = $(rooms[i]).attr('jid');
                     $available_chatrooms.append(this.room_template({'name':name, 'jid':jid}));
                 }
@@ -762,7 +751,7 @@
                 name = input.val().trim().toLowerCase();
                 input.val(''); // Clear the input
                 if (name) {
-                    jid = Strophe.escapeNode(name) + '@' + converse.muc_domain;
+                    jid = Strophe.escapeNode(name) + '@' + this.muc_domain;
                 } else {
                     return;
                 }
@@ -790,8 +779,16 @@
         initialize: function () {
             this.$el.appendTo(converse.chatboxesview.$el);
             this.model.on('change', $.proxy(function (item, changed) {
+                var i;
                 if (_.has(item.changed, 'connected')) {
                     this.render();
+                    converse.features.on('add', $.proxy(this.featureAdded, this));
+                    // Features could have been added before the controlbox was
+                    // initialized. Currently we're only interested in MUC
+                    var feature = converse.features.findWhere({'var': 'http://jabber.org/protocol/muc'});
+                    if (feature) {
+                        this.featureAdded(feature);
+                    }
                 }
                 if (_.has(item.changed, 'visible')) {
                     if (item.changed.visible === true) {
@@ -799,12 +796,22 @@
                     }
                 }
             }, this));
-
             this.model.on('show', this.show, this);
             this.model.on('destroy', this.hide, this);
             this.model.on('hide', this.hide, this);
             if (this.model.get('visible')) {
                 this.show();
+            }
+        },
+
+        featureAdded: function (feature) {
+            if (feature.get('var') == 'http://jabber.org/protocol/muc') {
+                if (!this.roomspanel) {
+                    this.roomspanel = new converse.RoomsPanel();
+                    this.roomspanel.muc_domain = feature.get('from');
+                    this.roomspanel.$parent = this.$el;
+                    this.roomspanel.render().trigger('update-rooms-list');
+                }
             }
         },
 
@@ -847,10 +854,6 @@
                 this.contactspanel = new converse.ContactsPanel();
                 this.contactspanel.$parent = this.$el;
                 this.contactspanel.render();
-                // TODO: Only add the rooms panel if the server supports MUC
-                this.roomspanel = new converse.RoomsPanel();
-                this.roomspanel.$parent = this.$el;
-                this.roomspanel.render();
             }
             return this;
         }
@@ -1842,8 +1845,7 @@
                             }));
             // iterate through all the <option> elements and add option values
             options.each(function(){
-                options_list.push(that.option_template({
-                                                        'value': $(this).val(),
+                options_list.push(that.option_template({'value': $(this).val(),
                                                         'text': $(this).text()
                                                         }));
             });
@@ -1851,6 +1853,57 @@
             $options_target.append(options_list.join(''));
             $select.remove();
             return this;
+        }
+    });
+
+    converse.Feature = Backbone.Model.extend();
+    converse.Features = Backbone.Collection.extend({
+        /* This collection stores Feature Models, representing features
+         * provided by available XMPP entities (e.g. servers)
+         *
+         * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
+         */
+        model: converse.Feature,
+        initialize: function () {
+            this.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.features'+converse.bare_jid));
+            if (this.localStorage.records.length === 0) {
+                // localStorage is empty, so we've likely never queried this
+                // domain for features yet
+                converse.connection.disco.info(converse.domain, null, this.onInfo, this.onError);
+                converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this), $.proxy(this.onError, this));
+            } else {
+                this.fetch({add:true});
+            }
+        },
+
+        onItems: function (stanza) {
+            $(stanza).find('query item').each($.proxy(function (idx, item) {
+                converse.connection.disco.info(
+                    $(item).attr('jid'),
+                    null,
+                    $.proxy(this.onInfo, this),
+                    $.proxy(this.onError, this));
+            }, this));
+        },
+
+        onInfo: function (stanza) {
+            var $stanza = $(stanza);
+            if (($stanza.find('identity[category=server][type=im]').length === 0) &&
+                ($stanza.find('identity[category=conference][type=text]').length === 0)) {
+                // This isn't an IM server component
+                return;
+            }
+            $stanza.find('feature').each($.proxy(function (idx, feature) {
+                this.create({
+                    'var': $(feature).attr('var'),
+                    'from': $stanza.attr('from')
+                });
+            }, this));
+        },
+
+        onError: function (stanza) {
+            console.log("Error while doing service discovery");
         }
     });
 
@@ -1868,7 +1921,7 @@
             '<input type="text" id="jid">' +
             '<label>Password:</label>' +
             '<input type="password" id="password">' +
-            '<input type="submit" name="submit"/>' +
+            '<button type="submit">Log In</button>' +
             '</form">'),
 
         bosh_url_input: _.template(
@@ -1946,6 +1999,7 @@
                 template.find('form').append(this.bosh_url_input);
             }
             this.$parent.find('#controlbox-panes').append(this.$el.html(template));
+            this.$el.find('input#jid').focus();
             return this;
         }
     });
@@ -1985,13 +2039,11 @@
 
     converse.onConnected = function (connection) {
         this.connection = connection;
-
-        this.animate = true; // Use animations
         this.connection.xmlInput = function (body) { console.log(body); };
         this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
-        this.muc_domain = 'conference.' +  this.domain;
+        this.features = new this.Features();
 
         // Set up the roster
         this.roster = new this.RosterItems();

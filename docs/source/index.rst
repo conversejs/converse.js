@@ -3,10 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=========================
-Converse.js documentation
-=========================
-
 .. toctree::
    :maxdepth: 2
 
@@ -15,9 +11,9 @@ Converse.js documentation
    :local:
 
 
-------------------------
+========================
 Configuration variables:
-------------------------
+========================
 
 Prebind
 ========

@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,9 +7,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Converse.js documentation &mdash; Converse.js 0.3 documentation</title>
+    <title>Configuration variables: &mdash; Converse.js 0.3 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/stylesheet.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -28,6 +27,22 @@
     <link rel="top" title="Converse.js 0.3 documentation" href="#" /> 
   </head>
   <body>
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+            <a id="forkme_banner" href="https://github.com/jcbrand/converse.js">View on GitHub</a>
+
+            <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
+            <h2 id="project_tagline">Documentation</h2>
+
+            <section id="downloads">
+                <a class="zip_download_link" href="https://github.com/jcbrand/converse.js/zipball/master">Download this project as a .zip file</a>
+                <a class="tar_download_link" href="https://github.com/jcbrand/converse.js/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+
+<div id="main_content_wrap" class="outer">
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -36,16 +51,14 @@
              accesskey="I">index</a></li>
         <li><a href="#">Converse.js 0.3 documentation</a> &raquo;</li> 
       </ul>
-    </div>  
+    </div>
+<section id="main_content" class="inner">  
 
     <div class="document">
       <div class="documentwrapper">
-        <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="converse-js-documentation">
-<h1>Converse.js documentation<a class="headerlink" href="#converse-js-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+  <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
@@ -64,9 +77,9 @@
 </ul>
 </div>
 <div class="section" id="configuration-variables">
-<h2><a class="toc-backref" href="#id1">Configuration variables:</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<h1><a class="toc-backref" href="#id1">Configuration variables:</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id2">Prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id2">Prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h2>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
 <p>This is useful when you don&#8217;t want to render the login form on the chat control
@@ -86,18 +99,18 @@ have to write a Javascript snippet to attach to the set up connection:</p>
 RID (Request ID), which you use when you attach to the connection.</p>
 </div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id3">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id3">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h2>
 <p>If you are using prebinding, you need to specify the fullname of the currently
 logged in user.</p>
 </div>
 <div class="section" id="bosh-service-url">
-<h3><a class="toc-backref" href="#id4">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id4">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h2>
 <p>Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.</p>
 <p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l">here</a> for more information.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id5">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id5">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h2>
 <p>There are two ways to add users.</p>
 <ul class="simple">
 <li>The user inputs a valid JID (Jabber ID), and the user is added as a pending</li>
@@ -108,60 +121,22 @@ a middle man between HTTP and XMPP.</p>
 be used.</p>
 </div>
 <div class="section" id="auto-subscribe">
-<h3><a class="toc-backref" href="#id6">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id6">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h2>
 <p>If true, the user will automatically subscribe back to any contact requests.</p>
 </div>
 <div class="section" id="animate">
-<h3><a class="toc-backref" href="#id7">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<h2><a class="toc-backref" href="#id7">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h2>
 <p>Show animations, for example when opening and closing chat boxes.</p>
-</div>
 </div>
 </div>
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Converse.js documentation</a><ul>
-<li><a class="reference internal" href="#configuration-variables">Configuration variables:</a><ul>
-<li><a class="reference internal" href="#prebind">Prebind</a></li>
-<li><a class="reference internal" href="#fullname">fullname</a></li>
-<li><a class="reference internal" href="#bosh-service-url">bosh_service_url</a></li>
-<li><a class="reference internal" href="#xhr-user-search">xhr_user_search</a></li>
-<li><a class="reference internal" href="#auto-subscribe">auto_subscribe</a></li>
-<li><a class="reference internal" href="#animate">animate</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
       </div>
       <div class="clearer"></div>
     </div>
+
+</section>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -171,9 +146,12 @@ be used.</p>
         <li><a href="#">Converse.js 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+</div>
+    <div id="footer_wrap" class="outer">
+    <footer class="inner">
         &copy; Copyright 2013, JC Brand.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    <p class="copyright">Converse.js created by <a href="http://opkode.com" target="_blank">jcbrand</a></p>
+    </footer>
     </div>
   </body>
 </html>

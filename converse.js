@@ -868,6 +868,8 @@
             'keypress textarea.chat-textarea': 'keyPressed'
         },
 
+        info_template: _.template('<div class="chat-event">{{message}}</div>'),
+
         sendChatRoomMessage: function (body) {
             var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
                 $chat_content;
@@ -985,10 +987,6 @@
                 delayed = $message.find('delay').length > 0,
                 subject = $message.children('subject').text(),
                 match, template, message_datetime, message_date, dates, isodate;
-            if (!body) { return true; } // XXX: Necessary?
-            if (subject) {
-                this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
-            }
             if (delayed) {
                 stamp = $message.find('delay').attr('stamp');
                 message_datetime = converse.parseISO8601(stamp);
@@ -1007,7 +1005,11 @@
                     datestring: message_date.toString().substring(0,15)
                 }));
             }
-
+            if (subject) {
+                this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
+                $chat_content.append(this.info_template({'message': 'Topic set by '+sender+' to: '+subject }));
+            }
+            if (!body) { return true; }
             match = body.match(/^\/(.*?)(?: (.*))?$/);
             if ((match) && (match[1] === 'me')) {
                 body = body.replace(/^\/me/, '*'+sender);
@@ -1994,7 +1996,7 @@
 
         render: function () {
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
-            template = this.template();
+            var template = this.template();
             if (! this.bosh_url_input) {
                 template.find('form').append(this.bosh_url_input);
             }

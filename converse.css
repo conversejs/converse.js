@@ -89,10 +89,6 @@
     list-style: none;
 }
 
-input.new-chatroom-name {
-    width: 10em;
-}
-
 .chat-blink {
     background-color: #176689;
     border-right:1px solid #176689;
@@ -416,7 +412,7 @@ form.search-xmpp-contact input {
 }
 
 #available-chatrooms {
-    height: 225px;
+    height: 183px;
     overflow-y: scroll;
 }
 

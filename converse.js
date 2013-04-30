@@ -701,7 +701,8 @@
 
         template: _.template(
             '<form class="add-chatroom" action="" method="post">'+
-                '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Chat room name"/>'+
+                '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
+                '<input type="text" name="server" class="new-chatroom-server" placeholder="Server" value="{{server_name}}"/>'+
                 '<button type="submit">Join</button>'+
             '</form>'+
             '<dl id="available-chatrooms">'+
@@ -710,7 +711,8 @@
 
         render: function () {
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
-            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()).hide());
+            var server_name = this.muc_domain;
+            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template({server_name:server_name})).hide());
             return this;
         },
 
@@ -743,16 +745,21 @@
 
         createChatRoom: function (ev) {
             ev.preventDefault();
-            var name, jid, input;
+            var name, server, jid, $name, $server, errors;
             if (ev.type === 'click') {
                 jid = $(ev.target).attr('data-room-jid');
             } else {
-                input = this.$el.find('input.new-chatroom-name');
-                name = input.val().trim().toLowerCase();
-                input.val(''); // Clear the input
-                if (name) {
-                    jid = Strophe.escapeNode(name) + '@' + this.muc_domain;
+                $name = this.$el.find('input.new-chatroom-name');
+                $server= this.$el.find('input.new-chatroom-server');
+                server = $server.val();
+                name = $name.val().trim().toLowerCase();
+                $name.val(''); // Clear the input
+                if (name && server) {
+                    jid = Strophe.escapeNode(name) + '@' + server;
                 } else {
+                    errors = true;
+                    if (!name) { $name.addClass('error'); }
+                    if (!server) { $server.addClass('error'); }
                     return;
                 }
             }

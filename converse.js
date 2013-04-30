@@ -702,7 +702,7 @@
         template: _.template(
             '<form class="add-chatroom" action="" method="post">'+
                 '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
-                '<input type="text" name="server" class="new-chatroom-server" placeholder="Server" value="{{server_name}}"/>'+
+                '<input type="text" name="server" class="new-chatroom-server" placeholder="Server"/>'+
                 '<button type="submit">Join</button>'+
             '</form>'+
             '<dl id="available-chatrooms">'+
@@ -711,8 +711,7 @@
 
         render: function () {
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
-            var server_name = this.muc_domain;
-            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template({server_name:server_name})).hide());
+            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()).hide());
             return this;
         },
 
@@ -813,12 +812,12 @@
 
         featureAdded: function (feature) {
             if (feature.get('var') == 'http://jabber.org/protocol/muc') {
-                if (!this.roomspanel) {
-                    this.roomspanel = new converse.RoomsPanel();
-                    this.roomspanel.muc_domain = feature.get('from');
-                    this.roomspanel.$parent = this.$el;
-                    this.roomspanel.render().trigger('update-rooms-list');
+                this.roomspanel.muc_domain = feature.get('from');
+                var $server= this.$el.find('input.new-chatroom-server');
+                if (! $server.is(':focus')) {
+                    $server.val(this.roomspanel.muc_domain);
                 }
+                this.roomspanel.trigger('update-rooms-list');
             }
         },
 
@@ -861,6 +860,9 @@
                 this.contactspanel = new converse.ContactsPanel();
                 this.contactspanel.$parent = this.$el;
                 this.contactspanel.render();
+                this.roomspanel = new converse.RoomsPanel();
+                this.roomspanel.$parent = this.$el;
+                this.roomspanel.render();
             }
             return this;
         }
@@ -874,7 +876,6 @@
             'click a.close-chatbox-button': 'closeChat',
             'keypress textarea.chat-textarea': 'keyPressed'
         },
-
         info_template: _.template('<div class="chat-event">{{message}}</div>'),
 
         sendChatRoomMessage: function (body) {
@@ -985,15 +986,42 @@
             return true;
         },
 
+        communicateStatusCodes: function ($message, $chat_content) {
+            /* Parse the message for status codes and communicate their purpose
+             * to the user.
+             * See: http://xmpp.org/registrar/mucstatus.html
+             */
+            var status_messages = {
+                100: 'This room is not anonymous',
+                102: 'This room now shows unavailable members',
+                103: 'This room does not show unavailable members',
+                104: 'Non-privacy-related room configuration has changed',
+                170: 'Room logging is now enabled',
+                171: 'Room logging is now disabled',
+                172: 'This room is now non-anonymous',
+                173: 'This room is now semi-anonymous',
+                174: 'This room is now fully-anonymous'
+            };
+            $message.find('x').find('status').each($.proxy(function (idx, item) {
+                var code  = $(item).attr('code');
+                var message = code && status_messages[code] || null;
+                if (message) { 
+                    $chat_content.append(this.info_template({message: message}));
+                }
+            }, this));
+        },
+
         onChatRoomMessage: function (message) {
             var $message = $(message),
                 body = $message.children('body').text(),
                 jid = $message.attr('from'),
                 $chat_content = this.$el.find('.chat-content'),
-                sender = Strophe.unescapeNode(Strophe.getResourceFromJid(jid)),
+                resource = Strophe.getResourceFromJid(jid),
+                sender = resource && Strophe.unescapeNode(resource) || '',
                 delayed = $message.find('delay').length > 0,
                 subject = $message.children('subject').text(),
-                match, template, message_datetime, message_date, dates, isodate;
+                match, template, message_datetime, message_date, dates, isodate, stamp;
+
             if (delayed) {
                 stamp = $message.find('delay').attr('stamp');
                 message_datetime = converse.parseISO8601(stamp);
@@ -1003,7 +1031,7 @@
             // If this message is on a different day than the one received
             // prior, then indicate it on the chatbox.
             dates = $chat_content.find("time").map(function(){return $(this).attr("datetime");}).get();
-            message_date = message_datetime;
+            message_date = new Date(message_datetime.getTime());
             message_date.setUTCHours(0,0,0,0);
             isodate = converse.toISOString(message_date);
             if (_.indexOf(dates, isodate) == -1) {
@@ -1012,6 +1040,7 @@
                     datestring: message_date.toString().substring(0,15)
                 }));
             }
+            this.communicateStatusCodes($message, $chat_content);
             if (subject) {
                 this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                 $chat_content.append(this.info_template({'message': 'Topic set by '+sender+' to: '+subject }));
@@ -1030,7 +1059,7 @@
             $chat_content.append(
                 template({
                     'sender': sender == 'me' && sender || 'room',
-                    'time': message_date.toLocaleTimeString().substring(0,5),
+                    'time': message_datetime.toLocaleTimeString().substring(0,5),
                     'message': body,
                     'username': sender,
                     'extra_classes': delayed && 'delayed' || ''

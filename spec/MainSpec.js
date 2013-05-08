@@ -551,6 +551,50 @@
             }, converse));
         }, converse));
 
+        describe("A Message Counter", $.proxy(function () {
+            it("is incremented when the message is received and the window is not focused", $.proxy(function () {
+                expect(this.msg_counter).toBe(0);
+                spyOn(converse, 'incrementMsgCounter').andCallThrough();
+                $(window).trigger('blur');
+                var message = 'This message will increment the message counter';
+                var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    msg = $msg({
+                        from: sender_jid,
+                        to: this.connection.jid, 
+                        type: 'chat', 
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                      .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                this.chatboxes.messageReceived(msg);
+                expect(converse.incrementMsgCounter).toHaveBeenCalled();
+                expect(this.msg_counter).toBe(1);
+            }, converse));
+
+            it("is cleared when the window is focused", $.proxy(function () {
+                spyOn(converse, 'clearMsgCounter').andCallThrough();
+                $(window).trigger('focus');
+                expect(converse.clearMsgCounter).toHaveBeenCalled();
+            }, converse));
+
+            it("is not incremented when the message is received and the window is focused", $.proxy(function () {
+                expect(this.msg_counter).toBe(0);
+                spyOn(converse, 'incrementMsgCounter').andCallThrough();
+                $(window).trigger('focus');
+                var message = 'This message will not increment the message counter';
+                var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    msg = $msg({
+                        from: sender_jid,
+                        to: this.connection.jid, 
+                        type: 'chat', 
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                      .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                this.chatboxes.messageReceived(msg);
+                expect(converse.incrementMsgCounter).not.toHaveBeenCalled();
+                expect(this.msg_counter).toBe(0);
+            }, converse));
+        }, converse));
+
         xdescribe("The Controlbox Tabs", $.proxy(function () {
             // XXX: Disabled for now, these tests don't pass due to service
             // discovery changes.

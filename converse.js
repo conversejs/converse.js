@@ -1908,7 +1908,7 @@
             if (this.localStorage.records.length === 0) {
                 // localStorage is empty, so we've likely never queried this
                 // domain for features yet
-                converse.connection.disco.info(converse.domain, null, this.onInfo, this.onError);
+                converse.connection.disco.info(converse.domain, null, $.proxy(this.onInfo, this), $.proxy(this.onError, this));
                 converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this), $.proxy(this.onError, this));
             } else {
                 this.fetch({add:true});

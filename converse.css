@@ -651,6 +651,7 @@ form.add-xmpp-contact input {
 }
 
 .dropdown dd ul {
+    padding-top: 5px;
     list-style:none;
     position:absolute; left:0; top:0;
     border:1px solid #ddd;
@@ -669,7 +670,7 @@ form.add-xmpp-contact input {
 }
 
 .dropdown dd ul li a {
-    padding:5px 5px 5px 30px;
+    padding:0 5px 5px 30px;
     display:block;
 }
 

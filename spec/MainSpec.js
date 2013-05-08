@@ -453,7 +453,7 @@
                 // onConnected method
                 newchatboxes.onConnected();
                 expect(newchatboxes.length).toEqual(6);
-                // Check that the roster items retrieved from localStorage
+                // Check that the chatboxes items retrieved from localStorage
                 // have the same attributes values as the original ones.
                 attrs = ['id', 'box_id', 'visible'];
                 for (i=0; i<attrs.length; i++) {
@@ -556,6 +556,17 @@
         }, converse));
 
         describe("The Controlbox Tabs", $.proxy(function () {
+            beforeEach($.proxy(function () {
+                // Close any remaining open chatboxes
+                var i, chatbox, num_chatboxes = this.chatboxes.models.length;
+                for (i=0; i<num_chatboxes; i++) {
+                    chatbox = this.chatboxes.models[i];
+                    if (chatbox.get('id') != 'controlbox') {
+                        this.chatboxesview.views[chatbox.get('id')].closeChat();
+                    }
+                }
+            }, converse));
+
             it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
                 var cbview = this.chatboxesview.views.controlbox;
                 var $panels = cbview.$el.find('#controlbox-panes');
@@ -625,6 +636,26 @@
                 }
                 roster[converse.bare_jid] = {};
                 chatroomview.onChatRoomRoster(roster, room);
+            }, converse));
+
+            it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
+                // We instantiate a new ChatBoxes collection, which by default
+                // will be empty.
+                var newchatboxes = new this.ChatBoxes();
+                expect(newchatboxes.length).toEqual(0);
+                // The chatboxes will then be fetched from localStorage inside the
+                // onConnected method
+                newchatboxes.onConnected();
+                expect(newchatboxes.length).toEqual(2); // controlbox is also included
+                // Check that the chatrooms retrieved from localStorage
+                // have the same attributes values as the original ones.
+                attrs = ['id', 'box_id', 'visible'];
+                for (i=0; i<attrs.length; i++) {
+                    new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
+                    old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
+                    expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
+                }
+                this.rosterview.render();
             }, converse));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {

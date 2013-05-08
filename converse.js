@@ -228,7 +228,7 @@
                 from = Strophe.getBareJidFromJid($message.attr('from')),
                 composing = $message.find('composing'),
                 delayed = $message.find('delay').length > 0,
-                fullname = this.get('fullname').split(' ')[0],
+                fullname = (this.get('fullname')||'').split(' ')[0],
                 stamp, time, sender;
 
             if (!body) {
@@ -683,6 +683,7 @@
         id: 'chatrooms',
         events: {
             'submit form.add-chatroom': 'createChatRoom',
+            'click input#show-rooms': 'showRooms',
             'click a.open-room': 'createChatRoom'
         },
         room_template: _.template(
@@ -698,11 +699,10 @@
             '<form class="add-chatroom" action="" method="post">'+
                 '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
                 '<input type="text" name="server" class="new-chatroom-server" placeholder="Server"/>'+
-                '<button type="submit">Join</button>'+
+                '<input type="submit" name="join" value="Join"/>'+
+                '<input type="button" name="show" id="show-rooms" value="Show rooms"/>'+
             '</form>'+
-            '<dl id="available-chatrooms">'+
-                '<dt>Available chatrooms</dt>'+
-            '</dl>'),
+            '<dl id="available-chatrooms"></dl>'),
 
         render: function () {
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
@@ -716,15 +716,14 @@
             });
         },
 
-        updateRoomsList: function () {
+        updateRoomsList: function (domain) {
             converse.connection.muc.listRooms(this.muc_domain, $.proxy(function (iq) {
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
                     rooms_length = rooms.length,
                     $available_chatrooms = this.$el.find('#available-chatrooms'),
                     fragment = document.createDocumentFragment();
-
-                $available_chatrooms.html('<dt>Available chatrooms</dt>');
+                $available_chatrooms.html('<dt>Rooms on '+this.muc_domain+'</dt>');
                 if (rooms.length) {
                     $available_chatrooms.find('dt').show();
                 } else {
@@ -740,6 +739,22 @@
             }, this));
         },
 
+        showRooms: function (ev) {
+            var $available_chatrooms = this.$el.find('#available-chatrooms');
+            var $server = this.$el.find('input.new-chatroom-server');
+            var server = $server.val();
+            if (!server) {
+                $server.addClass('error');
+                return;
+            }
+            this.$el.find('input.new-chatroom-name').removeClass('error');
+            $server.removeClass('error');
+            $available_chatrooms.empty();
+            $('#available-chatrooms').html('<img style="width: auto; margin-left: 40%; margin-top: 10%" src="images/spinner.gif"/>');
+            this.muc_domain = server;
+            this.updateRoomsList();
+        },
+
         createChatRoom: function (ev) {
             ev.preventDefault();
             var name, server, jid, $name, $server, errors;
@@ -753,6 +768,9 @@
                 $name.val(''); // Clear the input
                 if (name && server) {
                     jid = Strophe.escapeNode(name) + '@' + server;
+                    $name.removeClass('error');
+                    $server.removeClass('error');
+                    this.muc_domain = server;
                 } else {
                     errors = true;
                     if (!name) { $name.addClass('error'); }
@@ -1002,7 +1020,7 @@
             $message.find('x').find('status').each($.proxy(function (idx, item) {
                 var code  = $(item).attr('code');
                 var message = code && status_messages[code] || null;
-                if (message) { 
+                if (message) {
                     $chat_content.append(this.info_template({message: message}));
                 }
             }, this));
@@ -1073,7 +1091,6 @@
                 $participant_list = this.$el.find('.participant-list'),
                 participants = [],
                 i;
-
             if (controlboxview) {
                 controlboxview.roomspanel.trigger('update-rooms-list');
             }
@@ -1952,7 +1969,7 @@
             '<input type="text" id="jid">' +
             '<label>Password:</label>' +
             '<input type="password" id="password">' +
-            '<button type="submit">Log In</button>' +
+            '<input type="submit" value="Log In">' +
             '</form">'),
 
         bosh_url_input: _.template(
@@ -1986,12 +2003,9 @@
                 $pw_input.addClass('error');
             }
             if (errors) { return; }
-            // Clear the form's fields, so that it can't be submitted twice
-            if ($bsu_input) {
-                $bsu_input.val('');
-            }
-            $jid_input.val('');
-            $pw_input.val('');
+
+            var $button = $form.find('input[type=submit]');
+            $button.hide().after('<img style="width: auto" src="images/spinner.gif"/>');
 
             var connection = new Strophe.Connection(this.bosh_service_url);
             connection.connect(jid, password, $.proxy(function (status) {
@@ -1999,16 +2013,20 @@
                     console.log('Connected');
                     this.onConnected(connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
+                    $button.show().siblings('img').remove();
                     this.giveFeedback('Disconnected', 'error');
                 } else if (status === Strophe.Status.Error) {
+                    $button.show().siblings('img').remove();
                     this.giveFeedback('Error', 'error');
                 } else if (status === Strophe.Status.CONNECTING) {
                     this.giveFeedback('Connecting');
                 } else if (status === Strophe.Status.CONNFAIL) {
+                    $button.show().siblings('img').remove();
                     this.giveFeedback('Connection Failed', 'error');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
                     this.giveFeedback('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
+                    $button.show().siblings('img').remove();
                     this.giveFeedback('Authentication Failed', 'error');
                 } else if (status === Strophe.Status.DISCONNECTING) {
                     this.giveFeedback('Disconnecting');
@@ -2118,8 +2136,8 @@
 
             this.xmppstatus.initStatus();
         }, this));
-        
-        $(window).on("blur focus", $.proxy(function(e) {            
+
+        $(window).on("blur focus", $.proxy(function(e) {
             if ((this.windowState != e.type) && (e.type == 'focus')) {
                 converse.clearMsgCounter();
             }

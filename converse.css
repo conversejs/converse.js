@@ -439,10 +439,6 @@ form.search-xmpp-contact input {
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
-#available-chatrooms dt {
-    padding-top: 1em;
-}
-
 dd.available-chatroom,
 #converse-roster dd {
     font-weight: bold;

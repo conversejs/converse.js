@@ -182,6 +182,10 @@ input.error {
     border: 1px solid red;
 }
 
+.conn-feedback.error {
+    color: red;
+}
+
 .chat-message-error {
     color:#76797C;
     font-size:90%;

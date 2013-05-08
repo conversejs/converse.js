@@ -321,10 +321,6 @@
                     }));
                 }
             }
-            if (converse.xmppstatus.get('status') === 'offline') {
-                // only update the UI if the user is not offline
-                return;
-            }
             if (message.get('composing')) {
                 this.insertStatusNotification(message.get('fullname')+' '+'is typing');
                 return;
@@ -2006,17 +2002,17 @@
                     console.log('Connected');
                     this.onConnected(connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
-                    this.giveFeedback('Disconnected').css('background-image', "url(images/error_icon.png)");
+                    this.giveFeedback('Disconnected', 'error');
                 } else if (status === Strophe.Status.Error) {
-                    this.giveFeedback('Error');
+                    this.giveFeedback('Error', 'error');
                 } else if (status === Strophe.Status.CONNECTING) {
                     this.giveFeedback('Connecting');
                 } else if (status === Strophe.Status.CONNFAIL) {
-                    this.giveFeedback('Connection Failed');
+                    this.giveFeedback('Connection Failed', 'error');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
                     this.giveFeedback('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
-                    this.giveFeedback('Authentication Failed');
+                    this.giveFeedback('Authentication Failed', 'error');
                 } else if (status === Strophe.Status.DISCONNECTING) {
                     this.giveFeedback('Disconnecting');
                 } else if (status === Strophe.Status.ATTACHED) {
@@ -2071,8 +2067,12 @@
         }
     };
 
-    converse.giveFeedback = function (message) {
-        return $('.conn-feedback').text(message);
+    converse.giveFeedback = function (message, klass) {
+        $('.conn-feedback').text(message);
+        $('.conn-feedback').attr('class', 'conn-feedback');
+        if (klass) {
+            $('.conn-feedback').addClass(klass);
+        }
     }
 
     converse.onConnected = function (connection) {

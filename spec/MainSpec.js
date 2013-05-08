@@ -20,11 +20,15 @@
             'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
             'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
         ];
+        var chatroom_names = [
+            'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
+        ];
         var num_contacts = req_names.length + pend_names.length + cur_names.length;
         mock_connection  = {
             'muc': {
                 'listRooms': function () {},
-                'join': function () {}
+                'join': function () {},
+                'leave': function () {}
             },
             'jid': 'dummy@localhost',
             'addHandler': function (handler, ns, name, type, id, from, options) { 
@@ -551,10 +555,8 @@
             }, converse));
         }, converse));
 
-        xdescribe("The Controlbox Tabs", $.proxy(function () {
-            // XXX: Disabled for now, these tests don't pass due to service
-            // discovery changes.
-            it("consist of two tabs, 'Contacts' and 'ChatRooms', of which 'Contacts' is by default visible", $.proxy(function () {
+        describe("The Controlbox Tabs", $.proxy(function () {
+            it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
                 var cbview = this.chatboxesview.views.controlbox;
                 var $panels = cbview.$el.find('#controlbox-panes');
                 expect($panels.children().length).toBe(2);
@@ -565,7 +567,6 @@
             }, converse));
 
             describe("The Chatrooms Panel", $.proxy(function () {
-
                 it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
                     var cbview = this.chatboxesview.views.controlbox;
                     var $tabs = cbview.$el.find('#controlbox-tabs');
@@ -588,12 +589,15 @@
                 it("contains a form through which a new chatroom can be created", $.proxy(function () {
                     var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
                     var $input = roomspanel.$el.find('input.new-chatroom-name');
+                    var $server = roomspanel.$el.find('input.new-chatroom-server');
                     expect($input.length).toBe(1);
+                    expect($server.length).toBe(1);
                     expect($('.chatroom').length).toBe(0); // There shouldn't be any chatrooms open currently
                     spyOn(roomspanel, 'createChatRoom').andCallThrough();
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     runs(function () {
                         $input.val('Lounge');
+                        $server.val('muc.localhost');
                     });
                     waits('250');
                     runs(function () {
@@ -605,6 +609,32 @@
                         expect($('.chatroom').length).toBe(1); // There should now be an open chatroom
                     }, converse));
                 }, converse));
+            }, converse));
+        }, converse));
+
+        describe("A Chat Room", $.proxy(function () {
+            it("shows users currently present in the room", $.proxy(function () {
+                var chatroomview = this.chatboxesview.views['lounge@muc.localhost'];
+                var $participant_list = chatroomview.$el.find('.participant-list');
+                var roster = {}, room = {}, i;
+                for (i=0; i<chatroom_names.length; i++) {
+                    roster[chatroom_names[i]] = {};
+                    chatroomview.onChatRoomRoster(roster, room);
+                    expect($participant_list.find('li').length).toBe(1+i);
+                    expect($($participant_list.find('li')[i]).text()).toBe(chatroom_names[i]);
+                }
+                roster[converse.bare_jid] = {};
+                chatroomview.onChatRoomRoster(roster, room);
+            }, converse));
+
+            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+                var view = this.chatboxesview.views['lounge@muc.localhost'], chatroom = view.model, $el;
+                spyOn(view, 'closeChat').andCallThrough();
+                spyOn(converse.connection.muc, 'leave');
+                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                view.$el.find('.close-chatbox-button').click();
+                expect(view.closeChat).toHaveBeenCalled();
+                expect(converse.connection.muc.leave).toHaveBeenCalled();
             }, converse));
         }, converse));
     }, converse));

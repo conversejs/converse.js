@@ -14,6 +14,8 @@ Changelog
 - Separate messages according to day in chats. [jcbrand]
 - Add support for specifying the BOSH bind URL as configuration setting.
   [jcbrand]
+- Improve the message counter to only increment when the window is not focused 
+  [witekdev]
 
 
 0.2 (2013-03-28)

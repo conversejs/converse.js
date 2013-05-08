@@ -136,11 +136,9 @@
                     });
                 }, converse));
             }, converse));
-
         }, converse));
 
         describe("The Contacts Roster", $.proxy(function () {
-
             describe("Pending Contacts", $.proxy(function () {
                 it("do not have a heading if there aren't any", $.proxy(function () {
                     expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
@@ -369,7 +367,6 @@
             }, converse));
 
             describe("All Contacts", $.proxy(function () {
-
                 it("are saved to, and can be retrieved from, localStorage", $.proxy(function () {
                     var new_attrs, old_attrs, attrs, old_roster;
                     // One contact was declined, so we have 1 less contact then originally
@@ -552,6 +549,50 @@
                     var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
                     expect(txt).toEqual(message);
                 }, converse));
+            }, converse));
+        }, converse));
+
+        describe("A Message Counter", $.proxy(function () {
+            it("is incremented when the message is received and the window is not focused", $.proxy(function () {
+                expect(this.msg_counter).toBe(0);
+                spyOn(converse, 'incrementMsgCounter').andCallThrough();
+                $(window).trigger('blur');
+                var message = 'This message will increment the message counter';
+                var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    msg = $msg({
+                        from: sender_jid,
+                        to: this.connection.jid, 
+                        type: 'chat', 
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                      .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                this.chatboxes.messageReceived(msg);
+                expect(converse.incrementMsgCounter).toHaveBeenCalled();
+                expect(this.msg_counter).toBe(1);
+            }, converse));
+
+            it("is cleared when the window is focused", $.proxy(function () {
+                spyOn(converse, 'clearMsgCounter').andCallThrough();
+                $(window).trigger('focus');
+                expect(converse.clearMsgCounter).toHaveBeenCalled();
+            }, converse));
+
+            it("is not incremented when the message is received and the window is focused", $.proxy(function () {
+                expect(this.msg_counter).toBe(0);
+                spyOn(converse, 'incrementMsgCounter').andCallThrough();
+                $(window).trigger('focus');
+                var message = 'This message will not increment the message counter';
+                var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    msg = $msg({
+                        from: sender_jid,
+                        to: this.connection.jid, 
+                        type: 'chat', 
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                      .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                this.chatboxes.messageReceived(msg);
+                expect(converse.incrementMsgCounter).not.toHaveBeenCalled();
+                expect(this.msg_counter).toBe(0);
             }, converse));
         }, converse));
 

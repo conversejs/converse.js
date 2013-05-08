@@ -335,7 +335,7 @@
                             'extra_classes': message.get('delayed') && 'delayed' || ''
                         }));
             }
-            if (message.get('sender') != 'me') {
+            if ((message.get('sender') != 'me') && (converse.windowState == 'blur')) {
                 converse.incrementMsgCounter();
             }
             this.scrollDown();
@@ -480,7 +480,6 @@
             if (this.model.get('status')) {
                 this.showStatusMessage(this.model.get('status'));
             }
-            converse.clearMsgCounter();
         },
 
         template: _.template(
@@ -956,7 +955,6 @@
             this);
             this.$el.appendTo(converse.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
-            converse.clearMsgCounter();
         },
 
         onLeave: function () {
@@ -2121,6 +2119,14 @@
 
             this.xmppstatus.initStatus();
         }, this));
+        
+        $(window).on("blur focus", $.proxy(function(e) {            
+            if ((this.windowState != e.type) && (e.type == 'focus')) {
+                converse.clearMsgCounter();
+            }
+            this.windowState = e.type;
+        },this))
+
         this.giveFeedback('Online Contacts');
     };
 

@@ -721,8 +721,10 @@
                 var name, jid, i,
                     rooms = $(iq).find('query').find('item'),
                     rooms_length = rooms.length,
-                    $available_chatrooms = this.$el.find('#available-chatrooms');
-                $available_chatrooms.find('dd.available-chatroom').remove();
+                    $available_chatrooms = this.$el.find('#available-chatrooms'),
+                    fragment = document.createDocumentFragment();
+
+                $available_chatrooms.html('<dt>Available chatrooms</dt>');
                 if (rooms.length) {
                     $available_chatrooms.find('dt').show();
                 } else {
@@ -731,8 +733,9 @@
                 for (i=0; i<rooms_length; i++) {
                     name = Strophe.unescapeNode($(rooms[i]).attr('name')||$(rooms[i]).attr('jid'));
                     jid = $(rooms[i]).attr('jid');
-                    $available_chatrooms.append(this.room_template({'name':name, 'jid':jid}));
+                    fragment.appendChild($(this.room_template({'name':name, 'jid':jid}))[0]);
                 }
+                $available_chatrooms.append(fragment);
                 return true;
             }, this));
         },
@@ -1890,9 +1893,10 @@
 
     converse.Feature = Backbone.Model.extend();
     converse.Features = Backbone.Collection.extend({
-        /* This collection stores Feature Models, representing features
+        /* Service Discovery
+         * -----------------
+         * This collection stores Feature Models, representing features
          * provided by available XMPP entities (e.g. servers)
-         *
          * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
          */
         model: converse.Feature,
@@ -1902,8 +1906,8 @@
             if (this.localStorage.records.length === 0) {
                 // localStorage is empty, so we've likely never queried this
                 // domain for features yet
-                converse.connection.disco.info(converse.domain, null, $.proxy(this.onInfo, this), $.proxy(this.onError, this));
-                converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this), $.proxy(this.onError, this));
+                converse.connection.disco.info(converse.domain, null, $.proxy(this.onInfo, this));
+                converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this));
             } else {
                 this.fetch({add:true});
             }
@@ -1914,8 +1918,7 @@
                 converse.connection.disco.info(
                     $(item).attr('jid'),
                     null,
-                    $.proxy(this.onInfo, this),
-                    $.proxy(this.onError, this));
+                    $.proxy(this.onInfo, this));
             }, this));
         },
 
@@ -1932,10 +1935,6 @@
                     'from': $stanza.attr('from')
                 });
             }, this));
-        },
-
-        onError: function (stanza) {
-            console.log("Error while doing service discovery");
         }
     });
 

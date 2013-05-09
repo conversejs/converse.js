@@ -553,6 +553,10 @@
         }, converse));
 
         describe("A Message Counter", $.proxy(function () {
+            beforeEach($.proxy(function () {
+                converse.clearMsgCounter();
+            }, converse));
+
             it("is incremented when the message is received and the window is not focused", $.proxy(function () {
                 expect(this.msg_counter).toBe(0);
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();

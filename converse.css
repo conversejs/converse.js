@@ -2,6 +2,11 @@
     display: none
 }
 
+.locked {
+    background: url(images/emblem-readonly.png) no-repeat right;
+    padding-right: 22px;
+}
+
 img.spinner {
     width: auto;
     border: none;
@@ -382,6 +387,8 @@ form.search-xmpp-contact input {
     background: url(images/user_busy_panel.png) no-repeat 5px 2px;
 }
 
+#converse-roster dd.current-xmpp-contact.xa,
+#converse-roster dd.current-xmpp-contact.xa:hover,
 #converse-roster dd.current-xmpp-contact.away,
 #converse-roster dd.current-xmpp-contact.away:hover {
     background: url(images/user_away_panel.png) no-repeat 5px 2px;
@@ -457,7 +464,7 @@ dd.available-chatroom,
     border: none;
     display: block;
     padding: 0 0.5em 0 0.5em;
-    color: #3f3f3f;
+    color: #666;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 

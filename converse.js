@@ -688,10 +688,10 @@
         },
         room_template: _.template(
             '<dd class="available-chatroom">' +
-            '<a class="open-room" data-room-jid="{{jid}}"' +
+            '<a class="open-room {{classes}}" data-room-jid="{{jid}}"' +
                 ' title="{{desc}}"' +
                 ' href="#">' +
-            '({{occ}}) {{name}}</a></dd>'),
+            '{{name}}</a>&nbsp;{{occ}}</dd>'),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
 
@@ -735,13 +735,16 @@
                                     var name = $(stanza).find('identity').attr('name');
                                     var desc = $(stanza).find('field[var="muc#roominfo_description"] value').text();
                                     var occ = $(stanza).find('field[var="muc#roominfo_occupants"] value').text();
+                                    var locked = $(stanza).find('feature[var="muc_passwordprotected"]').length;
                                     var jid = $(stanza).attr('from');
+                                    var classes = locked && 'locked' || '';
                                     delete this.rdict[jid];
                                     this.$el.find('#available-chatrooms').append(
                                         this.room_template({'name':name,
                                                             'desc':desc,
                                                             'occ':occ,
-                                                            'jid':jid
+                                                            'jid':jid,
+                                                            'classes': classes 
                                         }));
                                     if (_.keys(this.rdict).length === 0) {
                                         $('input#show-rooms').show().siblings('img.spinner').remove();
@@ -1014,6 +1017,11 @@
                     if ($presence.find("status[code='210']").length) {
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
+                }
+            } else {
+                var error = $presence.find('error');
+                if ($(error).attr('type') == 'auth') {
+                    this.$el.find('.chat-content').append('Sorry, this chatroom is restricted');
                 }
             }
             return true;
@@ -2044,7 +2052,7 @@
                     $button.show().siblings('img').remove();
                     this.giveFeedback('Authentication Failed', 'error');
                 } else if (status === Strophe.Status.DISCONNECTING) {
-                    this.giveFeedback('Disconnecting');
+                    this.giveFeedback('Disconnecting', 'error');
                 } else if (status === Strophe.Status.ATTACHED) {
                     console.log('Attached');
                 }

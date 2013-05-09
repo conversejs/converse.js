@@ -971,9 +971,7 @@
                 '<div class="chat-area">' +
                     '<div class="chat-content"></div>' +
                     '<form class="sendXMPPMessage" action="" method="post">' +
-                        '<textarea ' +
-                            'type="text" ' +
-                            'class="chat-textarea" ' +
+                        '<textarea type="text" class="chat-textarea" ' +
                             'placeholder="Message"/>' +
                     '</form>' +
                 '</div>' +
@@ -2028,7 +2026,7 @@
             if (errors) { return; }
 
             var $button = $form.find('input[type=submit]');
-            $button.hide().after('<img class="spinner" src="images/spinner.gif"/>');
+            $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
 
             var connection = new Strophe.Connection(this.bosh_service_url);
             connection.connect(jid, password, $.proxy(function (status) {

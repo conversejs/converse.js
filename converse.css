@@ -542,7 +542,7 @@ form#converse-login input {
     display: block;
 }
 
-form#converse-login input.login-submit {
+form#converse-login .login-submit {
     margin-top: 1em;
 }
 

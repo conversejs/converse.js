@@ -1992,7 +1992,7 @@
             '<input type="text" id="jid">' +
             '<label>Password:</label>' +
             '<input type="password" id="password">' +
-            '<input type="submit" value="Log In">' +
+            '<input class="login-submit" type="submit" value="Log In">' +
             '</form">'),
 
         bosh_url_input: _.template(

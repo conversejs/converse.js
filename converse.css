@@ -542,6 +542,10 @@ form#converse-login input {
     display: block;
 }
 
+form#converse-login input.login-submit {
+    margin-top: 1em;
+}
+
 form.set-xmpp-status,
 form.add-chatroom {
     padding: 0.5em 0 0.3em 0.5em;

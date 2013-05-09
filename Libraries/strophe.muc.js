@@ -524,11 +524,11 @@
             return this._connection.send(presence.tree());
         },
 
-        listRooms: function(server, handle_cb) {
+        listRooms: function(server, callback, errback) {
             /* List all chat room available on a server.
              * Parameters:
              * (String) server - name of chat server.
-             * (String) handle_cb - Function to call for room list return.
+             * (String) callback - Function to call for room list return.
             */
             var iq;
             iq = $iq({
@@ -538,7 +538,7 @@
             }).c("query", {
                 xmlns: Strophe.NS.DISCO_ITEMS
             });
-            return this._connection.sendIQ(iq, handle_cb);
+            return this._connection.sendIQ(iq, callback, errback);
             },
             test_append_nick: function(room, nick) {
             return room + (nick !== null ? "/" + (Strophe.escapeNode(nick)) : "");

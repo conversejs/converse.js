@@ -717,26 +717,31 @@
         },
 
         updateRoomsList: function (domain) {
-            converse.connection.muc.listRooms(this.muc_domain, $.proxy(function (iq) {
-                var name, jid, i,
-                    rooms = $(iq).find('query').find('item'),
-                    rooms_length = rooms.length,
-                    $available_chatrooms = this.$el.find('#available-chatrooms'),
-                    fragment = document.createDocumentFragment();
-                $available_chatrooms.html('<dt>Rooms on '+this.muc_domain+'</dt>');
-                if (rooms.length) {
-                    $available_chatrooms.find('dt').show();
-                } else {
-                    $available_chatrooms.find('dt').hide();
-                }
-                for (i=0; i<rooms_length; i++) {
-                    name = Strophe.unescapeNode($(rooms[i]).attr('name')||$(rooms[i]).attr('jid'));
-                    jid = $(rooms[i]).attr('jid');
-                    fragment.appendChild($(this.room_template({'name':name, 'jid':jid}))[0]);
-                }
-                $available_chatrooms.append(fragment);
-                return true;
-            }, this));
+            converse.connection.muc.listRooms(
+                this.muc_domain, 
+                $.proxy(function (iq) { // Success
+                    var name, jid, i,
+                        rooms = $(iq).find('query').find('item'),
+                        rooms_length = rooms.length,
+                        $available_chatrooms = this.$el.find('#available-chatrooms'),
+                        fragment = document.createDocumentFragment();
+                    if (rooms.length) {
+                        $available_chatrooms.html('<dt>Rooms on '+this.muc_domain+'</dt>');
+                        for (i=0; i<rooms_length; i++) {
+                            name = Strophe.unescapeNode($(rooms[i]).attr('name')||$(rooms[i]).attr('jid'));
+                            jid = $(rooms[i]).attr('jid');
+                            fragment.appendChild($(this.room_template({'name':name, 'jid':jid}))[0]);
+                        }
+                        $available_chatrooms.append(fragment);
+                    } else {
+                        $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
+                    }
+                    return true;
+                }, this),
+                $.proxy(function (iq) { // Failure
+                    var $available_chatrooms = this.$el.find('#available-chatrooms');
+                    $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
+                }, this));
         },
 
         showRooms: function (ev) {

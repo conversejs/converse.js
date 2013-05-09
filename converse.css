@@ -431,12 +431,15 @@ form.search-xmpp-contact input {
 #available-chatrooms dt,
 #converse-roster dt {
     font-weight: normal;
-    display: none;
     font-size: 13px;
     color: #666;
     border: none;
     padding: 0.3em 0.5em 0.3em 0.5em;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
+}
+
+#converse-roster dt {
+    display: none;
 }
 
 dd.available-chatroom,

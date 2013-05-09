@@ -5,6 +5,6 @@ require(["jquery", "converse"], function($, converse) {
         prebind: false,
         xhr_user_search: false,
         auto_subscribe: false,
-        auto_list_rooms: false 
+        auto_list_rooms: false
     });
 });

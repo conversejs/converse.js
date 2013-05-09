@@ -8,7 +8,7 @@ img.spinner {
     box-shadow: none;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
-    margin: 5px;
+    margin: 0;
     padding: 0 5px 0 5px;
 }
 

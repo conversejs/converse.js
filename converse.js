@@ -750,12 +750,14 @@
                         }, this));
                     } else {
                         $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
+                        $('input#show-rooms').show().siblings('img.spinner').remove();
                     }
                     return true;
                 }, this),
                 $.proxy(function (iq) { // Failure
                     var $available_chatrooms = this.$el.find('#available-chatrooms');
                     $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
+                    $('input#show-rooms').show().siblings('img.spinner').remove();
                 }, this));
         },
 
@@ -985,7 +987,6 @@
                 $.proxy(this.onChatRoomPresence, this),
                 $.proxy(this.onChatRoomRoster, this));
 
-
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('destroy', function (model, response, options) {
                 this.$el.hide('fast');
@@ -1000,12 +1001,7 @@
             this.render().show().model.messages.fetch({add: true});
         },
 
-        onLeave: function () {
-            var controlboxview = converse.chatboxesview.views.controlbox;
-            if (controlboxview) {
-                controlboxview.roomspanel.trigger('update-rooms-list');
-            }
-        },
+        onLeave: function () {},
 
         onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
@@ -1113,9 +1109,6 @@
                 $participant_list = this.$el.find('.participant-list'),
                 participants = [],
                 i;
-            if (controlboxview) {
-                controlboxview.roomspanel.trigger('update-rooms-list');
-            }
             this.$el.find('.participant-list').empty();
             for (i=0; i<roster_size; i++) {
                 participants.push('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');

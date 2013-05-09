@@ -689,9 +689,9 @@
         room_template: _.template(
             '<dd class="available-chatroom">' +
             '<a class="open-room" data-room-jid="{{jid}}"' +
-                ' title="Click to open this chatroom"' +
+                ' title="{{desc}}"' +
                 ' href="#">' +
-            '{{name}}</a></dd>'),
+            '({{occ}}) {{name}}</a></dd>'),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
 
@@ -718,21 +718,36 @@
 
         updateRoomsList: function (domain) {
             converse.connection.muc.listRooms(
-                this.muc_domain, 
+                this.muc_domain,
                 $.proxy(function (iq) { // Success
-                    var name, jid, i,
-                        rooms = $(iq).find('query').find('item'),
-                        rooms_length = rooms.length,
-                        $available_chatrooms = this.$el.find('#available-chatrooms'),
-                        fragment = document.createDocumentFragment();
-                    if (rooms.length) {
+                    var name, jid, i, that = this, $available_chatrooms = this.$el.find('#available-chatrooms');
+                    this.rdict = {};
+                    this.rooms = $(iq).find('query').find('item');
+                    this.rooms.each(function (i) { that.rdict[$(this).attr('jid')] = this; });
+                    this.fragment = document.createDocumentFragment();
+                    if (this.rooms.length) {
                         $available_chatrooms.html('<dt>Rooms on '+this.muc_domain+'</dt>');
-                        for (i=0; i<rooms_length; i++) {
-                            name = Strophe.unescapeNode($(rooms[i]).attr('name')||$(rooms[i]).attr('jid'));
-                            jid = $(rooms[i]).attr('jid');
-                            fragment.appendChild($(this.room_template({'name':name, 'jid':jid}))[0]);
-                        }
-                        $available_chatrooms.append(fragment);
+                        _.each(this.rooms, $.proxy(function (room, idx) {
+                            converse.connection.disco.info(
+                                $(room).attr('jid'),
+                                null,
+                                $.proxy(function (stanza) {
+                                    var name = $(stanza).find('identity').attr('name');
+                                    var desc = $(stanza).find('field[var="muc#roominfo_description"] value').text();
+                                    var occ = $(stanza).find('field[var="muc#roominfo_occupants"] value').text();
+                                    var jid = $(stanza).attr('from');
+                                    delete this.rdict[jid];
+                                    this.$el.find('#available-chatrooms').append(
+                                        this.room_template({'name':name,
+                                                            'desc':desc,
+                                                            'occ':occ,
+                                                            'jid':jid
+                                        }));
+                                    if (_.keys(this.rdict).length === 0) {
+                                        $('input#show-rooms').show().siblings('img.spinner').remove();
+                                    }
+                                }, this));
+                        }, this));
                     } else {
                         $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
                     }
@@ -755,7 +770,7 @@
             this.$el.find('input.new-chatroom-name').removeClass('error');
             $server.removeClass('error');
             $available_chatrooms.empty();
-            $('#available-chatrooms').html('<img style="width: auto; margin-left: 40%; margin-top: 10%" src="images/spinner.gif"/>');
+            $('input#show-rooms').hide().after('<img class="spinner" style="width: auto" src="images/spinner.gif"/>');
             this.muc_domain = server;
             this.updateRoomsList();
         },
@@ -838,7 +853,9 @@
                 if (! $server.is(':focus')) {
                     $server.val(this.roomspanel.muc_domain);
                 }
-                this.roomspanel.trigger('update-rooms-list');
+                if (converse.auto_list_rooms) {
+                    this.roomspanel.trigger('update-rooms-list');
+                }
             }
         },
 
@@ -2010,7 +2027,7 @@
             if (errors) { return; }
 
             var $button = $form.find('input[type=submit]');
-            $button.hide().after('<img style="width: auto" src="images/spinner.gif"/>');
+            $button.hide().after('<img class="spinner" src="images/spinner.gif"/>');
 
             var connection = new Strophe.Connection(this.bosh_service_url);
             connection.connect(jid, password, $.proxy(function (status) {

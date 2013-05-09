@@ -72,6 +72,18 @@ auto_subscribe
 
 If true, the user will automatically subscribe back to any contact requests.
 
+auto_list_rooms
+===============
+
+If true, and the XMPP server on which the current user is logged in supports
+multi-user chat, then a list of rooms on that server will be fetched.
+
+Not recommended for servers with lots of chat rooms.
+
+For each room on the server a query is made to fetch further details (e.g.
+features, number of occupants etc.), so on servers with many rooms this 
+option will create lots of extra connection traffic.
+
 animate
 =======
 

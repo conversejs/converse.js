@@ -2,6 +2,16 @@
     display: none
 }
 
+img.spinner {
+    width: auto;
+    border: none;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    margin: 5px;
+    padding: 0 5px 0 5px;
+}
+
 #chatpanel {
     z-index: 99; /*--Keeps the panel on top of all other elements--*/
     position: fixed;
@@ -198,7 +208,6 @@ input.error {
 }
 
 div.chat-title {
-    height: 1.1em;
     color: white;
     font-weight: bold;
     line-height: 15px;

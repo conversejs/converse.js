@@ -408,8 +408,7 @@ form.search-xmpp-contact input {
 }
 
 #converse-roster dd a {
-    margin-left: 1.5em;
-    width: 113px;
+    margin-left: 1.3em;
 }
 
 #converse-roster dd span {
@@ -470,10 +469,19 @@ dd.available-chatroom,
 
 #converse-roster dd a.remove-xmpp-contact {
     background: url('images/delete_icon.png') no-repeat right top;
-    padding: 0 1em 1em 0;
+    padding: 0 0 1em 0;
     float: right;
     width: 22px;
     margin: 0;
+    display: none;
+}
+
+#converse-roster  dd:hover *[class*="remove-xmpp-contact"] {
+    display: inline-block;
+}
+
+#converse-roster  dd:hover *[class*="open-chat"] {
+    width: 128px;
 }
 
 .chatbox,

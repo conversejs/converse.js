@@ -1,6 +1,3 @@
-# Makefile for Sphinx documentation
-#
-
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD = sphinx-build
@@ -18,6 +15,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  release    to make a new minified release"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -37,6 +35,9 @@ help:
 	@echo "  changes    to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+
+release: 
+	r.js -o build.js
 
 clean:
 	-rm -rf $(BUILDDIR)/*

@@ -426,7 +426,7 @@ form.search-xmpp-contact input {
 
 #available-chatrooms {
     height: 183px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 #available-chatrooms dd {

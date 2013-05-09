@@ -16,6 +16,10 @@ Changelog
   [jcbrand]
 - Improve the message counter to only increment when the window is not focused 
   [witekdev]
+- Make fetching of list of chatrooms on a server a configuration option.
+  [jcbrand]
+- Use service discovery to show whether a chatroom is password protected as
+  well as its number of occupents. [jcbrand]
 
 
 0.2 (2013-03-28)
@@ -26,7 +30,7 @@ Changelog
 - Various smaller improvements and bugfixes [jcbrand]
 
 
-0.1 (unreleased)
+0.1 (2012-06-12)
 ----------------
 
 - Created [jcbrand]

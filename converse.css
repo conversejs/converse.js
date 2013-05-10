@@ -573,10 +573,12 @@ form#converse-login {
 
 form#converse-login input {
     display: block;
+    width: 90%;
 }
 
 form#converse-login .login-submit {
     margin-top: 1em;
+    width: auto;
 }
 
 form.set-xmpp-status,

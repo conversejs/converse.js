@@ -684,14 +684,24 @@
         events: {
             'submit form.add-chatroom': 'createChatRoom',
             'click input#show-rooms': 'showRooms',
-            'click a.open-room': 'createChatRoom'
+            'click a.open-room': 'createChatRoom',
+            'click a.room-info': 'showRoomInfo'
         },
         room_template: _.template(
-            '<dd class="available-chatroom">' +
-            '<a class="open-room {{classes}}" data-room-jid="{{jid}}"' +
-                ' title="{{desc}}"' +
-                ' href="#">' +
-            '{{name}}</a>&nbsp;{{occ}}</dd>'),
+            '<dd class="available-chatroom">'+
+            '<a class="open-room" data-room-jid="{{jid}}" title="Click to open this room" href="#">{{name}}</a>'+
+            '<a class="room-info" data-room-jid="{{jid}}" title="Show more information on this room" href="#">&nbsp;</a>'+
+            '</dd>'),
+
+        room_description_template: _.template(
+            '<div class="room-info">'+
+            '<p class="room-info"><strong>Description:</strong> {{desc}}</p>' +
+            '<p class="room-info"><strong>Occupants:</strong> {{occ}}</p>' +
+            '{[ if (locked) { ]}' +
+                '<p class="room-info locked">Requires authentication</p>' +
+            '{[ } ]}' +
+            '</div>'
+        ),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
 
@@ -720,37 +730,23 @@
             converse.connection.muc.listRooms(
                 this.muc_domain,
                 $.proxy(function (iq) { // Success
-                    var name, jid, i, that = this, $available_chatrooms = this.$el.find('#available-chatrooms');
-                    this.rdict = {};
+                    var name, jid, i, fragment,
+                        that = this,
+                        $available_chatrooms = this.$el.find('#available-chatrooms');
                     this.rooms = $(iq).find('query').find('item');
-                    this.rooms.each(function (i) { that.rdict[$(this).attr('jid')] = this; });
-                    this.fragment = document.createDocumentFragment();
                     if (this.rooms.length) {
                         $available_chatrooms.html('<dt>Rooms on '+this.muc_domain+'</dt>');
-                        _.each(this.rooms, $.proxy(function (room, idx) {
-                            converse.connection.disco.info(
-                                $(room).attr('jid'),
-                                null,
-                                $.proxy(function (stanza) {
-                                    var name = $(stanza).find('identity').attr('name');
-                                    var desc = $(stanza).find('field[var="muc#roominfo_description"] value').text();
-                                    var occ = $(stanza).find('field[var="muc#roominfo_occupants"] value').text();
-                                    var locked = $(stanza).find('feature[var="muc_passwordprotected"]').length;
-                                    var jid = $(stanza).attr('from');
-                                    var classes = locked && 'locked' || '';
-                                    delete this.rdict[jid];
-                                    this.$el.find('#available-chatrooms').append(
-                                        this.room_template({'name':name,
-                                                            'desc':desc,
-                                                            'occ':occ,
-                                                            'jid':jid,
-                                                            'classes': classes 
-                                        }));
-                                    if (_.keys(this.rdict).length === 0) {
-                                        $('input#show-rooms').show().siblings('img.spinner').remove();
-                                    }
-                                }, this));
-                        }, this));
+                        fragment = document.createDocumentFragment();
+                        for (i=0; i<this.rooms.length; i++) {
+                            name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
+                            jid = $(this.rooms[i]).attr('jid');
+                            fragment.appendChild($(this.room_template({
+                                'name':name,
+                                'jid':jid
+                                }))[0]);
+                        }
+                        $available_chatrooms.append(fragment);
+                        $('input#show-rooms').show().siblings('img.spinner').remove();
                     } else {
                         $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
                         $('input#show-rooms').show().siblings('img.spinner').remove();
@@ -778,6 +774,31 @@
             $('input#show-rooms').hide().after('<img class="spinner" style="width: auto" src="images/spinner.gif"/>');
             this.muc_domain = server;
             this.updateRoomsList();
+        },
+
+        showRoomInfo: function (ev) {
+            var target = ev.target,
+                $dd = $(target).parent('dd'),
+                $div = $dd.find('div.room-info');
+            if ($div.length) {
+                $div.remove();
+            } else {
+                $dd.append('<img class="spinner" src="images/spinner.gif"/>');
+                converse.connection.disco.info(
+                    $(target).attr('data-room-jid'),
+                    null,
+                    $.proxy(function (stanza) {
+                        var desc = $(stanza).find('field[var="muc#roominfo_description"] value').text();
+                        var occ = $(stanza).find('field[var="muc#roominfo_occupants"] value').text();
+                        var locked = $(stanza).find('feature[var="muc_passwordprotected"]').length;
+                        $dd.find('img.spinner').replaceWith(
+                            this.room_description_template({
+                                'desc':desc,
+                                'occ':occ,
+                                'locked':locked
+                            }));
+                    }, this));
+            }
         },
 
         createChatRoom: function (ev) {

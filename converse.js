@@ -2088,7 +2088,7 @@
         } else {
             controlbox.trigger('show');
         }
-    }
+    };
 
     converse.toggleControlBox = function () {
         if ($("div#controlbox").is(':visible')) {
@@ -2109,7 +2109,7 @@
         if (klass) {
             $('.conn-feedback').addClass(klass);
         }
-    }
+    };
 
     converse.onConnected = function (connection) {
         this.connection = connection;
@@ -2163,8 +2163,7 @@
                 converse.clearMsgCounter();
             }
             this.windowState = e.type;
-        },this))
-
+        },this));
         this.giveFeedback('Online Contacts');
     };
 
@@ -2179,6 +2178,5 @@
             }, this)
         );
     };
-
     return converse;
 }));

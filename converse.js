@@ -2113,8 +2113,8 @@
 
     converse.onConnected = function (connection) {
         this.connection = connection;
-        this.connection.xmlInput = function (body) { console.log(body); };
-        this.connection.xmlOutput = function (body) { console.log(body); };
+        // this.connection.xmlInput = function (body) { console.log(body); };
+        // this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
         this.features = new this.Features();
@@ -2132,7 +2132,17 @@
         this.rosterview = new this.RosterView({'model':this.roster});
 
         this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
-        this.xmppstatus.fetch();
+        this.xmppstatus.fetch({
+            success: $.proxy(function (xmppstatus, resp) {
+                if (!xmppstatus.get('fullname')) {
+                    this.getVCard(
+                        null, // No 'to' attr when getting one's own vCard
+                        $.proxy(function (jid, fullname, image, image_type, url) {
+                            this.xmppstatus.set({'fullname': fullname});
+                        }, this));
+                }
+            }, this)
+        });
 
         this.connection.addHandler(
             $.proxy(this.roster.subscribeToSuggestedItems, this.roster),

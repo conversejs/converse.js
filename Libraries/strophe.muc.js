@@ -75,6 +75,7 @@
                 this._muc_handler = this._connection.addHandler(function(stanza) {
                     var from, handler, handlers, id, roomname, x, xmlns, xquery, _i, _len;
                     from = stanza.getAttribute('from');
+                    if (!from) { return true; }
                     roomname = from.split("/")[0];
                     if (!_this.rooms[roomname]) { return true; }
                     room = _this.rooms[roomname];

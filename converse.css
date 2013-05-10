@@ -422,6 +422,7 @@ form.search-xmpp-contact input {
 #converse-roster {
     height: 200px;
     overflow-y: auto;
+    overflow-x: hidden;
     width: 100%;
     margin: 0;
     position: relative;

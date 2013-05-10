@@ -673,7 +673,7 @@
 
         addContact: function (jid, name) {
             converse.connection.roster.add(jid, name, [], function (iq) {
-                converse.connection.roster.subscribe(jid, null, converse.fullname);
+                converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
             });
         }
     });
@@ -1301,7 +1301,7 @@
             var jid = this.model.get('jid');
             converse.connection.roster.authorize(jid);
             converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
-                converse.connection.roster.subscribe(jid, null, converse.fullname);
+                converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
             });
             ev.preventDefault();
         },
@@ -1404,7 +1404,7 @@
                     fullname = $this.attr('name');
                 if (action === 'add') {
                     converse.connection.roster.add(jid, fullname, [], function (iq) {
-                        converse.connection.roster.subscribe(jid, null, converse.fullname);
+                        converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                     });
                 }
             });
@@ -1455,11 +1455,11 @@
             var bare_jid = Strophe.getBareJidFromJid(jid);
             if (converse.connection.roster.findItem(bare_jid)) {
                 converse.connection.roster.authorize(bare_jid);
-                converse.connection.roster.subscribe(jid, null, converse.fullname);
+                converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
             } else {
                 converse.connection.roster.add(jid, '', [], function (iq) {
                     converse.connection.roster.authorize(bare_jid);
-                    converse.connection.roster.subscribe(jid, null, converse.fullname);
+                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
             }
         },
@@ -1753,7 +1753,8 @@
         initialize: function () {
             this.set({
                 'status' : this.get('status'),
-                'status_message' : this.get('status_message')
+                'status_message' : this.get('status_message'),
+                'fullname' : this.get('fullname')
             });
         },
 
@@ -2138,7 +2139,7 @@
                     this.getVCard(
                         null, // No 'to' attr when getting one's own vCard
                         $.proxy(function (jid, fullname, image, image_type, url) {
-                            this.xmppstatus.set({'fullname': fullname});
+                            this.xmppstatus.save({'fullname': fullname});
                         }, this));
                 }
             }, this)

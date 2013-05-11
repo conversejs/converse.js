@@ -227,6 +227,7 @@ div.chat-title {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-shadow: rgba(0,0,0,0.51) 0 -1px 0;
+    height: 1em;
 }
 
 .chat-head-chatbox,

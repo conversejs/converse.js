@@ -1061,7 +1061,8 @@
                 this.model.get('nick'),
                 $.proxy(this.onChatRoomMessage, this),
                 $.proxy(this.onChatRoomPresence, this),
-                $.proxy(this.onChatRoomRoster, this));
+                $.proxy(this.onChatRoomRoster, this),
+                null);
 
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('destroy', function (model, response, options) {
@@ -1079,15 +1080,54 @@
 
         onLeave: function () {},
 
+        showRoomConfigOptions: function (stanza) {
+            // FIXME: Show a proper configuration form
+            var $chat_content = this.$el.find('.chat-content'),
+                $stanza = $(stanza),
+                $fields = $stanza.find('field'),
+                title = $stanza.find('title').text(),
+                instructions = $stanza.find('instructions').text(),
+                i;
+            $chat_content.append(title);
+            $chat_content.append(instructions);
+            for (i=0; i<$fields.length; i++) {
+                $field = $($fields[i]);
+                $chat_content.append('<label>'+$field.attr('label')+'</label>');
+                // $chat_content.append('<input type="text" name=">'+$field.attr('label')+'</label>');
+            }
+        },
+
         onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
                 $presence = $(presence),
-                from = $presence.attr('from');
+                from = $presence.attr('from'), item;
             if ($presence.attr('type') !== 'error') {
+                if ($presence.find("status[code='201']").length) {
+                    // This is a new chatroom. We create an instant
+                    // chatroom, and let the user manually set any
+                    // configuration setting. (2nd part is TODO)
+                    converse.connection.muc.createInstantRoom(room.name);
+                    /* TODO: Find a place for this code (it configures a
+                        * newly created chatroom).
+                        * -------------------------------------------------
+                    $item = $presence.find('item');
+                    if ($item.length) {
+                        if ($item.attr('affiliation') == 'owner') {
+                            if (false) {
+                            } else {
+                                converse.connection.muc.configure(
+                                    room.name, 
+                                    $.proxy(this.showRoomConfigOptions, this)
+                                );
+                            }
+                        }
+                    }
+                    */
+                }
+                // check for status 110 to see if it's our own presence
                 if ($presence.find("status[code='110']").length) {
-                    // check for status 110 to see if it's our own presence
-                    // check if server changed our nick
                     if ($presence.find("status[code='210']").length) {
+                        // check if server changed our nick
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
                 }
@@ -2226,8 +2266,8 @@
 
     converse.onConnected = function (connection) {
         this.connection = connection;
-        // this.connection.xmlInput = function (body) { console.log(body); };
-        // this.connection.xmlOutput = function (body) { console.log(body); };
+        this.connection.xmlInput = function (body) { console.log(body); };
+        this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
         this.features = new this.Features();

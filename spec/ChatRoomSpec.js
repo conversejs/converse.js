@@ -29,7 +29,8 @@
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'];
                 var $participant_list = chatroomview.$el.find('.participant-list');
                 var roster = {}, room = {}, i;
-                for (i=0; i<chatroom_names.length; i++) {
+
+                for (i=0; i<chatroom_names.length-1; i++) {
                     roster[chatroom_names[i]] = {};
                     chatroomview.onChatRoomRoster(roster, room);
                     expect($participant_list.find('li').length).toBe(1+i);
@@ -37,6 +38,20 @@
                 }
                 roster[converse.bare_jid] = {};
                 chatroomview.onChatRoomRoster(roster, room);
+            }, converse));
+
+            it("indicates moderators by means of a special css class and tooltip", $.proxy(function () {
+                var chatroomview = this.chatboxesview.views['lounge@muc.localhost'];
+                var $participant_list = chatroomview.$el.find('.participant-list');
+                var roster = {}, idx = chatroom_names.length-1;
+                roster[chatroom_names[idx]] = {};
+                roster[chatroom_names[idx]].role = 'moderator';
+                chatroomview.onChatRoomRoster(roster, {});
+                occupant = $participant_list.find('li');
+                expect(occupant.length).toBe(1);
+                expect($(occupant).text()).toBe(chatroom_names[idx]);
+                expect($(occupant).attr('class')).toBe('moderator');
+                expect($(occupant).attr('title')).toBe('This user is a moderator');
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {

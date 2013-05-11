@@ -1,12 +1,12 @@
 (function (root, factory) {
     define([
-        "converse"
-        ], function (converse) {
-            return factory(converse);
+        "converse",
+        "mock"
+        ], function (converse, mock_connection) {
+            return factory(converse, mock_connection);
         }
     );
-} (this, function (converse) {
-
+} (this, function (converse, mock_connection) {
     return describe("Converse.js", $.proxy(function() {
         // Names from http://www.fakenamegenerator.com/
         var req_names = [
@@ -20,56 +20,7 @@
             'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
             'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
         ];
-        var chatroom_names = [
-            'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
-        ];
         var num_contacts = req_names.length + pend_names.length + cur_names.length;
-        mock_connection  = {
-            'muc': {
-                'listRooms': function () {},
-                'join': function () {},
-                'leave': function () {}
-            },
-            'jid': 'dummy@localhost',
-            'addHandler': function (handler, ns, name, type, id, from, options) { 
-                return function () {};
-            },
-            'send': function () {},
-            'roster': {
-                'add': function () {},
-                'authorize': function () {},
-                'unauthorize': function () {},
-                'get': function () {},
-                'subscribe': function () {},
-                'registerCallback': function () {}
-            },
-            'vcard': { 
-                'get': function (callback, jid) {
-                    var name = jid.split('@')[0].replace('.', ' ').split(' ');
-                    var firstname = name[0].charAt(0).toUpperCase()+name[0].slice(1);
-                    var lastname = name[1].charAt(0).toUpperCase()+name[1].slice(1);
-                    var fullname = firstname+' '+lastname;
-                    var vcard = $iq().c('vCard').c('FN').t(fullname);
-                    callback(vcard.tree());
-                } 
-            },
-            'disco': {
-                'info': function () {},
-                'items': function () {}
-            }
-        };
-
-        // Clear localStorage
-        window.localStorage.clear();
-        this.initialize({
-            prebind: false,
-            xhr_user_search: false,
-            auto_subscribe: false,
-            animate: false
-        });
-        this.onConnected(mock_connection);
-
-        // Variable declarations for specs
         var open_controlbox;
 
         describe("The Control Box", $.proxy(function () {
@@ -82,8 +33,10 @@
                 // open yet.
                 expect($("div#controlbox").is(':visible')).toBe(false);
                 spyOn(this, 'toggleControlBox').andCallThrough();
+                spyOn(this, 'showControlBox').andCallThrough();
                 $('.toggle-online-users').click();
                 expect(this.toggleControlBox).toHaveBeenCalled();
+                expect(this.showControlBox).toHaveBeenCalled();
                 expect($("div#controlbox").is(':visible')).toBe(true);
             }, converse);
             it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
@@ -577,8 +530,13 @@
 
             it("is cleared when the window is focused", $.proxy(function () {
                 spyOn(converse, 'clearMsgCounter').andCallThrough();
-                $(window).trigger('focus');
-                expect(converse.clearMsgCounter).toHaveBeenCalled();
+                runs(function () {
+                    $(window).trigger('focus');
+                });
+                waits(50);
+                runs(function () {
+                    expect(converse.clearMsgCounter).toHaveBeenCalled();
+                });
             }, converse));
 
             it("is not incremented when the message is received and the window is focused", $.proxy(function () {
@@ -665,52 +623,6 @@
                         expect($('.chatroom').length).toBe(1); // There should now be an open chatroom
                     }, converse));
                 }, converse));
-            }, converse));
-        }, converse));
-
-        describe("A Chat Room", $.proxy(function () {
-            it("shows users currently present in the room", $.proxy(function () {
-                var chatroomview = this.chatboxesview.views['lounge@muc.localhost'];
-                var $participant_list = chatroomview.$el.find('.participant-list');
-                var roster = {}, room = {}, i;
-                for (i=0; i<chatroom_names.length; i++) {
-                    roster[chatroom_names[i]] = {};
-                    chatroomview.onChatRoomRoster(roster, room);
-                    expect($participant_list.find('li').length).toBe(1+i);
-                    expect($($participant_list.find('li')[i]).text()).toBe(chatroom_names[i]);
-                }
-                roster[converse.bare_jid] = {};
-                chatroomview.onChatRoomRoster(roster, room);
-            }, converse));
-
-            it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
-                // We instantiate a new ChatBoxes collection, which by default
-                // will be empty.
-                var newchatboxes = new this.ChatBoxes();
-                expect(newchatboxes.length).toEqual(0);
-                // The chatboxes will then be fetched from localStorage inside the
-                // onConnected method
-                newchatboxes.onConnected();
-                expect(newchatboxes.length).toEqual(2); // controlbox is also included
-                // Check that the chatrooms retrieved from localStorage
-                // have the same attributes values as the original ones.
-                attrs = ['id', 'box_id', 'visible'];
-                for (i=0; i<attrs.length; i++) {
-                    new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
-                    old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
-                    expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
-                }
-                this.rosterview.render();
-            }, converse));
-
-            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
-                var view = this.chatboxesview.views['lounge@muc.localhost'], chatroom = view.model, $el;
-                spyOn(view, 'closeChat').andCallThrough();
-                spyOn(converse.connection.muc, 'leave');
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                view.$el.find('.close-chatbox-button').click();
-                expect(view.closeChat).toHaveBeenCalled();
-                expect(converse.connection.muc.leave).toHaveBeenCalled();
             }, converse));
         }, converse));
     }, converse));

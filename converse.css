@@ -92,7 +92,11 @@ img.spinner {
     display: block;
     font-size: 12px;
     padding: 0.5em 0 0 0.5em;
+    cursor: default;
+}
 
+ul.participant-list li.moderator {
+    color: #FE0007;
 }
 
 .chatroom form.sendXMPPMessage {
@@ -223,6 +227,7 @@ div.chat-title {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-shadow: rgba(0,0,0,0.51) 0 -1px 0;
+    height: 1em;
 }
 
 .chat-head-chatbox,
@@ -441,7 +446,7 @@ form.search-xmpp-contact input {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    width: 160px;
+    width: 170px;
 }
 
 #available-chatrooms dt,
@@ -468,6 +473,41 @@ dd.available-chatroom,
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
+.room-info {
+    font-size: 11px;
+    font-style: normal;
+    font-weight: normal;
+}
+
+p.room-info {
+    margin: 0;
+    padding: 0;
+    display: block;
+    white-space: normal;
+}
+
+a.room-info {
+    background: url('images/information.png') no-repeat right top;
+    width: 22px;
+    float: right;
+    display: none;
+}
+
+a.open-room {
+    display: inline-block;    
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+}
+
+dd.available-chatroom:hover a.room-info {
+    display: inline-block;
+}
+
+dd.available-chatroom:hover a.open-room {
+    width: 75%;
+}
+
 #converse-roster dd a.remove-xmpp-contact {
     background: url('images/delete_icon.png') no-repeat right top;
     padding: 0 0 1em 0;
@@ -477,11 +517,11 @@ dd.available-chatroom,
     display: none;
 }
 
-#converse-roster  dd:hover *[class*="remove-xmpp-contact"] {
+#converse-roster  dd:hover a.remove-xmpp-contact {
     display: inline-block;
 }
 
-#converse-roster  dd:hover *[class*="open-chat"] {
+#converse-roster  dd:hover a.open-chat {
     width: 75%;
 }
 
@@ -541,10 +581,12 @@ form#converse-login {
 
 form#converse-login input {
     display: block;
+    width: 90%;
 }
 
 form#converse-login .login-submit {
     margin-top: 1em;
+    width: auto;
 }
 
 form.set-xmpp-status,

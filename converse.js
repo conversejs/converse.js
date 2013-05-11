@@ -684,14 +684,56 @@
         events: {
             'submit form.add-chatroom': 'createChatRoom',
             'click input#show-rooms': 'showRooms',
-            'click a.open-room': 'createChatRoom'
+            'click a.open-room': 'createChatRoom',
+            'click a.room-info': 'showRoomInfo'
         },
         room_template: _.template(
-            '<dd class="available-chatroom">' +
-            '<a class="open-room {{classes}}" data-room-jid="{{jid}}"' +
-                ' title="{{desc}}"' +
-                ' href="#">' +
-            '{{name}}</a>&nbsp;{{occ}}</dd>'),
+            '<dd class="available-chatroom">'+
+            '<a class="open-room" data-room-jid="{{jid}}" title="Click to open this room" href="#">{{name}}</a>'+
+            '<a class="room-info" data-room-jid="{{jid}}" title="Show more information on this room" href="#">&nbsp;</a>'+
+            '</dd>'),
+
+        room_description_template: _.template(
+            '<div class="room-info">'+
+            '<p class="room-info"><strong>Description:</strong> {{desc}}</p>' +
+            '<p class="room-info"><strong>Occupants:</strong> {{occ}}</p>' +
+            '<p class="room-info"><strong>Features:</strong> <ul>'+
+            '{[ if (passwordprotected) { ]}' +
+                '<li class="room-info locked">Requires authentication</li>' +
+            '{[ } ]}' +
+            '{[ if (hidden) { ]}' +
+                '<li class="room-info">Hidden</li>' +
+            '{[ } ]}' +
+            '{[ if (membersonly) { ]}' +
+                '<li class="room-info">Requires an invitation</li>' +
+            '{[ } ]}' +
+            '{[ if (moderated) { ]}' +
+                '<li class="room-info">Moderated</li>' +
+            '{[ } ]}' +
+            '{[ if (nonanonymous) { ]}' +
+                '<li class="room-info">Non-anonymous</li>' +
+            '{[ } ]}' +
+            '{[ if (open) { ]}' +
+                '<li class="room-info">Open room</li>' +
+            '{[ } ]}' +
+            '{[ if (persistent) { ]}' +
+                '<li class="room-info">Permanent room</li>' +
+            '{[ } ]}' +
+            '{[ if (publicroom) { ]}' +
+                '<li class="room-info">Public</li>' +
+            '{[ } ]}' +
+            '{[ if (semianonymous) { ]}' +
+                '<li class="room-info">Semi-anonymous</li>' +
+            '{[ } ]}' +
+            '{[ if (temporary) { ]}' +
+                '<li class="room-info">Temporary room</li>' +
+            '{[ } ]}' +
+            '{[ if (unmoderated) { ]}' +
+                '<li class="room-info">Unmoderated</li>' +
+            '{[ } ]}' +
+            '</p>' +
+            '</div>'
+        ),
 
         tab_template: _.template('<li><a class="s" href="#chatrooms">Rooms</a></li>'),
 
@@ -720,37 +762,23 @@
             converse.connection.muc.listRooms(
                 this.muc_domain,
                 $.proxy(function (iq) { // Success
-                    var name, jid, i, that = this, $available_chatrooms = this.$el.find('#available-chatrooms');
-                    this.rdict = {};
+                    var name, jid, i, fragment,
+                        that = this,
+                        $available_chatrooms = this.$el.find('#available-chatrooms');
                     this.rooms = $(iq).find('query').find('item');
-                    this.rooms.each(function (i) { that.rdict[$(this).attr('jid')] = this; });
-                    this.fragment = document.createDocumentFragment();
                     if (this.rooms.length) {
                         $available_chatrooms.html('<dt>Rooms on '+this.muc_domain+'</dt>');
-                        _.each(this.rooms, $.proxy(function (room, idx) {
-                            converse.connection.disco.info(
-                                $(room).attr('jid'),
-                                null,
-                                $.proxy(function (stanza) {
-                                    var name = $(stanza).find('identity').attr('name');
-                                    var desc = $(stanza).find('field[var="muc#roominfo_description"] value').text();
-                                    var occ = $(stanza).find('field[var="muc#roominfo_occupants"] value').text();
-                                    var locked = $(stanza).find('feature[var="muc_passwordprotected"]').length;
-                                    var jid = $(stanza).attr('from');
-                                    var classes = locked && 'locked' || '';
-                                    delete this.rdict[jid];
-                                    this.$el.find('#available-chatrooms').append(
-                                        this.room_template({'name':name,
-                                                            'desc':desc,
-                                                            'occ':occ,
-                                                            'jid':jid,
-                                                            'classes': classes 
-                                        }));
-                                    if (_.keys(this.rdict).length === 0) {
-                                        $('input#show-rooms').show().siblings('img.spinner').remove();
-                                    }
-                                }, this));
-                        }, this));
+                        fragment = document.createDocumentFragment();
+                        for (i=0; i<this.rooms.length; i++) {
+                            name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
+                            jid = $(this.rooms[i]).attr('jid');
+                            fragment.appendChild($(this.room_template({
+                                'name':name,
+                                'jid':jid
+                                }))[0]);
+                        }
+                        $available_chatrooms.append(fragment);
+                        $('input#show-rooms').show().siblings('img.spinner').remove();
                     } else {
                         $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
                         $('input#show-rooms').show().siblings('img.spinner').remove();
@@ -778,6 +806,53 @@
             $('input#show-rooms').hide().after('<img class="spinner" style="width: auto" src="images/spinner.gif"/>');
             this.muc_domain = server;
             this.updateRoomsList();
+        },
+
+        showRoomInfo: function (ev) {
+            var target = ev.target,
+                $dd = $(target).parent('dd'),
+                $div = $dd.find('div.room-info');
+            if ($div.length) {
+                $div.remove();
+            } else {
+                $dd.append('<img class="spinner" src="images/spinner.gif"/>');
+                converse.connection.disco.info(
+                    $(target).attr('data-room-jid'),
+                    null,
+                    $.proxy(function (stanza) {
+                        var $stanza = $(stanza);
+                        // All MUC features shown here: http://xmpp.org/registrar/disco-features.html
+                        var desc = $stanza.find('field[var="muc#roominfo_description"] value').text();
+                        var occ = $stanza.find('field[var="muc#roominfo_occupants"] value').text();
+                        var hidden = $stanza.find('feature[var="muc_hidden"]').length;
+                        var membersonly = $stanza.find('feature[var="muc_membersonly"]').length;
+                        var moderated = $stanza.find('feature[var="muc_moderated"]').length;
+                        var nonanonymous = $stanza.find('feature[var="muc_nonanonymous"]').length;
+                        var open = $stanza.find('feature[var="muc_open"]').length;
+                        var passwordprotected = $stanza.find('feature[var="muc_passwordprotected"]').length;
+                        var persistent = $stanza.find('feature[var="muc_persistent"]').length;
+                        var publicroom = $stanza.find('feature[var="muc_public"]').length;
+                        var semianonymous = $stanza.find('feature[var="muc_semianonymous"]').length;
+                        var temporary = $stanza.find('feature[var="muc_temporary"]').length;
+                        var unmoderated = $stanza.find('feature[var="muc_unmoderated"]').length;
+                        $dd.find('img.spinner').replaceWith(
+                            this.room_description_template({
+                                'desc':desc,
+                                'occ':occ,
+                                'hidden':hidden,
+                                'membersonly':membersonly,
+                                'moderated':moderated,
+                                'nonanonymous':nonanonymous,
+                                'open':open,
+                                'passwordprotected':passwordprotected,
+                                'persistent':persistent,
+                                'publicroom': publicroom,
+                                'semianonymous':semianonymous,
+                                'temporary':temporary,
+                                'unmoderated':unmoderated
+                            }));
+                    }, this));
+            }
         },
 
         createChatRoom: function (ev) {
@@ -986,7 +1061,8 @@
                 this.model.get('nick'),
                 $.proxy(this.onChatRoomMessage, this),
                 $.proxy(this.onChatRoomPresence, this),
-                $.proxy(this.onChatRoomRoster, this));
+                $.proxy(this.onChatRoomRoster, this),
+                null);
 
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('destroy', function (model, response, options) {
@@ -1004,22 +1080,84 @@
 
         onLeave: function () {},
 
+        showRoomConfigOptions: function (stanza) {
+            // FIXME: Show a proper configuration form
+            var $chat_content = this.$el.find('.chat-content'),
+                $stanza = $(stanza),
+                $fields = $stanza.find('field'),
+                title = $stanza.find('title').text(),
+                instructions = $stanza.find('instructions').text(),
+                i;
+            $chat_content.append(title);
+            $chat_content.append(instructions);
+            for (i=0; i<$fields.length; i++) {
+                $field = $($fields[i]);
+                $chat_content.append('<label>'+$field.attr('label')+'</label>');
+                // $chat_content.append('<input type="text" name=">'+$field.attr('label')+'</label>');
+            }
+        },
+
         onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
                 $presence = $(presence),
-                from = $presence.attr('from');
+                from = $presence.attr('from'), item;
             if ($presence.attr('type') !== 'error') {
+                if ($presence.find("status[code='201']").length) {
+                    // This is a new chatroom. We create an instant
+                    // chatroom, and let the user manually set any
+                    // configuration setting. (2nd part is TODO)
+                    converse.connection.muc.createInstantRoom(room.name);
+                    /* TODO: Find a place for this code (it configures a
+                        * newly created chatroom).
+                        * -------------------------------------------------
+                    $item = $presence.find('item');
+                    if ($item.length) {
+                        if ($item.attr('affiliation') == 'owner') {
+                            if (false) {
+                            } else {
+                                converse.connection.muc.configure(
+                                    room.name, 
+                                    $.proxy(this.showRoomConfigOptions, this)
+                                );
+                            }
+                        }
+                    }
+                    */
+                }
                 // check for status 110 to see if it's our own presence
                 if ($presence.find("status[code='110']").length) {
-                    // check if server changed our nick
                     if ($presence.find("status[code='210']").length) {
+                        // check if server changed our nick
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
                 }
             } else {
-                var error = $presence.find('error');
-                if ($(error).attr('type') == 'auth') {
-                    this.$el.find('.chat-content').append('Sorry, this chatroom is restricted');
+                var $error = $presence.find('error'),
+                    $chat_content = this.$el.find('.chat-content');
+                if ($error.attr('type') == 'auth') {
+                    if ($error.find('not-authorized').length) {
+                        $chat_content.append('This chatroom requires a password');
+                    } else if ($error.find('registration-required').length) {
+                        $chat_content.append('You are not on the member list of this room');
+                    } else if ($error.find('forbidden').length) {
+                        $chat_content.append('You have been banned from this room');
+                    }
+                } else if ($error.attr('type') == 'modify') {
+                    if ($error.find('jid-malformed').length) {
+                        $chat_content.append('No nickname was specified');
+                    }
+                } else if ($error.attr('type') == 'cancel') {
+                    if ($error.find('not-allowed').length) {
+                        $chat_content.append('You are not allowed to create new rooms');
+                    } else if ($error.find('not-acceptable').length) {
+                        $chat_content.append("Your nickname doesn't conform to the room's policies");
+                    } else if ($error.find('conflict').length) {
+                        $chat_content.append("Your nickname is already taken");
+                    } else if ($error.find('item-not-found').length) {
+                        $chat_content.append("This room does not (yet) exist");
+                    } else if ($error.find('service-unavailable').length) {
+                        $chat_content.append("This room has reached it's maximum number of occupants");
+                    } 
                 }
             }
             return true;
@@ -1108,16 +1246,32 @@
             return true;
         },
 
+        occupant_template: _.template(
+            '<li class="{{role}}" '+
+                '{[ if (role === "moderator") { ]}' +
+                    'title="This user is a moderator"' +
+                '{[ } ]}'+
+                '{[ if (role === "participant") { ]}' +
+                    'title="This user can send messages in this room"' +
+                '{[ } ]}'+
+                '{[ if (role === "visitor") { ]}' +
+                    'title="This user can NOT send messages in this room"' +
+                '{[ } ]}'+
+            '>{{nick}}</li>'
+        ),
+
         onChatRoomRoster: function (roster, room) {
-            // underscore size is needed because roster is an object
             var controlboxview = converse.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),
-                participants = [],
-                i;
+                participants = [], keys = _.keys(roster), i;
             this.$el.find('.participant-list').empty();
             for (i=0; i<roster_size; i++) {
-                participants.push('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
+                participants.push(
+                    this.occupant_template({
+                        role: roster[keys[i]].role,
+                        nick: Strophe.unescapeNode(keys[i])
+                    }));
             }
             $participant_list.append(participants.join(""));
             return true;
@@ -1344,7 +1498,6 @@
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
             }
-
             return this;
         },
 
@@ -1802,7 +1955,6 @@
             converse.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
             this.save({'status_message': status_message});
         }
-
     });
 
     converse.XMPPStatusView = Backbone.View.extend({
@@ -1833,7 +1985,6 @@
                 '</a>' +
                 '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
             '</div>'),
-
 
         renderStatusChangeForm: function (ev) {
             ev.preventDefault();
@@ -1937,6 +2088,7 @@
          * This collection stores Feature Models, representing features
          * provided by available XMPP entities (e.g. servers)
          * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
+         * All features are shown here: http://xmpp.org/registrar/disco-features.html
          */
         model: converse.Feature,
         initialize: function () {
@@ -2114,8 +2266,8 @@
 
     converse.onConnected = function (connection) {
         this.connection = connection;
-        // this.connection.xmlInput = function (body) { console.log(body); };
-        // this.connection.xmlOutput = function (body) { console.log(body); };
+        this.connection.xmlInput = function (body) { console.log(body); };
+        this.connection.xmlOutput = function (body) { console.log(body); };
         this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
         this.features = new this.Features();

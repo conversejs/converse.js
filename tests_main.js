@@ -2,7 +2,7 @@ require(["jquery", "spec/MainSpec"], function($) {
 
     $(function($) {
         var jasmineEnv = jasmine.getEnv();
-        jasmineEnv.updateInterval = 500;
+        jasmineEnv.updateInterval = 250;
 
         var htmlReporter = new jasmine.HtmlReporter();
 

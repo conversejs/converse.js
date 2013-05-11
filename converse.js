@@ -1092,9 +1092,32 @@
                     }
                 }
             } else {
-                var error = $presence.find('error');
-                if ($(error).attr('type') == 'auth') {
-                    this.$el.find('.chat-content').append('Sorry, this chatroom is restricted');
+                var $error = $presence.find('error'),
+                    $chat_content = this.$el.find('.chat-content');
+                if ($error.attr('type') == 'auth') {
+                    if ($error.find('not-authorized').length) {
+                        $chat_content.append('This chatroom requires a password');
+                    } else if ($error.find('registration-required').length) {
+                        $chat_content.append('You are not on the member list of this room');
+                    } else if ($error.find('forbidden').length) {
+                        $chat_content.append('You have been banned from this room');
+                    }
+                } else if ($error.attr('type') == 'modify') {
+                    if ($error.find('jid-malformed').length) {
+                        $chat_content.append('No nickname was specified');
+                    }
+                } else if ($error.attr('type') == 'cancel') {
+                    if ($error.find('not-allowed').length) {
+                        $chat_content.append('You are not allowed to create new rooms');
+                    } else if ($error.find('not-acceptable').length) {
+                        $chat_content.append("Your nickname doesn't conform to the room's policies");
+                    } else if ($error.find('conflict').length) {
+                        $chat_content.append("Your nickname is already taken");
+                    } else if ($error.find('item-not-found').length) {
+                        $chat_content.append("This room does not (yet) exist");
+                    } else if ($error.find('service-unavailable').length) {
+                        $chat_content.append("This room has reached it's maximum number of occupants");
+                    } 
                 }
             }
             return true;
@@ -1419,7 +1442,6 @@
                 this.$el.addClass('current-xmpp-contact');
                 this.$el.html(this.template(item.toJSON()));
             }
-
             return this;
         },
 
@@ -1877,7 +1899,6 @@
             converse.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
             this.save({'status_message': status_message});
         }
-
     });
 
     converse.XMPPStatusView = Backbone.View.extend({
@@ -1908,7 +1929,6 @@
                 '</a>' +
                 '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
             '</div>'),
-
 
         renderStatusChangeForm: function (ev) {
             ev.preventDefault();

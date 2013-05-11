@@ -713,5 +713,156 @@
                 expect(converse.connection.muc.leave).toHaveBeenCalled();
             }, converse));
         }, converse));
+
+        describe("When attempting to enter a chatroom", $.proxy(function () {
+            beforeEach($.proxy(function () {
+                var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
+                var $input = roomspanel.$el.find('input.new-chatroom-name');
+                var $server = roomspanel.$el.find('input.new-chatroom-server');
+                $input.val('problematic');
+                $server.val('muc.localhost');
+                roomspanel.$el.find('form').submit();
+            }, converse));
+
+            afterEach($.proxy(function () {
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.closeChat();
+            }, converse));
+
+            it("will show an error message if the room requires a password", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
+                    .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe('This chatroom requires a password');
+            }, converse));
+
+            it("will show an error message if the room is members-only and the user not included", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
+                    .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe('You are not on the member list of this room');
+            }, converse));
+
+            it("will show an error message if the user has been banned", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
+                    .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe('You have been banned from this room');
+            }, converse));
+
+            it("will show an error message if no nickname was specified for the user", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'modify'})
+                    .c('jid-malformed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe('No nickname was specified');
+            }, converse));
+
+            it("will show an error message if the user is not allowed to have created the room", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                    .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe('You are not allowed to create new rooms');
+            }, converse));
+
+            it("will show an error message if the user's nickname doesn't conform to room policy", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                    .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe("Your nickname doesn't conform to the room's policies");
+            }, converse));
+
+            it("will show an error message if the user's nickname is already taken", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                    .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe("Your nickname is already taken");
+            }, converse));
+
+            it("will show an error message if the room doesn't yet exist", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                    .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe("This room does not (yet) exist");
+            }, converse));
+
+            it("will show an error message if the room has reached it's maximum number of occupants", $.proxy(function () {
+                var presence = $pres().attrs({
+                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    id:'n13mt3l',
+                    to:'hag66@shakespeare.lit/pda',
+                    type:'error'})
+                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                    .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = this.chatboxesview.views['problematic@muc.localhost'];
+                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.text()).toBe("This room has reached it's maximum number of occupants");
+            }, converse));
+        }, converse));
     }, converse));
 }));

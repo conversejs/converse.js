@@ -57,6 +57,7 @@
              *  (String) nick - Optional nickname to use in the chat room.
              *  (Function) msg_handler_cb - The function call to handle messages from the specified chat room.
              *  (Function) pres_handler_cb - The function call back to handle presence in the chat room.
+             *  (Function) roster_cb - The function call back to handle roster changes in the chat room.
              *  (String) password - The optional password to use. (password protected rooms only)
             */
             var msg, room_nick, _this = this;

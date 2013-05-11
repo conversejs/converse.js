@@ -992,6 +992,7 @@
         className: 'chatroom',
         events: {
             'click a.close-chatbox-button': 'closeChat',
+            'click a.configure-chatroom-button': 'configureChatRoom',
             'keypress textarea.chat-textarea': 'keyPressed'
         },
         info_template: _.template('<div class="chat-event">{{message}}</div>'),
@@ -1039,6 +1040,7 @@
         template: _.template(
                 '<div class="chat-head chat-head-chatroom">' +
                     '<a class="close-chatbox-button">X</a>' +
+                    '<a class="configure-chatroom-button" style="display:none">&nbsp;</a>' +
                     '<div class="chat-title"> {{ name }} </div>' +
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +
@@ -1097,35 +1099,33 @@
             }
         },
 
+        configureChatRoom: function (ev) {
+            ev.preventDefault();
+            converse.connection.muc.configure(
+                this.model.get('jid'), 
+                $.proxy(this.showRoomConfigOptions, this)
+            );
+        },
+
         onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
                 $presence = $(presence),
-                from = $presence.attr('from'), item;
+                from = $presence.attr('from'), $item;
             if ($presence.attr('type') !== 'error') {
                 if ($presence.find("status[code='201']").length) {
                     // This is a new chatroom. We create an instant
                     // chatroom, and let the user manually set any
                     // configuration setting. (2nd part is TODO)
                     converse.connection.muc.createInstantRoom(room.name);
-                    /* TODO: Find a place for this code (it configures a
-                        * newly created chatroom).
-                        * -------------------------------------------------
-                    $item = $presence.find('item');
-                    if ($item.length) {
-                        if ($item.attr('affiliation') == 'owner') {
-                            if (false) {
-                            } else {
-                                converse.connection.muc.configure(
-                                    room.name, 
-                                    $.proxy(this.showRoomConfigOptions, this)
-                                );
-                            }
-                        }
-                    }
-                    */
                 }
                 // check for status 110 to see if it's our own presence
                 if ($presence.find("status[code='110']").length) {
+                    $item = $presence.find('item');
+                    if ($item.length) {
+                        if ($item.attr('affiliation') == 'owner') {
+                            this.$el.find('a.configure-chatroom-button').show();
+                        }
+                    }
                     if ($presence.find("status[code='210']").length) {
                         // check if server changed our nick
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});

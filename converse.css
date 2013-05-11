@@ -324,18 +324,19 @@ form.search-xmpp-contact input {
     padding: 3px 0 0 0;
 }
 
-.close-chatbox-button {
-    cursor: pointer;
-    float: right;
+a.configure-chatroom-button,
+a.close-chatbox-button {
     margin-top: 0.2em;
     margin-right: 0.5em;
+    cursor: pointer;
+    float: right;
+    width: 12px;
     -moz-box-shadow:inset 0 1px 0 0 #ffffff;
     -webkit-box-shadow:inset 0 1px 0 0 #ffffff;
     box-shadow:inset 0 1px 0 0 #ffffff;
     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f6f6f6) );
     background:-moz-linear-gradient( center top, #ffffff 5%, #f6f6f6 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f6f6f6');
-    background-color:#ffffff;
     -moz-border-radius:6px;
     -webkit-border-radius:6px;
     border-radius:6px;
@@ -345,9 +346,17 @@ form.search-xmpp-contact input {
     font-family:arial;
     font-size:12px;
     font-weight:bold;
-    padding:0 4px;
     text-decoration:none;
     text-shadow:1px 1px 0 #ffffff;
+}
+
+a.configure-chatroom-button {
+    padding:0 4px;
+    background: #ffffff url('images/preferences-system.png') no-repeat center center;
+}
+
+.close-chatbox-button {
+    padding: 0 2px 0 6px;
 }
 
 .close-chatbox-button:hover {

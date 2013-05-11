@@ -697,9 +697,41 @@
             '<div class="room-info">'+
             '<p class="room-info"><strong>Description:</strong> {{desc}}</p>' +
             '<p class="room-info"><strong>Occupants:</strong> {{occ}}</p>' +
-            '{[ if (locked) { ]}' +
-                '<p class="room-info locked">Requires authentication</p>' +
+            '<p class="room-info"><strong>Features:</strong> <ul>'+
+            '{[ if (passwordprotected) { ]}' +
+                '<li class="room-info locked">Requires authentication</li>' +
             '{[ } ]}' +
+            '{[ if (hidden) { ]}' +
+                '<li class="room-info">Hidden</li>' +
+            '{[ } ]}' +
+            '{[ if (membersonly) { ]}' +
+                '<li class="room-info">Requires an invitation</li>' +
+            '{[ } ]}' +
+            '{[ if (moderated) { ]}' +
+                '<li class="room-info">Moderated</li>' +
+            '{[ } ]}' +
+            '{[ if (nonanonymous) { ]}' +
+                '<li class="room-info">Non-anonymous</li>' +
+            '{[ } ]}' +
+            '{[ if (open) { ]}' +
+                '<li class="room-info">Open room</li>' +
+            '{[ } ]}' +
+            '{[ if (persistent) { ]}' +
+                '<li class="room-info">Permanent room</li>' +
+            '{[ } ]}' +
+            '{[ if (publicroom) { ]}' +
+                '<li class="room-info">Public</li>' +
+            '{[ } ]}' +
+            '{[ if (semianonymous) { ]}' +
+                '<li class="room-info">Semi-anonymous</li>' +
+            '{[ } ]}' +
+            '{[ if (temporary) { ]}' +
+                '<li class="room-info">Temporary room</li>' +
+            '{[ } ]}' +
+            '{[ if (unmoderated) { ]}' +
+                '<li class="room-info">Unmoderated</li>' +
+            '{[ } ]}' +
+            '</p>' +
             '</div>'
         ),
 
@@ -788,14 +820,36 @@
                     $(target).attr('data-room-jid'),
                     null,
                     $.proxy(function (stanza) {
-                        var desc = $(stanza).find('field[var="muc#roominfo_description"] value').text();
-                        var occ = $(stanza).find('field[var="muc#roominfo_occupants"] value').text();
-                        var locked = $(stanza).find('feature[var="muc_passwordprotected"]').length;
+                        var $stanza = $(stanza);
+                        // All MUC features shown here: http://xmpp.org/registrar/disco-features.html
+                        var desc = $stanza.find('field[var="muc#roominfo_description"] value').text();
+                        var occ = $stanza.find('field[var="muc#roominfo_occupants"] value').text();
+                        var hidden = $stanza.find('feature[var="muc_hidden"]').length;
+                        var membersonly = $stanza.find('feature[var="muc_membersonly"]').length;
+                        var moderated = $stanza.find('feature[var="muc_moderated"]').length;
+                        var nonanonymous = $stanza.find('feature[var="muc_nonanonymous"]').length;
+                        var open = $stanza.find('feature[var="muc_open"]').length;
+                        var passwordprotected = $stanza.find('feature[var="muc_passwordprotected"]').length;
+                        var persistent = $stanza.find('feature[var="muc_persistent"]').length;
+                        var publicroom = $stanza.find('feature[var="muc_public"]').length;
+                        var semianonymous = $stanza.find('feature[var="muc_semianonymous"]').length;
+                        var temporary = $stanza.find('feature[var="muc_temporary"]').length;
+                        var unmoderated = $stanza.find('feature[var="muc_unmoderated"]').length;
                         $dd.find('img.spinner').replaceWith(
                             this.room_description_template({
                                 'desc':desc,
                                 'occ':occ,
-                                'locked':locked
+                                'hidden':hidden,
+                                'membersonly':membersonly,
+                                'moderated':moderated,
+                                'nonanonymous':nonanonymous,
+                                'open':open,
+                                'passwordprotected':passwordprotected,
+                                'persistent':persistent,
+                                'publicroom': publicroom,
+                                'semianonymous':semianonymous,
+                                'temporary':temporary,
+                                'unmoderated':unmoderated
                             }));
                     }, this));
             }
@@ -1958,6 +2012,7 @@
          * This collection stores Feature Models, representing features
          * provided by available XMPP entities (e.g. servers)
          * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
+         * All features are shown here: http://xmpp.org/registrar/disco-features.html
          */
         model: converse.Feature,
         initialize: function () {

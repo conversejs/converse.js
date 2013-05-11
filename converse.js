@@ -1084,8 +1084,8 @@
                 $presence = $(presence),
                 from = $presence.attr('from');
             if ($presence.attr('type') !== 'error') {
-                // check for status 110 to see if it's our own presence
                 if ($presence.find("status[code='110']").length) {
+                    // check for status 110 to see if it's our own presence
                     // check if server changed our nick
                     if ($presence.find("status[code='210']").length) {
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
@@ -1206,16 +1206,32 @@
             return true;
         },
 
+        occupant_template: _.template(
+            '<li class="{{role}}" '+
+                '{[ if (role === "moderator") { ]}' +
+                    'title="This user is a moderator"' +
+                '{[ } ]}'+
+                '{[ if (role === "participant") { ]}' +
+                    'title="This user can send messages in this room"' +
+                '{[ } ]}'+
+                '{[ if (role === "visitor") { ]}' +
+                    'title="This user can NOT send messages in this room"' +
+                '{[ } ]}'+
+            '>{{nick}}</li>'
+        ),
+
         onChatRoomRoster: function (roster, room) {
-            // underscore size is needed because roster is an object
             var controlboxview = converse.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),
-                participants = [],
-                i;
+                participants = [], keys = _.keys(roster), i;
             this.$el.find('.participant-list').empty();
             for (i=0; i<roster_size; i++) {
-                participants.push('<li>' + Strophe.unescapeNode(_.keys(roster)[i]) + '</li>');
+                participants.push(
+                    this.occupant_template({
+                        role: roster[keys[i]].role,
+                        nick: Strophe.unescapeNode(keys[i])
+                    }));
             }
             $participant_list.append(participants.join(""));
             return true;

@@ -92,7 +92,11 @@ img.spinner {
     display: block;
     font-size: 12px;
     padding: 0.5em 0 0 0.5em;
+    cursor: default;
+}
 
+ul.participant-list li.moderator {
+    color: #FE0007;
 }
 
 .chatroom form.sendXMPPMessage {

@@ -1044,17 +1044,17 @@
                     '<div class="chat-title"> {{ name }} </div>' +
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +
-                '<div>' +
-                '<div class="chat-area">' +
-                    '<div class="chat-content"></div>' +
-                    '<form class="sendXMPPMessage" action="" method="post">' +
-                        '<textarea type="text" class="chat-textarea" ' +
-                            'placeholder="Message"/>' +
-                    '</form>' +
-                '</div>' +
-                '<div class="participants">' +
-                    '<ul class="participant-list"></ul>' +
-                '</div>' +
+                '<div class="chat-body">' +
+                    '<div class="chat-area">' +
+                        '<div class="chat-content"></div>' +
+                        '<form class="sendXMPPMessage" action="" method="post">' +
+                            '<textarea type="text" class="chat-textarea" ' +
+                                'placeholder="Message"/>' +
+                        '</form>' +
+                    '</div>' +
+                    '<div class="participants">' +
+                        '<ul class="participant-list"></ul>' +
+                    '</div>' +
                 '</div>'),
 
         initialize: function () {
@@ -1084,23 +1084,33 @@
 
         showRoomConfigOptions: function (stanza) {
             // FIXME: Show a proper configuration form
-            var $chat_content = this.$el.find('.chat-content'),
+            var $form= this.$el.find('form.configure-chatroom'),
                 $stanza = $(stanza),
                 $fields = $stanza.find('field'),
                 title = $stanza.find('title').text(),
                 instructions = $stanza.find('instructions').text(),
                 i;
-            $chat_content.append(title);
-            $chat_content.append(instructions);
+            $form.append($('<legend>').text(title));
+            if (instructions != title) {
+                $form.append($('<p>').text(instructions));
+            }
             for (i=0; i<$fields.length; i++) {
                 $field = $($fields[i]);
-                $chat_content.append('<label>'+$field.attr('label')+'</label>');
-                // $chat_content.append('<input type="text" name=">'+$field.attr('label')+'</label>');
+                if ($field.attr('label')) {
+                    $form.append('<label>'+$field.attr('label')+'</label>');
+                    $form.append('<input type="text">');
+                }
             }
         },
 
         configureChatRoom: function (ev) {
             ev.preventDefault();
+            this.$el.find('.chat-area').hide();
+            this.$el.find('.participants').hide();
+            this.$el.find('.chat-body').append(
+                $('<div class="configure-chatroom-container">'+
+                  '<form class="configure-chatroom"></form>'+
+                  '</div>'));
             converse.connection.muc.configure(
                 this.model.get('jid'), 
                 $.proxy(this.showRoomConfigOptions, this)

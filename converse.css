@@ -63,6 +63,12 @@ img.spinner {
     background-color: #2D617A;
 }
 
+.chatroom .chat-body {
+    height: 272px;
+    background-color: white;
+    border-radius: 4px;
+}
+
 .chatroom .chat-area {
     float: left;
     width: 200px;
@@ -376,6 +382,34 @@ a.configure-chatroom-button {
     padding-top: 0.5em;
 }
 
+.configure-chatroom-container {
+    color: #666;
+    padding: 5px;
+    height: 262px;
+    overflow-y: auto;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.configure-chatroom {
+    background: white;
+    font-size: 12px;
+    padding: 0;
+}
+
+.configure-chatroom legend {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.configure-chatroom label {
+    font-weight: bold;
+}
+
+.configure-chatroom input {
+    display: block;
+}
+
 #converse-roster dd.odd {
     background-color: #DCEAC5; /* Make this difference */
 }
@@ -557,6 +591,8 @@ dd.available-chatroom:hover a.open-room {
     height:272px;
     width: 199px;
     padding: 0;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
 .oc-chat-content dd {
@@ -672,6 +708,8 @@ div#settings {
     font-size: 14px;
     width: 199px;
     background-color: white;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
 form.sendXMPPMessage {

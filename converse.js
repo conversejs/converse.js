@@ -1085,8 +1085,9 @@
         form_input_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" value="{{value}}"></label>'),
         select_option_template: _.template('<option value="{{value}}">{{label}}</option>'),
         form_select_template: _.template('<label>{{label}}<select name="{{name}}">{{options}}</select></label>'),
+        form_checkbox_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" {{checked}}"></label>'),
 
-        showRoomConfigOptions: function (stanza) {
+        showRoomConfiguration: function (stanza) {
             var $form= this.$el.find('form.configure-chatroom'),
                 $stanza = $(stanza),
                 $fields = $stanza.find('field'),
@@ -1119,6 +1120,13 @@
                         name: $field.attr('var'),
                         label: $field.attr('label'),
                         options: options.join('')
+                    }));
+                } else if ($field.attr('type') == 'boolean') {
+                    $form.append(this.form_checkbox_template({
+                        name: $field.attr('var'),
+                        type: input_types[$field.attr('type')],
+                        label: $field.attr('label') || '',
+                        checked: $field.find('value').text() && 'checked="1"' || ''
                     }));
                 } else {
                     $form.append(this.form_input_template({
@@ -1166,6 +1174,7 @@
             });
             this.$el.find('div.configure-chatroom-container').hide(
                 function () {
+                    $(this).remove();
                     that.$el.find('.chat-area').show();
                     that.$el.find('.participants').show();
                 });
@@ -1184,6 +1193,7 @@
             var that = this;
             this.$el.find('div.configure-chatroom-container').hide(
                 function () {
+                    $(this).remove();
                     that.$el.find('.chat-area').show();
                     that.$el.find('.participants').show();
                 });
@@ -1191,6 +1201,9 @@
 
         configureChatRoom: function (ev) {
             ev.preventDefault();
+            if (this.$el.find('div.configure-chatroom-container').length) {
+                return;
+            }
             this.$el.find('.chat-area').hide();
             this.$el.find('.participants').hide();
             this.$el.find('.chat-body').append(
@@ -1200,7 +1213,7 @@
                   '</div>'));
             converse.connection.muc.configure(
                 this.model.get('jid'),
-                $.proxy(this.showRoomConfigOptions, this)
+                $.proxy(this.showRoomConfiguration, this)
             );
         },
 

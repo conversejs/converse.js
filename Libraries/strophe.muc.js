@@ -328,7 +328,7 @@
             return this._connection.sendIQ(stanza);
         },
 
-        saveConfiguration: function(room, configarray) {
+        saveConfiguration: function(room, configarray, callback, errback) {
             /* Save a room configuration.
              * Parameters:
              * (String) room - The multi-user chat room name.
@@ -351,7 +351,7 @@
                 config.cnode(conf).up();
             }
             stanza = config.tree();
-            return this._connection.sendIQ(stanza);
+            return this._connection.sendIQ(stanza, callback, errback);
         },
 
         createInstantRoom: function(room) {

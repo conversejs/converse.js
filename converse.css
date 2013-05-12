@@ -16,6 +16,12 @@ img.spinner {
     margin: 0;
     padding: 0 5px 0 5px;
 }
+img.centered {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30%;
+    display: block;
+}
 
 #chatpanel {
     z-index: 99; /*--Keeps the panel on top of all other elements--*/
@@ -400,14 +406,18 @@ a.configure-chatroom-button {
 .configure-chatroom legend {
     font-size: 14px;
     font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .configure-chatroom label {
     font-weight: bold;
+    display: block;
+    clear: both;
 }
 
-.configure-chatroom input {
-    display: block;
+.configure-chatroom label input,
+.configure-chatroom label select {
+    float: right;
 }
 
 #converse-roster dd.odd {

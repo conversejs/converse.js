@@ -1082,25 +1082,111 @@
 
         onLeave: function () {},
 
+        form_input_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" value="{{value}}"></label>'),
+        select_option_template: _.template('<option value="{{value}}">{{label}}</option>'),
+        form_select_template: _.template('<label>{{label}}<select name="{{name}}">{{options}}</select></label>'),
+
         showRoomConfigOptions: function (stanza) {
-            // FIXME: Show a proper configuration form
             var $form= this.$el.find('form.configure-chatroom'),
                 $stanza = $(stanza),
                 $fields = $stanza.find('field'),
                 title = $stanza.find('title').text(),
                 instructions = $stanza.find('instructions').text(),
-                i;
+                i, j, options=[];
+            var input_types = {
+                'text-private': 'password',
+                'text-single': 'textline',
+                'boolean': 'checkbox',
+                'hidden': 'hidden',
+                'list-single': 'dropdown'
+            };
+            $form.find('img.spinner').remove();
             $form.append($('<legend>').text(title));
             if (instructions != title) {
                 $form.append($('<p>').text(instructions));
             }
             for (i=0; i<$fields.length; i++) {
                 $field = $($fields[i]);
-                if ($field.attr('label')) {
-                    $form.append('<label>'+$field.attr('label')+'</label>');
-                    $form.append('<input type="text">');
+                if ($field.attr('type') == 'list-single') {
+                    $options = $field.find('option');
+                    for (j=0; j<$options.length; j++) {
+                        options.push(this.select_option_template({
+                            value: $($options[j]).find('value').text(),
+                            label: $($options[j]).attr('label')
+                        }));
+                    }
+                    $form.append(this.form_select_template({
+                        name: $field.attr('var'),
+                        label: $field.attr('label'),
+                        options: options.join('')
+                    }));
+                } else {
+                    $form.append(this.form_input_template({
+                        name: $field.attr('var'),
+                        type: input_types[$field.attr('type')],
+                        label: $field.attr('label') || '',
+                        value: $field.find('value').text()
+                    }));
                 }
             }
+            $form.append('<input type="submit" value="Save"/>');
+            $form.append('<input type="button" value="Cancel"/>');
+            $form.on('submit', $.proxy(this.saveConfiguration, this));
+            $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
+        },
+
+        field_template: _.template('<field var="{{name}}"><value>{{value}}</value></field>'),
+
+        saveConfiguration: function (ev) {
+            ev.preventDefault();
+            var that = this;
+            var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+                count = $inputs.length,
+                configArray = [];
+            $inputs.each(function () {
+                var $input = $(this), value;
+                if ($input.is('[type=checkbox]')) {
+                    value = $input.is(':checked') && 1 || 0;
+                } else {
+                    value = $input.val();
+                }
+                var cnode = $(that.field_template({
+                    name: $input.attr('name'),
+                    value: value
+                }))[0];
+                configArray.push(cnode);
+                if (!--count) {
+                    converse.connection.muc.saveConfiguration(
+                        that.model.get('jid'),
+                        configArray,
+                        that.onConfigSaved,
+                        that.onErrorConfigSaved
+                    );
+                }
+            });
+            this.$el.find('div.configure-chatroom-container').hide(
+                function () {
+                    that.$el.find('.chat-area').show();
+                    that.$el.find('.participants').show();
+                });
+        },
+
+        onConfigSaved: function (stanza) {
+            // XXX
+        },
+
+        onErrorConfigSaved: function (stanza) {
+            // XXX
+        },
+
+        cancelConfiguration: function (ev) {
+            ev.preventDefault();
+            var that = this;
+            this.$el.find('div.configure-chatroom-container').hide(
+                function () {
+                    that.$el.find('.chat-area').show();
+                    that.$el.find('.participants').show();
+                });
         },
 
         configureChatRoom: function (ev) {
@@ -1109,10 +1195,11 @@
             this.$el.find('.participants').hide();
             this.$el.find('.chat-body').append(
                 $('<div class="configure-chatroom-container">'+
-                  '<form class="configure-chatroom"></form>'+
+                    '<form class="configure-chatroom">'+
+                    '<img class="spinner centered" src="images/spinner.gif"/>'+
                   '</div>'));
             converse.connection.muc.configure(
-                this.model.get('jid'), 
+                this.model.get('jid'),
                 $.proxy(this.showRoomConfigOptions, this)
             );
         },
@@ -1125,7 +1212,7 @@
                 if ($presence.find("status[code='201']").length) {
                     // This is a new chatroom. We create an instant
                     // chatroom, and let the user manually set any
-                    // configuration setting. (2nd part is TODO)
+                    // configuration setting.
                     converse.connection.muc.createInstantRoom(room.name);
                 }
                 // check for status 110 to see if it's our own presence
@@ -1167,7 +1254,7 @@
                         $chat_content.append("This room does not (yet) exist");
                     } else if ($error.find('service-unavailable').length) {
                         $chat_content.append("This room has reached it's maximum number of occupants");
-                    } 
+                    }
                 }
             }
             return true;

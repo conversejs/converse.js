@@ -652,11 +652,16 @@
             converse.getVCard(
                 jid,
                 $.proxy(function (jid, fullname, image, image_type, url) {
-                    // XXX: Should we perhaps create a roster item here?
                     this.addContact(jid, fullname);
                 }, this),
-                $.proxy(function () {
+                $.proxy(function (stanza) {
                     console.log("An error occured while fetching vcard");
+                    if ($(stanza).find('error').attr('code') == '503') {
+                        // If we get service-unavailable, we continue to create
+                        // the user
+                        var jid = $(stanza).attr('from');
+                        this.addContact(jid, jid);
+                    }
                 }, this));
             $('.search-xmpp').hide();
         },
@@ -1952,9 +1957,8 @@
                 this.render(item);
             }, this);
 
-            this.model.on("destroy", function (item) {
-                this.removeRosterItem(item);
-            }, this);
+            this.model.on("remove", function (item) { this.removeRosterItem(item); }, this);
+            this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
 
             this.$el.hide().html(this.template());
             this.model.fetch({add: true}); // Get the cached roster items from localstorage

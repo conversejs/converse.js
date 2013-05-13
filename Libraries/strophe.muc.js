@@ -117,6 +117,14 @@
             return this._connection.send(msg);
         },
 
+        removeRoom: function (room) {
+            delete this.rooms[room];
+            if (this.rooms.length === 0) {
+                this._connection.deleteHandler(this._muc_handler);
+                this._muc_handler = null;
+            }
+        },
+
         leave: function(room, nick, handler_cb, exit_msg) {
             /*  Leave a multi-user chat room
              *
@@ -129,11 +137,7 @@
              *  iqid - The unique id for the room leave.
              */
             var presence, presenceid, room_nick;
-            delete this.rooms[room];
-            if (this.rooms.length === 0) {
-                this._connection.deleteHandler(this._muc_handler);
-                this._muc_handler = null;
-            }
+            this.removeRoom(room);
             room_nick = this.test_append_nick(room, nick);
             presenceid = this._connection.getUniqueId();
             presence = $pres({

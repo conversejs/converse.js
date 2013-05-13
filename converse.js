@@ -1233,9 +1233,6 @@
         },
 
         onChatRoomPresence: function (presence, room) {
-            if (!this.$el.find('.chat-area').length) {
-                this.renderChatArea();
-            }
             var nick = room.nick,
                 $presence = $(presence),
                 from = $presence.attr('from'), $item;
@@ -1264,6 +1261,8 @@
                     $chat_content = this.$el.find('.chat-content');
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
+                        this.renderChatArea();
+                        $chat_content = this.$el.find('.chat-content');
                         $chat_content.append('This chatroom requires a password');
                     } else if ($error.find('registration-required').length) {
                         $chat_content.append('You are not on the member list of this room');

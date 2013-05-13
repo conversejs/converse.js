@@ -1038,24 +1038,39 @@
         },
 
         template: _.template(
-                '<div class="chat-head chat-head-chatroom">' +
-                    '<a class="close-chatbox-button">X</a>' +
-                    '<a class="configure-chatroom-button" style="display:none">&nbsp;</a>' +
-                    '<div class="chat-title"> {{ name }} </div>' +
-                    '<p class="chatroom-topic"><p/>' +
-                '</div>' +
-                '<div class="chat-body">' +
-                    '<div class="chat-area">' +
-                        '<div class="chat-content"></div>' +
-                        '<form class="sendXMPPMessage" action="" method="post">' +
-                            '<textarea type="text" class="chat-textarea" ' +
-                                'placeholder="Message"/>' +
-                        '</form>' +
-                    '</div>' +
-                    '<div class="participants">' +
-                        '<ul class="participant-list"></ul>' +
-                    '</div>' +
-                '</div>'),
+            '<div class="chat-head chat-head-chatroom">' +
+                '<a class="close-chatbox-button">X</a>' +
+                '<a class="configure-chatroom-button" style="display:none">&nbsp;</a>' +
+                '<div class="chat-title"> {{ name }} </div>' +
+                '<p class="chatroom-topic"><p/>' +
+            '</div>' +
+            '<div class="chat-body">' +
+            '<img class="spinner centered" src="images/spinner.gif"/>' +
+            '</div>'),
+
+        chatarea_template: _.template(
+            '<div class="chat-area">' +
+                '<div class="chat-content"></div>' +
+                '<form class="sendXMPPMessage" action="" method="post">' +
+                    '<textarea type="text" class="chat-textarea" ' +
+                        'placeholder="Message"/>' +
+                '</form>' +
+            '</div>' +
+            '<div class="participants">' +
+                '<ul class="participant-list"></ul>' +
+            '</div>'),
+
+        render: function () {
+            this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
+            return this;
+        },
+
+        renderChatArea: function () {
+            this.$el.find('img.spinner.centered').remove();
+            this.$el.find('.chat-body').append(this.chatarea_template());
+            return this;
+        },
 
         initialize: function () {
             converse.connection.muc.join(
@@ -1218,6 +1233,9 @@
         },
 
         onChatRoomPresence: function (presence, room) {
+            if (!this.$el.find('.chat-area').length) {
+                this.renderChatArea();
+            }
             var nick = room.nick,
                 $presence = $(presence),
                 from = $presence.attr('from'), $item;
@@ -1371,6 +1389,9 @@
         ),
 
         onChatRoomRoster: function (roster, room) {
+            if (!this.$el.find('.chat-area').length) {
+                this.renderChatArea();
+            }
             var controlboxview = converse.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),
@@ -1385,12 +1406,6 @@
             }
             $participant_list.append(participants.join(""));
             return true;
-        },
-
-        render: function () {
-            this.$el.attr('id', this.model.get('box_id'))
-                    .html(this.template(this.model.toJSON()));
-            return this;
         }
     });
 

@@ -17,10 +17,10 @@ img.spinner {
     padding: 0 5px 0 5px;
 }
 img.centered {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 30%;
-    display: block;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    margin: 0 0 0 -25%;
 }
 
 #chatpanel {

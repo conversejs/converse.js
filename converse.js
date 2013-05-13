@@ -1102,8 +1102,8 @@
         form_select_template: _.template('<label>{{label}}<select name="{{name}}">{{options}}</select></label>'),
         form_checkbox_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" {{checked}}"></label>'),
 
-        showRoomConfiguration: function (stanza) {
-            var $form= this.$el.find('form.configure-chatroom'),
+        renderConfigurationForm: function (stanza) {
+            var $form= this.$el.find('form.chatroom-form'),
                 $stanza = $(stanza),
                 $fields = $stanza.find('field'),
                 title = $stanza.find('title').text(),
@@ -1187,7 +1187,7 @@
                     );
                 }
             });
-            this.$el.find('div.configure-chatroom-container').hide(
+            this.$el.find('div.chatroom-form-container').hide(
                 function () {
                     $(this).remove();
                     that.$el.find('.chat-area').show();
@@ -1206,7 +1206,7 @@
         cancelConfiguration: function (ev) {
             ev.preventDefault();
             var that = this;
-            this.$el.find('div.configure-chatroom-container').hide(
+            this.$el.find('div.chatroom-form-container').hide(
                 function () {
                     $(this).remove();
                     that.$el.find('.chat-area').show();
@@ -1216,20 +1216,48 @@
 
         configureChatRoom: function (ev) {
             ev.preventDefault();
-            if (this.$el.find('div.configure-chatroom-container').length) {
+            if (this.$el.find('div.chatroom-form-container').length) {
                 return;
             }
             this.$el.find('.chat-area').hide();
             this.$el.find('.participants').hide();
             this.$el.find('.chat-body').append(
-                $('<div class="configure-chatroom-container">'+
-                    '<form class="configure-chatroom">'+
+                $('<div class="chatroom-form-container">'+
+                    '<form class="chatroom-form">'+
                     '<img class="spinner centered" src="images/spinner.gif"/>'+
+                    '</form>'+
                   '</div>'));
             converse.connection.muc.configure(
                 this.model.get('jid'),
-                $.proxy(this.showRoomConfiguration, this)
+                $.proxy(this.renderConfigurationForm, this)
             );
+        },
+
+        renderPasswordForm: function () {
+            this.$el.find('img.centered.spinner').remove();
+            this.$el.find('.chat-body').append(
+                $('<div class="chatroom-form-container">'+
+                    '<form class="chatroom-form">'+
+                        '<legend>This chat room requires a password</legend>' +
+                        '<label>Password: <input type="password" name="password"/></label>' +
+                        '<input type="submit"/>' +
+                    '</form>'+
+                  '</div>'));
+            this.$el.find('.chatroom-form').on('submit', $.proxy(this.submitPassword, this));
+        },
+
+        submitPassword: function (ev) {
+            ev.preventDefault();
+            var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
+            this.$el.find('.chatroom-form-container').replaceWith(
+                '<img class="spinner centered" src="images/spinner.gif"/>');
+            converse.connection.muc.join(
+                this.model.get('jid'),
+                this.model.get('nick'),
+                $.proxy(this.onChatRoomMessage, this),
+                $.proxy(this.onChatRoomPresence, this),
+                $.proxy(this.onChatRoomRoster, this),
+                password);
         },
 
         onChatRoomPresence: function (presence, room) {
@@ -1237,6 +1265,7 @@
                 $presence = $(presence),
                 from = $presence.attr('from'), $item;
             if ($presence.attr('type') !== 'error') {
+                if (!this.$el.find('.chat-area').length) { this.renderChatArea(); }
                 if ($presence.find("status[code='201']").length) {
                     // This is a new chatroom. We create an instant
                     // chatroom, and let the user manually set any
@@ -1259,11 +1288,12 @@
             } else {
                 var $error = $presence.find('error'),
                     $chat_content = this.$el.find('.chat-content');
+                // We didn't enter the room, so we must remove it from the MUC
+                // add-on
+                converse.connection.muc.removeRoom(room.name);
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
-                        this.renderChatArea();
-                        $chat_content = this.$el.find('.chat-content');
-                        $chat_content.append('This chatroom requires a password');
+                        this.renderPasswordForm();
                     } else if ($error.find('registration-required').length) {
                         $chat_content.append('You are not on the member list of this room');
                     } else if ($error.find('forbidden').length) {
@@ -1388,9 +1418,7 @@
         ),
 
         onChatRoomRoster: function (roster, room) {
-            if (!this.$el.find('.chat-area').length) {
-                this.renderChatArea();
-            }
+            if (!this.$el.find('.chat-area').length) { this.renderChatArea(); }
             var controlboxview = converse.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),
@@ -2274,7 +2302,38 @@
             '<label>BOSH Service URL:</label>' +
             '<input type="text" id="bosh_service_url">'),
 
-        authenticate: $.proxy(function (ev) {
+
+        connect: function (jid, password) {
+            var connection = new Strophe.Connection(converse.bosh_service_url);
+            connection.connect(jid, password, $.proxy(function (status) {
+                if (status === Strophe.Status.CONNECTED) {
+                    console.log('Connected');
+                    converse.onConnected(connection);
+                } else if (status === Strophe.Status.DISCONNECTED) {
+                    $button.show().siblings('img').remove();
+                    converse.giveFeedback('Disconnected', 'error');
+                } else if (status === Strophe.Status.Error) {
+                    $button.show().siblings('img').remove();
+                    converse.giveFeedback('Error', 'error');
+                } else if (status === Strophe.Status.CONNECTING) {
+                    converse.giveFeedback('Connecting');
+                } else if (status === Strophe.Status.CONNFAIL) {
+                    $button.show().siblings('img').remove();
+                    converse.giveFeedback('Connection Failed', 'error');
+                } else if (status === Strophe.Status.AUTHENTICATING) {
+                    converse.giveFeedback('Authenticating');
+                } else if (status === Strophe.Status.AUTHFAIL) {
+                    $button.show().siblings('img').remove();
+                    converse.giveFeedback('Authentication Failed', 'error');
+                } else if (status === Strophe.Status.DISCONNECTING) {
+                    converse.giveFeedback('Disconnecting', 'error');
+                } else if (status === Strophe.Status.ATTACHED) {
+                    console.log('Attached');
+                }
+            }, this));
+        },
+
+        authenticate: function (ev) {
             ev.preventDefault();
             var $form = $(ev.target),
                 $jid_input = $form.find('input#jid'),
@@ -2284,10 +2343,10 @@
                 $bsu_input = null,
                 errors = false;
 
-            if (! this.bosh_service_url) {
+            if (! converse.bosh_service_url) {
                 $bsu_input = $form.find('input#bosh_service_url');
-                this.bosh_service_url = $bsu_input.val();
-                if (! this.bosh_service_url)  {
+                converse.bosh_service_url = $bsu_input.val();
+                if (! converse.bosh_service_url)  {
                     errors = true;
                     $bsu_input.addClass('error');
                 }
@@ -2304,35 +2363,8 @@
 
             var $button = $form.find('input[type=submit]');
             $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
-
-            var connection = new Strophe.Connection(this.bosh_service_url);
-            connection.connect(jid, password, $.proxy(function (status) {
-                if (status === Strophe.Status.CONNECTED) {
-                    console.log('Connected');
-                    this.onConnected(connection);
-                } else if (status === Strophe.Status.DISCONNECTED) {
-                    $button.show().siblings('img').remove();
-                    this.giveFeedback('Disconnected', 'error');
-                } else if (status === Strophe.Status.Error) {
-                    $button.show().siblings('img').remove();
-                    this.giveFeedback('Error', 'error');
-                } else if (status === Strophe.Status.CONNECTING) {
-                    this.giveFeedback('Connecting');
-                } else if (status === Strophe.Status.CONNFAIL) {
-                    $button.show().siblings('img').remove();
-                    this.giveFeedback('Connection Failed', 'error');
-                } else if (status === Strophe.Status.AUTHENTICATING) {
-                    this.giveFeedback('Authenticating');
-                } else if (status === Strophe.Status.AUTHFAIL) {
-                    $button.show().siblings('img').remove();
-                    this.giveFeedback('Authentication Failed', 'error');
-                } else if (status === Strophe.Status.DISCONNECTING) {
-                    this.giveFeedback('Disconnecting', 'error');
-                } else if (status === Strophe.Status.ATTACHED) {
-                    console.log('Attached');
-                }
-            }, converse));
-        }, converse),
+            this.connect(jid, password);
+        },
 
         remove: function () {
             this.$parent.find('#controlbox-tabs').empty();

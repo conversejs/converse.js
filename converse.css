@@ -167,7 +167,6 @@ ul.participant-list li.moderator {
 .chat-message-room {
     font-weight: bold;
     color: #4B7003;
-    white-space: nowrap;
 }
 
 .chat-message-them {
@@ -388,7 +387,7 @@ a.configure-chatroom-button {
     padding-top: 0.5em;
 }
 
-.configure-chatroom-container {
+.chatroom-form-container {
     color: #666;
     padding: 5px;
     height: 262px;
@@ -397,26 +396,26 @@ a.configure-chatroom-button {
     border-bottom-left-radius: 4px;
 }
 
-.configure-chatroom {
+.chatroom-form {
     background: white;
     font-size: 12px;
     padding: 0;
 }
 
-.configure-chatroom legend {
+.chatroom-form legend {
     font-size: 14px;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-.configure-chatroom label {
+.chatroom-form label {
     font-weight: bold;
     display: block;
     clear: both;
 }
 
-.configure-chatroom label input,
-.configure-chatroom label select {
+.chatroom-form label input,
+.chatroom-form label select {
     float: right;
 }
 

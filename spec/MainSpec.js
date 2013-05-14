@@ -23,6 +23,21 @@
         var num_contacts = req_names.length + pend_names.length + cur_names.length;
         var open_controlbox;
 
+        closeAllChatBoxes = function () {
+            var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
+            for (i=num_chatboxes-1; i>-1; i--) {
+                chatbox = converse.chatboxes.models[i];
+                converse.chatboxesview.views[chatbox.get('id')].closeChat();
+            }
+        };
+
+        openControlBox = function () {
+            // Make sure the controlbox is open
+            if (!$("div#controlbox").is(':visible')) {
+                $('.toggle-online-users').click();
+            }
+        };
+
         describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
@@ -93,6 +108,12 @@
 
         describe("The Contacts Roster", $.proxy(function () {
             describe("Pending Contacts", $.proxy(function () {
+                beforeEach(function () {
+                    if (!$("div#controlbox").is(':visible')) {
+                        $('.toggle-online-users').click();
+                    }
+                });
+
                 it("do not have a heading if there aren't any", $.proxy(function () {
                     expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
                 }, converse));
@@ -560,14 +581,8 @@
 
         describe("The Controlbox Tabs", $.proxy(function () {
             beforeEach($.proxy(function () {
-                // Close any remaining open chatboxes
-                var i, chatbox, num_chatboxes = this.chatboxes.models.length;
-                for (i=0; i<num_chatboxes; i++) {
-                    chatbox = this.chatboxes.models[i];
-                    if (chatbox.get('id') != 'controlbox') {
-                        this.chatboxesview.views[chatbox.get('id')].closeChat();
-                    }
-                }
+                closeAllChatBoxes();
+                openControlBox();
             }, converse));
 
             it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
@@ -581,6 +596,11 @@
             }, converse));
 
             describe("The Chatrooms Panel", $.proxy(function () {
+                beforeEach($.proxy(function () {
+                    closeAllChatBoxes();
+                    openControlBox();
+                }, converse));
+
                 it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
                     var cbview = this.chatboxesview.views.controlbox;
                     var $tabs = cbview.$el.find('#controlbox-tabs');
@@ -606,7 +626,7 @@
                     var $server = roomspanel.$el.find('input.new-chatroom-server');
                     expect($input.length).toBe(1);
                     expect($server.length).toBe(1);
-                    expect($('.chatroom').length).toBe(0); // There shouldn't be any chatrooms open currently
+                    expect($('.chatroom:visible').length).toBe(0); // There shouldn't be any chatrooms open currently
                     spyOn(roomspanel, 'createChatRoom').andCallThrough();
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     runs(function () {
@@ -620,7 +640,7 @@
                     });
                     waits('250');
                     runs($.proxy(function () {
-                        expect($('.chatroom').length).toBe(1); // There should now be an open chatroom
+                        expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
                     }, converse));
                 }, converse));
             }, converse));

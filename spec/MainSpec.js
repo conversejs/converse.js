@@ -343,8 +343,7 @@
             describe("All Contacts", $.proxy(function () {
                 it("are saved to, and can be retrieved from, localStorage", $.proxy(function () {
                     var new_attrs, old_attrs, attrs, old_roster;
-                    // One contact was declined, so we have 1 less contact then originally
-                    expect(this.roster.length).toEqual(num_contacts-1); 
+                    var num_contacts = this.roster.length;
                     new_roster = new this.RosterItems();
                     // Roster items are yet to be fetched from localStorage
                     expect(new_roster.length).toEqual(0);
@@ -353,7 +352,7 @@
                         hex_sha1('converse.rosteritems-dummy@localhost'));
 
                     new_roster.fetch();
-                    expect(this.roster.length).toEqual(num_contacts-1);
+                    expect(this.roster.length).toEqual(num_contacts);
                     // Check that the roster items retrieved from localStorage
                     // have the same attributes values as the original ones.
                     attrs = ['jid', 'fullname', 'subscription', 'ask'];

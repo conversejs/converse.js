@@ -32,7 +32,6 @@
         };
 
         openControlBox = function () {
-            // Make sure the controlbox is open
             if (!$("div#controlbox").is(':visible')) {
                 $('.toggle-online-users').click();
             }

@@ -11,6 +11,10 @@
         var chatroom_names = [
             'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
         ];
+        closeChatRoom = function (name) {
+            converse.chatboxesview.views['lounge@muc.localhost'].closeChat();
+        };
+
         describe("A Chat Room", $.proxy(function () {
             beforeEach($.proxy(function () {
                 if (!$("div#controlbox").is(':visible')) {
@@ -52,6 +56,23 @@
                 expect($(occupant).text()).toBe(chatroom_names[idx]);
                 expect($(occupant).attr('class')).toBe('moderator');
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
+            }, converse));
+
+            it("shows received and sent groupchat messages", $.proxy(function () {
+                var view = this.chatboxesview.views['lounge@muc.localhost'];
+                if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                var nick = chatroom_names[0];
+                var text = 'This is a received message';
+                var message = $msg({
+                    from: 'lounge@muc.localhost/'+nick,
+                    id: '1',
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t(text);
+                view.onChatRoomMessage(message.nodeTree);
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.find('.chat-message').length).toBe(1);
+                expect($chat_content.find('.chat-message-content').text()).toBe(text);
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {

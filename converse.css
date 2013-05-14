@@ -402,6 +402,12 @@ a.configure-chatroom-button {
     padding: 0;
 }
 
+.chat-body p {
+    font-size: 14px;
+    color: #666;
+    margin: 5px;
+}
+
 .chatroom-form legend {
     font-size: 14px;
     font-weight: bold;

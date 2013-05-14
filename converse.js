@@ -1317,7 +1317,7 @@
                     if ($error.find('not-allowed').length) {
                         this.renderErrorMessage('You are not allowed to create new rooms');
                     } else if ($error.find('not-acceptable').length) {
-                        this.renderErrorMessage("Your nickname doesn't conform to the room's policies");
+                        this.renderErrorMessage("Your nickname doesn't conform to this room's policies");
                     } else if ($error.find('conflict').length) {
                         this.renderErrorMessage("Your nickname is already taken");
                     } else if ($error.find('item-not-found').length) {
@@ -2314,7 +2314,7 @@
 
         connect: function (jid, password) {
             var connection = new Strophe.Connection(converse.bosh_service_url);
-            connection.connect(jid, password, $.proxy(function (status) {
+            connection.connect(jid, password, $.proxy(function (status, message) {
                 if (status === Strophe.Status.CONNECTED) {
                     console.log('Connected');
                     converse.onConnected(connection);

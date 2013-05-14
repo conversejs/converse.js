@@ -27,6 +27,7 @@
 
             it("shows users currently present in the room", $.proxy(function () {
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'];
+                chatroomview.renderChatArea();
                 var $participant_list = chatroomview.$el.find('.participant-list');
                 var roster = {}, room = {}, i;
 
@@ -109,10 +110,21 @@
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
                     .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe('This chatroom requires a password');
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderPasswordForm').andCallThrough();
+                runs(function () {
+                    view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                });
+                waits(250);
+                runs(function () {
+                    var $chat_body = view.$el.find('.chat-body');
+                    expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                    expect(view.renderPasswordForm).toHaveBeenCalled();
+                    expect($chat_body.find('form.chatroom-form').length).toBe(1);
+                    expect($chat_body.find('legend').text()).toBe('This chat room requires a password');
+                });
             }, converse));
 
             it("will show an error message if the room is members-only and the user not included", $.proxy(function () {
@@ -125,9 +137,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
                     .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe('You are not on the member list of this room');
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe('You are not on the member list of this room');
             }, converse));
 
             it("will show an error message if the user has been banned", $.proxy(function () {
@@ -140,9 +154,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
                     .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe('You have been banned from this room');
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe('You have been banned from this room');
             }, converse));
 
             it("will show an error message if no nickname was specified for the user", $.proxy(function () {
@@ -155,9 +171,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'modify'})
                     .c('jid-malformed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe('No nickname was specified');
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe('No nickname was specified');
             }, converse));
 
             it("will show an error message if the user is not allowed to have created the room", $.proxy(function () {
@@ -170,9 +188,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe('You are not allowed to create new rooms');
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe('You are not allowed to create new rooms');
             }, converse));
 
             it("will show an error message if the user's nickname doesn't conform to room policy", $.proxy(function () {
@@ -185,9 +205,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe("Your nickname doesn't conform to the room's policies");
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe("Your nickname doesn't conform to the room's policies");
             }, converse));
 
             it("will show an error message if the user's nickname is already taken", $.proxy(function () {
@@ -200,9 +222,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe("Your nickname is already taken");
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe("Your nickname is already taken");
             }, converse));
 
             it("will show an error message if the room doesn't yet exist", $.proxy(function () {
@@ -215,9 +239,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe("This room does not (yet) exist");
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe("This room does not (yet) exist");
             }, converse));
 
             it("will show an error message if the room has reached it's maximum number of occupants", $.proxy(function () {
@@ -230,9 +256,11 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
+                spyOn(converse.connection.muc, 'removeRoom');
+                spyOn(view, 'renderErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.text()).toBe("This room has reached it's maximum number of occupants");
+                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
+                expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");
             }, converse));
         }, converse));
     }, converse));

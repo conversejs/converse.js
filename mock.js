@@ -9,7 +9,8 @@
         'muc': {
             'listRooms': function () {},
             'join': function () {},
-            'leave': function () {}
+            'leave': function () {},
+            'removeRoom': function () {}
         },
         'jid': 'dummy@localhost',
         'addHandler': function (handler, ns, name, type, id, from, options) { 

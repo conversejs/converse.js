@@ -1251,6 +1251,11 @@
             this.$el.find('.chatroom-form').on('submit', $.proxy(this.submitPassword, this));
         },
 
+        renderErrorMessage: function (msg) {
+            this.$el.find('img.centered.spinner').remove();
+            this.$el.find('.chat-body').append($('<p>'+msg+'</p>'));
+        },
+
         submitPassword: function (ev) {
             ev.preventDefault();
             var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
@@ -1300,25 +1305,25 @@
                     if ($error.find('not-authorized').length) {
                         this.renderPasswordForm();
                     } else if ($error.find('registration-required').length) {
-                        $chat_content.append('You are not on the member list of this room');
+                        this.renderErrorMessage('You are not on the member list of this room');
                     } else if ($error.find('forbidden').length) {
-                        $chat_content.append('You have been banned from this room');
+                        this.renderErrorMessage('You have been banned from this room');
                     }
                 } else if ($error.attr('type') == 'modify') {
                     if ($error.find('jid-malformed').length) {
-                        $chat_content.append('No nickname was specified');
+                        this.renderErrorMessage('No nickname was specified');
                     }
                 } else if ($error.attr('type') == 'cancel') {
                     if ($error.find('not-allowed').length) {
-                        $chat_content.append('You are not allowed to create new rooms');
+                        this.renderErrorMessage('You are not allowed to create new rooms');
                     } else if ($error.find('not-acceptable').length) {
-                        $chat_content.append("Your nickname doesn't conform to the room's policies");
+                        this.renderErrorMessage("Your nickname doesn't conform to the room's policies");
                     } else if ($error.find('conflict').length) {
-                        $chat_content.append("Your nickname is already taken");
+                        this.renderErrorMessage("Your nickname is already taken");
                     } else if ($error.find('item-not-found').length) {
-                        $chat_content.append("This room does not (yet) exist");
+                        this.renderErrorMessage("This room does not (yet) exist");
                     } else if ($error.find('service-unavailable').length) {
-                        $chat_content.append("This room has reached it's maximum number of occupants");
+                        this.renderErrorMessage("This room has reached it's maximum number of occupants");
                     }
                 }
             }

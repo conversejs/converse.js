@@ -30,16 +30,24 @@
     <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
     <p><strong>Converse.js</strong> is an open source, web based, <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> chat client, similar to 
-    <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a>, except for the added support of multi-user chatrooms.</p>
+    <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a>, but with added support for multi-user chatrooms.</p>
 
     <p>It is a Javascript application that you can include in your
     website, thereby providing it with instant messaging functionality.</p>
 
-    <p>You will however need access to an XMPP/Jabber server.</p>
-    
-    <p>You can connect to any public, federated XMPP server, or you could set one up
-    yourself, thereby maintaining stricter control of the user data (XMPP servers
-    usually don't archive chat messages).</p>
+    <p>You will also need access to an XMPP/Jabber server. You can connect to any public, federated XMPP server, or you can set one up
+    yourself, thereby maintaining stricter privacy controls.</p>
+
+    <p>It's possible to enable single-site login, whereby users already
+    authenticated in your website will also automatically be logged in on the chat server, but this will require custom code on your server.</p>
+
+    <p>An <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">add-on product</a> that does exactly this,
+    already exists for the <a href="http://plone.org" target="_blank">Plone</a> CMS. Hopefully in the future more such add-ons will
+    be created for other platforms.
+   </p>
+
+    <p>If you have integrated Converse.js into any other CMS or framework,
+    <a href="http://opkode.com/contact" target="_blank">please let me know</a> and I'll mention it on this page.</p>
 
     <h2>Features</h2>
     <ul>
@@ -55,16 +63,7 @@
         <li>Custom status messages</li>
         <li>Typing notifications</li>
         <li>Third person messages (/me )</li>
-        <li>Chatroom Topics</li>
     </ul>
-
-    <h2>CMS Integration</h2>
-
-    <p><strong>Converse.js</strong> is available as an add-on for the  <a href="http://plone.org" target="_blank">Plone</a> CMS, 
-    called <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">collective.xmpp.chat</a>.</p>
-
-    <p>If you have integrated Converse.js into any other CMS or framework,
-    <a href="http://opkode.com/contact" target="_blank">please let me know</a> and I'll mention it on this page.</p>
 
     <h2>Screencasts</h2>
     <ul>
@@ -82,9 +81,19 @@
         <ul>
             <li><a href="http://jabber.org" target="_blank">jabber.org</a></li>
             <li><a href="https://jappix.com" target="_blank">jappix.com</a></li>
-            <li><a href="https://gmail.com" target="_blank">gmail.com</a></li>
         </ul>
+        There is also a list of public XMPP providers on <a href="xmpp.net" target="_blank">xmpp.net</a>.
    </p>
+    <p><b>Note:</b> currently the demo doesn't work in Internet Explorer older
+    than 10. This is due to lacking support for <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>,
+    a standard which enables cross-domain XmlHttpRequests. There are ways
+    around this, but it hasn't been a priority for me to implement them for
+    this demo.
+   </p>
+
+   <p>
+    See <a href="/docs/html/index.html#overcoming-cross-domain-request-restrictions" target="_blank">here</a> for more information.
+    </p>
 
     <h3>Is it secure?</h3>
     <p>Yes. In this demo <strong>Converse.js</strong> makes an
@@ -100,6 +109,13 @@
         this connection in your browser.
    </p>
     <p><strong>Converse.js</strong> already supports this usecase, but you'll have to do more manual work yourself.</p>
+
+
+    <h2>Documentation</h2>
+    <p>
+        The documentation is still a bit sparse and a work in progress.
+        Nevertheless, you can read what's already written <a href="/docs/html/index.html" target="_blank">here</a>.
+    </p>
 
     <h2>Tests</h2>
     <p>

@@ -801,10 +801,6 @@ form.add-xmpp-contact input {
     z-index: 22;
 }
 
-.chatbox .dropdown span.value {
-    display:none;
-}
-
 .chatbox .dropdown a {
     padding: 3px 0 0 25px;
     display: block;

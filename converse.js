@@ -1869,8 +1869,8 @@
                 bare_jid = Strophe.getBareJidFromJid(jid),
                 resource = Strophe.getResourceFromJid(jid),
                 presence_type = $presence.attr('type'),
-                show = $presence.find('show'),
-                chat_status = show.text() || 'online',
+                $show = $presence.find('show'),
+                chat_status = $show.text() || 'online',
                 status_message = $presence.find('status'),
                 item;
 
@@ -2107,7 +2107,7 @@
                 if (type === 'online') {
                     presence = $pres();
                 } else {
-                    presence = $pres().c('show').t(type);
+                    presence = $pres().c('show').t(type).up();
                 }
                 if (status_message) {
                     presence.c('status').t(status_message);
@@ -2150,8 +2150,8 @@
 
         status_template: _.template(
             '<div class="xmpp-status">' +
-                '<a class="choose-xmpp-status {{ chat_status }}" href="#" title="Click to change your chat status">' +
-                    '{{ status_message }} <span class="value">{{ status_message }}</span>' +
+                '<a class="choose-xmpp-status {{ chat_status }}" data-value="{{status_message}}" href="#" title="Click to change your chat status">' +
+                    '{{ status_message }}' +
                 '</a>' +
                 '<a class="change-xmpp-status-message" href="#" Title="Click here to write a custom status message"></a>' +
             '</div>'),
@@ -2174,8 +2174,8 @@
 
         setStatus: function (ev) {
             ev.preventDefault();
-            var $el = $(ev.target).find('span'),
-                value = $el.text();
+            var $el = $(ev.target),
+                value = $el.attr('data-value');
             this.model.setStatus(value);
             this.$el.find(".dropdown dd ul").hide();
         },
@@ -2214,10 +2214,7 @@
 
         option_template: _.template(
             '<li>' +
-                '<a href="#" class="{{ value }}">' +
-                    '{{ text }}' +
-                    '<span class="value">{{ value }}</span>' +
-                '</a>' +
+                '<a href="#" class="{{ value }}" data-value="{{ value }}">{{ text }}</a>' +
             '</li>'),
 
         initialize: function () {
@@ -2241,7 +2238,7 @@
             // iterate through all the <option> elements and add option values
             options.each(function(){
                 options_list.push(that.option_template({'value': $(this).val(),
-                                                        'text': $(this).text()
+                                                        'text': this.text
                                                         }));
             });
             $options_target = this.$el.find("#target dd ul").hide();

@@ -156,7 +156,6 @@ ul.participant-list li.moderator {
 
 .chat-info {
     color:#666666;
-
 }
 
 .chat-message-me {
@@ -181,6 +180,10 @@ ul.participant-list li.moderator {
 
 .chat-event, .chat-date, .chat-help {
     color: #808080;
+}
+
+li.chat-help {
+    padding-left: 10px;
 }
 
 .chat-date {
@@ -270,12 +273,6 @@ a.subscribe-to-user {
 
 dl.add-converse-contact {
     margin: 0 0 0 0.5em;
-    z-index: 21;
-    background: url('images/add_icon.png') no-repeat 3px;
-}
-
-dt#xmpp-contact-search {
-    padding-top: 3px;
 }
 
 .fancy-dropdown {
@@ -285,9 +282,8 @@ dt#xmpp-contact-search {
 
 .fancy-dropdown a.choose-xmpp-status,
 .fancy-dropdown a.toggle-xmpp-contact-form {
-    text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
-    padding-left: 1.5em;
-    width: 140px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
+    padding-left: 2em;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -295,17 +291,11 @@ dt#xmpp-contact-search {
     float: left;
 }
 
-#fancy-xmpp-status-select {
-    padding-bottom: 3px;
-}
-
 #fancy-xmpp-status-select a.change-xmpp-status-message {
-    text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
-    background: url('images/pencil_icon.png') no-repeat right top;
+    background: url('images/pencil_icon.png') no-repeat right 3px;
     float: right;
     clear: right;
-    width: 1em;
-    height: 1em;
+    height: 22px;
 }
 
 ul#found-users {
@@ -316,8 +306,7 @@ ul#found-users {
 form.search-xmpp-contact {
     margin: 0;
     padding-left: 5px;
-    padding: 1em 0 0 5px;
-    background: white;
+    padding: 0 0 5px 5px;
 }
 
 form.search-xmpp-contact input {
@@ -649,15 +638,27 @@ form#converse-login .login-submit {
     width: auto;
 }
 
-form.set-xmpp-status,
+form.set-xmpp-status {
+    padding: 0.5em 0 0.5em 0.5em;
+}
+
 form.add-chatroom {
-    padding: 0.5em 0 0.3em 0.5em;
-    background: white;
+    padding: 0.5em;
+}
+
+form.add-chatroom input[type=text] {
+    width: 172px;
+    margin: 3px;
+    padding: 1px;
+}
+
+form.add-chatroom input[type=button],
+form.add-chatroom input[type=submit] {
+    width: 50%;
 }
 
 .set-xmpp-status li {
     list-style: none;
-    padding-left: 5px;
 }
 
 select#select-xmpp-status {
@@ -754,16 +755,13 @@ form#set-custom-xmpp-status {
 }
 
 /* status dropdown styles */
-dl.dropdown {
+.chatbox dl.dropdown {
     margin-right: 0.5em;
     margin-bottom: 0;
+    background-color: rgb(240, 240, 240);
 }
-.dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
-.dropdown dd { position:relative; }
-
-div.xmpp-status {
-    padding: 3px;
-}
+.chatbox .dropdown dd, .dropdown dt, .dropdown ul { margin:0px; padding:0px; }
+.chatbox .dropdown dd { position:relative; }
 
 input.custom-xmpp-status {
     width: 138px;
@@ -778,47 +776,57 @@ form.add-xmpp-contact input {
     width: 125px;
 }
 
-.dropdown dt a span {
-    cursor:pointer; display:block; padding:5px;
+.chatbox .dropdown dt a span {
+    cursor:pointer; 
+    display:block; 
+    padding: 5px;
 }
 
-.dropdown dd ul {
-    padding-top: 5px;
+.chatbox .dropdown dd ul {
+    padding: 5px 0 5px 0;
     list-style:none;
     position:absolute; left:0; top:0;
     border:1px solid #ddd;
     border-top: 0;
     width: 99%;
-    background-color: #FFF;
     z-index: 21;
+    background-color: rgb(240, 240, 240);
 }
 
-.dropdown dd ul li a:hover {
-    background-color: #bed6e5;
+.set-xmpp-status .dropdown dd ul {
+    z-index: 22;
 }
 
-.dropdown span.value {
+.chatbox .dropdown span.value {
     display:none;
 }
 
-.dropdown dd ul li a {
-    padding:0 5px 5px 30px;
-    display:block;
+.chatbox .dropdown a {
+    padding: 3px 0 0 25px;
+    display: block;
+    height: 22px;
 }
 
-.dropdown a.online {
-    background: url(images/user_online_panel.png) no-repeat left 3px;
+.chatbox .dropdown a.toggle-xmpp-contact-form {
+    background: url('images/add_icon.png') no-repeat 4px 2px;
 }
 
-.dropdown a.offline {
-    background: url(images/user_offline_panel.png) no-repeat left 3px;
+.chatbox .dropdown a.online {
+    background: url(images/user_online_panel.png) no-repeat 3px 4px;
 }
 
-.dropdown a.dnd {
-    background: url(images/user_busy_panel.png) no-repeat left 3px;
+.chatbox .dropdown a.offline {
+    background: url(images/user_offline_panel.png) no-repeat 3px 4px;
 }
 
-.dropdown a.away {
-    background: url(images/user_away_panel.png) no-repeat left 3px;
+.chatbox .dropdown a.dnd {
+    background: url(images/user_busy_panel.png) no-repeat 3px 4px;
 }
 
+.chatbox .dropdown a.away {
+    background: url(images/user_away_panel.png) no-repeat 3px 4px;
+}
+
+.chatbox .dropdown dd ul a:hover {
+    background-color: #bed6e5;
+}

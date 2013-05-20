@@ -585,17 +585,22 @@
         ),
 
         add_contact_template: _.template(
+            '<li>'+
                 '<form class="add-xmpp-contact">' +
                     '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
                     '<button type="submit">Add</button>' +
-                '</form>'),
+                '</form>'+
+            '<li>'
+        ),
 
         search_contact_template: _.template(
+            '<li>'+
                 '<form class="search-xmpp-contact">' +
                     '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
                     '<button type="submit">Search</button>' +
-                    '<ul id="found-users"></ul>' +
-                '</form>'),
+                '</form>'+
+            '<li>'
+        ),
 
         render: function () {
             var markup;
@@ -622,14 +627,16 @@
         searchContacts: function (ev) {
             ev.preventDefault();
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
-                var $results_el = $('#found-users');
+                var $ul= $('.search-xmpp ul');
+                $ul.find('li.found-user').remove();
+                $ul.find('li.chat-help').remove();
+                if (!data.length) {
+                    $ul.append('<li class="chat-help">No users found</li>');
+                }
+
                 $(data).each(function (idx, obj) {
-                    if ($results_el.children().length) {
-                        $results_el.empty();
-                    }
-                    $results_el.append(
-                        $('<li></li>')
-                        .attr('id', 'found-users-'+obj.id)
+                    $ul.append(
+                        $('<li class="found-user"></li>')
                         .append(
                             $('<a class="subscribe-to-user" href="#" title="Click to add as a chat contact"></a>')
                             .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+converse.domain)
@@ -744,8 +751,10 @@
 
         template: _.template(
             '<form class="add-chatroom" action="" method="post">'+
+                '<legend>'+
                 '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
                 '<input type="text" name="server" class="new-chatroom-server" placeholder="Server"/>'+
+                '</legend>'+
                 '<input type="submit" name="join" value="Join"/>'+
                 '<input type="button" name="show" id="show-rooms" value="Show rooms"/>'+
             '</form>'+

@@ -1138,6 +1138,7 @@
             for (i=0; i<$fields.length; i++) {
                 $field = $($fields[i]);
                 if ($field.attr('type') == 'list-single') {
+                    options = [];
                     $options = $field.find('option');
                     for (j=0; j<$options.length; j++) {
                         options.push(this.select_option_template({
@@ -1155,7 +1156,7 @@
                         name: $field.attr('var'),
                         type: input_types[$field.attr('type')],
                         label: $field.attr('label') || '',
-                        checked: $field.find('value').text() && 'checked="1"' || ''
+                        checked: $field.find('value').text() === "1" && 'checked="1"' || ''
                     }));
                 } else {
                     $form.append(this.form_input_template({
@@ -1196,8 +1197,8 @@
                     converse.connection.muc.saveConfiguration(
                         that.model.get('jid'),
                         configArray,
-                        that.onConfigSaved,
-                        that.onErrorConfigSaved
+                        $.proxy(that.onConfigSaved, that),
+                        $.proxy(that.onErrorConfigSaved, that)
                     );
                 }
             });
@@ -1214,7 +1215,7 @@
         },
 
         onErrorConfigSaved: function (stanza) {
-            // XXX
+            this.insertStatusNotification("An error occurred while trying to save the form.");
         },
 
         cancelConfiguration: function (ev) {

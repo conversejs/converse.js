@@ -623,6 +623,7 @@ div#controlbox-panes {
     width: 199px;
 }
 
+
 form#converse-login {
     background: white;
     padding: 2em 0 0.3em 0.5em;
@@ -639,10 +640,12 @@ form#converse-login .login-submit {
 }
 
 form.set-xmpp-status {
+    background: none;
     padding: 0.5em 0 0.5em 0.5em;
 }
 
 form.add-chatroom {
+    background: none;
     padding: 0.5em;
 }
 
@@ -655,10 +658,6 @@ form.add-chatroom input[type=text] {
 form.add-chatroom input[type=button],
 form.add-chatroom input[type=submit] {
     width: 50%;
-}
-
-.set-xmpp-status li {
-    list-style: none;
 }
 
 select#select-xmpp-status {
@@ -768,7 +767,7 @@ input.custom-xmpp-status {
 }
 
 form.add-xmpp-contact {
-    background: white;
+    background: none;
     padding: 5px;
 }
 
@@ -791,6 +790,11 @@ form.add-xmpp-contact input {
     width: 99%;
     z-index: 21;
     background-color: rgb(240, 240, 240);
+}
+
+.chatbox .dropdown li {
+    list-style: none;
+    padding-left: 0;
 }
 
 .set-xmpp-status .dropdown dd ul {

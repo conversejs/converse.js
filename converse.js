@@ -587,7 +587,7 @@
         add_contact_template: _.template(
             '<li>'+
                 '<form class="add-xmpp-contact">' +
-                    '<input type="text" name="identifier" class="username" placeholder="Contact name"/>' +
+                    '<input type="text" name="identifier" class="username" placeholder="Contact username"/>' +
                     '<button type="submit">Add</button>' +
                 '</form>'+
             '<li>'

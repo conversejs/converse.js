@@ -22,8 +22,10 @@
                 }
                 var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');
+                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
                 var $server = roomspanel.$el.find('input.new-chatroom-server');
                 $input.val('lounge');
+                $nick.val('dummy');
                 $server.val('muc.localhost');
                 roomspanel.$el.find('form').submit();
                 $('.toggle-online-users').click();
@@ -110,8 +112,10 @@
             beforeEach($.proxy(function () {
                 var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');
+                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
                 var $server = roomspanel.$el.find('input.new-chatroom-server');
                 $input.val('problematic');
+                $nick.val('dummy');
                 $server.val('muc.localhost');
                 roomspanel.$el.find('form').submit();
             }, converse));

@@ -621,6 +621,7 @@
                 it("contains a form through which a new chatroom can be created", $.proxy(function () {
                     var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
                     var $input = roomspanel.$el.find('input.new-chatroom-name');
+                    var $nick = roomspanel.$el.find('input.new-chatroom-nick');
                     var $server = roomspanel.$el.find('input.new-chatroom-server');
                     expect($input.length).toBe(1);
                     expect($server.length).toBe(1);
@@ -629,6 +630,7 @@
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     runs(function () {
                         $input.val('Lounge');
+                        $nick.val('dummy');
                         $server.val('muc.localhost');
                     });
                     waits('250');

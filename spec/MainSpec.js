@@ -77,7 +77,7 @@
                     runs($.proxy(function () {
                         expect(view.updateStatusUI).toHaveBeenCalled();
                         expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                        expect(view.$el.find('a.choose-xmpp-status span.value').text()).toBe('I am online');
+                        expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
                     }, converse));
                 }, converse));
 
@@ -99,7 +99,7 @@
                         view.$el.find('form#set-custom-xmpp-status').submit();
                         expect(view.setStatusMessage).toHaveBeenCalled();
                         expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                        expect(view.$el.find('a.choose-xmpp-status span.value').text()).toBe(msg);
+                        expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
                     });
                 }, converse));
             }, converse));

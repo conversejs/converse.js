@@ -792,17 +792,17 @@
                                 }))[0]);
                         }
                         $available_chatrooms.append(fragment);
-                        $('input#show-rooms').show().siblings('img.spinner').remove();
+                        $('input#show-rooms').show().siblings('span.spinner').remove();
                     } else {
                         $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
-                        $('input#show-rooms').show().siblings('img.spinner').remove();
+                        $('input#show-rooms').show().siblings('span.spinner').remove();
                     }
                     return true;
                 }, this),
                 $.proxy(function (iq) { // Failure
                     var $available_chatrooms = this.$el.find('#available-chatrooms');
                     $available_chatrooms.html('<dt>No rooms on '+this.muc_domain+'</dt>');
-                    $('input#show-rooms').show().siblings('img.spinner').remove();
+                    $('input#show-rooms').show().siblings('span.spinner').remove();
                 }, this));
         },
 
@@ -817,7 +817,7 @@
             this.$el.find('input.new-chatroom-name').removeClass('error');
             $server.removeClass('error');
             $available_chatrooms.empty();
-            $('input#show-rooms').hide().after('<img class="spinner" style="width: auto" src="images/spinner.gif"/>');
+            $('input#show-rooms').hide().after('<span class="spinner"/>');
             this.muc_domain = server;
             this.updateRoomsList();
         },
@@ -829,14 +829,15 @@
             if ($div.length) {
                 $div.remove();
             } else {
-                $dd.append('<img class="spinner" src="images/spinner.gif"/>');
+                $dd.find('span.spinner').remove();
+                $dd.append('<span class="spinner hor_centered"/>');
                 converse.connection.disco.info(
                     $(target).attr('data-room-jid'),
                     null,
                     $.proxy(function (stanza) {
                         var $stanza = $(stanza);
                         // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                        $dd.find('img.spinner').replaceWith(
+                        $dd.find('span.spinner').replaceWith(
                             this.room_description_template({
                                 'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                                 'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
@@ -846,7 +847,7 @@
                                 'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
                                 'open': $stanza.find('feature[var="muc_open"]').length,
                                 'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
-                                'persistent': stanza.find('feature[var="muc_persistent"]').length,
+                                'persistent': $stanza.find('feature[var="muc_persistent"]').length,
                                 'publicroom': $stanza.find('feature[var="muc_public"]').length,
                                 'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
                                 'temporary': $stanza.find('feature[var="muc_temporary"]').length,

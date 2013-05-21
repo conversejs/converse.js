@@ -7,6 +7,20 @@
     padding-right: 22px;
 }
 
+span.spinner {
+    background: url(images/spinner.gif) no-repeat center;
+    width: 22px;
+    height: 22px;
+    padding: 0 2px 0 2px;
+    display: block;
+}
+
+span.spinner.hor_centered {
+    left: 40%;
+    position: absolute;
+}
+
+
 img.spinner {
     width: auto;
     border: none;
@@ -16,6 +30,7 @@ img.spinner {
     margin: 0;
     padding: 0 5px 0 5px;
 }
+
 img.centered {
     position: absolute;
     top: 30%;
@@ -524,6 +539,11 @@ dd.available-chatroom,
     font-size: 11px;
     font-style: normal;
     font-weight: normal;
+}
+
+li.room-info {
+    display: block;
+    margin-left: 5px;
 }
 
 p.room-info {

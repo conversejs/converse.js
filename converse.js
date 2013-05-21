@@ -753,6 +753,7 @@
             '<form class="add-chatroom" action="" method="post">'+
                 '<legend>'+
                 '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
+                '<input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname"/>'+
                 '<input type="text" name="server" class="new-chatroom-server" placeholder="Server"/>'+
                 '</legend>'+
                 '<input type="submit" name="join" value="Join"/>'+
@@ -770,6 +771,15 @@
             this.on('update-rooms-list', function (ev) {
                 this.updateRoomsList();
             });
+            converse.xmppstatus.model.on("change", $.proxy(function (model) {
+                if (!(_.has(model.changed, 'fullname'))) {
+                    return;
+                }
+                var $nick = this.$el.find('input.new-chatroom-nick');
+                if (! $nick.is(':focus')) {
+                    $nick.val(model.get('fullname'));
+                }
+            }, this));
         },
 
         updateRoomsList: function (domain) {
@@ -864,18 +874,22 @@
                 jid = $(ev.target).attr('data-room-jid');
             } else {
                 $name = this.$el.find('input.new-chatroom-name');
+                $nick = this.$el.find('input.new-chatroom-nick');
                 $server= this.$el.find('input.new-chatroom-server');
                 server = $server.val();
+                nick = $nick.val();
                 name = $name.val().trim().toLowerCase();
                 $name.val(''); // Clear the input
-                if (name && server) {
+                if (name && server && nick) {
                     jid = Strophe.escapeNode(name) + '@' + server;
                     $name.removeClass('error');
+                    $nick.removeClass('error');
                     $server.removeClass('error');
                     this.muc_domain = server;
                 } else {
                     errors = true;
                     if (!name) { $name.addClass('error'); }
+                    if (!nick) { $nick.addClass('error'); }
                     if (!server) { $server.addClass('error'); }
                     return;
                 }
@@ -884,7 +898,7 @@
                 'id': jid,
                 'jid': jid,
                 'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                'nick': converse.xmppstatus.get('fullname')||converse.bare_jid,
+                'nick': nick,
                 'chatroom': true,
                 'box_id' : hex_sha1(jid)
             });

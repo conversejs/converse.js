@@ -754,7 +754,7 @@
                 '<legend>'+
                 '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
                 '<input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname"/>'+
-                '<input type="text" name="server" class="new-chatroom-server" placeholder="Server"/>'+
+                '<input type="{{ server_input_type }}" name="server" class="new-chatroom-server" placeholder="Server"/>'+
                 '</legend>'+
                 '<input type="submit" name="join" value="Join"/>'+
                 '<input type="button" name="show" id="show-rooms" value="Show rooms"/>'+
@@ -763,7 +763,12 @@
 
         render: function () {
             this.$parent.find('#controlbox-tabs').append(this.tab_template());
-            this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()).hide());
+            this.$parent.find('#controlbox-panes').append(
+                this.$el.html(
+                    this.template({
+                        server_input_type: converse.hide_muc_server && 'hidden' || 'text'
+                    })
+                ).hide());
             return this;
         },
 

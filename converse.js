@@ -771,7 +771,7 @@
             this.on('update-rooms-list', function (ev) {
                 this.updateRoomsList();
             });
-            converse.xmppstatus.model.on("change", $.proxy(function (model) {
+            converse.xmppstatus.on("change", $.proxy(function (model) {
                 if (!(_.has(model.changed, 'fullname'))) {
                     return;
                 }

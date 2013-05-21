@@ -80,8 +80,61 @@ website. This will remove the need for any cross-domain XHR support.
 Converse.js Configuration variables:
 ====================================
 
+animate
+=======
+
+Default = True
+
+Show animations, for example when opening and closing chat boxes.
+
+auto_list_rooms
+===============
+
+Default = False
+
+If true, and the XMPP server on which the current user is logged in supports
+multi-user chat, then a list of rooms on that server will be fetched.
+
+Not recommended for servers with lots of chat rooms.
+
+For each room on the server a query is made to fetch further details (e.g.
+features, number of occupants etc.), so on servers with many rooms this 
+option will create lots of extra connection traffic.
+
+auto_subscribe
+==============
+
+Default = False
+
+If true, the user will automatically subscribe back to any contact requests.
+
+bosh_service_url
+================
+
+Connections to an XMPP server depend on a BOSH connection manager which acts as
+a middle man between HTTP and XMPP.
+
+See `here`_ for more information.
+
+fullname
+========
+
+If you are using prebinding, you need to specify the fullname of the currently
+logged in user.
+
+hide_muc_server
+===============
+
+Default = False
+
+Hide the ``server`` input field of the form inside the ``Room`` panel of the
+controlbox. Useful if you want to restrict users to a specific XMPP server of
+your choosing.
+
 prebind
 ========
+
+Default = False
 
 Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).
@@ -105,23 +158,11 @@ have to write a Javascript snippet to attach to the set up connection::
 The backend must authenticate for you, and then return a SID (session ID) and
 RID (Request ID), which you use when you attach to the connection.
 
-fullname
-========
-
-If you are using prebinding, you need to specify the fullname of the currently
-logged in user.
-
-bosh_service_url
-================
-
-Connections to an XMPP server depend on a BOSH connection manager which acts as
-a middle man between HTTP and XMPP.
-
-See `here`_ for more information.
-
 
 xhr_user_search
 ===============
+
+Default = False
 
 There are two ways to add users. 
 
@@ -132,27 +173,6 @@ contact.
 This setting enables the second mechanism, otherwise by default the first will
 be used.
 
-auto_subscribe
-==============
-
-If true, the user will automatically subscribe back to any contact requests.
-
-auto_list_rooms
-===============
-
-If true, and the XMPP server on which the current user is logged in supports
-multi-user chat, then a list of rooms on that server will be fetched.
-
-Not recommended for servers with lots of chat rooms.
-
-For each room on the server a query is made to fetch further details (e.g.
-features, number of occupants etc.), so on servers with many rooms this 
-option will create lots of extra connection traffic.
-
-animate
-=======
-
-Show animations, for example when opening and closing chat boxes.
 
 .. _`here`: http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l
 .. _`HTTP`: https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol

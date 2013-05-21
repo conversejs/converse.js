@@ -835,35 +835,22 @@
                     null,
                     $.proxy(function (stanza) {
                         var $stanza = $(stanza);
-                        // All MUC features shown here: http://xmpp.org/registrar/disco-features.html
-                        var desc = $stanza.find('field[var="muc#roominfo_description"] value').text();
-                        var occ = $stanza.find('field[var="muc#roominfo_occupants"] value').text();
-                        var hidden = $stanza.find('feature[var="muc_hidden"]').length;
-                        var membersonly = $stanza.find('feature[var="muc_membersonly"]').length;
-                        var moderated = $stanza.find('feature[var="muc_moderated"]').length;
-                        var nonanonymous = $stanza.find('feature[var="muc_nonanonymous"]').length;
-                        var open = $stanza.find('feature[var="muc_open"]').length;
-                        var passwordprotected = $stanza.find('feature[var="muc_passwordprotected"]').length;
-                        var persistent = $stanza.find('feature[var="muc_persistent"]').length;
-                        var publicroom = $stanza.find('feature[var="muc_public"]').length;
-                        var semianonymous = $stanza.find('feature[var="muc_semianonymous"]').length;
-                        var temporary = $stanza.find('feature[var="muc_temporary"]').length;
-                        var unmoderated = $stanza.find('feature[var="muc_unmoderated"]').length;
+                        // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                         $dd.find('img.spinner').replaceWith(
                             this.room_description_template({
-                                'desc':desc,
-                                'occ':occ,
-                                'hidden':hidden,
-                                'membersonly':membersonly,
-                                'moderated':moderated,
-                                'nonanonymous':nonanonymous,
-                                'open':open,
-                                'passwordprotected':passwordprotected,
-                                'persistent':persistent,
-                                'publicroom': publicroom,
-                                'semianonymous':semianonymous,
-                                'temporary':temporary,
-                                'unmoderated':unmoderated
+                                'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
+                                'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
+                                'hidden': $stanza.find('feature[var="muc_hidden"]').length,
+                                'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
+                                'moderated': $stanza.find('feature[var="muc_moderated"]').length,
+                                'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
+                                'open': $stanza.find('feature[var="muc_open"]').length,
+                                'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
+                                'persistent': stanza.find('feature[var="muc_persistent"]').length,
+                                'publicroom': $stanza.find('feature[var="muc_public"]').length,
+                                'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
+                                'temporary': $stanza.find('feature[var="muc_temporary"]').length,
+                                'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length
                             }));
                     }, this));
             }

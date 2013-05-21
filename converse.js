@@ -2510,6 +2510,13 @@
     };
 
     converse.initialize = function (settings) {
+        // Default values
+        this.animate = true;
+        this.auto_list_rooms = false;
+        this.auto_subscribe = false;
+        this.hide_muc_server = false;
+        this.prebind = false;
+        this.xhr_user_search = false;
         _.extend(this, settings);
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});

@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.3 (unreleased)
+0.3 (2013-05-21)
 ----------------
 
 - Add vCard support 
@@ -24,6 +24,8 @@ Changelog
 - Make fetching of list of chatrooms on a server a configuration option.
   [jcbrand]
 - Use service discovery to show all available features on a room.
+  [jcbrand]
+- Multi-user chatrooms are now configurable.
   [jcbrand]
 
 

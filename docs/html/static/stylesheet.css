@@ -29,3 +29,7 @@ h1#project_title a {
 h1 a {
     color: #0069ba;
 }
+
+ul {
+    margin-bottom: 0;
+}

@@ -10,9 +10,35 @@
    :depth: 3
    :local:
 
-===================
-What you will need:
-===================
+============
+Introduction
+============
+
+Even though you can connect to public XMPP servers on the `conversejs.org`_
+website, *Converse.js* is not meant to be a "Software-as-a-service" (SaaS) 
+webchat.
+
+Instead, its goal is to provide the means for website owners to add a tightly
+integrated instant messaging service to their own sites.
+
+As a website owner, you are expected to host *Converse.js* yourself, and to do some legwork to
+properly configure and integrated it into your site.
+
+The benefit in doing this, is that your users have a much more streamlined and integrated
+webchat experience and that you have control over the data. The latter being a
+requirement for many sites dealing with sensitive information.
+
+You'll need to set up your own XMPP server and in order to have
+single-signon functionality, whereby users are authenticated once and stay
+logged in to XMPP upon page reload, you will also have to add some server-side
+code.
+
+The `What you will need`_ section has more information on all these
+requirements.
+
+==================
+What you will need
+==================
 
 An XMPP/Jabber server
 =====================
@@ -22,16 +48,7 @@ to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).
 
 You can either set up your own XMPP server, or use a public one. You can find a
 list of public XMPP servers/providers on `xmpp.net`_ and a list of servers that
-you can set up yourself on `xmpp.org`_. Personally, I'm partial towards `ejabberd`_.
-
-Session support (i.e. single site login)
-----------------------------------------
-
-It's possible to enable single-site login, whereby users already
-authenticated in your website will also automatically be logged in on the chat server,
-but this will require custom code on your server.
-
-Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
+you can set up yourself on `xmpp.org`_.
 
 Connection Manager
 ==================
@@ -76,19 +93,87 @@ If you need to support these browsers, you can add a front-end proxy in
 Apache/Nginx which serves the connection manager under the same domain as your
 website. This will remove the need for any cross-domain XHR support.
 
-====================================
-Converse.js Configuration variables:
-====================================
+Server-side authentication
+==========================
+
+Session support (i.e. single site login)
+----------------------------------------
+
+It's possible to enable single-site login, whereby users already
+authenticated in your website will also automatically be logged in on the chat server,
+but this will require custom code on your server.
+
+Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
+
+
+=========================================
+Quickstart (to get a demo up and running)
+=========================================
+
+When you download a specific release of *Converse.js*, say for example version 0.3,
+there will be two minified files inside the zip file.
+
+For version 0.3 they will be:
+
+* converse.0.3.min.js
+* converse.0.3.min.css
+
+You can include these two files in your website via the *script* and *link*
+tags:
+
+::
+
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.0.3.min.css">
+    <script src="converse.0.3.min.js"></script>
+
+The *index.html* file inside the Converse.js folder serves as a nice usable
+example of this.
+
+These minified files provide the same demo-like functionality as is available
+on the `conversejs.org`_ website. Useful for testing or demoing, but not very
+practical.
+
+You'll most likely want to implement some kind of single-signon solution for
+your website, where users authenticate once in your website and then stay
+logged into their XMPP session upon page reload.
+
+For more info on this, read `Session support (i.e. single site login)`_.
+
+You might also want to have more fine-grained control of what gets included in
+the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
+that.
+
+
+=============
+Configuration
+=============
+
+The included minified JS and CSS files can be used for demoing or testing, but
+you'll want to configure *Converse.js* to suit your needs before you deploy it
+on your website.
+
+*Converse.js* is passed its configuration settings when you call its
+*initialize* method.
+
+Please refer to the `Configuration variables`_ section below for info on
+all the available configuration settings.
+
+After you have configured *Converse.js*, you'll have to regenerate the minified
+JS file so that it will include the new settings. Please refer to the
+`Minification`_ section for more info on how to do this.
+
+Configuration variables
+=======================
 
 animate
-=======
+-------
 
 Default = True
 
 Show animations, for example when opening and closing chat boxes.
 
 auto_list_rooms
-===============
+---------------
 
 Default = False
 
@@ -102,14 +187,14 @@ features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.
 
 auto_subscribe
-==============
+--------------
 
 Default = False
 
 If true, the user will automatically subscribe back to any contact requests.
 
 bosh_service_url
-================
+----------------
 
 Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.
@@ -117,13 +202,13 @@ a middle man between HTTP and XMPP.
 See `here`_ for more information.
 
 fullname
-========
+--------
 
 If you are using prebinding, you need to specify the fullname of the currently
 logged in user.
 
 hide_muc_server
-===============
+---------------
 
 Default = False
 
@@ -132,7 +217,7 @@ controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.
 
 prebind
-========
+--------
 
 Default = False
 
@@ -160,20 +245,65 @@ RID (Request ID), which you use when you attach to the connection.
 
 
 xhr_user_search
-===============
+---------------
 
 Default = False
 
 There are two ways to add users. 
 
-* The user inputs a valid JID (Jabber ID), and the user is added as a pending
-contact.
+* The user inputs a valid JID (Jabber ID), and the user is added as a pending contact.
 * The user inputs some text (for example part of a firstname or lastname), an XHR will be made to a backend, and a list of matches are returned. The user can then choose one of the matches to add as a contact.
 
 This setting enables the second mechanism, otherwise by default the first will
 be used.
 
 
+
+============
+Minification
+============
+
+Minifying Javascript
+====================
+
+We  use `require.js`_ to keep track of *Converse.js* and its dependencies and to
+to bundle them together in a single minified file fit for deployment to a 
+production site.
+
+To use the require.js's optimization tool, you'll need Node and it's package
+manager, NPM.
+
+You can then install install require.js for Node like so:
+
+::
+
+    npm install requirejs
+
+The minified javascript file is then created like this:
+
+::
+
+    r.js -o build.js
+
+You should now have a new minified file (the name which is specified in build.js).
+
+You can `read more about require.js's optimizer here`_.
+
+Minifying CSS
+=============
+
+CSS can be minimized with Yahoo's yuicompressor tool:
+
+::
+
+    yui-compressor --type=css converse.css -o converse.min.css
+
+
+
+
+.. _`conversejs.org`: http://conversejs.org
+.. _`require.js`: http://requirejs.org
+.. _`read more about require.js's optimizer here`: http://requirejs.org/docs/optimization.html
 .. _`here`: http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l
 .. _`HTTP`: https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 .. _`XMPP`: https://en.wikipedia.org/wiki/Xmpp

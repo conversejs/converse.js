@@ -508,7 +508,7 @@
                     img = new Image();   // Create new Image object
                 img.onload = function() {
                     var ratio = img.width/img.height;
-                    ctx.drawImage(img,0,0, 35*ratio, 35);
+                    ctx.drawImage(img, 0,0, 35*ratio, 35);
                 };
                 img.src = img_src;
                 this.$el.find('.chat-title').before(canvas);
@@ -1578,15 +1578,15 @@
             if (!attributes.fullname) {
                 attributes.fullname = jid;
             }
-            _.extend(attributes, {
+            var attrs = _.extend({
                 'id': jid,
                 'user_id': Strophe.getNodeFromJid(jid),
                 'resources': [],
-                'chat_status': 'offline',
-                'status': 'offline',
-                'sorted': false
-            });
-            this.set(attributes);
+                'status': ''
+            }, attributes);
+            attrs.sorted = false;
+            attrs.chat_status = 'offline';
+            this.set(attrs);
         }
     });
 
@@ -1613,7 +1613,8 @@
                     'fullname': this.model.get('fullname'),
                     'image_type': this.model.get('image_type'),
                     'image': this.model.get('image'),
-                    'url': this.model.get('url')
+                    'url': this.model.get('url'),
+                    'status': this.model.get('status')
                 });
             }
         },
@@ -1887,7 +1888,7 @@
                     // Another resource has changed it's status, we'll update ours as well.
                     // FIXME: We should ideally differentiate between converse.js using
                     // resources and other resources (i.e Pidgin etc.)
-                    converse.xmppstatus.set({'status': chat_status});
+                    converse.xmppstatus.save({'status': chat_status});
                 }
                 return true;
             } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
@@ -1896,7 +1897,7 @@
 
             item = this.getItem(bare_jid);
             if (item && (status_message.text() != item.get('status'))) {
-                item.set({'status': status_message.text()});
+                item.save({'status': status_message.text()});
             }
 
             if ((presence_type === 'error') || (presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {

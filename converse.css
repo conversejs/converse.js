@@ -304,6 +304,7 @@ dl.add-converse-contact {
     text-overflow: ellipsis;
     white-space: nowrap;
     float: left;
+    width: 130px;
 }
 
 #fancy-xmpp-status-select a.change-xmpp-status-message {
@@ -503,7 +504,7 @@ a.configure-chatroom-button {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    width: 170px;
+    width: 165px;
 }
 
 #available-chatrooms dt,

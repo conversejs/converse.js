@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4 (Unreleased)
+----------------
+
+- CSS tweaks: fixed overflowing text in status message and chatrooms list.
+  [jcbrand]
+
 0.3 (2013-05-21)
 ----------------
 

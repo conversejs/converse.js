@@ -2512,6 +2512,7 @@
 
     converse.initialize = function (settings) {
         // Default values
+        this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;

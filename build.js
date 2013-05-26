@@ -14,5 +14,5 @@
         "strophe.disco": "Libraries/strophe.disco"
     },
     name: "main",
-    out: "converse.0.3.min.js"
+    out: "converse.min.js"
 })

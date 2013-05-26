@@ -751,11 +751,9 @@
 
         template: _.template(
             '<form class="add-chatroom" action="" method="post">'+
-                '<legend>'+
                 '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name"/>'+
                 '<input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname"/>'+
                 '<input type="{{ server_input_type }}" name="server" class="new-chatroom-server" placeholder="Server"/>'+
-                '</legend>'+
                 '<input type="submit" name="join" value="Join"/>'+
                 '<input type="button" name="show" id="show-rooms" value="Show rooms"/>'+
             '</form>'+

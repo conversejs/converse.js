@@ -6,6 +6,8 @@ Changelog
 
 - CSS tweaks: fixed overflowing text in status message and chatrooms list.
   [jcbrand]
+- Bugfix: Cannot join chatroom when clicking from a list of rooms.
+  [jcbrand]
 
 0.3 (2013-05-21)
 ----------------

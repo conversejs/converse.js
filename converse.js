@@ -1305,8 +1305,9 @@
                     // configuration setting.
                     converse.connection.muc.createInstantRoom(room.name);
                 }
-                // check for status 110 to see if it's our own presence
-                if ($presence.find("status[code='110']").length) {
+                if (($presence.find("status[code='110']").length) || (from == room.name+'/'+Strophe.escapeNode(nick))) {
+                    // Check to see if it's our own presence
+                    // code 110 indicates it but ejabberd doesn't seem to comply
                     $item = $presence.find('item');
                     if ($item.length) {
                         if ($item.attr('affiliation') == 'owner') {

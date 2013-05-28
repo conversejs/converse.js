@@ -872,31 +872,39 @@
 
         createChatRoom: function (ev) {
             ev.preventDefault();
-            var name, server, jid, $name, $server, errors;
+            var name, $name,
+                server, $server,
+                jid,
+                $nick = this.$el.find('input.new-chatroom-nick'),
+                nick = $nick.val();
+
+            if (!nick) {
+                $nick.addClass('error');
+            }
+            else {
+                $nick.removeClass('error');
+            }
+
             if (ev.type === 'click') {
                 jid = $(ev.target).attr('data-room-jid');
             } else {
                 $name = this.$el.find('input.new-chatroom-name');
-                $nick = this.$el.find('input.new-chatroom-nick');
                 $server= this.$el.find('input.new-chatroom-server');
                 server = $server.val();
-                nick = $nick.val();
                 name = $name.val().trim().toLowerCase();
                 $name.val(''); // Clear the input
-                if (name && server && nick) {
+                if (name && server) {
                     jid = Strophe.escapeNode(name) + '@' + server;
                     $name.removeClass('error');
-                    $nick.removeClass('error');
                     $server.removeClass('error');
                     this.muc_domain = server;
                 } else {
-                    errors = true;
                     if (!name) { $name.addClass('error'); }
-                    if (!nick) { $nick.addClass('error'); }
                     if (!server) { $server.addClass('error'); }
                     return;
                 }
             }
+            if (!nick) { return; }
             converse.chatboxes.create({
                 'id': jid,
                 'jid': jid,

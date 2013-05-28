@@ -15,22 +15,22 @@ Introduction
 ============
 
 Even though you can connect to public XMPP servers on the `conversejs.org`_
-website, *Converse.js* is not meant to be a "Software-as-a-service" (SaaS) 
+website, *Converse.js* is not really meant to be a "Software-as-a-service" (SaaS) 
 webchat.
 
 Instead, its goal is to provide the means for website owners to add a tightly
 integrated instant messaging service to their own sites.
 
 As a website owner, you are expected to host *Converse.js* yourself, and to do some legwork to
-properly configure and integrated it into your site.
+properly configure and integrate it into your site.
 
 The benefit in doing this, is that your users have a much more streamlined and integrated
 webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.
 
 You'll need to set up your own XMPP server and in order to have
-single-signon functionality, whereby users are authenticated once and stay
-logged in to XMPP upon page reload, you will also have to add some server-side
+`Session Support`_ (i.e. single-signon functionality whereby users are authenticated once and stay
+logged in to XMPP upon page reload) you will also have to add some server-side
 code.
 
 The `What you will need`_ section has more information on all these
@@ -46,9 +46,12 @@ An XMPP/Jabber server
 *Converse.js* implements `XMPP`_ as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).
 
-You can either set up your own XMPP server, or use a public one. You can find a
-list of public XMPP servers/providers on `xmpp.net`_ and a list of servers that
-you can set up yourself on `xmpp.org`_.
+You can connect to public XMPP servers like ``jabber.org`` but if you want to
+have `Session Support`_ you'll have to set up your own XMPP server.
+
+You can find a list of public XMPP servers/providers on `xmpp.net`_ and a list of
+servers that you can set up yourself on `xmpp.org`_.
+
 
 Connection Manager
 ==================
@@ -96,8 +99,8 @@ website. This will remove the need for any cross-domain XHR support.
 Server-side authentication
 ==========================
 
-Session support (i.e. single site login)
-----------------------------------------
+Session Support
+---------------
 
 It's possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
@@ -137,7 +140,7 @@ You'll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.
 
-For more info on this, read `Session support (i.e. single site login)`_.
+For more info on this, read `Session Support`_.
 
 You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do

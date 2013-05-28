@@ -73,7 +73,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#server-side-authentication" id="id6">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#session-support-i-e-single-site-login" id="id7">Session support (i.e. single site login)</a></li>
+<li><a class="reference internal" href="#session-support" id="id7">Session support</a></li>
 </ul>
 </li>
 </ul>
@@ -103,18 +103,18 @@
 <div class="section" id="introduction">
 <h1><a class="toc-backref" href="#id1">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Even though you can connect to public XMPP servers on the <a class="reference external" href="http://conversejs.org">conversejs.org</a>
-website, <em>Converse.js</em> is not meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
+website, <em>Converse.js</em> is not really meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
 webchat.</p>
 <p>Instead, its goal is to provide the means for website owners to add a tightly
 integrated instant messaging service to their own sites.</p>
 <p>As a website owner, you are expected to host <em>Converse.js</em> yourself, and to do some legwork to
-properly configure and integrated it into your site.</p>
+properly configure and integrate it into your site.</p>
 <p>The benefit in doing this, is that your users have a much more streamlined and integrated
 webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.</p>
 <p>You&#8217;ll need to set up your own XMPP server and in order to have
-single-signon functionality, whereby users are authenticated once and stay
-logged in to XMPP upon page reload, you will also have to add some server-side
+<a class="reference internal" href="#session-support">Session support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
+logged in to XMPP upon page reload) you will also have to add some server-side
 code.</p>
 <p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
 requirements.</p>
@@ -125,9 +125,10 @@ requirements.</p>
 <h2><a class="toc-backref" href="#id3">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
 <p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
-<p>You can either set up your own XMPP server, or use a public one. You can find a
-list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of servers that
-you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
+<p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
+have <a class="reference internal" href="#session-support">Session support</a> you&#8217;ll have to set up your own XMPP server.</p>
+<p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
+servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
 </div>
 <div class="section" id="connection-manager">
 <h2><a class="toc-backref" href="#id4">Connection Manager</a><a class="headerlink" href="#connection-manager" title="Permalink to this headline">¶</a></h2>
@@ -164,8 +165,8 @@ website. This will remove the need for any cross-domain XHR support.</p>
 </div>
 <div class="section" id="server-side-authentication">
 <h2><a class="toc-backref" href="#id6">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="session-support-i-e-single-site-login">
-<h3><a class="toc-backref" href="#id7">Session support (i.e. single site login)</a><a class="headerlink" href="#session-support-i-e-single-site-login" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="session-support">
+<h3><a class="toc-backref" href="#id7">Session support</a><a class="headerlink" href="#session-support" title="Permalink to this headline">¶</a></h3>
 <p>It&#8217;s possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
 but this will require custom code on your server.</p>
@@ -195,7 +196,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read <a class="reference internal" href="#session-support-i-e-single-site-login">Session support (i.e. single site login)</a>.</p>
+<p>For more info on this, read <a class="reference internal" href="#session-support">Session support</a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>

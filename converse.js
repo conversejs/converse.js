@@ -249,7 +249,6 @@
                     time = converse.toISOString(new Date());
                 }
                 if (from == converse.bare_jid) {
-                    fullname = 'me';
                     sender = 'me';
                 } else {
                     sender = 'them';
@@ -283,13 +282,38 @@
 
         action_template: _.template(
                             '<div class="chat-message {{extra_classes}}">' +
-                                '<span class="chat-message-{{sender}}">{{time}}:&nbsp;</span>' +
+                                '<span class="chat-message-{{sender}}">{{time}} **{{username}} </span>' +
                                 '<span class="chat-message-content">{{message}}</span>' +
                             '</div>'),
 
         new_day_template: _.template(
                             '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
                             ),
+
+        appendMessage: function ($el, msg_dict) {
+            var this_date = converse.parseISO8601(msg_dict.time),
+                text = msg_dict.message,
+                match = text.match(/^\/(.*?)(?: (.*))?$/),
+                sender = msg_dict.sender,
+                template, username;
+            if ((match) && (match[1] === 'me')) {
+                text = text.replace(/^\/me/, '');
+                template = this.action_template;
+                username = msg_dict.fullname;
+            } else  {
+                template = this.message_template;
+                username = sender === 'me' && sender || msg_dict.fullname;
+            }
+            $el.find('div.chat-event').remove();
+            $el.append(
+                template({
+                    'sender': sender,
+                    'time': this_date.toLocaleTimeString().substring(0,4),
+                    'message': text,
+                    'username': username,
+                    'extra_classes': msg_dict.delayed && 'delayed' || ''
+                }));
+        },
 
         insertStatusNotification: function (message, replace) {
             var $chat_content = this.$el.find('.chat-content');
@@ -303,7 +327,7 @@
                 times = this.model.messages.pluck('time'),
                 this_date = converse.parseISO8601(time),
                 $chat_content = this.$el.find('.chat-content'),
-                previous_message, idx, prev_date, isodate;
+                previous_message, idx, prev_date, isodate, text, match;
 
             // If this message is on a different day than the one received
             // prior, then indicate it on the chatbox.
@@ -325,15 +349,7 @@
                 this.insertStatusNotification(message.get('fullname')+' '+'is typing');
                 return;
             } else {
-                $chat_content.find('div.chat-event').remove();
-                $chat_content.append(
-                        this.message_template({
-                            'sender': message.get('sender'),
-                            'time': this_date.toLocaleTimeString().substring(0,5),
-                            'message': message.get('message'),
-                            'username': message.get('fullname'),
-                            'extra_classes': message.get('delayed') && 'delayed' || ''
-                        }));
+                this.appendMessage($chat_content, _.clone(message.attributes));
             }
             if ((message.get('sender') != 'me') && (converse.windowState == 'blur')) {
                 converse.incrementMsgCounter();
@@ -375,6 +391,7 @@
                 else if (match[1] === "help") {
                     msgs =  [
                         '<strong>/help</strong>: Show this menu',
+                        '<strong>/me</strong>: Refer to yourself in the third person',
                         '<strong>/clear</strong>: Remove messages'
                         ];
                     this.addHelpMessages(msgs);
@@ -395,7 +412,7 @@
             converse.connection.send(forwarded);
             // Add the new message
             this.model.messages.create({
-                fullname: 'me',
+                fullname: converse.xmppstatus.get('fullname')||converse.bare_jid,
                 sender: 'me',
                 time: converse.toISOString(new Date()),
                 message: text
@@ -1414,25 +1431,12 @@
                 $chat_content.append(this.info_template({'message': 'Topic set by '+sender+' to: '+subject }));
             }
             if (!body) { return true; }
-            match = body.match(/^\/(.*?)(?: (.*))?$/);
-            if ((match) && (match[1] === 'me')) {
-                body = body.replace(/^\/me/, '*'+sender);
-                template = this.action_template;
-            } else  {
-                template = this.message_template;
-            }
-            if (sender === this.model.get('nick')) {
-                sender = 'me';
-            }
-            $chat_content.append(
-                template({
-                    'sender': sender == 'me' && sender || 'room',
-                    'time': message_datetime.toLocaleTimeString().substring(0,5),
-                    'message': body,
-                    'username': sender,
-                    'extra_classes': delayed && 'delayed' || ''
-                })
-            );
+            this.appendMessage($chat_content,
+                               {'message': body,
+                                'sender': sender === this.model.get('nick') && 'me' || 'room',
+                                'fullname': sender,
+                                'time': converse.toISOString(message_datetime)
+                               });
             this.scrollDown();
             return true;
         },
@@ -1499,8 +1503,8 @@
         },
 
         messageReceived: function (message) {
-            var  partner_jid, $message = $(message),
-                 message_from = $message.attr('from');
+            var partner_jid, $message = $(message),
+                message_from = $message.attr('from');
             if (message_from == converse.connection.jid) {
                 // FIXME: Forwarded messages should be sent to specific resources,
                 // not broadcasted

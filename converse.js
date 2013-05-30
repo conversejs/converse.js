@@ -389,9 +389,9 @@
                     return;
                 }
                 else if (match[1] === "help") {
-                    msgs =  [
+                    msgs = [
                         '<strong>/help</strong>: Show this menu',
-                        '<strong>/me</strong>: Refer to yourself in the third person',
+                        '<strong>/me</strong>: Write in the third person',
                         '<strong>/clear</strong>: Remove messages'
                         ];
                     this.addHelpMessages(msgs);
@@ -1048,6 +1048,9 @@
                 case 'msg':
                     // TODO: Private messages
                     break;
+                case 'clear':
+                    this.$el.find('.chat-content').empty();
+                    break;
                 case 'topic':
                     converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
                     break;
@@ -1065,8 +1068,10 @@
                     break;
                 case 'help':
                     $chat_content = this.$el.find('.chat-content');
-                    $chat_content.append('<div class="chat-help"><strong>/help</strong>: Show this menu</div>' +
-                                         '<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>');
+                    $chat_content.append(
+                        '<div class="chat-help"><strong>/help</strong>: Show this menu</div>' +
+                        '<div class="chat-help"><strong>/clear</strong>: Write in the third person</div>' +
+                        '<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>');
                     /* TODO:
                     $chat_content.append($('<div class="chat-help"><strong>/kick</strong>: Kick out user</div>'));
                     $chat_content.append($('<div class="chat-help"><strong>/ban</strong>: Ban user</div>'));
@@ -1291,9 +1296,118 @@
             this.$el.find('.chatroom-form').on('submit', $.proxy(this.submitPassword, this));
         },
 
-        renderErrorMessage: function (msg) {
+        showDisconnectMessage: function (msg) {
+            this.$el.find('.chat-area').hide();
+            this.$el.find('.participants').hide();
             this.$el.find('img.centered.spinner').remove();
             this.$el.find('.chat-body').append($('<p>'+msg+'</p>'));
+        },
+
+        infoMessages: {
+            100: 'This room is not anonymous',
+            102: 'This room now shows unavailable members',
+            103: 'This room does not show unavailable members',
+            104: 'Non-privacy-related room configuration has changed',
+            170: 'Room logging is now enabled',
+            171: 'Room logging is now disabled',
+            172: 'This room is now non-anonymous',
+            173: 'This room is now semi-anonymous',
+            174: 'This room is now fully-anonymous',
+            201: 'A new room has been created',
+            210: 'Your nickname has been changed'
+        },
+
+        actionInfoMessages: {
+            301: ' has been banned',
+            307: ' has been kicked out',
+            321: " has been removed because of an affiliation change",
+            322: " has been removed for not being a member"
+        },
+
+        disconnectMessages: {
+            301: 'You have been banned from this room',
+            307: 'You have been kicked from this room',
+            321: "You have been removed from this room because of an affiliation change",
+            322: "You have been removed from this room because the room" +
+                "has changed to members-only and you're not a member",
+            332: "You have been removed from this room because the MUC " +
+                "(Multi-user chat) service is being shut down."
+        },
+
+        showStatusMessages: function ($el, is_self) {
+            /* Check for status codes and communicate their purpose to the user
+             * See: http://xmpp.org/registrar/mucstatus.html
+             */
+            var $chat_content = this.$el.find('.chat-content'),
+                $stats = $el.find('status'),
+                disconnect_msgs = [],
+                info_msgs = [],
+                action_msgs = [],
+                msgs, i;
+            for (i=0; i<$stats.length; i++) {
+                var stat = $stats[i].getAttribute('code');
+                if (is_self) {
+                    if (_.contains(_.keys(this.disconnectMessages), stat)) {
+                        disconnect_msgs.push(this.disconnectMessages[stat]);
+                    }
+                } else {
+                    if (_.contains(_.keys(this.infoMessages), stat)) {
+                        info_msgs.push(this.infoMessages[stat]);
+                    } else if (_.contains(_.keys(this.actionInfoMessages), stat)) {
+                        action_msgs.push(
+                            '<strong>'+
+                                Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')))+
+                            '</strong>'+
+                             this.actionInfoMessages[stat]);
+                    }
+                }
+            }
+            if (disconnect_msgs.length > 0) {
+                for (i=0; i<disconnect_msgs.length; i++) {
+                    this.showDisconnectMessage(disconnect_msgs[i]);
+                }
+                return true;
+            } 
+            if (!this.$el.find('.chat-area').length) { this.renderChatArea(); }
+            for (i=0; i<info_msgs.length; i++) {
+                $chat_content.append(this.info_template({message: info_msgs[i]}));
+            }
+            for (i=0; i<action_msgs.length; i++) {
+                $chat_content.append(this.info_template({message: action_msgs[i]}));
+            }
+            return false;
+        },
+
+        showErrorMessage: function ($error, room) {
+            var $chat_content = this.$el.find('.chat-content');
+            // We didn't enter the room, so we must remove it from the MUC
+            // add-on
+            converse.connection.muc.removeRoom(room.name);
+            if ($error.attr('type') == 'auth') {
+                if ($error.find('not-authorized').length) {
+                    this.renderPasswordForm();
+                } else if ($error.find('registration-required').length) {
+                    this.showDisconnectMessage('You are not on the member list of this room');
+                } else if ($error.find('forbidden').length) {
+                    this.showDisconnectMessage('You have been banned from this room');
+                }
+            } else if ($error.attr('type') == 'modify') {
+                if ($error.find('jid-malformed').length) {
+                    this.showDisconnectMessage('No nickname was specified');
+                }
+            } else if ($error.attr('type') == 'cancel') {
+                if ($error.find('not-allowed').length) {
+                    this.showDisconnectMessage('You are not allowed to create new rooms');
+                } else if ($error.find('not-acceptable').length) {
+                    this.showDisconnectMessage("Your nickname doesn't conform to this room's policies");
+                } else if ($error.find('conflict').length) {
+                    this.showDisconnectMessage("Your nickname is already taken");
+                } else if ($error.find('item-not-found').length) {
+                    this.showDisconnectMessage("This room does not (yet) exist");
+                } else if ($error.find('service-unavailable').length) {
+                    this.showDisconnectMessage("This room has reached it's maximum number of occupants");
+                }
+            }
         },
 
         submitPassword: function (ev) {
@@ -1313,18 +1427,23 @@
         onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
                 $presence = $(presence),
-                from = $presence.attr('from'), $item;
-            if ($presence.attr('type') !== 'error') {
-                if (!this.$el.find('.chat-area').length) { this.renderChatArea(); }
+                from = $presence.attr('from'),
+                is_self = ($presence.find("status[code='110']").length) || (from == room.name+'/'+Strophe.escapeNode(nick)),
+                $item;
+
+            if ($presence.attr('type') === 'error') {
+                this.showErrorMessage($presence.find('error'), room);
+            } else {
+                if (this.showStatusMessages($presence, is_self)) {
+                    return true;
+                }
                 if ($presence.find("status[code='201']").length) {
                     // This is a new chatroom. We create an instant
                     // chatroom, and let the user manually set any
                     // configuration setting.
                     converse.connection.muc.createInstantRoom(room.name);
                 }
-                if (($presence.find("status[code='110']").length) || (from == room.name+'/'+Strophe.escapeNode(nick))) {
-                    // Check to see if it's our own presence
-                    // code 110 indicates it but ejabberd doesn't seem to comply
+                if (is_self) {
                     $item = $presence.find('item');
                     if ($item.length) {
                         if ($item.attr('affiliation') == 'owner') {
@@ -1335,65 +1454,9 @@
                         // check if server changed our nick
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
-                }
-            } else {
-                var $error = $presence.find('error'),
-                    $chat_content = this.$el.find('.chat-content');
-                // We didn't enter the room, so we must remove it from the MUC
-                // add-on
-                converse.connection.muc.removeRoom(room.name);
-                if ($error.attr('type') == 'auth') {
-                    if ($error.find('not-authorized').length) {
-                        this.renderPasswordForm();
-                    } else if ($error.find('registration-required').length) {
-                        this.renderErrorMessage('You are not on the member list of this room');
-                    } else if ($error.find('forbidden').length) {
-                        this.renderErrorMessage('You have been banned from this room');
-                    }
-                } else if ($error.attr('type') == 'modify') {
-                    if ($error.find('jid-malformed').length) {
-                        this.renderErrorMessage('No nickname was specified');
-                    }
-                } else if ($error.attr('type') == 'cancel') {
-                    if ($error.find('not-allowed').length) {
-                        this.renderErrorMessage('You are not allowed to create new rooms');
-                    } else if ($error.find('not-acceptable').length) {
-                        this.renderErrorMessage("Your nickname doesn't conform to this room's policies");
-                    } else if ($error.find('conflict').length) {
-                        this.renderErrorMessage("Your nickname is already taken");
-                    } else if ($error.find('item-not-found').length) {
-                        this.renderErrorMessage("This room does not (yet) exist");
-                    } else if ($error.find('service-unavailable').length) {
-                        this.renderErrorMessage("This room has reached it's maximum number of occupants");
-                    }
-                }
+                } 
             }
             return true;
-        },
-
-        communicateStatusCodes: function ($message, $chat_content) {
-            /* Parse the message for status codes and communicate their purpose
-             * to the user.
-             * See: http://xmpp.org/registrar/mucstatus.html
-             */
-            var status_messages = {
-                100: 'This room is not anonymous',
-                102: 'This room now shows unavailable members',
-                103: 'This room does not show unavailable members',
-                104: 'Non-privacy-related room configuration has changed',
-                170: 'Room logging is now enabled',
-                171: 'Room logging is now disabled',
-                172: 'This room is now non-anonymous',
-                173: 'This room is now semi-anonymous',
-                174: 'This room is now fully-anonymous'
-            };
-            $message.find('x').find('status').each($.proxy(function (idx, item) {
-                var code  = $(item).attr('code');
-                var message = code && status_messages[code] || null;
-                if (message) {
-                    $chat_content.append(this.info_template({message: message}));
-                }
-            }, this));
         },
 
         onChatRoomMessage: function (message) {
@@ -1425,7 +1488,7 @@
                     datestring: message_date.toString().substring(0,15)
                 }));
             }
-            this.communicateStatusCodes($message, $chat_content);
+            this.showStatusMessages($message);
             if (subject) {
                 this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                 $chat_content.append(this.info_template({'message': 'Topic set by '+sender+' to: '+subject }));
@@ -2337,9 +2400,10 @@
             '<label>BOSH Service URL:</label>' +
             '<input type="text" id="bosh_service_url">'),
 
-
-        connect: function (jid, password) {
-            var connection = new Strophe.Connection(converse.bosh_service_url);
+        connect: function ($form, jid, password) {
+            var $button = $form.find('input[type=submit]'),
+                connection = new Strophe.Connection(converse.bosh_service_url);
+            $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
             connection.connect(jid, password, $.proxy(function (status, message) {
                 if (status === Strophe.Status.CONNECTED) {
                     console.log('Connected');
@@ -2395,10 +2459,7 @@
                 $pw_input.addClass('error');
             }
             if (errors) { return; }
-
-            var $button = $form.find('input[type=submit]');
-            $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
-            this.connect(jid, password);
+            this.connect($form, jid, password);
         },
 
         remove: function () {

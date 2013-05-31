@@ -893,14 +893,11 @@
                 server, $server,
                 jid,
                 $nick = this.$el.find('input.new-chatroom-nick'),
-                nick = $nick.val();
+                nick = $nick.val(),
+                chatroom;
 
-            if (!nick) {
-                $nick.addClass('error');
-            }
-            else {
-                $nick.removeClass('error');
-            }
+            if (!nick) { $nick.addClass('error'); }
+            else { $nick.removeClass('error'); }
 
             if (ev.type === 'click') {
                 jid = $(ev.target).attr('data-room-jid');
@@ -922,7 +919,7 @@
                 }
             }
             if (!nick) { return; }
-            converse.chatboxes.create({
+            chatroom = converse.chatboxes.createChatBox({
                 'id': jid,
                 'jid': jid,
                 'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -930,6 +927,9 @@
                 'chatroom': true,
                 'box_id' : hex_sha1(jid)
             });
+            if (!chatroom.get('connected')) {
+                converse.chatboxesview.views[jid].connect(null);
+            }
         }
     });
 
@@ -1107,7 +1107,8 @@
             '</div>' +
             '<div class="participants">' +
                 '<ul class="participant-list"></ul>' +
-            '</div>'),
+            '</div>'
+        ),
 
         render: function () {
             this.$el.attr('id', this.model.get('box_id'))
@@ -1116,27 +1117,38 @@
         },
 
         renderChatArea: function () {
-            this.$el.find('img.spinner.centered').remove();
-            this.$el.find('.chat-body').append(this.chatarea_template());
+            if (!this.$el.find('.chat-area').length) { 
+                this.$el.find('.chat-body').empty().append(this.chatarea_template());
+            }
             return this;
         },
 
-        initialize: function () {
-            converse.connection.muc.join(
-                this.model.get('jid'),
-                this.model.get('nick'),
-                $.proxy(this.onChatRoomMessage, this),
-                $.proxy(this.onChatRoomPresence, this),
-                $.proxy(this.onChatRoomRoster, this),
-                null);
+        connect: function (password) {
+            if (_.has(converse.connection.muc.rooms, this.model.get('jid'))) {
+                // If the room exists, it already has event listeners, so we
+                // doing add them again.
+                converse.connection.muc.join(
+                    this.model.get('jid'), this.model.get('nick'), null, null, null, password);
+            } else {
+                converse.connection.muc.join(
+                    this.model.get('jid'),
+                    this.model.get('nick'),
+                    $.proxy(this.onChatRoomMessage, this),
+                    $.proxy(this.onChatRoomPresence, this),
+                    $.proxy(this.onChatRoomRoster, this),
+                    password);
+            }
+        },
 
+        initialize: function () {
+            this.connect(null);
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('destroy', function (model, response, options) {
                 this.$el.hide('fast');
                 converse.connection.muc.leave(
                     this.model.get('jid'),
                     this.model.get('nick'),
-                    this.onLeave,
+                    $.proxy(this.onLeave, this),
                     undefined);
             },
             this);
@@ -1144,7 +1156,9 @@
             this.render().show().model.messages.fetch({add: true});
         },
 
-        onLeave: function () {},
+        onLeave: function () {
+            this.model.set('connected', false);
+        },
 
         form_input_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" value="{{value}}"></label>'),
         select_option_template: _.template('<option value="{{value}}">{{label}}</option>'),
@@ -1283,6 +1297,14 @@
             );
         },
 
+        submitPassword: function (ev) {
+            ev.preventDefault();
+            var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
+            this.$el.find('.chatroom-form-container').replaceWith(
+                '<img class="spinner centered" src="images/spinner.gif"/>');
+            this.connect(password);
+        },
+
         renderPasswordForm: function () {
             this.$el.find('img.centered.spinner').remove();
             this.$el.find('.chat-body').append(
@@ -1297,8 +1319,8 @@
         },
 
         showDisconnectMessage: function (msg) {
-            this.$el.find('.chat-area').hide();
-            this.$el.find('.participants').hide();
+            this.$el.find('.chat-area').remove();
+            this.$el.find('.participants').remove();
             this.$el.find('img.centered.spinner').remove();
             this.$el.find('.chat-body').append($('<p>'+msg+'</p>'));
         },
@@ -1366,16 +1388,17 @@
                 for (i=0; i<disconnect_msgs.length; i++) {
                     this.showDisconnectMessage(disconnect_msgs[i]);
                 }
-                return true;
+                this.model.set('connected', false)
+                return;
             } 
-            if (!this.$el.find('.chat-area').length) { this.renderChatArea(); }
+            this.renderChatArea();
             for (i=0; i<info_msgs.length; i++) {
                 $chat_content.append(this.info_template({message: info_msgs[i]}));
             }
             for (i=0; i<action_msgs.length; i++) {
                 $chat_content.append(this.info_template({message: action_msgs[i]}));
             }
-            return false;
+            this.scrollDown();
         },
 
         showErrorMessage: function ($error, room) {
@@ -1410,20 +1433,6 @@
             }
         },
 
-        submitPassword: function (ev) {
-            ev.preventDefault();
-            var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-            this.$el.find('.chatroom-form-container').replaceWith(
-                '<img class="spinner centered" src="images/spinner.gif"/>');
-            converse.connection.muc.join(
-                this.model.get('jid'),
-                this.model.get('nick'),
-                $.proxy(this.onChatRoomMessage, this),
-                $.proxy(this.onChatRoomPresence, this),
-                $.proxy(this.onChatRoomRoster, this),
-                password);
-        },
-
         onChatRoomPresence: function (presence, room) {
             var nick = room.nick,
                 $presence = $(presence),
@@ -1432,9 +1441,12 @@
                 $item;
 
             if ($presence.attr('type') === 'error') {
+                this.model.set('connected', false)
                 this.showErrorMessage($presence.find('error'), room);
             } else {
-                if (this.showStatusMessages($presence, is_self)) {
+                this.model.set('connected', true);
+                this.showStatusMessages($presence, is_self);
+                if (!this.model.get('connected')) {
                     return true;
                 }
                 if ($presence.find("status[code='201']").length) {
@@ -1519,7 +1531,7 @@
         ),
 
         onChatRoomRoster: function (roster, room) {
-            if (!this.$el.find('.chat-area').length) { this.renderChatArea(); }
+            this.renderChatArea();
             var controlboxview = converse.chatboxesview.views.controlbox,
                 roster_size = _.size(roster),
                 $participant_list = this.$el.find('.participant-list'),
@@ -1563,6 +1575,16 @@
                     }
                 }, this)
             });
+        },
+
+        createChatBox: function (attrs) {
+            var chatbox  = this.get(attrs.jid);
+            if (chatbox) {
+                chatbox.trigger('show');
+            } else {
+                chatbox = this.create(attrs);
+            }
+            return chatbox;
         },
 
         messageReceived: function (message) {
@@ -1676,21 +1698,15 @@
 
         openChat: function (ev) {
             ev.preventDefault();
-            var jid = Strophe.getBareJidFromJid(this.model.get('jid')),
-                chatbox  = converse.chatboxes.get(jid);
-            if (chatbox) {
-                chatbox.trigger('show');
-            } else {
-                converse.chatboxes.create({
-                    'id': this.model.get('jid'),
-                    'jid': this.model.get('jid'),
-                    'fullname': this.model.get('fullname'),
-                    'image_type': this.model.get('image_type'),
-                    'image': this.model.get('image'),
-                    'url': this.model.get('url'),
-                    'status': this.model.get('status')
-                });
-            }
+            converse.chatboxes.createChatBox({
+                'id': this.model.get('jid'),
+                'jid': this.model.get('jid'),
+                'fullname': this.model.get('fullname'),
+                'image_type': this.model.get('image_type'),
+                'image': this.model.get('image'),
+                'url': this.model.get('url'),
+                'status': this.model.get('status')
+            });
         },
 
         removeContact: function (ev) {

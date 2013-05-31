@@ -368,7 +368,7 @@
             var $chat_content = this.$el.find('.chat-content'), i,
                 msgs_length = msgs.length;
             for (i=0; i<msgs_length; i++) {
-                $chat_content.append($('<div class="chat-help">'+msgs[i]+'</div>'));
+                $chat_content.append($('<div class="chat-info">'+msgs[i]+'</div>'));
             }
             this.scrollDown();
         },
@@ -499,20 +499,20 @@
         },
 
         template: _.template(
-                    '<div class="chat-head chat-head-chatbox">' +
-                        '<a class="close-chatbox-button">X</a>' +
-                        '<a href="{{url}}" target="_blank" class="user">' +
-                            '<div class="chat-title"> {{ fullname }} </div>' +
-                        '</a>' +
-                        '<p class="user-custom-message"><p/>' +
-                    '</div>' +
-                    '<div class="chat-content"></div>' +
-                    '<form class="sendXMPPMessage" action="" method="post">' +
-                    '<textarea ' +
-                        'type="text" ' +
-                        'class="chat-textarea" ' +
-                        'placeholder="Personal message"/>'+
-                    '</form>'),
+            '<div class="chat-head chat-head-chatbox">' +
+                '<a class="close-chatbox-button">X</a>' +
+                '<a href="{{url}}" target="_blank" class="user">' +
+                    '<div class="chat-title"> {{ fullname }} </div>' +
+                '</a>' +
+                '<p class="user-custom-message"><p/>' +
+            '</div>' +
+            '<div class="chat-content"></div>' +
+            '<form class="sendXMPPMessage" action="" method="post">' +
+            '<textarea ' +
+                'type="text" ' +
+                'class="chat-textarea" ' +
+                'placeholder="Personal message"/>'+
+            '</form>'),
 
         render: function () {
             this.$el.attr('id', this.model.get('box_id'))
@@ -645,9 +645,9 @@
             $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
                 var $ul= $('.search-xmpp ul');
                 $ul.find('li.found-user').remove();
-                $ul.find('li.chat-help').remove();
+                $ul.find('li.chat-info').remove();
                 if (!data.length) {
-                    $ul.append('<li class="chat-help">No users found</li>');
+                    $ul.append('<li class="chat-info">No users found</li>');
                 }
 
                 $(data).each(function (idx, obj) {
@@ -1038,7 +1038,7 @@
             'click a.configure-chatroom-button': 'configureChatRoom',
             'keypress textarea.chat-textarea': 'keyPressed'
         },
-        info_template: _.template('<div class="chat-event">{{message}}</div>'),
+        info_template: _.template('<div class="chat-info">{{message}}</div>'),
 
         sendChatRoomMessage: function (body) {
             var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],

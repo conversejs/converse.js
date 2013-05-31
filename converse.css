@@ -194,11 +194,11 @@ ul.participant-list li.moderator {
     display: inline-block;
 }
 
-.chat-event, .chat-date, .chat-help {
+.chat-event, .chat-date, .chat-info {
     color: #808080;
 }
 
-li.chat-help {
+li.chat-info {
     padding-left: 10px;
 }
 

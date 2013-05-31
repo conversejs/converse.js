@@ -492,7 +492,7 @@
                     jid,
                     $.proxy(function (jid, fullname, image, image_type, url) {
                         this.model.save({
-                            'fullname' : fullname,
+                            'fullname' : fullname || jid,
                             'url': url,
                             'image_type': image_type,
                             'image': image,
@@ -1063,7 +1063,8 @@
                         }
                     }
                 });
-                converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
+                converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus})
+                converse.xmppstatusview.render();
                 this.roomspanel = new converse.RoomsPanel();
                 this.roomspanel.$parent = this.$el;
                 this.roomspanel.render();
@@ -1629,7 +1630,8 @@
 
         messageReceived: function (message) {
             var partner_jid, $message = $(message),
-                message_from = $message.attr('from');
+                message_from = $message.attr('from'),
+                roster_item, chatbox;
             if (message_from == converse.connection.jid) {
                 // FIXME: Forwarded messages should be sent to specific resources,
                 // not broadcasted
@@ -1651,26 +1653,16 @@
                 resource = Strophe.getResourceFromJid(message_from);
             }
             chatbox = this.get(partner_jid);
+            roster_item = converse.roster.get(partner_jid);
             if (!chatbox) {
-                converse.getVCard(
-                    partner_jid,
-                    $.proxy(function (jid, fullname, image, image_type, url) {
-                        var chatbox = this.create({
-                            'id': jid,
-                            'jid': jid,
-                            'fullname': fullname,
-                            'image_type': image_type,
-                            'image': image,
-                            'url': url
-                        });
-                        chatbox.messageReceived(message);
-                        converse.roster.addResource(partner_jid, resource);
-                    }, this),
-                    $.proxy(function () {
-                        // # FIXME
-                        console.log("An error occured while fetching vcard");
-                    }, this));
-                return true;
+                chatbox = this.create({
+                    'id': partner_jid,
+                    'jid': partner_jid,
+                    'fullname': roster_item.get('fullname') || jid,
+                    'image_type': roster_item.get('image_type'),
+                    'image': roster_item.get('image'),
+                    'url': roster_item.get('url')
+                });
             }
             chatbox.messageReceived(message);
             converse.roster.addResource(partner_jid, resource);
@@ -1831,7 +1823,7 @@
             var rosteritem = converse.roster.get(jid);
             if (rosteritem) {
                 rosteritem.save({
-                    'fullname': fullname,
+                    'fullname': fullname || jid,
                     'image_type': img_type,
                     'image': img,
                     'url': url,
@@ -2194,7 +2186,7 @@
                     item.set('sorted', true);
                     this.initialSort();
                     this.$el.show(function () {
-                        converse.xmppstatusview.render();
+                        converse.xmppstatus.initStatus();
                     });
                 }
             }
@@ -2395,7 +2387,6 @@
             $options_target = this.$el.find("#target dd ul").hide();
             $options_target.append(options_list.join(''));
             $select.remove();
-            this.model.initStatus();
             return this;
         }
     });

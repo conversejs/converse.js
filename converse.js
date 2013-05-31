@@ -398,7 +398,6 @@
                     return;
                 }
             }
-
             var message = $msg({from: converse.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
                 .c('body').t(text).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
@@ -1068,17 +1067,15 @@
                     break;
                 case 'help':
                     $chat_content = this.$el.find('.chat-content');
-                    $chat_content.append(
-                        '<div class="chat-help"><strong>/help</strong>: Show this menu</div>' +
-                        '<div class="chat-help"><strong>/clear</strong>: Write in the third person</div>' +
-                        '<div class="chat-help"><strong>/topic</strong>: Set chatroom topic</div>');
-                    /* TODO:
-                    $chat_content.append($('<div class="chat-help"><strong>/kick</strong>: Kick out user</div>'));
-                    $chat_content.append($('<div class="chat-help"><strong>/ban</strong>: Ban user</div>'));
-                    $chat_content.append($('<div class="chat-help"><strong>/op $user</strong>: Remove messages</div>'));
-                    $chat_content.append($('<div class="chat-help"><strong>/deop $user</strong>: Remove messages</div>'));
-                    */
-                    this.scrollDown();
+                    msgs = [
+                        '<strong>/help</strong>: Show this menu',
+                        '<strong>/me</strong>: Write in the third person',
+                        '<strong>/topic</strong>: Set chatroom topic',
+                        '<strong>/kick</strong>: Kick user from chatroom',
+                        '<strong>/ban</strong>: Ban user from chatroom',
+                        '<strong>/clear</strong>: Remove messages'
+                        ];
+                    this.addHelpMessages(msgs);
                     break;
                 default:
                     this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);

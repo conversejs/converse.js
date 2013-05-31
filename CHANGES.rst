@@ -8,6 +8,8 @@ Changelog
   [jcbrand]
 - Bugfix: Cannot join chatroom when clicking from a list of rooms.
   [jcbrand]
+- Add better support for kicking or banning users from chatrooms.
+  [jcbrand]
 
 0.3 (2013-05-21)
 ----------------

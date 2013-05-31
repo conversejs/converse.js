@@ -10,7 +10,8 @@
             'listRooms': function () {},
             'join': function () {},
             'leave': function () {},
-            'removeRoom': function () {}
+            'removeRoom': function () {},
+            'rooms': {}
         },
         'jid': 'dummy@localhost',
         'addHandler': function (handler, ns, name, type, id, from, options) { 

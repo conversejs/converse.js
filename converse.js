@@ -2007,10 +2007,15 @@
 
         presenceHandler: function (presence) {
             var $presence = $(presence),
-                jid = $presence.attr('from'),
+                presence_type = $presence.attr('type');
+            if (presence_type === 'error') {
+                // TODO
+                // error presence stanzas don't necessarily have a 'from' attr.
+                return true;
+            }
+            var jid = $presence.attr('from'),
                 bare_jid = Strophe.getBareJidFromJid(jid),
                 resource = Strophe.getResourceFromJid(jid),
-                presence_type = $presence.attr('type'),
                 $show = $presence.find('show'),
                 chat_status = $show.text() || 'online',
                 status_message = $presence.find('status'),
@@ -2027,13 +2032,11 @@
             } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                 return true; // Ignore MUC
             }
-
             item = this.getItem(bare_jid);
             if (item && (status_message.text() != item.get('status'))) {
                 item.save({'status': status_message.text()});
             }
-
-            if ((presence_type === 'error') || (presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
+            if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                 return true;
             } else if (presence_type === 'subscribe') {
                 if (converse.auto_subscribe) {

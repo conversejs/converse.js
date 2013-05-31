@@ -12,6 +12,11 @@ Changelog
   [jcbrand]
 - Fixed alignment of chat messages in Firefox.
   [jcbrand]
+- More intelligent fetching of vCards.
+  [jcbrand]
+- Fixed a race condition bug. Make sure that the roster is populated before
+  sending initial presence.
+  [jcbrand]
 
 0.3 (2013-05-21)
 ----------------

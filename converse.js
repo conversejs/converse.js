@@ -217,7 +217,7 @@
                     'fullname' : this.get('fullname'),
                     'url': this.get('url'),
                     'image_type': this.get('image_type'),
-                    'image_src': this.get('image_src')
+                    'image': this.get('image')
                 });
             }
         },
@@ -420,10 +420,7 @@
 
         keyPressed: function (ev) {
             var $textarea = $(ev.target),
-                message,
-                notify,
-                composing;
-
+                message, notify, composing;
             if(ev.keyCode == 13) {
                 ev.preventDefault();
                 message = $textarea.val();
@@ -436,7 +433,6 @@
                     }
                 }
                 this.$el.data('composing', false);
-
             } else if (!this.model.get('chatroom')) {
                 // composing data is only for single user chat
                 composing = this.$el.data('composing');
@@ -470,7 +466,10 @@
                 }
             } if (_.has(item.changed, 'status')) {
                 this.showStatusMessage(item.get('status'));
+            } if (_.has(item.changed, 'image')) {
+                this.renderAvatar();
             }
+            // TODO check for changed fullname as well
         },
 
         showStatusMessage: function (msg) {
@@ -485,12 +484,34 @@
             }
         },
 
+        updateVCard: function () {
+            var jid = this.model.get('jid'),
+                rosteritem = converse.roster.get(jid);
+            if ((rosteritem)&&(!rosteritem.get('vcard_updated'))) {
+                converse.getVCard(
+                    jid,
+                    $.proxy(function (jid, fullname, image, image_type, url) {
+                        this.model.save({
+                            'fullname' : fullname,
+                            'url': url,
+                            'image_type': image_type,
+                            'image': image,
+                            'vcard_updated': converse.toISOString(new Date())
+                        });
+                    }, this),
+                    $.proxy(function (stanza) {
+                        console.log("ChatBoxView.initialize: An error occured while fetching vcard");
+                    }, this)
+                );
+            }
+        },
+
         initialize: function (){
             this.model.messages.on('add', this.showMessage, this);
             this.model.on('show', this.show, this);
             this.model.on('destroy', this.hide, this);
             this.model.on('change', this.onChange, this);
-
+            this.updateVCard();
             this.$el.appendTo(converse.chatboxesview.$el);
             this.render().show().model.messages.fetch({add: true});
             if (this.model.get('status')) {
@@ -514,21 +535,26 @@
                 'placeholder="Personal message"/>'+
             '</form>'),
 
+        renderAvatar: function () {
+            if (!this.model.get('image')) {
+                return;
+            }
+            var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
+                canvas = $('<canvas height="35px" width="35px" class="avatar"></canvas>'),
+                ctx = canvas.get(0).getContext('2d'),
+                img = new Image();   // Create new Image object
+            img.onload = function() {
+                var ratio = img.width/img.height;
+                ctx.drawImage(img, 0,0, 35*ratio, 35);
+            };
+            img.src = img_src;
+            this.$el.find('.chat-title').before(canvas);
+        },
+
         render: function () {
             this.$el.attr('id', this.model.get('box_id'))
-                    .html(this.template(this.model.toJSON()));
-            if (this.model.get('image')) {
-                var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                    canvas = $('<canvas height="35px" width="35px" class="avatar"></canvas>'),
-                    ctx = canvas.get(0).getContext('2d'),
-                    img = new Image();   // Create new Image object
-                img.onload = function() {
-                    var ratio = img.width/img.height;
-                    ctx.drawImage(img, 0,0, 35*ratio, 35);
-                };
-                img.src = img_src;
-                this.$el.find('.chat-title').before(canvas);
-            }
+                .html(this.template(this.model.toJSON()));
+            this.renderAvatar();
             return this;
         },
 
@@ -584,7 +610,7 @@
         template: _.template(
             '<form class="set-xmpp-status" action="" method="post">'+
                 '<span id="xmpp-status-holder">'+
-                    '<select id="select-xmpp-status">'+
+                    '<select id="select-xmpp-status" style="display:none">'+
                         '<option value="online">Online</option>'+
                         '<option value="dnd">Busy</option>'+
                         '<option value="away">Away</option>'+
@@ -628,6 +654,7 @@
                 markup = this.add_contact_template();
             }
             this.$el.find('.search-xmpp ul').append(markup);
+            this.$el.append(converse.rosterview.$el);
             return this;
         },
 
@@ -1021,6 +1048,22 @@
                 this.contactspanel = new converse.ContactsPanel();
                 this.contactspanel.$parent = this.$el;
                 this.contactspanel.render();
+                converse.xmppstatus = new converse.XMPPStatus();
+                converse.xmppstatus.localStorage = new Backbone.LocalStorage(
+                    hex_sha1('converse.xmppstatus-'+converse.bare_jid));
+                converse.xmppstatus.fetch({
+                    success: function (xmppstatus, resp) {
+                        if (!xmppstatus.get('fullname')) {
+                            converse.getVCard(
+                                null, // No 'to' attr when getting one's own vCard
+                                function (jid, fullname, image, image_type, url) {
+                                    converse.xmppstatus.save({'fullname': fullname});
+                                }
+                            );
+                        }
+                    }
+                });
+                converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                 this.roomspanel = new converse.RoomsPanel();
                 this.roomspanel.$parent = this.$el;
                 this.roomspanel.render();
@@ -1114,7 +1157,7 @@
         },
 
         renderChatArea: function () {
-            if (!this.$el.find('.chat-area').length) { 
+            if (!this.$el.find('.chat-area').length) {
                 this.$el.find('.chat-body').empty().append(this.chatarea_template());
             }
             return this;
@@ -1387,7 +1430,7 @@
                 }
                 this.model.set('connected', false)
                 return;
-            } 
+            }
             this.renderChatArea();
             for (i=0; i<info_msgs.length; i++) {
                 $chat_content.append(this.info_template({message: info_msgs[i]}));
@@ -1463,7 +1506,7 @@
                         // check if server changed our nick
                         this.model.set({'nick': Strophe.getResourceFromJid(from)});
                     }
-                } 
+                }
             }
             return true;
         },
@@ -1654,6 +1697,7 @@
                     }
                     this.views[item.get('id')] = view;
                 } else {
+                    delete view.model; // Remove ref to old model to help garbage collection
                     view.model = item;
                     view.initialize();
                     if (item.get('id') !== 'controlbox') {
@@ -1784,6 +1828,16 @@
                 img = $vcard.find('BINVAL').text(),
                 img_type = $vcard.find('TYPE').text(),
                 url = $vcard.find('URL').text();
+            var rosteritem = converse.roster.get(jid);
+            if (rosteritem) {
+                rosteritem.save({
+                    'fullname': fullname,
+                    'image_type': img_type,
+                    'image': img,
+                    'url': url,
+                    'vcard_updated': converse.toISOString(new Date())
+                });
+            }
             callback(jid, fullname, img, img_type, url);
         }, this), jid, errback);
     }
@@ -2072,8 +2126,7 @@
 
             this.$el.hide().html(this.template());
             this.model.fetch({add: true}); // Get the cached roster items from localstorage
-            this.initialSort();
-            this.$el.appendTo(converse.chatboxesview.views.controlbox.contactspanel.$el);
+            // XXX: is this necessary? this.initialSort();
         },
 
         updateChatBox: function (item, changed) {
@@ -2140,7 +2193,9 @@
                     // options where all of the items are offline and now we can show the rosterView
                     item.set('sorted', true);
                     this.initialSort();
-                    this.$el.show();
+                    this.$el.show(function () {
+                        converse.xmppstatusview.render();
+                    });
                 }
             }
             // Hide the headings if there are no contacts under them
@@ -2180,10 +2235,10 @@
         initStatus: function () {
             var stat = this.get('status');
             if (stat === undefined) {
-                this.save({status: 'online'});
-            } else {
-                this.sendPresence(stat);
+                stat = 'online';
+                this.save({status: stat});
             }
+            this.sendPresence(stat);
         },
 
         sendPresence: function (type) {
@@ -2340,6 +2395,7 @@
             $options_target = this.$el.find("#target dd ul").hide();
             $options_target.append(options_list.join(''));
             $select.remove();
+            this.model.initStatus();
             return this;
         }
     });
@@ -2537,53 +2593,33 @@
         this.domain = Strophe.getDomainFromJid(this.connection.jid);
         this.features = new this.Features();
 
+
         // Set up the roster
         this.roster = new this.RosterItems();
         this.roster.localStorage = new Backbone.LocalStorage(
             hex_sha1('converse.rosteritems-'+this.bare_jid));
-
-        this.xmppstatus = new this.XMPPStatus({id:1});
-        this.xmppstatus.localStorage = new Backbone.LocalStorage(
-            hex_sha1('converse.xmppstatus-'+this.bare_jid));
-
-        this.chatboxes.onConnected();
+        this.connection.roster.registerCallback(
+            $.proxy(this.roster.rosterHandler, this.roster),
+            null, 'presence', null);
         this.rosterview = new this.RosterView({'model':this.roster});
 
-        this.xmppstatusview = new this.XMPPStatusView({'model': this.xmppstatus}).render();
-        this.xmppstatus.fetch({
-            success: $.proxy(function (xmppstatus, resp) {
-                if (!xmppstatus.get('fullname')) {
-                    this.getVCard(
-                        null, // No 'to' attr when getting one's own vCard
-                        $.proxy(function (jid, fullname, image, image_type, url) {
-                            this.xmppstatus.save({'fullname': fullname});
-                        }, this));
-                }
-            }, this)
-        });
+        this.chatboxes.onConnected();
 
         this.connection.addHandler(
             $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
             'http://jabber.org/protocol/rosterx', 'message', null);
 
-        this.connection.roster.registerCallback(
-            $.proxy(this.roster.rosterHandler, this.roster),
-            null, 'presence', null);
-
-        this.connection.roster.get($.proxy(function () {
+        this.connection.roster.get($.proxy(function (a) {
             this.connection.addHandler(
                     $.proxy(function (presence) {
                         this.presenceHandler(presence);
                         return true;
                     }, this.roster), null, 'presence', null);
-
             this.connection.addHandler(
                     $.proxy(function (message) {
                         this.chatboxes.messageReceived(message);
                         return true;
                     }, this), null, 'message', 'chat');
-
-            this.xmppstatus.initStatus();
         }, this));
 
         $(window).on("blur focus", $.proxy(function(e) {

@@ -471,8 +471,6 @@
                         }).c('body').t(message).up()
                           .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
-                    spyOn(this, 'getVCard').andCallThrough();
-
                     // We don't already have an open chatbox for this user
                     expect(this.chatboxes.get(sender_jid)).not.toBeDefined();
 
@@ -483,10 +481,6 @@
                     }, converse));
                     waits(500);
                     runs($.proxy(function () {
-                        // Since we didn't already have an open chatbox, one
-                        // will asynchronously created inside a callback to
-                        // getVCard
-                        expect(this.getVCard).toHaveBeenCalled();
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);
                         var chatboxview = this.chatboxesview.views[sender_jid];

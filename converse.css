@@ -174,24 +174,29 @@ ul.participant-list li.moderator {
     color:#666666;
 }
 
+.chat-message-room,
+.chat-message-them,
 .chat-message-me {
     font-weight: bold;
-    color: #436976;
-}
-
-.chat-message-room {
-    font-weight: bold;
-    color: #4B7003;
-}
-
-.chat-message-them {
-    font-weight: bold;
-    color: #F62817;
     white-space: nowrap;
     max-width: 100px;
     text-overflow: ellipsis;
     overflow: hidden;
     display: inline-block;
+    float: left;
+    padding-right: 3px;
+}
+
+.chat-message-them {
+    color: #F62817;
+}
+
+.chat-message-me {
+    color: #436976;
+}
+
+.chat-message-room {
+    color: #4B7003;
 }
 
 .chat-event, .chat-date, .chat-info {
@@ -263,7 +268,7 @@ div.chat-title {
 .chat-head-chatbox,
 .chat-head-chatroom {
     background: linear-gradient(top, rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%);
-    height: 33px;
+    height: 35px;
     position: relative;
 }
 

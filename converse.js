@@ -2464,28 +2464,32 @@
             '<input type="text" id="bosh_service_url">'),
 
         connect: function ($form, jid, password) {
-            var $button = $form.find('input[type=submit]'),
+            var button = null,
                 connection = new Strophe.Connection(converse.bosh_service_url);
-            $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
+            if ($form) {
+                $button = $form.find('input[type=submit]');
+                $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
+            }
             connection.connect(jid, password, $.proxy(function (status, message) {
                 if (status === Strophe.Status.CONNECTED) {
                     console.log('Connected');
                     converse.onConnected(connection);
                 } else if (status === Strophe.Status.DISCONNECTED) {
-                    $button.show().siblings('img').remove();
+                    if ($button) { $button.show().siblings('img').remove(); }
                     converse.giveFeedback('Disconnected', 'error');
+                    this.connect(null, connection.jid, connection.pass);
                 } else if (status === Strophe.Status.Error) {
-                    $button.show().siblings('img').remove();
+                    if ($button) { $button.show().siblings('img').remove(); }
                     converse.giveFeedback('Error', 'error');
                 } else if (status === Strophe.Status.CONNECTING) {
                     converse.giveFeedback('Connecting');
                 } else if (status === Strophe.Status.CONNFAIL) {
-                    $button.show().siblings('img').remove();
+                    if ($button) { $button.show().siblings('img').remove(); }
                     converse.giveFeedback('Connection Failed', 'error');
                 } else if (status === Strophe.Status.AUTHENTICATING) {
                     converse.giveFeedback('Authenticating');
                 } else if (status === Strophe.Status.AUTHFAIL) {
-                    $button.show().siblings('img').remove();
+                    if ($button) { $button.show().siblings('img').remove(); }
                     converse.giveFeedback('Authentication Failed', 'error');
                 } else if (status === Strophe.Status.DISCONNECTING) {
                     converse.giveFeedback('Disconnecting', 'error');

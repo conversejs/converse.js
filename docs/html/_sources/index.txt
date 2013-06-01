@@ -29,7 +29,7 @@ webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.
 
 You'll need to set up your own XMPP server and in order to have
-`Session support`_ (i.e. single-signon functionality whereby users are authenticated once and stay
+`Session Support`_ (i.e. single-signon functionality whereby users are authenticated once and stay
 logged in to XMPP upon page reload) you will also have to add some server-side
 code.
 
@@ -47,7 +47,7 @@ An XMPP/Jabber server
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).
 
 You can connect to public XMPP servers like ``jabber.org`` but if you want to
-have `Session support`_ you'll have to set up your own XMPP server.
+have `Session Support`_ you'll have to set up your own XMPP server.
 
 You can find a list of public XMPP servers/providers on `xmpp.net`_ and a list of
 servers that you can set up yourself on `xmpp.org`_.
@@ -99,7 +99,7 @@ website. This will remove the need for any cross-domain XHR support.
 Server-side authentication
 ==========================
 
-Session support
+Session Support
 ---------------
 
 It's possible to enable single-site login, whereby users already
@@ -140,7 +140,7 @@ You'll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.
 
-For more info on this, read `Session support`_.
+For more info on this, read `Session Support`_.
 
 You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
@@ -260,8 +260,6 @@ There are two ways to add users.
 This setting enables the second mechanism, otherwise by default the first will
 be used.
 
-
-
 ============
 Minification
 ============
@@ -302,6 +300,91 @@ CSS can be minimized with Yahoo's yuicompressor tool:
     yui-compressor --type=css converse.css -o converse.min.css
 
 
+============
+Translations
+============
+
+The gettext POT file located in ./locales/converse.pot is the template
+containing all translations and from which for each language an individual PO
+file is generated.
+
+The POT file contains all translateable strings extracted from converse.js.
+
+To make a user facing string translateable, wrap it in the double underscore helper
+function like so:
+
+::
+
+    __('This string will be translated at runtime');
+
+After adding the string, you'll need to regenerate the POT file, like so:
+
+::
+
+    make pot
+
+You can then create or update the PO file for a specific language by doing the following:
+
+::
+
+    msgmerge ./locales/af/LC_MESSAGES/converse.po ./locales/converse.pot -U
+
+This PO file is then what gets translated.
+
+If you've created a new PO file, please make sure to add the following
+attributes at the top of the file (under *Content-Transfer-Encoding*). They are
+required as configuration settings for Jed, the Javascript translations library
+that we're using.
+
+::
+
+    "domain: converse\n"
+    "lang: af\n",
+    "plural_forms: nplurals=2; plural=(n != 1);\n"
+    
+
+Unfortunately Jed cannot use the PO files directly. We have to generate from it 
+a file in JSON format and then put that in a .js file for the specific
+language.
+
+To generate JSON from a PO file, you'll need po2json for node.js. Run the
+following command to install it (npm being the node.js package manager):
+
+::
+
+    npm install po2json
+    
+You can then convert the translations into JSON format:
+
+::
+
+    po2json locales/af/LC_MESSAGES/converse.po locales/af/LC_MESSAGES/converse.json
+
+Now from converse.json paste the data as a value for the "locale_data" key in the
+object in the language's .js file.
+
+So, if you are for example translating into German (language code 'de'), you'll
+create or update the file ./locale/LC_MESSAGES/de.js with the following code:
+
+::
+
+    (function (root, factory) {
+        define("af", ['jed'], function () {
+            return factory(new Jed({
+                "domain": "converse",
+                "locale_data": {
+                    // Paste the JSON data from converse.json here
+                }
+            })
+        }
+    }(this, function (i18n) { 
+        return i18n; 
+    }));
+
+making sure to also paste the JSON data as value to the "locale_data" key.
+
+Congratulations, you've now succesfully added your translations. Sorry for all
+those hoops you had to jump through.
 
 
 .. _`conversejs.org`: http://conversejs.org

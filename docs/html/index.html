@@ -73,7 +73,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#server-side-authentication" id="id6">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#session-support" id="id7">Session support</a></li>
+<li><a class="reference internal" href="#session-support" id="id7">Session Support</a></li>
 </ul>
 </li>
 </ul>
@@ -98,6 +98,7 @@
 <li><a class="reference internal" href="#minifying-css" id="id21">Minifying CSS</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#translations" id="id22">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="introduction">
@@ -113,7 +114,7 @@ properly configure and integrate it into your site.</p>
 webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.</p>
 <p>You&#8217;ll need to set up your own XMPP server and in order to have
-<a class="reference internal" href="#session-support">Session support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
+<a class="reference internal" href="#session-support">Session Support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
 logged in to XMPP upon page reload) you will also have to add some server-side
 code.</p>
 <p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
@@ -126,7 +127,7 @@ requirements.</p>
 <p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
 <p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
-have <a class="reference internal" href="#session-support">Session support</a> you&#8217;ll have to set up your own XMPP server.</p>
+have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
 <p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
 servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
 </div>
@@ -166,7 +167,7 @@ website. This will remove the need for any cross-domain XHR support.</p>
 <div class="section" id="server-side-authentication">
 <h2><a class="toc-backref" href="#id6">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="session-support">
-<h3><a class="toc-backref" href="#id7">Session support</a><a class="headerlink" href="#session-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">Session Support</a><a class="headerlink" href="#session-support" title="Permalink to this headline">¶</a></h3>
 <p>It&#8217;s possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
 but this will require custom code on your server.</p>
@@ -196,7 +197,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read <a class="reference internal" href="#session-support">Session support</a>.</p>
+<p>For more info on this, read <a class="reference internal" href="#session-support">Session Support</a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
@@ -311,6 +312,64 @@ manager, NPM.</p>
 <div class="highlight-python"><pre>yui-compressor --type=css converse.css -o converse.min.css</pre>
 </div>
 </div>
+</div>
+<div class="section" id="translations">
+<h1><a class="toc-backref" href="#id22">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<p>The gettext POT file located in ./locales/converse.pot is the template
+containing all translations and from which for each language an individual PO
+file is generated.</p>
+<p>The POT file contains all translateable strings extracted from converse.js.</p>
+<p>To make a user facing string translateable, wrap it in the double underscore helper
+function like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">__</span><span class="p">(</span><span class="s">&#39;This string will be translated at runtime&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>After adding the string, you&#8217;ll need to regenerate the POT file, like so:</p>
+<div class="highlight-python"><pre>make pot</pre>
+</div>
+<p>You can then create or update the PO file for a specific language by doing the following:</p>
+<div class="highlight-python"><pre>msgmerge ./locales/af/LC_MESSAGES/converse.po ./locales/converse.pot -U</pre>
+</div>
+<p>This PO file is then what gets translated.</p>
+<p>If you&#8217;ve created a new PO file, please make sure to add the following
+attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). They are
+required as configuration settings for Jed, the Javascript translations library
+that we&#8217;re using.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;domain: converse</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="s">&quot;lang: af</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="s">&quot;plural_forms: nplurals=2; plural=(n != 1);</span><span class="se">\n</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>Unfortunately Jed cannot use the PO files directly. We have to generate from it
+a file in JSON format and then put that in a .js file for the specific
+language.</p>
+<p>To generate JSON from a PO file, you&#8217;ll need po2json for node.js. Run the
+following command to install it (npm being the node.js package manager):</p>
+<div class="highlight-python"><pre>npm install po2json</pre>
+</div>
+<p>You can then convert the translations into JSON format:</p>
+<div class="highlight-python"><pre>po2json locales/af/LC_MESSAGES/converse.po locales/af/LC_MESSAGES/converse.json</pre>
+</div>
+<p>Now from converse.json paste the data as a value for the &#8220;locale_data&#8221; key in the
+object in the language&#8217;s .js file.</p>
+<p>So, if you are for example translating into German (language code &#8216;de&#8217;), you&#8217;ll
+create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p>
+<div class="highlight-python"><pre>(function (root, factory) {
+    define("af", ['jed'], function () {
+        return factory(new Jed({
+            "domain": "converse",
+            "locale_data": {
+                // Paste the JSON data from converse.json here
+            }
+        })
+    }
+}(this, function (i18n) {
+    return i18n;
+}));</pre>
+</div>
+<p>making sure to also paste the JSON data as value to the &#8220;locale_data&#8221; key.</p>
+<p>Congratulations, you&#8217;ve now succesfully added your translations. Sorry for all
+those hoops you had to jump through.</p>
 </div>
 
 

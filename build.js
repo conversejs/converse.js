@@ -2,6 +2,10 @@
     baseUrl: ".",
     paths: {
         "jquery": "Libraries/require-jquery",
+        "jed": "Libraries/jed",
+        "locales": "Libraries/locales",
+        "af": "locale/af/LC_MESSAGES/af",
+        "en": "locale/en/LC_MESSAGES/en",
         "sjcl": "Libraries/sjcl",
         "tinysort": "Libraries/jquery.tinysort",
         "underscore": "Libraries/underscore",

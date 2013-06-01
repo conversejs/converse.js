@@ -11,6 +11,7 @@ Changelog
 - More intelligent fetching of vCards. [jcbrand]
 - Fixed a race condition bug. Make sure that the roster is populated before sending initial presence. [jcbrand]
 - Reconnect automatically when the connection drops. [jcbrand]
+- Add support for internationalization. [jcbrand]
 
 0.3 (2013-05-21)
 ----------------

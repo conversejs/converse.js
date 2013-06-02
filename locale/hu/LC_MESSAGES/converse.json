@@ -1,0 +1,457 @@
+{
+   "converse": {
+      "": {
+         "Project-Id-Version": "Converse.js 0.4",
+         "Report-Msgid-Bugs-To": "",
+         "POT-Creation-Date": "2013-06-01 23:03+0200",
+         "PO-Revision-Date": "2013-06-02 19:45+0200",
+         "Last-Translator": "JC Brand <jc@opkode.com>",
+         "Language-Team": "Hungarian",
+         "Language": "hu",
+         "MIME-Version": "1.0",
+         "Content-Type": "text/plain; charset=ASCII",
+         "Content-Transfer-Encoding": "8bit",
+         "Plural-Forms": "nplurals=2; plural=(n != 1);"
+      },
+      "Show this menu": [
+         null,
+         ""
+      ],
+      "Write in the third person": [
+         null,
+         ""
+      ],
+      "Remove messages": [
+         null,
+         ""
+      ],
+      "Personal message": [
+         null,
+         ""
+      ],
+      "Contacts": [
+         null,
+         ""
+      ],
+      "Online": [
+         null,
+         ""
+      ],
+      "Busy": [
+         null,
+         ""
+      ],
+      "Away": [
+         null,
+         ""
+      ],
+      "Offline": [
+         null,
+         ""
+      ],
+      "Click to add new chat contacts": [
+         null,
+         ""
+      ],
+      "Add a contact": [
+         null,
+         ""
+      ],
+      "Contact username": [
+         null,
+         ""
+      ],
+      "Add": [
+         null,
+         ""
+      ],
+      "Contact name": [
+         null,
+         ""
+      ],
+      "Search": [
+         null,
+         ""
+      ],
+      "No users found": [
+         null,
+         ""
+      ],
+      "Click to add as a chat contact": [
+         null,
+         ""
+      ],
+      "Click to open this room": [
+         null,
+         ""
+      ],
+      "Show more information on this room": [
+         null,
+         ""
+      ],
+      "Description:": [
+         null,
+         ""
+      ],
+      "Occupants:": [
+         null,
+         ""
+      ],
+      "Features:": [
+         null,
+         ""
+      ],
+      "Requires authentication": [
+         null,
+         ""
+      ],
+      "Hidden": [
+         null,
+         ""
+      ],
+      "Requires an invitation": [
+         null,
+         ""
+      ],
+      "Moderated": [
+         null,
+         ""
+      ],
+      "Non-anonymous": [
+         null,
+         ""
+      ],
+      "Open room": [
+         null,
+         ""
+      ],
+      "Permanent room": [
+         null,
+         ""
+      ],
+      "Public": [
+         null,
+         ""
+      ],
+      "Semi-anonymous": [
+         null,
+         ""
+      ],
+      "Temporary room": [
+         null,
+         ""
+      ],
+      "Unmoderated": [
+         null,
+         ""
+      ],
+      "Rooms": [
+         null,
+         ""
+      ],
+      "Room name": [
+         null,
+         ""
+      ],
+      "Nickname": [
+         null,
+         ""
+      ],
+      "Server": [
+         null,
+         ""
+      ],
+      "Join": [
+         null,
+         ""
+      ],
+      "Show rooms": [
+         null,
+         ""
+      ],
+      "No rooms on %1$s": [
+         null,
+         ""
+      ],
+      "Rooms on %1$s": [
+         null,
+         ""
+      ],
+      "Set chatroom topic": [
+         null,
+         ""
+      ],
+      "Kick user from chatroom": [
+         null,
+         ""
+      ],
+      "Ban user from chatroom": [
+         null,
+         ""
+      ],
+      "Message": [
+         null,
+         ""
+      ],
+      "Save": [
+         null,
+         ""
+      ],
+      "Cancel": [
+         null,
+         ""
+      ],
+      "An error occurred while trying to save the form.": [
+         null,
+         ""
+      ],
+      "This chatroom requires a password": [
+         null,
+         ""
+      ],
+      "Password: ": [
+         null,
+         ""
+      ],
+      "Submit": [
+         null,
+         ""
+      ],
+      "This room is not anonymous": [
+         null,
+         ""
+      ],
+      "This room now shows unavailable members": [
+         null,
+         ""
+      ],
+      "This room does not show unavailable members": [
+         null,
+         ""
+      ],
+      "Non-privacy-related room configuration has changed": [
+         null,
+         ""
+      ],
+      "Room logging is now enabled": [
+         null,
+         ""
+      ],
+      "Room logging is now disabled": [
+         null,
+         ""
+      ],
+      "This room is now non-anonymous": [
+         null,
+         ""
+      ],
+      "This room is now semi-anonymous": [
+         null,
+         ""
+      ],
+      "This room is now fully-anonymous": [
+         null,
+         ""
+      ],
+      "A new room has been created": [
+         null,
+         ""
+      ],
+      "Your nickname has been changed": [
+         null,
+         ""
+      ],
+      "<strong>%1$s</strong> has been banned": [
+         null,
+         ""
+      ],
+      "<strong>%1$s</strong> has been kicked out": [
+         null,
+         ""
+      ],
+      "<strong>%1$s</strong> has been removed because of an affiliation change": [
+         null,
+         ""
+      ],
+      "<strong>%1$s</strong> has been removed for not being a member": [
+         null,
+         ""
+      ],
+      "You have been banned from this room": [
+         null,
+         ""
+      ],
+      "You have been kicked from this room": [
+         null,
+         ""
+      ],
+      "You have been removed from this room because of an affiliation change": [
+         null,
+         ""
+      ],
+      "You have been removed from this room because the room has changed to members-only and you're not a member": [
+         null,
+         ""
+      ],
+      "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+         null,
+         ""
+      ],
+      "You are not on the member list of this room": [
+         null,
+         ""
+      ],
+      "No nickname was specified": [
+         null,
+         ""
+      ],
+      "You are not allowed to create new rooms": [
+         null,
+         ""
+      ],
+      "Your nickname doesn't conform to this room's policies": [
+         null,
+         ""
+      ],
+      "Your nickname is already taken": [
+         null,
+         ""
+      ],
+      "This room does not (yet) exist": [
+         null,
+         ""
+      ],
+      "This room has reached it's maximum number of occupants": [
+         null,
+         ""
+      ],
+      "Topic set by %1$s to: %2$s": [
+         null,
+         ""
+      ],
+      "This user is a moderator": [
+         null,
+         ""
+      ],
+      "This user can send messages in this room": [
+         null,
+         ""
+      ],
+      "This user can NOT send messages in this room": [
+         null,
+         ""
+      ],
+      "Click to chat with this contact": [
+         null,
+         ""
+      ],
+      "Click to remove this contact": [
+         null,
+         ""
+      ],
+      "Contact requests": [
+         null,
+         ""
+      ],
+      "My contacts": [
+         null,
+         ""
+      ],
+      "Pending contacts": [
+         null,
+         ""
+      ],
+      "Custom status": [
+         null,
+         ""
+      ],
+      "Click to change your chat status": [
+         null,
+         ""
+      ],
+      "Click here to write a custom status message": [
+         null,
+         ""
+      ],
+      "online": [
+         null,
+         ""
+      ],
+      "busy": [
+         null,
+         ""
+      ],
+      "away for long": [
+         null,
+         ""
+      ],
+      "away": [
+         null,
+         ""
+      ],
+      "I am %1$s": [
+         null,
+         ""
+      ],
+      "Sign in": [
+         null,
+         ""
+      ],
+      "XMPP/Jabber Username:": [
+         null,
+         ""
+      ],
+      "Password:": [
+         null,
+         ""
+      ],
+      "Log In": [
+         null,
+         ""
+      ],
+      "BOSH Service URL:": [
+         null,
+         ""
+      ],
+      "Connected": [
+         null,
+         ""
+      ],
+      "Disconnected": [
+         null,
+         ""
+      ],
+      "Error": [
+         null,
+         ""
+      ],
+      "Connecting": [
+         null,
+         ""
+      ],
+      "Connection Failed": [
+         null,
+         ""
+      ],
+      "Authenticating": [
+         null,
+         ""
+      ],
+      "Authentication Failed": [
+         null,
+         ""
+      ],
+      "Disconnecting": [
+         null,
+         ""
+      ],
+      "Attached": [
+         null,
+         ""
+      ],
+      "Online Contacts": [
+         null,
+         ""
+      ]
+   }
+}

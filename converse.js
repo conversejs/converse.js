@@ -78,15 +78,17 @@
     var converse = {};
     converse.initialize = function (settings) {
         // Default values
-        this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
+        this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
         this.hide_muc_server = false;
-        this.prebind = false;
-        this.xhr_user_search = false;
         this.i18n = locales.en;
+        this.prebind = false;
+        this.show_controlbox_by_default = false;
+        this.xhr_user_search = false;
         _.extend(this, settings);
+
 
         var __ = function (str) {
             var t = converse.i18n.translate(str);
@@ -2670,12 +2672,15 @@
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $('a.toggle-online-users').bind(
+        $('toggle-online-users').bind(
             'click',
             $.proxy(function (e) {
                 e.preventDefault(); this.toggleControlBox();
             }, this)
         );
+        if (this.show_controlbox_by_default) {
+            this.toggleControlBox();
+        }
     };
     return converse;
 }));

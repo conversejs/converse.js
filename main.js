@@ -8,6 +8,7 @@ require(["jquery", "converse"], function($, converse) {
         hide_muc_server: false,
         i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
         prebind: false,
+        show_controlbox_by_default: true,
         xhr_user_search: false
     });
 });

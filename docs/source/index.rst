@@ -246,6 +246,20 @@ have to write a Javascript snippet to attach to the set up connection::
 The backend must authenticate for you, and then return a SID (session ID) and
 RID (Request ID), which you use when you attach to the connection.
 
+show_controlbox_by_default
+--------------------------
+
+Default = False
+
+The "controlbox" refers to the special chatbox containing your contacts roster,
+status widget, chatrooms and other controls.
+
+By default this box is hidden and can be toggled by clicking on any element in
+the page with class *toggle-online-users*.
+
+If this options is set to true, the controlbox will by default be shown upon
+page load.
+
 
 xhr_user_search
 ---------------

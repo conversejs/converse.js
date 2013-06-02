@@ -28,24 +28,26 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
-    <p><strong>Converse.js</strong> is an open source, web based, <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> chat client, similar to 
-    <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a>, but with added support for multi-user chatrooms.</p>
 
-    <p>It is a Javascript application that you can include in your
-    website, thereby providing it with instant messaging functionality.</p>
+    <p><strong>Converse.js</strong> is an open source, webchat client, that
+    runs in the browser and can be integrated into any website.</p>
 
-    <p>You will also need access to an XMPP/Jabber server. You can connect to any public, federated XMPP server, or you can set one up
-    yourself, thereby maintaining stricter privacy controls.</p>
+    <p>It's similar to <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a>, but also supports multi-user chatrooms.</p>
 
-    <p>It's possible to enable single-site login, whereby users already
-    authenticated in your website will also automatically be logged in on the chat server, but this will require custom code on your server.</p>
+    <p><em>Converse.js</em> can connect to any accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server, either from a public provider such as
+    <a href="http://jabber.org">jabber.org</a>, or to one you have set up
+    yourself.</a>
+
+    <p>It's possible to enable single-site login, whereby users already authenticated in your website will also automatically be logged in on the chat server,
+    but you will have to pre-authenticate them on your server. You can refer to the <a href="/docs/html/index.html">documentation</a> for more
+    info.</p>
 
     <p>An <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">add-on product</a> that does exactly this,
     already exists for the <a href="http://plone.org" target="_blank">Plone</a> CMS. Hopefully in the future more such add-ons will
     be created for other platforms.
    </p>
 
-    <p>If you have integrated Converse.js into any other CMS or framework,
+    <p>If you have integrated <em>Converse.js</em> into any other CMS or framework,
     <a href="http://opkode.com/contact" target="_blank">please let me know</a> and I'll mention it on this page.</p>
 
     <h2>Features</h2>
@@ -76,27 +78,20 @@
     </ul>
 
     <h2>Demo</h2>
-    <p><a href="#" class="chat toggle-online-users">Click this link</a> or click the link on the bottom right corner of this page.</a></p>
-    <p>You can log in with any existing federated Jabber/XMPP account, or create a new one at any of these providers:
-        <ul>
-            <li><a href="http://jabber.org" target="_blank">jabber.org</a></li>
-            <li><a href="https://jappix.com" target="_blank">jappix.com</a></li>
-        </ul>
-        There is also a list of public XMPP providers on <a href="xmpp.net" target="_blank">xmpp.net</a>.
-   </p>
-    <p><b>Note:</b> currently the demo doesn't work in Internet Explorer older
+    <p>You can log in with any existing XMPP account. There is also a list of public XMPP providers on <a href="http://xmpp.net" target="_blank">xmpp.net</a>.</p>
+    <p><em><strong>Note:</strong> currently the demo doesn't work in Internet Explorer older
     than 10. This is due to lacking support for <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>,
     a standard which enables cross-domain XmlHttpRequests. There are ways
     around this, but it hasn't been a priority for me to implement them for
     this demo.
    </p>
-
    <p>
-    See <a href="/docs/html/index.html#overcoming-cross-domain-request-restrictions" target="_blank">here</a> for more information.
+        See <a href="/docs/html/index.html#overcoming-cross-domain-request-restrictions" target="_blank">here</a> for more information.
     </p>
+    </em>
 
     <h3>Is it secure?</h3>
-    <p>Yes. In this demo <strong>Converse.js</strong> makes an
+    <p>Yes. In this demo <em>Converse.js</em> makes an
     <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer" target="_blank">SSL</a> encrypted connection to a secure connection manager. 
     The connection manager then uses SSL and <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to connect to an XMPP server.</p>
     That said, the developers don't assume any liability for any loss or damages as a result of using this software or demo. Use this demo at your own risk. 
@@ -108,7 +103,7 @@
         establish an authenticated connection on the server side and then attach to
         this connection in your browser.
    </p>
-    <p><strong>Converse.js</strong> already supports this usecase, but you'll have to do more manual work yourself.</p>
+    <p><em>Converse.js</em> already supports this usecase, but you'll have to do some integration work yourself.</p>
 
 
     <h2>Documentation</h2>

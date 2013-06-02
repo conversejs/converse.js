@@ -304,7 +304,7 @@ CSS can be minimized with Yahoo's yuicompressor tool:
 Translations
 ============
 
-The gettext POT file located in ./locales/converse.pot is the template
+The gettext POT file located in ./locale/converse.pot is the template
 containing all translations and from which for each language an individual PO
 file is generated.
 
@@ -327,7 +327,7 @@ You can then create or update the PO file for a specific language by doing the f
 
 ::
 
-    msgmerge ./locales/af/LC_MESSAGES/converse.po ./locales/converse.pot -U
+    msgmerge ./locale/af/LC_MESSAGES/converse.po ./locale/converse.pot -U
 
 This PO file is then what gets translated.
 
@@ -339,7 +339,7 @@ that we're using.
 ::
 
     "domain: converse\n"
-    "lang: af\n",
+    "lang: af\n"
     "plural_forms: nplurals=2; plural=(n != 1);\n"
     
 
@@ -358,7 +358,7 @@ You can then convert the translations into JSON format:
 
 ::
 
-    po2json locales/af/LC_MESSAGES/converse.po locales/af/LC_MESSAGES/converse.json
+    po2json locale/af/LC_MESSAGES/converse.po locale/af/LC_MESSAGES/converse.json
 
 Now from converse.json paste the data as a value for the "locale_data" key in the
 object in the language's .js file.
@@ -382,6 +382,11 @@ create or update the file ./locale/LC_MESSAGES/de.js with the following code:
     }));
 
 making sure to also paste the JSON data as value to the "locale_data" key.
+
+.. Note :: 
+    If you are adding translations for a new language that is not already supported,
+    you'll have to make one more edit in ./locale/locales.js to make sure the
+    language is loaded by require.js.
 
 Congratulations, you've now succesfully added your translations. Sorry for all
 those hoops you had to jump through.

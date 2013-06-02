@@ -14,10 +14,7 @@
     if (typeof define === 'function' && define.amd) {
         require.config({
             paths: {
-                "jed": "Libraries/jed",
-                "locales": "Libraries/locales",
-                "af": "locale/af/LC_MESSAGES/af",
-                "en": "locale/en/LC_MESSAGES/en",
+                "locales": "locale/locales",
                 "sjcl": "Libraries/sjcl",
                 "tinysort": "Libraries/jquery.tinysort",
                 "underscore": "Libraries/underscore",

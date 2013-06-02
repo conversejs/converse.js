@@ -315,7 +315,7 @@ manager, NPM.</p>
 </div>
 <div class="section" id="translations">
 <h1><a class="toc-backref" href="#id22">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
-<p>The gettext POT file located in ./locales/converse.pot is the template
+<p>The gettext POT file located in ./locale/converse.pot is the template
 containing all translations and from which for each language an individual PO
 file is generated.</p>
 <p>The POT file contains all translateable strings extracted from converse.js.</p>
@@ -328,7 +328,7 @@ function like so:</p>
 <div class="highlight-python"><pre>make pot</pre>
 </div>
 <p>You can then create or update the PO file for a specific language by doing the following:</p>
-<div class="highlight-python"><pre>msgmerge ./locales/af/LC_MESSAGES/converse.po ./locales/converse.pot -U</pre>
+<div class="highlight-python"><pre>msgmerge ./locale/af/LC_MESSAGES/converse.po ./locale/converse.pot -U</pre>
 </div>
 <p>This PO file is then what gets translated.</p>
 <p>If you&#8217;ve created a new PO file, please make sure to add the following
@@ -336,7 +336,7 @@ attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). Th
 required as configuration settings for Jed, the Javascript translations library
 that we&#8217;re using.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;domain: converse</span><span class="se">\n</span><span class="s">&quot;</span>
-<span class="s">&quot;lang: af</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="s">&quot;lang: af</span><span class="se">\n</span><span class="s">&quot;</span>
 <span class="s">&quot;plural_forms: nplurals=2; plural=(n != 1);</span><span class="se">\n</span><span class="s">&quot;</span>
 </pre></div>
 </div>
@@ -348,7 +348,7 @@ following command to install it (npm being the node.js package manager):</p>
 <div class="highlight-python"><pre>npm install po2json</pre>
 </div>
 <p>You can then convert the translations into JSON format:</p>
-<div class="highlight-python"><pre>po2json locales/af/LC_MESSAGES/converse.po locales/af/LC_MESSAGES/converse.json</pre>
+<div class="highlight-python"><pre>po2json locale/af/LC_MESSAGES/converse.po locale/af/LC_MESSAGES/converse.json</pre>
 </div>
 <p>Now from converse.json paste the data as a value for the &#8220;locale_data&#8221; key in the
 object in the language&#8217;s .js file.</p>
@@ -368,6 +368,12 @@ create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p
 }));</pre>
 </div>
 <p>making sure to also paste the JSON data as value to the &#8220;locale_data&#8221; key.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are adding translations for a new language that is not already supported,
+you&#8217;ll have to make one more edit in ./locale/locales.js to make sure the
+language is loaded by require.js.</p>
+</div>
 <p>Congratulations, you&#8217;ve now succesfully added your translations. Sorry for all
 those hoops you had to jump through.</p>
 </div>

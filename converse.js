@@ -18,6 +18,7 @@
                 "locales": "Libraries/locales",
                 "af": "locale/af/LC_MESSAGES/af",
                 "en": "locale/en/LC_MESSAGES/en",
+                "de": "locale/de/LC_MESSAGES/de",
                 "sjcl": "Libraries/sjcl",
                 "tinysort": "Libraries/jquery.tinysort",
                 "underscore": "Libraries/underscore",

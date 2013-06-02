@@ -2672,7 +2672,7 @@
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $('toggle-online-users').bind(
+        $('.toggle-online-users').bind(
             'click',
             $.proxy(function (e) {
                 e.preventDefault(); this.toggleControlBox();

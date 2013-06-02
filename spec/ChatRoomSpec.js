@@ -147,7 +147,7 @@
                     expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                     expect(view.renderPasswordForm).toHaveBeenCalled();
                     expect($chat_body.find('form.chatroom-form').length).toBe(1);
-                    expect($chat_body.find('legend').text()).toBe('This chat room requires a password');
+                    expect($chat_body.find('legend').text()).toBe('This chatroom requires a password');
                 });
             }, converse));
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-06-01 23:02+0200\n"
-"PO-Revision-Date: 2013-06-01 23:03+0200\n"
+"PO-Revision-Date: 2013-06-02 13:26+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans\n"
 "Language: af\n"
@@ -42,7 +42,7 @@ msgstr "Kontakte"
 
 #: converse.js:618
 msgid "Online"
-msgstr "Aanlyn"
+msgstr "Aangemeld"
 
 #: converse.js:619
 msgid "Busy"
@@ -50,11 +50,11 @@ msgstr "Besig"
 
 #: converse.js:620
 msgid "Away"
-msgstr "Weg"
+msgstr "Afwesig"
 
 #: converse.js:621
 msgid "Offline"
-msgstr "Aflyn"
+msgstr "Afgemeld"
 
 #: converse.js:628
 msgid "Click to add new chat contacts"
@@ -407,7 +407,7 @@ msgstr "Kliek hier om jou eie statusboodskap te skryf"
 
 #: converse.js:2355 converse.js:2363
 msgid "online"
-msgstr "aanlyn"
+msgstr "aangemeld"
 
 #: converse.js:2357
 msgid "busy"
@@ -415,11 +415,11 @@ msgstr "besig"
 
 #: converse.js:2359
 msgid "away for long"
-msgstr "weg vir lank"
+msgstr "vir lank afwesig"
 
 #: converse.js:2361
 msgid "away"
-msgstr "weg"
+msgstr "afwesig"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -453,7 +453,7 @@ msgstr "Verbind"
 
 #: converse.js:2507
 msgid "Disconnected"
-msgstr "Ontkoppel"
+msgstr "Verbindung onderbreek"
 
 #: converse.js:2511
 msgid "Error"
@@ -477,7 +477,7 @@ msgstr "Bekragtiging het gefaal"
 
 #: converse.js:2523
 msgid "Disconnecting"
-msgstr "Besig om te ontkoppel"
+msgstr "Onderbreek verbinding"
 
 #: converse.js:2525
 msgid "Attached"
@@ -485,4 +485,4 @@ msgstr "Geheg"
 
 #: converse.js:2656
 msgid "Online Contacts"
-msgstr "Kontakte aanlyn"
+msgstr "Kontakte aangemeld"

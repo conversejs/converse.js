@@ -99,14 +99,18 @@ website. This will remove the need for any cross-domain XHR support.
 Server-side authentication
 ==========================
 
-Session Support
----------------
+Pre-binding and Single Session Support
+--------------------------------------
 
 It's possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
 but this will require custom code on your server.
 
 Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
+
+.. Note::
+   If you want to enable single session support, make sure to pass **prebind: true**
+   when you call **converse.initialize** (see ./main.js).
 
 When you authenticate to the XMPP server on your backend, you'll receive two
 tokens, RID (request ID) and SID (session ID).

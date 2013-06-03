@@ -73,7 +73,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#server-side-authentication" id="id6">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#session-support" id="id7">Session Support</a></li>
+<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id7">Pre-binding and Single Session Support</a></li>
 </ul>
 </li>
 </ul>
@@ -115,7 +115,7 @@ properly configure and integrate it into your site.</p>
 webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.</p>
 <p>You&#8217;ll need to set up your own XMPP server and in order to have
-<a class="reference internal" href="#session-support">Session Support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
+<a href="#id24"><span class="problematic" id="id25">`Session Support`_</span></a> (i.e. single-signon functionality whereby users are authenticated once and stay
 logged in to XMPP upon page reload) you will also have to add some server-side
 code.</p>
 <p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
@@ -128,7 +128,7 @@ requirements.</p>
 <p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
 <p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
-have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
+have <a href="#id26"><span class="problematic" id="id27">`Session Support`_</span></a> you&#8217;ll have to set up your own XMPP server.</p>
 <p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
 servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
 </div>
@@ -167,12 +167,17 @@ website. This will remove the need for any cross-domain XHR support.</p>
 </div>
 <div class="section" id="server-side-authentication">
 <h2><a class="toc-backref" href="#id6">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="session-support">
-<h3><a class="toc-backref" href="#id7">Session Support</a><a class="headerlink" href="#session-support" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pre-binding-and-single-session-support">
+<h3><a class="toc-backref" href="#id7">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
 <p>It&#8217;s possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
 but this will require custom code on your server.</p>
 <p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to enable single session support, make sure to pass <strong>prebind: true</strong>
+when you call <strong>converse.initialize</strong> (see ./main.js).</p>
+</div>
 <p>When you authenticate to the XMPP server on your backend, you&#8217;ll receive two
 tokens, RID (request ID) and SID (session ID).</p>
 <p>These tokens then need to be passed back to the javascript running in your
@@ -224,7 +229,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read <a class="reference internal" href="#session-support">Session Support</a>.</p>
+<p>For more info on this, read <a href="#id28"><span class="problematic" id="id29">`Session Support`_</span></a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>

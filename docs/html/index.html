@@ -88,17 +88,18 @@
 <li><a class="reference internal" href="#fullname" id="id15">fullname</a></li>
 <li><a class="reference internal" href="#hide-muc-server" id="id16">hide_muc_server</a></li>
 <li><a class="reference internal" href="#prebind" id="id17">prebind</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id18">xhr_user_search</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id18">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id19">xhr_user_search</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id19">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript" id="id20">Minifying Javascript</a></li>
-<li><a class="reference internal" href="#minifying-css" id="id21">Minifying CSS</a></li>
+<li><a class="reference internal" href="#minification" id="id20">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript" id="id21">Minifying Javascript</a></li>
+<li><a class="reference internal" href="#minifying-css" id="id22">Minifying CSS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id22">Translations</a></li>
+<li><a class="reference internal" href="#translations" id="id23">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="introduction">
@@ -172,6 +173,32 @@ website. This will remove the need for any cross-domain XHR support.</p>
 authenticated in your website will also automatically be logged in on the chat server,
 but this will require custom code on your server.</p>
 <p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
+<p>When you authenticate to the XMPP server on your backend, you&#8217;ll receive two
+tokens, RID (request ID) and SID (session ID).</p>
+<p>These tokens then need to be passed back to the javascript running in your
+browser, where you will need them attach to the existing session.</p>
+<p>You can embed the RID and SID tokens in your HTML markup or you can do an
+XMLHttpRequest call to you server and ask it to return them for you.</p>
+<p>Below is one example of how this could work. An Ajax call is made to the
+relative URL <strong>/prebind</strong> and it expects to receive JSON data back.</p>
+<div class="highlight-python"><pre>$.getJSON('/prebind', function (data) {
+        var connection = new Strophe.Connection(converse.bosh_service_url);
+        connection.attach(data.jid, data.sid, data.rid, function (status) {
+            if ((status === Strophe.Status.ATTACHED) || (status === Strophe.Status.CONNECTED)) {
+                converse.onConnected(connection)
+            }
+        });
+    }
+);</pre>
+</div>
+<p><strong>Here&#8217;s what&#8217;s happening:</strong></p>
+<p>The JSON data contains the user&#8217;s JID (jabber ID), RID and SID. The URL to the
+BOSH connection manager is already set as a configuration setting on the
+<em>converse</em> object (see ./main.js), so we can reuse it from there.</p>
+<p>A new Strophe.Connection object is instantiated and then <em>attach</em> is called with
+the user&#8217;s JID, the necessary tokens and a callback function.</p>
+<p>In the callback function, you call <em>converse.onConnected</em> together with the
+connection object.</p>
 </div>
 </div>
 </div>
@@ -275,8 +302,18 @@ have to write a Javascript snippet to attach to the set up connection:</p>
 <p>The backend must authenticate for you, and then return a SID (session ID) and
 RID (Request ID), which you use when you attach to the connection.</p>
 </div>
+<div class="section" id="show-controlbox-by-default">
+<h3><a class="toc-backref" href="#id18">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<p>Default = False</p>
+<p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
+status widget, chatrooms and other controls.</p>
+<p>By default this box is hidden and can be toggled by clicking on any element in
+the page with class <em>toggle-online-users</em>.</p>
+<p>If this options is set to true, the controlbox will by default be shown upon
+page load.</p>
+</div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id18">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>There are two ways to add users.</p>
 <ul class="simple">
@@ -289,9 +326,9 @@ be used.</p>
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id19">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id20">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript">
-<h2><a class="toc-backref" href="#id20">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
 <p>We  use <a class="reference external" href="http://requirejs.org">require.js</a> to keep track of <em>Converse.js</em> and its dependencies and to
 to bundle them together in a single minified file fit for deployment to a
 production site.</p>
@@ -307,14 +344,14 @@ manager, NPM.</p>
 <p>You can <a class="reference external" href="http://requirejs.org/docs/optimization.html">read more about require.js&#8217;s optimizer here</a>.</p>
 </div>
 <div class="section" id="minifying-css">
-<h2><a class="toc-backref" href="#id21">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
 <p>CSS can be minimized with Yahoo&#8217;s yuicompressor tool:</p>
 <div class="highlight-python"><pre>yui-compressor --type=css converse.css -o converse.min.css</pre>
 </div>
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id22">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id23">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <p>The gettext POT file located in ./locale/converse.pot is the template
 containing all translations and from which for each language an individual PO
 file is generated.</p>

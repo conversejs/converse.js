@@ -108,6 +108,42 @@ but this will require custom code on your server.
 
 Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
 
+When you authenticate to the XMPP server on your backend, you'll receive two
+tokens, RID (request ID) and SID (session ID).
+
+These tokens then need to be passed back to the javascript running in your
+browser, where you will need them attach to the existing session.
+
+You can embed the RID and SID tokens in your HTML markup or you can do an
+XMLHttpRequest call to you server and ask it to return them for you.
+
+Below is one example of how this could work. An Ajax call is made to the
+relative URL **/prebind** and it expects to receive JSON data back.
+
+:: 
+
+    $.getJSON('/prebind', function (data) {
+            var connection = new Strophe.Connection(converse.bosh_service_url);
+            connection.attach(data.jid, data.sid, data.rid, function (status) {
+                if ((status === Strophe.Status.ATTACHED) || (status === Strophe.Status.CONNECTED)) {
+                    converse.onConnected(connection)
+                } 
+            });
+        }
+    );
+
+**Here's what's happening:**
+
+The JSON data contains the user's JID (jabber ID), RID and SID. The URL to the
+BOSH connection manager is already set as a configuration setting on the
+*converse* object (see ./main.js), so we can reuse it from there.
+
+A new Strophe.Connection object is instantiated and then *attach* is called with
+the user's JID, the necessary tokens and a callback function.
+
+In the callback function, you call *converse.onConnected* together with the
+connection object.
+
 
 =========================================
 Quickstart (to get a demo up and running)

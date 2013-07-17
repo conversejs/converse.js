@@ -1,0 +1,17 @@
+{
+    "name": "dwchat",
+    "description": "XMPP Webclient based on Converse.js",
+    "version": "0.0.1",
+    "contributors": [
+        {
+            "name": "Remko Plantenga"
+        }
+    ],
+    "dependencies": {
+        "conversejs": "https://github.com/sonata82/converse.js.git",
+        "node-xmpp-bosh": "~0.7.x"
+    },
+    "engines": {
+        "npm": "1.1.x"
+    }
+}

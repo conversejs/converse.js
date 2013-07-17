@@ -180,7 +180,7 @@
                 xmlns: Strophe.NS.CLIENT
             }).t(message);
             msg.up();
-            if (html_message !== null) {
+            if (html_message != null) {
                 msg.c("html", {xmlns: Strophe.NS.XHTML_IM}).c("body", {xmlns: Strophe.NS.XHTML}).h(html_message);
 
                 if (msg.node.childNodes.length === 0) {

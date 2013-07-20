@@ -5,7 +5,8 @@
             "af": "locale/af/LC_MESSAGES/af",
             "en": "locale/en/LC_MESSAGES/en",
             "de": "locale/de/LC_MESSAGES/de",
-            "hu": "locale/hu/LC_MESSAGES/hu"
+            "hu": "locale/hu/LC_MESSAGES/hu",
+            "it": "locale/it/LC_MESSAGES/it"
         }
     });
 
@@ -14,12 +15,13 @@
         'af',
         'en',
         'de',
-        'hu'
-        ], function (jed, af, en, de, hu) {
+        'hu',
+        "it"
+        ], function (jed, af, en, de, hu, it) {
             root.locales = {};
             root.locales.af = af;
             root.locales.en = en;
             root.locales.de = de;
-            root.locales.hu = hu;
+            root.locales.it = it;
         });
 })(this);

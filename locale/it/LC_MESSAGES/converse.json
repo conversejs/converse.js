@@ -90,7 +90,7 @@
       ],
       "Show more information on this room": [
          null,
-         "Mostra più informazioni su questa stanza"
+         "Mostra piÃ¹ informazioni su questa stanza"
       ],
       "Description:": [
          null,
@@ -102,7 +102,7 @@
       ],
       "Features:": [
          null,
-         "Funzionalità:"
+         "FunzionalitÃ :"
       ],
       "Requires authentication": [
          null,
@@ -222,7 +222,7 @@
       ],
       "This room is not anonymous": [
          null,
-         "Questa stanza non è anonima"
+         "Questa stanza non Ã¨ anonima"
       ],
       "This room now shows unavailable members": [
          null,
@@ -234,51 +234,51 @@
       ],
       "Non-privacy-related room configuration has changed": [
          null,
-         "Una configurazione della stanza non legata alla privacy è stata modificata"
+         "Una configurazione della stanza non legata alla privacy Ã¨ stata modificata"
       ],
       "Room logging is now enabled": [
          null,
-         "La registrazione è abilitata nella stanza"
+         "La registrazione Ã¨ abilitata nella stanza"
       ],
       "Room logging is now disabled": [
          null,
-         "La registrazione è disabilitata nella stanza"
+         "La registrazione Ã¨ disabilitata nella stanza"
       ],
       "This room is now non-anonymous": [
          null,
-         "Questa stanza è non-anonima"
+         "Questa stanza Ã¨ non-anonima"
       ],
       "This room is now semi-anonymous": [
          null,
-         "Questa stanza è semi-anonima"
+         "Questa stanza Ã¨ semi-anonima"
       ],
       "This room is now fully-anonymous": [
          null,
-         "Questa stanza è completamente-anonima"
+         "Questa stanza Ã¨ completamente-anonima"
       ],
       "A new room has been created": [
          null,
-         "Una nuova stanza è stata creata"
+         "Una nuova stanza Ã¨ stata creata"
       ],
       "Your nickname has been changed": [
          null,
-         "Il tuo soprannome è stato cambiato"
+         "Il tuo soprannome Ã¨ stato cambiato"
       ],
       "<strong>%1$s</strong> has been banned": [
          null,
-         "<strong>%1$s</strong> è stato bandito"
+         "<strong>%1$s</strong> Ã¨ stato bandito"
       ],
       "<strong>%1$s</strong> has been kicked out": [
          null,
-         "<strong>%1$s</strong> è stato espulso"
+         "<strong>%1$s</strong> Ã¨ stato espulso"
       ],
       "<strong>%1$s</strong> has been removed because of an affiliation change": [
          null,
-         "<strong>%1$s</strong> è stato rimosso a causa di un cambio di affiliazione"
+         "<strong>%1$s</strong> Ã¨ stato rimosso a causa di un cambio di affiliazione"
       ],
       "<strong>%1$s</strong> has been removed for not being a member": [
          null,
-         "<strong>%1$s</strong> è stato rimosso in quanto non membro"
+         "<strong>%1$s</strong> Ã¨ stato rimosso in quanto non membro"
       ],
       "You have been banned from this room": [
          null,
@@ -294,11 +294,11 @@
       ],
       "You have been removed from this room because the room has changed to members-only and you're not a member": [
          null,
-         "Sei stato rimosso da questa stanza poiché ora la stanza accetta solo membri"
+         "Sei stato rimosso da questa stanza poichÃ© ora la stanza accetta solo membri"
       ],
       "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
          null,
-         "Sei stato rimosso da questa stanza poiché il servizio MUC (Chat multi utente) è in fase di spegnimento"
+         "Sei stato rimosso da questa stanza poichÃ© il servizio MUC (Chat multi utente) Ã¨ in fase di spegnimento"
       ],
       "You are not on the member list of this room": [
          null,
@@ -310,15 +310,15 @@
       ],
       "You are not allowed to create new rooms": [
          null,
-         "Non ti è permesso creare nuove stanze"
+         "Non ti Ã¨ permesso creare nuove stanze"
       ],
       "Your nickname doesn't conform to this room's policies": [
          null,
-         "Il tuo soprannome non è conforme alle regole di questa stanza"
+         "Il tuo soprannome non Ã¨ conforme alle regole di questa stanza"
       ],
       "Your nickname is already taken": [
          null,
-         "Il tuo soprannome è già utilizzato"
+         "Il tuo soprannome Ã¨ giÃ  utilizzato"
       ],
       "This room does not (yet) exist": [
          null,
@@ -334,15 +334,15 @@
       ],
       "This user is a moderator": [
          null,
-         "Questo utente è un moderatore"
+         "Questo utente Ã¨ un moderatore"
       ],
       "This user can send messages in this room": [
          null,
-         "Questo utente può inviare messaggi in questa stanza"
+         "Questo utente puÃ² inviare messaggi in questa stanza"
       ],
       "This user can NOT send messages in this room": [
          null,
-         "Questo utente NON può inviare messaggi in questa stanza"
+         "Questo utente NON puÃ² inviare messaggi in questa stanza"
       ],
       "Click to chat with this contact": [
          null,

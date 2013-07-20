@@ -97,7 +97,7 @@ msgstr "Clicca per aprire questa stanza"
 
 #: converse.js:755
 msgid "Show more information on this room"
-msgstr "Mostra pi˘ informazioni su questa stanza"
+msgstr "Mostra pi√π informazioni su questa stanza"
 
 #: converse.js:760
 msgid "Description:"
@@ -109,7 +109,7 @@ msgstr "Utenti presenti:"
 
 #: converse.js:762
 msgid "Features:"
-msgstr "Funzionalit‡:"
+msgstr "Funzionalit√†:"
 
 #: converse.js:764
 msgid "Requires authentication"
@@ -233,7 +233,7 @@ msgstr "Invia"
 
 #: converse.js:1383
 msgid "This room is not anonymous"
-msgstr "Questa stanza non Ë anonima"
+msgstr "Questa stanza non √® anonima"
 
 #: converse.js:1384
 msgid "This room now shows unavailable members"
@@ -245,63 +245,63 @@ msgstr "Questa stanza non mostra i membri non disponibili"
 
 #: converse.js:1386
 msgid "Non-privacy-related room configuration has changed"
-msgstr "Una configurazione della stanza non legata alla privacy Ë stata modificata"
+msgstr "Una configurazione della stanza non legata alla privacy √® stata modificata"
 
 #: converse.js:1387
 msgid "Room logging is now enabled"
-msgstr "La registrazione Ë abilitata nella stanza"
+msgstr "La registrazione √® abilitata nella stanza"
 
 #: converse.js:1388
 msgid "Room logging is now disabled"
-msgstr "La registrazione Ë disabilitata nella stanza"
+msgstr "La registrazione √® disabilitata nella stanza"
 
 #: converse.js:1389
 msgid "This room is now non-anonymous"
-msgstr "Questa stanza Ë non-anonima"
+msgstr "Questa stanza √® non-anonima"
 
 #: converse.js:1390
 msgid "This room is now semi-anonymous"
-msgstr "Questa stanza Ë semi-anonima"
+msgstr "Questa stanza √® semi-anonima"
 
 #: converse.js:1391
 msgid "This room is now fully-anonymous"
-msgstr "Questa stanza Ë completamente-anonima"
+msgstr "Questa stanza √® completamente-anonima"
 
 #: converse.js:1392
 msgid "A new room has been created"
-msgstr "Una nuova stanza Ë stata creata"
+msgstr "Una nuova stanza √® stata creata"
 
 #: converse.js:1393
 msgid "Your nickname has been changed"
-msgstr "Il tuo soprannome Ë stato cambiato"
+msgstr "Il tuo soprannome √® stato cambiato"
 
 #. For translations: %1$s will be replaced with the user's nickname
 #. Don't translate "strong"
 #. Example: <strong>jcbrand</strong> has been banned
 #: converse.js:1400
 msgid "<strong>%1$s</strong> has been banned"
-msgstr "<strong>%1$s</strong> Ë stato bandito"
+msgstr "<strong>%1$s</strong> √® stato bandito"
 
 #. For translations: %1$s will be replaced with the user's nickname
 #. Don't translate "strong"
 #. Example: <strong>jcbrand</strong> has been kicked out
 #: converse.js:1404
 msgid "<strong>%1$s</strong> has been kicked out"
-msgstr "<strong>%1$s</strong> Ë stato espulso"
+msgstr "<strong>%1$s</strong> √® stato espulso"
 
 #. For translations: %1$s will be replaced with the user's nickname
 #. Don't translate "strong"
 #. Example: <strong>jcbrand</strong> has been removed because of an affiliasion change
 #: converse.js:1408
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
-msgstr "<strong>%1$s</strong> Ë stato rimosso a causa di un cambio di affiliazione"
+msgstr "<strong>%1$s</strong> √® stato rimosso a causa di un cambio di affiliazione"
 
 #. For translations: %1$s will be replaced with the user's nickname
 #. Don't translate "strong"
 #. Example: <strong>jcbrand</strong> has been removed for not being a member
 #: converse.js:1412
 msgid "<strong>%1$s</strong> has been removed for not being a member"
-msgstr "<strong>%1$s</strong> Ë stato rimosso in quanto non membro"
+msgstr "<strong>%1$s</strong> √® stato rimosso in quanto non membro"
 
 #: converse.js:1416
 #: converse.js:1478
@@ -318,11 +318,11 @@ msgstr "Sei stato rimosso da questa stanza a causa di un cambio di affiliazione"
 
 #: converse.js:1419
 msgid "You have been removed from this room because the room has changed to members-only and you're not a member"
-msgstr "Sei stato rimosso da questa stanza poichÈ ora la stanza accetta solo membri"
+msgstr "Sei stato rimosso da questa stanza poich√© ora la stanza accetta solo membri"
 
 #: converse.js:1420
 msgid "You have been removed from this room because the MUC (Multi-user chat) service is being shut down."
-msgstr "Sei stato rimosso da questa stanza poichÈ il servizio MUC (Chat multi utente) Ë in fase di spegnimento"
+msgstr "Sei stato rimosso da questa stanza poich√© il servizio MUC (Chat multi utente) √® in fase di spegnimento"
 
 #: converse.js:1476
 msgid "You are not on the member list of this room"
@@ -334,15 +334,15 @@ msgstr "Nessun soprannome specificato"
 
 #: converse.js:1486
 msgid "You are not allowed to create new rooms"
-msgstr "Non ti Ë permesso creare nuove stanze"
+msgstr "Non ti √® permesso creare nuove stanze"
 
 #: converse.js:1488
 msgid "Your nickname doesn't conform to this room's policies"
-msgstr "Il tuo soprannome non Ë conforme alle regole di questa stanza"
+msgstr "Il tuo soprannome non √® conforme alle regole di questa stanza"
 
 #: converse.js:1490
 msgid "Your nickname is already taken"
-msgstr "Il tuo soprannome Ë gi‡ utilizzato"
+msgstr "Il tuo soprannome √® gi√† utilizzato"
 
 #: converse.js:1492
 msgid "This room does not (yet) exist"
@@ -360,15 +360,15 @@ msgstr "Topic impostato da %1$s a: %2$s"
 
 #: converse.js:1587
 msgid "This user is a moderator"
-msgstr "Questo utente Ë un moderatore"
+msgstr "Questo utente √® un moderatore"
 
 #: converse.js:1590
 msgid "This user can send messages in this room"
-msgstr "Questo utente puÚ inviare messaggi in questa stanza"
+msgstr "Questo utente pu√≤ inviare messaggi in questa stanza"
 
 #: converse.js:1593
 msgid "This user can NOT send messages in this room"
-msgstr "Questo utente NON puÚ inviare messaggi in questa stanza"
+msgstr "Questo utente NON pu√≤ inviare messaggi in questa stanza"
 
 #: converse.js:1796
 msgid "Click to chat with this contact"

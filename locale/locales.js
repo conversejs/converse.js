@@ -22,6 +22,7 @@
             root.locales.af = af;
             root.locales.en = en;
             root.locales.de = de;
+            root.locales.hu = hu;
             root.locales.it = it;
         });
 })(this);

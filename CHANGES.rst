@@ -4,6 +4,7 @@ Changelog
 0.4 (Unreleased)
 ----------------
 
+- Add Spanish translations. [macagua]
 - CSS tweaks: fixed overflowing text in status message and chatrooms list. [jcbrand]
 - Bugfix: Couldn't join chatroom when clicking from a list of rooms. [jcbrand]
 - Add better support for kicking or banning users from chatrooms. [jcbrand]

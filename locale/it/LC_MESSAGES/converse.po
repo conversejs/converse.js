@@ -1,0 +1,489 @@
+# German translations for Converse.js package.
+# Copyright (C) 2013 Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# JC Brand <jc@opkode.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-07-20 23:03+0200\n"
+"PO-Revision-Date: 2013-07-20 18:53+0100\n"
+"Last-Translator: Fabio Bas <ctrlaltca@gmail.com>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"domain: converse\n"
+"lang: it\n"
+"plural_forms: nplurals=2; plural=(n != 1);\n"
+
+#: converse.js:397
+#: converse.js:1128
+msgid "Show this menu"
+msgstr "Mostra questo menu"
+
+#: converse.js:398
+#: converse.js:1129
+msgid "Write in the third person"
+msgstr "Scrivi in terza persona"
+
+#: converse.js:399
+#: converse.js:1133
+msgid "Remove messages"
+msgstr "Rimuovi messaggi"
+
+#: converse.js:539
+msgid "Personal message"
+msgstr "Messaggio personale"
+
+#: converse.js:613
+msgid "Contacts"
+msgstr "Contatti"
+
+#: converse.js:618
+msgid "Online"
+msgstr "In linea"
+
+#: converse.js:619
+msgid "Busy"
+msgstr "Occupato"
+
+#: converse.js:620
+msgid "Away"
+msgstr "Assente"
+
+#: converse.js:621
+msgid "Offline"
+msgstr "Non in linea"
+
+#: converse.js:628
+msgid "Click to add new chat contacts"
+msgstr "Clicca per aggiungere nuovi contatti alla chat"
+
+#: converse.js:628
+msgid "Add a contact"
+msgstr "Aggiungi contatti"
+
+#: converse.js:637
+msgid "Contact username"
+msgstr "Nome utente del contatto"
+
+#: converse.js:638
+msgid "Add"
+msgstr "Aggiungi"
+
+#: converse.js:646
+msgid "Contact name"
+msgstr "Nome del contatto"
+
+#: converse.js:647
+msgid "Search"
+msgstr "Cerca"
+
+#: converse.js:682
+msgid "No users found"
+msgstr "Nessun utente trovato"
+
+#: converse.js:689
+msgid "Click to add as a chat contact"
+msgstr "Clicca per aggiungere il contatto alla chat"
+
+#: converse.js:753
+msgid "Click to open this room"
+msgstr "Clicca per aprire questa stanza"
+
+#: converse.js:755
+msgid "Show more information on this room"
+msgstr "Mostra più informazioni su questa stanza"
+
+#: converse.js:760
+msgid "Description:"
+msgstr "Descrizione:"
+
+#: converse.js:761
+msgid "Occupants:"
+msgstr "Utenti presenti:"
+
+#: converse.js:762
+msgid "Features:"
+msgstr "Funzionalità:"
+
+#: converse.js:764
+msgid "Requires authentication"
+msgstr "Richiede autenticazione"
+
+#: converse.js:767
+msgid "Hidden"
+msgstr "Nascosta"
+
+#: converse.js:770
+msgid "Requires an invitation"
+msgstr "Richiede un invito"
+
+#: converse.js:773
+msgid "Moderated"
+msgstr "Moderata"
+
+#: converse.js:776
+msgid "Non-anonymous"
+msgstr "Non-anonima"
+
+#: converse.js:779
+msgid "Open room"
+msgstr "Stanza aperta"
+
+#: converse.js:782
+msgid "Permanent room"
+msgstr "Stanza permanente"
+
+#: converse.js:785
+msgid "Public"
+msgstr "Pubblica"
+
+#: converse.js:788
+msgid "Semi-anonymous"
+msgstr "Semi-anonima"
+
+#: converse.js:791
+msgid "Temporary room"
+msgstr "Stanza temporanea"
+
+#: converse.js:794
+msgid "Unmoderated"
+msgstr "Non moderata"
+
+#: converse.js:800
+msgid "Rooms"
+msgstr "Stanze"
+
+#: converse.js:804
+msgid "Room name"
+msgstr "Nome stanza"
+
+#: converse.js:805
+msgid "Nickname"
+msgstr "Soprannome"
+
+#: converse.js:806
+msgid "Server"
+msgstr "Server"
+
+#: converse.js:807
+msgid "Join"
+msgstr "Entra"
+
+#: converse.js:808
+msgid "Show rooms"
+msgstr "Mostra stanze"
+
+#. For translators: %1$s is a variable and will be replaced with the XMPP server name
+#: converse.js:841
+msgid "No rooms on %1$s"
+msgstr "Nessuna stanza su %1$s"
+
+#. For translators: %1$s is a variable and will be
+#. replaced with the XMPP server name
+#: converse.js:856
+msgid "Rooms on %1$s"
+msgstr "Stanze su %1$s"
+
+#: converse.js:1130
+msgid "Set chatroom topic"
+msgstr "Cambia oggetto della stanza"
+
+#: converse.js:1131
+msgid "Kick user from chatroom"
+msgstr "Espelli utente dalla stanza"
+
+#: converse.js:1132
+msgid "Ban user from chatroom"
+msgstr "Bandisci utente dalla stanza"
+
+#: converse.js:1159
+msgid "Message"
+msgstr "Messaggio"
+
+#: converse.js:1273
+#: converse.js:2318
+msgid "Save"
+msgstr "Salva"
+
+#: converse.js:1274
+msgid "Cancel"
+msgstr "Annulla"
+
+#: converse.js:1321
+msgid "An error occurred while trying to save the form."
+msgstr "Errore durante il salvataggio del modulo"
+
+#: converse.js:1367
+msgid "This chatroom requires a password"
+msgstr "Questa stanza richiede una password"
+
+#: converse.js:1368
+msgid "Password: "
+msgstr "Password: "
+
+#: converse.js:1369
+msgid "Submit"
+msgstr "Invia"
+
+#: converse.js:1383
+msgid "This room is not anonymous"
+msgstr "Questa stanza non è anonima"
+
+#: converse.js:1384
+msgid "This room now shows unavailable members"
+msgstr "Questa stanza mostra i membri non disponibili al momento"
+
+#: converse.js:1385
+msgid "This room does not show unavailable members"
+msgstr "Questa stanza non mostra i membri non disponibili"
+
+#: converse.js:1386
+msgid "Non-privacy-related room configuration has changed"
+msgstr "Una configurazione della stanza non legata alla privacy è stata modificata"
+
+#: converse.js:1387
+msgid "Room logging is now enabled"
+msgstr "La registrazione è abilitata nella stanza"
+
+#: converse.js:1388
+msgid "Room logging is now disabled"
+msgstr "La registrazione è disabilitata nella stanza"
+
+#: converse.js:1389
+msgid "This room is now non-anonymous"
+msgstr "Questa stanza è non-anonima"
+
+#: converse.js:1390
+msgid "This room is now semi-anonymous"
+msgstr "Questa stanza è semi-anonima"
+
+#: converse.js:1391
+msgid "This room is now fully-anonymous"
+msgstr "Questa stanza è completamente-anonima"
+
+#: converse.js:1392
+msgid "A new room has been created"
+msgstr "Una nuova stanza è stata creata"
+
+#: converse.js:1393
+msgid "Your nickname has been changed"
+msgstr "Il tuo soprannome è stato cambiato"
+
+#. For translations: %1$s will be replaced with the user's nickname
+#. Don't translate "strong"
+#. Example: <strong>jcbrand</strong> has been banned
+#: converse.js:1400
+msgid "<strong>%1$s</strong> has been banned"
+msgstr "<strong>%1$s</strong> è stato bandito"
+
+#. For translations: %1$s will be replaced with the user's nickname
+#. Don't translate "strong"
+#. Example: <strong>jcbrand</strong> has been kicked out
+#: converse.js:1404
+msgid "<strong>%1$s</strong> has been kicked out"
+msgstr "<strong>%1$s</strong> è stato espulso"
+
+#. For translations: %1$s will be replaced with the user's nickname
+#. Don't translate "strong"
+#. Example: <strong>jcbrand</strong> has been removed because of an affiliasion change
+#: converse.js:1408
+msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
+msgstr "<strong>%1$s</strong> è stato rimosso a causa di un cambio di affiliazione"
+
+#. For translations: %1$s will be replaced with the user's nickname
+#. Don't translate "strong"
+#. Example: <strong>jcbrand</strong> has been removed for not being a member
+#: converse.js:1412
+msgid "<strong>%1$s</strong> has been removed for not being a member"
+msgstr "<strong>%1$s</strong> è stato rimosso in quanto non membro"
+
+#: converse.js:1416
+#: converse.js:1478
+msgid "You have been banned from this room"
+msgstr "Sei stato bandito da questa stanza"
+
+#: converse.js:1417
+msgid "You have been kicked from this room"
+msgstr "Sei stato espulso da questa stanza"
+
+#: converse.js:1418
+msgid "You have been removed from this room because of an affiliation change"
+msgstr "Sei stato rimosso da questa stanza a causa di un cambio di affiliazione"
+
+#: converse.js:1419
+msgid "You have been removed from this room because the room has changed to members-only and you're not a member"
+msgstr "Sei stato rimosso da questa stanza poiché ora la stanza accetta solo membri"
+
+#: converse.js:1420
+msgid "You have been removed from this room because the MUC (Multi-user chat) service is being shut down."
+msgstr "Sei stato rimosso da questa stanza poiché il servizio MUC (Chat multi utente) è in fase di spegnimento"
+
+#: converse.js:1476
+msgid "You are not on the member list of this room"
+msgstr "Non sei nella lista dei membri di questa stanza"
+
+#: converse.js:1482
+msgid "No nickname was specified"
+msgstr "Nessun soprannome specificato"
+
+#: converse.js:1486
+msgid "You are not allowed to create new rooms"
+msgstr "Non ti è permesso creare nuove stanze"
+
+#: converse.js:1488
+msgid "Your nickname doesn't conform to this room's policies"
+msgstr "Il tuo soprannome non è conforme alle regole di questa stanza"
+
+#: converse.js:1490
+msgid "Your nickname is already taken"
+msgstr "Il tuo soprannome è già utilizzato"
+
+#: converse.js:1492
+msgid "This room does not (yet) exist"
+msgstr "Questa stanza non esiste (per ora)"
+
+#: converse.js:1494
+msgid "This room has reached it's maximum number of occupants"
+msgstr "Questa stanza ha raggiunto il limite massimo di utenti"
+
+#. For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
+#. Example: Topic set by JC Brand to: Hello World!
+#: converse.js:1571
+msgid "Topic set by %1$s to: %2$s"
+msgstr "Topic impostato da %1$s a: %2$s"
+
+#: converse.js:1587
+msgid "This user is a moderator"
+msgstr "Questo utente è un moderatore"
+
+#: converse.js:1590
+msgid "This user can send messages in this room"
+msgstr "Questo utente può inviare messaggi in questa stanza"
+
+#: converse.js:1593
+msgid "This user can NOT send messages in this room"
+msgstr "Questo utente NON può inviare messaggi in questa stanza"
+
+#: converse.js:1796
+msgid "Click to chat with this contact"
+msgstr "Clicca per parlare con questo contatto"
+
+#: converse.js:1797
+#: converse.js:1801
+msgid "Click to remove this contact"
+msgstr "Clicca per rimuovere questo contatto"
+
+#: converse.js:2163
+msgid "Contact requests"
+msgstr "Richieste dei contatti"
+
+#: converse.js:2164
+msgid "My contacts"
+msgstr "I miei contatti"
+
+#: converse.js:2165
+msgid "Pending contacts"
+msgstr "Contatti in attesa"
+
+#: converse.js:2317
+msgid "Custom status"
+msgstr "Stato personalizzato"
+
+#: converse.js:2323
+msgid "Click to change your chat status"
+msgstr "Clicca per cambiare il tuo stato"
+
+#: converse.js:2326
+msgid "Click here to write a custom status message"
+msgstr "Clicca qui per scrivere un messaggio di stato personalizzato"
+
+#: converse.js:2355
+#: converse.js:2363
+msgid "online"
+msgstr "in linea"
+
+#: converse.js:2357
+msgid "busy"
+msgstr "occupato"
+
+#: converse.js:2359
+msgid "away for long"
+msgstr "assente da molto"
+
+#: converse.js:2361
+msgid "away"
+msgstr "assente"
+
+#. For translators: the %1$s part gets replaced with the status
+#. Example, I am online
+#: converse.js:2375
+#: converse.js:2409
+msgid "I am %1$s"
+msgstr "Sono %1$s"
+
+#: converse.js:2480
+msgid "Sign in"
+msgstr "Accesso"
+
+#: converse.js:2483
+msgid "XMPP/Jabber Username:"
+msgstr "Nome utente:"
+
+#: converse.js:2485
+msgid "Password:"
+msgstr "Password:"
+
+#: converse.js:2487
+msgid "Log In"
+msgstr "Entra"
+
+#: converse.js:2491
+msgid "BOSH Service URL:"
+msgstr "Indirizzo servizio BOSH:"
+
+#: converse.js:2503
+msgid "Connected"
+msgstr "Connesso"
+
+#: converse.js:2507
+msgid "Disconnected"
+msgstr "Disconnesso"
+
+#: converse.js:2511
+msgid "Error"
+msgstr "Errore"
+
+#: converse.js:2513
+msgid "Connecting"
+msgstr "Connessione in corso"
+
+#: converse.js:2516
+msgid "Connection Failed"
+msgstr "Connessione fallita"
+
+#: converse.js:2518
+msgid "Authenticating"
+msgstr "Autenticazione in corso"
+
+#: converse.js:2521
+msgid "Authentication Failed"
+msgstr "Autenticazione fallita"
+
+#: converse.js:2523
+msgid "Disconnecting"
+msgstr "Disconnessione in corso"
+
+#: converse.js:2525
+msgid "Attached"
+msgstr "Allegato"
+
+#: converse.js:2656
+msgid "Online Contacts"
+msgstr "Contatti in linea"
+

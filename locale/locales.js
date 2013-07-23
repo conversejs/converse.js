@@ -4,7 +4,7 @@
             "jed": "Libraries/jed",
             "af": "locale/af/LC_MESSAGES/af",
             "en": "locale/en/LC_MESSAGES/en",
-            "es": "locale/en/LC_MESSAGES/es",
+            "es": "locale/es/LC_MESSAGES/es",
             "de": "locale/de/LC_MESSAGES/de",
             "hu": "locale/hu/LC_MESSAGES/hu",
             "it": "locale/it/LC_MESSAGES/it"

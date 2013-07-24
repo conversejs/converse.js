@@ -1,7 +1,16 @@
 Changelog
 =========
 
-0.4 (Unreleased)
+0.5 (Unreleased)
+----------------
+
+- #22 Fixed compare operator in strophe.muc [sonata82]
+- #23 Add Italian translations [ctrlaltca]
+- #24 Add Spanish translations [macagua]
+- #25 Using span with css instead of img [matheus-morfi]
+- #26 Only the first minute digit shown in chatbox. [jcbrand]
+
+0.4 (2013-06-03)
 ----------------
 
 - CSS tweaks: fixed overflowing text in status message and chatrooms list. [jcbrand]

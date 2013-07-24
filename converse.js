@@ -313,6 +313,7 @@
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     sender = msg_dict.sender,
                     template, username;
+
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
                     template = this.action_template;
@@ -325,7 +326,7 @@
                 $el.append(
                     template({
                         'sender': sender,
-                        'time': this_date.toLocaleTimeString().substring(0,4),
+                        'time': this_date.getHours()+':'+this_date.getMinutes(),
                         'message': text,
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''

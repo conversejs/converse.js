@@ -498,8 +498,11 @@
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the
                         // chatbox in the DOM
-                        var txt = chatboxview.$el.find('.chat-content').find('.chat-message').find('.chat-message-content').text();
-                        expect(txt).toEqual(message);
+                        var $chat_content = chatboxview.$el.find('.chat-content');
+                        var msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                        expect(msg_txt).toEqual(message);
+                        var sender_txt = $chat_content.find('span.chat-message-them').text();
+                        expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                     }, converse));
                 }, converse));
 

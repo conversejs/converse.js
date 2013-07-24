@@ -15,27 +15,16 @@ span.spinner {
     display: block;
 }
 
-span.spinner.hor_centered {
-    left: 40%;
-    position: absolute;
-}
-
-
-img.spinner {
-    width: auto;
-    border: none;
-    box-shadow: none;
-    -moz-box-shadow: none;
-    -webkit-box-shadow: none;
-    margin: 0;
-    padding: 0 5px 0 5px;
-}
-
-img.centered {
+span.spinner.centered {
     position: absolute;
     top: 30%;
     left: 50%;
     margin: 0 0 0 -25%;
+}
+
+span.spinner.hor_centered {
+    left: 40%;
+    position: absolute;
 }
 
 #chatpanel {

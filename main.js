@@ -1,1 +1,3 @@
-require(["jquery", "converse"], function($, converse) {});
+require(["jquery", "converse"], function($, converse) {
+    window.converse = converse;
+});

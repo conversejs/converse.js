@@ -99,6 +99,8 @@ website. This will remove the need for any cross-domain XHR support.
 Server-side authentication
 ==========================
 
+.. _`Session Support`:
+
 Pre-binding and Single Session Support
 --------------------------------------
 
@@ -110,7 +112,7 @@ Jack Moffitt has a great `blogpost`_ about this and even provides an `example Dj
 
 .. Note::
    If you want to enable single session support, make sure to pass **prebind: true**
-   when you call **converse.initialize** (see ./main.js).
+   when you call **converse.initialize** (see ./index.html).
 
 When you authenticate to the XMPP server on your backend, you'll receive two
 tokens, RID (request ID) and SID (session ID).
@@ -153,21 +155,36 @@ connection object.
 Quickstart (to get a demo up and running)
 =========================================
 
-When you download a specific release of *Converse.js*, say for example version 0.3,
-there will be two minified files inside the zip file.
+When you download a specific release of *Converse.js* there will be two minified files inside the zip file.
 
-For version 0.3 they will be:
+* converse.min.js
+* converse.min.css
 
-* converse.0.3.min.js
-* converse.0.3.min.css
-
-You can include these two files in your website via the *script* and *link*
+You can include these two files inside the *<head>* element of your website via the *script* and *link*
 tags:
 
 ::
 
-    <link rel="stylesheet" type="text/css" media="screen" href="converse.0.3.min.css">
-    <script src="converse.0.3.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
+    <script src="converse.min.js"></script>
+
+Then, at the bottom of your page, after the closing *</body>* element, put the
+following inline Javascript code:
+
+::
+
+    <script>
+        converse.initialize({
+            auto_list_rooms: false,
+            auto_subscribe: false,
+            bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
+            hide_muc_server: false,
+            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+            prebind: false,
+            show_controlbox_by_default: true,
+            xhr_user_search: false
+        });
+    </script>
 
 The *index.html* file inside the Converse.js folder serves as a nice usable
 example of this.
@@ -180,7 +197,7 @@ You'll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.
 
-For more info on this, read `Session Support`_.
+For more info on this, read: `Pre-binding and Single Session Support`_.
 
 You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
@@ -197,6 +214,9 @@ on your website.
 
 *Converse.js* is passed its configuration settings when you call its
 *initialize* method.
+
+You'll most likely want to call the *initialize* method in your HTML page. For
+an example of how this is done, please see the bottom of the *./index.html* page.
 
 Please refer to the `Configuration variables`_ section below for info on
 all the available configuration settings.
@@ -357,6 +377,14 @@ CSS can be minimized with Yahoo's yuicompressor tool:
 ============
 Translations
 ============
+
+.. Note :: 
+   Translations take up a lot of space and will bloat your minified file.
+   At the time of writing, the difference between *converse.min.js* and
+   *converse.min.no-locales.js* is about 50KB! Therefore, make sure to only
+   include those languages that you intend to support and remove from
+   ./locale/locales.js those which you don't need. Remember to rebuild the
+   minified file afterwards.
 
 The gettext POT file located in ./locale/converse.pot is the template
 containing all translations and from which for each language an individual PO

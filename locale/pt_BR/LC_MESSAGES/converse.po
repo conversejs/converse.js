@@ -62,7 +62,7 @@ msgstr "Clique para adicionar novos contatos ao chat"
 
 #: converse.js:628
 msgid "Add a contact"
-msgstr "Adicionar um contato"
+msgstr "Adicionar contato"
 
 #: converse.js:637
 msgid "Contact username"
@@ -201,7 +201,7 @@ msgstr "Banir usuário do chat"
 
 #: converse.js:1159
 msgid "Message"
-msgstr "Menssagem"
+msgstr "Mensagem"
 
 #: converse.js:1273 converse.js:2318
 msgid "Save"
@@ -425,7 +425,7 @@ msgstr "ausente"
 #. Example, I am online
 #: converse.js:2375 converse.js:2409
 msgid "I am %1$s"
-msgstr "Eu sou %1$s"
+msgstr "Estou %1$s"
 
 #: converse.js:2480
 msgid "Sign in"

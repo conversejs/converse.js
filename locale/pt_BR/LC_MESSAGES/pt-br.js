@@ -62,7 +62,7 @@
       ],
       "Add a contact": [
          null,
-         "Adicionar um contato"
+         "Adicionar contato"
       ],
       "Contact username": [
          null,
@@ -198,7 +198,7 @@
       ],
       "Message": [
          null,
-         "Menssagem"
+         "Mensagem"
       ],
       "Save": [
          null,
@@ -398,7 +398,7 @@
       ],
       "I am %1$s": [
          null,
-         "Eu sou %1$s"
+         "Estou %1$s"
       ],
       "Sign in": [
          null,

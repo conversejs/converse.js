@@ -380,8 +380,8 @@ Translations
 
 .. Note :: 
    Translations take up a lot of space and will bloat your minified file.
-   At the time of writing, the difference between *converse.min.js* and
-   *converse.min.no-locales.js* is about 50KB! Therefore, make sure to only
+   At the time of writing, all the translations add about 50KB of extra data to
+   the minified javascript file. Therefore, make sure to only
    include those languages that you intend to support and remove from
    ./locale/locales.js those which you don't need. Remember to rebuild the
    minified file afterwards.

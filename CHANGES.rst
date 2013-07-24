@@ -32,7 +32,7 @@ Changelog
 - Fixed user status handling, which wasn't 100% according to the spec. [jcbrand]
 - Separate messages according to day in chats. [jcbrand]
 - Add support for specifying the BOSH bind URL as configuration setting. [jcbrand]
-- Improve the message counter to only increment when the window is not focused [witekdev]
+- #8 Improve the message counter to only increment when the window is not focused [witekdev]
 - Make fetching of list of chatrooms on a server a configuration option. [jcbrand]
 - Use service discovery to show all available features on a room. [jcbrand]
 - Multi-user chatrooms are now configurable. [jcbrand]

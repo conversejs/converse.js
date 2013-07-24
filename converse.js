@@ -326,7 +326,7 @@
                 $el.append(
                     template({
                         'sender': sender,
-                        'time': this_date.getHours()+':'+this_date.getMinutes(),
+                        'time': this_date.toTimeString().substring(0,5),
                         'message': text,
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''

@@ -1,7 +1,15 @@
 Changelog
 =========
 
-0.4 (Unreleased)
+0.5 (Unreleased)
+----------------
+- #22 Fixed compare operator in strophe.muc [sonata82]
+- #23 Add Italian translations [ctrlaltca]
+- #24 Add Spanish translations [macagua]
+- #25 Using span with css instead of img [matheus-morfi]
+- #26 Only the first minute digit shown in chatbox. [jcbrand]
+
+0.4 (2013-06-03)
 ----------------
 
 - CSS tweaks: fixed overflowing text in status message and chatrooms list. [jcbrand]
@@ -23,7 +31,7 @@ Changelog
 - Fixed user status handling, which wasn't 100% according to the spec. [jcbrand]
 - Separate messages according to day in chats. [jcbrand]
 - Add support for specifying the BOSH bind URL as configuration setting. [jcbrand]
-- Improve the message counter to only increment when the window is not focused [witekdev]
+- #8 Improve the message counter to only increment when the window is not focused [witekdev]
 - Make fetching of list of chatrooms on a server a configuration option. [jcbrand]
 - Use service discovery to show all available features on a room. [jcbrand]
 - Multi-user chatrooms are now configurable. [jcbrand]

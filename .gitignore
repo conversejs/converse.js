@@ -1,0 +1,14 @@
+*~
+*.mo
+*.kpf
+*.swp
+.*.cfg
+.hg/
+.bzr/
+.svn/
+.project
+.pydevproject
+node_modules
+
+# OSX
+.DS_Store

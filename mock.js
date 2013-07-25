@@ -1,8 +1,8 @@
 (function (root, factory) {
-    define("mock", 
-        ['converse'], 
-        function() { 
-            return factory(); 
+    define("mock",
+        ['converse'],
+        function() {
+            return factory();
         });
 }(this, function (converse) {
     var mock_connection = {
@@ -14,7 +14,7 @@
             'rooms': {}
         },
         'jid': 'dummy@localhost',
-        'addHandler': function (handler, ns, name, type, id, from, options) { 
+        'addHandler': function (handler, ns, name, type, id, from, options) {
             return function () {};
         },
         'send': function () {},
@@ -26,7 +26,7 @@
             'subscribe': function () {},
             'registerCallback': function () {}
         },
-        'vcard': { 
+        'vcard': {
             'get': function (callback, jid) {
                 var firstname, lastname;
                 if (!jid) {
@@ -41,7 +41,7 @@
                 var fullname = firstname+' '+lastname;
                 var vcard = $iq().c('vCard').c('FN').t(fullname);
                 callback(vcard.tree());
-            } 
+            }
         },
         'disco': {
             'info': function () {},

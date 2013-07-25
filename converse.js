@@ -313,6 +313,7 @@
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     sender = msg_dict.sender,
                     template, username;
+
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
                     template = this.action_template;
@@ -325,7 +326,7 @@
                 $el.append(
                     template({
                         'sender': sender,
-                        'time': this_date.toLocaleTimeString().substring(0,4),
+                        'time': this_date.toTimeString().substring(0,5),
                         'message': text,
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''
@@ -1161,7 +1162,7 @@
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +
                 '<div class="chat-body">' +
-                '<img class="spinner centered" src="images/spinner.gif"/>' +
+                '<span class="spinner centered"/>' +
                 '</div>'),
 
             chatarea_template: _.template(
@@ -1246,7 +1247,7 @@
                     'hidden': 'hidden',
                     'list-single': 'dropdown'
                 };
-                $form.find('img.spinner').remove();
+                $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
                 if (instructions != title) {
                     $form.append($('<p>').text(instructions));
@@ -1355,7 +1356,7 @@
                 this.$el.find('.chat-body').append(
                     $('<div class="chatroom-form-container">'+
                         '<form class="chatroom-form">'+
-                        '<img class="spinner centered" src="images/spinner.gif"/>'+
+                        '<span class="spinner centered"/>'+
                         '</form>'+
                     '</div>'));
                 converse.connection.muc.configure(
@@ -1368,12 +1369,12 @@
                 ev.preventDefault();
                 var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                 this.$el.find('.chatroom-form-container').replaceWith(
-                    '<img class="spinner centered" src="images/spinner.gif"/>');
+                    '<span class="spinner centered"/>');
                 this.connect(password);
             },
 
             renderPasswordForm: function () {
-                this.$el.find('img.centered.spinner').remove();
+                this.$el.find('span.centered.spinner').remove();
                 this.$el.find('.chat-body').append(
                     $('<div class="chatroom-form-container">'+
                         '<form class="chatroom-form">'+
@@ -1388,7 +1389,7 @@
             showDisconnectMessage: function (msg) {
                 this.$el.find('.chat-area').remove();
                 this.$el.find('.participants').remove();
-                this.$el.find('img.centered.spinner').remove();
+                this.$el.find('span.centered.spinner').remove();
                 this.$el.find('.chat-body').append($('<p>'+msg+'</p>'));
             },
 
@@ -2509,7 +2510,7 @@
                     connection = new Strophe.Connection(converse.bosh_service_url);
                 if ($form) {
                     $button = $form.find('input[type=submit]');
-                    $button.hide().after('<img class="spinner login-submit" src="images/spinner.gif"/>');
+                    $button.hide().after('<span class="spinner login-submit"/>');
                 }
                 connection.connect(jid, password, $.proxy(function (status, message) {
                     if (status === Strophe.Status.CONNECTED) {

@@ -25,5 +25,10 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jcbrand/converse.js/issues"
+  },
+  "devDependencies": {
+    "grunt-cli": "~0.1.9",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0"
   }
 }

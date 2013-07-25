@@ -29,13 +29,14 @@
         "it",
         'ptbr'
         ], function (jed, af, en, es, de, hu, it, ptbr) {
-            root.locales = {};
-            root.locales.af = af;
-            root.locales.en = en;
-            root.locales.es = es;
-            root.locales.de = de;
-            root.locales.hu = hu;
-            root.locales.it = it;
-            root.locales.ptbr = ptbr;
+            root.locales = {
+                 'af': af,
+                 'en': en,
+                 'es': es,
+                 'de': de,
+                 'hu': hu,
+                 'it': it,
+                 'pt-br': ptbr
+            };
         });
 })(this);

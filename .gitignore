@@ -8,6 +8,7 @@
 .svn/
 .project
 .pydevproject
+node_modules
 
 # OSX
 .DS_Store

@@ -2,6 +2,14 @@
     baseUrl: ".",
     paths: {
         "jquery": "Libraries/require-jquery",
+        "jed": "Libraries/jed",
+        "locales": "locale/locales",
+        "af": "locale/af/LC_MESSAGES/af",
+        "en": "locale/en/LC_MESSAGES/en",
+        "de": "locale/de/LC_MESSAGES/de",
+        "es": "locale/es/LC_MESSAGES/es",
+        "hu": "locale/hu/LC_MESSAGES/hu",
+        "it": "locale/it/LC_MESSAGES/it",
         "sjcl": "Libraries/sjcl",
         "tinysort": "Libraries/jquery.tinysort",
         "underscore": "Libraries/underscore",
@@ -14,5 +22,5 @@
         "strophe.disco": "Libraries/strophe.disco"
     },
     name: "main",
-    out: "converse.0.3.min.js"
+    out: "converse.min.js"
 })

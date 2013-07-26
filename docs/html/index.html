@@ -73,7 +73,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#server-side-authentication" id="id6">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#session-support-i-e-single-site-login" id="id7">Session support (i.e. single site login)</a></li>
+<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id7">Pre-binding and Single Session Support</a></li>
 </ul>
 </li>
 </ul>
@@ -88,33 +88,35 @@
 <li><a class="reference internal" href="#fullname" id="id15">fullname</a></li>
 <li><a class="reference internal" href="#hide-muc-server" id="id16">hide_muc_server</a></li>
 <li><a class="reference internal" href="#prebind" id="id17">prebind</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id18">xhr_user_search</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id18">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id19">xhr_user_search</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id19">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript" id="id20">Minifying Javascript</a></li>
-<li><a class="reference internal" href="#minifying-css" id="id21">Minifying CSS</a></li>
+<li><a class="reference internal" href="#minification" id="id20">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript" id="id21">Minifying Javascript</a></li>
+<li><a class="reference internal" href="#minifying-css" id="id22">Minifying CSS</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#translations" id="id23">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="introduction">
 <h1><a class="toc-backref" href="#id1">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Even though you can connect to public XMPP servers on the <a class="reference external" href="http://conversejs.org">conversejs.org</a>
-website, <em>Converse.js</em> is not meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
+website, <em>Converse.js</em> is not really meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
 webchat.</p>
 <p>Instead, its goal is to provide the means for website owners to add a tightly
 integrated instant messaging service to their own sites.</p>
 <p>As a website owner, you are expected to host <em>Converse.js</em> yourself, and to do some legwork to
-properly configure and integrated it into your site.</p>
+properly configure and integrate it into your site.</p>
 <p>The benefit in doing this, is that your users have a much more streamlined and integrated
 webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.</p>
 <p>You&#8217;ll need to set up your own XMPP server and in order to have
-single-signon functionality, whereby users are authenticated once and stay
-logged in to XMPP upon page reload, you will also have to add some server-side
+<a class="reference internal" href="#session-support">Session Support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
+logged in to XMPP upon page reload) you will also have to add some server-side
 code.</p>
 <p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
 requirements.</p>
@@ -125,9 +127,10 @@ requirements.</p>
 <h2><a class="toc-backref" href="#id3">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
 <p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
-<p>You can either set up your own XMPP server, or use a public one. You can find a
-list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of servers that
-you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
+<p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
+have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
+<p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
+servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
 </div>
 <div class="section" id="connection-manager">
 <h2><a class="toc-backref" href="#id4">Connection Manager</a><a class="headerlink" href="#connection-manager" title="Permalink to this headline">¶</a></h2>
@@ -164,28 +167,72 @@ website. This will remove the need for any cross-domain XHR support.</p>
 </div>
 <div class="section" id="server-side-authentication">
 <h2><a class="toc-backref" href="#id6">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="session-support-i-e-single-site-login">
-<h3><a class="toc-backref" href="#id7">Session support (i.e. single site login)</a><a class="headerlink" href="#session-support-i-e-single-site-login" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="pre-binding-and-single-session-support">
+<span id="session-support"></span><h3><a class="toc-backref" href="#id7">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
 <p>It&#8217;s possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
 but this will require custom code on your server.</p>
 <p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to enable single session support, make sure to pass <strong>prebind: true</strong>
+when you call <strong>converse.initialize</strong> (see ./index.html).</p>
+</div>
+<p>When you authenticate to the XMPP server on your backend, you&#8217;ll receive two
+tokens, RID (request ID) and SID (session ID).</p>
+<p>These tokens then need to be passed back to the javascript running in your
+browser, where you will need them attach to the existing session.</p>
+<p>You can embed the RID and SID tokens in your HTML markup or you can do an
+XMLHttpRequest call to you server and ask it to return them for you.</p>
+<p>Below is one example of how this could work. An Ajax call is made to the
+relative URL <strong>/prebind</strong> and it expects to receive JSON data back.</p>
+<div class="highlight-python"><pre>$.getJSON('/prebind', function (data) {
+        var connection = new Strophe.Connection(converse.bosh_service_url);
+        connection.attach(data.jid, data.sid, data.rid, function (status) {
+            if ((status === Strophe.Status.ATTACHED) || (status === Strophe.Status.CONNECTED)) {
+                converse.onConnected(connection)
+            }
+        });
+    }
+);</pre>
+</div>
+<p><strong>Here&#8217;s what&#8217;s happening:</strong></p>
+<p>The JSON data contains the user&#8217;s JID (jabber ID), RID and SID. The URL to the
+BOSH connection manager is already set as a configuration setting on the
+<em>converse</em> object (see ./main.js), so we can reuse it from there.</p>
+<p>A new Strophe.Connection object is instantiated and then <em>attach</em> is called with
+the user&#8217;s JID, the necessary tokens and a callback function.</p>
+<p>In the callback function, you call <em>converse.onConnected</em> together with the
+connection object.</p>
 </div>
 </div>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
 <h1><a class="toc-backref" href="#id8">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
-<p>When you download a specific release of <em>Converse.js</em>, say for example version 0.3,
-there will be two minified files inside the zip file.</p>
-<p>For version 0.3 they will be:</p>
+<p>When you download a specific release of <em>Converse.js</em> there will be two minified files inside the zip file.</p>
 <ul class="simple">
-<li>converse.0.3.min.js</li>
-<li>converse.0.3.min.css</li>
+<li>converse.min.js</li>
+<li>converse.min.css</li>
 </ul>
-<p>You can include these two files in your website via the <em>script</em> and <em>link</em>
+<p>You can include these two files inside the <em>&lt;head&gt;</em> element of your website via the <em>script</em> and <em>link</em>
 tags:</p>
-<div class="highlight-python"><pre>&lt;link rel="stylesheet" type="text/css" media="screen" href="converse.0.3.min.css"&gt;
-&lt;script src="converse.0.3.min.js"&gt;&lt;/script&gt;</pre>
+<div class="highlight-python"><pre>&lt;link rel="stylesheet" type="text/css" media="screen" href="converse.min.css"&gt;
+&lt;script src="converse.min.js"&gt;&lt;/script&gt;</pre>
+</div>
+<p>Then, at the bottom of your page, after the closing <em>&lt;/body&gt;</em> element, put the
+following inline Javascript code:</p>
+<div class="highlight-python"><pre>&lt;script&gt;
+    converse.initialize({
+        auto_list_rooms: false,
+        auto_subscribe: false,
+        bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
+        hide_muc_server: false,
+        i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+        prebind: false,
+        show_controlbox_by_default: true,
+        xhr_user_search: false
+    });
+&lt;/script&gt;</pre>
 </div>
 <p>The <em>index.html</em> file inside the Converse.js folder serves as a nice usable
 example of this.</p>
@@ -195,7 +242,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read <a class="reference internal" href="#session-support-i-e-single-site-login">Session support (i.e. single site login)</a>.</p>
+<p>For more info on this, read: <a class="reference internal" href="#pre-binding-and-single-session-support">Pre-binding and Single Session Support</a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
@@ -207,6 +254,8 @@ you&#8217;ll want to configure <em>Converse.js</em> to suit your needs before yo
 on your website.</p>
 <p><em>Converse.js</em> is passed its configuration settings when you call its
 <em>initialize</em> method.</p>
+<p>You&#8217;ll most likely want to call the <em>initialize</em> method in your HTML page. For
+an example of how this is done, please see the bottom of the <em>./index.html</em> page.</p>
 <p>Please refer to the <a class="reference internal" href="#configuration-variables">Configuration variables</a> section below for info on
 all the available configuration settings.</p>
 <p>After you have configured <em>Converse.js</em>, you&#8217;ll have to regenerate the minified
@@ -273,8 +322,18 @@ have to write a Javascript snippet to attach to the set up connection:</p>
 <p>The backend must authenticate for you, and then return a SID (session ID) and
 RID (Request ID), which you use when you attach to the connection.</p>
 </div>
+<div class="section" id="show-controlbox-by-default">
+<h3><a class="toc-backref" href="#id18">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<p>Default = False</p>
+<p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
+status widget, chatrooms and other controls.</p>
+<p>By default this box is hidden and can be toggled by clicking on any element in
+the page with class <em>toggle-online-users</em>.</p>
+<p>If this options is set to true, the controlbox will by default be shown upon
+page load.</p>
+</div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id18">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>There are two ways to add users.</p>
 <ul class="simple">
@@ -287,9 +346,9 @@ be used.</p>
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id19">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id20">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript">
-<h2><a class="toc-backref" href="#id20">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
 <p>We  use <a class="reference external" href="http://requirejs.org">require.js</a> to keep track of <em>Converse.js</em> and its dependencies and to
 to bundle them together in a single minified file fit for deployment to a
 production site.</p>
@@ -305,11 +364,84 @@ manager, NPM.</p>
 <p>You can <a class="reference external" href="http://requirejs.org/docs/optimization.html">read more about require.js&#8217;s optimizer here</a>.</p>
 </div>
 <div class="section" id="minifying-css">
-<h2><a class="toc-backref" href="#id21">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
 <p>CSS can be minimized with Yahoo&#8217;s yuicompressor tool:</p>
 <div class="highlight-python"><pre>yui-compressor --type=css converse.css -o converse.min.css</pre>
 </div>
 </div>
+</div>
+<div class="section" id="translations">
+<h1><a class="toc-backref" href="#id23">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Translations take up a lot of space and will bloat your minified file.
+At the time of writing, all the translations add about 50KB of extra data to
+the minified javascript file. Therefore, make sure to only
+include those languages that you intend to support and remove from
+./locale/locales.js those which you don&#8217;t need. Remember to rebuild the
+minified file afterwards.</p>
+</div>
+<p>The gettext POT file located in ./locale/converse.pot is the template
+containing all translations and from which for each language an individual PO
+file is generated.</p>
+<p>The POT file contains all translateable strings extracted from converse.js.</p>
+<p>To make a user facing string translateable, wrap it in the double underscore helper
+function like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">__</span><span class="p">(</span><span class="s">&#39;This string will be translated at runtime&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>After adding the string, you&#8217;ll need to regenerate the POT file, like so:</p>
+<div class="highlight-python"><pre>make pot</pre>
+</div>
+<p>You can then create or update the PO file for a specific language by doing the following:</p>
+<div class="highlight-python"><pre>msgmerge ./locale/af/LC_MESSAGES/converse.po ./locale/converse.pot -U</pre>
+</div>
+<p>This PO file is then what gets translated.</p>
+<p>If you&#8217;ve created a new PO file, please make sure to add the following
+attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). They are
+required as configuration settings for Jed, the Javascript translations library
+that we&#8217;re using.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;domain: converse</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="s">&quot;lang: af</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="s">&quot;plural_forms: nplurals=2; plural=(n != 1);</span><span class="se">\n</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>Unfortunately Jed cannot use the PO files directly. We have to generate from it
+a file in JSON format and then put that in a .js file for the specific
+language.</p>
+<p>To generate JSON from a PO file, you&#8217;ll need po2json for node.js. Run the
+following command to install it (npm being the node.js package manager):</p>
+<div class="highlight-python"><pre>npm install po2json</pre>
+</div>
+<p>You can then convert the translations into JSON format:</p>
+<div class="highlight-python"><pre>po2json locale/af/LC_MESSAGES/converse.po locale/af/LC_MESSAGES/converse.json</pre>
+</div>
+<p>Now from converse.json paste the data as a value for the &#8220;locale_data&#8221; key in the
+object in the language&#8217;s .js file.</p>
+<p>So, if you are for example translating into German (language code &#8216;de&#8217;), you&#8217;ll
+create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p>
+<div class="highlight-python"><pre>(function (root, factory) {
+    define("af", ['jed'], function () {
+        return factory(new Jed({
+            "domain": "converse",
+            "locale_data": {
+                // Paste the JSON data from converse.json here
+            }
+        })
+    }
+}(this, function (i18n) {
+    return i18n;
+}));</pre>
+</div>
+<p>making sure to also paste the JSON data as value to the &#8220;locale_data&#8221; key.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are adding translations for a new language that is not already supported,
+you&#8217;ll have to make one more edit in ./locale/locales.js to make sure the
+language is loaded by require.js.</p>
+</div>
+<p>Congratulations, you&#8217;ve now succesfully added your translations. Sorry for all
+those hoops you had to jump through.</p>
 </div>
 
 

@@ -54,7 +54,7 @@
                 expect($("div#controlbox").is(':visible')).toBe(true);
             }, converse);
             it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
-            
+
             describe("The Status Widget", $.proxy(function () {
                 it("can be used to set the current user's chat status", $.proxy(function () {
                     var view = this.xmppstatusview;
@@ -121,7 +121,7 @@
                     var i, t, is_last;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=0; i<pend_names.length; i++) {
-                        is_last = i==(pend_names.length-1);
+                        is_last = i===(pend_names.length-1);
                         this.roster.create({
                             jid: pend_names[i].replace(' ','.').toLowerCase() + '@localhost',
                             subscription: 'none',
@@ -129,7 +129,7 @@
                             fullname: pend_names[i],
                             is_last: is_last
                         });
-                        // For performance reasons, the roster should only be shown once 
+                        // For performance reasons, the roster should only be shown once
                         // the last contact has been added.
                         if (is_last) {
                             expect(this.rosterview.$el.is(':visible')).toEqual(true);
@@ -162,7 +162,7 @@
                             subscription: 'both',
                             ask: null,
                             fullname: cur_names[i],
-                            is_last: i==(cur_names.length-1)
+                            is_last: i===(cur_names.length-1)
                         });
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
@@ -291,7 +291,7 @@
                             subscription: 'none',
                             ask: 'request',
                             fullname: req_names[i],
-                            is_last: i==(req_names.length-1)
+                            is_last: i===(req_names.length-1)
                         });
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
@@ -335,7 +335,7 @@
                     expect(this.rosterview.removeRosterItem).toHaveBeenCalled();
                     expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                     // There should now be one less contact
-                    expect(this.roster.length).toEqual(num_contacts-1); 
+                    expect(this.roster.length).toEqual(num_contacts-1);
                 }, converse));
             }, converse));
 
@@ -368,7 +368,7 @@
 
                 afterEach($.proxy(function () {
                     // Contacts retrieved from localStorage have chat_status of
-                    // "offline". 
+                    // "offline".
                     // In the next test suite, we need some online contacts, so
                     // we make some online now
                     for (i=0; i<5; i++) {
@@ -456,7 +456,7 @@
                 expect(newchatboxes.length).toEqual(0);
 
                 // Lets open the controlbox again, purely for visual feedback
-                open_controlbox(); 
+                open_controlbox();
             }, converse));
 
             describe("A Chat Message", $.proxy(function () {
@@ -465,13 +465,11 @@
                     var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                         msg = $msg({
                             from: sender_jid,
-                            to: this.connection.jid, 
-                            type: 'chat', 
+                            to: this.connection.jid,
+                            type: 'chat',
                             id: (new Date()).getTime()
                         }).c('body').t(message).up()
                           .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-
-                    spyOn(this, 'getVCard').andCallThrough();
 
                     // We don't already have an open chatbox for this user
                     expect(this.chatboxes.get(sender_jid)).not.toBeDefined();
@@ -483,10 +481,6 @@
                     }, converse));
                     waits(500);
                     runs($.proxy(function () {
-                        // Since we didn't already have an open chatbox, one
-                        // will asynchronously created inside a callback to
-                        // getVCard
-                        expect(this.getVCard).toHaveBeenCalled();
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);
                         var chatboxview = this.chatboxesview.views[sender_jid];
@@ -504,8 +498,11 @@
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the
                         // chatbox in the DOM
-                        var txt = chatboxview.$el.find('.chat-content').find('.chat-message').find('.chat-message-content').text();
-                        expect(txt).toEqual(message);
+                        var $chat_content = chatboxview.$el.find('.chat-content');
+                        var msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                        expect(msg_txt).toEqual(message);
+                        var sender_txt = $chat_content.find('span.chat-message-them').text();
+                        expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                     }, converse));
                 }, converse));
 
@@ -537,8 +534,8 @@
                 var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
-                        to: this.connection.jid, 
-                        type: 'chat', 
+                        to: this.connection.jid,
+                        type: 'chat',
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
@@ -566,8 +563,8 @@
                 var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
-                        to: this.connection.jid, 
-                        type: 'chat', 
+                        to: this.connection.jid,
+                        type: 'chat',
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();

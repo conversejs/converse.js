@@ -6,7 +6,7 @@
     <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
-    <!-- <script src="converse.min.js"></script> -->
+    <!-- for production <script src="converse.min.js"></script> -->
     <script data-main="main" src="Libraries/require-jquery.js"></script>
     <title>Converse.js</title>
 </head>
@@ -136,8 +136,9 @@
     and <a href="http://opensource.org/licenses/GPL-2.0" target="_blank">GPL</a> licenses.</p>
 
     <h2>Contact</h2>
+    <p>You can follow me on <strong><a href="http://twitter.com/jcopkode" target="_blank">Twitter</a></strong> and <strong><a href="http://identi.ca/opkode" target="_blank">Identica</a></strong></p>
     <p>My XMPP username is <strong>jc@opkode.im</strong>.</p>
-    <p>You can send me an email via this <a href="http://opkode.com/contact" target="_blank">contact form</a>.</p>
+    <p>Send me an email via this <a href="http://opkode.com/contact" target="_blank">contact form</a>.</p>
 </section>
 
 </div>
@@ -165,13 +166,13 @@
 <script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
 </body>
 <script>
-    require(["jquery", "converse"], function ($, converse) {
+    require(['converse'], function (converse) {
         converse.initialize({
             auto_list_rooms: false,
             auto_subscribe: false,
             bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
             hide_muc_server: false,
-            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+            i18n: locales.de, // Refer to ./locale/locales.js to see which locales are supported
             prebind: false,
             show_controlbox_by_default: true,
             xhr_user_search: false

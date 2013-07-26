@@ -3,6 +3,7 @@ Changelog
 
 0.5 (Unreleased)
 ----------------
+- #9 Remove dependency on AMD/require.js [jcbrand]
 - #22 Fixed compare operator in strophe.muc [sonata82]
 - #23 Add Italian translations [ctrlaltca]
 - #24 Add Spanish translations [macagua]

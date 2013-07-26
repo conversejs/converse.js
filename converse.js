@@ -2516,21 +2516,21 @@
                         console.log(__('Connected'));
                         converse.onConnected(connection);
                     } else if (status === Strophe.Status.DISCONNECTED) {
-                        if ($button) { $button.show().siblings('img').remove(); }
+                        if ($button) { $button.show().siblings('span').remove(); }
                         converse.giveFeedback(__('Disconnected'), 'error');
                         this.connect(null, connection.jid, connection.pass);
                     } else if (status === Strophe.Status.Error) {
-                        if ($button) { $button.show().siblings('img').remove(); }
+                        if ($button) { $button.show().siblings('span').remove(); }
                         converse.giveFeedback(__('Error'), 'error');
                     } else if (status === Strophe.Status.CONNECTING) {
                         converse.giveFeedback(__('Connecting'));
                     } else if (status === Strophe.Status.CONNFAIL) {
-                        if ($button) { $button.show().siblings('img').remove(); }
+                        if ($button) { $button.show().siblings('span').remove(); }
                         converse.giveFeedback(__('Connection Failed'), 'error');
                     } else if (status === Strophe.Status.AUTHENTICATING) {
                         converse.giveFeedback(__('Authenticating'));
                     } else if (status === Strophe.Status.AUTHFAIL) {
-                        if ($button) { $button.show().siblings('img').remove(); }
+                        if ($button) { $button.show().siblings('span').remove(); }
                         converse.giveFeedback(__('Authentication Failed'), 'error');
                     } else if (status === Strophe.Status.DISCONNECTING) {
                         converse.giveFeedback(__('Disconnecting'), 'error');

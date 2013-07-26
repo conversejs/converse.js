@@ -10,6 +10,7 @@
         "es": "locale/es/LC_MESSAGES/es",
         "hu": "locale/hu/LC_MESSAGES/hu",
         "it": "locale/it/LC_MESSAGES/it",
+        "ptbr": "locale/pt_BR/LC_MESSAGES/pt-br", 
         "sjcl": "Libraries/sjcl",
         "tinysort": "Libraries/jquery.tinysort",
         "underscore": "Libraries/underscore",

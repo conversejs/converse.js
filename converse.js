@@ -2093,7 +2093,7 @@
         initStatus: function () {
             var stat = this.get('status');
             if (stat === undefined) {
-                this.save({status: 'online'});
+                this.setStatus('online');
             } else {
                 this.sendPresence(stat);
             }
@@ -2114,7 +2114,7 @@
                 presence = $pres({'type':type});
             } else {
                 if (type === 'online') {
-                    presence = $pres();
+                    presence = $pres({'type':type});
                 } else {
                     presence = $pres().c('show').t(type).up();
                 }

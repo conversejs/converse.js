@@ -173,7 +173,7 @@ following inline Javascript code:
 
 ::
 
-    <script>
+    require(['converse'], function (converse) {
         converse.initialize({
             auto_list_rooms: false,
             auto_subscribe: false,
@@ -184,7 +184,7 @@ following inline Javascript code:
             show_controlbox_by_default: true,
             xhr_user_search: false
         });
-    </script>
+    });
 
 The *index.html* file inside the Converse.js folder serves as a nice usable
 example of this.
@@ -202,6 +202,34 @@ For more info on this, read: `Pre-binding and Single Session Support`_.
 You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
 that.
+
+===========
+Development
+===========
+
+With AMD and require.js (recommended)
+-------------------------------------
+
+Converse.js uses `require.js`_ to track and load dependencies.
+
+If you want to develop or customize converse.js, you'll want to load the
+non-minified javascript files.
+
+Add the following two lines to the *<head>* section of your webpage.
+
+::
+
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
+    <script data-main="main" src="Libraries/require-jquery.js"></script>
+
+
+Without AMD and require.js
+--------------------------
+
+Converse.js can also be used without require.js. If you for some reason prefer
+to use it this way, please refer to *non_amd.html* for an example of how and in
+what order all the Javascript files that converse.js depends on need to be
+loaded.
 
 
 =============

@@ -552,6 +552,7 @@ p.room-info {
 a.room-info {
     background: url('images/information.png') no-repeat right top;
     width: 22px;
+    height: 22px;
     float: right;
     display: none;
     clear: right;

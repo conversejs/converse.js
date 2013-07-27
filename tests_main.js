@@ -12,10 +12,16 @@ require(["jquery", "converse", "mock", "spec/MainSpec", "spec/ChatRoomSpec"], fu
     // Jasmine stuff
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 250;
-    var htmlReporter = new jasmine.HtmlReporter();
-    jasmineEnv.addReporter(htmlReporter);
-    jasmineEnv.specFilter = function(spec) {
-        return htmlReporter.specFilter(spec);
-    };
+    if (/PhantomJS/.test(navigator.userAgent)) {
+        jasmineEnv.addReporter(new jasmine.TrivialReporter());
+        jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('target/test-reports/'));
+        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+    } else {
+        var htmlReporter = new jasmine.HtmlReporter();
+        jasmineEnv.addReporter(htmlReporter);
+        jasmineEnv.specFilter = function(spec) {
+            return htmlReporter.specFilter(spec);
+        };
+    }
     jasmineEnv.execute();
 });

@@ -29,6 +29,7 @@
   "devDependencies": {
     "grunt-cli": "~0.1.9",
     "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.0"
+    "grunt-contrib-jshint": "~0.6.0",
+    "phantomjs": "~1.9.1-0"
   }
 }

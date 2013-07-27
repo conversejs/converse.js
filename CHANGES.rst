@@ -3,12 +3,14 @@ Changelog
 
 0.5 (Unreleased)
 ----------------
-- #9 Remove dependency on AMD/require.js [jcbrand]
+
+- #09 Remove dependency on AMD/require.js [jcbrand]
 - #22 Fixed compare operator in strophe.muc [sonata82]
 - #23 Add Italian translations [ctrlaltca]
 - #24 Add Spanish translations [macagua]
 - #25 Using span with css instead of img [matheus-morfi]
 - #26 Only the first minute digit shown in chatbox. [jcbrand]
+- #28 Add Brazilian Portuguese translations [matheus-morfi]
 
 0.4 (2013-06-03)
 ----------------

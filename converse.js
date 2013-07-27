@@ -1869,7 +1869,7 @@
                 }
                 callback(jid, fullname, img, img_type, url);
             }, this), jid, errback);
-        }
+        };
 
         this.RosterItems = Backbone.Collection.extend({
             model: converse.RosterItem,

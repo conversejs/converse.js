@@ -46,11 +46,12 @@ require([
 
     // Jasmine stuff
     var jasmineEnv = jasmine.getEnv();
-    jasmineEnv.updateInterval = 250;
     if (/PhantomJS/.test(navigator.userAgent)) {
+        console.log('ehllo');
         jasmineEnv.addReporter(new jasmine.TrivialReporter());
-        // jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('target/test-reports/'));
+        jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
         jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+        jasmineEnv.updateInterval = 0;
     } else {
         var htmlReporter = new jasmine.HtmlReporter();
         jasmineEnv.addReporter(htmlReporter);
@@ -58,6 +59,7 @@ require([
         jasmineEnv.specFilter = function(spec) {
             return htmlReporter.specFilter(spec);
         };
+        jasmineEnv.updateInterval = 250;
     }
     jasmineEnv.execute();
 });

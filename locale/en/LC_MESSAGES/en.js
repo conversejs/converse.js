@@ -1,5 +1,5 @@
 (function (root, factory) {
-    var en = new Jed({
+    var translations = {
         "domain": "converse",
         "locale_data": {
             "converse": {
@@ -10,16 +10,16 @@
                 }
             }
         }
-    });
+    };
     if (typeof define === 'function' && define.amd) {
         define("en", ['jed'], function () {
-            return factory(en);
+            return factory(new Jed(translations));
         });
     } else {
         if (!window.locales) {
             window.locales = {};
         }
-        window.locales.en = en;
+        window.locales.en = factory(new Jed(translations));
     }
 }(this, function (en) { 
     return en;

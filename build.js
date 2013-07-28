@@ -8,7 +8,6 @@
         "en": "locale/en/LC_MESSAGES/en",
         "de": "locale/de/LC_MESSAGES/de",
         "es": "locale/es/LC_MESSAGES/es",
-        "hu": "locale/hu/LC_MESSAGES/hu",
         "it": "locale/it/LC_MESSAGES/it",
         "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
         "sjcl": "Libraries/sjcl",

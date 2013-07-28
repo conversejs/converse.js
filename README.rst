@@ -51,7 +51,14 @@ We use behavior-driven tests written with jasmine.js_. They can run in your
 browser (`see here`_) or in the command line via phantom.js_.
 
 We use `Travis-CI`_ for continuous integration.
+
 .. image:: https://api.travis-ci.org/jcbrand/converse.js.png?branch=master
+
+-------------
+Documentation
+-------------
+
+The developer/integrator documentation can be found at `<http://conversejs.org/docs/html>`_.
 
 
 ------------
@@ -83,7 +90,7 @@ Licence
 .. _Screencast2: http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript
 .. _`Integrated into a Plone site`: http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp
 .. _`In a static HTML page`: http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript
-.. _`conversejs.org`: http://converse.js.org
+.. _`conversejs.org`: http://conversejs.org
 .. _jquery: http://jquery.com
 .. _jasmine.js: http://pivotal.github.io/jasmine
 .. _`see here`: http://conversejs.org/tests.html

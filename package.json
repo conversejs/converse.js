@@ -30,6 +30,8 @@
     "grunt-cli": "~0.1.9",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.6.0",
-    "phantomjs": "~1.9.1-0"
+    "phantomjs": "~1.9.1-0",
+    "phantom-jasmine": "~0.3.0",
+    "jasmine-reporters": "~0.2.1"
   }
 }

@@ -33,5 +33,13 @@ You can see the current test output online, here: http://conversejs.org/tests.ht
 On the command line you can run ``grunt test`` (if you have before run ``npm
 install``).
 
+Check your code for errors or bad habits by running JSHint
+----------------------------------------------------------
+
+If you haven't yet done so, run ``npm install`` to install all development
+dependencies.
+
+Then run ``grunt jshint`` and check the output.
+
 .. _Converse.js: http://conversejs.org
 .. _`contact me`: http://opkode.com/contact.html

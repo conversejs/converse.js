@@ -11,6 +11,7 @@ Changelog
 - #25 Using span with css instead of img [matheus-morfi]
 - #26 Only the first minute digit shown in chatbox. [jcbrand]
 - #28 Add Brazilian Portuguese translations [matheus-morfi]
+- Use Bower to manage 3rd party dependencies. [jcbrand]
 
 0.4 (2013-06-03)
 ----------------

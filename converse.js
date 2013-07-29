@@ -15,16 +15,16 @@
         require.config({
             paths: {
                 "locales": "locale/locales",
-                "sjcl": "Libraries/sjcl",
-                "tinysort": "Libraries/jquery.tinysort",
-                "underscore": "Libraries/underscore",
-                "backbone": "Libraries/backbone",
-                "localstorage": "Libraries/backbone.localStorage",
-                "strophe": "Libraries/strophe",
-                "strophe.muc": "Libraries/strophe.muc",
-                "strophe.roster": "Libraries/strophe.roster",
-                "strophe.vcard": "Libraries/strophe.vcard",
-                "strophe.disco": "Libraries/strophe.disco"
+                "sjcl": "components/sjcl/sjcl",
+                "tinysort": "components/tinysort/src/jquery.tinysort",
+                "underscore": "components/underscore/underscore",
+                "backbone": "components/backbone/backbone",
+                "localstorage": "components/backbone.localStorage/backbone.localStorage",
+                "strophe": "components/strophe/strophe",
+                "strophe.muc": "components/strophe.muc/index",
+                "strophe.roster": "components/strophe.roster/index",
+                "strophe.vcard": "components/strophe.vcard/index",
+                "strophe.disco": "components/strophe.disco/index"
             },
 
             // define module dependencies for modules not using define

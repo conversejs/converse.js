@@ -32,7 +32,23 @@ module.exports = function(grunt) {
                 done();
         });
     });
-    grunt.registerTask('default', 'Perform all checks (e.g. before releasing)', function () {
+
+    grunt.registerTask('build', 'Set up the development environment', function () {
+        var done = this.async();
+        var child_process = require('child_process');
+        var exec = child_process.exec;
+        exec('bower update && cd ./components/strophe && make normal',
+             function (err, stdout, stderr) {
+                if (err) {
+                    grunt.log.write('build failed with error code '+err.code);
+                    grunt.log.write(stderr);
+                }
+                grunt.log.write(stdout);
+                done();
+        });
+    });
+
+    grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
         grunt.task.run('jshint', 'test');
     });
 };

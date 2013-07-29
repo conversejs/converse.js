@@ -2314,7 +2314,7 @@
 
             setStatusMessage: function (ev) {
                 ev.preventDefault();
-                var status_message = $(ev.target).find('input').attr('value');
+                var status_message = $(ev.target).find('input').val();
                 if (status_message === "") {
                 }
                 this.model.setStatusMessage(status_message);

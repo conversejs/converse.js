@@ -22,8 +22,8 @@ the tests are implemented.
 If you are unsure how to write tests, please `contact me`_ and I'll be happy to
 help.
 
-Check that the tests run
-------------------------
+Check that the tests pass
+-------------------------
 
 Check that the Jasmine tests complete sucessfully. Open tests.html in your
 browser, and the tests will run automatically.

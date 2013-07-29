@@ -265,6 +265,52 @@ for an example of how and in what order all the Javascript files that converse.j
 depends on need to be loaded.
 
 
+Before submitting a pull request
+================================
+
+Add tests for your bugfix or feature
+------------------------------------
+
+Add a test for any bug fixed or feature added. We use Jasmine
+for testing. 
+
+Take a look at ``tests.html`` and ``spec/MainSpec.js`` to see how
+the tests are implemented.
+
+If you are unsure how to write tests, please 
+`contact me <http://conversejs.org>`_ and I'll be happy to help.
+
+Check that the tests pass
+-------------------------
+
+Check that the Jasmine tests complete sucessfully. Open 
+`tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
+in your browser, and the tests will run automatically.
+
+On the command line you can run:
+
+::
+
+    grunt test
+
+Check your code for errors or bad habits by running JSHint
+----------------------------------------------------------
+
+`JSHint <http://jshint.com>`_ will do a static analysis of your code and hightlight potential errors
+and/or bad habits.
+
+::
+
+    grunt jshint
+
+
+You can run both the tests and jshint in one go by calling:
+
+::
+
+    grunt check
+
+
 =============
 Configuration
 =============

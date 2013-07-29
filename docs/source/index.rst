@@ -10,6 +10,60 @@
    :depth: 3
    :local:
 
+
+=========================================
+Quickstart (to get a demo up and running)
+=========================================
+
+When you download a specific release of *Converse.js* there will be two minified files inside the zip file.
+
+* converse.min.js
+* converse.min.css
+
+You can include these two files inside the *<head>* element of your website via the *script* and *link*
+tags:
+
+::
+
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
+    <script src="converse.min.js"></script>
+
+Then, at the bottom of your page, after the closing *</body>* element, put the
+following inline Javascript code:
+
+::
+
+    require(['converse'], function (converse) {
+        converse.initialize({
+            auto_list_rooms: false,
+            auto_subscribe: false,
+            bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
+            hide_muc_server: false,
+            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+            prebind: false,
+            show_controlbox_by_default: true,
+            xhr_user_search: false
+        });
+    });
+
+The *index.html* file inside the Converse.js folder serves as a nice usable
+example of this.
+
+These minified files provide the same demo-like functionality as is available
+on the `conversejs.org`_ website. Useful for testing or demoing, but not very
+practical.
+
+You'll most likely want to implement some kind of single-signon solution for
+your website, where users authenticate once in your website and then stay
+logged into their XMPP session upon page reload.
+
+For more info on this, read: `Pre-binding and Single Session Support`_.
+
+You might also want to have more fine-grained control of what gets included in
+the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
+that.
+
+
 ============
 Introduction
 ============
@@ -35,6 +89,7 @@ code.
 
 The `What you will need`_ section has more information on all these
 requirements.
+
 
 ==================
 What you will need
@@ -151,85 +206,63 @@ In the callback function, you call *converse.onConnected* together with the
 connection object.
 
 
-=========================================
-Quickstart (to get a demo up and running)
-=========================================
-
-When you download a specific release of *Converse.js* there will be two minified files inside the zip file.
-
-* converse.min.js
-* converse.min.css
-
-You can include these two files inside the *<head>* element of your website via the *script* and *link*
-tags:
-
-::
-
-    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
-    <script src="converse.min.js"></script>
-
-Then, at the bottom of your page, after the closing *</body>* element, put the
-following inline Javascript code:
-
-::
-
-    require(['converse'], function (converse) {
-        converse.initialize({
-            auto_list_rooms: false,
-            auto_subscribe: false,
-            bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
-            hide_muc_server: false,
-            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
-            prebind: false,
-            show_controlbox_by_default: true,
-            xhr_user_search: false
-        });
-    });
-
-The *index.html* file inside the Converse.js folder serves as a nice usable
-example of this.
-
-These minified files provide the same demo-like functionality as is available
-on the `conversejs.org`_ website. Useful for testing or demoing, but not very
-practical.
-
-You'll most likely want to implement some kind of single-signon solution for
-your website, where users authenticate once in your website and then stay
-logged into their XMPP session upon page reload.
-
-For more info on this, read: `Pre-binding and Single Session Support`_.
-
-You might also want to have more fine-grained control of what gets included in
-the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
-that.
-
 ===========
 Development
 ===========
 
-With AMD and require.js (recommended)
--------------------------------------
+Install Node.js and development dependencies
+============================================
 
-Converse.js uses `require.js`_ to track and load dependencies.
+We use development tools (`Grunt <http://gruntjs.com>`_ and `Bower <http://bower.io>`_)
+which depend on Node.js and npm (the Node package manager).
+
+If you don't have Node.js installed, you can download and install the latest
+version `here <https://nodejs.org/download>`_.
+
+Once you have Node.js installed, run the following command in the Converse.js
+directory:
+
+::
+
+    npm install
+
+Install 3rd party dependencies
+==============================
+
+Now that we have Grunt and Bower, you can install and configure Converse's
+3rd party dependencies with the following command:
+
+::
+
+    grunt build
+
+With AMD and require.js (recommended)
+=====================================
+
+Converse.js uses `require.js`_ to asynchronously load dependencies.
 
 If you want to develop or customize converse.js, you'll want to load the
 non-minified javascript files.
 
-Add the following two lines to the *<head>* section of your webpage.
+Add the following two lines to the *<head>* section of your webpage:
 
 ::
 
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
-    <script data-main="main" src="Libraries/require-jquery.js"></script>
+    <script data-main="main" src="components/requirejs/require.js"></script>
 
+require.js will then let the main.js file be parsed (because of the *data-main*
+attribute on the *script* tag), which will in turn cause converse.js to be
+parsed.
 
 Without AMD and require.js
---------------------------
+==========================
 
 Converse.js can also be used without require.js. If you for some reason prefer
-to use it this way, please refer to *non_amd.html* for an example of how and in
-what order all the Javascript files that converse.js depends on need to be
-loaded.
+to use it this way, please refer to 
+`non_amd.html <https://github.com/jcbrand/converse.js/blob/master/non_amd.html>`_
+for an example of how and in what order all the Javascript files that converse.js
+depends on need to be loaded.
 
 
 =============
@@ -290,7 +323,7 @@ bosh_service_url
 Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.
 
-See `here`_ for more information.
+See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for more information.
 
 fullname
 --------
@@ -505,7 +538,6 @@ those hoops you had to jump through.
 .. _`conversejs.org`: http://conversejs.org
 .. _`require.js`: http://requirejs.org
 .. _`read more about require.js's optimizer here`: http://requirejs.org/docs/optimization.html
-.. _`here`: http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l
 .. _`HTTP`: https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 .. _`XMPP`: https://en.wikipedia.org/wiki/Xmpp
 .. _`Converse.js homepage`: http://conversejs.org

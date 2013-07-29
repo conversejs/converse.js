@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &mdash; Converse.js 0.3 documentation</title>
+    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/stylesheet.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Converse.js 0.3 documentation" href="#" /> 
+    <link rel="top" title="Converse.js 0.5 documentation" href="#" /> 
   </head>
   <body>
     <div id="header_wrap" class="outer">
@@ -49,7 +49,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">Converse.js 0.3 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
 <section id="main_content" class="inner">  
@@ -65,151 +65,52 @@
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
-<li><a class="reference internal" href="#what-you-will-need" id="id2">What you will need</a><ul>
-<li><a class="reference internal" href="#an-xmpp-jabber-server" id="id3">An XMPP/Jabber server</a></li>
-<li><a class="reference internal" href="#connection-manager" id="id4">Connection Manager</a><ul>
-<li><a class="reference internal" href="#overcoming-cross-domain-request-restrictions" id="id5">Overcoming cross-domain request restrictions</a></li>
+<li><a class="reference internal" href="#quickstart-to-get-a-demo-up-and-running" id="id2">Quickstart (to get a demo up and running)</a></li>
+<li><a class="reference internal" href="#introduction" id="id3">Introduction</a></li>
+<li><a class="reference internal" href="#what-you-will-need" id="id4">What you will need</a><ul>
+<li><a class="reference internal" href="#an-xmpp-jabber-server" id="id5">An XMPP/Jabber server</a></li>
+<li><a class="reference internal" href="#connection-manager" id="id6">Connection Manager</a><ul>
+<li><a class="reference internal" href="#overcoming-cross-domain-request-restrictions" id="id7">Overcoming cross-domain request restrictions</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#server-side-authentication" id="id6">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id7">Pre-binding and Single Session Support</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#quickstart-to-get-a-demo-up-and-running" id="id8">Quickstart (to get a demo up and running)</a></li>
-<li><a class="reference internal" href="#development" id="id9">Development</a></li>
-<li><a class="reference internal" href="#configuration" id="id10">Configuration</a><ul>
-<li><a class="reference internal" href="#configuration-variables" id="id11">Configuration variables</a><ul>
-<li><a class="reference internal" href="#animate" id="id12">animate</a></li>
-<li><a class="reference internal" href="#auto-list-rooms" id="id13">auto_list_rooms</a></li>
-<li><a class="reference internal" href="#auto-subscribe" id="id14">auto_subscribe</a></li>
-<li><a class="reference internal" href="#bosh-service-url" id="id15">bosh_service_url</a></li>
-<li><a class="reference internal" href="#fullname" id="id16">fullname</a></li>
-<li><a class="reference internal" href="#hide-muc-server" id="id17">hide_muc_server</a></li>
-<li><a class="reference internal" href="#prebind" id="id18">prebind</a></li>
-<li><a class="reference internal" href="#show-controlbox-by-default" id="id19">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id20">xhr_user_search</a></li>
+<li><a class="reference internal" href="#server-side-authentication" id="id8">Server-side authentication</a><ul>
+<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id9">Pre-binding and Single Session Support</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id21">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript" id="id22">Minifying Javascript</a></li>
-<li><a class="reference internal" href="#minifying-css" id="id23">Minifying CSS</a></li>
+<li><a class="reference internal" href="#development" id="id10">Development</a><ul>
+<li><a class="reference internal" href="#install-node-js-and-development-dependencies" id="id11">Install Node.js and development dependencies</a></li>
+<li><a class="reference internal" href="#install-3rd-party-dependencies" id="id12">Install 3rd party dependencies</a></li>
+<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id13">With AMD and require.js (recommended)</a></li>
+<li><a class="reference internal" href="#without-amd-and-require-js" id="id14">Without AMD and require.js</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id24">Translations</a></li>
+<li><a class="reference internal" href="#configuration" id="id15">Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-variables" id="id16">Configuration variables</a><ul>
+<li><a class="reference internal" href="#animate" id="id17">animate</a></li>
+<li><a class="reference internal" href="#auto-list-rooms" id="id18">auto_list_rooms</a></li>
+<li><a class="reference internal" href="#auto-subscribe" id="id19">auto_subscribe</a></li>
+<li><a class="reference internal" href="#bosh-service-url" id="id20">bosh_service_url</a></li>
+<li><a class="reference internal" href="#fullname" id="id21">fullname</a></li>
+<li><a class="reference internal" href="#hide-muc-server" id="id22">hide_muc_server</a></li>
+<li><a class="reference internal" href="#prebind" id="id23">prebind</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id24">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id25">xhr_user_search</a></li>
 </ul>
-</div>
-<div class="section" id="introduction">
-<h1><a class="toc-backref" href="#id1">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>Even though you can connect to public XMPP servers on the <a class="reference external" href="http://conversejs.org">conversejs.org</a>
-website, <em>Converse.js</em> is not really meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
-webchat.</p>
-<p>Instead, its goal is to provide the means for website owners to add a tightly
-integrated instant messaging service to their own sites.</p>
-<p>As a website owner, you are expected to host <em>Converse.js</em> yourself, and to do some legwork to
-properly configure and integrate it into your site.</p>
-<p>The benefit in doing this, is that your users have a much more streamlined and integrated
-webchat experience and that you have control over the data. The latter being a
-requirement for many sites dealing with sensitive information.</p>
-<p>You&#8217;ll need to set up your own XMPP server and in order to have
-<a class="reference internal" href="#session-support">Session Support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
-logged in to XMPP upon page reload) you will also have to add some server-side
-code.</p>
-<p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
-requirements.</p>
-</div>
-<div class="section" id="what-you-will-need">
-<h1><a class="toc-backref" href="#id2">What you will need</a><a class="headerlink" href="#what-you-will-need" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="an-xmpp-jabber-server">
-<h2><a class="toc-backref" href="#id3">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
-<p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
-to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
-<p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
-have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
-<p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
-servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
-</div>
-<div class="section" id="connection-manager">
-<h2><a class="toc-backref" href="#id4">Connection Manager</a><a class="headerlink" href="#connection-manager" title="Permalink to this headline">¶</a></h2>
-<p>Your website and <em>Converse.js</em> use <a class="reference external" href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> as protocol to communicate with
-the webserver. HTTP connections are stateless and usually shortlived.</p>
-<p><a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> on the other hand, is the protocol that enables instant messaging, and
-its connections are stateful and usually longer.</p>
-<p>To enable a web application like <em>Converse.js</em> to communicate with an XMPP
-server, we need a proxy in the middle that can act as a bridge between the two
-protocols.</p>
-<p>This is the job of a connection manager. A connection manager can be either a
-standalone application or part of an XMPP server. <a class="reference external" href="http://www.ejabberd.im">ejabberd</a> for example,
-includes a connection manager (but you have to enable it).</p>
-<p>The demo on the <a class="reference external" href="http://conversejs.org">Converse.js homepage</a> uses a a connection manager located at <a class="reference external" href="https://bind.opkode.im">https://bind.opkode.im</a>.
-This connection manager is for testing purposes only, please don&#8217;t use it in
-production.</p>
-<div class="section" id="overcoming-cross-domain-request-restrictions">
-<h3><a class="toc-backref" href="#id5">Overcoming cross-domain request restrictions</a><a class="headerlink" href="#overcoming-cross-domain-request-restrictions" title="Permalink to this headline">¶</a></h3>
-<p>The domain of the <em>Converse.js</em> demo is <em>conversejs.org</em>, but the domain of the connection manager is <em>opkode.im</em>.
-HTTP requests are made by <em>Converse.js</em> to the connection manager via XmlHttpRequests (XHR).
-Until recently, it was not possible to make such requests to a different domain
-than the one currently being served (to prevent XSS attacks).</p>
-<p>Luckily there is now a standard called <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> (Cross-origin resource sharing), which enables exactly that.
-Modern browsers support CORS, but there are problems with Internet Explorer &lt;
-10.</p>
-<p>IE 8 and 9 partially support CORS via a proprietary implementation called
-XDomainRequest. There is a <a class="reference external" href="https://gist.github.com/1095825/6b4517276f26b66b01fa97b0a78c01275fdc6ff2">Strophe.js plugin</a> which you can use to enable
-support for XDomainRequest when it is present.</p>
-<p>In IE &lt; 8, there is no support for CORS.</p>
-<p>If you need to support these browsers, you can add a front-end proxy in
-Apache/Nginx which serves the connection manager under the same domain as your
-website. This will remove the need for any cross-domain XHR support.</p>
-</div>
-</div>
-<div class="section" id="server-side-authentication">
-<h2><a class="toc-backref" href="#id6">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pre-binding-and-single-session-support">
-<span id="session-support"></span><h3><a class="toc-backref" href="#id7">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
-<p>It&#8217;s possible to enable single-site login, whereby users already
-authenticated in your website will also automatically be logged in on the chat server,
-but this will require custom code on your server.</p>
-<p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you want to enable single session support, make sure to pass <strong>prebind: true</strong>
-when you call <strong>converse.initialize</strong> (see ./index.html).</p>
-</div>
-<p>When you authenticate to the XMPP server on your backend, you&#8217;ll receive two
-tokens, RID (request ID) and SID (session ID).</p>
-<p>These tokens then need to be passed back to the javascript running in your
-browser, where you will need them attach to the existing session.</p>
-<p>You can embed the RID and SID tokens in your HTML markup or you can do an
-XMLHttpRequest call to you server and ask it to return them for you.</p>
-<p>Below is one example of how this could work. An Ajax call is made to the
-relative URL <strong>/prebind</strong> and it expects to receive JSON data back.</p>
-<div class="highlight-python"><pre>$.getJSON('/prebind', function (data) {
-        var connection = new Strophe.Connection(converse.bosh_service_url);
-        connection.attach(data.jid, data.sid, data.rid, function (status) {
-            if ((status === Strophe.Status.ATTACHED) || (status === Strophe.Status.CONNECTED)) {
-                converse.onConnected(connection)
-            }
-        });
-    }
-);</pre>
-</div>
-<p><strong>Here&#8217;s what&#8217;s happening:</strong></p>
-<p>The JSON data contains the user&#8217;s JID (jabber ID), RID and SID. The URL to the
-BOSH connection manager is already set as a configuration setting on the
-<em>converse</em> object (see ./main.js), so we can reuse it from there.</p>
-<p>A new Strophe.Connection object is instantiated and then <em>attach</em> is called with
-the user&#8217;s JID, the necessary tokens and a callback function.</p>
-<p>In the callback function, you call <em>converse.onConnected</em> together with the
-connection object.</p>
-</div>
-</div>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#minification" id="id26">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript" id="id27">Minifying Javascript</a></li>
+<li><a class="reference internal" href="#minifying-css" id="id28">Minifying CSS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#translations" id="id29">Translations</a></li>
+</ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
-<h1><a class="toc-backref" href="#id8">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id2">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
 <p>When you download a specific release of <em>Converse.js</em> there will be two minified files inside the zip file.</p>
 <ul class="simple">
 <li>converse.min.js</li>
@@ -248,22 +149,155 @@ logged into their XMPP session upon page reload.</p>
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
 </div>
+<div class="section" id="introduction">
+<h1><a class="toc-backref" href="#id3">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Even though you can connect to public XMPP servers on the <a class="reference external" href="http://conversejs.org">conversejs.org</a>
+website, <em>Converse.js</em> is not really meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
+webchat.</p>
+<p>Instead, its goal is to provide the means for website owners to add a tightly
+integrated instant messaging service to their own sites.</p>
+<p>As a website owner, you are expected to host <em>Converse.js</em> yourself, and to do some legwork to
+properly configure and integrate it into your site.</p>
+<p>The benefit in doing this, is that your users have a much more streamlined and integrated
+webchat experience and that you have control over the data. The latter being a
+requirement for many sites dealing with sensitive information.</p>
+<p>You&#8217;ll need to set up your own XMPP server and in order to have
+<a class="reference internal" href="#session-support">Session Support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
+logged in to XMPP upon page reload) you will also have to add some server-side
+code.</p>
+<p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
+requirements.</p>
+</div>
+<div class="section" id="what-you-will-need">
+<h1><a class="toc-backref" href="#id4">What you will need</a><a class="headerlink" href="#what-you-will-need" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="an-xmpp-jabber-server">
+<h2><a class="toc-backref" href="#id5">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
+<p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
+to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
+<p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
+have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
+<p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
+servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
+</div>
+<div class="section" id="connection-manager">
+<h2><a class="toc-backref" href="#id6">Connection Manager</a><a class="headerlink" href="#connection-manager" title="Permalink to this headline">¶</a></h2>
+<p>Your website and <em>Converse.js</em> use <a class="reference external" href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> as protocol to communicate with
+the webserver. HTTP connections are stateless and usually shortlived.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> on the other hand, is the protocol that enables instant messaging, and
+its connections are stateful and usually longer.</p>
+<p>To enable a web application like <em>Converse.js</em> to communicate with an XMPP
+server, we need a proxy in the middle that can act as a bridge between the two
+protocols.</p>
+<p>This is the job of a connection manager. A connection manager can be either a
+standalone application or part of an XMPP server. <a class="reference external" href="http://www.ejabberd.im">ejabberd</a> for example,
+includes a connection manager (but you have to enable it).</p>
+<p>The demo on the <a class="reference external" href="http://conversejs.org">Converse.js homepage</a> uses a a connection manager located at <a class="reference external" href="https://bind.opkode.im">https://bind.opkode.im</a>.
+This connection manager is for testing purposes only, please don&#8217;t use it in
+production.</p>
+<div class="section" id="overcoming-cross-domain-request-restrictions">
+<h3><a class="toc-backref" href="#id7">Overcoming cross-domain request restrictions</a><a class="headerlink" href="#overcoming-cross-domain-request-restrictions" title="Permalink to this headline">¶</a></h3>
+<p>The domain of the <em>Converse.js</em> demo is <em>conversejs.org</em>, but the domain of the connection manager is <em>opkode.im</em>.
+HTTP requests are made by <em>Converse.js</em> to the connection manager via XmlHttpRequests (XHR).
+Until recently, it was not possible to make such requests to a different domain
+than the one currently being served (to prevent XSS attacks).</p>
+<p>Luckily there is now a standard called <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> (Cross-origin resource sharing), which enables exactly that.
+Modern browsers support CORS, but there are problems with Internet Explorer &lt;
+10.</p>
+<p>IE 8 and 9 partially support CORS via a proprietary implementation called
+XDomainRequest. There is a <a class="reference external" href="https://gist.github.com/1095825/6b4517276f26b66b01fa97b0a78c01275fdc6ff2">Strophe.js plugin</a> which you can use to enable
+support for XDomainRequest when it is present.</p>
+<p>In IE &lt; 8, there is no support for CORS.</p>
+<p>If you need to support these browsers, you can add a front-end proxy in
+Apache/Nginx which serves the connection manager under the same domain as your
+website. This will remove the need for any cross-domain XHR support.</p>
+</div>
+</div>
+<div class="section" id="server-side-authentication">
+<h2><a class="toc-backref" href="#id8">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pre-binding-and-single-session-support">
+<span id="session-support"></span><h3><a class="toc-backref" href="#id9">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s possible to enable single-site login, whereby users already
+authenticated in your website will also automatically be logged in on the chat server,
+but this will require custom code on your server.</p>
+<p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to enable single session support, make sure to pass <strong>prebind: true</strong>
+when you call <strong>converse.initialize</strong> (see ./index.html).</p>
+</div>
+<p>When you authenticate to the XMPP server on your backend, you&#8217;ll receive two
+tokens, RID (request ID) and SID (session ID).</p>
+<p>These tokens then need to be passed back to the javascript running in your
+browser, where you will need them attach to the existing session.</p>
+<p>You can embed the RID and SID tokens in your HTML markup or you can do an
+XMLHttpRequest call to you server and ask it to return them for you.</p>
+<p>Below is one example of how this could work. An Ajax call is made to the
+relative URL <strong>/prebind</strong> and it expects to receive JSON data back.</p>
+<div class="highlight-python"><pre>$.getJSON('/prebind', function (data) {
+        var connection = new Strophe.Connection(converse.bosh_service_url);
+        connection.attach(data.jid, data.sid, data.rid, function (status) {
+            if ((status === Strophe.Status.ATTACHED) || (status === Strophe.Status.CONNECTED)) {
+                converse.onConnected(connection)
+            }
+        });
+    }
+);</pre>
+</div>
+<p><strong>Here&#8217;s what&#8217;s happening:</strong></p>
+<p>The JSON data contains the user&#8217;s JID (jabber ID), RID and SID. The URL to the
+BOSH connection manager is already set as a configuration setting on the
+<em>converse</em> object (see ./main.js), so we can reuse it from there.</p>
+<p>A new Strophe.Connection object is instantiated and then <em>attach</em> is called with
+the user&#8217;s JID, the necessary tokens and a callback function.</p>
+<p>In the callback function, you call <em>converse.onConnected</em> together with the
+connection object.</p>
+</div>
+</div>
+</div>
 <div class="section" id="development">
-<h1><a class="toc-backref" href="#id9">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
-<p>Converse.js uses <a class="reference external" href="http://requirejs.org">require.js</a> to track and load dependencies.</p>
+<h1><a class="toc-backref" href="#id10">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-node-js-and-development-dependencies">
+<h2><a class="toc-backref" href="#id11">Install Node.js and development dependencies</a><a class="headerlink" href="#install-node-js-and-development-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>We use development tools (<a class="reference external" href="http://gruntjs.com">Grunt</a> and <a class="reference external" href="http://bower.io">Bower</a>)
+which depend on Node.js and npm (the Node package manager).</p>
+<p>If you don&#8217;t have Node.js installed, you can download and install the latest
+version <a class="reference external" href="https://nodejs.org/download">here</a>.</p>
+<p>Once you have Node.js installed, run the following command in the Converse.js
+directory:</p>
+<div class="highlight-python"><pre>npm install</pre>
+</div>
+</div>
+<div class="section" id="install-3rd-party-dependencies">
+<h2><a class="toc-backref" href="#id12">Install 3rd party dependencies</a><a class="headerlink" href="#install-3rd-party-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have Grunt and Bower, you can install and configure Converse&#8217;s
+3rd party dependencies with the following command:</p>
+<div class="highlight-python"><pre>grunt build</pre>
+</div>
+</div>
+<div class="section" id="with-amd-and-require-js-recommended">
+<h2><a class="toc-backref" href="#id13">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
+<p>Converse.js uses <a class="reference external" href="http://requirejs.org">require.js</a> to asynchronously load dependencies.</p>
 <p>If you want to develop or customize converse.js, you&#8217;ll want to load the
 non-minified javascript files.</p>
-<p>Add the following two lines to the <em>&lt;head&gt;</em> section of your webpage.</p>
+<p>Add the following two lines to the <em>&lt;head&gt;</em> section of your webpage:</p>
 <div class="highlight-python"><pre>&lt;link rel="stylesheet" type="text/css" media="screen" href="converse.css"&gt;
-&lt;script data-main="main" src="Libraries/require-jquery.js"&gt;&lt;/script&gt;</pre>
+&lt;script data-main="main" src="components/requirejs/require.js"&gt;&lt;/script&gt;</pre>
 </div>
+<p>require.js will then let the main.js file be parsed (because of the <em>data-main</em>
+attribute on the <em>script</em> tag), which will in turn cause converse.js to be
+parsed.</p>
+</div>
+<div class="section" id="without-amd-and-require-js">
+<h2><a class="toc-backref" href="#id14">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js can also be used without require.js. If you for some reason prefer
-to use it this way, please refer to <em>non_amd.html</em> for an example of how and in
-what order all the Javascript files that converse.js depends on need to be
-loaded.</p>
+to use it this way, please refer to
+<a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
+for an example of how and in what order all the Javascript files that converse.js
+depends on need to be loaded.</p>
+</div>
 </div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#id10">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id15">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>The included minified JS and CSS files can be used for demoing or testing, but
 you&#8217;ll want to configure <em>Converse.js</em> to suit your needs before you deploy it
 on your website.</p>
@@ -277,14 +311,14 @@ all the available configuration settings.</p>
 JS file so that it will include the new settings. Please refer to the
 <a class="reference internal" href="#minification">Minification</a> section for more info on how to do this.</p>
 <div class="section" id="configuration-variables">
-<h2><a class="toc-backref" href="#id11">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="animate">
-<h3><a class="toc-backref" href="#id12">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
 <p>Default = True</p>
 <p>Show animations, for example when opening and closing chat boxes.</p>
 </div>
 <div class="section" id="auto-list-rooms">
-<h3><a class="toc-backref" href="#id13">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.</p>
@@ -294,30 +328,30 @@ features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.</p>
 </div>
 <div class="section" id="auto-subscribe">
-<h3><a class="toc-backref" href="#id14">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>If true, the user will automatically subscribe back to any contact requests.</p>
 </div>
 <div class="section" id="bosh-service-url">
-<h3><a class="toc-backref" href="#id15">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
 <p>Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.</p>
-<p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need/l">here</a> for more information.</p>
+<p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">here</a> for more information.</p>
 </div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id16">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
 <p>If you are using prebinding, you need to specify the fullname of the currently
 logged in user.</p>
 </div>
 <div class="section" id="hide-muc-server">
-<h3><a class="toc-backref" href="#id17">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>Hide the <tt class="docutils literal"><span class="pre">server</span></tt> input field of the form inside the <tt class="docutils literal"><span class="pre">Room</span></tt> panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.</p>
 </div>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id18">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
@@ -338,7 +372,7 @@ have to write a Javascript snippet to attach to the set up connection:</p>
 RID (Request ID), which you use when you attach to the connection.</p>
 </div>
 <div class="section" id="show-controlbox-by-default">
-<h3><a class="toc-backref" href="#id19">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.</p>
@@ -348,7 +382,7 @@ the page with class <em>toggle-online-users</em>.</p>
 page load.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id20">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>There are two ways to add users.</p>
 <ul class="simple">
@@ -361,9 +395,9 @@ be used.</p>
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id21">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id26">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript">
-<h2><a class="toc-backref" href="#id22">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
 <p>We  use <a class="reference external" href="http://requirejs.org">require.js</a> to keep track of <em>Converse.js</em> and its dependencies and to
 to bundle them together in a single minified file fit for deployment to a
 production site.</p>
@@ -379,14 +413,14 @@ manager, NPM.</p>
 <p>You can <a class="reference external" href="http://requirejs.org/docs/optimization.html">read more about require.js&#8217;s optimizer here</a>.</p>
 </div>
 <div class="section" id="minifying-css">
-<h2><a class="toc-backref" href="#id23">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
 <p>CSS can be minimized with Yahoo&#8217;s yuicompressor tool:</p>
 <div class="highlight-python"><pre>yui-compressor --type=css converse.css -o converse.min.css</pre>
 </div>
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id24">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id29">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.
@@ -472,7 +506,7 @@ those hoops you had to jump through.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">Converse.js 0.3 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
 </div>

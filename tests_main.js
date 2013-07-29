@@ -1,12 +1,46 @@
+
 require.config({
     paths: {
-        "jasmine": "Libraries/jasmine-1.3.1/jasmine",
-        "jasmine-html": "Libraries/jasmine-1.3.1/jasmine-html",
+        "jquery": "components/jquery/jquery",
+        "locales": "locale/locales",
+        "sjcl": "components/sjcl/sjcl",
+        "tinysort": "components/tinysort/src/jquery.tinysort",
+        "underscore": "components/underscore/underscore",
+        "backbone": "components/backbone/backbone",
+        "localstorage": "components/backbone.localStorage/backbone.localStorage",
+        "strophe": "components/strophe/strophe",
+        "strophe.muc": "components/strophe.muc/index",
+        "strophe.roster": "components/strophe.roster/index",
+        "strophe.vcard": "components/strophe.vcard/index",
+        "strophe.disco": "components/strophe.disco/index",
+        // Extra test dependencies
+        "jasmine": "components/jasmine/lib/jasmine-core/jasmine",
+        "jasmine-html": "components/jasmine/lib/jasmine-core/jasmine-html",
         "jasmine-console-reporter": "node_modules/jasmine-reporters/src/jasmine.console_reporter",
         "jasmine-junit-reporter": "node_modules/jasmine-reporters/src/jasmine.junit_reporter"
     },
+
     // define module dependencies for modules not using define
     shim: {
+        'backbone': {
+            //These script dependencies should be loaded before loading
+            //backbone.js
+            deps: [
+                'underscore',
+                'jquery'
+                ],
+            //Once loaded, use the global 'Backbone' as the
+            //module value.
+            exports: 'Backbone'
+        },
+        'tinysort': { deps: ['jquery'] },
+        'strophe': { deps: ['jquery'] },
+        'underscore':   { exports: '_' },
+        'strophe.muc':  { deps: ['strophe', 'jquery'] },
+        'strophe.roster':   { deps: ['strophe'] },
+        'strophe.vcard':    { deps: ['strophe'] },
+        'strophe.disco':    { deps: ['strophe'] },
+        // Extra test dependencies
         'jasmine-html': {
             deps: ['jasmine'],
             exports: 'jasmine'
@@ -21,7 +55,6 @@ require.config({
         }
     }
 });
-
 
 require([
     "jquery",
@@ -59,7 +92,7 @@ require([
         jasmineEnv.specFilter = function(spec) {
             return htmlReporter.specFilter(spec);
         };
-        jasmineEnv.updateInterval = 250;
+        jasmineEnv.updateInterval = 0;
     }
     jasmineEnv.execute();
 });

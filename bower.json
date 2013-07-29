@@ -2,11 +2,11 @@
   "name": "converse",
   "version": "0.5.0",
   "devDependencies": {
-    "jasmine": "https://github.com/jcbrand/jasmine.git"
+    "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x"
   },
   "dependencies": {
     "requirejs": "2.1.8",
-    "jquery": "1.10.2",
+    "jquery": "1.8.3",
     "sjcl": "git://github.com/bitwiseshiftleft/sjcl.git",
     "jed": "0.5.4",
     "tinysort": "git://github.com/Sjeiti/TinySort.git",

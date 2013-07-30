@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+    var cfg = require('./package.json');
     grunt.initConfig({
         jshint: {
             options: {
@@ -24,7 +25,7 @@ module.exports = function(grunt) {
                         "*/"
             },
             minify: {
-                dest: 'converse.min.css',
+                dest: 'converse-'+cfg.version+'.min.css',
                 src: ['converse.css']
             }
         },
@@ -33,8 +34,9 @@ module.exports = function(grunt) {
                 options: {
                     baseUrl: ".",
                     name: "main",
-                    out: "converse.min.js",
+                    out: "converse-"+cfg.version+".min.js",
                     paths: {
+                        "require": "components/requirejs/require",
                         "jquery": "components/jquery/jquery",
                         "jed": "components/jed/jed",
                         "locales": "locale/locales",
@@ -54,6 +56,15 @@ module.exports = function(grunt) {
                         "strophe.roster": "components/strophe.roster/index",
                         "strophe.vcard": "components/strophe.vcard/index",
                         "strophe.disco": "components/strophe.disco/index"
+                    },
+                    done: function(done, output) {
+                        var duplicates = require('rjs-build-analysis').duplicates(output);
+                        if (duplicates.length > 0) {
+                            grunt.log.subhead('Duplicates found in requirejs build:');
+                            grunt.log.warn(duplicates);
+                            done(new Error('r.js built duplicate modules, please check the excludes option.'));
+                        }
+                        done();
                     }
                 }
             }
@@ -95,27 +106,7 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('minify', 'Minify JC and CSS files', ['requirejs', 'cssmin']);
-
-    grunt.registerTask('rename', 'Rename minified files to include version number', function () {
-        var cfg = require('./package.json');
-        grunt.log.write('The release version is '+cfg.version);
-        var done = this.async();
-        var child_process = require('child_process');
-        var exec = child_process.exec;
-        exec('mv converse.min.js converse-'+cfg.version+'.min.js &&'+
-             'mv converse.min.css converse-'+cfg.version+'.min.css',
-             function (err, stdout, stderr) {
-                if (err) {
-                    grunt.log.write('rename failed with error code '+err.code);
-                    grunt.log.write(stderr);
-                }
-                grunt.log.write(stdout);
-                done();
-        });
-    });
-
-    grunt.registerTask('release', 'Create a new release', ['minify', 'rename']);
+    grunt.registerTask('release', 'Create a new release', ['requirejs', 'cssmin']);
 
     grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
         grunt.task.run('jshint', 'test');

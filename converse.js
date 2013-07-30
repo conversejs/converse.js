@@ -17,6 +17,7 @@
             "localstorage",
             "tinysort",
             "sjcl",
+            "strophe",
             "strophe.muc",
             "strophe.roster",
             "strophe.vcard",

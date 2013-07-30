@@ -78,7 +78,7 @@ module.exports = function(grunt) {
         var done = this.async();
         var child_process = require('child_process');
         var exec = child_process.exec;
-        exec('phantomjs '+
+        exec('./node_modules/.bin/phantomjs '+
              'node_modules/jasmine-reporters/test/phantomjs-testrunner.js '+
              __dirname+'/tests.html',
              function (err, stdout, stderr) {

@@ -80,7 +80,6 @@ require([
     // Jasmine stuff
     var jasmineEnv = jasmine.getEnv();
     if (/PhantomJS/.test(navigator.userAgent)) {
-        console.log('ehllo');
         jasmineEnv.addReporter(new jasmine.TrivialReporter());
         jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
         jasmineEnv.addReporter(new jasmine.ConsoleReporter());
@@ -92,7 +91,7 @@ require([
         jasmineEnv.specFilter = function(spec) {
             return htmlReporter.specFilter(spec);
         };
-        jasmineEnv.updateInterval = 0;
+        jasmineEnv.updateInterval = 200;
     }
     jasmineEnv.execute();
 });

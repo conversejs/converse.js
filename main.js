@@ -37,6 +37,6 @@ require.config({
     }
 });
 
-require(["jquery", "converse"], function($, converse) {
+require(["components/requirejs/require", "jquery", "converse"], function(require, $, converse) {
     window.converse = converse;
 });

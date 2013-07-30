@@ -106,6 +106,7 @@ module.exports = function(grunt) {
         });
     });
 
+    // TODO: update CHANGES.txt with release date
     grunt.registerTask('release', 'Create a new release', ['requirejs', 'cssmin']);
 
     grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {

@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.5 (Unreleased)
-----------------
+0.5.0 (2013-07-30)
+------------------
 
 - #09 Remove dependency on AMD/require.js [jcbrand]
 - #22 Fixed compare operator in strophe.muc [sonata82]
@@ -13,8 +13,8 @@ Changelog
 - #28 Add Brazilian Portuguese translations [matheus-morfi]
 - Use Bower to manage 3rd party dependencies. [jcbrand]
 
-0.4 (2013-06-03)
-----------------
+0.4.0 (2013-06-03)
+------------------
 
 - CSS tweaks: fixed overflowing text in status message and chatrooms list. [jcbrand]
 - Bugfix: Couldn't join chatroom when clicking from a list of rooms. [jcbrand]
@@ -25,8 +25,8 @@ Changelog
 - Reconnect automatically when the connection drops. [jcbrand]
 - Add support for internationalization. [jcbrand]
 
-0.3 (2013-05-21)
-----------------
+0.3.0 (2013-05-21)
+------------------
 
 - Add vCard support [jcbrand]
 - Remember custom status messages upon reload. [jcbrand]
@@ -41,15 +41,15 @@ Changelog
 - Multi-user chatrooms are now configurable. [jcbrand]
 
 
-0.2 (2013-03-28)
-----------------
+0.2.0 (2013-03-28)
+------------------
 
 - Performance enhancements and general script cleanup [ichim-david]
 - Add "Connecting to chat..." info [alecghica]
 - Various smaller improvements and bugfixes [jcbrand]
 
 
-0.1 (2012-06-12)
-----------------
+0.1.0 (2012-06-12)
+------------------
 
 - Created [jcbrand]

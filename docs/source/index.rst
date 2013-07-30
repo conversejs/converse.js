@@ -234,7 +234,7 @@ Now that we have Grunt and Bower, you can install and configure Converse's
 
 ::
 
-    grunt build
+    grunt fetch
 
 With AMD and require.js (recommended)
 =====================================

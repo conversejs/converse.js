@@ -1,5 +1,5 @@
 (function (root, factory) {
-    var it = new Jed({
+    var translations = {
         "domain": "converse",
         "locale_data": {
             "converse": {
@@ -461,16 +461,16 @@
                 ]
             }
         }
-    });
+    };
     if (typeof define === 'function' && define.amd) {
         define("it", ['jed'], function () {
-            return factory(it);
+            return factory(new Jed(translations));
         });
     } else {
         if (!window.locales) {
             window.locales = {};
         }
-        window.locales.it = it;
+        window.locales.it = factory(new Jed(translations));
     }
 }(this, function (it) { 
     return it; 

@@ -12,47 +12,12 @@
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
-        require.config({
-            paths: {
-                "locales": "locale/locales",
-                "sjcl": "Libraries/sjcl",
-                "tinysort": "Libraries/jquery.tinysort",
-                "underscore": "Libraries/underscore",
-                "backbone": "Libraries/backbone",
-                "localstorage": "Libraries/backbone.localStorage",
-                "strophe": "Libraries/strophe",
-                "strophe.muc": "Libraries/strophe.muc",
-                "strophe.roster": "Libraries/strophe.roster",
-                "strophe.vcard": "Libraries/strophe.vcard",
-                "strophe.disco": "Libraries/strophe.disco"
-            },
-
-            // define module dependencies for modules not using define
-            shim: {
-                'backbone': {
-                    //These script dependencies should be loaded before loading
-                    //backbone.js
-                    deps: [
-                        'underscore',
-                        'jquery'
-                        ],
-                    //Once loaded, use the global 'Backbone' as the
-                    //module value.
-                    exports: 'Backbone'
-                },
-                'underscore':   { exports: '_' },
-                'strophe.muc':  { deps: ['strophe', 'jquery'] },
-                'strophe.roster':   { deps: ['strophe', 'jquery'] },
-                'strophe.vcard':    { deps: ['strophe', 'jquery'] },
-                'strophe.disco':    { deps: ['strophe', 'jquery'] }
-            }
-        });
-
         define("converse", [
             "locales",
             "localstorage",
             "tinysort",
             "sjcl",
+            "strophe",
             "strophe.muc",
             "strophe.roster",
             "strophe.vcard",
@@ -1869,7 +1834,7 @@
                 }
                 callback(jid, fullname, img, img_type, url);
             }, this), jid, errback);
-        }
+        };
 
         this.RosterItems = Backbone.Collection.extend({
             model: converse.RosterItem,
@@ -2350,7 +2315,7 @@
 
             setStatusMessage: function (ev) {
                 ev.preventDefault();
-                var status_message = $(ev.target).find('input').attr('value');
+                var status_message = $(ev.target).find('input').val();
                 if (status_message === "") {
                 }
                 this.model.setStatusMessage(status_message);

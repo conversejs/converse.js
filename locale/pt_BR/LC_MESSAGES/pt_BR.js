@@ -1,5 +1,5 @@
 (function (root, factory) {
-    var pt_BR = new Jed({
+    var translations = {
         "domain": "converse",
         "locale_data": {
             "converse": {
@@ -461,16 +461,16 @@
                 ]
             }
         }
-    });
+    };
     if (typeof define === 'function' && define.amd) {
         define("pt_BR", ['jed'], function () {
-            return factory(pt_BR);
+            return factory(new Jed(translations));
         });
     } else {
         if (!window.locales) {
             window.locales = {};
         }
-        window.locales.pt_BR = pt_BR;
+        window.locales.pt_BR = factory(new Jed(translations));
     }
   }(this, function (i18n) {
       return i18n;

@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.5.1 (Unreleased)
+------------------
+
+- Attach panels to the DOM upon initialize. [jcbrand]
+
 0.5.0 (2013-07-30)
 ------------------
 

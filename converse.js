@@ -628,15 +628,20 @@
                 '<li>'
             ),
 
+            initialize: function (cfg) {
+                cfg.$parent.append(this.$el);
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+            },
+
             render: function () {
                 var markup;
-                this.$parent.find('#controlbox-tabs').append(this.tab_template());
-                this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
+                this.$tabs.append(this.tab_template());
                 if (converse.xhr_user_search) {
                     markup = this.search_contact_template();
                 } else {
                     markup = this.add_contact_template();
                 }
+                this.$el.html(this.template());
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
                 return this;
@@ -788,18 +793,15 @@
                 '</form>'+
                 '<dl id="available-chatrooms"></dl>'),
 
-            render: function () {
-                this.$parent.find('#controlbox-tabs').append(this.tab_template());
-                this.$parent.find('#controlbox-panes').append(
+            initialize: function (cfg) {
+                cfg.$parent.append(
                     this.$el.html(
                         this.template({
                             server_input_type: converse.hide_muc_server && 'hidden' || 'text'
                         })
                     ).hide());
-                return this;
-            },
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
 
-            initialize: function () {
                 this.on('update-rooms-list', function (ev) {
                     this.updateRoomsList();
                 });
@@ -812,6 +814,11 @@
                         $nick.val(model.get('fullname'));
                     }
                 }, this));
+            },
+
+            render: function () {
+                this.$tabs.append(this.tab_template());
+                return this;
             },
 
             informNoRoomsFound: function () {
@@ -1030,15 +1037,14 @@
             },
 
             render: function () {
-                this.$el.html(this.template(this.model.toJSON()));
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
-                    this.loginpanel = new converse.LoginPanel();
-                    this.loginpanel.$parent = this.$el;
+                    this.$el.html(this.template(this.model.toJSON()));
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes')});
                     this.loginpanel.render();
-                } else {
-                    this.contactspanel = new converse.ContactsPanel();
-                    this.contactspanel.$parent = this.$el;
+                } else if (!this.contactspanel) {
+                    this.$el.html(this.template(this.model.toJSON()));
+                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('#controlbox-panes')});
                     this.contactspanel.render();
                     converse.xmppstatus = new converse.XMPPStatus();
                     converse.xmppstatus.localStorage = new Backbone.LocalStorage(
@@ -1057,8 +1063,7 @@
                     });
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                     converse.xmppstatusview.render();
-                    this.roomspanel = new converse.RoomsPanel();
-                    this.roomspanel.$parent = this.$el;
+                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('#controlbox-panes')});
                     this.roomspanel.render();
                 }
                 return this;
@@ -2506,6 +2511,17 @@
                 }, this));
             },
 
+            initialize: function (cfg) {
+                cfg.$parent.append(this.$el.html(this.template()));
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+            },
+
+            render: function () {
+                this.$tabs.append(this.tab_template());
+                this.$el.find('input#jid').focus();
+                return this;
+            },
+
             authenticate: function (ev) {
                 ev.preventDefault();
                 var $form = $(ev.target),
@@ -2537,19 +2553,8 @@
             },
 
             remove: function () {
-                this.$parent.find('#controlbox-tabs').empty();
-                this.$parent.find('#controlbox-panes').empty();
-            },
-
-            render: function () {
-                this.$parent.find('#controlbox-tabs').append(this.tab_template());
-                var template = this.template();
-                if (! this.bosh_url_input) {
-                    template.find('form').append(this.bosh_url_input);
-                }
-                this.$parent.find('#controlbox-panes').append(this.$el.html(template));
-                this.$el.find('input#jid').focus();
-                return this;
+                this.$tabs.empty();
+                this.$el.parent().empty();
             }
         });
 

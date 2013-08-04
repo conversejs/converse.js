@@ -4,7 +4,7 @@ Changelog
 0.5.1 (Unreleased)
 ------------------
 
-- #13: Messages sent between to GTalk accounts weren't being received. [jcbrand]
+- #13, #14: Messages sent between to GTalk accounts weren't being received. [jcbrand]
 - #32: Default status was offline when user didn't have contacts. [jcbrand]
 - Attach panels to the DOM upon initialize. [jcbrand]
 

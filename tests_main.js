@@ -75,7 +75,6 @@ require([
         auto_subscribe: false,
         animate: false
     });
-    converse.onConnected(mock_connection);
 
     // Jasmine stuff
     var jasmineEnv = jasmine.getEnv();
@@ -93,5 +92,5 @@ require([
         };
         jasmineEnv.updateInterval = 200;
     }
-    jasmineEnv.execute();
+    converse.onConnected(mock_connection, $.proxy(jasmineEnv.execute, jasmineEnv));
 });

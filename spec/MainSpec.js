@@ -56,6 +56,12 @@
             it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
 
             describe("The Status Widget", $.proxy(function () {
+                it("shows the user's chat status, which is online by default", $.proxy(function () {
+                    var view = this.xmppstatusview;
+                    expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
+                    expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
+                }, converse));
+
                 it("can be used to set the current user's chat status", $.proxy(function () {
                     var view = this.xmppstatusview;
                     spyOn(view, 'toggleOptions').andCallThrough();
@@ -64,25 +70,26 @@
                     runs(function () {
                         view.$el.find('a.choose-xmpp-status').click();
                         expect(view.toggleOptions).toHaveBeenCalled();
-                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
                     });
                     waits(250);
                     runs(function () {
                         spyOn(view, 'updateStatusUI').andCallThrough();
                         view.initialize(); // Rebind events for spy
-                        view.$el.find('.dropdown dd ul li a').first().click();
+                        $(view.$el.find('.dropdown dd ul li a')[1]).click();
                         expect(view.setStatus).toHaveBeenCalled();
                     });
                     waits(250);
                     runs($.proxy(function () {
                         expect(view.updateStatusUI).toHaveBeenCalled();
-                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
-                        expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
+                        expect(view.$el.find('a.choose-xmpp-status').hasClass('dnd')).toBe(true);
+                        expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am busy');
                     }, converse));
                 }, converse));
 
                 it("can be used to set a custom status message", $.proxy(function () {
                     var view = this.xmppstatusview;
+                    this.xmppstatus.save({'status': 'online'});
                     spyOn(view, 'setStatusMessage').andCallThrough();
                     spyOn(view, 'renderStatusChangeForm').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -120,6 +127,7 @@
                 it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                     var i, t, is_last;
                     spyOn(this.rosterview, 'render').andCallThrough();
+                    spyOn(this.xmppstatus, 'sendPresence');
                     for (i=0; i<pend_names.length; i++) {
                         is_last = i===(pend_names.length-1);
                         this.roster.create({
@@ -133,6 +141,7 @@
                         // the last contact has been added.
                         if (is_last) {
                             expect(this.rosterview.$el.is(':visible')).toEqual(true);
+                            expect(this.xmppstatus.sendPresence).toHaveBeenCalled();
                         } else {
                             expect(this.rosterview.$el.is(':visible')).toEqual(false);
                         }

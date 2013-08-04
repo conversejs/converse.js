@@ -25,7 +25,7 @@ module.exports = function(grunt) {
                         "*/"
             },
             minify: {
-                dest: 'converse-'+cfg.version+'.min.css',
+                dest: 'converse.min.css',
                 src: ['converse.css']
             }
         },
@@ -34,7 +34,7 @@ module.exports = function(grunt) {
                 options: {
                     baseUrl: ".",
                     name: "main",
-                    out: "converse-"+cfg.version+".min.js",
+                    out: "converse.min.js",
                     paths: {
                         "require": "components/requirejs/require",
                         "jquery": "components/jquery/jquery",
@@ -106,8 +106,7 @@ module.exports = function(grunt) {
         });
     });
 
-    // TODO: update CHANGES.txt with release date
-    grunt.registerTask('release', 'Create a new release', ['requirejs', 'cssmin']);
+    grunt.registerTask('minify', 'Create a new release', ['requirejs', 'cssmin']);
 
     grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
         grunt.task.run('jshint', 'test');

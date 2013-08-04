@@ -381,7 +381,7 @@
                         return;
                     }
                 }
-                var message = $msg({from: converse.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
+                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
                 // Forward the message, so that other connected resources are also aware of it.
@@ -628,15 +628,20 @@
                 '<li>'
             ),
 
+            initialize: function (cfg) {
+                cfg.$parent.append(this.$el);
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+            },
+
             render: function () {
                 var markup;
-                this.$parent.find('#controlbox-tabs').append(this.tab_template());
-                this.$parent.find('#controlbox-panes').append(this.$el.html(this.template()));
+                this.$tabs.append(this.tab_template());
                 if (converse.xhr_user_search) {
                     markup = this.search_contact_template();
                 } else {
                     markup = this.add_contact_template();
                 }
+                this.$el.html(this.template());
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
                 return this;
@@ -788,18 +793,15 @@
                 '</form>'+
                 '<dl id="available-chatrooms"></dl>'),
 
-            render: function () {
-                this.$parent.find('#controlbox-tabs').append(this.tab_template());
-                this.$parent.find('#controlbox-panes').append(
+            initialize: function (cfg) {
+                cfg.$parent.append(
                     this.$el.html(
                         this.template({
                             server_input_type: converse.hide_muc_server && 'hidden' || 'text'
                         })
                     ).hide());
-                return this;
-            },
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
 
-            initialize: function () {
                 this.on('update-rooms-list', function (ev) {
                     this.updateRoomsList();
                 });
@@ -812,6 +814,11 @@
                         $nick.val(model.get('fullname'));
                     }
                 }, this));
+            },
+
+            render: function () {
+                this.$tabs.append(this.tab_template());
+                return this;
             },
 
             informNoRoomsFound: function () {
@@ -1030,35 +1037,18 @@
             },
 
             render: function () {
-                this.$el.html(this.template(this.model.toJSON()));
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
-                    this.loginpanel = new converse.LoginPanel();
-                    this.loginpanel.$parent = this.$el;
+                    this.$el.html(this.template(this.model.toJSON()));
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes')});
                     this.loginpanel.render();
-                } else {
-                    this.contactspanel = new converse.ContactsPanel();
-                    this.contactspanel.$parent = this.$el;
+                } else if (!this.contactspanel) {
+                    this.$el.html(this.template(this.model.toJSON()));
+                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('#controlbox-panes')});
                     this.contactspanel.render();
-                    converse.xmppstatus = new converse.XMPPStatus();
-                    converse.xmppstatus.localStorage = new Backbone.LocalStorage(
-                        hex_sha1('converse.xmppstatus-'+converse.bare_jid));
-                    converse.xmppstatus.fetch({
-                        success: function (xmppstatus, resp) {
-                            if (!xmppstatus.get('fullname')) {
-                                converse.getVCard(
-                                    null, // No 'to' attr when getting one's own vCard
-                                    function (jid, fullname, image, image_type, url) {
-                                        converse.xmppstatus.save({'fullname': fullname});
-                                    }
-                                );
-                            }
-                        }
-                    });
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                     converse.xmppstatusview.render();
-                    this.roomspanel = new converse.RoomsPanel();
-                    this.roomspanel.$parent = this.$el;
+                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('#controlbox-panes')});
                     this.roomspanel.render();
                 }
                 return this;
@@ -2024,7 +2014,7 @@
                     item;
 
                 if (this.isSelf(bare_jid)) {
-                    if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailabe')) {
+                    if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
                         // Another resource has changed it's status, we'll update ours as well.
                         // FIXME: We should ideally differentiate between converse.js using
                         // resources and other resources (i.e Pidgin etc.)
@@ -2122,8 +2112,20 @@
                 this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
 
                 this.$el.hide().html(this.template());
-                this.model.fetch({add: true}); // Get the cached roster items from localstorage
-                // XXX: is this necessary? this.initialSort();
+                this.model.fetch({
+                    add: true,
+                    success: function (model, resp, options) {
+                        if (resp.length === 0) {
+                            // The presence stanza is sent out once all
+                            // roster contacts have been added and rendered.
+                            // See RosterView's render method.
+                            //
+                            // If there aren't any roster contacts, we still
+                            // want to send a presence stanza, so we do it here.
+                            converse.xmppstatus.sendPresence();
+                        }
+                    },
+                }); // Get the cached roster items from localstorage
             },
 
             updateChatBox: function (item, changed) {
@@ -2190,9 +2192,8 @@
                         // options where all of the items are offline and now we can show the rosterView
                         item.set('sorted', true);
                         this.initialSort();
-                        this.$el.show(function () {
-                            converse.xmppstatus.initStatus();
-                        });
+                        this.$el.show();
+                        converse.xmppstatus.sendPresence();
                     }
                 }
                 // Hide the headings if there are no contacts under them
@@ -2223,22 +2224,24 @@
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function () {
                 this.set({
-                    'status' : this.get('status'),
-                    'status_message' : this.get('status_message'),
-                    'fullname' : this.get('fullname')
+                    'status' : this.get('status') || 'online',
                 });
-            },
-
-            initStatus: function () {
-                var stat = this.get('status');
-                if (stat === undefined) {
-                    stat = 'online';
-                    this.save({status: stat});
-                }
-                this.sendPresence(stat);
+                this.on('change', $.proxy(function () {
+                    if (this.get('fullname') === undefined) {
+                        converse.getVCard(
+                            null, // No 'to' attr when getting one's own vCard
+                            $.proxy(function (jid, fullname, image, image_type, url) {
+                                this.save({'fullname': fullname});
+                            }, this)
+                        );
+                    }
+                }, this));
             },
 
             sendPresence: function (type) {
+                if (type === undefined) {
+                    type = this.get('status') || 'online';
+                }
                 var status_message = this.get('status_message'),
                     presence;
                 // Most of these presence types are actually not explicitly sent,
@@ -2385,7 +2388,7 @@
                 this.$el.html(this.choose_template());
                 this.$el.find('#fancy-xmpp-status-select')
                         .html(this.status_template({
-                            'status_message': __("I am %1$s", this.getPrettyStatus(chat_status)),
+                            'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
                             'chat_status': chat_status
                             }));
                 // iterate through all the <option> elements and add option values
@@ -2506,6 +2509,17 @@
                 }, this));
             },
 
+            initialize: function (cfg) {
+                cfg.$parent.append(this.$el.html(this.template()));
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+            },
+
+            render: function () {
+                this.$tabs.append(this.tab_template());
+                this.$el.find('input#jid').focus();
+                return this;
+            },
+
             authenticate: function (ev) {
                 ev.preventDefault();
                 var $form = $(ev.target),
@@ -2537,19 +2551,8 @@
             },
 
             remove: function () {
-                this.$parent.find('#controlbox-tabs').empty();
-                this.$parent.find('#controlbox-panes').empty();
-            },
-
-            render: function () {
-                this.$parent.find('#controlbox-tabs').append(this.tab_template());
-                var template = this.template();
-                if (! this.bosh_url_input) {
-                    template.find('form').append(this.bosh_url_input);
-                }
-                this.$parent.find('#controlbox-panes').append(this.$el.html(template));
-                this.$el.find('input#jid').focus();
-                return this;
+                this.$tabs.empty();
+                this.$el.parent().empty();
             }
         });
 
@@ -2590,14 +2593,15 @@
             }
         };
 
-        this.onConnected = function (connection) {
-            this.connection = connection;
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
-            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.features = new this.Features();
+        this.initStatus = function (callback) {
+            this.xmppstatus = new this.XMPPStatus();
+            var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
+            this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
+            this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
+            this.xmppstatus.fetch({success: callback, error: callback});
+        };
 
+        this.initRoster = function () {
             // Set up the roster
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
@@ -2606,33 +2610,45 @@
                 $.proxy(this.roster.rosterHandler, this.roster),
                 null, 'presence', null);
             this.rosterview = new this.RosterView({'model':this.roster});
+        }
 
-            this.chatboxes.onConnected();
-
-            this.connection.addHandler(
-                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                'http://jabber.org/protocol/rosterx', 'message', null);
-
-            this.connection.roster.get($.proxy(function (a) {
+        this.onConnected = function (connection, callback) {
+            this.connection = connection;
+            this.connection.xmlInput = function (body) { console.log(body); };
+            this.connection.xmlOutput = function (body) { console.log(body); };
+            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+            this.domain = Strophe.getDomainFromJid(this.connection.jid);
+            this.features = new this.Features();
+            this.initStatus($.proxy(function () {
+                this.initRoster();
+                this.chatboxes.onConnected();
                 this.connection.addHandler(
-                        $.proxy(function (presence) {
-                            this.presenceHandler(presence);
-                            return true;
-                        }, this.roster), null, 'presence', null);
-                this.connection.addHandler(
-                        $.proxy(function (message) {
-                            this.chatboxes.messageReceived(message);
-                            return true;
-                        }, this), null, 'message', 'chat');
-            }, this));
+                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                    'http://jabber.org/protocol/rosterx', 'message', null);
 
-            $(window).on("blur focus", $.proxy(function(e) {
-                if ((this.windowState != e.type) && (e.type == 'focus')) {
-                    converse.clearMsgCounter();
+                this.connection.roster.get($.proxy(function (a) {
+                    this.connection.addHandler(
+                            $.proxy(function (presence) {
+                                this.presenceHandler(presence);
+                                return true;
+                            }, this.roster), null, 'presence', null);
+                    this.connection.addHandler(
+                            $.proxy(function (message) {
+                                this.chatboxes.messageReceived(message);
+                                return true;
+                            }, this), null, 'message', 'chat');
+                }, this));
+                $(window).on("blur focus", $.proxy(function(e) {
+                    if ((this.windowState != e.type) && (e.type == 'focus')) {
+                        converse.clearMsgCounter();
+                    }
+                    this.windowState = e.type;
+                },this));
+                this.giveFeedback(__('Online Contacts'));
+                if (callback) {
+                    callback();
                 }
-                this.windowState = e.type;
-            },this));
-            this.giveFeedback(__('Online Contacts'));
+            }, this));
         };
 
         // This is the end of the initialize method.

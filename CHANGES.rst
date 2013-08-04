@@ -4,6 +4,7 @@ Changelog
 0.5.1 (Unreleased)
 ------------------
 
+- #32: Default status was offline when user didn't have contacts. [jcbrand]
 - Attach panels to the DOM upon initialize. [jcbrand]
 
 0.5.0 (2013-07-30)

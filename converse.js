@@ -381,7 +381,7 @@
                         return;
                     }
                 }
-                var message = $msg({from: converse.bare_jid, to: bare_jid, type: 'chat', id: timestamp})
+                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
                 // Forward the message, so that other connected resources are also aware of it.

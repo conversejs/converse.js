@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.5.1 (Unreleased)
+0.5.1 (2013-08-04)
 ------------------
 
 - #13, #14: Messages sent between to GTalk accounts weren't being received. [jcbrand]

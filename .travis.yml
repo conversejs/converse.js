@@ -1,4 +1,6 @@
 language: node_js
 node_js:
  - "0.10.13"
+before_install:
+ - "bower update"
 script: grunt test

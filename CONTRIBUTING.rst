@@ -28,8 +28,6 @@ Check that the tests pass
 Check that the Jasmine tests complete sucessfully. Open tests.html in your
 browser, and the tests will run automatically.
 
-You can see the current test output online, here: http://conversejs.org/tests.html
-
 On the command line you can run ``grunt test`` (if you have before run ``npm
 install``).
 

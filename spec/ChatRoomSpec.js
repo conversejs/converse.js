@@ -1,12 +1,11 @@
 (function (root, factory) {
     define([
-        "converse",
         "mock"
-        ], function (converse, mock_connection) {
-            return factory(converse, mock_connection);
+        ], function (mock_connection) {
+            return factory(mock_connection);
         }
     );
-} (this, function (converse, mock_connection) {
+} (this, function (mock_connection) {
     return describe("ChatRooms", $.proxy(function() {
         var chatroom_names = [
             'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'

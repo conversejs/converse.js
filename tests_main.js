@@ -60,37 +60,45 @@ require([
     "jquery",
     "converse",
     "mock",
-    "jasmine-html",
-    "jasmine-console-reporter",
-    "jasmine-junit-reporter",
-    "spec/MainSpec",
-    "spec/ChatRoomSpec"
+    "jasmine-html"
     ], function($, converse, mock_connection, jasmine) {
-
-    // Set up converse.js
-    window.localStorage.clear();
-    converse.initialize({
-        prebind: false,
-        xhr_user_search: false,
-        auto_subscribe: false,
-        animate: false
-    });
-
-    // Jasmine stuff
-    var jasmineEnv = jasmine.getEnv();
-    if (/PhantomJS/.test(navigator.userAgent)) {
-        jasmineEnv.addReporter(new jasmine.TrivialReporter());
-        jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
-        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-        jasmineEnv.updateInterval = 0;
-    } else {
-        var htmlReporter = new jasmine.HtmlReporter();
-        jasmineEnv.addReporter(htmlReporter);
-        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-        jasmineEnv.specFilter = function(spec) {
-            return htmlReporter.specFilter(spec);
-        };
-        jasmineEnv.updateInterval = 200;
+        // Set up converse.js
+        window.localStorage.clear();
+        converse.initialize({
+            prebind: false,
+            xhr_user_search: false,
+            auto_subscribe: false,
+            animate: false
+        });
+        converse.onConnected(
+            mock_connection, 
+            function (converse) {
+                window.converse = converse;
+                require([
+                    "jasmine-console-reporter",
+                    "jasmine-junit-reporter",
+                    "spec/MainSpec",
+                    "spec/ChatRoomSpec"
+                ], function () {
+                    // Jasmine stuff
+                    var jasmineEnv = jasmine.getEnv();
+                    if (/PhantomJS/.test(navigator.userAgent)) {
+                        jasmineEnv.addReporter(new jasmine.TrivialReporter());
+                        jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
+                        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                        jasmineEnv.updateInterval = 0;
+                    } else {
+                        var htmlReporter = new jasmine.HtmlReporter();
+                        jasmineEnv.addReporter(htmlReporter);
+                        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                        jasmineEnv.specFilter = function(spec) {
+                            return htmlReporter.specFilter(spec);
+                        };
+                        jasmineEnv.updateInterval = 200;
+                    }
+                    jasmineEnv.execute();
+                });
+            }
+        );
     }
-    converse.onConnected(mock_connection, $.proxy(jasmineEnv.execute, jasmineEnv));
-});
+);

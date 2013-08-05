@@ -43,6 +43,7 @@
     var converse = {};
     converse.initialize = function (settings) {
         // Default values
+        var converse = this;
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
@@ -54,15 +55,14 @@
         this.xhr_user_search = false;
         _.extend(this, settings);
 
-
-        var __ = function (str) {
-            var t = converse.i18n.translate(str);
+        var __ = $.proxy(function (str) {
+            var t = this.i18n.translate(str);
             if (arguments.length>1) {
                 return t.fetch.apply(t, [].slice.call(arguments,1));
             } else {
                 return t.fetch();
             }
-        };
+        }, this);
         this.msg_counter = 0;
         this.autoLink = function (text) {
             // Convert URLs into hyperlinks
@@ -2646,7 +2646,7 @@
                 },this));
                 this.giveFeedback(__('Online Contacts'));
                 if (callback) {
-                    callback();
+                    callback(this);
                 }
             }, this));
         };
@@ -2664,5 +2664,13 @@
             this.toggleControlBox();
         }
     };
-    return converse;
+    return {
+        'initialize': function (settings) {
+            converse.initialize(settings);
+        },
+        'onConnected': function (connection, callback) { 
+            // onConnected can only be called after initialize has been called.
+            converse.onConnected(connection, callback);
+        }
+    };
 }));

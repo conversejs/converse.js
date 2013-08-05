@@ -1,13 +1,12 @@
 (function (root, factory) {
     define([
-        "converse",
         "mock"
-        ], function (converse, mock_connection) {
-            return factory(converse, mock_connection);
+        ], function (mock_connection) {
+            return factory(mock_connection);
         }
     );
-} (this, function (converse, mock_connection) {
-    return describe("Converse.js", $.proxy(function() {
+} (this, function (mock_connection) {
+    return describe("Converse.js", function() {
         // Names from http://www.fakenamegenerator.com/
         var req_names = [
             'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
@@ -651,5 +650,5 @@
                 }, converse));
             }, converse));
         }, converse));
-    }, converse));
+    });
 }));

@@ -7,8 +7,8 @@
     <link rel="shortcut icon" type="image/png" href="components/jasmine/images/jasmine_favicon.png">
     <link rel="stylesheet" type="text/css" href="components/jasmine/src/html/jasmine.css">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="converse-0.5.0.min.css">
-    <script src="converse-0.5.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
+    <script src="converse.min.js"></script>
     <script src="components/jasmine/lib/jasmine-core/jasmine.js"></script>
     <script src="components/jasmine/lib/jasmine-core/jasmine-html.js"></script>
     <script src="node_modules/jasmine-reporters/src/jasmine.console_reporter.js"></script>
@@ -33,83 +33,91 @@
     </div>
 
 <script>
-    require([
-        'converse',
-        "spec/MainSpec",
-        "spec/ChatRoomSpec"], 
-    function (converse) {
-        var mock_connection = {
-            'muc': {
-                'listRooms': function () {},
-                'join': function () {},
-                'leave': function () {},
-                'removeRoom': function () {},
-                'rooms': {}
-            },
-            'jid': 'dummy@localhost',
-            'addHandler': function (handler, ns, name, type, id, from, options) {
-                return function () {};
-            },
-            'send': function () {},
-            'roster': {
-                'add': function () {},
-                'authorize': function () {},
-                'unauthorize': function () {},
-                'get': function () {},
-                'subscribe': function () {},
-                'registerCallback': function () {}
-            },
-            'vcard': {
-                'get': function (callback, jid) {
-                    var firstname, lastname;
-                    if (!jid) {
-                        jid = 'dummy@localhost';
-                        firstname = 'Max';
-                        lastname = 'Mustermann';
-                    } else {
-                        var name = jid.split('@')[0].replace('.', ' ').split(' ');
-                        firstname = name[0].charAt(0).toUpperCase()+name[0].slice(1);
-                        lastname = name[1].charAt(0).toUpperCase()+name[1].slice(1);
-                    }
-                    var fullname = firstname+' '+lastname;
-                    var vcard = $iq().c('vCard').c('FN').t(fullname);
-                    callback(vcard.tree());
+    var mock_connection = {
+        'muc': {
+            'listRooms': function () {},
+            'join': function () {},
+            'leave': function () {},
+            'removeRoom': function () {},
+            'rooms': {}
+        },
+        'jid': 'dummy@localhost',
+        'addHandler': function (handler, ns, name, type, id, from, options) {
+            return function () {};
+        },
+        'send': function () {},
+        'roster': {
+            'add': function () {},
+            'authorize': function () {},
+            'unauthorize': function () {},
+            'get': function () {},
+            'subscribe': function () {},
+            'registerCallback': function () {}
+        },
+        'vcard': {
+            'get': function (callback, jid) {
+                var firstname, lastname;
+                if (!jid) {
+                    jid = 'dummy@localhost';
+                    firstname = 'Max';
+                    lastname = 'Mustermann';
+                } else {
+                    var name = jid.split('@')[0].replace('.', ' ').split(' ');
+                    firstname = name[0].charAt(0).toUpperCase()+name[0].slice(1);
+                    lastname = name[1].charAt(0).toUpperCase()+name[1].slice(1);
                 }
-            },
-            'disco': {
-                'info': function () {},
-                'items': function () {}
+                var fullname = firstname+' '+lastname;
+                var vcard = $iq().c('vCard').c('FN').t(fullname);
+                callback(vcard.tree());
             }
-        };
-
-        // Set up converse.js
-        window.localStorage.clear();
-        converse.initialize({
-            prebind: false,
-            xhr_user_search: false,
-            auto_subscribe: false,
-            animate: false
-        });
-        converse.onConnected(mock_connection);
-
-        // Jasmine stuff
-        var jasmineEnv = jasmine.getEnv();
-        if (/PhantomJS/.test(navigator.userAgent)) {
-            jasmineEnv.addReporter(new jasmine.TrivialReporter());
-            jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
-            jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-            jasmineEnv.updateInterval = 0;
-        } else {
-            var htmlReporter = new jasmine.HtmlReporter();
-            jasmineEnv.addReporter(htmlReporter);
-            jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-            jasmineEnv.specFilter = function(spec) {
-                return htmlReporter.specFilter(spec);
-            };
-            jasmineEnv.updateInterval = 200;
+        },
+        'disco': {
+            'info': function () {},
+            'items': function () {}
         }
-        jasmineEnv.execute();
-    });
+    };
+    require([
+        "jquery",
+        "converse",
+        ], function($, converse) {
+            // Set up converse.js
+            window.localStorage.clear();
+            converse.initialize({
+                prebind: false,
+                xhr_user_search: false,
+                auto_subscribe: false,
+                animate: false
+            });
+            converse.onConnected(
+                mock_connection, 
+                function (converse) {
+                    window.converse = converse;
+                    require([
+                        "spec/MainSpec",
+                        "spec/ChatRoomSpec"
+                    ], function () {
+                        // Jasmine stuff
+                        var jasmineEnv = jasmine.getEnv();
+                        if (/PhantomJS/.test(navigator.userAgent)) {
+                            jasmineEnv.addReporter(new jasmine.TrivialReporter());
+                            jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
+                            jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                            jasmineEnv.updateInterval = 0;
+                        } else {
+                            var htmlReporter = new jasmine.HtmlReporter();
+                            jasmineEnv.addReporter(htmlReporter);
+                            jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                            jasmineEnv.specFilter = function(spec) {
+                                return htmlReporter.specFilter(spec);
+                            };
+                            jasmineEnv.updateInterval = 200;
+                        }
+                        jasmineEnv.execute();
+                    });
+                }
+            );
+        }
+    );
 </script>
 </body>
 </html>

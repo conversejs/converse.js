@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.5.2 (Unreleased)
+0.5.2 (2013-08-05)
 ------------------
 
 - Important security update. Don't expose the Strophe connection object globally. [jcbrand]

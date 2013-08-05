@@ -48,7 +48,7 @@ Tests
 -----
 
 We use behavior-driven tests written with jasmine.js_. They can run in your
-browser (`see here`_) or in the command line via phantom.js_.
+browser or in the command line via phantom.js_.
 
 We use `Travis-CI`_ for continuous integration.
 
@@ -93,6 +93,5 @@ Licence
 .. _`conversejs.org`: http://conversejs.org
 .. _jquery: http://jquery.com
 .. _jasmine.js: http://pivotal.github.io/jasmine
-.. _`see here`: http://conversejs.org/tests.html
 .. _phantom.js: http://phantomjs.org
 .. _`Travis-CI`: https://travis-ci.org

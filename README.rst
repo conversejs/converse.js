@@ -50,10 +50,6 @@ Tests
 We use behavior-driven tests written with jasmine.js_. They can run in your
 browser or in the command line via phantom.js_.
 
-We use `Travis-CI`_ for continuous integration.
-
-.. image:: https://api.travis-ci.org/jcbrand/converse.js.png?branch=master
-
 -------------
 Documentation
 -------------

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
+    <script data-main="main" src="components/requirejs/require.js"></script>
+    <title>Converse.js Mockup</title>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+    <header class="inner">
+        <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
+        <h2 id="project_tagline">Static Mockup</h2>
+    </header>
+    </div>
+
+<!--
+<div id="chatpanel">
+    <div id="collective-xmpp-chat-data"></div>
+    <div id="toggle-controlbox">
+        <a href="#" class="chat toggle-online-users">
+            <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
+        </a>
+    </div>
+</div>
+-->
+
+<div id="chatpanel">
+    <div id="collective-xmpp-chat-data">
+        <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
+            <div class="chat-head oc-chat-head">
+                <ul id="controlbox-tabs"><li><a class="current" href="#login">Sign in</a></li></ul><a class="close-chatbox-button">X</a></div>
+                <div id="controlbox-panes">
+                    <div id="login-dialog">
+                    <form id="converse-login">
+                        <label>XMPP/Jabber Username:</label><input type="text" id="jid">
+                        <label>Password:</label><input type="password" id="password">
+                        <input class="login-submit" type="submit" value="Log In">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
+            <div class="chat-head oc-chat-head">
+                <ul id="controlbox-tabs">
+                    <li><a class="s current" href="#users">Contacts</a></li>
+                    <li><a class="s" href="#chatrooms">Rooms</a></li>
+                </ul>
+                <a class="close-chatbox-button">X</a>
+            </div>
+        <div id="controlbox-panes">
+            <div id="users" class="oc-chat-content" style="display: block;">
+                <form class="set-xmpp-status" action="" method="post">
+                    <span id="xmpp-status-holder">
+                    <dl id="target" class="dropdown">
+                        <dt id="fancy-xmpp-status-select" class="fancy-dropdown">
+                            <div class="xmpp-status">
+                                <a class="choose-xmpp-status online" data-value="I am online" href="#" title="Click to change your chat status">I am online</a>
+                                <a class="change-xmpp-status-message" href="#" title="Click here to write a custom status message"></a>
+                            </div>
+                        </dt>
+                        <dd>
+                            <ul style="display: none;">
+                                <li><a href="#" class="online" data-value="online">Online</a></li>
+                                <li><a href="#" class="dnd" data-value="dnd">Busy</a></li>
+                                <li><a href="#" class="away" data-value="away">Away</a></li>
+                                <li><a href="#" class="offline" data-value="offline">Offline</a></li>
+                            </ul>
+                        </dd>
+                    </dl>
+                    </span>
+                </form>
+                <dl class="add-converse-contact dropdown">
+                    <dt id="xmpp-contact-search" class="fancy-dropdown">
+                        <span class="icon-plus"></span>
+                        <a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">
+                            Add a contact
+                        </a>
+                    </dt>
+                    <dd class="search-xmpp" style="display:none">
+                        <ul>
+                            <li>
+                                <form class="add-xmpp-contact"><input type="text" name="identifier" class="username" placeholder="Contact username"><button type="submit">Add</button></form>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </dd>
+                </dl>
+                <dl id="converse-roster" style="display: block;">
+                    <dt id="xmpp-contact-requests" style="display: none;">Contact requests</dt>
+                    <dt id="xmpp-contacts" style="display: block;">My contacts</dt>
+                    <dd class="online current-xmpp-contact">
+                        <span class="icon-bubble"></span>
+                        <a class="open-chat" title="Click to chat with this contact" href="#">opkode@jabber.org</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="dnd current-xmpp-contact">
+                        <span class="icon-bubble-2"></span>
+                        <a class="open-chat" title="Click to chat with this contact" href="#">manuela@opkode.im</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="busy current-xmpp-contact">
+                        <span class="icon-busy"></span>
+                        <a class="open-chat" title="Click to chat with this contact" href="#">opkode@jappix.com</a>
+                        <a class="remove-xmpp-contact icon-remove-2" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="offline current-xmpp-contact">
+                        <span class="icon-offline"></span>
+                        <a class="open-chat" title="Click to chat with this contact" href="#">johndoe777@jappix.com</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dt id="pending-xmpp-contacts" style="display: block;">Pending contacts</dt>
+                    <dd class="offline pending-xmpp-contact"><span>763bec9a@area51.gigaspeedsurfer.de</span>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="offline pending-xmpp-contact"><span>ufon@jabbim.cz</span>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                </dl>
+            </div>
+            <div id="chatrooms" style="display: none;">
+                <form class="add-chatroom" action="" method="post">
+                    <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
+                    <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
+                    <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
+                    <input type="submit" name="join" value="Join">
+                    <input type="button" name="show" id="show-rooms" value="Show rooms">
+                </form>
+                <dl id="available-chatrooms"></dl>
+            </div>
+        </div>
+    </div>
+    <div class="chatbox" id="37c0c87392010303765fe36b05c0967d62c6b70f" style="opacity: 1; display: inline;">
+        <div class="chat-head chat-head-chatbox">
+            <a class="close-chatbox-button">X</a>
+            <a href="" target="_blank" class="user">
+                <div class="chat-title">opkode@jabber.org</div>
+            </a>
+            <p class="user-custom-message"></p>
+            <p></p>
+        </div>
+    <div class="chat-content">
+        <div class="chat-message"><span class="chat-message-me">19:39 me:&nbsp;</span><span class="chat-message-content">Hello world</span></div>
+    </div>
+    <form class="sendXMPPMessage" action="" method="post">
+        <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
+    </form>
+    </div>
+    </div>
+    <div id="toggle-controlbox">
+        <a href="#" class="chat toggle-online-users">
+            <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
+        </a>
+    </div>
+</div>
+
+</body>
+<script>
+</script>
+</html>

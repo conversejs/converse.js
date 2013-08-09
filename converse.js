@@ -13,6 +13,7 @@
     }
     if (typeof define === 'function' && define.amd) {
         define("converse", [
+            "components/otr/build/otr",
             "locales",
             "localstorage",
             "tinysort",
@@ -22,13 +23,13 @@
             "strophe.roster",
             "strophe.vcard",
             "strophe.disco"
-            ], function() {
+            ], function(otr) {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory(jQuery, _, console);
+                return factory(jQuery, _, otr, console);
             }
         );
     } else {
@@ -37,9 +38,9 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, console || {log: function(){}});
+        root.converse = factory(jQuery, _, otr, console || {log: function(){}});
     }
-}(this, function ($, _, console) {
+}(this, function ($, _, otr, console) {
     var converse = {};
     converse.initialize = function (settings) {
         // Default values

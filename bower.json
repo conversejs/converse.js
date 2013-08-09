@@ -17,8 +17,8 @@
     "strophe.roster": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/roster/strophe.roster.js",
     "strophe.vcard": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/vcard/strophe.vcard.js",
     "strophe.disco": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/disco/strophe.disco.js",
-    "strophe.muc": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/muc/strophe.muc.js"
+    "strophe.muc": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/muc/strophe.muc.js",
+    "otr": "~0.2.1"
   },
-  "exportsOverride": {
-  }
+  "exportsOverride": {}
 }

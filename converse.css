@@ -465,6 +465,12 @@ a.configure-chatroom-button {
     text-overflow: ellipsis;
 }
 
+#converse-roster dd span {
+    padding: 2px 5px 0 0;
+    float: left;
+    font-size: 16px;
+}
+
 .remove-xmpp-contact-dialog .ui-dialog-buttonpane {
     border: none;
 }

@@ -50,7 +50,7 @@ The *index.html* file inside the Converse.js folder serves as a nice usable
 example of this.
 
 These minified files provide the same demo-like functionality as is available
-on the `conversejs.org`_ website. Useful for testing or demoing, but not very
+on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing, but not very
 practical.
 
 You'll most likely want to implement some kind of single-signon solution for
@@ -210,6 +210,12 @@ connection object.
 Development
 ===========
 
+If you want to work with the non-minified Javascript and CSS files you'll soon
+notice that there are references to a missing *components* folder. Please
+follow the instructions below to create this folder and fetch Converse's
+3rd-party dependencies.
+
+
 Install Node.js and development dependencies
 ============================================
 
@@ -219,27 +225,39 @@ which depend on Node.js and npm (the Node package manager).
 If you don't have Node.js installed, you can download and install the latest
 version `here <https://nodejs.org/download>`_.
 
-Once you have Node.js installed, run the following command in the Converse.js
+Once you have Node.js installed, run the following command inside the Converse.js
 directory:
 
 ::
 
     npm install
 
+This will install all the development dependencies for Converse.js. If you are
+curious to know what these are, take a look at whats under the *devDependencies* key in 
+`package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`.
+
 Install 3rd party dependencies
 ==============================
 
-Now that we have Grunt and Bower, you can install and configure Converse's
-3rd party dependencies with the following command:
+After running ``npm install``, you will now have Grunt and Bower installed.
+
+We use Bower to manage Converse's front-end dependencies (e.g. Javascript that
+should get loaded in the browser).
+
+To fetch these dependencies, run:
 
 ::
 
     grunt fetch
 
+This will call Bower in the background to fetch all the front-end
+dependencies (like backbone.js, strophe.js etc.) and then put them in the
+*components* folder.
+
 With AMD and require.js (recommended)
 =====================================
 
-Converse.js uses `require.js`_ to asynchronously load dependencies.
+Converse.js uses `require.js <http://requirejs.org>`_ to asynchronously load dependencies.
 
 If you want to develop or customize converse.js, you'll want to load the
 non-minified javascript files.
@@ -580,9 +598,6 @@ making sure to also paste the JSON data as value to the "locale_data" key.
 Congratulations, you've now succesfully added your translations. Sorry for all
 those hoops you had to jump through.
 
-
-.. _`conversejs.org`: http://conversejs.org
-.. _`require.js`: http://requirejs.org
 .. _`read more about require.js's optimizer here`: http://requirejs.org/docs/optimization.html
 .. _`HTTP`: https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 .. _`XMPP`: https://en.wikipedia.org/wiki/Xmpp

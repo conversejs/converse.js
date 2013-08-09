@@ -6,6 +6,8 @@
  * Dual licensed under the MIT and GPL Licenses
  */
 
+@import url("fonticons/style.css");
+
 .hidden {
     display: none
 }
@@ -301,13 +303,10 @@ dl.add-converse-contact {
 .fancy-dropdown a.choose-xmpp-status,
 .fancy-dropdown a.toggle-xmpp-contact-form {
     text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
-    padding-left: 2em;
-    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    float: left;
-    width: 130px;
+    display: inline;
 }
 
 #fancy-xmpp-status-select a.change-xmpp-status-message {
@@ -442,23 +441,6 @@ a.configure-chatroom-button {
     clear: both;
 }
 
-#converse-roster dd.current-xmpp-contact,
-#converse-roster dd.current-xmpp-contact:hover {
-    background: url(images/user_online_panel.png) no-repeat 5px 2px;
-}
-
-#converse-roster dd.current-xmpp-contact.offline:hover,
-#converse-roster dd.current-xmpp-contact.unavailable:hover,
-#converse-roster dd.current-xmpp-contact.offline,
-#converse-roster dd.current-xmpp-contact.unavailable {
-    background: url(images/user_offline_panel.png) no-repeat 5px 2px;
-}
-
-#converse-roster dd.current-xmpp-contact.dnd,
-#converse-roster dd.current-xmpp-contact.dnd:hover {
-    background: url(images/user_busy_panel.png) no-repeat 5px 2px;
-}
-
 #converse-roster dd.current-xmpp-contact.xa,
 #converse-roster dd.current-xmpp-contact.xa:hover,
 #converse-roster dd.current-xmpp-contact.away,
@@ -477,14 +459,6 @@ a.configure-chatroom-button {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-}
-
-#converse-roster dd a {
-    margin-left: 1.3em;
-}
-
-#converse-roster dd span {
-    width: 125px;
 }
 
 .remove-xmpp-contact-dialog .ui-dialog-buttonpane {
@@ -582,18 +556,20 @@ dd.available-chatroom:hover a.open-room {
 }
 
 #converse-roster dd a.remove-xmpp-contact {
-    background: url('images/delete_icon.png') no-repeat right top;
-    padding: 0 0 1em 0;
     float: right;
     width: 22px;
     margin: 0;
     display: none;
+    color: rgb(102, 102, 102);
 }
 
 #converse-roster  dd:hover a.remove-xmpp-contact {
     display: inline-block;
 }
 
+#converse-roster a.open-chat {
+    width: 85%;
+}
 #converse-roster  dd:hover a.open-chat {
     width: 75%;
 }
@@ -831,17 +807,8 @@ form.add-xmpp-contact input {
 }
 
 .chatbox .dropdown a {
-    padding: 3px 0 0 25px;
-    display: block;
+    padding: 3px 0 0 5px;
     height: 22px;
-}
-
-.chatbox .dropdown a.toggle-xmpp-contact-form {
-    background: url('images/add_icon.png') no-repeat 4px 2px;
-}
-
-.chatbox .dropdown a.online {
-    background: url(images/user_online_panel.png) no-repeat 3px 4px;
 }
 
 .chatbox .dropdown a.offline {

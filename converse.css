@@ -309,6 +309,10 @@ dl.add-converse-contact {
     display: inline;
 }
 
+.fancy-dropdown a.toggle-xmpp-contact-form span {
+   float: left; 
+}
+
 #fancy-xmpp-status-select a.change-xmpp-status-message {
     background: url('images/pencil_icon.png') no-repeat right 3px;
     float: right;
@@ -783,7 +787,8 @@ form.add-xmpp-contact input {
 .chatbox .dropdown dt a span {
     cursor:pointer; 
     display:block; 
-    padding: 5px;
+    padding: 3px 7px 0 5px;
+    color: rgb(102, 102, 102);
 }
 
 .chatbox .dropdown dd ul {
@@ -807,8 +812,9 @@ form.add-xmpp-contact input {
 }
 
 .chatbox .dropdown a {
-    padding: 3px 0 0 5px;
     height: 22px;
+    display: inline-block;
+    padding-top: 2px;
 }
 
 .chatbox .dropdown a.offline {

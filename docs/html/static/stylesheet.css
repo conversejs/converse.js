@@ -7,6 +7,11 @@ by Jason Costello, @jsncostello
 @import url("../../../stylesheets/stylesheet.css");
 @import url(pygment_trac.css);
 
+div.body h1 {
+    font-size: 36px;
+    margin-top: 1em;
+}
+
 div.body,
 div.document {
     background-color: transparent;
@@ -33,7 +38,6 @@ h1 a {
 ul {
     margin-bottom: 0;
 }
-
 
 tt.literal {
     color: #222;

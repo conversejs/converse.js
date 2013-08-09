@@ -8,6 +8,14 @@
 
 @import url("fonticons/style.css");
 
+#collective-xmpp-chat-data {
+  color: rgb(89, 89, 89);
+}
+
+#collective-xmpp-chat-data input {
+  color: rgb(89, 89, 89);
+}
+
 .hidden {
     display: none
 }
@@ -144,7 +152,7 @@ ul.participant-list li.moderator {
 .chat-content {
     padding: 0.3em;
     font-size: 13px;
-    color: #333333;
+    color: rgb(89, 89, 89);
     height:193px;
     overflow-y:auto;
     border:1px solid #999;
@@ -570,7 +578,7 @@ dd.available-chatroom:hover a.open-room {
     width: 22px;
     margin: 0;
     display: none;
-    color: rgb(102, 102, 102);
+    color: rgb(89, 89, 89);
 }
 
 #converse-roster  dd:hover a.remove-xmpp-contact {
@@ -721,7 +729,6 @@ ul#controlbox-tabs li a {
 
 ul#controlbox-tabs a.current, ul#controlbox-tabs a.current:hover {
     box-shadow: none;
-    color: #000;
     border-bottom: 0;
     height: 35px;
 }
@@ -794,7 +801,7 @@ form.add-xmpp-contact input {
     cursor:pointer; 
     display:block; 
     padding: 3px 7px 0 5px;
-    color: rgb(102, 102, 102);
+    color: rgb(89, 89, 89);
 }
 
 .chatbox .dropdown dd ul {

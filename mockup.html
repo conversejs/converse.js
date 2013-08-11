@@ -6,7 +6,7 @@
     <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
-    <script data-main="main" src="components/requirejs/require.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <title>Converse.js Mockup</title>
 </head>
 
@@ -19,18 +19,7 @@
     </header>
     </div>
 
-<!--
-<div id="chatpanel">
-    <div id="collective-xmpp-chat-data"></div>
-    <div id="toggle-controlbox">
-        <a href="#" class="chat toggle-online-users">
-            <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
-        </a>
-    </div>
-</div>
--->
-
-<div id="chatpanel">
+<div id="chatpanel" style="width: 100%;">
     <div id="collective-xmpp-chat-data">
         <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
             <div class="chat-head oc-chat-head">
@@ -45,6 +34,7 @@
                 </div>
             </div>
         </div>
+
         <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
             <div class="chat-head oc-chat-head">
                 <ul id="controlbox-tabs">
@@ -124,17 +114,38 @@
                 </dl>
             </div>
             <div id="chatrooms" style="display: none;">
-                <form class="add-chatroom" action="" method="post">
-                    <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
-                    <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
-                    <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
-                    <input type="submit" name="join" value="Join">
-                    <input type="button" name="show" id="show-rooms" value="Show rooms">
-                </form>
-                <dl id="available-chatrooms"></dl>
+            <form class="add-chatroom" action="" method="post">
+                <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
+                <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
+                <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
+                <input type="submit" name="join" value="Join">
+                <input type="button" name="show" id="show-rooms" value="Show rooms" style="display: inline-block;">
+            </form>
+            <dl id="available-chatrooms">
+                <dt>Rooms on conference.opkode.im</dt>
+                <dd class="available-chatroom">
+                    <a class="open-room" 
+                    data-room-jid="converse.js@conference.opkode.im"
+                    title="Click to open this room" href="#">converse.js (2)</a>
+                    <a class="room-info" data-room-jid="converse.js@conference.opkode.im" 
+                    title="Show more information on this room" href="#">&nbsp;</a>
+                    <div class="room-info">
+                        <p class="room-info"><strong>Description:</strong></p>
+                        <p class="room-info"><strong>Occupants:</strong> 2</p>
+                        <p class="room-info"><strong>Features:</strong> </p>
+                        <ul>
+                            <li class="room-info">Moderated</li><li class="room-info">Open room</li>
+                            <li class="room-info">Permanent room</li><li class="room-info">Public</li>
+                            <li class="room-info">Semi-anonymous</li>
+                            <p></p>
+                        </ul>
+                    </div>
+                </dd>
+            </dl>
             </div>
         </div>
     </div>
+
     <div class="chatbox" id="37c0c87392010303765fe36b05c0967d62c6b70f" style="opacity: 1; display: inline;">
         <div class="chat-head chat-head-chatbox">
             <a class="close-chatbox-button">X</a>
@@ -157,9 +168,69 @@
             <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
         </a>
     </div>
+
+    <div class="chatroom" id="4a77380f1cd9d392627b0e1469688f9ca44e9392" style="opacity: 1; display: inline;">
+        <div class="chat-head chat-head-chatroom">
+            <a class="close-chatbox-button">X</a>
+            <a class="configure-chatroom-button" style="">&nbsp;</a>
+            <div class="chat-title"> converse.js </div>
+            <p class="chatroom-topic"></p>
+            <p></p>
+        </div>
+        <div class="chat-body">
+            <div class="chat-area">
+                <div class="chat-content">
+                    <time class="chat-date" datetime="2013-06-04T00:00:00.000Z">Tue Jun 04 2013</time>
+                    <div class="chat-message ">
+                        <span class="chat-message-room">18:50 fires:&nbsp;</span>
+                        <span class="chat-message-content">explodingcoder: hi :)</span>
+                    </div>
+                    <div class="chat-message ">
+                        <span class="chat-message-me">19:40 me:&nbsp;</span>
+                        <span class="chat-message-content">
+                            I'll be gone for a while, will be back in about an hour</span>
+                    </div>
+                </div>
+                <form class="sendXMPPMessage" action="" method="post">
+                    <textarea type="text" class="chat-textarea" placeholder="Message"></textarea>
+                </form>
+            </div>
+            <div class="participants">
+                <ul class="participant-list">
+                    <li class="participant" title="This user can send messages in this room">jabberthehut</li>
+                    <li class="participant" title="This user can send messages in this room">explodingcoder</li>
+                    <li class="moderator" title="This user is a moderator">jcbrand</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 </body>
 <script>
+$(document).ready(function () {
+    $('a[href=#chatrooms]').click(function (ev) { 
+        switchTab(ev);
+    });
+    $('a[href=#users]').click(function (ev) {
+        switchTab(ev); 
+    });
+
+    var switchTab = function (ev) {
+        ev.preventDefault();
+        var $tab = $(ev.target),
+            $sibling = $tab.parent().siblings('li').children('a'),
+            $tab_panel = $($tab.attr('href')),
+            $sibling_panel = $($sibling.attr('href'));
+
+        $sibling_panel.fadeOut('fast', function () {
+            $sibling.removeClass('current');
+            $tab.addClass('current');
+            $tab_panel.fadeIn('fast', function () {
+            });
+        });
+    }
+});
 </script>
 </html>

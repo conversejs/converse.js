@@ -28,8 +28,14 @@ tags:
     <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
     <script src="converse.min.js"></script>
 
-Then, at the bottom of your page, after the closing *</body>* element, put the
-following inline Javascript code:
+You need to initialize Converse.js with configuration settings particular to
+your requirements.
+
+Please refer to the `Configuration variables`_ section further below for info on
+all the available configuration settings.
+
+To do this, put the following inline Javascript code at the
+bottom of your page (after the closing *</body>* element).
 
 ::
 
@@ -46,8 +52,22 @@ following inline Javascript code:
         });
     });
 
-The *index.html* file inside the Converse.js folder serves as a nice usable
-example of this.
+
+Finally, Converse.js requires a special snippet of HTML markup to be included in your page:
+
+::
+
+    <div id="chatpanel">
+        <div id="collective-xmpp-chat-data"></div>
+        <div id="toggle-controlbox">
+            <a href="#" class="chat toggle-online-users">
+                <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
+            </a>
+        </div>
+    </div>
+
+The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
+Converse.js repository serves as a nice usable example of this.
 
 These minified files provide the same demo-like functionality as is available
 on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing, but not very

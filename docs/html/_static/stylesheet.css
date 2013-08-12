@@ -7,11 +7,6 @@ by Jason Costello, @jsncostello
 @import url("../../../stylesheets/stylesheet.css");
 @import url(pygment_trac.css);
 
-div.body h1 {
-    margin-top: 1em;
-    font-size: 36px;
-}
-
 div.body,
 div.document {
     background-color: transparent;
@@ -34,16 +29,3 @@ h1#project_title a {
 h1 a {
     color: #0069ba;
 }
-
-ul {
-    margin-bottom: 0;
-}
-
-
-tt.literal {
-    color: #222;
-    background-color: #fff;
-    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-    font-size: 14px;
-}
-

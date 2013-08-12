@@ -127,8 +127,12 @@ tags:</p>
 <div class="highlight-python"><pre>&lt;link rel="stylesheet" type="text/css" media="screen" href="converse.min.css"&gt;
 &lt;script src="converse.min.js"&gt;&lt;/script&gt;</pre>
 </div>
-<p>Then, at the bottom of your page, after the closing <em>&lt;/body&gt;</em> element, put the
-following inline Javascript code:</p>
+<p>You need to initialize Converse.js with configuration settings particular to
+your requirements.</p>
+<p>Please refer to the <a class="reference internal" href="#configuration-variables">Configuration variables</a> section further below for info on
+all the available configuration settings.</p>
+<p>To do this, put the following inline Javascript code at the
+bottom of your page (after the closing <em>&lt;/body&gt;</em> element).</p>
 <div class="highlight-python"><pre>require(['converse'], function (converse) {
     converse.initialize({
         auto_list_rooms: false,
@@ -142,8 +146,18 @@ following inline Javascript code:</p>
     });
 });</pre>
 </div>
-<p>The <em>index.html</em> file inside the Converse.js folder serves as a nice usable
-example of this.</p>
+<p>Finally, Converse.js requires a special snippet of HTML markup to be included in your page:</p>
+<div class="highlight-python"><pre>&lt;div id="chatpanel"&gt;
+    &lt;div id="collective-xmpp-chat-data"&gt;&lt;/div&gt;
+    &lt;div id="toggle-controlbox"&gt;
+        &lt;a href="#" class="chat toggle-online-users"&gt;
+            &lt;strong class="conn-feedback"&gt;Toggle chat&lt;/strong&gt; &lt;strong style="display: none" id="online-count"&gt;(0)&lt;/strong&gt;
+        &lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+</div>
+<p>The <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/index.html">index.html</a> file inside the
+Converse.js repository serves as a nice usable example of this.</p>
 <p>These minified files provide the same demo-like functionality as is available
 on the <a class="reference external" href="http://conversejs.org">conversejs.org</a> website. Useful for testing or demoing, but not very
 practical.</p>

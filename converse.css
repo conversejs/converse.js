@@ -362,11 +362,11 @@ form.search-xmpp-contact input {
 
 a.configure-chatroom-button,
 a.close-chatbox-button {
-    margin-top: 0.2em;
-    margin-right: 0.5em;
+    font-size: 13px;
+    padding: 2px 2px 1px 2px;
+    margin-right: 3px;
     cursor: pointer;
     float: right;
-    width: 12px;
     -moz-box-shadow:inset 0 1px 0 0 #ffffff;
     -webkit-box-shadow:inset 0 1px 0 0 #ffffff;
     box-shadow:inset 0 1px 0 0 #ffffff;
@@ -379,16 +379,8 @@ a.close-chatbox-button {
     border:1px solid #888;
     display:inline-block;
     color: #666 !important;
-    font-family:arial;
-    font-size:12px;
-    font-weight:bold;
     text-decoration:none;
     text-shadow:1px 1px 0 #ffffff;
-}
-
-a.configure-chatroom-button {
-    padding:0 4px;
-    background: #ffffff url('images/preferences-system.png') no-repeat center center;
 }
 
 .close-chatbox-button {
@@ -424,7 +416,7 @@ a.configure-chatroom-button {
 .chatroom-form {
     background: white;
     font-size: 12px;
-    padding: 0;
+    padding: 10px 5px;
 }
 
 .chat-body p {

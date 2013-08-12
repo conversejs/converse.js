@@ -739,6 +739,7 @@
                 'title="'+__('Show more information on this room')+'" href="#">&nbsp;</a>'+
                 '</dd>'),
 
+            // FIXME: check markup in mockup
             room_description_template: _.template(
                 '<div class="room-info">'+
                 '<p class="room-info"><strong>'+__('Description:')+'</strong> {{desc}}</p>' +

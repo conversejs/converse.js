@@ -59,11 +59,27 @@
                             </div>
                         </dt>
                         <dd>
-                            <ul style="display: none;">
-                                <li><a href="#" class="online" data-value="online">Online</a></li>
-                                <li><a href="#" class="dnd" data-value="dnd">Busy</a></li>
-                                <li><a href="#" class="away" data-value="away">Away</a></li>
-                                <li><a href="#" class="offline" data-value="offline">Offline</a></li>
+                            <ul style="display: none;" class="xmpp-status-menu">
+                                <li>
+                                    <a href="#" class="online" data-value="online">
+                                    <span class="icon-bubble"></span>
+                                    Online</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dnd" data-value="dnd">
+                                    <span class="icon-busy"></span>
+                                    Busy</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="away" data-value="away">
+                                    <span class="icon-bubble-2"></span>
+                                    Away</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="offline" data-value="offline">
+                                    <span class="icon-offline"></span>
+                                    Offline</a>
+                                </li>
                             </ul>
                         </dd>
                     </dl>
@@ -79,7 +95,10 @@
                     <dd class="search-xmpp" style="display:none">
                         <ul>
                             <li>
-                                <form class="add-xmpp-contact"><input type="text" name="identifier" class="username" placeholder="Contact username"><button type="submit">Add</button></form>
+                                <form class="add-xmpp-contact">
+                                    <input type="text" name="identifier" class="username" placeholder="Contact username">
+                                    <button type="submit">Add</button>
+                                </form>
                             </li>
                             <li></li>
                         </ul>
@@ -158,6 +177,7 @@
                             <li class="room-info">Moderated</li><li class="room-info">Open room</li>
                             <li class="room-info">Permanent room</li><li class="room-info">Public</li>
                             <li class="room-info">Semi-anonymous</li>
+                            <li class="room-info">Requires authentication <span class="icon-lock"></span></li>
                             <p></p>
                         </ul>
                     </div>
@@ -259,6 +279,20 @@ $(document).ready(function () {
     });
     $('a[href=#users]').click(function (ev) {
         switchTab(ev); 
+    });
+
+    $("a.choose-xmpp-status").click(function (ev) {
+        ev.preventDefault();
+        $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
+    });
+
+    $('.toggle-xmpp-contact-form').click(function (ev) {
+        ev.preventDefault();
+        $(ev.target).parent().parent().find('.search-xmpp').toggle('fast', function () {
+            if ($(this).is(':visible')) {
+                $(this).find('input.username').focus();
+            }
+        });
     });
 
     var switchTab = function (ev) {

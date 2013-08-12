@@ -21,7 +21,6 @@
 }
 
 .locked {
-    background: url(images/emblem-readonly.png) no-repeat right;
     padding-right: 22px;
 }
 
@@ -454,13 +453,7 @@ a.close-chatbox-button {
 #converse-roster dd.current-xmpp-contact span {
     font-size: 16px;
     float: left;
-}
-
-#converse-roster dd.current-xmpp-contact.xa,
-#converse-roster dd.current-xmpp-contact.xa:hover,
-#converse-roster dd.current-xmpp-contact.away,
-#converse-roster dd.current-xmpp-contact.away:hover {
-    background: url(images/user_away_panel.png) no-repeat 5px 2px;
+    color: rgb(79, 79, 79);
 }
 
 #converse-roster dd.requesting-xmpp-contact button{
@@ -786,7 +779,7 @@ form.add-xmpp-contact {
 }
 
 form.add-xmpp-contact input {
-    width: 125px;
+    width: 120px;
 }
 
 .chatbox .dropdown dt a span {
@@ -822,18 +815,15 @@ form.add-xmpp-contact input {
     padding-top: 2px;
 }
 
-.chatbox .dropdown a.offline {
-    background: url(images/user_offline_panel.png) no-repeat 3px 4px;
-}
-
-.chatbox .dropdown a.dnd {
-    background: url(images/user_busy_panel.png) no-repeat 3px 4px;
-}
-
-.chatbox .dropdown a.away {
-    background: url(images/user_away_panel.png) no-repeat 3px 4px;
-}
-
 .chatbox .dropdown dd ul a:hover {
     background-color: #bed6e5;
+}
+
+.xmpp-status-menu li a {
+    width: 100%;
+}
+
+.xmpp-status-menu li a span {
+    padding: 0 5px 0 5px;
+    color: rgb(79, 79, 79);
 }

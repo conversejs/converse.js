@@ -321,11 +321,17 @@ dl.add-converse-contact {
    float: left; 
 }
 
+#fancy-xmpp-status-select span {
+    padding-right: 5px; 
+    padding-left: 5px; 
+}
+
 #fancy-xmpp-status-select a.change-xmpp-status-message {
-    background: url('images/pencil_icon.png') no-repeat right 3px;
     float: right;
     clear: right;
     height: 22px;
+    padding: 5px 5px 0 0;
+    color: rgb(79, 79, 79);
 }
 
 ul#found-users {
@@ -482,10 +488,6 @@ a.configure-chatroom-button {
     padding: 2px 5px 0 0;
 }
 
-.remove-xmpp-contact-dialog .ui-dialog-buttonpane {
-    border: none;
-}
-
 #converse-roster {
     height: 200px;
     overflow-y: auto;
@@ -553,7 +555,6 @@ p.room-info {
 }
 
 a.room-info {
-    background: url('images/information.png') no-repeat right top;
     width: 22px;
     height: 22px;
     float: right;
@@ -570,13 +571,12 @@ a.open-room {
 
 dd.available-chatroom:hover a.room-info {
     display: inline-block;
-}
-
-dd.available-chatroom:hover a.open-room {
-    width: 75%;
+    margin-top: 3px;
+    font-size: 15px;
 }
 
 #converse-roster dd a.remove-xmpp-contact {
+    line-height: 21px;
     float: right;
     width: 22px;
     margin: 0;
@@ -673,7 +673,7 @@ form.add-chatroom input[type=text] {
 
 form.add-chatroom input[type=button],
 form.add-chatroom input[type=submit] {
-    width: 50%;
+    width: 48%;
 }
 
 select#select-xmpp-status {
@@ -771,6 +771,10 @@ form#set-custom-xmpp-status {
     padding: 1px 2px 1px 1px;
 }
 
+#controlbox div.xmpp-status {
+    display: inline;
+}
+
 /* status dropdown styles */
 .chatbox dl.dropdown {
     margin-right: 0.5em;
@@ -796,7 +800,7 @@ form.add-xmpp-contact input {
 .chatbox .dropdown dt a span {
     cursor:pointer; 
     display:block; 
-    padding: 3px 7px 0 5px;
+    padding: 2px 7px 0 5px;
     color: rgb(79, 79, 79);
 }
 

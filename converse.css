@@ -55,7 +55,7 @@ span.spinner.hor_centered {
 
 #toggle-controlbox {
     position: fixed;
-    font-size: 80%;
+    font-size: 70%;
     bottom: 0;
     right: 0;
     border-top-right-radius: 4px;
@@ -63,9 +63,9 @@ span.spinner.hor_centered {
     background: #e3e2e2;
     border: 1px solid #c3c3c3;
     border-bottom: none;
-    padding: 0.25em 0.5em;
-    margin-right: 1em;
-    height: 1.1em;
+    padding: 1px 3px;
+    margin-right: 15px;
+    height: 16px;
 }
 
 #connecting-to-chat {
@@ -222,7 +222,7 @@ li.chat-info {
 div#settings,
 div#chatrooms,
 div#login-dialog {
-    height: 272px;
+    height: 274px;
 }
 
 p.not-implemented {
@@ -605,18 +605,12 @@ dd.available-chatroom:hover a.open-room {
     border-radius: 4px;
 }
 
-.chatbox {
-    width: 201px;
-}
-
 .chatroom {
     width: 300px;
-    height: 311px;
 }
 
 .oc-chat-content {
-    height:272px;
-    width: 199px;
+    height:274px;
     padding: 0;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -742,7 +736,6 @@ div#login-dialog,
 div#settings {
     border: 0;
     font-size: 14px;
-    width: 199px;
     background-color: white;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;

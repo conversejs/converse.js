@@ -48,6 +48,7 @@
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
         this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
+        this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.prebind = false;
@@ -2615,8 +2616,13 @@
 
         this.onConnected = function (connection, callback) {
             this.connection = connection;
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+                Strophe.log = function (level, msg) {
+                    console.log(level+' '+msg);
+                };
+            }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.features = new this.Features();
@@ -2627,18 +2633,20 @@
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                     'http://jabber.org/protocol/rosterx', 'message', null);
 
-                this.connection.roster.get($.proxy(function (a) {
-                    this.connection.addHandler(
-                            $.proxy(function (presence) {
-                                this.presenceHandler(presence);
-                                return true;
-                            }, this.roster), null, 'presence', null);
-                    this.connection.addHandler(
-                            $.proxy(function (message) {
-                                this.chatboxes.messageReceived(message);
-                                return true;
-                            }, this), null, 'message', 'chat');
-                }, this));
+                this.connection.addHandler(
+                        $.proxy(function (presence) {
+                            this.presenceHandler(presence);
+                            return true;
+                        }, this.roster), null, 'presence', null);
+
+                this.connection.addHandler(
+                        $.proxy(function (message) {
+                            this.chatboxes.messageReceived(message);
+                            return true;
+                        }, this), null, 'message', 'chat');
+
+                this.connection.roster.get(function () {});
+
                 $(window).on("blur focus", $.proxy(function(e) {
                     if ((this.windowState != e.type) && (e.type == 'focus')) {
                         converse.clearMsgCounter();

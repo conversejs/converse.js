@@ -696,12 +696,8 @@
                     }, this),
                     $.proxy(function (stanza) {
                         console.log("An error occured while fetching vcard");
-                        if ($(stanza).find('error').attr('code') == '503') {
-                            // If we get service-unavailable, we continue to create
-                            // the user
-                            var jid = $(stanza).attr('from');
-                            this.addContact(jid, jid);
-                        }
+                        var jid = $(stanza).attr('from');
+                        this.addContact(jid, jid);
                     }, this));
                 $('.search-xmpp').hide();
             },
@@ -2224,7 +2220,7 @@
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function () {
                 this.set({
-                    'status' : this.get('status') || 'online',
+                    'status' : this.get('status') || 'online'
                 });
                 this.on('change', $.proxy(function () {
                     if (this.get('fullname') === undefined) {

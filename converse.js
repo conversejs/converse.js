@@ -1763,19 +1763,19 @@
             },
 
             template: _.template(
-                        '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">{{ fullname }}</a>' +
-                        '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
+                '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">{{ fullname }}</a>' +
+                '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             pending_template: _.template(
-                        '<span>{{ fullname }}</span>' +
-                        '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
+                '<span>{{ fullname }}</span>' +
+                '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             request_template: _.template('<div>{{ fullname }}</div>' +
-                        '<button type="button" class="accept-xmpp-request">' +
-                        'Accept</button>' +
-                        '<button type="button" class="decline-xmpp-request">' +
-                        'Decline</button>' +
-                        ''),
+                '<button type="button" class="accept-xmpp-request">' +
+                'Accept</button>' +
+                '<button type="button" class="decline-xmpp-request">' +
+                'Decline</button>' +
+                ''),
 
             render: function () {
                 var item = this.model,

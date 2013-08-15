@@ -307,6 +307,10 @@ dl.add-converse-contact {
     height: 22px;
 }
 
+.fancy-dropdown a.choose-xmpp-status {
+    width: 155px;
+}
+
 .fancy-dropdown a.choose-xmpp-status,
 .fancy-dropdown a.toggle-xmpp-contact-form {
     text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
@@ -320,9 +324,10 @@ dl.add-converse-contact {
    float: left; 
 }
 
-#fancy-xmpp-status-select span {
+.choose-xmpp-status span {
     padding-right: 5px; 
     padding-left: 5px; 
+    float: left;
 }
 
 #fancy-xmpp-status-select a.change-xmpp-status-message {

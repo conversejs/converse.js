@@ -48,6 +48,7 @@
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
         this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
+        this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.prebind = false;
@@ -2614,8 +2615,13 @@
 
         this.onConnected = function (connection, callback) {
             this.connection = connection;
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+                Strophe.log = function (level, msg) {
+                    console.log(level+' '+msg);
+                };
+            }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.features = new this.Features();

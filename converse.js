@@ -736,9 +736,9 @@
             room_template: _.template(
                 '<dd class="available-chatroom">'+
                 '<a class="open-room" data-room-jid="{{jid}}"'+
-                'title="'+__('Click to open this room')+'" href="#">{{name}}</a>'+
-                '<a class="room-info" data-room-jid="{{jid}}"'+
-                'title="'+__('Show more information on this room')+'" href="#">&nbsp;</a>'+
+                    'title="'+__('Click to open this room')+'" href="#">{{name}}</a>'+
+                '<a class="room-info icon-room-info" data-room-jid="{{jid}}"'+
+                    'title="'+__('Show more information on this room')+'" href="#">&nbsp;</a>'+
                 '</dd>'),
 
             // FIXME: check markup in mockup
@@ -1115,7 +1115,7 @@
             template: _.template(
                 '<div class="chat-head chat-head-chatroom">' +
                     '<a class="close-chatbox-button icon-close"></a>' +
-                    '<a class="configure-chatroom-button" style="display:none">&nbsp;</a>' +
+                    '<a class="configure-chatroom-button icon-wrench" style="display:none"></a>' +
                     '<div class="chat-title"> {{ name }} </div>' +
                     '<p class="chatroom-topic"><p/>' +
                 '</div>' +

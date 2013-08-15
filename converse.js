@@ -1437,10 +1437,9 @@
             },
 
             showErrorMessage: function ($error, room) {
-                var $chat_content = this.$el.find('.chat-content');
                 // We didn't enter the room, so we must remove it from the MUC
                 // add-on
-                converse.connection.muc.removeRoom(room.name);
+                delete converse.connection.muc[room.name];
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
                         this.renderPasswordForm();

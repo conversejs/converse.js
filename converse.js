@@ -505,7 +505,7 @@
 
             template: _.template(
                 '<div class="chat-head chat-head-chatbox">' +
-                    '<a class="close-chatbox-button">X</a>' +
+                    '<a class="close-chatbox-button icon-close"></a>' +
                     '<a href="{{url}}" target="_blank" class="user">' +
                         '<div class="chat-title"> {{ fullname }} </div>' +
                     '</a>' +
@@ -605,7 +605,8 @@
                 '<dl class="add-converse-contact dropdown">' +
                     '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
                         '<a class="toggle-xmpp-contact-form" href="#"'+
-                            'title="'+__('Click to add new chat contacts')+'">'+__('Add a contact')+'</a>' +
+                            'title="'+__('Click to add new chat contacts')+'">'+
+                        '<span class="icon-plus"></span>'+__('Add a contact')+'</a>' +
                     '</dt>' +
                     '<dd class="search-xmpp" style="display:none"><ul></ul></dd>' +
                 '</dl>'
@@ -1013,7 +1014,7 @@
             template: _.template(
                 '<div class="chat-head oc-chat-head">'+
                     '<ul id="controlbox-tabs"></ul>'+
-                    '<a class="close-chatbox-button">X</a>'+
+                    '<a class="close-chatbox-button icon-close"></a>'+
                 '</div>'+
                 '<div id="controlbox-panes"></div>'
             ),
@@ -1113,7 +1114,7 @@
 
             template: _.template(
                 '<div class="chat-head chat-head-chatroom">' +
-                    '<a class="close-chatbox-button">X</a>' +
+                    '<a class="close-chatbox-button icon-close"></a>' +
                     '<a class="configure-chatroom-button" style="display:none">&nbsp;</a>' +
                     '<div class="chat-title"> {{ name }} </div>' +
                     '<p class="chatroom-topic"><p/>' +
@@ -1765,6 +1766,7 @@
 
             template: _.template(
                 '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">{{ fullname }}</a>' +
+                '<span class="icon-{{ chat_status }}" title="{{ status_desc }}"></span>'+
                 '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             pending_template: _.template(
@@ -1793,7 +1795,15 @@
                     converse.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
-                    this.$el.html(this.template(item.toJSON()));
+                    var status_desc = {
+                        'dnd': 'This contact is busy',
+                        'online': 'This contact is online',
+                        'offline': 'This contact is offline',
+                        'away': 'This contact is away'
+                        }[item.get('chat_status')||'offline'];
+                    this.$el.html(this.template(
+                        _.extend(item.toJSON(), {'status_desc': status_desc})
+                        ));
                 }
                 return this;
             },
@@ -2305,6 +2315,7 @@
             status_template: _.template(
                 '<div class="xmpp-status">' +
                     '<a class="choose-xmpp-status {{ chat_status }}" data-value="{{status_message}}" href="#" title="'+__('Click to change your chat status')+'">' +
+                        '<span class="icon-{{ chat_status }}"></span>'+
                         '{{ status_message }}' +
                     '</a>' +
                     '<a class="change-xmpp-status-message" href="#" title="'+__('Click here to write a custom status message')+'"></a>' +
@@ -2367,12 +2378,15 @@
             choose_template: _.template(
                 '<dl id="target" class="dropdown">' +
                     '<dt id="fancy-xmpp-status-select" class="fancy-dropdown"></dt>' +
-                    '<dd><ul></ul></dd>' +
+                    '<dd><ul class="xmpp-status-menu"></ul></dd>' +
                 '</dl>'),
 
             option_template: _.template(
                 '<li>' +
-                    '<a href="#" class="{{ value }}" data-value="{{ value }}">{{ text }}</a>' +
+                    '<a href="#" class="{{ value }}" data-value="{{ value }}">'+
+                        '<span class="icon-{{ value }}"></span>'+
+                        '{{ text }}'+
+                    '</a>' +
                 '</li>'),
 
             initialize: function () {

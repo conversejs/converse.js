@@ -161,21 +161,6 @@ ul.participant-list li.moderator {
     line-height: 1.3em;
 }
 
-.chat-textarea {
-    border: 0;
-    height: 50px;
-}
-
-.chat-textarea-chatbox-selected {
-    border: 1px solid #578308;
-    margin:0;
-}
-
-.chat-textarea-chatroom-selected {
-    border: 2px solid #2D617A;
-    margin:0;
-}
-
 .chat-info {
     color:#666666;
 }
@@ -752,10 +737,37 @@ form.sendXMPPMessage {
     height: 54px;
 }
 
+form.sendXMPPMessage ul.chat-toolbar {
+    float: right;
+    padding: 0;
+}
+
+form.sendXMPPMessage ul.chat-toolbar li {
+    list-style: none;
+    padding: 2px 0 2px 2px;
+}
+
 form#set-custom-xmpp-status {
     float: left;
     padding: 0;
 }
+
+.chat-textarea {
+    border: 0;
+    height: 50px;
+    width: 160px;
+}
+
+.chat-textarea-chatbox-selected {
+    border: 1px solid #578308;
+    margin:0;
+}
+
+.chat-textarea-chatroom-selected {
+    border: 2px solid #2D617A;
+    margin:0;
+}
+
 
 #set-custom-xmpp-status button {
     padding: 1px 2px 1px 1px;

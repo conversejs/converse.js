@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.5.3 (Unreleased)
+------------------
+
+- Register presence and message handlers before fetching the roster. Otherwise
+  some presence notifications might be missed. [jcbrand]
+
 0.5.2 (2013-08-05)
 ------------------
 

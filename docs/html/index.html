@@ -99,21 +99,22 @@
 <li><a class="reference internal" href="#auto-list-rooms" id="id23">auto_list_rooms</a></li>
 <li><a class="reference internal" href="#auto-subscribe" id="id24">auto_subscribe</a></li>
 <li><a class="reference internal" href="#bosh-service-url" id="id25">bosh_service_url</a></li>
-<li><a class="reference internal" href="#fullname" id="id26">fullname</a></li>
-<li><a class="reference internal" href="#hide-muc-server" id="id27">hide_muc_server</a></li>
-<li><a class="reference internal" href="#prebind" id="id28">prebind</a></li>
-<li><a class="reference internal" href="#show-controlbox-by-default" id="id29">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id30">xhr_user_search</a></li>
+<li><a class="reference internal" href="#debug" id="id26">debug</a></li>
+<li><a class="reference internal" href="#fullname" id="id27">fullname</a></li>
+<li><a class="reference internal" href="#hide-muc-server" id="id28">hide_muc_server</a></li>
+<li><a class="reference internal" href="#prebind" id="id29">prebind</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id30">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id31">xhr_user_search</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id31">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript" id="id32">Minifying Javascript</a></li>
-<li><a class="reference internal" href="#minifying-css" id="id33">Minifying CSS</a></li>
+<li><a class="reference internal" href="#minification" id="id32">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript" id="id33">Minifying Javascript</a></li>
+<li><a class="reference internal" href="#minifying-css" id="id34">Minifying CSS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id34">Translations</a></li>
+<li><a class="reference internal" href="#translations" id="id35">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
@@ -444,20 +445,24 @@ option will create lots of extra connection traffic.</p>
 a middle man between HTTP and XMPP.</p>
 <p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">here</a> for more information.</p>
 </div>
+<div class="section" id="debug">
+<h3><a class="toc-backref" href="#id26">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
+<p>If set to true, debugging output will be logged to the browser console.</p>
+</div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id26">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
 <p>If you are using prebinding, you need to specify the fullname of the currently
 logged in user.</p>
 </div>
 <div class="section" id="hide-muc-server">
-<h3><a class="toc-backref" href="#id27">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>Hide the <tt class="docutils literal"><span class="pre">server</span></tt> input field of the form inside the <tt class="docutils literal"><span class="pre">Room</span></tt> panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.</p>
 </div>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id28">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
@@ -478,7 +483,7 @@ have to write a Javascript snippet to attach to the set up connection:</p>
 RID (Request ID), which you use when you attach to the connection.</p>
 </div>
 <div class="section" id="show-controlbox-by-default">
-<h3><a class="toc-backref" href="#id29">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.</p>
@@ -488,7 +493,7 @@ the page with class <em>toggle-online-users</em>.</p>
 page load.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id30">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = False</p>
 <p>There are two ways to add users.</p>
 <ul class="simple">
@@ -501,9 +506,9 @@ be used.</p>
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id31">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id32">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript">
-<h2><a class="toc-backref" href="#id32">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id33">Minifying Javascript</a><a class="headerlink" href="#minifying-javascript" title="Permalink to this headline">¶</a></h2>
 <p>We  use <a class="reference external" href="http://requirejs.org">require.js</a> to keep track of <em>Converse.js</em> and its dependencies and to
 to bundle them together in a single minified file fit for deployment to a
 production site.</p>
@@ -519,14 +524,14 @@ manager, NPM.</p>
 <p>You can <a class="reference external" href="http://requirejs.org/docs/optimization.html">read more about require.js&#8217;s optimizer here</a>.</p>
 </div>
 <div class="section" id="minifying-css">
-<h2><a class="toc-backref" href="#id33">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id34">Minifying CSS</a><a class="headerlink" href="#minifying-css" title="Permalink to this headline">¶</a></h2>
 <p>CSS can be minimized with Yahoo&#8217;s yuicompressor tool:</p>
 <div class="highlight-python"><pre>yui-compressor --type=css converse.css -o converse.min.css</pre>
 </div>
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id34">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id35">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.

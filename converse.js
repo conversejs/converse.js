@@ -227,17 +227,17 @@
                     priv: myKey,
                     debug: true
                 };
-                var contact = new otr.OTR(options);
-
-                contact.on('ui', function (msg) {
+                this.otr = new otr.OTR(options);
+                this.otr.on('ui', $.proxy(function (msg) {
                     console.log("message to display to the user:"+msg);
-                });
-                contact.on('io', function (msg) {
+                }, this));
+                this.otr.on('io', $.proxy(function (msg) {
                     console.log("message to display to the user:"+msg);
-                });
-                contact.on('error', function (msg) {
+                    this.trigger('sendMessage', msg);
+                }, this));
+                this.otr.on('error', $.proxy(function (msg) {
                     console.log("message to display to the user:"+msg);
-                });
+                }, this));
             },
 
             messageReceived: function (message) {
@@ -307,6 +307,20 @@
             new_day_template: _.template(
                                 '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
                                 ),
+
+            initialize: function (){
+                this.model.messages.on('add', this.showMessage, this);
+                this.model.on('show', this.show, this);
+                this.model.on('destroy', this.hide, this);
+                this.model.on('change', this.onChange, this);
+                this.model.on('sendMessage', this.onMessageSend, this);
+                this.updateVCard();
+                this.$el.appendTo(converse.chatboxesview.$el);
+                this.render().show().model.messages.fetch({add: true});
+                if (this.model.get('status')) {
+                    this.showStatusMessage(this.model.get('status'));
+                }
+            },
 
             appendMessage: function ($el, msg_dict) {
                 var this_date = converse.parseISO8601(msg_dict.time),
@@ -393,14 +407,7 @@
             },
 
             sendMessage: function (text) {
-                // TODO: Look in ChatPartners to see what resources we have for the recipient.
-                // if we have one resource, we sent to only that resources, if we have multiple
-                // we send to the bare jid.
-                var timestamp = (new Date()).getTime(),
-                    bare_jid = this.model.get('jid'),
-                    match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/),
-                    msgs;
-
+                var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
                     if (match[1] === "clear") {
                         this.$el.find('.chat-content').empty();
@@ -432,6 +439,20 @@
                         return;
                     }
                 }
+                if (this.model.otr) {
+                    this.model.otr.sendMsg(text);
+                }
+                else {
+                    this.model.trigger('sendMessage', text);
+                }
+            },
+
+            onMessageSend: function (text) {
+                // TODO: Look in ChatPartners to see what resources we have for the recipient.
+                // if we have one resource, we sent to only that resources, if we have multiple
+                // we send to the bare jid.
+                var timestamp = (new Date()).getTime();
+                var bare_jid = this.model.get('jid');
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
@@ -441,6 +462,7 @@
                                 .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                                 .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
                                 .cnode(message.tree());
+
                 converse.connection.send(message);
                 converse.connection.send(forwarded);
                 // Add the new message
@@ -537,19 +559,6 @@
                             console.log("ChatBoxView.initialize: An error occured while fetching vcard");
                         }, this)
                     );
-                }
-            },
-
-            initialize: function (){
-                this.model.messages.on('add', this.showMessage, this);
-                this.model.on('show', this.show, this);
-                this.model.on('destroy', this.hide, this);
-                this.model.on('change', this.onChange, this);
-                this.updateVCard();
-                this.$el.appendTo(converse.chatboxesview.$el);
-                this.render().show().model.messages.fetch({add: true});
-                if (this.model.get('status')) {
-                    this.showStatusMessage(this.model.get('status'));
                 }
             },
 

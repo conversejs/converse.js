@@ -743,13 +743,14 @@ form.sendXMPPMessage {
 ul.chat-toolbar {
     font-size: 14px;
     margin: 0;
-    padding: 0;
+    padding: 0 5px 0 0;
+    float: right;
 }
 
 ul.chat-toolbar li {
     display: inline-block;
     list-style: none;
-    padding: 0 0 0 5px;
+    padding: 0 3px 0 3px;
 }
 
 ul.chat-toolbar li:hover {

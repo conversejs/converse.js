@@ -28,8 +28,14 @@ tags:
     <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
     <script src="converse.min.js"></script>
 
-Then, at the bottom of your page, after the closing *</body>* element, put the
-following inline Javascript code:
+You need to initialize Converse.js with configuration settings particular to
+your requirements.
+
+Please refer to the `Configuration variables`_ section further below for info on
+all the available configuration settings.
+
+To do this, put the following inline Javascript code at the
+bottom of your page (after the closing *</body>* element).
 
 ::
 
@@ -46,8 +52,22 @@ following inline Javascript code:
         });
     });
 
-The *index.html* file inside the Converse.js folder serves as a nice usable
-example of this.
+
+Finally, Converse.js requires a special snippet of HTML markup to be included in your page:
+
+::
+
+    <div id="chatpanel">
+        <div id="collective-xmpp-chat-data"></div>
+        <div id="toggle-controlbox">
+            <a href="#" class="chat toggle-online-users">
+                <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
+            </a>
+        </div>
+    </div>
+
+The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
+Converse.js repository serves as a nice usable example of this.
 
 These minified files provide the same demo-like functionality as is available
 on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing, but not very
@@ -206,6 +226,60 @@ In the callback function, you call *converse.onConnected* together with the
 connection object.
 
 
+Facebook integration
+====================
+
+.. Note :: 
+    It should be possible to integrate Converse.js with Facebook chat, and
+    below I'll provide some tips and documentation on how to achieve this. That
+    said, I don't have a Facebook account and therefore haven't tried to do
+    this myself. Feedback and patches from people who have succesfully done this
+    will be appreciated.
+
+
+Converse.js uses `Strophe.js <http://strophe.im/strophejs>`_ to connect and
+communicate with the XMPP server. One nice thing about Strophe.js is that it 
+can be extended via `plugins <http://github.com/strophe/strophejs-plugins>`_.
+
+Here is a `plugin for authenticating with facebook 
+<https://github.com/kissrobber/turedsocial/blob/master/strophe-plugins/src/facebook.js>`_.
+
+You will need your own BOSH connection manager to act as a proxy between
+Converse.js/Strophe.js and Facebook's XMPP server. That is because Facebook's
+XMPP server doesn't support BOSH natively.
+
+The BOSH connection manager that I make available for
+testing purposes (at https://bind.opkode.im) uses `Punjab <https://github.com/twonds/punjab>`_,
+although there are quite a few other options available as well.
+
+When you configure Converse.js, via its ``initialize`` method, you must specify the 
+`bosh_service_url`_ value, which is to be your BOSH connection manager.
+
+Please note, to enable Facebook integration, you'll have to
+get your hands dirty and modify Converse.js's code, so that it calls the
+``facebookConnect`` method of the plugin above.
+
+The plugin above gives the following code example for you to meditate upon:
+
+::
+
+    connection = new Strophe.Connection("http://localhost:5280/bosh");
+    connection.facebookConnect(
+        "12345@chat.facebook.com",
+        onConnectFacebook,
+        300,
+        1,
+        '5e64a30272af065bd72258c565a03f2f',
+        '8147a27e4a7f9b55ffc85c2683f9529a',
+        FB.getSession().session_key
+    );
+
+The connection is already created inside Converse.js, so the
+``facebookConnect`` method needs to also be called from there.
+
+If someone submits a sane patch that does the above, I'll be happy to merge it.
+Until then, people will have to do this themselves.
+
 ===========
 Development
 ===========
@@ -296,7 +370,7 @@ Take a look at ``tests.html`` and ``spec/MainSpec.js`` to see how
 the tests are implemented.
 
 If you are unsure how to write tests, please 
-`contact me <http://conversejs.org>`_ and I'll be happy to help.
+`contact me <http://opkode.com/contact>`_ and I'll be happy to help.
 
 Check that the tests pass
 -------------------------
@@ -388,6 +462,11 @@ Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.
 
 See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for more information.
+
+debug
+-----
+
+If set to true, debugging output will be logged to the browser console.
 
 fullname
 --------

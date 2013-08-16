@@ -14,22 +14,22 @@
     if (typeof define === 'function' && define.amd) {
         define("converse", [
             "components/otr/build/otr",
+            "crypto.aes",
             "locales",
             "localstorage",
             "tinysort",
-            "sjcl",
             "strophe",
             "strophe.muc",
             "strophe.roster",
             "strophe.vcard",
             "strophe.disco"
-            ], function(otr) {
+            ], function(otr, crypto) {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory(jQuery, _, otr, console);
+                return factory(jQuery, _, crypto, otr, console);
             }
         );
     } else {
@@ -38,9 +38,9 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, otr, console || {log: function(){}});
+        root.converse = factory(jQuery, _, crypto, otr, console || {log: function(){}});
     }
-}(this, function ($, _, otr, console) {
+}(this, function ($, _, crypto, otr, console) {
     var converse = {};
     converse.initialize = function (settings) {
         // Default values
@@ -204,6 +204,40 @@
                         'image': this.get('image')
                     });
                 }
+            },
+
+            getPrivateKey: function () {
+                var savedKey = this.get('priv_key');
+                var myKey, decrypted, ciphertextParams;
+                if (savedKey) {
+                    decrypted = crypto.lib.PasswordBasedCipher.decrypt(crypto.algo.AES, savedKey, converse.connection.pass);
+                    myKey = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
+                } else {
+                    myKey = new otr.DSA();
+                    ciphertextParams = crypto.lib.PasswordBasedCipher.encrypt(crypto.algo.AES, myKey.packPrivate(), converse.connection.pass);
+                    this.save({'priv_key': ciphertextParams.toString()});
+                }
+                return myKey;
+            },
+
+            initiateOTR: function (myKey) {
+                var options = {
+                    fragment_size: 140,
+                    send_interval: 200,
+                    priv: myKey,
+                    debug: true
+                };
+                var contact = new otr.OTR(options);
+
+                contact.on('ui', function (msg) {
+                    console.log("message to display to the user:"+msg);
+                });
+                contact.on('io', function (msg) {
+                    console.log("message to display to the user:"+msg);
+                });
+                contact.on('error', function (msg) {
+                    console.log("message to display to the user:"+msg);
+                });
             },
 
             messageReceived: function (message) {
@@ -380,6 +414,21 @@
                             '<strong>/clear</strong>:'+__('Remove messages')+''
                             ];
                         this.addHelpMessages(msgs);
+                        return;
+                    }
+                    else if (match[1] === "otr") {
+                        msgs = [
+                            __('Initializing OTR.'),
+                            __('Generating private key'),
+                            __('...this might take a few seconds.')
+                            ];
+                        this.addHelpMessages(msgs);
+                        var privKey = this.model.getPrivateKey();
+                        msgs = [
+                            __('Private key generated.')
+                            ];
+                        this.addHelpMessages(msgs);
+                        this.model.initiateOTR(privKey);
                         return;
                     }
                 }

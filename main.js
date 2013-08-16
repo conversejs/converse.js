@@ -11,7 +11,8 @@ require.config({
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
-        "strophe.disco": "components/strophe.disco/index"
+        "strophe.disco": "components/strophe.disco/index",
+        "crypto.aes": "components/crypto-js/build/rollups/aes"
     },
 
     // define module dependencies for modules not using define
@@ -26,6 +27,9 @@ require.config({
             //Once loaded, use the global 'Backbone' as the
             //module value.
             exports: 'Backbone'
+        },
+        'crypto.aes': {
+            exports: 'CryptoJS'
         },
         'tinysort': { deps: ['jquery'] },
         'strophe': { deps: ['jquery'] },

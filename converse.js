@@ -48,6 +48,7 @@
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
         this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
+        this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.prebind = false;
@@ -695,12 +696,8 @@
                     }, this),
                     $.proxy(function (stanza) {
                         console.log("An error occured while fetching vcard");
-                        if ($(stanza).find('error').attr('code') == '503') {
-                            // If we get service-unavailable, we continue to create
-                            // the user
-                            var jid = $(stanza).attr('from');
-                            this.addContact(jid, jid);
-                        }
+                        var jid = $(stanza).attr('from');
+                        this.addContact(jid, jid);
                     }, this));
                 $('.search-xmpp').hide();
             },
@@ -1434,10 +1431,9 @@
             },
 
             showErrorMessage: function ($error, room) {
-                var $chat_content = this.$el.find('.chat-content');
                 // We didn't enter the room, so we must remove it from the MUC
                 // add-on
-                converse.connection.muc.removeRoom(room.name);
+                delete converse.connection.muc[room.name];
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
                         this.renderPasswordForm();
@@ -2224,7 +2220,7 @@
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function () {
                 this.set({
-                    'status' : this.get('status') || 'online',
+                    'status' : this.get('status') || 'online'
                 });
                 this.on('change', $.proxy(function () {
                     if (this.get('fullname') === undefined) {
@@ -2614,8 +2610,13 @@
 
         this.onConnected = function (connection, callback) {
             this.connection = connection;
-            this.connection.xmlInput = function (body) { console.log(body); };
-            this.connection.xmlOutput = function (body) { console.log(body); };
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+                Strophe.log = function (level, msg) {
+                    console.log(level+' '+msg);
+                };
+            }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.features = new this.Features();
@@ -2626,18 +2627,20 @@
                     $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                     'http://jabber.org/protocol/rosterx', 'message', null);
 
-                this.connection.roster.get($.proxy(function (a) {
-                    this.connection.addHandler(
-                            $.proxy(function (presence) {
-                                this.presenceHandler(presence);
-                                return true;
-                            }, this.roster), null, 'presence', null);
-                    this.connection.addHandler(
-                            $.proxy(function (message) {
-                                this.chatboxes.messageReceived(message);
-                                return true;
-                            }, this), null, 'message', 'chat');
-                }, this));
+                this.connection.addHandler(
+                        $.proxy(function (presence) {
+                            this.presenceHandler(presence);
+                            return true;
+                        }, this.roster), null, 'presence', null);
+
+                this.connection.addHandler(
+                        $.proxy(function (message) {
+                            this.chatboxes.messageReceived(message);
+                            return true;
+                        }, this), null, 'message', 'chat');
+
+                this.connection.roster.get(function () {});
+
                 $(window).on("blur focus", $.proxy(function(e) {
                     if ((this.windowState != e.type) && (e.type == 'focus')) {
                         converse.clearMsgCounter();

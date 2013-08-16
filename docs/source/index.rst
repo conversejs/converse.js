@@ -463,6 +463,11 @@ a middle man between HTTP and XMPP.
 
 See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for more information.
 
+debug
+-----
+
+If set to true, debugging output will be logged to the browser console.
+
 fullname
 --------
 

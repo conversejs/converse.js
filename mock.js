@@ -10,7 +10,6 @@
             'listRooms': function () {},
             'join': function () {},
             'leave': function () {},
-            'removeRoom': function () {},
             'rooms': {}
         },
         'jid': 'dummy@localhost',

@@ -143,7 +143,6 @@
                 waits(250);
                 runs(function () {
                     var $chat_body = view.$el.find('.chat-body');
-                    expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                     expect(view.renderPasswordForm).toHaveBeenCalled();
                     expect($chat_body.find('form.chatroom-form').length).toBe(1);
                     expect($chat_body.find('legend').text()).toBe('This chatroom requires a password');
@@ -163,7 +162,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe('You are not on the member list of this room');
             }, converse));
 
@@ -180,7 +178,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe('You have been banned from this room');
             }, converse));
 
@@ -197,7 +194,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe('No nickname was specified');
             }, converse));
 
@@ -214,7 +210,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe('You are not allowed to create new rooms');
             }, converse));
 
@@ -231,7 +226,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe("Your nickname doesn't conform to this room's policies");
             }, converse));
 
@@ -248,7 +242,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe("Your nickname is already taken");
             }, converse));
 
@@ -265,7 +258,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe("This room does not (yet) exist");
             }, converse));
 
@@ -282,7 +274,6 @@
                 spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(converse.connection.muc.removeRoom).toHaveBeenCalled();
                 expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");
             }, converse));
         }, converse));

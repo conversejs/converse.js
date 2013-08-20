@@ -106,7 +106,7 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('minify', 'Create a new release', ['requirejs', 'cssmin']);
+    grunt.registerTask('minify', 'Create a new release', ['cssmin', 'requirejs']);
 
     grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
         grunt.task.run('jshint', 'test');

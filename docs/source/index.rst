@@ -542,40 +542,27 @@ be used.
 Minification
 ============
 
-Minifying Javascript
-====================
+Minifying Javascript and CSS
+============================
+
+Please make sure to read the section `Development`_ and that you have installed
+all development dependencies (long story short, you can run ``npm install``
+and then ``grunt fetch``).
 
 We  use `require.js`_ to keep track of *Converse.js* and its dependencies and to
 to bundle them together in a single minified file fit for deployment to a 
 production site.
 
-To use the require.js's optimization tool, you'll need Node and it's package
-manager, NPM.
-
-You can then install install require.js for Node like so:
+To minify the Javascript and CSS, run the following command:
 
 ::
 
-    npm install requirejs
+    grunt minify
 
-The minified javascript file is then created like this:
-
-::
-
-    r.js -o build.js
-
-You should now have a new minified file (the name which is specified in build.js).
-
+Javascript will be bundled and minified via `require.js`_'s optimization tool.
 You can `read more about require.js's optimizer here`_.
 
-Minifying CSS
-=============
-
-CSS can be minimized with Yahoo's yuicompressor tool:
-
-::
-
-    yui-compressor --type=css converse.css -o converse.min.css
+CSS is minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.
 
 
 ============

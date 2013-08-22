@@ -71,6 +71,12 @@
             return text.replace(re, '<a target="_blank" href="$1">$1</a>');
         };
 
+        this.log = function (txt) {
+            if (this.debug) {
+                console.log(txt);
+            }
+        };
+
         this.toISOString = function (date) {
             var pad;
             if (typeof date.toISOString !== 'undefined') {
@@ -159,7 +165,7 @@
             converse.connection.sendIQ(iq,
                         callback,
                         function () {
-                            console.log('Error while retrieving collections');
+                            converse.log('Error while retrieving collections');
                         });
         };
 
@@ -484,7 +490,7 @@
                             });
                         }, this),
                         $.proxy(function (stanza) {
-                            console.log("ChatBoxView.initialize: An error occured while fetching vcard");
+                            converse.log("ChatBoxView.initialize: An error occured while fetching vcard");
                         }, this)
                     );
                 }
@@ -695,7 +701,7 @@
                         this.addContact(jid, fullname);
                     }, this),
                     $.proxy(function (stanza) {
-                        console.log("An error occured while fetching vcard");
+                        converse.log("An error occured while fetching vcard");
                         var jid = $(stanza).attr('from');
                         this.addContact(jid, jid);
                     }, this));
@@ -941,7 +947,7 @@
                     }
                 }
                 if (!nick) { return; }
-                chatroom = converse.chatboxes.createChatBox({
+                chatroom = converse.chatboxesview.showChatBox({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -1607,16 +1613,6 @@
                 });
             },
 
-            createChatBox: function (attrs) {
-                var chatbox  = this.get(attrs.jid);
-                if (chatbox) {
-                    chatbox.trigger('show');
-                } else {
-                    chatbox = this.create(attrs);
-                }
-                return chatbox;
-            },
-
             messageReceived: function (message) {
                 var partner_jid, $message = $(message),
                     message_from = $message.attr('from');
@@ -1686,6 +1682,20 @@
                         }
                     }
                 }, this);
+            },
+
+            showChatBox: function (attrs) {
+                var chatbox  = this.model.get(attrs.jid);
+                if (chatbox) {
+                    chatbox.trigger('show');
+                } else {
+                    chatbox = this.model.create(attrs, {
+                        'error': function (model, response) {
+                            converse.log(response.responseText);
+                        }
+                    });
+                }
+                return chatbox;
             }
         });
 
@@ -1719,7 +1729,7 @@
 
             openChat: function (ev) {
                 ev.preventDefault();
-                converse.chatboxes.createChatBox({
+                converse.chatboxesview.showChatBox({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),

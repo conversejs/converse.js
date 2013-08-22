@@ -47,7 +47,7 @@
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
-        this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
+        this.bosh_service_url = ''; // The BOSH connection manager URL.
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
@@ -71,9 +71,46 @@
             return text.replace(re, '<a target="_blank" href="$1">$1</a>');
         };
 
+        this.giveFeedback = function (message, klass) {
+            $('.conn-feedback').text(message);
+            $('.conn-feedback').attr('class', 'conn-feedback');
+            if (klass) {
+                $('.conn-feedback').addClass(klass);
+            }
+        };
+
         this.log = function (txt) {
             if (this.debug) {
                 console.log(txt);
+            }
+        };
+
+        this.onConnect = function (status) {
+            if (status === Strophe.Status.CONNECTED) {
+                converse.log('Connected');
+                converse.onConnected();
+            } else if (status === Strophe.Status.DISCONNECTED) {
+                if ($button) { $button.show().siblings('span').remove(); }
+                converse.giveFeedback(__('Disconnected'), 'error');
+                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
+            } else if (status === Strophe.Status.Error) {
+                if ($button) { $button.show().siblings('span').remove(); }
+                converse.giveFeedback(__('Error'), 'error');
+            } else if (status === Strophe.Status.CONNECTING) {
+                converse.giveFeedback(__('Connecting'));
+            } else if (status === Strophe.Status.CONNFAIL) {
+                if ($button) { $button.show().siblings('span').remove(); }
+                converse.giveFeedback(__('Connection Failed'), 'error');
+            } else if (status === Strophe.Status.AUTHENTICATING) {
+                converse.giveFeedback(__('Authenticating'));
+            } else if (status === Strophe.Status.AUTHFAIL) {
+                if ($button) { $button.show().siblings('span').remove(); }
+                converse.giveFeedback(__('Authentication Failed'), 'error');
+            } else if (status === Strophe.Status.DISCONNECTING) {
+                converse.giveFeedback(__('Disconnecting'), 'error');
+            } else if (status === Strophe.Status.ATTACHED) {
+                converse.log('Attached');
+                converse.onConnected();
             }
         };
 
@@ -2062,7 +2099,7 @@
                                     });
                                 }, this),
                                 $.proxy(function (jid, fullname, img, img_type, url) {
-                                    console.log("Error while retrieving vcard");
+                                    converse.log("Error while retrieving vcard");
                                     this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
                                 }, this)
                             );
@@ -2486,33 +2523,7 @@
                     $button = $form.find('input[type=submit]');
                     $button.hide().after('<span class="spinner login-submit"/>');
                 }
-                connection.connect(jid, password, $.proxy(function (status, message) {
-                    if (status === Strophe.Status.CONNECTED) {
-                        console.log(__('Connected'));
-                        converse.onConnected(connection);
-                    } else if (status === Strophe.Status.DISCONNECTED) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Disconnected'), 'error');
-                        this.connect(null, connection.jid, connection.pass);
-                    } else if (status === Strophe.Status.Error) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Error'), 'error');
-                    } else if (status === Strophe.Status.CONNECTING) {
-                        converse.giveFeedback(__('Connecting'));
-                    } else if (status === Strophe.Status.CONNFAIL) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Connection Failed'), 'error');
-                    } else if (status === Strophe.Status.AUTHENTICATING) {
-                        converse.giveFeedback(__('Authenticating'));
-                    } else if (status === Strophe.Status.AUTHFAIL) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Authentication Failed'), 'error');
-                    } else if (status === Strophe.Status.DISCONNECTING) {
-                        converse.giveFeedback(__('Disconnecting'), 'error');
-                    } else if (status === Strophe.Status.ATTACHED) {
-                        console.log(__('Attached'));
-                    }
-                }, this));
+                connection.connect(jid, password, converse.onConnect);
             },
 
             initialize: function (cfg) {
@@ -2591,14 +2602,6 @@
             }
         };
 
-        this.giveFeedback = function (message, klass) {
-            $('.conn-feedback').text(message);
-            $('.conn-feedback').attr('class', 'conn-feedback');
-            if (klass) {
-                $('.conn-feedback').addClass(klass);
-            }
-        };
-
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
             var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
@@ -2618,8 +2621,7 @@
             this.rosterview = new this.RosterView({'model':this.roster});
         }
 
-        this.onConnected = function (connection, callback) {
-            this.connection = connection;
+        this.onConnected = function (callback) {
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
@@ -2676,14 +2678,22 @@
         if (this.show_controlbox_by_default) {
             this.toggleControlBox();
         }
+        if (this.prebind) {
+            if (!this.connection) {
+                if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
+                    this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
+                    return;
+                }
+                this.connection = new Strophe.Connection(this.bosh_service_url);
+                this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+            } else {
+                this.onConnected();
+            }
+        }
     };
     return {
         'initialize': function (settings) {
             converse.initialize(settings);
-        },
-        'onConnected': function (connection, callback) { 
-            // onConnected can only be called after initialize has been called.
-            converse.onConnected(connection, callback);
         }
     };
 }));

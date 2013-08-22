@@ -71,7 +71,6 @@ require([
             animate: false
         });
         converse.onConnected(
-            mock_connection, 
             function (converse) {
                 window.converse = converse;
                 require([

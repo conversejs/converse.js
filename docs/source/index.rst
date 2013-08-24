@@ -466,8 +466,8 @@ If set to true, debugging output will be logged to the browser console.
 fullname
 --------
 
-If you are using prebinding, you need to specify the fullname of the currently
-logged in user.
+If you are using prebinding, can specify the fullname of the currently
+logged in user, otherwise the user's vCard will be fetched.
 
 hide_muc_server
 ---------------
@@ -477,6 +477,12 @@ Default = false
 Hide the ``server`` input field of the form inside the ``Room`` panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.
+
+i18n
+----
+
+Specify the locale/language. The language must be in the ``locales`` object. Refer to
+``./locale/locales.js`` to see which locales are supported.
 
 prebind
 --------

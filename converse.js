@@ -292,18 +292,19 @@
                 };
                 this.otr = new otr.OTR(options);
                 this.otr.on('ui', $.proxy(function (msg) {
-                    console.log("message to display to the user:"+msg);
+                    this.trigger('OTRMessageReceived', msg, 'them');
                 }, this));
                 this.otr.on('io', $.proxy(function (msg) {
-                    console.log("message to display to the user:"+msg);
                     this.trigger('sendMessage', msg);
                 }, this));
                 this.otr.on('error', $.proxy(function (msg) {
-                    console.log("message to display to the user:"+msg);
+                    // XXX
+                    console.log("ERROR: message to display to the user:"+msg);
                 }, this));
+                this.otr.sendQueryMsg();
             },
 
-            messageReceived: function (message) {
+            createMessage: function (message) {
                 var $message = $(message),
                     body = converse.autoLink($message.children('body').text()),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
@@ -342,6 +343,32 @@
                         message: body
                     });
                 }
+            },
+
+            messageReceived: function (message) {
+                var $body = $(message).children('body');
+                var text = ($body.length > 0 ? converse.autoLink($body.text()) : undefined);
+                if (text) {
+                    if (this.otr) {
+                        this.otr.receiveMsg(text);
+                    } else {
+                        var match = text.match(/^\?OTR(.*\?)/);
+                        if (match) {
+                            // They want to initiate OTR
+                            if (!this.otr) {
+                                // FIXME: this isn't yet correct...
+                                this.initiateOTR();
+                            }
+                            this.otr.receiveMsg(match[0]);
+                        } else {
+                            // Normal unencrypted message.
+                            this.createMessage(message);
+                        }
+                    }
+                } else {
+                    // No <body>, so probably typing notification
+                    this.createMessage(message);
+                }
             }
         });
 
@@ -377,6 +404,8 @@
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change', this.onChange, this);
                 this.model.on('sendMessage', this.onMessageSend, this);
+                this.model.on('sendOTRMessage', this.showOTRMessage, this);
+                this.model.on('OTRMessageReceived', this.showOTRMessage, this);
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxesview.$el);
                 this.render().show().model.messages.fetch({add: true});
@@ -409,12 +438,28 @@
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''
                     }));
+                this.scrollDown();
             },
 
             insertStatusNotification: function (message, replace) {
                 var $chat_content = this.$el.find('.chat-content');
                 $chat_content.find('div.chat-event').remove().end()
                     .append($('<div class="chat-event"></div>').text(message));
+                this.scrollDown();
+            },
+
+            showOTRMessage:  function (text, sender) {
+                var username = sender === 'me' && sender || this.model.get('fullname');
+                var $el = this.$el.find('.chat-content');
+                $el.find('div.chat-event').remove();
+                $el.append(
+                    this.message_template({
+                        'sender': sender,
+                        'time': (new Date()).toTimeString().substring(0,5),
+                        'message': text,
+                        'username': username,
+                        'extra_classes': ''
+                    }));
                 this.scrollDown();
             },
 
@@ -493,19 +538,33 @@
                             __('...this might take a few seconds.')
                             ];
                         this.addHelpMessages(msgs);
-                        var privKey = this.model.getPrivateKey();
-                        msgs = [
-                            __('Private key generated.')
-                            ];
-                        this.addHelpMessages(msgs);
-                        this.model.initiateOTR(privKey);
+                        setTimeout($.proxy(function () {
+                            var privKey = this.model.getPrivateKey();
+                            msgs = [
+                                __('Private key generated.')
+                                ];
+                            this.addHelpMessages(msgs);
+                            this.model.initiateOTR(privKey);
+                        }, this));
                         return;
+                    } else if (match[1] === "endotr") {
+                        if (this.model.otr) {
+                            this.model.otr.endOtr();
+                        }
                     }
                 }
                 if (this.model.otr) {
                     this.model.otr.sendMsg(text);
+                    this.model.trigger('sendOTRMessage', text, 'me');
                 }
                 else {
+                    // We only save unencrypted messages.
+                    this.model.messages.create({
+                        fullname: converse.xmppstatus.get('fullname')||converse.bare_jid,
+                        sender: 'me',
+                        time: converse.toISOString(new Date()),
+                        message: text
+                    });
                     this.model.trigger('sendMessage', text);
                 }
             },
@@ -528,13 +587,6 @@
 
                 converse.connection.send(message);
                 converse.connection.send(forwarded);
-                // Add the new message
-                this.model.messages.create({
-                    fullname: converse.xmppstatus.get('fullname')||converse.bare_jid,
-                    sender: 'me',
-                    time: converse.toISOString(new Date()),
-                    message: text
-                });
             },
 
             keyPressed: function (ev) {
@@ -1666,7 +1718,6 @@
                                     'fullname': sender,
                                     'time': converse.toISOString(message_datetime)
                                 });
-                this.scrollDown();
                 return true;
             },
 

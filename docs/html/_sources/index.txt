@@ -188,15 +188,17 @@ Jack Moffitt has a great `blogpost`_ about this and even provides an `example Dj
 .. Note::
    If you want to enable single session support, make sure to pass **prebind: true**
    when you call **converse.initialize** (see ./index.html).
+   Additionally you need to pass in valid **jid**, **sid**, **rid** and
+   **bosh_service_url** values.
 
 When you authenticate to the XMPP server on your backend, you'll receive two
 tokens, RID (request ID) and SID (session ID).
 
 These tokens then need to be passed back to the javascript running in your
-browser, where you will need them attach to the existing session.
+browser, where you will need them to attach to the existing session.
 
 You can embed the RID and SID tokens in your HTML markup or you can do an
-XMLHttpRequest call to you server and ask it to return them for you.
+XMLHttpRequest call to your server and ask it to return them for you.
 
 Below is one example of how this could work. An Ajax call is made to the
 relative URL **/prebind** and it expects to receive JSON data back.
@@ -204,26 +206,19 @@ relative URL **/prebind** and it expects to receive JSON data back.
 :: 
 
     $.getJSON('/prebind', function (data) {
-            var connection = new Strophe.Connection(converse.bosh_service_url);
-            connection.attach(data.jid, data.sid, data.rid, function (status) {
-                if ((status === Strophe.Status.ATTACHED) || (status === Strophe.Status.CONNECTED)) {
-                    converse.onConnected(connection)
-                } 
-            });
-        }
+        converse.initialize({
+            prebind: true,
+            bosh_service_url: data.bosh_service_url,
+            jid: data.jid,
+            sid: data.sid,
+            rid: data.rid
+        });
     );
 
 **Here's what's happening:**
 
-The JSON data contains the user's JID (jabber ID), RID and SID. The URL to the
-BOSH connection manager is already set as a configuration setting on the
-*converse* object (see ./main.js), so we can reuse it from there.
-
-A new Strophe.Connection object is instantiated and then *attach* is called with
-the user's JID, the necessary tokens and a callback function.
-
-In the callback function, you call *converse.onConnected* together with the
-connection object.
+The JSON data contains the user's JID (jabber ID), RID, SID and the URL to the
+BOSH connection manager. 
 
 
 Facebook integration
@@ -471,22 +466,28 @@ If set to true, debugging output will be logged to the browser console.
 fullname
 --------
 
-If you are using prebinding, you need to specify the fullname of the currently
-logged in user.
+If you are using prebinding, can specify the fullname of the currently
+logged in user, otherwise the user's vCard will be fetched.
 
 hide_muc_server
 ---------------
 
-Default = False
+Default = false
 
 Hide the ``server`` input field of the form inside the ``Room`` panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.
 
+i18n
+----
+
+Specify the locale/language. The language must be in the ``locales`` object. Refer to
+``./locale/locales.js`` to see which locales are supported.
+
 prebind
 --------
 
-Default = False
+Default = false
 
 Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).
@@ -494,26 +495,19 @@ already authenticated (usually on the backend before page load).
 This is useful when you don't want to render the login form on the chat control
 box with each page load.
 
-When set to true, you'll need to make sure that the onConnected method is 
-called, and passed to it a Strophe connection object.
+For prebinding to work, your backend server must authenticate for you, and 
+then return a JID (jabber ID), SID (session ID) and RID (Request ID).
 
-Besides requiring the back-end to authenticate you, you'll also 
-have to write a Javascript snippet to attach to the set up connection::
+If you set ``prebind`` to ``true``, you have to make sure to also pass in these
+values as ``jid``, ``sid``, ``rid``.
 
-    $.JSON({
-        'url': 'mysite.com/xmpp-authenticate',
-        'success': function (data) {
-            connection = new Strophe.Connection(bosh_service_url);
-            connection.attach(data.jid, data.sid, data.rid, converse.onConnected);
-        }
+Additionally, you have to specify ``bosh_service_url``.
 
-The backend must authenticate for you, and then return a SID (session ID) and
-RID (Request ID), which you use when you attach to the connection.
 
 show_controlbox_by_default
 --------------------------
 
-Default = False
+Default = false
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.

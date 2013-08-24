@@ -5,8 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
-    <!-- <script src="converse.min.js"></script> -->
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
     <script data-main="main" src="components/requirejs/require.js"></script>
     <title>Converse.js</title>
 </head>
@@ -164,7 +163,7 @@
             auto_subscribe: false,
             bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
             hide_muc_server: false,
-            i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
+            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
             prebind: false,
             show_controlbox_by_default: true,
             xhr_user_search: false,

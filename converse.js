@@ -2517,13 +2517,11 @@
                 '<input type="text" id="bosh_service_url">'),
 
             connect: function ($form, jid, password) {
-                var button = null,
-                    connection = new Strophe.Connection(converse.bosh_service_url);
                 if ($form) {
-                    $button = $form.find('input[type=submit]');
-                    $button.hide().after('<span class="spinner login-submit"/>');
+                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                 }
-                connection.connect(jid, password, converse.onConnect);
+                converse.connection = new Strophe.Connection(converse.bosh_service_url);
+                converse.connection.connect(jid, password, converse.onConnect);
             },
 
             initialize: function (cfg) {

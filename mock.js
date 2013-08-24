@@ -23,7 +23,8 @@
             'unauthorize': function () {},
             'get': function () {},
             'subscribe': function () {},
-            'registerCallback': function () {}
+            'registerCallback': function () {},
+            'remove': function (jid, callback) { callback(); }
         },
         'vcard': {
             'get': function (callback, jid) {

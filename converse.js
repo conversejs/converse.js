@@ -42,20 +42,40 @@
     }
 }(this, function ($, _, crypto, otr, console) {
     var converse = {};
-    converse.initialize = function (settings) {
+    converse.initialize = function (settings, callback) {
         // Default values
         var converse = this;
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
-        this.bosh_service_url = ''; // The BOSH connection manager URL. Required if you are not prebinding.
+        this.bosh_service_url = undefined; // The BOSH connection manager URL.
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.xhr_user_search = false;
-        _.extend(this, settings);
+        this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
+        this.callback = callback || function () {};
+
+        // Allow only the whitelisted settings attributes to be overwritten,
+        // nothing else.
+        whitelist = [
+            'animate',
+            'auto_list_rooms',
+            'auto_subscribe',
+            'bosh_service_url',
+            'fullname',
+            'debug',
+            'hide_muc_server',
+            'i18n',
+            'prebind',
+            'show_controlbox_by_default',
+            'xhr_user_search',
+            'connection',
+            'testing'
+        ];
+        _.extend(this, _.pick(settings, whitelist));
 
         var __ = $.proxy(function (str) {
             var t = this.i18n.translate(str);
@@ -70,6 +90,49 @@
             // Convert URLs into hyperlinks
             var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
             return text.replace(re, '<a target="_blank" href="$1">$1</a>');
+        };
+
+        this.giveFeedback = function (message, klass) {
+            $('.conn-feedback').text(message);
+            $('.conn-feedback').attr('class', 'conn-feedback');
+            if (klass) {
+                $('.conn-feedback').addClass(klass);
+            }
+        };
+
+        this.log = function (txt) {
+            if (this.debug) {
+                console.log(txt);
+            }
+        };
+
+        this.onConnect = function (status) {
+            if (status === Strophe.Status.CONNECTED) {
+                converse.log('Connected');
+                converse.onConnected();
+            } else if (status === Strophe.Status.DISCONNECTED) {
+                if ($button) { $button.show().siblings('span').remove(); }
+                converse.giveFeedback(__('Disconnected'), 'error');
+                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
+            } else if (status === Strophe.Status.Error) {
+                if ($button) { $button.show().siblings('span').remove(); }
+                converse.giveFeedback(__('Error'), 'error');
+            } else if (status === Strophe.Status.CONNECTING) {
+                converse.giveFeedback(__('Connecting'));
+            } else if (status === Strophe.Status.CONNFAIL) {
+                converse.chatboxesview.views.controlbox.trigger('connection-fail');
+                converse.giveFeedback(__('Connection Failed'), 'error');
+            } else if (status === Strophe.Status.AUTHENTICATING) {
+                converse.giveFeedback(__('Authenticating'));
+            } else if (status === Strophe.Status.AUTHFAIL) {
+                converse.chatboxesview.views.controlbox.trigger('auth-fail');
+                converse.giveFeedback(__('Authentication Failed'), 'error');
+            } else if (status === Strophe.Status.DISCONNECTING) {
+                converse.giveFeedback(__('Disconnecting'), 'error');
+            } else if (status === Strophe.Status.ATTACHED) {
+                converse.log('Attached');
+                converse.onConnected();
+            }
         };
 
         this.toISOString = function (date) {
@@ -158,10 +221,10 @@
                         .t('1');
 
             converse.connection.sendIQ(iq,
-                        callback,
-                        function () {
-                            console.log('Error while retrieving collections');
-                        });
+                callback,
+                function () {
+                    converse.log('Error while retrieving collections');
+                });
         };
 
         this.collections.getLastMessages = function (jid, callback) {
@@ -556,7 +619,7 @@
                             });
                         }, this),
                         $.proxy(function (stanza) {
-                            console.log("ChatBoxView.initialize: An error occured while fetching vcard");
+                            converse.log("ChatBoxView.initialize: An error occured while fetching vcard");
                         }, this)
                     );
                 }
@@ -755,7 +818,7 @@
                         this.addContact(jid, fullname);
                     }, this),
                     $.proxy(function (stanza) {
-                        console.log("An error occured while fetching vcard");
+                        converse.log("An error occured while fetching vcard");
                         var jid = $(stanza).attr('from');
                         this.addContact(jid, jid);
                     }, this));
@@ -1002,7 +1065,7 @@
                     }
                 }
                 if (!nick) { return; }
-                chatroom = converse.chatboxes.createChatBox({
+                chatroom = converse.chatboxesview.showChatBox({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -1098,7 +1161,7 @@
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
                     this.$el.html(this.template(this.model.toJSON()));
-                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes')});
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes'), 'model': this});
                     this.loginpanel.render();
                 } else if (!this.contactspanel) {
                     this.$el.html(this.template(this.model.toJSON()));
@@ -1668,16 +1731,6 @@
                 });
             },
 
-            createChatBox: function (attrs) {
-                var chatbox  = this.get(attrs.jid);
-                if (chatbox) {
-                    chatbox.trigger('show');
-                } else {
-                    chatbox = this.create(attrs);
-                }
-                return chatbox;
-            },
-
             messageReceived: function (message) {
                 var partner_jid, $message = $(message),
                     message_from = $message.attr('from');
@@ -1747,6 +1800,20 @@
                         }
                     }
                 }, this);
+            },
+
+            showChatBox: function (attrs) {
+                var chatbox  = this.model.get(attrs.jid);
+                if (chatbox) {
+                    chatbox.trigger('show');
+                } else {
+                    chatbox = this.model.create(attrs, {
+                        'error': function (model, response) {
+                            converse.log(response.responseText);
+                        }
+                    });
+                }
+                return chatbox;
             }
         });
 
@@ -1780,7 +1847,7 @@
 
             openChat: function (ev) {
                 ev.preventDefault();
-                converse.chatboxes.createChatBox({
+                converse.chatboxesview.showChatBox({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),
@@ -2122,7 +2189,7 @@
                                     });
                                 }, this),
                                 $.proxy(function (jid, fullname, img, img_type, url) {
-                                    console.log("Error while retrieving vcard");
+                                    converse.log("Error while retrieving vcard");
                                     this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
                                 }, this)
                             );
@@ -2544,44 +2611,26 @@
                 '<input type="text" id="bosh_service_url">'),
 
             connect: function ($form, jid, password) {
-                var button = null,
-                    connection = new Strophe.Connection(converse.bosh_service_url);
                 if ($form) {
-                    $button = $form.find('input[type=submit]');
-                    $button.hide().after('<span class="spinner login-submit"/>');
+                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                 }
-                connection.connect(jid, password, $.proxy(function (status, message) {
-                    if (status === Strophe.Status.CONNECTED) {
-                        console.log(__('Connected'));
-                        converse.onConnected(connection);
-                    } else if (status === Strophe.Status.DISCONNECTED) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Disconnected'), 'error');
-                        this.connect(null, connection.jid, connection.pass);
-                    } else if (status === Strophe.Status.Error) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Error'), 'error');
-                    } else if (status === Strophe.Status.CONNECTING) {
-                        converse.giveFeedback(__('Connecting'));
-                    } else if (status === Strophe.Status.CONNFAIL) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Connection Failed'), 'error');
-                    } else if (status === Strophe.Status.AUTHENTICATING) {
-                        converse.giveFeedback(__('Authenticating'));
-                    } else if (status === Strophe.Status.AUTHFAIL) {
-                        if ($button) { $button.show().siblings('span').remove(); }
-                        converse.giveFeedback(__('Authentication Failed'), 'error');
-                    } else if (status === Strophe.Status.DISCONNECTING) {
-                        converse.giveFeedback(__('Disconnecting'), 'error');
-                    } else if (status === Strophe.Status.ATTACHED) {
-                        console.log(__('Attached'));
-                    }
-                }, this));
+                converse.connection = new Strophe.Connection(converse.bosh_service_url);
+                converse.connection.connect(jid, password, converse.onConnect);
+            },
+
+            showConnectButton: function () {
+                var $form = this.$el.find('#converse-login');
+                var $button = $form.find('input[type=submit]')
+                if ($button.length) {
+                    $button.show().siblings('span').remove();
+                }
             },
 
             initialize: function (cfg) {
                 cfg.$parent.append(this.$el.html(this.template()));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                this.model.on('connection-fail', function () { this.showConnectButton(); }, this);
+                this.model.on('auth-fail', function () { this.showConnectButton(); }, this);
             },
 
             render: function () {
@@ -2655,14 +2704,6 @@
             }
         };
 
-        this.giveFeedback = function (message, klass) {
-            $('.conn-feedback').text(message);
-            $('.conn-feedback').attr('class', 'conn-feedback');
-            if (klass) {
-                $('.conn-feedback').addClass(klass);
-            }
-        };
-
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
             var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
@@ -2682,8 +2723,7 @@
             this.rosterview = new this.RosterView({'model':this.roster});
         }
 
-        this.onConnected = function (connection, callback) {
-            this.connection = connection;
+        this.onConnected = function () {
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
@@ -2722,8 +2762,10 @@
                     this.windowState = e.type;
                 },this));
                 this.giveFeedback(__('Online Contacts'));
-                if (callback) {
-                    callback(this);
+                if (this.testing) {
+                    this.callback(this);
+                } else  {
+                    this.callback();
                 }
             }, this));
         };
@@ -2737,17 +2779,21 @@
                 e.preventDefault(); this.toggleControlBox();
             }, this)
         );
-        if (this.show_controlbox_by_default) {
-            this.toggleControlBox();
+        if ((this.prebind) && (!this.connection)) {
+            if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
+                this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
+                return;
+            }
+            this.connection = new Strophe.Connection(this.bosh_service_url);
+            this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+        } else if (this.connection) {
+            this.onConnected();
         }
+        if (this.show_controlbox_by_default) { this.showControlBox(); }
     };
     return {
-        'initialize': function (settings) {
-            converse.initialize(settings);
-        },
-        'onConnected': function (connection, callback) { 
-            // onConnected can only be called after initialize has been called.
-            converse.onConnected(connection, callback);
+        'initialize': function (settings, callback) {
+            converse.initialize(settings, callback);
         }
     };
 }));

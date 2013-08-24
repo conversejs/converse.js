@@ -68,37 +68,35 @@ require([
             prebind: false,
             xhr_user_search: false,
             auto_subscribe: false,
-            animate: false
+            animate: false,
+            connection: mock_connection,
+            testing: true
+        }, function (converse) {
+            window.converse = converse;
+            require([
+                "jasmine-console-reporter",
+                "jasmine-junit-reporter",
+                "spec/MainSpec",
+                "spec/ChatRoomSpec"
+            ], function () {
+                // Jasmine stuff
+                var jasmineEnv = jasmine.getEnv();
+                if (/PhantomJS/.test(navigator.userAgent)) {
+                    jasmineEnv.addReporter(new jasmine.TrivialReporter());
+                    jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
+                    jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                    jasmineEnv.updateInterval = 0;
+                } else {
+                    var htmlReporter = new jasmine.HtmlReporter();
+                    jasmineEnv.addReporter(htmlReporter);
+                    jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                    jasmineEnv.specFilter = function(spec) {
+                        return htmlReporter.specFilter(spec);
+                    };
+                    jasmineEnv.updateInterval = 200;
+                }
+                jasmineEnv.execute();
+            });
         });
-        converse.onConnected(
-            mock_connection, 
-            function (converse) {
-                window.converse = converse;
-                require([
-                    "jasmine-console-reporter",
-                    "jasmine-junit-reporter",
-                    "spec/MainSpec",
-                    "spec/ChatRoomSpec"
-                ], function () {
-                    // Jasmine stuff
-                    var jasmineEnv = jasmine.getEnv();
-                    if (/PhantomJS/.test(navigator.userAgent)) {
-                        jasmineEnv.addReporter(new jasmine.TrivialReporter());
-                        jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
-                        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-                        jasmineEnv.updateInterval = 0;
-                    } else {
-                        var htmlReporter = new jasmine.HtmlReporter();
-                        jasmineEnv.addReporter(htmlReporter);
-                        jasmineEnv.addReporter(new jasmine.ConsoleReporter());
-                        jasmineEnv.specFilter = function(spec) {
-                            return htmlReporter.specFilter(spec);
-                        };
-                        jasmineEnv.updateInterval = 200;
-                    }
-                    jasmineEnv.execute();
-                });
-            }
-        );
     }
 );

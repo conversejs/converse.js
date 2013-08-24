@@ -41,7 +41,7 @@
     }
 }(this, function ($, _, console) {
     var converse = {};
-    converse.initialize = function (settings) {
+    converse.initialize = function (settings, callback) {
         // Default values
         var converse = this;
         this.animate = true;
@@ -54,6 +54,8 @@
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.xhr_user_search = false;
+        this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
+        this.callback = callback || function () {};
 
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
@@ -68,7 +70,9 @@
             'i18n',
             'prebind',
             'show_controlbox_by_default',
-            'xhr_user_search'
+            'xhr_user_search',
+            'connection',
+            'testing'
         ];
         _.extend(this, _.pick(settings, whitelist));
 
@@ -216,10 +220,10 @@
                         .t('1');
 
             converse.connection.sendIQ(iq,
-                        callback,
-                        function () {
-                            converse.log('Error while retrieving collections');
-                        });
+                callback,
+                function () {
+                    converse.log('Error while retrieving collections');
+                });
         };
 
         this.collections.getLastMessages = function (jid, callback) {
@@ -2635,7 +2639,7 @@
             this.rosterview = new this.RosterView({'model':this.roster});
         }
 
-        this.onConnected = function (callback) {
+        this.onConnected = function () {
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
@@ -2674,8 +2678,10 @@
                     this.windowState = e.type;
                 },this));
                 this.giveFeedback(__('Online Contacts'));
-                if (callback) {
-                    callback(this);
+                if (this.testing) {
+                    this.callback(this);
+                } else  {
+                    this.callback();
                 }
             }, this));
         };
@@ -2689,23 +2695,21 @@
                 e.preventDefault(); this.toggleControlBox();
             }, this)
         );
-        if (this.prebind) {
-            if (!this.connection) {
-                if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
-                    this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
-                    return;
-                }
-                this.connection = new Strophe.Connection(this.bosh_service_url);
-                this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
-            } else {
-                this.onConnected();
+        if ((this.prebind) && (!this.connection)) {
+            if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
+                this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
+                return;
             }
+            this.connection = new Strophe.Connection(this.bosh_service_url);
+            this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+        } else if (this.connection) {
+            this.onConnected();
         }
         if (this.show_controlbox_by_default) { this.showControlBox(); }
     };
     return {
-        'initialize': function (settings) {
-            converse.initialize(settings);
+        'initialize': function (settings, callback) {
+            converse.initialize(settings, callback);
         }
     };
 }));

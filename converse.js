@@ -2673,9 +2673,6 @@
                 e.preventDefault(); this.toggleControlBox();
             }, this)
         );
-        if (this.show_controlbox_by_default) {
-            this.toggleControlBox();
-        }
         if (this.prebind) {
             if (!this.connection) {
                 if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
@@ -2688,6 +2685,7 @@
                 this.onConnected();
             }
         }
+        if (this.show_controlbox_by_default) { this.showControlBox(); }
     };
     return {
         'initialize': function (settings) {

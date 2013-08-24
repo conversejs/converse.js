@@ -151,6 +151,7 @@ ul.participant-list li.moderator {
     font-size: 13px;
     color: rgb(79, 79, 79);
     height:193px;
+    width: 199px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;

@@ -119,12 +119,12 @@
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.CONNFAIL) {
-                if ($button) { $button.show().siblings('span').remove(); }
+                converse.chatboxesview.views.controlbox.trigger('connection-fail');
                 converse.giveFeedback(__('Connection Failed'), 'error');
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                if ($button) { $button.show().siblings('span').remove(); }
+                converse.chatboxesview.views.controlbox.trigger('auth-fail');
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
@@ -1102,7 +1102,7 @@
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
                     this.$el.html(this.template(this.model.toJSON()));
-                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes')});
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes'), 'model': this});
                     this.loginpanel.render();
                 } else if (!this.contactspanel) {
                     this.$el.html(this.template(this.model.toJSON()));
@@ -2559,9 +2559,19 @@
                 converse.connection.connect(jid, password, converse.onConnect);
             },
 
+            showConnectButton: function () {
+                var $form = this.$el.find('#converse-login');
+                var $button = $form.find('input[type=submit]')
+                if ($button.length) {
+                    $button.show().siblings('span').remove();
+                }
+            },
+
             initialize: function (cfg) {
                 cfg.$parent.append(this.$el.html(this.template()));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                this.model.on('connection-fail', function () { this.showConnectButton(); }, this);
+                this.model.on('auth-fail', function () { this.showConnectButton(); }, this);
             },
 
             render: function () {

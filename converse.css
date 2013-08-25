@@ -78,7 +78,7 @@ span.spinner.hor_centered {
     font-size: 100%;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
-    padding: 3px 0 3px 7px;
+    padding: 3px 0 0 3px;
 }
 
 .chat-head-chatbox {
@@ -91,7 +91,7 @@ span.spinner.hor_centered {
 }
 
 .chatroom .chat-body {
-    height: 272px;
+    height: 274px;
     background-color: white;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -110,12 +110,12 @@ span.spinner.hor_centered {
 
 .chatroom .participants {
     float: left;
-    width: auto;
-    height: 272px;
+    height: 274px;
     background-color: white;
     overflow: auto;
     border-left: 1px solid #AAA;
     max-width: 99px;
+    border-bottom-right-radius: 4px;
 }
 
 .participants ul.participant-list li {
@@ -124,17 +124,13 @@ span.spinner.hor_centered {
     white-space: nowrap;
     display: block;
     font-size: 12px;
+    font-weight: bold;
     padding: 0.5em 0 0 0.5em;
     cursor: default;
 }
 
 ul.participant-list li.moderator {
-    color: #FE0007;
-}
-
-.chatroom form.sendXMPPMessage {
-    -webkit-border-bottom-right-radius: 0;
-    border-bottom-right-radius: 0;
+    color: #8f2831;
 }
 
 .chatroom .participant-list {
@@ -148,10 +144,11 @@ ul.participant-list li.moderator {
 }
 
 .chat-content {
+    position: relative;
     padding: 0.3em;
     font-size: 13px;
     color: rgb(79, 79, 79);
-    height:193px;
+    height:180px;
     width: 190px;
     overflow-y:auto;
     border: 0;
@@ -159,19 +156,8 @@ ul.participant-list li.moderator {
     line-height: 1.3em;
 }
 
-.chat-textarea {
-    border: 0;
-    height: 50px;
-}
-
-.chat-textarea-chatbox-selected {
-    border: 1px solid #578308;
-    margin:0;
-}
-
-.chat-textarea-chatroom-selected {
-    border: 2px solid #2D617A;
-    margin:0;
+.chatroom .chat-content {
+    height:200px;
 }
 
 .chat-info {
@@ -196,7 +182,7 @@ ul.participant-list li.moderator {
 }
 
 .chat-message-them {
-    color: #F62817;
+    color: #8f2831;
 }
 
 .chat-message-me {
@@ -746,7 +732,7 @@ form.sendXMPPMessage {
     background: white;
     border: 0;
     border-top: 1px solid #BBB;
-    padding: 0.5em;
+    padding: 0;
     margin: 0;
     position: relative;
     -webkit-border-radius: 4px;
@@ -757,13 +743,78 @@ form.sendXMPPMessage {
     background-clip: padding-box;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    height: 54px;
+    height: 85px;
+    width: 200px;
+}
+
+.chatroom form.sendXMPPMessage {
+    -webkit-border-bottom-right-radius: 0;
+    border-bottom-right-radius: 0;
+    height: 65px;
+}
+
+.chat-textarea {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border: 0;
+    width: 100%;
+    padding: 3px;
+    border-radius: 4px;
+    resize: none;
+    height: 65px;
+}
+
+ul.chat-toolbar {
+    font-size: 14px;
+    margin: 0;
+    padding: 0 5px 0 0;
+    float: right;
+    display: inline-block;
+    height: 20px;
+}
+
+.chat-toolbar-text {
+    font-size: 12px;
+}
+
+.not-private {
+    color: #8f2831;
+}
+
+.unverified {
+    color: #cf5300;
+}
+
+.private {
+    color: #4B7003
+}
+
+ul.chat-toolbar li {
+    display: inline-block;
+    list-style: none;
+    padding: 0 3px 0 3px;
+}
+
+ul.chat-toolbar li:hover {
+    cursor: pointer; 
+    color: rgb(39, 39, 39);
 }
 
 form#set-custom-xmpp-status {
     float: left;
     padding: 0;
 }
+
+.chat-textarea-chatbox-selected {
+    border: 1px solid #578308;
+    margin:0;
+}
+
+.chat-textarea-chatroom-selected {
+    border: 2px solid #2D617A;
+    margin:0;
+}
+
 
 #set-custom-xmpp-status button {
     padding: 1px 2px 1px 1px;

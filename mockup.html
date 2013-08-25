@@ -200,18 +200,25 @@
             <p></p>
         </div>
         <div class="chat-content">
+            <div class="chat-info"><strong>/help</strong>:Show this menu</div>
+            <div class="chat-info"><strong>/me</strong>:Write in the third person</div>
             <div class="chat-message">
-                <span class="chat-message-me">19:39 me:&nbsp;</span>
+                <span class="chat-message-me">09:35 me:&nbsp;</span>
                 <span class="chat-message-content">Hello world</span>
             </div>
             <div class="chat-message ">
-                <span class="chat-message-them">15:45 Benedict-John:&nbsp;</span>
+                <span class="chat-message-them">19:25 Benedict-John:&nbsp;</span>
                 <span class="chat-message-content">Dagsê</span>
             </div>
             <div class="chat-message">
                 <span class="chat-message-me">19:39 me:&nbsp;</span>
                 <span class="chat-message-content">This is a relatively long message to check that wrapping works as expected.</span>
             </div>
+            <div class="chat-message">
+                <span class="chat-message-me">19:42 me:&nbsp;</span>
+                <span class="chat-message-content">Supercalifragilisticexpialidociousstillnotlongenough</span>
+            </div>
+            <div class="chat-event">JC Brand is busy</div>
         </div>
         <form class="sendXMPPMessage" action="" method="post">
             <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
@@ -235,9 +242,18 @@
                         <span class="chat-message-content">leia: hi :)</span>
                     </div>
                     <div class="chat-message ">
-                        <span class="chat-message-me">19:40 me:&nbsp;</span>
+                        <span class="chat-message-room">19:40 leia:&nbsp;</span>
                         <span class="chat-message-content">
                             I'll be gone for a while, will be back in about an hour</span>
+                    </div>
+                    <div class="chat-message ">
+                        <span class="chat-message-room">19:40 Obi-wan Kenobi, Jedi Master:&nbsp;</span>
+                        <span class="chat-message-content">
+                            I'll be gone for a while, will be back in about an hour</span>
+                    </div>
+                    <div class="chat-message">
+                        <span class="chat-message-me">19:42 me:&nbsp;</span>
+                        <span class="chat-message-content">Supercalifragilisticexpialidociousstillnotlongenough</span>
                     </div>
                 </div>
                 <form class="sendXMPPMessage" action="" method="post">
@@ -246,7 +262,8 @@
             </div>
             <div class="participants">
                 <ul class="participant-list">
-                    <li class="participant" title="This user can send messages in this room">jabberthehut</li>
+                    <li class="participant" title="This user can send messages in this room">Obi-wan Kenobi, Jedi Master</li>
+                    <li class="participant" title="This user can send messages in this room">jabber the hut</li>
                     <li class="participant" title="This user can send messages in this room">leia</li>
                     <li class="moderator" title="This user is a moderator">luke</li>
                 </ul>

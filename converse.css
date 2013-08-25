@@ -115,6 +115,7 @@ span.spinner.hor_centered {
     background-color: white;
     overflow: auto;
     border-left: 1px solid #AAA;
+    max-width: 99px;
 }
 
 .participants ul.participant-list li {
@@ -188,6 +189,10 @@ ul.participant-list li.moderator {
     display: inline-block;
     float: left;
     padding-right: 3px;
+}
+
+.chat-message-content {
+    word-wrap: break-word;
 }
 
 .chat-message-them {

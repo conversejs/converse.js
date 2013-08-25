@@ -124,12 +124,13 @@ span.spinner.hor_centered {
     white-space: nowrap;
     display: block;
     font-size: 12px;
+    font-weight: bold;
     padding: 0.5em 0 0 0.5em;
     cursor: default;
 }
 
 ul.participant-list li.moderator {
-    color: #FE0007;
+    color: #8f2831;
 }
 
 .chatroom .participant-list {
@@ -181,7 +182,7 @@ ul.participant-list li.moderator {
 }
 
 .chat-message-them {
-    color: #F62817;
+    color: #8f2831;
 }
 
 .chat-message-me {
@@ -770,6 +771,22 @@ ul.chat-toolbar {
     float: right;
     display: inline-block;
     height: 20px;
+}
+
+.chat-toolbar-text {
+    font-size: 12px;
+}
+
+.not-private {
+    color: #8f2831;
+}
+
+.unverified {
+    color: #cf5300;
+}
+
+.private {
+    color: #4B7003
 }
 
 ul.chat-toolbar li {

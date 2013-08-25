@@ -225,20 +225,20 @@
             </div>
         </div>
         <form class="sendXMPPMessage" action="" method="post">
-            <ul class="chat-toolbar">
+            <ul class="chat-toolbar no-text-select">
                 <!--
                 <li class="icon-happy" title="Insert a smilery"></li>
                 <li class="icon-camera-2" title="Enable video chat"></li>
                 <li class="icon-newspaper" title="Fetch and show this user's vCard"></li>
                 -->
-                <li class="toggle-otr click-nav not-private" title="Turn on 'off-the-record' chat encryption">
+                <li class="toggle-otr not-private" title="Turn on 'off-the-record' chat encryption">
                     <span class="chat-toolbar-text">Not private</span>
                     <span class="icon-unlocked"></span>
                     <ul>
                         <li><a href="#">Start private conversation</a></li>
                         <li><a href="#">End private conversation</a></li>
                         <li><a href="#">Authenticate buddy</a></li>
-                        <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php">What's this?</a></li>
+                        <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What's this?</a></li>
                     </ul>
                 </li>
             </ul>
@@ -365,13 +365,13 @@ $(document).ready(function () {
 
     $(function() {
         // Clickable Dropdown
-        $('.click-nav').click(function(e) {
-            $('.click-nav ul').slideToggle(200);
+        $('.toggle-otr').click(function(e) {
+            $('.toggle-otr ul').slideToggle(200);
             e.stopPropagation();
         });
         $(document).click(function() {
-            if ($('.click-nav ul').is(':visible')) {
-                $('.click-nav ul', this).slideUp();
+            if ($('.toggle-otr ul').is(':visible')) {
+                $('.toggle-otr ul', this).slideUp(200);
             }
         });
     });

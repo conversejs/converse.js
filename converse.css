@@ -8,6 +8,15 @@
 
 @import url("fonticons/style.css");
 
+.no-text-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 #collective-xmpp-chat-data {
   color: rgb(79, 79, 79);
 }
@@ -777,8 +786,40 @@ ul.chat-toolbar {
     float: right;
 }
 
+.chat-toolbar .toggle-otr ul {
+	display: none;
+    font-size:12px;
+    position: absolute;
+    top: 20px;
+    right: 0;
+    background: #fff;
+    box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.4);
+}
+
+.chat-toolbar .toggle-otr ul li {
+	position: relative;
+	list-style: none;
+	cursor: pointer;
+    display: block;
+    z-index: 99;
+}
+
+.chat-toolbar .toggle-otr ul li:hover {
+    background-color: #eee;
+}
+
+.chat-toolbar .toggle-otr ul li a {
+	transition:background-color 0.2s ease-in-out;
+	-webkit-transition:background-color 0.2s ease-in-out;
+	-moz-transition:background-color 0.2s ease-in-out;
+	display: block;
+	padding: 1px;
+	text-decoration: none;
+}
+
 .chat-toolbar-text {
     font-size: 12px;
+    padding-right: 3px;
 }
 
 .not-private a,
@@ -893,36 +934,5 @@ form.add-xmpp-contact input {
 .xmpp-status-menu li a span {
     padding: 0 5px 0 5px;
     color: rgb(79, 79, 79);
-}
-
-.chatbox .click-nav ul {
-	display: none;
-    font-size:12px;
-    position: absolute;
-    top: 20px;
-    right: 0;
-    background: #fff;
-    box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.4);
-}
-
-.chatbox .click-nav ul li {
-	position: relative;
-	list-style: none;
-	cursor: pointer;
-    display: block;
-    z-index: 99;
-}
-
-.chatbox .click-nav ul li:hover {
-    background-color: #eee;
-}
-
-.chatbox .click-nav ul li a {
-	transition:background-color 0.2s ease-in-out;
-	-webkit-transition:background-color 0.2s ease-in-out;
-	-moz-transition:background-color 0.2s ease-in-out;
-	display: block;
-	padding: 1px;
-	text-decoration: none;
 }
 

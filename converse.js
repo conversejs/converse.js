@@ -379,8 +379,40 @@
 
             events: {
                 'click .close-chatbox-button': 'closeChat',
-                'keypress textarea.chat-textarea': 'keyPressed'
+                'keypress textarea.chat-textarea': 'keyPressed',
+                'click .toggle-otr': 'toggleOTRMenu',
+                'click .start-otr': 'startOTR',
+                'click .end-otr': 'endOTR',
+                'click .auth-otr': 'authOTR'
             },
+
+            template: _.template(
+                '<div class="chat-head chat-head-chatbox">' +
+                    '<a class="close-chatbox-button icon-close"></a>' +
+                    '<a href="{{url}}" target="_blank" class="user">' +
+                        '<div class="chat-title"> {{ fullname }} </div>' +
+                    '</a>' +
+                    '<p class="user-custom-message"><p/>' +
+                '</div>' +
+                '<div class="chat-content"></div>' +
+                '<form class="sendXMPPMessage" action="" method="post">' +
+                    '<ul class="chat-toolbar no-text-select">'+
+                        '<li class="toggle-otr not-private" title="Turn on \'off-the-record\' chat encryption">'+
+                            '<span class="chat-toolbar-text">Not private</span>'+
+                            '<span class="icon-unlocked"></span>'+
+                            '<ul>'+
+                                '<li><a class="start-otr" href="#">Start private conversation</a></li>'+
+                                '<li><a class="end-otr" href="#">End private conversation</a></li>'+
+                                '<li><a class="auth-otr" href="#">Authenticate buddy</a></li>'+
+                                '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What\'s this?</a></li>'+
+                            '</ul>'+
+                        '</li>'+
+                    '</ul>'+
+                '<textarea ' +
+                    'type="text" ' +
+                    'class="chat-textarea" ' +
+                    'placeholder="'+__('Personal message')+'"/>'+
+                '</form>'),
 
             message_template: _.template(
                                 '<div class="chat-message {{extra_classes}}">' +
@@ -562,20 +594,7 @@
                         return;
                     }
                     else if (match[1] === "otr") {
-                        msgs = [
-                            __('Initializing OTR.'),
-                            __('Generating private key'),
-                            __('...this might take a few seconds.')
-                            ];
-                        this.showHelpMessages(msgs);
-                        setTimeout($.proxy(function () {
-                            var privKey = this.model.getPrivateKey();
-                            msgs = [
-                                __('Private key generated.')
-                                ];
-                            this.showHelpMessages(msgs);
-                            this.model.initiateOTR(privKey);
-                        }, this));
+                        this.startOTR();
                         return;
                     } else if (match[1] === "endotr") {
                         if (this.model.otr) {
@@ -629,6 +648,47 @@
                         this.$el.data('composing', true);
                     }
                 }
+            },
+
+            toggleOTRMenu: function (ev) {
+                ev.stopPropagation();
+                $(ev.currentTarget).children('ul').slideToggle(200, function () {
+                    $(document).click(function() {
+                        if ($('.toggle-otr ul').is(':visible')) {
+                            $('.toggle-otr ul', this).slideUp();
+                        }
+                    });
+                });
+            },
+
+            startOTR: function (ev) {
+                $(ev.target).parent().parent().slideUp();
+                ev.stopPropagation();
+                msgs = [
+                    __('Initializing OTR.'),
+                    __('Generating private key'),
+                    __('...this might take a few seconds.')
+                    ];
+                this.showHelpMessages(msgs);
+                setTimeout($.proxy(function () {
+                    var privKey = this.model.getPrivateKey();
+                    msgs = [
+                        __('Private key generated.')
+                        ];
+                    this.showHelpMessages(msgs);
+                    this.model.initiateOTR(privKey);
+                }, this));
+                // TODO: UI must be updated to show new status... most likely
+                // "unverified" but we also need to figure out to know whether
+                // the status is verified or unverified (and how to verify).
+            },
+
+            endOTR: function (ev) {
+                alert('to be done');
+            },
+
+            authOTR: function (ev) {
+                alert('to be done');
             },
 
             onChange: function (item, changed) {
@@ -687,22 +747,6 @@
                     );
                 }
             },
-
-            template: _.template(
-                '<div class="chat-head chat-head-chatbox">' +
-                    '<a class="close-chatbox-button icon-close"></a>' +
-                    '<a href="{{url}}" target="_blank" class="user">' +
-                        '<div class="chat-title"> {{ fullname }} </div>' +
-                    '</a>' +
-                    '<p class="user-custom-message"><p/>' +
-                '</div>' +
-                '<div class="chat-content"></div>' +
-                '<form class="sendXMPPMessage" action="" method="post">' +
-                '<textarea ' +
-                    'type="text" ' +
-                    'class="chat-textarea" ' +
-                    'placeholder="'+__('Personal message')+'"/>'+
-                '</form>'),
 
             renderAvatar: function () {
                 if (!this.model.get('image')) {

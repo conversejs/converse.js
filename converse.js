@@ -587,7 +587,7 @@
                     return;
                 }
                 var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                    canvas = $('<canvas height="35px" width="35px" class="avatar"></canvas>'),
+                    canvas = $('<canvas height="33px" width="33px" class="avatar"></canvas>'),
                     ctx = canvas.get(0).getContext('2d'),
                     img = new Image();   // Create new Image object
                 img.onload = function() {

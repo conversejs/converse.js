@@ -7,7 +7,6 @@
   "dependencies": {
     "requirejs": "2.1.8",
     "jquery": "1.8.3",
-    "sjcl": "git://github.com/bitwiseshiftleft/sjcl.git",
     "jed": "0.5.4",
     "tinysort": "git://github.com/Sjeiti/TinySort.git",
     "underscore": "1.5.1",
@@ -17,8 +16,8 @@
     "strophe.roster": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/roster/strophe.roster.js",
     "strophe.vcard": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/vcard/strophe.vcard.js",
     "strophe.disco": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/disco/strophe.disco.js",
-    "strophe.muc": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/muc/strophe.muc.js"
+    "strophe.muc": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/muc/strophe.muc.js",
+    "almond": "~0.2.6"
   },
-  "exportsOverride": {
-  }
+  "exportsOverride": {}
 }

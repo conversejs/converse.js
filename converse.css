@@ -110,11 +110,11 @@ span.spinner.hor_centered {
 
 .chatroom .participants {
     float: left;
-    width: auto;
     height: 272px;
     background-color: white;
     overflow: auto;
     border-left: 1px solid #AAA;
+    max-width: 99px;
 }
 
 .participants ul.participant-list li {
@@ -152,6 +152,7 @@ ul.participant-list li.moderator {
     font-size: 13px;
     color: rgb(79, 79, 79);
     height:173px;
+    width: 190px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;
@@ -173,6 +174,10 @@ ul.participant-list li.moderator {
     display: inline-block;
     float: left;
     padding-right: 3px;
+}
+
+.chat-message-content {
+    word-wrap: break-word;
 }
 
 .chat-message-them {
@@ -575,6 +580,10 @@ dd.available-chatroom:hover a.room-info {
     margin-right: 15px;
     z-index: 20; /* So that it's higher than the content actions */
     border-radius: 4px;
+}
+
+.chatbox {
+    width: 200px;
 }
 
 .chatroom {

@@ -135,7 +135,6 @@
                     .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'renderPasswordForm').andCallThrough();
                 runs(function () {
                     view.onChatRoomPresence(presence, {'nick': 'dummy'});
@@ -159,7 +158,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
                     .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('You are not on the member list of this room');
@@ -175,7 +173,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
                     .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('You have been banned from this room');
@@ -191,7 +188,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'modify'})
                     .c('jid-malformed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('No nickname was specified');
@@ -207,7 +203,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('You are not allowed to create new rooms');
@@ -223,7 +218,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("Your nickname doesn't conform to this room's policies");
@@ -239,7 +233,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("Your nickname is already taken");
@@ -255,7 +248,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("This room does not (yet) exist");
@@ -271,7 +263,6 @@
                 .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
                     .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxesview.views['problematic@muc.localhost'];
-                spyOn(converse.connection.muc, 'removeRoom');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");

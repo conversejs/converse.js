@@ -46,7 +46,6 @@ module.exports = function(grunt) {
                         "es": "locale/es/LC_MESSAGES/es",
                         "it": "locale/it/LC_MESSAGES/it",
                         "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
-                        "sjcl": "components/sjcl/sjcl",
                         "tinysort": "components/tinysort/src/jquery.tinysort",
                         "underscore": "components/underscore/underscore",
                         "backbone": "components/backbone/backbone",
@@ -95,7 +94,7 @@ module.exports = function(grunt) {
         var done = this.async();
         var child_process = require('child_process');
         var exec = child_process.exec;
-        exec('bower update && cd ./components/strophe && make normal',
+        exec('./node_modules/.bin/bower update && cd ./components/strophe && make normal',
              function (err, stdout, stderr) {
                 if (err) {
                     grunt.log.write('build failed with error code '+err.code);

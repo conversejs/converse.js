@@ -2,7 +2,6 @@ require.config({
     paths: {
         "jquery": "components/jquery/jquery",
         "locales": "locale/locales",
-        "sjcl": "components/sjcl/sjcl",
         "tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
@@ -37,6 +36,6 @@ require.config({
     }
 });
 
-require(["components/requirejs/require", "jquery", "converse"], function(require, $, converse) {
+require(["jquery", "converse"], function(require, $, converse) {
     window.converse = converse;
 });

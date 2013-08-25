@@ -12,7 +12,7 @@
             'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
         ];
         var pend_names = [
-            'Suleyman van Beusichem', 'Nicole Diederich', 'Nanja van Yperen'
+            'Suleyman van Beusichem', 'Nanja van Yperen', 'Nicole Diederich'
         ];
         var cur_names = [
             'Max Frankfurter', 'Candice van der Knijff', 'Irini Vlastuin', 'Rinse Sommer', 'Annegreet Gomez',
@@ -123,6 +123,48 @@
                     expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
                 }, converse));
 
+                it("can be added to the roster", $.proxy(function () {
+                    spyOn(this.rosterview, 'render').andCallThrough();
+                    spyOn(this.xmppstatus, 'sendPresence');
+                    this.roster.create({
+                        jid: pend_names[0].replace(' ','.').toLowerCase() + '@localhost',
+                        subscription: 'none',
+                        ask: 'subscribe',
+                        fullname: pend_names[0],
+                        is_last: true 
+                    });
+                    expect(this.rosterview.$el.is(':visible')).toEqual(true);
+                    expect(this.xmppstatus.sendPresence).toHaveBeenCalled();
+                    expect(this.rosterview.render).toHaveBeenCalled();
+                }, converse));
+
+                it("can be removed by the user", $.proxy(function () {
+                    var view = _.toArray(this.rosterview.rosteritemviews).pop();
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(this.connection.roster, 'remove').andCallThrough();
+                    spyOn(this.connection.roster, 'unauthorize');
+                    spyOn(this.rosterview.model, 'remove').andCallThrough();
+                    //spyOn(view, 'removeContact').andCallThrough();
+
+                    runs($.proxy(function () {
+                        view.$el.find('.remove-xmpp-contact').click();
+                    }, converse));
+                    waits(500);
+                    runs($.proxy(function () {
+                        expect(window.confirm).toHaveBeenCalled();
+                        //expect(view.removeContact).toHaveBeenCalled();
+                        expect(this.connection.roster.remove).toHaveBeenCalled();
+                        expect(this.connection.roster.unauthorize).toHaveBeenCalled();
+                        expect(this.rosterview.model.remove).toHaveBeenCalled();
+                        // The element must now be detached from the DOM.
+                        expect(view.$el.closest('html').length).toBeFalsy();
+                    }, converse));
+                }, converse));
+
+                it("will lose their own heading once the last one has been removed", $.proxy(function () {
+                    expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
+                }, converse));
+
                 it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                     var i, t, is_last;
                     spyOn(this.rosterview, 'render').andCallThrough();
@@ -136,13 +178,10 @@
                             fullname: pend_names[i],
                             is_last: is_last
                         });
-                        // For performance reasons, the roster should only be shown once
-                        // the last contact has been added.
                         if (is_last) {
-                            expect(this.rosterview.$el.is(':visible')).toEqual(true);
                             expect(this.xmppstatus.sendPresence).toHaveBeenCalled();
                         } else {
-                            expect(this.rosterview.$el.is(':visible')).toEqual(false);
+                            expect(this.xmppstatus.sendPresence).not.toHaveBeenCalled();
                         }
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
@@ -154,6 +193,7 @@
                 it("will have their own heading once they have been added", $.proxy(function () {
                     expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
                 }, converse));
+
             }, converse));
 
             describe("Existing Contacts", $.proxy(function () {

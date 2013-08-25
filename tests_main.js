@@ -3,7 +3,6 @@ require.config({
     paths: {
         "jquery": "components/jquery/jquery",
         "locales": "locale/locales",
-        "sjcl": "components/sjcl/sjcl",
         "tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
@@ -13,6 +12,7 @@ require.config({
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
+        "crypto.aes": "components/crypto-js/build/rollups/aes",
         // Extra test dependencies
         "jasmine": "components/jasmine/lib/jasmine-core/jasmine",
         "jasmine-html": "components/jasmine/lib/jasmine-core/jasmine-html",

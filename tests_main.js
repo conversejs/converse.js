@@ -3,7 +3,6 @@ require.config({
     paths: {
         "jquery": "components/jquery/jquery",
         "locales": "locale/locales",
-        "sjcl": "components/sjcl/sjcl",
         "tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",

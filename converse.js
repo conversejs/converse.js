@@ -16,7 +16,6 @@
             "locales",
             "localstorage",
             "tinysort",
-            "sjcl",
             "strophe",
             "strophe.muc",
             "strophe.roster",

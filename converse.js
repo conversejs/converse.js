@@ -292,10 +292,10 @@
                 };
                 this.otr = new otr.OTR(options);
                 this.otr.on('ui', $.proxy(function (msg) {
-                    this.trigger('OTRMessageReceived', msg);
+                    this.trigger('showReceivedOTRMessage', msg);
                 }, this));
                 this.otr.on('io', $.proxy(function (msg) {
-                    this.trigger('sendMessage', msg);
+                    this.trigger('sendMessageStanza', msg);
                 }, this));
                 this.otr.on('error', $.proxy(function (msg) {
                     // XXX
@@ -403,11 +403,11 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change', this.onChange, this);
-                this.model.on('sendMessage', this.onMessageSend, this);
-                this.model.on('sendOTRMessage', function (text) {
+                this.model.on('sendMessageStanza', this.sendMessageStanza, this);
+                this.model.on('showSentOTRMessage', function (text) {
                     this.showOTRMessage(text, 'me');
                 }, this);
-                this.model.on('OTRMessageReceived', function (text) {
+                this.model.on('showReceivedOTRMessage', function (text) {
                     this.showOTRMessage(text, 'them');
                 }, this);
                 this.updateVCard();
@@ -453,8 +453,9 @@
             },
 
             showOTRMessage:  function (text, sender) {
-                // "Off-the-record" messages are not stored at all, so we don't
-                // have a backbone converse.Message object to work with.
+                /* "Off-the-record" messages are encrypted and not stored at all,
+                 * so we don't have a backbone converse.Message object to work with.
+                 */
                 var username = sender === 'me' && sender || this.model.get('fullname');
                 var $el = this.$el.find('.chat-content');
                 $el.find('div.chat-event').remove();
@@ -520,6 +521,29 @@
                     (next_date.getMonth() != prev_date.getMonth()));
             },
 
+            sendMessageStanza: function (text) {
+                /*
+                 * Sends the actual XML stanza to the XMPP server.
+                 */
+                // TODO: Look in ChatPartners to see what resources we have for the recipient.
+                // if we have one resource, we sent to only that resources, if we have multiple
+                // we send to the bare jid.
+                var timestamp = (new Date()).getTime();
+                var bare_jid = this.model.get('jid');
+                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
+                    .c('body').t(text).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
+                // Forward the message, so that other connected resources are also aware of it.
+                // TODO: Forward the message only to other connected resources (inside the browser)
+                var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
+                                .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
+                                .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
+                                .cnode(message.tree());
+
+                converse.connection.send(message);
+                converse.connection.send(forwarded);
+            },
+
             sendMessage: function (text) {
                 var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
@@ -560,8 +584,9 @@
                     }
                 }
                 if (this.model.otr) {
+                    // Off-the-record encryption is active
                     this.model.otr.sendMsg(text);
-                    this.model.trigger('sendOTRMessage', text);
+                    this.model.trigger('showSentOTRMessage', text);
                 }
                 else {
                     // We only save unencrypted messages.
@@ -571,28 +596,8 @@
                         time: converse.toISOString(new Date()),
                         message: text
                     });
-                    this.model.trigger('sendMessage', text);
+                    this.sendMessageStanza(text);
                 }
-            },
-
-            onMessageSend: function (text) {
-                // TODO: Look in ChatPartners to see what resources we have for the recipient.
-                // if we have one resource, we sent to only that resources, if we have multiple
-                // we send to the bare jid.
-                var timestamp = (new Date()).getTime();
-                var bare_jid = this.model.get('jid');
-                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
-                    .c('body').t(text).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
-                // Forward the message, so that other connected resources are also aware of it.
-                // TODO: Forward the message only to other connected resources (inside the browser)
-                var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
-                                .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
-                                .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
-                                .cnode(message.tree());
-
-                converse.connection.send(message);
-                converse.connection.send(forwarded);
             },
 
             keyPressed: function (ev) {

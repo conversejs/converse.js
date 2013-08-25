@@ -768,23 +768,30 @@ ul.chat-toolbar {
     font-size: 14px;
     margin: 0;
     padding: 0 5px 0 0;
-    float: right;
-    display: inline-block;
     height: 20px;
+    display: block;
+    width: 195px;
+}
+
+.chat-toolbar .toggle-otr {
+    float: right;
 }
 
 .chat-toolbar-text {
     font-size: 12px;
 }
 
+.not-private a,
 .not-private {
     color: #8f2831;
 }
 
+.unverified a,
 .unverified {
     color: #cf5300;
 }
 
+.private a,
 .private {
     color: #4B7003
 }
@@ -793,11 +800,7 @@ ul.chat-toolbar li {
     display: inline-block;
     list-style: none;
     padding: 0 3px 0 3px;
-}
-
-ul.chat-toolbar li:hover {
     cursor: pointer; 
-    color: rgb(39, 39, 39);
 }
 
 form#set-custom-xmpp-status {
@@ -891,3 +894,35 @@ form.add-xmpp-contact input {
     padding: 0 5px 0 5px;
     color: rgb(79, 79, 79);
 }
+
+.chatbox .click-nav ul {
+	display: none;
+    font-size:12px;
+    position: absolute;
+    top: 20px;
+    right: 0;
+    background: #fff;
+    box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.4);
+}
+
+.chatbox .click-nav ul li {
+	position: relative;
+	list-style: none;
+	cursor: pointer;
+    display: block;
+    z-index: 99;
+}
+
+.chatbox .click-nav ul li:hover {
+    background-color: #eee;
+}
+
+.chatbox .click-nav ul li a {
+	transition:background-color 0.2s ease-in-out;
+	-webkit-transition:background-color 0.2s ease-in-out;
+	-moz-transition:background-color 0.2s ease-in-out;
+	display: block;
+	padding: 1px;
+	text-decoration: none;
+}
+

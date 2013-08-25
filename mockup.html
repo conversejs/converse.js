@@ -226,12 +226,20 @@
         </div>
         <form class="sendXMPPMessage" action="" method="post">
             <ul class="chat-toolbar">
+                <!--
                 <li class="icon-happy" title="Insert a smilery"></li>
                 <li class="icon-camera-2" title="Enable video chat"></li>
                 <li class="icon-newspaper" title="Fetch and show this user's vCard"></li>
-                <li class="otr" title="Turn on 'off-the-record' chat encryption">
-                    <span class="chat-toolbar-text not-private">Not private</span>
-                    <span class="icon-unlocked not-private"/>
+                -->
+                <li class="toggle-otr click-nav not-private" title="Turn on 'off-the-record' chat encryption">
+                    <span class="chat-toolbar-text">Not private</span>
+                    <span class="icon-unlocked"></span>
+                    <ul>
+                        <li><a href="#">Start private conversation</a></li>
+                        <li><a href="#">End private conversation</a></li>
+                        <li><a href="#">Authenticate buddy</a></li>
+                        <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php">What's this?</a></li>
+                    </ul>
                 </li>
             </ul>
             <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
@@ -354,6 +362,19 @@ $(document).ready(function () {
             });
         });
     }
+
+    $(function() {
+        // Clickable Dropdown
+        $('.click-nav').click(function(e) {
+            $('.click-nav ul').slideToggle(200);
+            e.stopPropagation();
+        });
+        $(document).click(function() {
+            if ($('.click-nav ul').is(':visible')) {
+                $('.click-nav ul', this).slideUp();
+            }
+        });
+    });
 });
 </script>
 <script src="http://devbox:9001/socket.js" type="text/javascript" charset="utf-8"></script>

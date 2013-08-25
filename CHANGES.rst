@@ -13,6 +13,8 @@ Changelog
 - Add a debug option (logs to the browser console). [jcbrand]
 - Use font icons from http://icomoon.io [jcbrand]
 - Added a static mockup to aid CSS/design process. [jcbrand]
+- Save language codes with hyphens. Thanks to @seocam. [jcbrand]
+- The combined and minified JS file now uses almond and not require.js. [jcbrand]
 
 0.5.2 (2013-08-05)
 ------------------

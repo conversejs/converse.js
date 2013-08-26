@@ -71,7 +71,10 @@
             'show_controlbox_by_default',
             'xhr_user_search',
             'connection',
-            'testing'
+            'testing',
+            'jid',
+            'sid',
+            'rid'
         ];
         _.extend(this, _.pick(settings, whitelist));
 

@@ -35,7 +35,7 @@ help:
 	@echo "  text       to make text files"
 
 pot: 
-	xgettext --keyword=__ --keyword=translate --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.4 -c --language="python";
+	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.4 -c --language="python";
 
 release: 
 	r.js -o build.js

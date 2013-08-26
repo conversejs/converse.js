@@ -76,6 +76,8 @@
         _.extend(this, _.pick(settings, whitelist));
 
         var __ = $.proxy(function (str) {
+            /* Translation factory
+             */
             if (this.i18n === undefined) {
                 return str;
             }
@@ -86,6 +88,18 @@
                 return t.fetch();
             }
         }, this);
+
+        var ___ = function (str) {
+            /* XXX: This is part of a hack to get gettext to scan strings to be
+             * translated. Strings we cannot send to the function above because
+             * they require variable interpolation and we don't yet have the
+             * variables at scan time.
+             *
+             * See actionInfoMessages
+             */
+            return str;
+        };
+
         this.msg_counter = 0;
         this.autoLink = function (text) {
             // Convert URLs into hyperlinks
@@ -1427,22 +1441,20 @@
             },
 
             actionInfoMessages: {
-                // # For translations: %1$s will be replaced with the user's nickname
-                // # Don't translate "strong"
-                // # Example: <strong>jcbrand</strong> has been banned
-                301: converse.i18n.translate('<strong>%1$s</strong> has been banned'),
-                // # For translations: %1$s will be replaced with the user's nickname
-                // # Don't translate "strong"
-                // # Example: <strong>jcbrand</strong> has been kicked out
-                307: converse.i18n.translate('<strong>%1$s</strong> has been kicked out'),
-                // # For translations: %1$s will be replaced with the user's nickname
-                // # Don't translate "strong"
-                // # Example: <strong>jcbrand</strong> has been removed because of an affiliasion change
-                321: converse.i18n.translate("<strong>%1$s</strong> has been removed because of an affiliation change"),
-                // # For translations: %1$s will be replaced with the user's nickname
-                // # Don't translate "strong"
-                // # Example: <strong>jcbrand</strong> has been removed for not being a member
-                322: converse.i18n.translate("<strong>%1$s</strong> has been removed for not being a member")
+                /* XXX: Note the triple underscore function and not double
+                 * underscore.
+                 *
+                 * This is a hack. We can't pass the strings to __ because we
+                 * don't yet know what the variable to interpolate is.
+                 *
+                 * Triple underscore will just return the string again, but we
+                 * can then at least tell gettext to scan for it so that these
+                 * strings are picked up by the translation machinery.
+                 */
+                301: ___("<strong>%1$s</strong> has been banned"),
+                307: ___("<strong>%1$s</strong> has been kicked out"),
+                321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
+                322: ___("<strong>%1$s</strong> has been removed for not being a member")
             },
 
             disconnectMessages: {
@@ -1474,9 +1486,8 @@
                             info_msgs.push(this.infoMessages[stat]);
                         } else if (_.contains(_.keys(this.actionInfoMessages), stat)) {
                             action_msgs.push(
-                                this.actionInfoMessages[stat].fetch(
-                                    Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')))
-                            ));
+                                __(this.actionInfoMessages[stat], Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from'))))
+                            );
                         }
                     }
                 }

@@ -76,7 +76,7 @@
         _.extend(this, _.pick(settings, whitelist));
 
         var __ = $.proxy(function (str) {
-            if (i18n === undefined) {
+            if (this.i18n === undefined) {
                 return str;
             }
             var t = this.i18n.translate(str);

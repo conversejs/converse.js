@@ -387,18 +387,8 @@ a.close-chatbox-button {
     text-shadow:1px 1px 0 #ffffff;
 }
 
-.close-chatbox-button {
-    padding: 0 2px 0 6px;
-}
-
-.close-chatbox-button:hover {
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f6f6f6), color-stop(1, #ffffff) );
-    background:-moz-linear-gradient( center top, #f6f6f6 5%, #ffffff 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f6f6f6', endColorstr='#ffffff');
-    background-color:#f6f6f6;
-}
-
-.close-chatbox-button:active {
+a.configure-chatroom-button:active,
+a.close-chatbox-button:active {
     position:relative;
     top:1px;
 }

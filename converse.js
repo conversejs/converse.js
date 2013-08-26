@@ -2379,7 +2379,7 @@
                         '<span class="icon-{{ chat_status }}"></span>'+
                         '{{ status_message }}' +
                     '</a>' +
-                    '<a class="change-xmpp-status-message" href="#" title="'+__('Click here to write a custom status message')+'"></a>' +
+                    '<a class="change-xmpp-status-message icon-pencil" href="#" title="'+__('Click here to write a custom status message')+'"></a>' +
                 '</div>'),
 
             renderStatusChangeForm: function (ev) {

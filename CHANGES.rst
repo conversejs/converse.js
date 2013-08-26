@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - IE9 and IE8 CSS fixes. [jcbrand]
+- Bugfix. Pencil icon not visible (for setting status update). [jcbrand]
 
 0.6.0 (2013-08-26)
 ------------------

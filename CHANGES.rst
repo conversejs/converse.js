@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.6.1 (Unreleased)
+------------------
+
+- IE9 and IE8 CSS fixes. [jcbrand]
+
 0.6.0 (2013-08-26)
 ------------------
 

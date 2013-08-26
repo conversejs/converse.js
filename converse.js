@@ -15,7 +15,7 @@
         define("converse", [
             "locales",
             "backbone.localStorage",
-            "tinysort",
+            "jquery.tinysort",
             "strophe",
             "strophe.muc",
             "strophe.roster",

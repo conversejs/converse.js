@@ -2,7 +2,7 @@ require.config({
     paths: {
         "jquery": "components/jquery/jquery",
         "locales": "locale/locales",
-        "tinysort": "components/tinysort/src/jquery.tinysort",
+        "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",

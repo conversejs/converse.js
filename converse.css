@@ -8,10 +8,7 @@
 
 @import url("fonticons/style.css");
 
-#collective-xmpp-chat-data {
-  color: rgb(79, 79, 79);
-}
-
+#collective-xmpp-chat-data,
 #collective-xmpp-chat-data input {
   color: rgb(79, 79, 79);
 }
@@ -115,7 +112,7 @@ span.spinner.hor_centered {
     background-color: white;
     overflow: auto;
     border-left: 1px solid #AAA;
-    max-width: 99px;
+    max-width: 98px;
 }
 
 .participants ul.participant-list li {

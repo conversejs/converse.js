@@ -5,7 +5,7 @@ require.config({
         "tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
-        "localstorage": "components/backbone.localStorage/backbone.localStorage",
+        "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",

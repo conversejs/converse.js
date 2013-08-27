@@ -2,7 +2,7 @@
  * This file can be used if no locale support is required.
  */
 (function (root, factory) {
-    define("locales", ['jed'], function (jed) {
+    define("locales", ['jed'], function (Jed) {
         var translations = {
             "domain": "converse",
             "locale_data": {
@@ -15,6 +15,6 @@
                 }
             }
         };
-        root.locales = { 'en': factory(new Jed(translations)) };
+        root.locales = { 'en': new Jed(translations) };
     });
 })(this);

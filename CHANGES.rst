@@ -1,11 +1,13 @@
 Changelog
 =========
 
-0.6.1 (Unreleased)
+0.6.1 (2013-08-28)
 ------------------
 
 - IE9 and IE8 CSS fixes. [jcbrand]
-- Bugfix. Pencil icon not visible (for setting status update). [jcbrand]
+- Bugfix: Pencil icon not visible (for setting status update). [jcbrand]
+- Bugfix: RID, JID and SID initialization values were being ignored. [jcbrand]
+- Bugfix: Fall back to English if a non-existing locale was specified. [jcbrand]
 
 0.6.0 (2013-08-26)
 ------------------

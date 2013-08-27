@@ -83,6 +83,9 @@
         var __ = $.proxy(function (str) {
             /* Translation factory
              */
+            if (this.i18n === undefined) {
+                this.i18n = locales['en'];
+            }
             var t = this.i18n.translate(str);
             if (arguments.length>1) {
                 return t.fetch.apply(t, [].slice.call(arguments,1));

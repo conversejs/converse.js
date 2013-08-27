@@ -1840,8 +1840,9 @@
             },
 
             template: _.template(
-                '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">{{ fullname }}</a>' +
-                '<span class="icon-{{ chat_status }}" title="{{ status_desc }}"></span>'+
+                '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">'+
+                    '<span class="icon-{{ chat_status }}" title="{{ status_desc }}"></span>{{ fullname }}'+
+                '</a>' +
                 '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             pending_template: _.template(

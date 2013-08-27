@@ -53,6 +53,7 @@
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.xhr_user_search = false;
+        this.xhr_custom_status = false;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.callback = callback || function () {};
 
@@ -70,6 +71,7 @@
             'prebind',
             'show_controlbox_by_default',
             'xhr_user_search',
+            'xhr_custom_status',
             'connection',
             'testing',
             'jid',
@@ -2363,6 +2365,13 @@
             setStatusMessage: function (status_message) {
                 converse.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
                 this.save({'status_message': status_message});
+                if (this.xhr_custom_status) {
+                    $.ajax({
+                        url: 'set-custom-status',
+                        type: 'POST',
+                        data: {'msg': status_message}
+                    });
+                }
             }
         });
 

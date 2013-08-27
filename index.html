@@ -36,17 +36,9 @@
 
     <p><em>Converse.js</em> can connect to any accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server, either from a public provider such as <a href="http://jabber.org">jabber.org</a>, or to one you have set up yourself.</p>
 
-    <p>It's possible to enable single-site login, whereby users already authenticated in your website will also automatically be logged in on the chat server,
+    <p>It's possible to enable single-site-login, whereby users already authenticated in your website will also automatically be logged in on the chat server,
     but you will have to pre-authenticate them on your server. You can refer to the <a href="/docs/html/index.html">documentation</a> for more
     info.</p>
-
-    <p>An <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">add-on product</a> that does exactly this,
-    already exists for the <a href="http://plone.org" target="_blank">Plone</a> CMS. Hopefully in the future more such add-ons will
-    be created for other platforms.
-   </p>
-
-    <p>If you have integrated <em>Converse.js</em> into any other CMS or framework,
-    <a href="http://opkode.com/contact.html" target="_blank">please let me know</a> and I'll mention it on this page.</p>
 
     <h2>Features</h2>
     <ul>
@@ -62,7 +54,7 @@
         <li>Custom status messages</li>
         <li>Typing notifications</li>
         <li>Third person messages (/me )</li>
-        <li>Translated into multiple languages  (af, de, es, it, pt_BR)</li>
+        <li>Translated into multiple languages  (af, de, es, it, pt-BR)</li>
     </ul>
 
     <h2>Screencasts</h2>
@@ -75,6 +67,30 @@
         </li>
     </ul>
 
+
+    <h2>Integration into other frameworks</h2>
+
+    <ul>
+        <li><h4><a href="http://plone.org" target="_blank">Plone</a></h4>
+            <strong><a href="http://github.com/collective/collective.xmpp.chat" target="_blank">collective.xmpp.chat</a></strong>
+            is an add-on for Plone that uses <em>Converse.js</em>.
+            Together with <a href="http://github.com/collective/collective.xmpp.core" target="_blank">collective.xmpp.core</a>, it provides for single-signon-support (SSO)
+            and also enables you to manually or automatically
+            register your Plone users onto your XMPP server.
+        </li>
+        <li><h4><a href="http://www.djangoproject.com" target="_blank">Django</a></h4>
+            <strong><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank">django-conversejs</a></strong> is an app that makes it easer to integrate <em>Converse.js</em>
+            into Django. It adds single-signon-support (SSO) support and a database model to store XMPP credentials.
+        </li>
+        <li><h4><a href="http://roundcube.net" target="_blank">Roundcube</a></h4>
+            <strong><a href="https://github.com/priyadi/roundcube-converse.js-xmpp-plugin" target="_blank">roundcube-converse.js-xmpp-plugin</a></strong>
+            is a plugin for Roundcube Webmail. It's README states that it's still a work in progress.
+        </li>
+    </ul>
+
+    <p>If you have integrated <em>Converse.js</em> into any other CMS or framework,
+    <a href="http://opkode.com/contact.html" target="_blank">please let me know</a> and I'll mention it on this page.</p>
+
     <h2>Demo</h2>
     <p>You can log in with any existing XMPP account. There is also a list of public XMPP providers on <a href="http://xmpp.net" target="_blank">xmpp.net</a>.</p>
     <p><em><strong>Note:</strong> currently the demo doesn't work in Internet Explorer older
@@ -84,9 +100,25 @@
     See <a href="/docs/html/index.html#overcoming-cross-domain-request-restrictions" target="_blank">here</a> for more information.</p></em>
 
     <h3>Is it secure?</h3>
-    <p>Yes. In this demo <em>Converse.js</em> makes an
-    <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer" target="_blank">SSL</a> encrypted connection to a secure connection manager. 
-    The connection manager then uses SSL and <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to connect to an XMPP server.</p>
+    <p>
+        Yes, as long as you can trust that the Javascript being downloaded is
+        not being tampered with. This page itself is served by Github and is not SSL Encrypted (e.g. HTTPS). 
+        I don't know how probable it is that Github served pages could be hacked to
+        insert malicious Javascript.
+    </p>
+    <p>
+        Ideally you'd want your site to be served via HTTPS, to make it more
+        difficult. In this case, use with caution.
+    </p>
+    <p> 
+        <em>Converse.js</em> makes HTTP requests to a <em>connection manager</em>, which in this case has an
+        <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer" target="_blank">SSL</a> encrypted connection to an XMPP server.</p>
+        The <em>connection manager</em> then uses SSL and <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to connect to an XMPP server.
+    </p>
+    <p>
+        Logging in happens via <a href="https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer">SASL</a> and 
+        <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a>.
+    </p>
     That said, the developers don't assume any liability for any loss or damages as a result of using this software or demo. Use this demo at your own risk. 
 
     <h3>Session support</h3>
@@ -128,11 +160,10 @@
     and <a href="http://opensource.org/licenses/GPL-2.0" target="_blank">GPL</a> licenses.</p>
 
     <h2>Contact</h2>
-    <p>You can follow me on <strong><a href="http://twitter.com/jcopkode" target="_blank">Twitter</a></strong> and <strong><a href="http://identi.ca/opkode" target="_blank">Identica</a></strong></p>
+    <p>You can follow me on <strong><a href="http://twitter.com/jcopkode" target="_blank">Twitter</a></strong></p>
     <p>My XMPP username is <strong>jc@opkode.im</strong>.</p>
     <p>Send me an email via this <a href="http://opkode.com/contact" target="_blank">contact form</a>.</p>
 </section>
-
 </div>
 
 <!-- FOOTER  -->

@@ -322,6 +322,19 @@ $(document).ready(function () {
         $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
     });
 
+    $("a.change-xmpp-status-message").click(function (ev) {
+        ev.preventDefault();
+        var form = ''+
+                '<form id="set-custom-xmpp-status">' +
+                    '<input type="text" class="custom-xmpp-status"I am online"'+
+                        'placeholder="I am online"/>' +
+                    '<button type="submit">Save</button>' +
+                '</form>';
+
+        $(ev.target).closest('.xmpp-status').replaceWith(form);
+        $(ev.target).closest('.custom-xmpp-status').focus().focus();
+    });
+
     $('.toggle-xmpp-contact-form').click(function (ev) {
         ev.preventDefault();
         $(ev.target).parent().parent().find('.search-xmpp').toggle('fast', function () {

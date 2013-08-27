@@ -114,13 +114,13 @@
                         John Smit</a>
                         <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                     </dd>
-                    <dd class="dnd current-xmpp-contact">
+                    <dd class="away current-xmpp-contact">
                         <a class="open-chat" title="Click to chat with this contact" href="#">
                         <span class="icon-away" title="this contact is away"></span>
                         Francois Pienaar</a>
                         <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                     </dd>
-                    <dd class="busy current-xmpp-contact">
+                    <dd class="dnd current-xmpp-contact">
                         <a class="open-chat" title="Click to chat with this contact" href="#">
                         <span class="icon-dnd" title="This contact is busy"></span>
                         Gary Teichmann</a>
@@ -196,7 +196,7 @@
                 <canvas height="33px" width="33px" class="avatar" style="background-color: black"></canvas>
                 <div class="chat-title"> JC Brand </div>
             </a>
-            <p class="user-custom-message"></p>
+            <p class="user-custom-message" title="10000ft in the air">10000ft in the air</p>
             <p></p>
         </div>
         <div class="chat-content">
@@ -320,6 +320,19 @@ $(document).ready(function () {
     $("a.choose-xmpp-status").click(function (ev) {
         ev.preventDefault();
         $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
+    });
+
+    $("a.change-xmpp-status-message").click(function (ev) {
+        ev.preventDefault();
+        var form = ''+
+                '<form id="set-custom-xmpp-status">' +
+                    '<input type="text" class="custom-xmpp-status"I am online"'+
+                        'placeholder="I am online"/>' +
+                    '<button type="submit">Save</button>' +
+                '</form>';
+
+        $(ev.target).closest('.xmpp-status').replaceWith(form);
+        $(ev.target).closest('.custom-xmpp-status').focus().focus();
     });
 
     $('.toggle-xmpp-contact-form').click(function (ev) {

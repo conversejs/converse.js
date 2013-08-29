@@ -2257,44 +2257,41 @@
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {
-                        if (!item.get('sorted')) {
-                            // this attribute will be true only after all of the elements have been added on the page
-                            // at this point all offline
+                        if ($.contains(document.documentElement, view.el)) {
+                            view.render();
+                        } else {
                             $my_contacts.after(view.render().el);
                         }
-                        else {
-                            // just by calling render will be enough to change the icon of the existing item without
-                            // having to reinsert it and the sort will come from the presence change
-                            view.render();
-                        }
-                    }
-                    presence_change = view.model.changed.chat_status;
-                    if (presence_change) {
-                        // resort all items only if the model has changed it's chat_status as this render
-                        // is also triggered when the resource is changed which always comes before the presence change
-                        // therefore we avoid resorting when the change doesn't affect the position of the item
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
                     }
 
-                    if (item.get('is_last') && !item.get('sorted')) {
-                        // this will be true after all of the roster items have been added with the default
-                        // options where all of the items are offline and now we can show the rosterView
-                        item.set('sorted', true);
-                        this.initialSort();
-                        this.$el.show();
+                    presence_change = view.model.changed.chat_status;
+                    if (presence_change) {
+                        $my_contacts.siblings('dd.current-xmpp-contact.'+presence_change).tsort('a', crit);
+                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline'));
+                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable'));
+                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away'));
+                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd'));
+                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online'));
+                    }
+
+                    if (item.get('is_last')) {
+                        if (!this.$el.is(':visible')) {
+                            // Once all initial roster items have been added, we
+                            // can show the roster.
+                            this.initialSort();
+                            this.$el.show();
+                        }
                         converse.xmppstatus.sendPresence();
                     }
                 }
                 // Hide the headings if there are no contacts under them
                 _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
                     if (h.nextUntil('dt').length) {
-                        h.show();
+                        if (!h.is(':visible')) {
+                            h.show();
+                        }
                     }
-                    else {
+                    else if (h.is(':visible')) {
                         h.hide();
                     }
                 });

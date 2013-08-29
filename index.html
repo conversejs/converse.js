@@ -101,24 +101,27 @@
     <h3>Is it secure?</h3>
     <p>
         Yes, as long as you can trust that the Javascript being downloaded is
-        not being tampered with. This page itself is served by Github and is not SSL Encrypted (e.g. HTTPS). 
+        not being tampered with. This page itself is served by Github and is not <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS/TLS</a>
+        encrypted (i.e. served via <a href="https://en.wikipedia.org/wiki/HTTPS">HTTPS</a>). 
         I don't know how probable it is that Github served pages could be hacked to
         insert malicious Javascript.
     </p>
     <p>
-        Ideally you'd want your site to be served via HTTPS, to make it more
-        difficult. In this case, use with caution.
+        Ideally you'd want your site to be served encrypted via HTTPS. 
+        In this case, use with caution. You can of course go
+        download the source from Github and run this page locally, removing
+        the attack vector altogether.
     </p>
     <p> 
-        <em>Converse.js</em> makes HTTP requests to a <em>connection manager</em>, which in this case has an
-        <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer" target="_blank">SSL</a> encrypted connection to an XMPP server.</p>
-        The <em>connection manager</em> then uses SSL and <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to connect to an XMPP server.
+        <em>Converse.js</em> itself makes encrypted HTTPS requests to a <em>connection manager</em>, which will make an 
+        SSL/TLS encrypted connection to an XMPP server (if the server supports it).
     </p>
     <p>
-        Logging in happens via <a href="https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer">SASL</a> and 
-        <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a>.
+        Logging in happens via <a href="https://en.wikipedia.org/wiki/Simple_Authentication_and_Security_Layer">SASL</a>.
     </p>
-    That said, the developers don't assume any liability for any loss or damages as a result of using this software or demo. Use this demo at your own risk. 
+    <p>
+        That said, the developers don't assume any liability for any loss or damages as a result of using this software or demo. Use at your own risk. 
+    </p>
 
     <h3>Session support</h3>
     <p>
@@ -151,8 +154,6 @@
         <li><a href="http://backbonejs.org" target="_blank">backbone.js</a></li>
         <li><a href="http://requirejs.org" target="_blank">require.js</a> (optional dependency)</li>
     </ul>
-    <p>Some images were taken from <a href="http://plone.org" target="_blank">Plone</a> and the
-    <a href="http://openiconlibrary.sourceforge.net" target="_blank">Open Icon Library</a>.
 
     <h2>Licence</h2>
     <p><strong>Converse.js</strong> is released under both the <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT</a> 

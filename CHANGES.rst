@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.6.2 (2013-08-29)
+------------------
+
+- Bugfix. The remove icon wasn't appearing in the contacts roster. [jcbrand]
+- Bugfix. With auto_subscribe=True, the "Pending Contacts" header didn't disappear
+after a new user was accepted. [jcbrand]
+
 0.6.1 (2013-08-28)
 ------------------
 

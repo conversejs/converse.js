@@ -1848,11 +1848,11 @@
                 '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">'+
                     '<span class="icon-{{ chat_status }}" title="{{ status_desc }}"></span>{{ fullname }}'+
                 '</a>' +
-                '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
+                '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             pending_template: _.template(
                 '<span>{{ fullname }}</span>' +
-                '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
+                '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             request_template: _.template('<div>{{ fullname }}</div>' +
                 '<button type="button" class="accept-xmpp-request">' +
@@ -1875,6 +1875,12 @@
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
+                    _.each(['pending-xmpp-contact', 'requesting-xmpp-contact'], 
+                        function (cls) {
+                            if (this.el.className.indexOf(cls) !== -1) {
+                                this.$el.removeClass(cls);
+                            }
+                        }, this);
                     this.$el.addClass('current-xmpp-contact');
                     var status_desc = {
                         'dnd': 'This contact is busy',
@@ -2242,7 +2248,8 @@
                 var $my_contacts = this.$el.find('#xmpp-contacts'),
                     $contact_requests = this.$el.find('#xmpp-contact-requests'),
                     $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
-                    $count, presence_change;
+                    sorted = false,
+                    $count, changed_presence;
                 if (item) {
                     var jid = item.id,
                         view = this.rosteritemviews[item.id],
@@ -2257,44 +2264,37 @@
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {
-                        if (!item.get('sorted')) {
-                            // this attribute will be true only after all of the elements have been added on the page
-                            // at this point all offline
+                        if ($.contains(document.documentElement, view.el)) {
+                            view.render();
+                        } else {
                             $my_contacts.after(view.render().el);
                         }
-                        else {
-                            // just by calling render will be enough to change the icon of the existing item without
-                            // having to reinsert it and the sort will come from the presence change
-                            view.render();
+                    }
+                    changed_presence = view.model.changed.chat_status;
+                    if (changed_presence) {
+                        this.sortRoster(changed_presence)
+                        sorted = true;
+                    } 
+                    if (item.get('is_last')) {
+                        if (!sorted) {
+                            this.sortRoster(item.get('chat_status'));
                         }
-                    }
-                    presence_change = view.model.changed.chat_status;
-                    if (presence_change) {
-                        // resort all items only if the model has changed it's chat_status as this render
-                        // is also triggered when the resource is changed which always comes before the presence change
-                        // therefore we avoid resorting when the change doesn't affect the position of the item
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd').tsort('a', crit));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online').tsort('a', crit));
-                    }
-
-                    if (item.get('is_last') && !item.get('sorted')) {
-                        // this will be true after all of the roster items have been added with the default
-                        // options where all of the items are offline and now we can show the rosterView
-                        item.set('sorted', true);
-                        this.initialSort();
-                        this.$el.show();
+                        if (!this.$el.is(':visible')) {
+                            // Once all initial roster items have been added, we
+                            // can show the roster.
+                            this.$el.show();
+                        }
                         converse.xmppstatus.sendPresence();
                     }
                 }
                 // Hide the headings if there are no contacts under them
                 _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
                     if (h.nextUntil('dt').length) {
-                        h.show();
+                        if (!h.is(':visible')) {
+                            h.show();
+                        }
                     }
-                    else {
+                    else if (h.is(':visible')) {
                         h.hide();
                     }
                 });
@@ -2306,11 +2306,14 @@
                 return this;
             },
 
-            initialSort: function () {
-                var $my_contacts = this.$el.find('#xmpp-contacts'),
-                    crit = {order:'asc'};
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+            sortRoster: function (chat_status) {
+                var $my_contacts = this.$el.find('#xmpp-contacts');
+                $my_contacts.siblings('dd.current-xmpp-contact.'+chat_status).tsort('a', {order:'asc'});
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online'));
             }
         });
 
@@ -2694,9 +2697,8 @@
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) {
-                    console.log(level+' '+msg);
-                };
+                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
             }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);

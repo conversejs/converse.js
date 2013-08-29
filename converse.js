@@ -1875,6 +1875,12 @@
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
+                    _.each(['pending-xmpp-contact', 'requesting-xmpp-contact'], 
+                        function (cls) {
+                            if (this.el.className.indexOf(cls) !== -1) {
+                                this.$el.removeClass(cls);
+                            }
+                        }, this);
                     this.$el.addClass('current-xmpp-contact');
                     var status_desc = {
                         'dnd': 'This contact is busy',
@@ -2242,7 +2248,8 @@
                 var $my_contacts = this.$el.find('#xmpp-contacts'),
                     $contact_requests = this.$el.find('#xmpp-contact-requests'),
                     $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
-                    $count, presence_change;
+                    sorted = false,
+                    $count, changed_presence;
                 if (item) {
                     var jid = item.id,
                         view = this.rosteritemviews[item.id],
@@ -2263,22 +2270,18 @@
                             $my_contacts.after(view.render().el);
                         }
                     }
-
-                    presence_change = view.model.changed.chat_status;
-                    if (presence_change) {
-                        $my_contacts.siblings('dd.current-xmpp-contact.'+presence_change).tsort('a', crit);
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline'));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable'));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away'));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd'));
-                        $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online'));
-                    }
-
+                    changed_presence = view.model.changed.chat_status;
+                    if (changed_presence) {
+                        this.sortRoster(changed_presence)
+                        sorted = true;
+                    } 
                     if (item.get('is_last')) {
+                        if (!sorted) {
+                            this.sortRoster(item.get('chat_status'));
+                        }
                         if (!this.$el.is(':visible')) {
                             // Once all initial roster items have been added, we
                             // can show the roster.
-                            this.initialSort();
                             this.$el.show();
                         }
                         converse.xmppstatus.sendPresence();
@@ -2303,11 +2306,14 @@
                 return this;
             },
 
-            initialSort: function () {
-                var $my_contacts = this.$el.find('#xmpp-contacts'),
-                    crit = {order:'asc'};
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline').tsort('a', crit));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable').tsort('a', crit));
+            sortRoster: function (chat_status) {
+                var $my_contacts = this.$el.find('#xmpp-contacts');
+                $my_contacts.siblings('dd.current-xmpp-contact.'+chat_status).tsort('a', {order:'asc'});
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online'));
             }
         });
 
@@ -2691,9 +2697,8 @@
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) {
-                    console.log(level+' '+msg);
-                };
+                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
             }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);

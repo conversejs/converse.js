@@ -1848,11 +1848,11 @@
                 '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">'+
                     '<span class="icon-{{ chat_status }}" title="{{ status_desc }}"></span>{{ fullname }}'+
                 '</a>' +
-                '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
+                '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             pending_template: _.template(
                 '<span>{{ fullname }}</span>' +
-                '<a class="remove-xmpp-contact" title="'+__('Click to remove this contact')+'" href="#"></a>'),
+                '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
 
             request_template: _.template('<div>{{ fullname }}</div>' +
                 '<button type="button" class="accept-xmpp-request">' +

@@ -2,10 +2,10 @@ require.config({
     paths: {
         "jquery": "components/jquery/jquery",
         "locales": "locale/locales",
-        "tinysort": "components/tinysort/src/jquery.tinysort",
+        "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
-        "localstorage": "components/backbone.localStorage/backbone.localStorage",
+        "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",
@@ -40,6 +40,6 @@ require.config({
     }
 });
 
-require(["components/requirejs/require", "jquery", "converse"], function(require, $, converse) {
+require(["jquery", "converse"], function(require, $, converse) {
     window.converse = converse;
 });

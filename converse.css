@@ -17,10 +17,7 @@
     user-select: none;
 }
 
-#collective-xmpp-chat-data {
-  color: rgb(79, 79, 79);
-}
-
+#collective-xmpp-chat-data,
 #collective-xmpp-chat-data input {
   color: rgb(79, 79, 79);
 }
@@ -163,6 +160,10 @@ ul.participant-list li.moderator {
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em;
+}
+
+.chatroom .chat-content {
+    height:200px;
 }
 
 .chatroom .chat-content {
@@ -331,7 +332,7 @@ dl.add-converse-contact {
     float: right;
     clear: right;
     height: 22px;
-    padding: 5px 5px 0 0;
+    padding: 0px 5px 0 0;
     color: rgb(79, 79, 79);
 }
 
@@ -384,18 +385,8 @@ a.close-chatbox-button {
     text-shadow:1px 1px 0 #ffffff;
 }
 
-.close-chatbox-button {
-    padding: 0 2px 0 6px;
-}
-
-.close-chatbox-button:hover {
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f6f6f6), color-stop(1, #ffffff) );
-    background:-moz-linear-gradient( center top, #f6f6f6 5%, #ffffff 100% );
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f6f6f6', endColorstr='#ffffff');
-    background-color:#f6f6f6;
-}
-
-.close-chatbox-button:active {
+a.configure-chatroom-button:active,
+a.close-chatbox-button:active {
     position:relative;
     top:1px;
 }
@@ -576,6 +567,7 @@ dd.available-chatroom:hover a.room-info {
 }
 
 #converse-roster a.open-chat {
+    line-height: 21px;
     width: 85%;
 }
 #converse-roster  dd:hover a.open-chat {
@@ -627,7 +619,7 @@ div#controlbox-panes {
     background-color: white;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
-    width: 199px;
+    width: 200px;
 }
 
 
@@ -781,6 +773,10 @@ ul.chat-toolbar {
     height: 20px;
     display: block;
     width: 195px;
+    /* XXX:  CHECKME */
+    float: right;
+    display: inline-block;
+    height: 20px;
 }
 
 .chat-toolbar .toggle-otr {
@@ -845,6 +841,11 @@ ul.chat-toolbar li {
     cursor: pointer; 
 }
 
+ul.chat-toolbar li:hover {
+    cursor: pointer; 
+    color: rgb(39, 39, 39);
+}
+
 form#set-custom-xmpp-status {
     float: left;
     padding: 0;
@@ -859,7 +860,6 @@ form#set-custom-xmpp-status {
     border: 2px solid #2D617A;
     margin:0;
 }
-
 
 #set-custom-xmpp-status button {
     padding: 1px 2px 1px 1px;
@@ -894,7 +894,7 @@ form.add-xmpp-contact input {
 .chatbox .dropdown dt a span {
     cursor:pointer; 
     display:block; 
-    padding: 2px 7px 0 5px;
+    padding: 4px 7px 0 5px;
     color: rgb(79, 79, 79);
 }
 
@@ -921,7 +921,7 @@ form.add-xmpp-contact input {
 .chatbox .dropdown a {
     height: 22px;
     display: inline-block;
-    padding-top: 2px;
+    line-height: 24px;
 }
 
 .chatbox .dropdown dd ul a:hover {

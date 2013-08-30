@@ -305,14 +305,13 @@
                 return myKey;
             },
 
-            initiateOTR: function (myKey) {
-                var options = {
+            initiateOTR: function () {
+                this.otr = new otr.OTR({
                     fragment_size: 140,
                     send_interval: 200,
-                    priv: myKey,
-                    debug: true
-                };
-                this.otr = new otr.OTR(options);
+                    priv: this.getPrivateKey(),
+                    debug: this.debug
+                });
                 this.otr.on('ui', $.proxy(function (msg) {
                     this.trigger('showReceivedOTRMessage', msg);
                 }, this));
@@ -378,10 +377,8 @@
                         if (match) {
                             // They want to initiate OTR
                             if (!this.otr) {
-                                // FIXME: this isn't yet correct...
-                                this.initiateOTR();
+                                this.trigger('buddyStartsOTR');
                             }
-                            this.otr.receiveMsg(match[0]);
                         } else {
                             // Normal unencrypted message.
                             this.createMessage(message);
@@ -403,7 +400,7 @@
                 'click .close-chatbox-button': 'closeChat',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-otr': 'toggleOTRMenu',
-                'click .start-otr': 'startOTR',
+                'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
                 'click .auth-otr': 'authOTR'
             },
@@ -420,7 +417,7 @@
                 '<form class="sendXMPPMessage" action="" method="post">' +
                     '<ul class="chat-toolbar no-text-select">'+
                         '<li class="toggle-otr not-private" title="Turn on \'off-the-record\' chat encryption">'+
-                            '<span class="chat-toolbar-text">Not private</span>'+
+                            '<span class="chat-toolbar-text">Unencrypted</span>'+
                             '<span class="icon-unlocked"></span>'+
                             '<ul>'+
                                 '<li><a class="start-otr" href="#">Start private conversation</a></li>'+
@@ -457,6 +454,7 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change', this.onChange, this);
+                this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
                 this.model.on('sendMessageStanza', this.sendMessageStanza, this);
                 this.model.on('showSentOTRMessage', function (text) {
                     this.showOTRMessage(text, 'me');
@@ -683,26 +681,31 @@
                 });
             },
 
-            startOTR: function (ev) {
-                $(ev.target).parent().parent().slideUp();
-                ev.stopPropagation();
-                msgs = [
-                    __('Initializing OTR.'),
-                    __('Generating private key'),
-                    __('...this might take a few seconds.')
-                    ];
-                this.showHelpMessages(msgs);
+            startOTR: function (message) {
+                this.showHelpMessages([
+                    message,
+                    __('Hold on, generating private key.')
+                ]);
                 setTimeout($.proxy(function () {
-                    var privKey = this.model.getPrivateKey();
-                    msgs = [
-                        __('Private key generated.')
-                        ];
-                    this.showHelpMessages(msgs);
-                    this.model.initiateOTR(privKey);
+                    this.model.initiateOTR();
+                    this.showHelpMessages([__('Private key generated.')]);
                 }, this));
                 // TODO: UI must be updated to show new status... most likely
                 // "unverified" but we also need to figure out to know whether
                 // the status is verified or unverified (and how to verify).
+            },
+
+            buddyStartsOTR: function (ev) {
+                this.showHelpMessages([
+                    __(this.model.get('fullname') + ' has requested an encrypted session.')
+                ]);
+                this.startOTR();
+            },
+
+            startOTRFromToolbar: function (ev) {
+                $(ev.target).parent().parent().slideUp();
+                ev.stopPropagation();
+                this.startOTR();
             },
 
             endOTR: function (ev) {

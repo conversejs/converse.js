@@ -819,8 +819,8 @@ ul.chat-toolbar {
     padding-right: 3px;
 }
 
-.not-private a,
-.not-private {
+.unencrypted a,
+.unencrypted {
     color: #8f2831;
 }
 

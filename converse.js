@@ -58,6 +58,10 @@
         this.xhr_custom_status = false;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.callback = callback || function () {};
+        var UNENCRYPTED = 'unencrypted';
+        var UNVERIFIED= 'unverified';
+        var VERIFIED= 'verified';
+        var FINISHED = 'finished';
 
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
@@ -286,7 +290,8 @@
                         'fullname' : this.get('fullname'),
                         'url': this.get('url'),
                         'image_type': this.get('image_type'),
-                        'image': this.get('image')
+                        'image': this.get('image'),
+                        'otr_status': 'unencrypted'
                     });
                 }
             },
@@ -312,6 +317,25 @@
                     priv: this.getPrivateKey(),
                     debug: this.debug
                 });
+                this.otr.on('status', $.proxy(function (state) {
+                    switch (state) {
+                        case otr.OTR.CONST.STATUS_AKE_SUCCESS:
+                            if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_ENCRYPTED) {
+                                this.set('otr_status', UNVERIFIED);
+                            }
+                            break;
+                        case otr.OTR.CONST.STATUS_END_OTR:
+                            if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
+                                // XXX: inform the user that his correspondent has closed his end
+                                // of the private connection and the user should do the same
+                                this.set('otr_status', FINISHED);
+                            } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
+                                this.set('otr_status', UNENCRYPTED);
+                            }
+                            break;
+                    }
+                }, this));
+
                 this.otr.on('ui', $.proxy(function (msg) {
                     this.trigger('showReceivedOTRMessage', msg);
                 }, this));
@@ -415,39 +439,51 @@
                 '</div>' +
                 '<div class="chat-content"></div>' +
                 '<form class="sendXMPPMessage" action="" method="post">' +
-                    '<ul class="chat-toolbar no-text-select">'+
-                        '<li class="toggle-otr not-private" title="Turn on \'off-the-record\' chat encryption">'+
-                            '<span class="chat-toolbar-text">Unencrypted</span>'+
-                            '<span class="icon-unlocked"></span>'+
-                            '<ul>'+
-                                '<li><a class="start-otr" href="#">Start private conversation</a></li>'+
-                                '<li><a class="end-otr" href="#">End private conversation</a></li>'+
-                                '<li><a class="auth-otr" href="#">Authenticate buddy</a></li>'+
-                                '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What\'s this?</a></li>'+
-                            '</ul>'+
-                        '</li>'+
-                    '</ul>'+
+                    '<ul class="chat-toolbar no-text-select"></ul>'+
                 '<textarea ' +
                     'type="text" ' +
                     'class="chat-textarea" ' +
                     'placeholder="'+__('Personal message')+'"/>'+
                 '</form>'),
 
+            toolbar_template: _.template(
+                '<li class="toggle-otr {{otr_status}}" title="{{otr_tooltip}}">'+
+                    '<span class="chat-toolbar-text">{{otr_status}}</span>'+
+                    '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
+                        '<span class="icon-unlocked"></span>'+
+                    '{[ } ]}' +
+                    '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
+                        '<span class="icon-lock"></span>'+
+                    '{[ } ]}' +
+                    '{[ if (otr_status == "'+VERIFIED+'") { ]}' +
+                        '<span class="icon-lock"></span>'+
+                    '{[ } ]}' +
+                    '{[ if (otr_status == "'+FINISHED+'") { ]}' +
+                        '<span class="icon-unlocked"></span>'+
+                    '{[ } ]}' +
+                    '<ul>'+
+                        '<li><a class="start-otr" href="#">Start private conversation</a></li>'+
+                        '<li><a class="end-otr" href="#">End private conversation</a></li>'+
+                        '<li><a class="auth-otr" href="#">Authenticate buddy</a></li>'+
+                        '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What\'s this?</a></li>'+
+                    '</ul>'+
+                '</li>'),
+
             message_template: _.template(
-                                '<div class="chat-message {{extra_classes}}">' +
-                                    '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' +
-                                    '<span class="chat-message-content">{{message}}</span>' +
-                                '</div>'),
+                '<div class="chat-message {{extra_classes}}">' +
+                    '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' +
+                    '<span class="chat-message-content">{{message}}</span>' +
+                '</div>'),
 
             action_template: _.template(
-                                '<div class="chat-message {{extra_classes}}">' +
-                                    '<span class="chat-message-{{sender}}">{{time}} **{{username}} </span>' +
-                                    '<span class="chat-message-content">{{message}}</span>' +
-                                '</div>'),
+                '<div class="chat-message {{extra_classes}}">' +
+                    '<span class="chat-message-{{sender}}">{{time}} **{{username}} </span>' +
+                    '<span class="chat-message-content">{{message}}</span>' +
+                '</div>'),
 
             new_day_template: _.template(
-                                '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
-                                ),
+                '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
+                ),
 
             initialize: function (){
                 this.model.messages.on('add', this.onMessageAdded, this);
@@ -468,6 +504,13 @@
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
                 }
+            },
+
+            render: function () {
+                this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
+                this.renderToolbar().renderAvatar();
+                return this;
             },
 
             showStatusNotification: function (message, replace) {
@@ -681,24 +724,19 @@
                 });
             },
 
-            startOTR: function (message) {
-                this.showHelpMessages([
-                    message,
-                    __('Hold on, generating private key.')
-                ]);
+            startOTR: function () {
+                // TODO: this should probably only be shown when a private key
+                // is really being generated. Would have to be via triggered
+                // event.
+                this.showHelpMessages([__('Hold on, generating a private key.')]);
                 setTimeout($.proxy(function () {
                     this.model.initiateOTR();
                     this.showHelpMessages([__('Private key generated.')]);
                 }, this));
-                // TODO: UI must be updated to show new status... most likely
-                // "unverified" but we also need to figure out to know whether
-                // the status is verified or unverified (and how to verify).
             },
 
             buddyStartsOTR: function (ev) {
-                this.showHelpMessages([
-                    __(this.model.get('fullname') + ' has requested an encrypted session.')
-                ]);
+                this.showHelpMessages([__('This user has requested an encrypted session.')]);
                 this.startOTR();
             },
 
@@ -731,10 +769,15 @@
                             this.$el.find('div.chat-event').remove();
                         }
                     }
-                } if (_.has(item.changed, 'status')) {
+                } 
+                if (_.has(item.changed, 'status')) {
                     this.showStatusMessage(item.get('status'));
-                } if (_.has(item.changed, 'image')) {
+                } 
+                if (_.has(item.changed, 'image')) {
                     this.renderAvatar();
+                }
+                if (_.has(item.changed, 'otr_status')) {
+                    this.renderToolbar();
                 }
                 // TODO check for changed fullname as well
             },
@@ -773,6 +816,21 @@
                 }
             },
 
+            renderToolbar: function () {
+                var data = this.model.toJSON();
+                if (data.otr_status == UNENCRYPTED) {
+                    data.otr_tooltip = __('Your chat message are not encrypted. Click here to enable OTR encryption.');
+                } else if (data.otr_status == UNVERIFIED){
+                    data.otr_tooltip = __('Your chat messages are encrypted, but your buddy has not been verified.');
+                } else if (data.otr_status == VERIFIED){
+                    data.otr_tooltip = __('Your chat messages are encrypted and your buddy verified.');
+                } else if (data.otr_status == FINISHED){
+                    data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
+                }
+                this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
+                return this;
+            },
+
             renderAvatar: function () {
                 if (!this.model.get('image')) {
                     return;
@@ -787,12 +845,6 @@
                 };
                 img.src = img_src;
                 this.$el.find('.chat-title').before(canvas);
-            },
-
-            render: function () {
-                this.$el.attr('id', this.model.get('box_id'))
-                    .html(this.template(this.model.toJSON()));
-                this.renderAvatar();
                 return this;
             },
 

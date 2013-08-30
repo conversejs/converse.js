@@ -30,7 +30,7 @@ require.config({
         'crypto.aes': {
             exports: 'CryptoJS'
         },
-        'tinysort': { deps: ['jquery'] },
+        'jquery.tinysort': { deps: ['jquery'] },
         'strophe': { deps: ['jquery'] },
         'underscore':   { exports: '_' },
         'strophe.muc':  { deps: ['strophe', 'jquery'] },

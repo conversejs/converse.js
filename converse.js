@@ -281,17 +281,16 @@
         this.ChatBox = Backbone.Model.extend({
             initialize: function () {
                 if (this.get('box_id') !== 'controlbox') {
+                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                        this.initiateOTR();
+                    }
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.messages'+this.get('jid')));
                     this.set({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
-                        'fullname' : this.get('fullname'),
-                        'url': this.get('url'),
-                        'image_type': this.get('image_type'),
-                        'image': this.get('image'),
-                        'otr_status': UNENCRYPTED
+                        'otr_status': this.get('otr_status') || UNENCRYPTED 
                     });
                 }
             },
@@ -305,7 +304,7 @@
                 if (savedKey) {
                     decrypted = cipher.decrypt(crypto.algo.AES, savedKey, pass);
                     myKey = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
-                    if (cipher.decrypt(crypto.algo.AES, passCheck, 'pass').toString(crypto.enc.Latin1) === 'match') {
+                    if (cipher.decrypt(crypto.algo.AES, passCheck, pass).toString(crypto.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
                         return myKey;
                     }
@@ -319,6 +318,42 @@
                 return myKey;
             },
 
+            updateOTRStatus: function (state) {
+                switch (state) {
+                    case otr.OTR.CONST.STATUS_AKE_SUCCESS:
+                        if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_ENCRYPTED) {
+                            this.save({'otr_status': UNVERIFIED});
+                        }
+                        break;
+                    case otr.OTR.CONST.STATUS_END_OTR:
+                        if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
+                            this.save({'otr_status': FINISHED});
+                        } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_PLAINTEXT) {
+                            this.save({'otr_status': UNENCRYPTED});
+                        }
+                        break;
+                }
+            },
+
+            onSMP: function (type, data) {
+                // Event handler for SMP (Socialist's Millionaire Protocol)
+                // used by OTR (off-the-record).
+                switch (type) {
+                    case 'question':
+                        this.otr.smpSecret(prompt(data));
+                        break;
+                    case 'trust':
+                        if (this.otr.trust === true) {
+                            this.save({'otr_status': VERIFIED});
+                        } else {
+                            this.save({'otr_status': UNVERIFIED});
+                        }
+                        break;
+                    default:
+                        throw new Error('Unknown type.');
+                }
+            },
+
             initiateOTR: function () {
                 this.otr = new otr.OTR({
                     fragment_size: 140,
@@ -326,22 +361,8 @@
                     priv: this.getPrivateKey(),
                     debug: this.debug
                 });
-                this.otr.on('status', $.proxy(function (state) {
-                    switch (state) {
-                        case otr.OTR.CONST.STATUS_AKE_SUCCESS:
-                            if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_ENCRYPTED) {
-                                this.set('otr_status', UNVERIFIED);
-                            }
-                            break;
-                        case otr.OTR.CONST.STATUS_END_OTR:
-                            if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
-                                this.set('otr_status', FINISHED);
-                            } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_PLAINTEXT) {
-                                this.set('otr_status', UNENCRYPTED);
-                            }
-                            break;
-                    }
-                }, this));
+                this.otr.on('status', $.proxy(this.updateOTRStatus, this));
+                this.otr.on('smp', $.proxy(this.onSMP, this));
 
                 this.otr.on('ui', $.proxy(function (msg) {
                     this.trigger('showReceivedOTRMessage', msg);
@@ -409,10 +430,16 @@
                                 this.trigger('buddyStartsOTR');
                             }
                         } else if (text.match(/^\?OTR\:/)) {
-                            // This is an encrypted message, but we don't
-                            // appear to have an encrypted session. Send to OTR
-                            // anyway, they'll complain.
-                            this.otr.receiveMsg(text);
+                            if (this.otr) {
+                                // This is an encrypted message, but we don't
+                                // appear to have an encrypted session. Send to OTR
+                                // anyway, they'll complain.
+                                this.otr.receiveMsg(text);
+                            } else {
+                                this.showHelpMessages(
+                                    [__('We received an encrypted message, but you are not set up for encryption yet.')],
+                                    'error');
+                            }
                         } else {
                             // Normal unencrypted message.
                             this.createMessage(message);
@@ -480,7 +507,8 @@
                             '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
                         '{[ } ]}' +
                         '{[ if (otr_status === "'+UNVERIFIED+'") { ]}' +
-                            '<li><a class="auth-otr" href="#">'+__('Authenticate buddy')+'</a></li>'+
+                            '<li><a class="auth-otr" data-scheme="fingerprint" href="#">'+__('Verify with fingerprints')+'</a></li>'+
+                            '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
                         '{[ } ]}' +
                         '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
                     '</ul>'+
@@ -788,21 +816,31 @@
             },
 
             authOTR: function (ev) {
-                var result = confirm(__(
-                    'Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\n'+
-                    'Fingerprint for you, %2$s: %3$s\n\n'+
-                    'Fingerprint for %1$s: %4$s\n\n'+
-                    'If you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
-                        this.model.get('fullname'),
-                        converse.xmppstatus.get('fullname')||converse.bare_jid,
-                        this.model.otr.priv.fingerprint(),
-                        this.model.otr.their_priv_pk.fingerprint()
-                    ]
-                ));
-                if (result === true) {
-                    this.model.set('otr_status', VERIFIED);
+                var scheme = $(ev.target).data().scheme;
+                var result, question, answer;
+                if (scheme === 'fingerprint') {
+                    result = confirm(__(
+                        'Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\n'+
+                        'Fingerprint for you, %2$s: %3$s\n\n'+
+                        'Fingerprint for %1$s: %4$s\n\n'+
+                        'If you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
+                            this.model.get('fullname'),
+                            converse.xmppstatus.get('fullname')||converse.bare_jid,
+                            this.model.otr.priv.fingerprint(),
+                            this.model.otr.their_priv_pk.fingerprint()
+                        ]
+                    ));
+                    if (result === true) {
+                        this.model.save({'otr_status': VERIFIED});
+                    } else {
+                        this.model.save({'otr_status': UNVERIFIED});
+                    }
+                } else if (scheme === 'smp') {
+                    question = prompt(__('What is your security question?'));
+                    answer = prompt(__('What is the answer to the security question?'));
+                    this.model.otr.smpSecret(answer, question);
                 } else {
-                    this.model.set('otr_status', UNVERIFIED);
+                    this.showHelpMessages([__('Invalid authentication scheme provided')], 'error');
                 }
             },
 

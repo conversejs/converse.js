@@ -291,7 +291,7 @@
                         'url': this.get('url'),
                         'image_type': this.get('image_type'),
                         'image': this.get('image'),
-                        'otr_status': 'unencrypted'
+                        'otr_status': UNENCRYPTED
                     });
                 }
             },
@@ -397,12 +397,17 @@
                     if (this.otr) {
                         this.otr.receiveMsg(text);
                     } else {
-                        var match = text.match(/^\?OTR(.*\?)/);
-                        if (match) {
+                        if (text.match(/^\?OTR(.*\?)/)) {
                             // They want to initiate OTR
                             if (!this.otr) {
                                 this.trigger('buddyStartsOTR');
                             }
+                        } else if (text.match(/^\?OTR\:/)) {
+                            this.trigger(
+                                'showHelpMessages',
+                                [__("You were sent an encrypted message, but you don't have encryption set up.")],
+                                'error'
+                            );
                         } else {
                             // Normal unencrypted message.
                             this.createMessage(message);
@@ -462,10 +467,17 @@
                         '<span class="icon-unlocked"></span>'+
                     '{[ } ]}' +
                     '<ul>'+
-                        '<li><a class="start-otr" href="#">Start private conversation</a></li>'+
-                        '<li><a class="end-otr" href="#">End private conversation</a></li>'+
-                        '<li><a class="auth-otr" href="#">Authenticate buddy</a></li>'+
-                        '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What\'s this?</a></li>'+
+                        '{[ if (otr_status === "'+UNENCRYPTED+'") { ]}' +
+                            '<li><a class="start-otr" href="#">'+__('Start encrypted conversation')+'</a></li>'+
+                        '{[ } ]}' +
+                        '{[ if (otr_status !== "'+UNENCRYPTED+'") { ]}' +
+                            '<li><a class="start-otr" href="#">'+__('Refresh encrypted conversation')+'</a></li>'+
+                            '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
+                        '{[ } ]}' +
+                        '{[ if (otr_status === "'+UNVERIFIED+'") { ]}' +
+                            '<li><a class="auth-otr" href="#">'+__('Verify buddy')+'</a></li>'+
+                        '{[ } ]}' +
+                        '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
                     '</ul>'+
                 '</li>'),
 
@@ -491,6 +503,7 @@
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change', this.onChange, this);
                 this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
+                this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.model.on('sendMessageStanza', this.sendMessageStanza, this);
                 this.model.on('showSentOTRMessage', function (text) {
                     this.showOTRMessage(text, 'me');
@@ -565,11 +578,11 @@
                 this.scrollDown();
             },
 
-            showHelpMessages: function (msgs) {
+            showHelpMessages: function (msgs, type) {
                 var $chat_content = this.$el.find('.chat-content'), i,
                     msgs_length = msgs.length;
                 for (i=0; i<msgs_length; i++) {
-                    $chat_content.append($('<div class="chat-info">'+msgs[i]+'</div>'));
+                    $chat_content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
                 }
                 this.scrollDown();
             },

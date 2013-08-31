@@ -171,7 +171,10 @@ ul.participant-list li.moderator {
 }
 
 .chat-info {
-    color:#666666;
+    color: #666666;
+}
+.chat-error {
+    color: #8f2831;
 }
 
 .chat-message-room,

@@ -298,15 +298,24 @@
 
             getPrivateKey: function () {
                 var savedKey = this.get('priv_key');
+                var passCheck = this.get('pass_check');
+                var cipher = crypto.lib.PasswordBasedCipher;
+                var pass = converse.connection.pass;
                 var myKey, decrypted, ciphertextParams;
                 if (savedKey) {
-                    decrypted = crypto.lib.PasswordBasedCipher.decrypt(crypto.algo.AES, savedKey, converse.connection.pass);
+                    decrypted = cipher.decrypt(crypto.algo.AES, savedKey, pass);
                     myKey = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
-                } else {
-                    myKey = new otr.DSA();
-                    ciphertextParams = crypto.lib.PasswordBasedCipher.encrypt(crypto.algo.AES, myKey.packPrivate(), converse.connection.pass);
-                    this.save({'priv_key': ciphertextParams.toString()});
+                    if (cipher.decrypt(crypto.algo.AES, passCheck, 'pass').toString(crypto.enc.Latin1) === 'match') {
+                        // Verified that the user's password is still the same
+                        return myKey;
+                    }
                 }
+                // Couldn't get stored key, generate a new one.
+                myKey = new otr.DSA();
+                this.save({
+                    'priv_key': cipher.encrypt(crypto.algo.AES, myKey.packPrivate(), pass).toString(),
+                    'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString()
+                });
                 return myKey;
             },
 

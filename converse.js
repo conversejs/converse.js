@@ -781,7 +781,22 @@
             },
 
             authOTR: function (ev) {
-                alert('to be done');
+                var result = confirm(__(
+                    'Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\n'+
+                    'Fingerprint for you, %2$s: %3$s\n\n'+
+                    'Fingerprint for %1$s: %4$s\n\n'+
+                    'If you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
+                        this.model.get('fullname'),
+                        converse.xmppstatus.get('fullname')||converse.bare_jid,
+                        this.model.otr.priv.fingerprint(),
+                        this.model.otr.their_priv_pk.fingerprint()
+                    ]
+                ));
+                if (result === true) {
+                    this.model.set('otr_status', VERIFIED);
+                } else {
+                    this.model.set('otr_status', UNVERIFIED);
+                }
             },
 
             onChange: function (item, changed) {

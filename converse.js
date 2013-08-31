@@ -340,7 +340,10 @@
                 // used by OTR (off-the-record).
                 switch (type) {
                     case 'question':
-                        this.otr.smpSecret(prompt(data));
+                        this.otr.smpSecret(prompt(__(
+                            'Authentication request from %1$s\n\n'+
+                            'Your buddy is attempting to verify your identity, by asking you the question below.\n\n'+
+                            '%2$s', [this.get('fullname'), data])));
                         break;
                     case 'trust':
                         if (this.otr.trust === true) {
@@ -505,10 +508,10 @@
                         '{[ if (otr_status !== "'+UNENCRYPTED+'") { ]}' +
                             '<li><a class="start-otr" href="#">'+__('Refresh encrypted conversation')+'</a></li>'+
                             '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
+                            '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
                         '{[ } ]}' +
                         '{[ if (otr_status === "'+UNVERIFIED+'") { ]}' +
                             '<li><a class="auth-otr" data-scheme="fingerprint" href="#">'+__('Verify with fingerprints')+'</a></li>'+
-                            '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
                         '{[ } ]}' +
                         '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
                     '</ul>'+
@@ -836,9 +839,14 @@
                         this.model.save({'otr_status': UNVERIFIED});
                     }
                 } else if (scheme === 'smp') {
+                    alert(__('You will be prompted to provide a security question and then an answer to '+
+                             'that question.\n\nYour buddy will then be prompted the same question and if they '+
+                             'type the exact same answer (case sensitive), their identity will have been verified.'));
                     question = prompt(__('What is your security question?'));
-                    answer = prompt(__('What is the answer to the security question?'));
-                    this.model.otr.smpSecret(answer, question);
+                    if (question) {
+                        answer = prompt(__('What is the answer to the security question?'));
+                        this.model.otr.smpSecret(answer, question);
+                    }
                 } else {
                     this.showHelpMessages([__('Invalid authentication scheme provided')], 'error');
                 }

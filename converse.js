@@ -343,8 +343,7 @@
                     this.trigger('sendMessageStanza', msg);
                 }, this));
                 this.otr.on('error', $.proxy(function (msg) {
-                    // XXX
-                    console.log("ERROR: message to display to the user:"+msg);
+                    this.trigger('showOTRError', msg);
                 }, this));
                 this.otr.sendQueryMsg();
             },
@@ -502,6 +501,7 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change', this.onChange, this);
+                this.model.on('showOTRError', this.showOTRError, this);
                 this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.model.on('sendMessageStanza', this.sendMessageStanza, this);
@@ -557,7 +557,7 @@
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''
                     }));
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             showOTRMessage:  function (text, sender) {
@@ -575,7 +575,7 @@
                         'username': username,
                         'extra_classes': ''
                     }));
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             showHelpMessages: function (msgs, type) {
@@ -584,7 +584,7 @@
                 for (i=0; i<msgs_length; i++) {
                     $chat_content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
                 }
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             onMessageAdded: function (message) {
@@ -619,7 +619,7 @@
                 if ((message.get('sender') != 'me') && (converse.windowState == 'blur')) {
                     converse.incrementMsgCounter();
                 }
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             isDifferentDay: function (prev_date, next_date) {
@@ -737,6 +737,25 @@
                 });
             },
 
+            showOTRError: function (msg) {
+                if (msg == 'Message cannot be sent at this time.') {
+                    this.showHelpMessages(
+                        [__('Your message could not be sent')], 'error');
+                } else if (msg == 'Received an unencrypted message.') {
+                    this.showHelpMessages(
+                        [__('We received an unencrypted message')], 'error');
+                } else if (
+                    (msg == 'MACs do not match.') ||
+                    (msg == 'Received an unreadable encrypted message.')) {
+                    this.showHelpMessages(
+                        [__('We received an unreadable encrypted message')],
+                        'error');
+                } else {
+                    this.showHelpMessages(['Encryption error occured: '+msg], 'error');
+                }
+                console.log("OTR ERROR:"+msg);
+            },
+
             startOTR: function () {
                 // TODO: this should probably only be shown when a private key
                 // is really being generated. Would have to be via triggered
@@ -790,7 +809,7 @@
                     this.renderAvatar();
                 }
                 if (_.has(item.changed, 'otr_status')) {
-                    this.renderToolbar();
+                    this.renderToolbar().informOTRChange();
                 }
                 // TODO check for changed fullname as well
             },
@@ -829,14 +848,29 @@
                 }
             },
 
+            informOTRChange: function () {
+                var data = this.model.toJSON();
+                var msgs = [];
+                if (data.otr_status == UNENCRYPTED) {
+                    msgs.push(__("Your messages are not encrypted anymore"));
+                } else if (data.otr_status == UNVERIFIED){
+                    msgs.push(__("Your messages are encrypted but your buddy's identity has not been verified."));
+                } else if (data.otr_status == VERIFIED){
+                    msgs.push(__("Your messages are encrypted and your buddy's identify verified."));
+                } else if (data.otr_status == FINISHED){
+                    msgs.push(__("Your buddy has ended encryption on their end, you should do the same."));
+                }
+                return this.showHelpMessages(msgs);
+            },
+
             renderToolbar: function () {
                 var data = this.model.toJSON();
                 if (data.otr_status == UNENCRYPTED) {
-                    data.otr_tooltip = __('Your chat message are not encrypted. Click here to enable OTR encryption.');
+                    data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
                 } else if (data.otr_status == UNVERIFIED){
-                    data.otr_tooltip = __('Your chat messages are encrypted, but your buddy has not been verified.');
+                    data.otr_tooltip = __('Your messages are encrypted, but your buddy has not been verified.');
                 } else if (data.otr_status == VERIFIED){
-                    data.otr_tooltip = __('Your chat messages are encrypted and your buddy verified.');
+                    data.otr_tooltip = __('Your messages are encrypted and your buddy verified.');
                 } else if (data.otr_status == FINISHED){
                     data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
                 }
@@ -1745,7 +1779,7 @@
                 for (i=0; i<action_msgs.length; i++) {
                     $chat_content.append(this.info_template({message: action_msgs[i]}));
                 }
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             showErrorMessage: function ($error, room) {

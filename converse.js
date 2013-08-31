@@ -326,10 +326,8 @@
                             break;
                         case otr.OTR.CONST.STATUS_END_OTR:
                             if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
-                                // XXX: inform the user that his correspondent has closed his end
-                                // of the private connection and the user should do the same
                                 this.set('otr_status', FINISHED);
-                            } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
+                            } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_PLAINTEXT) {
                                 this.set('otr_status', UNENCRYPTED);
                             }
                             break;
@@ -779,7 +777,7 @@
             },
 
             endOTR: function (ev) {
-                alert('to be done');
+                this.model.otr.endOtr();
             },
 
             authOTR: function (ev) {
@@ -854,9 +852,9 @@
                 if (data.otr_status == UNENCRYPTED) {
                     msgs.push(__("Your messages are not encrypted anymore"));
                 } else if (data.otr_status == UNVERIFIED){
-                    msgs.push(__("Your messages are encrypted but your buddy's identity has not been verified."));
+                    msgs.push(__("Your messages are now encrypted but your buddy's identity has not been verified."));
                 } else if (data.otr_status == VERIFIED){
-                    msgs.push(__("Your messages are encrypted and your buddy's identify verified."));
+                    msgs.push(__("Your buddy's identify has been verified."));
                 } else if (data.otr_status == FINISHED){
                     msgs.push(__("Your buddy has ended encryption on their end, you should do the same."));
                 }

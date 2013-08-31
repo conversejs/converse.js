@@ -789,10 +789,11 @@ ul.chat-toolbar {
 	display: none;
     font-size:12px;
     position: absolute;
-    top: 20px;
+    bottom: 100%;
+    margin-bottom: 0;
     right: 0;
     background: #fff;
-    box-shadow: 1px 3px 3px 1px rgba(0,0,0,0.4);
+    box-shadow: -1px -2px 2px 1px rgba(0,0,0,0.4);
 }
 
 .chat-toolbar .toggle-otr ul li {

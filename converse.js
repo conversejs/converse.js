@@ -1318,7 +1318,7 @@
                     '<ul id="controlbox-tabs"></ul>'+
                     '<a class="close-chatbox-button icon-close"></a>'+
                 '</div>'+
-                '<div id="controlbox-panes"></div>'
+                '<div class="controlbox-panes"></div>'
             ),
 
             switchTab: function (ev) {
@@ -1345,15 +1345,15 @@
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
                     this.$el.html(this.template(this.model.toJSON()));
-                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes'), 'model': this});
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
                     this.loginpanel.render();
                 } else if (!this.contactspanel) {
                     this.$el.html(this.template(this.model.toJSON()));
-                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('#controlbox-panes')});
+                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
                     this.contactspanel.render();
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                     converse.xmppstatusview.render();
-                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('#controlbox-panes')});
+                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
                     this.roomspanel.render();
                 }
                 return this;

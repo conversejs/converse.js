@@ -295,7 +295,7 @@
                 }
             },
 
-            getPrivateKey: function () {
+            getPrivateKey: function (callback) {
                 var savedKey = this.get('priv_key');
                 var passCheck = this.get('pass_check');
                 var cipher = crypto.lib.PasswordBasedCipher;
@@ -306,16 +306,20 @@
                     myKey = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
                     if (cipher.decrypt(crypto.algo.AES, passCheck, pass).toString(crypto.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
-                        return myKey;
+                        return callback(myKey);
                     }
                 }
-                // Couldn't get stored key, generate a new one.
-                myKey = new otr.DSA();
-                this.save({
-                    'priv_key': cipher.encrypt(crypto.algo.AES, myKey.packPrivate(), pass).toString(),
-                    'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString()
-                });
-                return myKey;
+                this.trigger('showHelpMessages', [__('Please wait, generating private key...')]);
+                setTimeout($.proxy(function () {
+                    // Couldn't get stored key, generate a new one.
+                    myKey = new otr.DSA();
+                    this.trigger('showHelpMessages', [__('Private key generated.')]);
+                    this.save({
+                        'priv_key': cipher.encrypt(crypto.algo.AES, myKey.packPrivate(), pass).toString(),
+                        'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString()
+                    });
+                    return callback(myKey);
+                }, this));
             },
 
             updateOTRStatus: function (state) {
@@ -358,25 +362,27 @@
             },
 
             initiateOTR: function () {
-                this.otr = new otr.OTR({
-                    fragment_size: 140,
-                    send_interval: 200,
-                    priv: this.getPrivateKey(),
-                    debug: this.debug
-                });
-                this.otr.on('status', $.proxy(this.updateOTRStatus, this));
-                this.otr.on('smp', $.proxy(this.onSMP, this));
+                this.getPrivateKey($.proxy(function (key) {
+                    this.otr = new otr.OTR({
+                        fragment_size: 140,
+                        send_interval: 200,
+                        priv: key,
+                        debug: this.debug
+                    });
+                    this.otr.on('status', $.proxy(this.updateOTRStatus, this));
+                    this.otr.on('smp', $.proxy(this.onSMP, this));
 
-                this.otr.on('ui', $.proxy(function (msg) {
-                    this.trigger('showReceivedOTRMessage', msg);
+                    this.otr.on('ui', $.proxy(function (msg) {
+                        this.trigger('showReceivedOTRMessage', msg);
+                    }, this));
+                    this.otr.on('io', $.proxy(function (msg) {
+                        this.trigger('sendMessageStanza', msg);
+                    }, this));
+                    this.otr.on('error', $.proxy(function (msg) {
+                        this.trigger('showOTRError', msg);
+                    }, this));
+                    this.otr.sendQueryMsg();
                 }, this));
-                this.otr.on('io', $.proxy(function (msg) {
-                    this.trigger('sendMessageStanza', msg);
-                }, this));
-                this.otr.on('error', $.proxy(function (msg) {
-                    this.trigger('showOTRError', msg);
-                }, this));
-                this.otr.sendQueryMsg();
             },
 
             createMessage: function (message) {
@@ -707,7 +713,7 @@
                         return;
                     }
                     else if (match[1] === "otr") {
-                        this.startOTR();
+                        this.model.initiateOTR();
                         return;
                     } else if (match[1] === "endotr") {
                         if (this.model.otr) {
@@ -792,26 +798,15 @@
                 console.log("OTR ERROR:"+msg);
             },
 
-            startOTR: function () {
-                // TODO: this should probably only be shown when a private key
-                // is really being generated. Would have to be via triggered
-                // event.
-                this.showHelpMessages([__('Hold on, generating a private key.')]);
-                setTimeout($.proxy(function () {
-                    this.model.initiateOTR();
-                    this.showHelpMessages([__('Private key generated.')]);
-                }, this));
-            },
-
             buddyStartsOTR: function (ev) {
                 this.showHelpMessages([__('This user has requested an encrypted session.')]);
-                this.startOTR();
+                this.model.initiateOTR();
             },
 
             startOTRFromToolbar: function (ev) {
                 $(ev.target).parent().parent().slideUp();
                 ev.stopPropagation();
-                this.startOTR();
+                this.model.initiateOTR();
             },
 
             endOTR: function (ev) {

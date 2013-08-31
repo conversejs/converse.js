@@ -391,7 +391,7 @@
                 var $body = $(message).children('body');
                 var text = ($body.length > 0 ? converse.autoLink($body.text()) : undefined);
                 if (text) {
-                    if (this.otr) {
+                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
                         this.otr.receiveMsg(text);
                     } else {
                         if (text.match(/^\?OTR(.*\?)/)) {
@@ -400,11 +400,10 @@
                                 this.trigger('buddyStartsOTR');
                             }
                         } else if (text.match(/^\?OTR\:/)) {
-                            this.trigger(
-                                'showHelpMessages',
-                                [__("You were sent an encrypted message, but you don't have encryption set up.")],
-                                'error'
-                            );
+                            // This is an encrypted message, but we don't
+                            // appear to have an encrypted session. Send to OTR
+                            // anyway, they'll complain.
+                            this.otr.receiveMsg(text);
                         } else {
                             // Normal unencrypted message.
                             this.createMessage(message);
@@ -472,7 +471,7 @@
                             '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
                         '{[ } ]}' +
                         '{[ if (otr_status === "'+UNVERIFIED+'") { ]}' +
-                            '<li><a class="auth-otr" href="#">'+__('Verify buddy')+'</a></li>'+
+                            '<li><a class="auth-otr" href="#">'+__('Authenticate buddy')+'</a></li>'+
                         '{[ } ]}' +
                         '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
                     '</ul>'+
@@ -676,12 +675,11 @@
                         }
                     }
                 }
-                if (this.model.otr) {
+                if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
                     // Off-the-record encryption is active
                     this.model.otr.sendMsg(text);
                     this.model.trigger('showSentOTRMessage', text);
-                }
-                else {
+                } else {
                     // We only save unencrypted messages.
                     this.model.messages.create({
                         fullname: converse.xmppstatus.get('fullname')||converse.bare_jid,

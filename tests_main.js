@@ -33,7 +33,7 @@ require.config({
             //module value.
             exports: 'Backbone'
         },
-        'tinysort': { deps: ['jquery'] },
+        'jquery.tinysort': { deps: ['jquery'] },
         'strophe': { deps: ['jquery'] },
         'underscore':   { exports: '_' },
         'strophe.muc':  { deps: ['strophe', 'jquery'] },

@@ -137,9 +137,9 @@
                 converse.log('Connected');
                 converse.onConnected();
             } else if (status === Strophe.Status.DISCONNECTED) {
-                if ($button) { $button.show().siblings('span').remove(); }
+                //if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Disconnected'), 'error');
-                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
+                //converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
             } else if (status === Strophe.Status.Error) {
                 if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Error'), 'error');
@@ -155,6 +155,7 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
+                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
             } else if (status === Strophe.Status.ATTACHED) {
                 converse.log('Attached');
                 converse.onConnected();
@@ -295,30 +296,30 @@
                 }
             },
 
-            getPrivateKey: function (callback) {
-                var savedKey = this.get('priv_key');
-                var passCheck = this.get('pass_check');
+            getSession: function (callback) {
+                var saved_key = this.get('priv_key');
                 var cipher = crypto.lib.PasswordBasedCipher;
                 var pass = converse.connection.pass;
-                var myKey, decrypted, ciphertextParams;
-                if (savedKey) {
-                    decrypted = cipher.decrypt(crypto.algo.AES, savedKey, pass);
-                    myKey = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
-                    if (cipher.decrypt(crypto.algo.AES, passCheck, pass).toString(crypto.enc.Latin1) === 'match') {
+                if (saved_key) {
+                    var decrypted = cipher.decrypt(crypto.algo.AES, saved_key, pass);
+                    var key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
+                    if (cipher.decrypt(crypto.algo.AES, this.get('pass_check'), pass).toString(crypto.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
-                        return callback(myKey);
+                        return callback(key, this.get('instance_tag'));
                     }
                 }
                 this.trigger('showHelpMessages', [__('Please wait, generating private key...')]);
                 setTimeout($.proxy(function () {
                     // Couldn't get stored key, generate a new one.
-                    myKey = new otr.DSA();
+                    var key = new otr.DSA();
+                    var instance_tag = otr.OTR.makeInstanceTag();
                     this.trigger('showHelpMessages', [__('Private key generated.')]);
                     this.save({
-                        'priv_key': cipher.encrypt(crypto.algo.AES, myKey.packPrivate(), pass).toString(),
-                        'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString()
+                        'priv_key': cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString(),
+                        'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString(),
+                        'instance_tag': instance_tag
                     });
-                    return callback(myKey);
+                    return callback(key, instance_tag);
                 }, this));
             },
 
@@ -353,6 +354,10 @@
                         if (this.otr.trust === true) {
                             this.save({'otr_status': VERIFIED});
                         } else {
+                            this.trigger(
+                                'showHelpMessages',
+                                [__("Could not verify identify via the Socialist's Millionaire Protocol.")],
+                                'error');
                             this.save({'otr_status': UNVERIFIED});
                         }
                         break;
@@ -361,12 +366,19 @@
                 }
             },
 
-            initiateOTR: function () {
-                this.getPrivateKey($.proxy(function (key) {
+            initiateOTR: function (query_msg) {
+                // Sets up an OTR object through which we can send and receive
+                // encrypted messages.
+                //
+                // If 'query_msg' is passed in, it means there is an alread incoming
+                // query message from our buddy. Otherwise, it is us who will
+                // send the query message to them.
+                this.getSession($.proxy(function (key, instance_tag) {
                     this.otr = new otr.OTR({
                         fragment_size: 140,
                         send_interval: 200,
                         priv: key,
+                        instance_tag: instance_tag,
                         debug: this.debug
                     });
                     this.otr.on('status', $.proxy(this.updateOTRStatus, this));
@@ -381,7 +393,12 @@
                     this.otr.on('error', $.proxy(function (msg) {
                         this.trigger('showOTRError', msg);
                     }, this));
-                    this.otr.sendQueryMsg();
+
+                    if (query_msg) {
+                        this.otr.receiveMsg(query_msg);
+                    } else {
+                        this.otr.sendQueryMsg();
+                    }
                 }, this));
             },
 
@@ -433,21 +450,12 @@
                     if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
                         this.otr.receiveMsg(text);
                     } else {
-                        if (text.match(/^\?OTR(.*\?)/)) {
+                        if (text.match(/^\?OTR/)) {
                             // They want to initiate OTR
                             if (!this.otr) {
-                                this.trigger('buddyStartsOTR');
-                            }
-                        } else if (text.match(/^\?OTR\:/)) {
-                            if (this.otr) {
-                                // This is an encrypted message, but we don't
-                                // appear to have an encrypted session. Send to OTR
-                                // anyway, they'll complain.
-                                this.otr.receiveMsg(text);
+                                this.initiateOTR(text);
                             } else {
-                                this.showHelpMessages(
-                                    [__('We received an encrypted message, but you are not set up for encryption yet.')],
-                                    'error');
+                                this.otr.receiveMsg(text);
                             }
                         } else {
                             // Normal unencrypted message.

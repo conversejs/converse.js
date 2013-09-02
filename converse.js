@@ -49,19 +49,21 @@
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
+        this.callback = callback || function () {};
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
+        this.allow_otr = true;
         this.prebind = false;
         this.show_controlbox_by_default = false;
-        this.xhr_user_search = false;
-        this.xhr_custom_status = false;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
-        this.callback = callback || function () {};
+        this.xhr_custom_status = false;
+        this.xhr_user_search = false;
+
+        var FINISHED = 'finished';
         var UNENCRYPTED = 'unencrypted';
         var UNVERIFIED= 'unverified';
         var VERIFIED= 'verified';
-        var FINISHED = 'finished';
 
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
@@ -70,19 +72,20 @@
             'auto_list_rooms',
             'auto_subscribe',
             'bosh_service_url',
-            'fullname',
+            'connection',
             'debug',
+            'fullname',
             'hide_muc_server',
             'i18n',
-            'prebind',
-            'show_controlbox_by_default',
-            'xhr_user_search',
-            'xhr_custom_status',
-            'connection',
-            'testing',
             'jid',
+            'allow_otr',
+            'prebind',
+            'rid',
+            'show_controlbox_by_default',
             'sid',
-            'rid'
+            'testing',
+            'xhr_custom_status',
+            'xhr_user_search'
         ];
         _.extend(this, _.pick(settings, whitelist));
 

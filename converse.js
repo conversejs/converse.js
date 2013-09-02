@@ -2570,9 +2570,9 @@
             template: _.template(
                 '<form id="converse-login">' +
                 '<label>'+__('XMPP/Jabber Username:')+'</label>' +
-                '<input type="text" id="jid">' +
+                '<input type="username" name="jid">' +
                 '<label>'+__('Password:')+'</label>' +
-                '<input type="password" id="password">' +
+                '<input type="password" name="password">' +
                 '<input class="login-submit" type="submit" value="'+__('Log In')+'">' +
                 '</form">'),
 
@@ -2597,7 +2597,7 @@
             },
 
             initialize: function (cfg) {
-                cfg.$parent.append(this.$el.html(this.template()));
+                cfg.$parent.html(this.$el.html(this.template()));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                 this.model.on('connection-fail', function () { this.showConnectButton(); }, this);
                 this.model.on('auth-fail', function () { this.showConnectButton(); }, this);
@@ -2610,11 +2610,10 @@
             },
 
             authenticate: function (ev) {
-                ev.preventDefault();
                 var $form = $(ev.target),
-                    $jid_input = $form.find('input#jid'),
+                    $jid_input = $form.find('input[name=jid]'),
                     jid = $jid_input.val(),
-                    $pw_input = $form.find('input#password'),
+                    $pw_input = $form.find('input[name=password]'),
                     password = $pw_input.val(),
                     $bsu_input = null,
                     errors = false;
@@ -2637,6 +2636,7 @@
                 }
                 if (errors) { return; }
                 this.connect($form, jid, password);
+                return false;
             },
 
             remove: function () {

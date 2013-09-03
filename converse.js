@@ -414,7 +414,7 @@
                     }
                 }
                 if (message.get('composing')) {
-                    this.insertStatusNotification(message.get('fullname')+' '+'is typing');
+                    this.insertStatusNotification(__('%1$s is typing', message.get('fullname')));
                     return;
                 } else {
                     this.appendMessage($chat_content, _.clone(message.attributes));

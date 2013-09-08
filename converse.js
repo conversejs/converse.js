@@ -316,31 +316,39 @@
                 }
             },
 
-            getSession: function (callback) {
+            getSession: function () {
                 var saved_key = this.get('priv_key');
                 var cipher = crypto.lib.PasswordBasedCipher;
                 var pass = converse.connection.pass;
+                var result, key;
                 if (saved_key) {
                     var decrypted = cipher.decrypt(crypto.algo.AES, saved_key, pass);
-                    var key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
+                    key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
                     if (cipher.decrypt(crypto.algo.AES, this.get('pass_check'), pass).toString(crypto.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
-                        return callback(key, this.get('instance_tag'));
+                        return {
+                            'key': key,
+                            'instance_tag': this.get('instance_tag')
+                        };
                     }
-                }
-                this.trigger('showHelpMessages', [__('Please wait, generating private key...')]);
-                setTimeout($.proxy(function () {
-                    // Couldn't get stored key, generate a new one.
-                    var key = new otr.DSA();
-                    var instance_tag = otr.OTR.makeInstanceTag();
-                    this.trigger('showHelpMessages', [__('Private key generated.')]);
-                    this.save({
-                        'priv_key': cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString(),
-                        'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString(),
-                        'instance_tag': instance_tag
-                    });
-                    return callback(key, instance_tag);
-                }, this));
+                } 
+                // We need to generate a new key
+                result = alert(__(
+                    'Your browser needs to generate a private key, which will be used '+
+                    'in your encrypted chat session. This can take up to 30 seconds and '+
+                    'your browser might freeze and become unresponsive.'));
+                key = new otr.DSA();
+                var instance_tag = otr.OTR.makeInstanceTag();
+                this.trigger('showHelpMessages', [__('Private key generated.')]);
+                this.save({
+                    'priv_key': cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString(),
+                    'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString(),
+                    'instance_tag': instance_tag
+                });
+                return {
+                    'key': key,
+                    'instance_tag': instance_tag
+                };
             },
 
             updateOTRStatus: function (state) {
@@ -393,33 +401,32 @@
                 // If 'query_msg' is passed in, it means there is an alread incoming
                 // query message from our buddy. Otherwise, it is us who will
                 // send the query message to them.
-                this.getSession($.proxy(function (key, instance_tag) {
-                    this.otr = new otr.OTR({
-                        fragment_size: 140,
-                        send_interval: 200,
-                        priv: key,
-                        instance_tag: instance_tag,
-                        debug: this.debug
-                    });
-                    this.otr.on('status', $.proxy(this.updateOTRStatus, this));
-                    this.otr.on('smp', $.proxy(this.onSMP, this));
+                session = this.getSession();
+                this.otr = new otr.OTR({
+                    fragment_size: 140,
+                    send_interval: 200,
+                    priv: session.key,
+                    instance_tag: session.instance_tag,
+                    debug: this.debug
+                });
+                this.otr.on('status', $.proxy(this.updateOTRStatus, this));
+                this.otr.on('smp', $.proxy(this.onSMP, this));
 
-                    this.otr.on('ui', $.proxy(function (msg) {
-                        this.trigger('showReceivedOTRMessage', msg);
-                    }, this));
-                    this.otr.on('io', $.proxy(function (msg) {
-                        this.trigger('sendMessageStanza', msg);
-                    }, this));
-                    this.otr.on('error', $.proxy(function (msg) {
-                        this.trigger('showOTRError', msg);
-                    }, this));
-
-                    if (query_msg) {
-                        this.otr.receiveMsg(query_msg);
-                    } else {
-                        this.otr.sendQueryMsg();
-                    }
+                this.otr.on('ui', $.proxy(function (msg) {
+                    this.trigger('showReceivedOTRMessage', msg);
                 }, this));
+                this.otr.on('io', $.proxy(function (msg) {
+                    this.trigger('sendMessageStanza', msg);
+                }, this));
+                this.otr.on('error', $.proxy(function (msg) {
+                    this.trigger('showOTRError', msg);
+                }, this));
+
+                if (query_msg) {
+                    this.otr.receiveMsg(query_msg);
+                } else {
+                    this.otr.sendQueryMsg();
+                }
             },
 
             endOTR: function () {

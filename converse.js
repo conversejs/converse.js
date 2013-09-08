@@ -43,6 +43,12 @@
 }(this, function ($, _, crypto, otr, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
+        // Constants
+        var UNENCRYPTED = 0;
+        var UNVERIFIED= 1;
+        var VERIFIED= 2;
+        var FINISHED = 3;
+
         // Default values
         var converse = this;
         this.animate = true;
@@ -59,11 +65,6 @@
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
         this.xhr_user_search = false;
-
-        var FINISHED = 'finished';
-        var UNENCRYPTED = 'unencrypted';
-        var UNVERIFIED= 'unverified';
-        var VERIFIED= 'verified';
 
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
@@ -90,10 +91,9 @@
         _.extend(this, _.pick(settings, whitelist));
 
         var __ = $.proxy(function (str) {
-            /* Translation factory
-             */
+            // Translation factory 
             if (this.i18n === undefined) {
-                this.i18n = locales['en'];
+                this.i18n = locales.en;
             }
             var t = this.i18n.translate(str);
             if (arguments.length>1) {
@@ -113,6 +113,17 @@
              */
             return str;
         };
+        var OTR_CLASS_MAPPING = {};
+        OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
+        OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
+        OTR_CLASS_MAPPING[VERIFIED] = 'verified';
+        OTR_CLASS_MAPPING[FINISHED] = 'finished';
+
+        var OTR_TRANSLATED_MAPPING  = {};
+        OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
+        OTR_TRANSLATED_MAPPING[UNVERIFIED] = __('unverified');
+        OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
+        OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
 
         this.msg_counter = 0;
         this.autoLink = function (text) {
@@ -129,9 +140,13 @@
             }
         };
 
-        this.log = function (txt) {
+        this.log = function (txt, level) {
             if (this.debug) {
-                console.log(txt);
+                if (level == 'error') {
+                    console.log('ERROR: '+txt);
+                } else {
+                    console.log(txt);
+                }
             }
         };
 
@@ -405,6 +420,13 @@
                 }, this));
             },
 
+            endOTR: function () {
+                if (this.otr) {
+                    this.otr.endOtr();
+                }
+                this.save({'otr_status': UNENCRYPTED});
+            },
+
             createMessage: function (message) {
                 var $message = $(message),
                     body = converse.autoLink($message.children('body').text()),
@@ -449,25 +471,23 @@
             messageReceived: function (message) {
                 var $body = $(message).children('body');
                 var text = ($body.length > 0 ? converse.autoLink($body.text()) : undefined);
-                if (text) {
-                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                        this.otr.receiveMsg(text);
-                    } else {
-                        if (text.match(/^\?OTR/)) {
-                            // They want to initiate OTR
-                            if (!this.otr) {
-                                this.initiateOTR(text);
-                            } else {
-                                this.otr.receiveMsg(text);
-                            }
-                        } else {
-                            // Normal unencrypted message.
-                            this.createMessage(message);
-                        }
-                    }
+                if ((!text) || (!converse.allow_otr)) {
+                    return this.createMessage(message);
+                }
+                if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                    this.otr.receiveMsg(text);
                 } else {
-                    // No <body>, so probably typing notification
-                    this.createMessage(message);
+                    if (text.match(/^\?OTR/)) {
+                        // They want to initiate OTR
+                        if (!this.otr) {
+                            this.initiateOTR(text);
+                        } else {
+                            this.otr.receiveMsg(text);
+                        }
+                    } else {
+                        // Normal unencrypted message.
+                        this.createMessage(message);
+                    }
                 }
             }
         });
@@ -501,38 +521,42 @@
                     'type="text" ' +
                     'class="chat-textarea" ' +
                     'placeholder="'+__('Personal message')+'"/>'+
-                '</form>'),
+                '</form>'
+            ),
 
             toolbar_template: _.template(
-                '<li class="toggle-otr {{otr_status}}" title="{{otr_tooltip}}">'+
-                    '<span class="chat-toolbar-text">{{otr_status}}</span>'+
-                    '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
-                        '<span class="icon-unlocked"></span>'+
-                    '{[ } ]}' +
-                    '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
-                        '<span class="icon-lock"></span>'+
-                    '{[ } ]}' +
-                    '{[ if (otr_status == "'+VERIFIED+'") { ]}' +
-                        '<span class="icon-lock"></span>'+
-                    '{[ } ]}' +
-                    '{[ if (otr_status == "'+FINISHED+'") { ]}' +
-                        '<span class="icon-unlocked"></span>'+
-                    '{[ } ]}' +
-                    '<ul>'+
-                        '{[ if (otr_status === "'+UNENCRYPTED+'") { ]}' +
-                            '<li><a class="start-otr" href="#">'+__('Start encrypted conversation')+'</a></li>'+
+                '{[ if (allow_otr)  { ]}' +
+                    '<li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">'+
+                        '<span class="chat-toolbar-text">{{otr_translated_status}}</span>'+
+                        '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
+                            '<span class="icon-unlocked"></span>'+
                         '{[ } ]}' +
-                        '{[ if (otr_status !== "'+UNENCRYPTED+'") { ]}' +
-                            '<li><a class="start-otr" href="#">'+__('Refresh encrypted conversation')+'</a></li>'+
-                            '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
-                            '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
+                        '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
+                            '<span class="icon-lock"></span>'+
                         '{[ } ]}' +
-                        '{[ if (otr_status === "'+UNVERIFIED+'") { ]}' +
-                            '<li><a class="auth-otr" data-scheme="fingerprint" href="#">'+__('Verify with fingerprints')+'</a></li>'+
+                        '{[ if (otr_status == "'+VERIFIED+'") { ]}' +
+                            '<span class="icon-lock"></span>'+
                         '{[ } ]}' +
-                        '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
-                    '</ul>'+
-                '</li>'),
+                        '{[ if (otr_status == "'+FINISHED+'") { ]}' +
+                            '<span class="icon-unlocked"></span>'+
+                        '{[ } ]}' +
+                        '<ul>'+
+                            '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
+                                '<li><a class="start-otr" href="#">'+__('Start encrypted conversation')+'</a></li>'+
+                            '{[ } ]}' +
+                            '{[ if (otr_status != "'+UNENCRYPTED+'") { ]}' +
+                                '<li><a class="start-otr" href="#">'+__('Refresh encrypted conversation')+'</a></li>'+
+                                '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
+                                '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
+                            '{[ } ]}' +
+                            '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
+                                '<li><a class="auth-otr" data-scheme="fingerprint" href="#">'+__('Verify with fingerprints')+'</a></li>'+
+                            '{[ } ]}' +
+                            '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
+                        '</ul>'+
+                    '</li>'+
+                '{[ } ]}'
+            ),
 
             message_template: _.template(
                 '<div class="chat-message {{extra_classes}}">' +
@@ -723,13 +747,10 @@
                         this.showHelpMessages(msgs);
                         return;
                     }
-                    else if (match[1] === "otr") {
-                        this.model.initiateOTR();
-                        return;
-                    } else if (match[1] === "endotr") {
-                        if (this.model.otr) {
-                            this.model.otr.endOtr();
-                        }
+                    else if ((converse.allow_otr) || (match[1] === "otr")) {
+                        return this.model.initiateOTR();
+                    } else if ((converse.allow_otr) || (match[1] === "endotr")) {
+                        return this.endOTR();
                     }
                 }
                 if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
@@ -821,7 +842,7 @@
             },
 
             endOTR: function (ev) {
-                this.model.otr.endOtr();
+                this.model.endOTR();
             },
 
             authOTR: function (ev) {
@@ -946,6 +967,9 @@
                 } else if (data.otr_status == FINISHED){
                     data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
                 }
+                data.allow_otr = converse.allow_otr;
+                data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
+                data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status]; 
                 this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
                 return this;
             },
@@ -2058,6 +2082,9 @@
                 }
                 chatbox = this.get(partner_jid);
                 roster_item = converse.roster.get(partner_jid);
+                if (roster_item === undefined) {
+                    converse.log('Could not get roster item for JID '+partner_jid, 'error');
+                }
                 if (!chatbox) {
                     chatbox = this.create({
                         'id': partner_jid,

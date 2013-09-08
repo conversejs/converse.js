@@ -62,6 +62,7 @@
         this.allow_otr = true;
         this.prebind = false;
         this.show_controlbox_by_default = false;
+        this.show_toolbar = true;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
         this.xhr_user_search = false;
@@ -83,6 +84,7 @@
             'prebind',
             'rid',
             'show_controlbox_by_default',
+            'show_toolbar',
             'sid',
             'testing',
             'xhr_custom_status',
@@ -516,7 +518,9 @@
                 '</div>' +
                 '<div class="chat-content"></div>' +
                 '<form class="sendXMPPMessage" action="" method="post">' +
-                    '<ul class="chat-toolbar no-text-select"></ul>'+
+                    '{[ if ('+converse.show_toolbar+') { ]}' +
+                        '<ul class="chat-toolbar no-text-select"></ul>'+
+                    '{[ } ]}' +
                 '<textarea ' +
                     'type="text" ' +
                     'class="chat-textarea" ' +
@@ -746,11 +750,10 @@
                             ];
                         this.showHelpMessages(msgs);
                         return;
-                    }
-                    else if ((converse.allow_otr) || (match[1] === "otr")) {
-                        return this.model.initiateOTR();
                     } else if ((converse.allow_otr) || (match[1] === "endotr")) {
                         return this.endOTR();
+                    } else if ((converse.allow_otr) || (match[1] === "otr")) {
+                        return this.model.initiateOTR();
                     }
                 }
                 if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
@@ -957,20 +960,22 @@
             },
 
             renderToolbar: function () {
-                var data = this.model.toJSON();
-                if (data.otr_status == UNENCRYPTED) {
-                    data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
-                } else if (data.otr_status == UNVERIFIED){
-                    data.otr_tooltip = __('Your messages are encrypted, but your buddy has not been verified.');
-                } else if (data.otr_status == VERIFIED){
-                    data.otr_tooltip = __('Your messages are encrypted and your buddy verified.');
-                } else if (data.otr_status == FINISHED){
-                    data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
+                if (converse.show_toolbar) {
+                    var data = this.model.toJSON();
+                    if (data.otr_status == UNENCRYPTED) {
+                        data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
+                    } else if (data.otr_status == UNVERIFIED){
+                        data.otr_tooltip = __('Your messages are encrypted, but your buddy has not been verified.');
+                    } else if (data.otr_status == VERIFIED){
+                        data.otr_tooltip = __('Your messages are encrypted and your buddy verified.');
+                    } else if (data.otr_status == FINISHED){
+                        data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
+                    }
+                    data.allow_otr = converse.allow_otr;
+                    data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
+                    data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status]; 
+                    this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
                 }
-                data.allow_otr = converse.allow_otr;
-                data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
-                data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status]; 
-                this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
                 return this;
             },
 

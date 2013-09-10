@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.6.2 (Unreleased)
+------------------
+
+- French translations. [tdesvenain]
+
 0.6.2 (2013-08-29)
 ------------------
 

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.6.0 documentation</title>
+    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.6.2 documentation</title>
     
     <link rel="stylesheet" href="_static/stylesheet.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.6.0',
+        VERSION:     '0.6.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Converse.js 0.6.0 documentation" href="#" /> 
+    <link rel="top" title="Converse.js 0.6.2 documentation" href="#" /> 
   </head>
   <body>
     <div id="header_wrap" class="outer">
@@ -49,7 +49,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">Converse.js 0.6.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.6.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
 <section id="main_content" class="inner">  
@@ -550,7 +550,7 @@ function like so:</p>
 <div class="highlight-python"><pre>make pot</pre>
 </div>
 <p>You can then create or update the PO file for a specific language by doing the following:</p>
-<div class="highlight-python"><pre>msgmerge ./locale/af/LC_MESSAGES/converse.po ./locale/converse.pot -U</pre>
+<div class="highlight-python"><pre>msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U</pre>
 </div>
 <p>This PO file is then what gets translated.</p>
 <p>If you&#8217;ve created a new PO file, please make sure to add the following
@@ -558,11 +558,11 @@ attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). Th
 required as configuration settings for Jed, the Javascript translations library
 that we&#8217;re using.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;domain: converse</span><span class="se">\n</span><span class="s">&quot;</span>
-<span class="s">&quot;lang: af</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="s">&quot;lang: de</span><span class="se">\n</span><span class="s">&quot;</span>
 <span class="s">&quot;plural_forms: nplurals=2; plural=(n != 1);</span><span class="se">\n</span><span class="s">&quot;</span>
 </pre></div>
 </div>
-<p>Unfortunately Jed cannot use the PO files directly. We have to generate from it
+<p>Unfortunately <a class="reference external" href="http://slexaxton.github.io/Jed">Jed</a> cannot use the PO files directly. We have to generate from it
 a file in JSON format and then put that in a .js file for the specific
 language.</p>
 <p>To generate JSON from a PO file, you&#8217;ll need po2json for node.js. Run the
@@ -570,14 +570,14 @@ following command to install it (npm being the node.js package manager):</p>
 <div class="highlight-python"><pre>npm install po2json</pre>
 </div>
 <p>You can then convert the translations into JSON format:</p>
-<div class="highlight-python"><pre>po2json locale/af/LC_MESSAGES/converse.po locale/af/LC_MESSAGES/converse.json</pre>
+<div class="highlight-python"><pre>po2json locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json</pre>
 </div>
 <p>Now from converse.json paste the data as a value for the &#8220;locale_data&#8221; key in the
 object in the language&#8217;s .js file.</p>
 <p>So, if you are for example translating into German (language code &#8216;de&#8217;), you&#8217;ll
 create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p>
 <div class="highlight-python"><pre>(function (root, factory) {
-    define("af", ['jed'], function () {
+    define("de", ['jed'], function () {
         return factory(new Jed({
             "domain": "converse",
             "locale_data": {
@@ -613,7 +613,7 @@ those hoops you had to jump through.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">Converse.js 0.6.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.6.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
 </div>

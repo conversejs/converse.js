@@ -337,10 +337,7 @@
                     }
                 } 
                 // We need to generate a new key and instance tag
-                result = alert(__(
-                    'Your browser needs to generate a private key, which will be used '+
-                    'in your encrypted chat session. This can take up to 30 seconds and '+
-                    'your browser might freeze and become unresponsive.'));
+                result = alert(__('Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.'));
                 instance_tag = otr.OTR.makeInstanceTag();
                 key = new otr.DSA();
                 // Encrypt the key and set in sessionStorage. Also store
@@ -380,9 +377,8 @@
                 switch (type) {
                     case 'question':
                         this.otr.smpSecret(prompt(__(
-                            'Authentication request from %1$s\n\n'+
-                            'Your buddy is attempting to verify your identity, by asking you the question below.\n\n'+
-                            '%2$s', [this.get('fullname'), data])));
+                            'Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s',
+                            [this.get('fullname'), data])));
                         break;
                     case 'trust':
                         if (this.otr.trust === true) {
@@ -390,7 +386,7 @@
                         } else {
                             this.trigger(
                                 'showHelpMessages',
-                                [__("Could not verify identify via the Socialist's Millionaire Protocol.")],
+                                [__("Could not verify this user's identify.")],
                                 'error');
                             this.save({'otr_status': UNVERIFIED});
                         }
@@ -835,9 +831,7 @@
                 } else if (msg == 'Received an unencrypted message.') {
                     this.showHelpMessages(
                         [__('We received an unencrypted message')], 'error');
-                } else if (
-                    (msg == 'MACs do not match.') ||
-                    (msg == 'Received an unreadable encrypted message.')) {
+                } else if (msg == 'Received an unreadable encrypted message.') {
                     this.showHelpMessages(
                         [__('We received an unreadable encrypted message')],
                         'error');
@@ -866,11 +860,7 @@
                 var scheme = $(ev.target).data().scheme;
                 var result, question, answer;
                 if (scheme === 'fingerprint') {
-                    result = confirm(__(
-                        'Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\n'+
-                        'Fingerprint for you, %2$s: %3$s\n\n'+
-                        'Fingerprint for %1$s: %4$s\n\n'+
-                        'If you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
+                    result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
                             this.model.get('fullname'),
                             converse.xmppstatus.get('fullname')||converse.bare_jid,
                             this.model.otr.priv.fingerprint(),
@@ -883,9 +873,7 @@
                         this.model.save({'otr_status': UNVERIFIED});
                     }
                 } else if (scheme === 'smp') {
-                    alert(__('You will be prompted to provide a security question and then an answer to '+
-                             'that question.\n\nYour buddy will then be prompted the same question and if they '+
-                             'type the exact same answer (case sensitive), their identity will have been verified.'));
+                    alert(__('You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.'));
                     question = prompt(__('What is your security question?'));
                     if (question) {
                         answer = prompt(__('What is the answer to the security question?'));
@@ -2612,7 +2600,7 @@
                             // want to send a presence stanza, so we do it here.
                             converse.xmppstatus.sendPresence();
                         }
-                    },
+                    }
                 }); // Get the cached roster items from localstorage
             },
 

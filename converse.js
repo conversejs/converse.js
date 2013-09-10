@@ -370,7 +370,7 @@
                     username = msg_dict.fullname;
                 } else  {
                     template = this.message_template;
-                    username = sender === 'me' && sender || msg_dict.fullname;
+                    username = sender === 'me' && __('me') || msg_dict.fullname;
                 }
                 $el.find('div.chat-event').remove();
                 $el.append(

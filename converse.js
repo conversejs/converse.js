@@ -317,34 +317,40 @@
             },
 
             getSession: function () {
-                var saved_key = this.get('priv_key');
+                // XXX: sessionStorage is not supported in IE < 8. Perhaps a
+                // user alert is required here...
+                var saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
+                var instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
                 var cipher = crypto.lib.PasswordBasedCipher;
                 var pass = converse.connection.pass;
                 var result, key;
-                if (saved_key) {
+                if (saved_key && instance_tag) {
                     var decrypted = cipher.decrypt(crypto.algo.AES, saved_key, pass);
                     key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
                     if (cipher.decrypt(crypto.algo.AES, this.get('pass_check'), pass).toString(crypto.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
+                        this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
                         return {
                             'key': key,
-                            'instance_tag': this.get('instance_tag')
+                            'instance_tag': instance_tag
                         };
                     }
                 } 
-                // We need to generate a new key
+                // We need to generate a new key and instance tag
                 result = alert(__(
                     'Your browser needs to generate a private key, which will be used '+
                     'in your encrypted chat session. This can take up to 30 seconds and '+
                     'your browser might freeze and become unresponsive.'));
+                instance_tag = otr.OTR.makeInstanceTag();
                 key = new otr.DSA();
-                var instance_tag = otr.OTR.makeInstanceTag();
+                // Encrypt the key and set in sessionStorage. Also store
+                // instance tag
+                window.sessionStorage[hex_sha1(this.id+'priv_key')] = 
+                    cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString();
+                window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
+
                 this.trigger('showHelpMessages', [__('Private key generated.')]);
-                this.save({
-                    'priv_key': cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString(),
-                    'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString(),
-                    'instance_tag': instance_tag
-                });
+                this.save({'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString()});
                 return {
                     'key': key,
                     'instance_tag': instance_tag
@@ -401,6 +407,7 @@
                 // If 'query_msg' is passed in, it means there is an alread incoming
                 // query message from our buddy. Otherwise, it is us who will
                 // send the query message to them.
+                this.save({'otr_status': UNENCRYPTED});
                 session = this.getSession();
                 this.otr = new otr.OTR({
                     fragment_size: 140,

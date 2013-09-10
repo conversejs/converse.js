@@ -4,10 +4,116 @@
         "locale_data": {
             "converse": {
                 "": {
+                    "Project-Id-Version": "Converse.js 0.4",
+                    "Report-Msgid-Bugs-To": "",
+                    "POT-Creation-Date": "2013-09-10 23:27+0200",
+                    "PO-Revision-Date": "2013-09-10 23:28+0200",
+                    "Last-Translator": "JC Brand <jc@opkode.com>",
+                    "Language-Team": "Afrikaans",
+                    "Language": "af",
+                    "MIME-Version": "1.0",
+                    "Content-Type": "text/plain; charset=UTF-8",
+                    "Content-Transfer-Encoding": "8bit",
                     "domain": "converse",
                     "lang": "af",
                     "plural_forms": "nplurals=2; plural=(n != 1);"
                 },
+                "unencrypted": [
+                    null,
+                    "nie-privaat"
+                ],
+                "unverified": [
+                    null,
+                    "ongeverifieer"
+                ],
+                "verified": [
+                    null,
+                    "privaat"
+                ],
+                "finished": [
+                    null,
+                    "afgesluit"
+                ],
+                "Disconnected": [
+                    null,
+                    "Verbindung onderbreek"
+                ],
+                "Error": [
+                    null,
+                    "Fout"
+                ],
+                "Connecting": [
+                    null,
+                    "Verbind tans"
+                ],
+                "Connection Failed": [
+                    null,
+                    "Verbinding het gefaal"
+                ],
+                "Authenticating": [
+                    null,
+                    "Besig om te bekragtig"
+                ],
+                "Authentication Failed": [
+                    null,
+                    "Bekragtiging het gefaal"
+                ],
+                "Disconnecting": [
+                    null,
+                    "Onderbreek verbinding"
+                ],
+                "Re-establishing encrypted session": [
+                    null,
+                    "Herstel versleutelde sessie"
+                ],
+                "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+                    null,
+                    "Die webblaaier moet 'n private sleutel vir die versleutelde klets-sessie genereer. Dit kan tot 30 sekondes duur, waartydenѕ die webblaaier mag vries en nie reageer nie."
+                ],
+                "Private key generated.": [
+                    null,
+                    "Private sleutel"
+                ],
+                "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+                    null,
+                    "Verifikasie versoek van  %1$s\n\nU gespreksmaat probeer om u identiteit te verifieer, deur die volgende vraag te vra \n\n%2$s"
+                ],
+                "Could not verify this user's identify.": [
+                    null,
+                    "Kon nie hierdie gebruiker se identitied verifieer nie."
+                ],
+                "Personal message": [
+                    null,
+                    "Persoonlike boodskap"
+                ],
+                "Start encrypted conversation": [
+                    null,
+                    "Begin versleutelde gesprek"
+                ],
+                "Refresh encrypted conversation": [
+                    null,
+                    "Verfris versleutelde gesprek"
+                ],
+                "End encrypted conversation": [
+                    null,
+                    "Beëindig versleutelde gesprek"
+                ],
+                "Verify with SMP": [
+                    null,
+                    "Verifieer met SMP"
+                ],
+                "Verify with fingerprints": [
+                    null,
+                    "Verifieer met vingerafdrukke"
+                ],
+                "What's this?": [
+                    null,
+                    "Wat is hierdie?"
+                ],
+                "me": [
+                    null,
+                    "ek"
+                ],
                 "Show this menu": [
                     null,
                     "Vertoon hierdie keuselys"
@@ -20,9 +126,73 @@
                     null,
                     "Verwyder boodskappe"
                 ],
-                "Personal message": [
+                "Your message could not be sent": [
                     null,
-                    "Persoonlike boodskap"
+                    "U boodskap kon nie gestuur word nie"
+                ],
+                "We received an unencrypted message": [
+                    null,
+                    "Ons het 'n onversleutelde boodskap ontvang"
+                ],
+                "We received an unreadable encrypted message": [
+                    null,
+                    "Ons het 'n onleesbare versleutelde boodskap ontvang"
+                ],
+                "This user has requested an encrypted session.": [
+                    null,
+                    "Hierdie gebruiker versoek 'n versleutelde sessie"
+                ],
+                "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+                    null,
+                    "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \n\nU vingerafdruk, %2$s: %3$s\n\nVingerafdruk vir %1$s: %4$s\n\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
+                ],
+                "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+                    null,
+                    "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\n\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (hoofletters tel) verskaf, sal hul identiteit geverifieer wees."
+                ],
+                "What is your security question?": [
+                    null,
+                    "Wat is u sekuriteitsvraag?"
+                ],
+                "What is the answer to the security question?": [
+                    null,
+                    "Wat is die antwoord tot die sekuriteitsvraag?"
+                ],
+                "Invalid authentication scheme provided": [
+                    null,
+                    "Ongeldige verifikasiemetode verskaf"
+                ],
+                "Your messages are not encrypted anymore": [
+                    null,
+                    "U boodskappe is nie meer versleutel nie"
+                ],
+                "Your messages are now encrypted but your buddy's identity has not been verified.": [
+                    null,
+                    "U boodskappe is now versleutel maar u gespreksmaat se identiteit is nog onseker."
+                ],
+                "Your buddy's identify has been verified.": [
+                    null,
+                    "U gespreksmaat se identiteit is geverifieer."
+                ],
+                "Your buddy has ended encryption on their end, you should do the same.": [
+                    null,
+                    "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
+                ],
+                "Your messages are not encrypted. Click here to enable OTR encryption.": [
+                    null,
+                    "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te aktiveer."
+                ],
+                "Your messages are encrypted, but your buddy has not been verified.": [
+                    null,
+                    "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."
+                ],
+                "Your messages are encrypted and your buddy verified.": [
+                    null,
+                    "U boodskappe is versleutel en u gespreksmaat se identiteit geverifieer."
+                ],
+                "Your buddy has closed their end of the private session, you should do the same": [
+                    null,
+                    "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
                 ],
                 "Contacts": [
                     null,
@@ -30,7 +200,7 @@
                 ],
                 "Online": [
                     null,
-                    "Aanlyn"
+                    "Aangemeld"
                 ],
                 "Busy": [
                     null,
@@ -38,11 +208,11 @@
                 ],
                 "Away": [
                     null,
-                    "Weg"
+                    "Afwesig"
                 ],
                 "Offline": [
                     null,
-                    "Aflyn"
+                    "Afgemeld"
                 ],
                 "Click to add new chat contacts": [
                     null,
@@ -370,7 +540,7 @@
                 ],
                 "online": [
                     null,
-                    "aanlyn"
+                    "aangemeld"
                 ],
                 "busy": [
                     null,
@@ -378,11 +548,11 @@
                 ],
                 "away for long": [
                     null,
-                    "weg vir lank"
+                    "vir lank afwesig"
                 ],
                 "away": [
                     null,
-                    "weg"
+                    "afwesig"
                 ],
                 "I am %1$s": [
                     null,
@@ -408,45 +578,17 @@
                     null,
                     "BOSH bediener URL"
                 ],
+                "Online Contacts": [
+                    null,
+                    "Kontakte aangemeld"
+                ],
                 "Connected": [
                     null,
                     "Verbind"
                 ],
-                "Disconnected": [
-                    null,
-                    "Ontkoppel"
-                ],
-                "Error": [
-                    null,
-                    "Fout"
-                ],
-                "Connecting": [
-                    null,
-                    "Verbind tans"
-                ],
-                "Connection Failed": [
-                    null,
-                    "Verbinding het gefaal"
-                ],
-                "Authenticating": [
-                    null,
-                    "Besig om te bekragtig"
-                ],
-                "Authentication Failed": [
-                    null,
-                    "Bekragtiging het gefaal"
-                ],
-                "Disconnecting": [
-                    null,
-                    "Besig om te ontkoppel"
-                ],
                 "Attached": [
                     null,
                     "Geheg"
-                ],
-                "Online Contacts": [
-                    null,
-                    "Kontakte aanlyn"
                 ]
             }
         }

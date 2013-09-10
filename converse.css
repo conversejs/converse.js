@@ -846,7 +846,6 @@ ul.chat-toolbar li {
 
 ul.chat-toolbar li:hover {
     cursor: pointer; 
-    color: rgb(39, 39, 39);
 }
 
 form#set-custom-xmpp-status {

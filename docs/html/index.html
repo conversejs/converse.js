@@ -552,7 +552,10 @@ function like so:</p>
 <p>You can then create or update the PO file for a specific language by doing the following:</p>
 <div class="highlight-python"><pre>msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U</pre>
 </div>
-<p>This PO file is then what gets translated.</p>
+<p>To do this for ALL languages, run:</p>
+<div class="highlight-python"><pre>make merge</pre>
+</div>
+<p>The resulting PO file is then what gets translated.</p>
 <p>If you&#8217;ve created a new PO file, please make sure to add the following
 attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). They are
 required as configuration settings for Jed, the Javascript translations library

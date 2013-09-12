@@ -604,7 +604,13 @@ You can then create or update the PO file for a specific language by doing the f
 
     msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
 
-This PO file is then what gets translated.
+To do this for ALL languages, run:
+
+::
+
+    make merge
+
+The resulting PO file is then what gets translated.
 
 If you've created a new PO file, please make sure to add the following
 attributes at the top of the file (under *Content-Transfer-Encoding*). They are

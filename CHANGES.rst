@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.6.3 (Unreleased)
+0.6.3 (2013-09-12)
 ------------------
 
 NB: This release contains an important security fix. Please don't use older

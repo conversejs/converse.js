@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.6.2 documentation</title>
+    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.6.3 documentation</title>
     
     <link rel="stylesheet" href="_static/stylesheet.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.6.2',
+        VERSION:     '0.6.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Converse.js 0.6.2 documentation" href="#" /> 
+    <link rel="top" title="Converse.js 0.6.3 documentation" href="#" /> 
   </head>
   <body>
     <div id="header_wrap" class="outer">
@@ -49,7 +49,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">Converse.js 0.6.2 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.6.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
 <section id="main_content" class="inner">  
@@ -552,7 +552,10 @@ function like so:</p>
 <p>You can then create or update the PO file for a specific language by doing the following:</p>
 <div class="highlight-python"><pre>msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U</pre>
 </div>
-<p>This PO file is then what gets translated.</p>
+<p>To do this for ALL languages, run:</p>
+<div class="highlight-python"><pre>make merge</pre>
+</div>
+<p>The resulting PO file is then what gets translated.</p>
 <p>If you&#8217;ve created a new PO file, please make sure to add the following
 attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). They are
 required as configuration settings for Jed, the Javascript translations library
@@ -613,7 +616,7 @@ those hoops you had to jump through.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">Converse.js 0.6.2 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.6.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
 </div>

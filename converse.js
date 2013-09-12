@@ -307,7 +307,7 @@
                     }
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
-                        hex_sha1('converse.messages'+this.get('jid')));
+                        hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.set({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
@@ -3063,7 +3063,7 @@
             // Set up the roster
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+this.bare_jid));
+                hex_sha1('converse.rosteritems-'+converse.bare_jid));
             this.connection.roster.registerCallback(
                 $.proxy(this.roster.rosterHandler, this.roster),
                 null, 'presence', null);

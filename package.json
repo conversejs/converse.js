@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {

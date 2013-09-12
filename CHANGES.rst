@@ -1,10 +1,14 @@
 Changelog
 =========
 
-0.6.2 (Unreleased)
+0.6.3 (2013-09-12)
 ------------------
 
+NB: This release contains an important security fix. Please don't use older
+versions of the 0.6.x branch.
+
 - French translations. [tdesvenain]
+- Bugfix: Messages were stored against buddy JID and not own JID. [jcbrand]
 
 0.6.2 (2013-08-29)
 ------------------

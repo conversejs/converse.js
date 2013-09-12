@@ -334,7 +334,7 @@ dl.add-converse-contact {
     float: right;
     clear: right;
     height: 22px;
-    padding: 5px 5px 0 0;
+    padding: 0px 5px 0 0;
     color: rgb(79, 79, 79);
 }
 
@@ -836,7 +836,7 @@ form.add-xmpp-contact input {
 .chatbox .dropdown dt a span {
     cursor:pointer; 
     display:block; 
-    padding: 2px 7px 0 5px;
+    padding: 4px 7px 0 5px;
     color: rgb(79, 79, 79);
 }
 
@@ -863,7 +863,7 @@ form.add-xmpp-contact input {
 .chatbox .dropdown a {
     height: 22px;
     display: inline-block;
-    padding-top: 2px;
+    line-height: 24px;
 }
 
 .chatbox .dropdown dd ul a:hover {

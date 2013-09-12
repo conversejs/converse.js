@@ -602,9 +602,15 @@ You can then create or update the PO file for a specific language by doing the f
 
 ::
 
-    msgmerge ./locale/af/LC_MESSAGES/converse.po ./locale/converse.pot -U
+    msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
 
-This PO file is then what gets translated.
+To do this for ALL languages, run:
+
+::
+
+    make merge
+
+The resulting PO file is then what gets translated.
 
 If you've created a new PO file, please make sure to add the following
 attributes at the top of the file (under *Content-Transfer-Encoding*). They are
@@ -614,11 +620,11 @@ that we're using.
 ::
 
     "domain: converse\n"
-    "lang: af\n"
+    "lang: de\n"
     "plural_forms: nplurals=2; plural=(n != 1);\n"
     
 
-Unfortunately Jed cannot use the PO files directly. We have to generate from it 
+Unfortunately `Jed <http://slexaxton.github.io/Jed>`_ cannot use the PO files directly. We have to generate from it 
 a file in JSON format and then put that in a .js file for the specific
 language.
 
@@ -633,7 +639,7 @@ You can then convert the translations into JSON format:
 
 ::
 
-    po2json locale/af/LC_MESSAGES/converse.po locale/af/LC_MESSAGES/converse.json
+    po2json locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
 
 Now from converse.json paste the data as a value for the "locale_data" key in the
 object in the language's .js file.
@@ -644,7 +650,7 @@ create or update the file ./locale/LC_MESSAGES/de.js with the following code:
 ::
 
     (function (root, factory) {
-        define("af", ['jed'], function () {
+        define("de", ['jed'], function () {
             return factory(new Jed({
                 "domain": "converse",
                 "locale_data": {

@@ -277,7 +277,7 @@
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
-                        hex_sha1('converse.messages'+this.get('jid')));
+                        hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.set({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
@@ -370,7 +370,7 @@
                     username = msg_dict.fullname;
                 } else  {
                     template = this.message_template;
-                    username = sender === 'me' && sender || msg_dict.fullname;
+                    username = sender === 'me' && __('me') || msg_dict.fullname;
                 }
                 $el.find('div.chat-event').remove();
                 $el.append(
@@ -414,7 +414,7 @@
                     }
                 }
                 if (message.get('composing')) {
-                    this.insertStatusNotification(message.get('fullname')+' '+'is typing');
+                    this.insertStatusNotification(__('%1$s is typing', message.get('fullname')));
                     return;
                 } else {
                     this.appendMessage($chat_content, _.clone(message.attributes));
@@ -2570,9 +2570,9 @@
             template: _.template(
                 '<form id="converse-login">' +
                 '<label>'+__('XMPP/Jabber Username:')+'</label>' +
-                '<input type="text" id="jid">' +
+                '<input type="username" name="jid">' +
                 '<label>'+__('Password:')+'</label>' +
-                '<input type="password" id="password">' +
+                '<input type="password" name="password">' +
                 '<input class="login-submit" type="submit" value="'+__('Log In')+'">' +
                 '</form">'),
 
@@ -2597,7 +2597,7 @@
             },
 
             initialize: function (cfg) {
-                cfg.$parent.append(this.$el.html(this.template()));
+                cfg.$parent.html(this.$el.html(this.template()));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                 this.model.on('connection-fail', function () { this.showConnectButton(); }, this);
                 this.model.on('auth-fail', function () { this.showConnectButton(); }, this);
@@ -2610,11 +2610,10 @@
             },
 
             authenticate: function (ev) {
-                ev.preventDefault();
                 var $form = $(ev.target),
-                    $jid_input = $form.find('input#jid'),
+                    $jid_input = $form.find('input[name=jid]'),
                     jid = $jid_input.val(),
-                    $pw_input = $form.find('input#password'),
+                    $pw_input = $form.find('input[name=password]'),
                     password = $pw_input.val(),
                     $bsu_input = null,
                     errors = false;
@@ -2637,6 +2636,7 @@
                 }
                 if (errors) { return; }
                 this.connect($form, jid, password);
+                return false;
             },
 
             remove: function () {
@@ -2686,7 +2686,7 @@
             // Set up the roster
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+this.bare_jid));
+                hex_sha1('converse.rosteritems-'+converse.bare_jid));
             this.connection.roster.registerCallback(
                 $.proxy(this.roster.rosterHandler, this.roster),
                 null, 'presence', null);

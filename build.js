@@ -11,6 +11,7 @@
         "en": "locale/en/LC_MESSAGES/en",
         "de": "locale/de/LC_MESSAGES/de",
         "es": "locale/es/LC_MESSAGES/es",
+        "fr": "locale/fr/LC_MESSAGES/fr",
         "it": "locale/it/LC_MESSAGES/it",
         "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",

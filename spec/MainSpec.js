@@ -197,6 +197,10 @@
             }, converse));
 
             describe("Existing Contacts", $.proxy(function () {
+                beforeEach($.proxy(function () {
+                    openControlBox();
+                }, converse));
+
                 it("do not have a heading if there aren't any", $.proxy(function () {
                     expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
                 }, converse));

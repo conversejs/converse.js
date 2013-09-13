@@ -2260,10 +2260,11 @@
                         }, this);
                     this.$el.addClass('current-xmpp-contact');
                     var status_desc = {
-                        'dnd': 'This contact is busy',
-                        'online': 'This contact is online',
-                        'offline': 'This contact is offline',
-                        'away': 'This contact is away'
+                        'dnd': __('This contact is busy'),
+                        'online': __('This contact is online'),
+                        'offline': __('This contact is offline'),
+                        'unavailable': __('This contact is unavailable'),
+                        'away': __('This contact is away')
                         }[item.get('chat_status')||'offline'];
                     this.$el.html(this.template(
                         _.extend(item.toJSON(), {'status_desc': status_desc})

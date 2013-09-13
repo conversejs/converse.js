@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 0.4\n"
+"Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-13 16:02+0200\n"
 "PO-Revision-Date: 2013-07-23 14:34-0300\n"
-"Last-Translator: Matheus Figueiredo <matheus@tracy.com>\n"
+"Last-Translator: Sergio Oliveira <sergio@tracy.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -50,11 +50,11 @@ msgstr "Desconectando"
 
 #: converse.js:373
 msgid "me"
-msgstr ""
+msgstr "eu"
 
 #: converse.js:417
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s está digitando"
 
 #: converse.js:461 converse.js:1180
 msgid "Show this menu"
@@ -154,7 +154,7 @@ msgstr "Escondido"
 
 #: converse.js:837
 msgid "Requires an invitation"
-msgstr "Requer convite"
+msgstr "Requer um convite"
 
 #: converse.js:840
 msgid "Moderated"
@@ -249,7 +249,7 @@ msgstr "Cancelar"
 
 #: converse.js:1373
 msgid "An error occurred while trying to save the form."
-msgstr "Ocorreu um erro enquanto salvava o formulário"
+msgstr "Ocorreu um erro enquanto tentava salvar o formulário"
 
 #: converse.js:1419
 msgid "This chatroom requires a password"
@@ -269,7 +269,7 @@ msgstr "Essa sala não é anônima"
 
 #: converse.js:1436
 msgid "This room now shows unavailable members"
-msgstr "Essa sala mostra membros indisponíveis"
+msgstr "Agora esta sala mostra membros indisponíveis"
 
 #: converse.js:1437
 msgid "This room does not show unavailable members"
@@ -407,28 +407,27 @@ msgstr "Clique para remover o contato"
 
 #: converse.js:1886
 msgid "This contact is busy"
-msgstr ""
+msgstr "Este contato está ocupado"
 
 #: converse.js:1887
 msgid "This contact is online"
-msgstr ""
+msgstr "Este contato está online"
 
 #: converse.js:1888
 msgid "This contact is offline"
-msgstr ""
+msgstr "Este contato está offline"
 
 #: converse.js:1889
-#, fuzzy
 msgid "This contact is unavailable"
-msgstr "Essa sala mostra membros indisponíveis"
+msgstr "Este contato está indisponível"
 
 #: converse.js:1890
 msgid "This contact is away for an extended period"
-msgstr ""
+msgstr "Este contato está ausente por um longo período"
 
 #: converse.js:1891
 msgid "This contact is away"
-msgstr ""
+msgstr "Este contato está ausente"
 
 #: converse.js:2245
 msgid "Contact requests"

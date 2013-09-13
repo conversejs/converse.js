@@ -7,6 +7,7 @@ Changelog
 - Add icon for the unavailable chat state. [jcbrand]
 - Chat state descriptions weren't translation aware. [jcbrand]
 - Clear messages from localStorage when user types "/clear". [jcbrand]
+- The 'xa' chat state wasn't being handled properly. [jcbrand]
 
 0.6.3 (2013-09-12)
 ------------------

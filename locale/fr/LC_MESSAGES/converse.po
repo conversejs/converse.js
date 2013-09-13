@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-13 10:35+0200\n"
+"POT-Creation-Date: 2013-09-13 16:02+0200\n"
 "PO-Revision-Date: 2013-09-12 11:20+0200\n"
 "Language-Team: FR <LL@li.org>\n"
 "Language: fr\n"
@@ -239,7 +239,7 @@ msgstr "Bannir l'utilisateur du salon."
 msgid "Message"
 msgstr "Message"
 
-#: converse.js:1325 converse.js:2404
+#: converse.js:1325 converse.js:2406
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -424,76 +424,80 @@ msgid "This contact is unavailable"
 msgstr "Ce salon affiche maintenant des membres indisponibles"
 
 #: converse.js:1890
+msgid "This contact is away for an extended period"
+msgstr ""
+
+#: converse.js:1891
 msgid "This contact is away"
 msgstr ""
 
-#: converse.js:2244
+#: converse.js:2245
 msgid "Contact requests"
 msgstr "Demandes de contacts"
 
-#: converse.js:2245
+#: converse.js:2246
 msgid "My contacts"
 msgstr "Mes contacts"
 
-#: converse.js:2246
+#: converse.js:2247
 msgid "Pending contacts"
 msgstr "Contacts en attente"
 
-#: converse.js:2403
+#: converse.js:2405
 msgid "Custom status"
 msgstr "Statut personnel"
 
-#: converse.js:2409
+#: converse.js:2411
 msgid "Click to change your chat status"
 msgstr "Cliquez pour changer votre statut"
 
-#: converse.js:2413
+#: converse.js:2415
 msgid "Click here to write a custom status message"
 msgstr "Cliquez ici pour indiquer votre statut personnel"
 
-#: converse.js:2442 converse.js:2450
+#: converse.js:2444 converse.js:2452
 msgid "online"
 msgstr "en ligne"
 
-#: converse.js:2444
+#: converse.js:2446
 msgid "busy"
 msgstr "occupé"
 
-#: converse.js:2446
+#: converse.js:2448
 msgid "away for long"
 msgstr "absent pour une longue durée"
 
-#: converse.js:2448
+#: converse.js:2450
 msgid "away"
 msgstr "absent"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: converse.js:2462 converse.js:2499
+#: converse.js:2464 converse.js:2501
 msgid "I am %1$s"
 msgstr "Je suis %1$s"
 
-#: converse.js:2570
+#: converse.js:2572
 msgid "Sign in"
 msgstr "S'inscrire"
 
-#: converse.js:2573
+#: converse.js:2575
 msgid "XMPP/Jabber Username:"
 msgstr "Nom d'utilisateur XMPP/Jabber"
 
-#: converse.js:2575
+#: converse.js:2577
 msgid "Password:"
 msgstr "Mot de passe :"
 
-#: converse.js:2577
+#: converse.js:2579
 msgid "Log In"
 msgstr "Se connecter"
 
-#: converse.js:2581
+#: converse.js:2583
 msgid "BOSH Service URL:"
 msgstr "URL du service BOSH:"
 
-#: converse.js:2734
+#: converse.js:2736
 msgid "Online Contacts"
 msgstr "Contacts en ligne"
 

@@ -580,7 +580,7 @@
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
-                    view.$el.find('.chat-textarea').text(message);
+                    view.$el.find('.chat-textarea').val(message).text(message);
                     view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
@@ -588,7 +588,32 @@
                     expect(txt).toEqual(message);
                 }, converse));
             }, converse));
+
+            describe("Special Messages", $.proxy(function () {
+                it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
+                    var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var view = this.chatboxesview.views[contact_jid];
+                    var message = 'This message is another sent from this chatbox';
+                    // Lets make sure there is at least one message already
+                    // (e.g for when this test is run on its own).
+                    view.$el.find('.chat-textarea').val(message).text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.model.messages.length > 0).toBeTruthy(); 
+                    expect(view.model.messages.localStorage.records.length > 0).toBeTruthy();
+
+                    message = '/clear';
+                    var old_length = view.model.messages.length;
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    view.$el.find('.chat-textarea').val(message).text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.messages.length, 0); // The messages must be removed from the modal
+                    expect(view.model.messages.localStorage.records.length, 0); // And also from localStorage
+                }, converse));
+            }, converse));
+
         }, converse));
+
 
         describe("A Message Counter", $.proxy(function () {
             beforeEach($.proxy(function () {

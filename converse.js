@@ -1887,6 +1887,7 @@
                         'online': __('This contact is online'),
                         'offline': __('This contact is offline'),
                         'unavailable': __('This contact is unavailable'),
+                        'xa': __('This contact is away for an extended period'),
                         'away': __('This contact is away')
                         }[item.get('chat_status')||'offline'];
                     this.$el.html(this.template(
@@ -2273,7 +2274,7 @@
                     }
                     changed_presence = view.model.changed.chat_status;
                     if (changed_presence) {
-                        this.sortRoster(changed_presence)
+                        this.sortRoster(changed_presence);
                         sorted = true;
                     } 
                     if (item.get('is_last')) {
@@ -2312,6 +2313,7 @@
                 $my_contacts.siblings('dd.current-xmpp-contact.'+chat_status).tsort('a', {order:'asc'});
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline'));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable'));
+                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.xa'));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away'));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd'));
                 $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online'));

@@ -453,7 +453,7 @@
                 if (match) {
                     if (match[1] === "clear") {
                         this.$el.find('.chat-content').empty();
-                        this.model.messages.reset();
+                        this.model.messages.reset().localStorage._clear();
                         return;
                     }
                     else if (match[1] === "help") {
@@ -2691,7 +2691,7 @@
                 $.proxy(this.roster.rosterHandler, this.roster),
                 null, 'presence', null);
             this.rosterview = new this.RosterView({'model':this.roster});
-        }
+        };
 
         this.onConnected = function () {
             if (this.debug) {

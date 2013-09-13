@@ -167,9 +167,46 @@ support for XDomainRequest when it is present.
 
 In IE < 8, there is no support for CORS.
 
-If you need to support these browsers, you can add a front-end proxy in
+Instead of using CORS, you can add a reverse proxy in
 Apache/Nginx which serves the connection manager under the same domain as your
 website. This will remove the need for any cross-domain XHR support.
+
+For example:
+~~~~~~~~~~~~
+
+Assuming your site is accessible on port ``80`` for the domain ``mysite.com``
+and your connection manager manager is running at ``someothersite.com/http-bind``.
+
+The *bosh_service_url* value you want to give Converse.js to overcome
+the cross-domain restriction is ``mysite.com/http-bind`` and not
+``someothersite.com/http-bind``.
+
+Your ``nginx`` or ``apache`` configuration will look as follows:
+
+Nginx
+~~~~~
+::
+
+    http {
+        server {
+            listen       80
+            server_name  mysite.com;
+            location ~ ^/http-bind/ {
+                proxy_pass http://someothersite.com;
+            }
+        }
+    }
+
+Apache
+~~~~~~
+::
+
+    <VirtualHost *:80>
+        ServerName mysite.com 
+        RewriteEngine On
+        RewriteRule ^/http-bind(.*) http://someothersite.com/http-bind$1 [P,L]
+    </VirtualHost>
+
 
 Server-side authentication
 ==========================

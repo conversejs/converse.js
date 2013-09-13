@@ -229,9 +229,40 @@ Modern browsers support CORS, but there are problems with Internet Explorer &lt;
 XDomainRequest. There is a <a class="reference external" href="https://gist.github.com/1095825/6b4517276f26b66b01fa97b0a78c01275fdc6ff2">Strophe.js plugin</a> which you can use to enable
 support for XDomainRequest when it is present.</p>
 <p>In IE &lt; 8, there is no support for CORS.</p>
-<p>If you need to support these browsers, you can add a front-end proxy in
+<p>Instead of using CORS, you can add a reverse proxy in
 Apache/Nginx which serves the connection manager under the same domain as your
 website. This will remove the need for any cross-domain XHR support.</p>
+<div class="section" id="for-example">
+<h4>For example:<a class="headerlink" href="#for-example" title="Permalink to this headline">¶</a></h4>
+<p>Assuming your site is accessible on port <tt class="docutils literal"><span class="pre">80</span></tt> for the domain <tt class="docutils literal"><span class="pre">mysite.com</span></tt>
+and your connection manager manager is running at <tt class="docutils literal"><span class="pre">someothersite.com/http-bind</span></tt>.</p>
+<p>The <em>bosh_service_url</em> value you want to give Converse.js to overcome
+the cross-domain restriction is <tt class="docutils literal"><span class="pre">mysite.com/http-bind</span></tt> and not
+<tt class="docutils literal"><span class="pre">someothersite.com/http-bind</span></tt>.</p>
+<p>Your <tt class="docutils literal"><span class="pre">nginx</span></tt> or <tt class="docutils literal"><span class="pre">apache</span></tt> configuration will look as follows:</p>
+</div>
+<div class="section" id="nginx">
+<h4>Nginx<a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>http {
+    server {
+        listen       80
+        server_name  mysite.com;
+        location ~ ^/http-bind/ {
+            proxy_pass http://someothersite.com;
+        }
+    }
+}</pre>
+</div>
+</div>
+<div class="section" id="apache">
+<h4>Apache<a class="headerlink" href="#apache" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>&lt;VirtualHost *:80&gt;
+    ServerName mysite.com
+    RewriteEngine On
+    RewriteRule ^/http-bind(.*) http://someothersite.com/http-bind$1 [P,L]
+&lt;/VirtualHost&gt;</pre>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="server-side-authentication">

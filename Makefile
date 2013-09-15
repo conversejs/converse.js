@@ -47,7 +47,7 @@ bump:
 	sed -i s/v[0-9]\.[0-9]\.[0-9]\.tar\.gz/v$(VERSION)\.tar\.gz/ index.html
 	sed -i s/version\ =\ \'[0-9]\.[0-9]\.[0-9]\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	sed -i s/release\ =\ \'[0-9]\.[0-9]\.[0-9]\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
-	sed -i "s/^[0-9]\.[0-9]\.[0-9]\ \(Unreleased\)/$(VERSION)\ (`date +%Y-%m-%d`)/" CHANGES.rst
+	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" CHANGES.rst
 
 release: 
 	r.js -o build.js && grunt cssmin

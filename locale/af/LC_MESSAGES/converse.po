@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-13 16:02+0200\n"
-"PO-Revision-Date: 2013-09-13 16:06+0200\n"
+"PO-Revision-Date: 2013-09-15 11:44+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans\n"
 "Language: af\n"
@@ -423,11 +423,11 @@ msgstr "Hierdie persoon is onbeskikbaar"
 
 #: converse.js:1890
 msgid "This contact is away for an extended period"
-msgstr "Hierdie persoon is weg vir lank"
+msgstr "Hierdie persoon is vir lank afwesig"
 
 #: converse.js:1891
 msgid "This contact is away"
-msgstr "Hierdie persoon is weg"
+msgstr "Hierdie persoon is afwesig"
 
 #: converse.js:2245
 msgid "Contact requests"

@@ -4,10 +4,57 @@
         "locale_data": {
             "converse": {
                 "": {
+                    "Project-Id-Version": "Converse.js 0.4",
+                    "Report-Msgid-Bugs-To": "",
+                    "POT-Creation-Date": "2013-09-13 16:02+0200",
+                    "PO-Revision-Date": "2013-09-15 11:44+0200",
+                    "Last-Translator": "JC Brand <jc@opkode.com>",
+                    "Language-Team": "German",
+                    "Language": "de",
+                    "MIME-Version": "1.0",
+                    "Content-Type": "text/plain; charset=UTF-8",
+                    "Content-Transfer-Encoding": "8bit",
+                    "Plural-Forms": "nplurals=2; plural=(n != 1);",
                     "domain": "converse",
                     "lang": "de",
                     "plural_forms": "nplurals=2; plural=(n != 1);"
                 },
+                "Disconnected": [
+                    null,
+                    "Verbindung unterbrochen."
+                ],
+                "Error": [
+                    null,
+                    "Fehler"
+                ],
+                "Connecting": [
+                    null,
+                    "Verbindungsaufbau …"
+                ],
+                "Connection Failed": [
+                    null,
+                    "Entfernte Verbindung fehlgeschlagen"
+                ],
+                "Authenticating": [
+                    null,
+                    "Authentifizierung"
+                ],
+                "Authentication Failed": [
+                    null,
+                    "Authentifizierung gescheitert"
+                ],
+                "Disconnecting": [
+                    null,
+                    "Trenne Verbindung"
+                ],
+                "me": [
+                    null,
+                    "Ich"
+                ],
+                "%1$s is typing": [
+                    null,
+                    "%1$s tippt"
+                ],
                 "Show this menu": [
                     null,
                     "Dieses Menü anzeigen"
@@ -344,6 +391,30 @@
                     null,
                     "Hier klicken um diesen Kontakt zu entfernen"
                 ],
+                "This contact is busy": [
+                    null,
+                    "Dieser Kontakt ist beschäfticht"
+                ],
+                "This contact is online": [
+                    null,
+                    "Dieser Kontakt ist online"
+                ],
+                "This contact is offline": [
+                    null,
+                    "Dieser Kontakt ist offline"
+                ],
+                "This contact is unavailable": [
+                    null,
+                    "Dieser Kontakt ist nicht verfügbar"
+                ],
+                "This contact is away for an extended period": [
+                    null,
+                    "Dieser Kontakt is für längere Zeit abwesend"
+                ],
+                "This contact is away": [
+                    null,
+                    "Dieser Kontakt ist abwesend"
+                ],
                 "Contact requests": [
                     null,
                     "Kontaktanfragen"
@@ -408,45 +479,17 @@
                     null,
                     "BOSH "
                 ],
+                "Online Contacts": [
+                    null,
+                    "Online-Kontakte"
+                ],
                 "Connected": [
                     null,
                     "Verbunden"
                 ],
-                "Disconnected": [
-                    null,
-                    "Verbindung unterbrochen."
-                ],
-                "Error": [
-                    null,
-                    "Fehler"
-                ],
-                "Connecting": [
-                    null,
-                    "Verbindungsaufbau …"
-                ],
-                "Connection Failed": [
-                    null,
-                    "Entfernte Verbindung fehlgeschlagen"
-                ],
-                "Authenticating": [
-                    null,
-                    "Authentifizierung"
-                ],
-                "Authentication Failed": [
-                    null,
-                    "Authentifizierung gescheitert"
-                ],
-                "Disconnecting": [
-                    null,
-                    "Trenne Verbindung"
-                ],
                 "Attached": [
                     null,
                     "Angehängt"
-                ],
-                "Online Contacts": [
-                    null,
-                    "Online-Kontakte"
                 ]
             }
         }

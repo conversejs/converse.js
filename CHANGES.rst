@@ -8,12 +8,14 @@ Changelog
 - Chat state descriptions weren't translation aware. [jcbrand]
 - Clear messages from localStorage when user types "/clear". [jcbrand]
 - The 'xa' chat state wasn't being handled properly. [jcbrand]
+- Updated pt-BR translations [seocam]
+- Updated af and de translations [jcbrand]
 
 0.6.3 (2013-09-12)
 ------------------
 
 NB: This release contains an important security fix. Please don't use older
-versions of the 0.6.x branch.
+versions of the 0.6 branch.
 
 - French translations. [tdesvenain]
 - Bugfix: Messages were stored against buddy JID and not own JID. [jcbrand]

@@ -4,7 +4,7 @@
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
          "POT-Creation-Date": "2013-09-13 16:02+0200",
-         "PO-Revision-Date": "2013-09-13 16:06+0200",
+         "PO-Revision-Date": "2013-09-15 11:44+0200",
          "Last-Translator": "JC Brand <jc@opkode.com>",
          "Language-Team": "Afrikaans",
          "Language": "af",
@@ -405,11 +405,11 @@
       ],
       "This contact is away for an extended period": [
          null,
-         "Hierdie persoon is weg vir lank"
+         "Hierdie persoon is vir lank afwesig"
       ],
       "This contact is away": [
          null,
-         "Hierdie persoon is weg"
+         "Hierdie persoon is afwesig"
       ],
       "Contact requests": [
          null,

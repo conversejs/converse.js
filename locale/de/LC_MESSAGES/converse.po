@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-13 16:02+0200\n"
-"PO-Revision-Date: 2013-09-13 16:06+0200\n"
+"PO-Revision-Date: 2013-09-15 11:44+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -408,27 +408,27 @@ msgstr "Hier klicken um diesen Kontakt zu entfernen"
 
 #: converse.js:1886
 msgid "This contact is busy"
-msgstr ""
+msgstr "Dieser Kontakt ist beschäfticht"
 
 #: converse.js:1887
 msgid "This contact is online"
-msgstr ""
+msgstr "Dieser Kontakt ist online"
 
 #: converse.js:1888
 msgid "This contact is offline"
-msgstr ""
+msgstr "Dieser Kontakt ist offline"
 
 #: converse.js:1889
 msgid "This contact is unavailable"
-msgstr ""
+msgstr "Dieser Kontakt ist nicht verfügbar"
 
 #: converse.js:1890
 msgid "This contact is away for an extended period"
-msgstr ""
+msgstr "Dieser Kontakt is für längere Zeit abwesend"
 
 #: converse.js:1891
 msgid "This contact is away"
-msgstr ""
+msgstr "Dieser Kontakt ist abwesend"
 
 #: converse.js:2245
 msgid "Contact requests"

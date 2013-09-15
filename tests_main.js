@@ -12,6 +12,7 @@ require.config({
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
+        "crypto.aes": "components/crypto-js/build/rollups/aes",
         // Extra test dependencies
         "jasmine": "components/jasmine/lib/jasmine-core/jasmine",
         "jasmine-html": "components/jasmine/lib/jasmine-core/jasmine-html",
@@ -32,7 +33,7 @@ require.config({
             //module value.
             exports: 'Backbone'
         },
-        'tinysort': { deps: ['jquery'] },
+        'jquery.tinysort': { deps: ['jquery'] },
         'strophe': { deps: ['jquery'] },
         'underscore':   { exports: '_' },
         'strophe.muc':  { deps: ['strophe', 'jquery'] },

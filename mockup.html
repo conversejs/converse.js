@@ -27,7 +27,7 @@
                     <li><a class="current" href="#login">Sign in</a></li>
                 </ul>
                 <a class="close-chatbox-button icon-close"></a></div>
-                <div id="controlbox-panes">
+                <div class="controlbox-panes">
                     <div id="login-dialog">
                     <form id="converse-login">
                         <label>XMPP/Jabber Username:</label><input type="text" id="jid">
@@ -46,7 +46,7 @@
                 </ul>
                 <a class="close-chatbox-button icon-close"></a>
             </div>
-        <div id="controlbox-panes">
+        <div class="controlbox-panes">
             <div id="users" class="oc-chat-content" style="display: block;">
                 <form class="set-xmpp-status" action="" method="post">
                     <span id="xmpp-status-holder">
@@ -200,8 +200,8 @@
             <p></p>
         </div>
         <div class="chat-content">
-            <div class="chat-info"><strong>/help</strong>:Show this menu</div>
-            <div class="chat-info"><strong>/me</strong>:Write in the third person</div>
+            <div class="chat-info"><strong>/help</strong>:This is an info message</div>
+            <div class="chat-error">This is an error message</div>
             <div class="chat-message">
                 <span class="chat-message-me">09:35 me:&nbsp;</span>
                 <span class="chat-message-content">Hello world</span>
@@ -225,6 +225,23 @@
             </div>
         </div>
         <form class="sendXMPPMessage" action="" method="post">
+            <ul class="chat-toolbar no-text-select">
+                <!--
+                <li class="icon-happy" title="Insert a smilery"></li>
+                <li class="icon-camera-2" title="Enable video chat"></li>
+                <li class="icon-newspaper" title="Fetch and show this user's vCard"></li>
+                -->
+                <li class="toggle-otr unencrypted" title="Turn on 'off-the-record' chat encryption">
+                    <span class="chat-toolbar-text">unencrypted</span>
+                    <span class="icon-unlocked"></span>
+                    <ul>
+                        <li><a href="#">Start private conversation</a></li>
+                        <li><a href="#">End private conversation</a></li>
+                        <li><a href="#">Authenticate buddy</a></li>
+                        <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What's this?</a></li>
+                    </ul>
+                </li>
+            </ul>
             <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
         </form>
     </div>
@@ -358,6 +375,19 @@ $(document).ready(function () {
             });
         });
     }
+
+    $(function() {
+        // Clickable Dropdown
+        $('.toggle-otr').click(function(e) {
+            $('.toggle-otr ul').slideToggle(200);
+            e.stopPropagation();
+        });
+        $(document).click(function() {
+            if ($('.toggle-otr ul').is(':visible')) {
+                $('.toggle-otr ul', this).slideUp(200);
+            }
+        });
+    });
 });
 </script>
 <script src="http://devbox:9001/socket.js" type="text/javascript" charset="utf-8"></script>

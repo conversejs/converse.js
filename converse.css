@@ -8,6 +8,15 @@
 
 @import url("fonticons/style.css");
 
+.no-text-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 #collective-xmpp-chat-data,
 #collective-xmpp-chat-data input {
   color: rgb(79, 79, 79);
@@ -107,13 +116,11 @@ span.spinner.hor_centered {
 
 .chatroom .participants {
     float: left;
-    overflow: auto;
-    border-left: 1px solid #AAA;
-    max-width: 98px;
     height: 274px;
     background-color: white;
     overflow: auto;
     border-left: 1px solid #AAA;
+    max-width: 98px;
     border-bottom-right-radius: 4px;
 }
 
@@ -123,12 +130,13 @@ span.spinner.hor_centered {
     white-space: nowrap;
     display: block;
     font-size: 12px;
+    font-weight: bold;
     padding: 0.5em 0 0 0.5em;
     cursor: default;
 }
 
 ul.participant-list li.moderator {
-    color: #FE0007;
+    color: #8f2831;
 }
 
 .chatroom .participant-list {
@@ -142,30 +150,20 @@ ul.participant-list li.moderator {
 }
 
 .chat-content {
+    position: relative;
     padding: 0.3em;
     font-size: 13px;
     color: rgb(79, 79, 79);
-    height:200px;
-    width: 192px;
+    height:180px;
+    width: 190px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em;
 }
 
-.chat-textarea {
-    border: 0;
-    height: 50px;
-}
-
-.chat-textarea-chatbox-selected {
-    border: 1px solid #578308;
-    margin:0;
-}
-
-.chat-textarea-chatroom-selected {
-    border: 2px solid #2D617A;
-    margin:0;
+.chatroom .chat-content {
+    height:200px;
 }
 
 .chatroom .chat-content {
@@ -173,7 +171,10 @@ ul.participant-list li.moderator {
 }
 
 .chat-info {
-    color:#666666;
+    color: #666666;
+}
+.chat-error {
+    color: #8f2831;
 }
 
 .chat-message-room,
@@ -194,7 +195,7 @@ ul.participant-list li.moderator {
 }
 
 .chat-message-them {
-    color: #F62817;
+    color: #8f2831;
 }
 
 .chat-message-me {
@@ -218,7 +219,6 @@ li.chat-info {
     padding-top: 10px;
 }
 
-div#settings,
 div#chatrooms,
 div#login-dialog {
     height: 274px;
@@ -611,7 +611,7 @@ dd.available-chatroom:hover a.room-info {
     background-color: #DCEAC5;
 }
 
-div#controlbox-panes {
+.controlbox-panes {
     background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%); /* FF3.6+ */
     background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* IE10+ */
     background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* Opera 11.10+ */
@@ -747,7 +747,7 @@ form.sendXMPPMessage {
     background-clip: padding-box;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    height: 65px;
+    height: 85px;
     width: 200px;
 }
 
@@ -772,20 +772,80 @@ ul.chat-toolbar {
     font-size: 14px;
     margin: 0;
     padding: 0 5px 0 0;
+    height: 20px;
+    display: block;
+    width: 195px;
+    /* XXX:  CHECKME */
     float: right;
     display: inline-block;
     height: 20px;
+}
+
+.chat-toolbar .toggle-otr {
+    float: right;
+}
+
+.chat-toolbar .toggle-otr ul {
+	display: none;
+    font-size:12px;
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: -1px -2px 2px 1px rgba(0,0,0,0.4);
+}
+
+.chat-toolbar .toggle-otr ul li {
+	position: relative;
+	list-style: none;
+	cursor: pointer;
+    display: block;
+    z-index: 99;
+}
+
+.chat-toolbar .toggle-otr ul li:hover {
+    background-color: #eee;
+}
+
+.chat-toolbar .toggle-otr ul li a {
+	transition:background-color 0.2s ease-in-out;
+	-webkit-transition:background-color 0.2s ease-in-out;
+	-moz-transition:background-color 0.2s ease-in-out;
+	display: block;
+	padding: 1px;
+	text-decoration: none;
+}
+
+.chat-toolbar-text {
+    font-size: 12px;
+    padding-right: 3px;
+}
+
+.unencrypted a,
+.unencrypted {
+    color: #8f2831;
+}
+
+.unverified a,
+.unverified {
+    color: #cf5300;
+}
+
+.private a,
+.private {
+    color: #4B7003
 }
 
 ul.chat-toolbar li {
     display: inline-block;
     list-style: none;
     padding: 0 3px 0 3px;
+    cursor: pointer; 
 }
 
 ul.chat-toolbar li:hover {
     cursor: pointer; 
-    color: rgb(39, 39, 39);
 }
 
 form#set-custom-xmpp-status {
@@ -878,3 +938,4 @@ form.add-xmpp-contact input {
     padding: 0 5px 0 5px;
     color: rgb(79, 79, 79);
 }
+

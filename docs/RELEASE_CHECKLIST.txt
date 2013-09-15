@@ -1,0 +1,10 @@
+- Run tests
+    grunt test
+- Bump version
+    make bump VERSION=0.6.4
+- Re-minify CSS and JS
+    grunt release
+- Tag
+    git tag -s v0.6.4 -m 'Release of version 0.6.4'
+- Push
+    git push origin master --tags

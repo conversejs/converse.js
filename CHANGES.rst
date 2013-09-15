@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.6.4 (Unreleased)
+0.6.4 (2013-09-15)
 ------------------
 
 - Add icon for the unavailable chat state. [jcbrand]

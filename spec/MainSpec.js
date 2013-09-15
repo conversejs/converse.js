@@ -17,7 +17,8 @@
         var cur_names = [
             'Max Frankfurter', 'Candice van der Knijff', 'Irini Vlastuin', 'Rinse Sommer', 'Annegreet Gomez',
             'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
-            'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
+            'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers',
+            'Staal Burger', 'Brenner Brand', 'Vleis Visagie'
         ];
         var num_contacts = req_names.length + pend_names.length + cur_names.length;
         var open_controlbox;
@@ -197,6 +198,10 @@
             }, converse));
 
             describe("Existing Contacts", $.proxy(function () {
+                beforeEach($.proxy(function () {
+                    openControlBox();
+                }, converse));
+
                 it("do not have a heading if there aren't any", $.proxy(function () {
                     expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
                 }, converse));
@@ -276,10 +281,28 @@
                     }
                 }, converse));
 
-                it("can change their status to unavailable and be sorted alphabetically", $.proxy(function () {
+                it("can change their status to xa and be sorted alphabetically", $.proxy(function () {
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=9; i<12; i++) {
+                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        view = this.rosterview.rosteritemviews[jid];
+                        spyOn(view, 'render').andCallThrough();
+                        item = view.model;
+                        item.set('chat_status', 'xa');
+                        expect(view.render).toHaveBeenCalled();
+                        expect(this.rosterview.render).toHaveBeenCalled();
+
+                        // Check that they are sorted alphabetically
+                        t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
+                        expect(t).toEqual(cur_names.slice(9,i+1).sort().join(''));
+                    }
+                }, converse));
+
+                it("can change their status to unavailable and be sorted alphabetically", $.proxy(function () {
+                    var item, view, jid, t;
+                    spyOn(this.rosterview, 'render').andCallThrough();
+                    for (i=12; i<15; i++) {
                         jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
@@ -290,31 +313,29 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(9, i+1).sort().join(''));
+                        expect(t).toEqual(cur_names.slice(12, i+1).sort().join(''));
                     }
                 }, converse));
 
-                it("are ordered according to status: online, busy, away, unavailable, offline", $.proxy(function () {
+                it("are ordered according to status: online, busy, away, xa, unavailable, offline", $.proxy(function () {
                     var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                     var i;
-                    // The first five contacts are online.
                     for (i=0; i<3; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('online');
                     }
-                    // The next five are busy
                     for (i=3; i<6; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('dnd');
                     }
-                    // The next five are away
                     for (i=6; i<9; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('away');
                     }
-                    // The next five are unavailable
                     for (i=9; i<12; i++) {
+                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('xa');
+                    }
+                    for (i=12; i<15; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('unavailable');
                     }
-                    // The next 20 are offline
-                    for (i=12; i<cur_names.length; i++) {
+                    for (i=15; i<cur_names.length; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
                     }
                 }, converse));
@@ -559,7 +580,7 @@
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
-                    view.$el.find('.chat-textarea').text(message);
+                    view.$el.find('.chat-textarea').val(message).text(message);
                     view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
@@ -567,7 +588,32 @@
                     expect(txt).toEqual(message);
                 }, converse));
             }, converse));
+
+            describe("Special Messages", $.proxy(function () {
+                it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
+                    var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var view = this.chatboxesview.views[contact_jid];
+                    var message = 'This message is another sent from this chatbox';
+                    // Lets make sure there is at least one message already
+                    // (e.g for when this test is run on its own).
+                    view.$el.find('.chat-textarea').val(message).text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.model.messages.length > 0).toBeTruthy(); 
+                    expect(view.model.messages.localStorage.records.length > 0).toBeTruthy();
+
+                    message = '/clear';
+                    var old_length = view.model.messages.length;
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    view.$el.find('.chat-textarea').val(message).text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.messages.length, 0); // The messages must be removed from the modal
+                    expect(view.model.messages.localStorage.records.length, 0); // And also from localStorage
+                }, converse));
+            }, converse));
+
         }, converse));
+
 
         describe("A Message Counter", $.proxy(function () {
             beforeEach($.proxy(function () {

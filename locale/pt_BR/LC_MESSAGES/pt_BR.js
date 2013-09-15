@@ -4,11 +4,11 @@
         "locale_data": {
             "converse": {
                 "": {
-                    "Project-Id-Version": "Converse.js 0.4",
+                    "Project-Id-Version": "Converse.js 0.6.3",
                     "Report-Msgid-Bugs-To": "",
-                    "POT-Creation-Date": "2013-06-01 23:03+0200",
+                    "POT-Creation-Date": "2013-09-13 16:02+0200",
                     "PO-Revision-Date": "2013-07-23 14:34-0300",
-                    "Last-Translator": "Matheus Figueiredo <matheus@tracy.com>",
+                    "Last-Translator": "Sergio Oliveira <sergio@tracy.com.br>",
                     "Language-Team": "Brazilian Portuguese",
                     "Language": "pt_BR",
                     "MIME-Version": "1.0",
@@ -19,6 +19,42 @@
                     "lang": "pt_BR",
                     "plural_forms": "nplurals=2; plural=(n != 1);"
                 },
+                "Disconnected": [
+                    null,
+                    "Desconectado"
+                ],
+                "Error": [
+                    null,
+                    "Erro"
+                ],
+                "Connecting": [
+                    null,
+                    "Conectando"
+                ],
+                "Connection Failed": [
+                    null,
+                    "Falha de conexão"
+                ],
+                "Authenticating": [
+                    null,
+                    "Autenticando"
+                ],
+                "Authentication Failed": [
+                    null,
+                    "Falha de autenticação"
+                ],
+                "Disconnecting": [
+                    null,
+                    "Desconectando"
+                ],
+                "me": [
+                    null,
+                    "eu"
+                ],
+                "%1$s is typing": [
+                    null,
+                    "%1$s está digitando"
+                ],
                 "Show this menu": [
                     null,
                     "Mostrar o menu"
@@ -117,7 +153,7 @@
                 ],
                 "Requires an invitation": [
                     null,
-                    "Requer convite"
+                    "Requer um convite"
                 ],
                 "Moderated": [
                     null,
@@ -209,7 +245,7 @@
                 ],
                 "An error occurred while trying to save the form.": [
                     null,
-                    "Ocorreu um erro enquanto salvava o formulário"
+                    "Ocorreu um erro enquanto tentava salvar o formulário"
                 ],
                 "This chatroom requires a password": [
                     null,
@@ -229,7 +265,7 @@
                 ],
                 "This room now shows unavailable members": [
                     null,
-                    "Essa sala mostra membros indisponíveis"
+                    "Agora esta sala mostra membros indisponíveis"
                 ],
                 "This room does not show unavailable members": [
                     null,
@@ -355,6 +391,30 @@
                     null,
                     "Clique para remover o contato"
                 ],
+                "This contact is busy": [
+                    null,
+                    "Este contato está ocupado"
+                ],
+                "This contact is online": [
+                    null,
+                    "Este contato está online"
+                ],
+                "This contact is offline": [
+                    null,
+                    "Este contato está offline"
+                ],
+                "This contact is unavailable": [
+                    null,
+                    "Este contato está indisponível"
+                ],
+                "This contact is away for an extended period": [
+                    null,
+                    "Este contato está ausente por um longo período"
+                ],
+                "This contact is away": [
+                    null,
+                    "Este contato está ausente"
+                ],
                 "Contact requests": [
                     null,
                     "Solicitação de contatos"
@@ -419,45 +479,17 @@
                     null,
                     "URL de serviço BOSH:"
                 ],
+                "Online Contacts": [
+                    null,
+                    "Contatos online"
+                ],
                 "Connected": [
                     null,
                     "Conectado"
                 ],
-                "Disconnected": [
-                    null,
-                    "Desconectado"
-                ],
-                "Error": [
-                    null,
-                    "Erro"
-                ],
-                "Connecting": [
-                    null,
-                    "Conectando"
-                ],
-                "Connection Failed": [
-                    null,
-                    "Falha de conexão"
-                ],
-                "Authenticating": [
-                    null,
-                    "Autenticando"
-                ],
-                "Authentication Failed": [
-                    null,
-                    "Falha de autenticação"
-                ],
-                "Disconnecting": [
-                    null,
-                    "Desconectando"
-                ],
                 "Attached": [
                     null,
                     "Anexado"
-                ],
-                "Online Contacts": [
-                    null,
-                    "Contatos online"
                 ]
             }
         }

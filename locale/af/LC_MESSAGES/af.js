@@ -4,10 +4,56 @@
         "locale_data": {
             "converse": {
                 "": {
+                    "Project-Id-Version": "Converse.js 0.4",
+                    "Report-Msgid-Bugs-To": "",
+                    "POT-Creation-Date": "2013-09-13 16:02+0200",
+                    "PO-Revision-Date": "2013-09-15 11:44+0200",
+                    "Last-Translator": "JC Brand <jc@opkode.com>",
+                    "Language-Team": "Afrikaans",
+                    "Language": "af",
+                    "MIME-Version": "1.0",
+                    "Content-Type": "text/plain; charset=ASCII",
+                    "Content-Transfer-Encoding": "8bit",
                     "domain": "converse",
                     "lang": "af",
                     "plural_forms": "nplurals=2; plural=(n != 1);"
                 },
+                "Disconnected": [
+                    null,
+                    "Verbindung onderbreek"
+                ],
+                "Error": [
+                    null,
+                    "Fout"
+                ],
+                "Connecting": [
+                    null,
+                    "Verbind tans"
+                ],
+                "Connection Failed": [
+                    null,
+                    "Verbinding het gefaal"
+                ],
+                "Authenticating": [
+                    null,
+                    "Besig om te bekragtig"
+                ],
+                "Authentication Failed": [
+                    null,
+                    "Bekragtiging het gefaal"
+                ],
+                "Disconnecting": [
+                    null,
+                    "Onderbreek verbinding"
+                ],
+                "me": [
+                    null,
+                    "ek"
+                ],
+                "%1$s is typing": [
+                    null,
+                    "%1$s tik tans"
+                ],
                 "Show this menu": [
                     null,
                     "Vertoon hierdie keuselys"
@@ -30,7 +76,7 @@
                 ],
                 "Online": [
                     null,
-                    "Aanlyn"
+                    "Aangemeld"
                 ],
                 "Busy": [
                     null,
@@ -38,11 +84,11 @@
                 ],
                 "Away": [
                     null,
-                    "Weg"
+                    "Afwesig"
                 ],
                 "Offline": [
                     null,
-                    "Aflyn"
+                    "Afgemeld"
                 ],
                 "Click to add new chat contacts": [
                     null,
@@ -344,6 +390,30 @@
                     null,
                     "Kliek om hierdie kontak te verwyder"
                 ],
+                "This contact is busy": [
+                    null,
+                    "Hierdie persoon is besig"
+                ],
+                "This contact is online": [
+                    null,
+                    "Hierdie persoon is aanlyn"
+                ],
+                "This contact is offline": [
+                    null,
+                    "Hierdie persoon is aflyn"
+                ],
+                "This contact is unavailable": [
+                    null,
+                    "Hierdie persoon is onbeskikbaar"
+                ],
+                "This contact is away for an extended period": [
+                    null,
+                    "Hierdie persoon is vir lank afwesig"
+                ],
+                "This contact is away": [
+                    null,
+                    "Hierdie persoon is afwesig"
+                ],
                 "Contact requests": [
                     null,
                     "Kontak versoeke"
@@ -370,7 +440,7 @@
                 ],
                 "online": [
                     null,
-                    "aanlyn"
+                    "aangemeld"
                 ],
                 "busy": [
                     null,
@@ -378,11 +448,11 @@
                 ],
                 "away for long": [
                     null,
-                    "weg vir lank"
+                    "vir lank afwesig"
                 ],
                 "away": [
                     null,
-                    "weg"
+                    "afwesig"
                 ],
                 "I am %1$s": [
                     null,
@@ -408,45 +478,17 @@
                     null,
                     "BOSH bediener URL"
                 ],
+                "Online Contacts": [
+                    null,
+                    "Kontakte aangemeld"
+                ],
                 "Connected": [
                     null,
                     "Verbind"
                 ],
-                "Disconnected": [
-                    null,
-                    "Ontkoppel"
-                ],
-                "Error": [
-                    null,
-                    "Fout"
-                ],
-                "Connecting": [
-                    null,
-                    "Verbind tans"
-                ],
-                "Connection Failed": [
-                    null,
-                    "Verbinding het gefaal"
-                ],
-                "Authenticating": [
-                    null,
-                    "Besig om te bekragtig"
-                ],
-                "Authentication Failed": [
-                    null,
-                    "Bekragtiging het gefaal"
-                ],
-                "Disconnecting": [
-                    null,
-                    "Besig om te ontkoppel"
-                ],
                 "Attached": [
                     null,
                     "Geheg"
-                ],
-                "Online Contacts": [
-                    null,
-                    "Kontakte aanlyn"
                 ]
             }
         }

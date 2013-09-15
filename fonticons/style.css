@@ -28,7 +28,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-home, .icon-pencil, .icon-camera, .icon-camera-2, .icon-play, .icon-music, .icon-headphones, .icon-phone, .icon-phone-hang-up, .icon-address-book, .icon-notebook, .icon-envelop, .icon-pushpin, .icon-online, .icon-away, .icon-bubbles, .icon-bubbles-2, .icon-bubbles-3, .icon-user, .icon-users, .icon-quotes-left, .icon-spinner, .icon-search, .icon-cogs, .icon-wrench, .icon-unlocked, .icon-lock, .icon-lock-2, .icon-key, .icon-key-2, .icon-zoom-out, .icon-zoom-in, .icon-cog, .icon-remove, .icon-remove-2, .icon-eye, .icon-eye-blocked, .icon-attachment, .icon-globe, .icon-heart, .icon-happy, .icon-thumbs-up, .icon-smiley, .icon-tongue, .icon-sad, .icon-wink, .icon-wondering, .icon-confused, .icon-shocked, .icon-evil, .icon-angry, .icon-cool, .icon-grin, .icon-info, .icon-notification, .icon-warning, .icon-spell-check, .icon-volume-high, .icon-volume-medium, .icon-volume-low, .icon-volume-mute, .icon-volume-mute-2, .icon-volume-decrease, .icon-volume-increase, .icon-bold, .icon-underline, .icon-italic, .icon-strikethrough, .icon-new-tab, .icon-youtube, .icon-close, .icon-blocked, .icon-cancel-circle, .icon-minus, .icon-plus, .icon-checkbox-checked, .icon-checkbox-unchecked, .icon-checkbox-partial, .icon-radio-checked, .icon-radio-unchecked, .icon-room-info, .icon-newspaper, .icon-image, .icon-offline, .icon-dnd {
+.icon-home, .icon-pencil, .icon-camera, .icon-camera-2, .icon-play, .icon-music, .icon-headphones, .icon-phone, .icon-phone-hang-up, .icon-address-book, .icon-notebook, .icon-envelop, .icon-pushpin, .icon-online, .icon-away, .icon-xa, .icon-bubbles, .icon-bubbles-2, .icon-bubbles-3, .icon-user, .icon-users, .icon-quotes-left, .icon-spinner, .icon-search, .icon-cogs, .icon-wrench, .icon-unlocked, .icon-lock, .icon-lock-2, .icon-key, .icon-key-2, .icon-zoom-out, .icon-zoom-in, .icon-cog, .icon-remove, .icon-remove-2, .icon-eye, .icon-eye-blocked, .icon-attachment, .icon-globe, .icon-heart, .icon-happy, .icon-thumbs-up, .icon-smiley, .icon-tongue, .icon-sad, .icon-wink, .icon-wondering, .icon-confused, .icon-shocked, .icon-evil, .icon-angry, .icon-cool, .icon-grin, .icon-info, .icon-notification, .icon-warning, .icon-spell-check, .icon-volume-high, .icon-volume-medium, .icon-volume-low, .icon-volume-mute, .icon-volume-mute-2, .icon-volume-decrease, .icon-volume-increase, .icon-bold, .icon-underline, .icon-italic, .icon-strikethrough, .icon-new-tab, .icon-youtube, .icon-close, .icon-blocked, .icon-cancel-circle, .icon-minus, .icon-plus, .icon-checkbox-checked, .icon-checkbox-unchecked, .icon-checkbox-partial, .icon-radio-checked, .icon-radio-unchecked, .icon-room-info, .icon-newspaper, .icon-image, .icon-offline, .icon-unavailable, .icon-dnd {
 	font-family: 'Converse-js';
 	speak: none;
 	font-style: normal;
@@ -287,6 +287,8 @@ you can use the generic selector below, but it's slower:
 .icon-image:before {
 	content: "\2b14";
 }
+.icon-xa:before,
+.icon-unavailable:before,
 .icon-offline:before {
 	content: "\e002";
 }

@@ -2,9 +2,6 @@
 converse.js
 ===========
 
-.. figure:: https://api.travis-ci.org/jcbrand/converse.js.png?branch=master
-   :alt: Build Status
-
 Converse.js_ is a web based `XMPP/Jabber`_ instant messaging client.
 
 It enables you to add chat functionality to your website, independent of any

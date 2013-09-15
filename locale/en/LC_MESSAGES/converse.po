@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-15 22:06+0200\n"
-"PO-Revision-Date: 2013-09-15 22:05+0200\n"
+"PO-Revision-Date: 2013-09-15 22:15+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -19,19 +19,19 @@ msgstr ""
 
 #: converse.js:125
 msgid "unencrypted"
-msgstr ""
+msgstr "unencrypted"
 
 #: converse.js:126
 msgid "unverified"
-msgstr ""
+msgstr "unverified"
 
 #: converse.js:127
 msgid "verified"
-msgstr ""
+msgstr "verified"
 
 #: converse.js:128
 msgid "finished"
-msgstr ""
+msgstr "finished"
 
 #: converse.js:161
 msgid "Disconnected"
@@ -63,7 +63,7 @@ msgstr "Disconnecting"
 
 #: converse.js:332
 msgid "Re-establishing encrypted session"
-msgstr ""
+msgstr "Re-establishing encrypted session"
 
 #: converse.js:340
 msgid ""

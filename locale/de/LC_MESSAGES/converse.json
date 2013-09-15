@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-13 16:02+0200",
-         "PO-Revision-Date": "2013-09-15 11:44+0200",
+         "POT-Creation-Date": "2013-09-15 21:55+0200",
+         "PO-Revision-Date": "2013-09-15 22:03+0200",
          "Last-Translator": "JC Brand <jc@opkode.com>",
          "Language-Team": "German",
          "Language": "de",
@@ -16,6 +16,22 @@
          "lang": "de",
          "plural_forms": "nplurals=2; plural=(n != 1);"
       },
+      "unencrypted": [
+         null,
+         ""
+      ],
+      "unverified": [
+         null,
+         ""
+      ],
+      "verified": [
+         null,
+         ""
+      ],
+      "finished": [
+         null,
+         ""
+      ],
       "Disconnected": [
          null,
          "Verbindung unterbrochen."
@@ -44,13 +60,57 @@
          null,
          "Trenne Verbindung"
       ],
+      "Re-establishing encrypted session": [
+         null,
+         ""
+      ],
+      "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+         null,
+         ""
+      ],
+      "Private key generated.": [
+         null,
+         ""
+      ],
+      "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+         null,
+         ""
+      ],
+      "Could not verify this user's identify.": [
+         null,
+         ""
+      ],
+      "Personal message": [
+         null,
+         "Persönliche Nachricht"
+      ],
+      "Start encrypted conversation": [
+         null,
+         ""
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         ""
+      ],
+      "End encrypted conversation": [
+         null,
+         ""
+      ],
+      "Verify with SMP": [
+         null,
+         ""
+      ],
+      "Verify with fingerprints": [
+         null,
+         ""
+      ],
+      "What's this?": [
+         null,
+         ""
+      ],
       "me": [
          null,
          "Ich"
-      ],
-      "%1$s is typing": [
-         null,
-         "%1$s tippt"
       ],
       "Show this menu": [
          null,
@@ -64,9 +124,73 @@
          null,
          "Nachrichten entfernen"
       ],
-      "Personal message": [
+      "Your message could not be sent": [
          null,
-         "Persönliche Nachricht"
+         ""
+      ],
+      "We received an unencrypted message": [
+         null,
+         ""
+      ],
+      "We received an unreadable encrypted message": [
+         null,
+         ""
+      ],
+      "This user has requested an encrypted session.": [
+         null,
+         ""
+      ],
+      "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+         null,
+         ""
+      ],
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+         null,
+         ""
+      ],
+      "What is your security question?": [
+         null,
+         ""
+      ],
+      "What is the answer to the security question?": [
+         null,
+         ""
+      ],
+      "Invalid authentication scheme provided": [
+         null,
+         ""
+      ],
+      "Your messages are not encrypted anymore": [
+         null,
+         ""
+      ],
+      "Your messages are now encrypted but your buddy's identity has not been verified.": [
+         null,
+         ""
+      ],
+      "Your buddy's identify has been verified.": [
+         null,
+         ""
+      ],
+      "Your buddy has ended encryption on their end, you should do the same.": [
+         null,
+         ""
+      ],
+      "Your messages are not encrypted. Click here to enable OTR encryption.": [
+         null,
+         ""
+      ],
+      "Your messages are encrypted, but your buddy has not been verified.": [
+         null,
+         ""
+      ],
+      "Your messages are encrypted and your buddy verified.": [
+         null,
+         ""
+      ],
+      "Your buddy has closed their end of the private session, you should do the same": [
+         null,
+         ""
       ],
       "Contacts": [
          null,
@@ -479,6 +603,10 @@
       "Online Contacts": [
          null,
          "Online-Kontakte"
+      ],
+      "%1$s is typing": [
+         null,
+         "%1$s tippt"
       ],
       "Connected": [
          null,

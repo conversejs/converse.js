@@ -356,6 +356,12 @@ To fetch these dependencies, run:
 
     grunt fetch
 
+If you don't have grunt installed globally, you need to specify the relative
+path:
+
+::
+    ./node_modules/.bin/grunt fetch
+
 This will call Bower in the background to fetch all the front-end
 dependencies (like backbone.js, strophe.js etc.) and then put them in the
 *components* folder.

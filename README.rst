@@ -29,6 +29,7 @@ It has the following features:
 * Typing notifications
 * Third person messages (/me )
 * Translated into multiple languages  (af, de, es, it, pt_BR)
+* Off-the-record encryption support (via `OTR.js <http://arlolra.github.io/otr>`_)
 
 -----------
 Screencasts

@@ -374,6 +374,12 @@ should get loaded in the browser).</p>
 <p>To fetch these dependencies, run:</p>
 <div class="highlight-python"><pre>grunt fetch</pre>
 </div>
+<p>If you don&#8217;t have grunt installed globally, you need to specify the relative
+path:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>./node_modules/.bin/grunt fetch</dd>
+</dl>
 <p>This will call Bower in the background to fetch all the front-end
 dependencies (like backbone.js, strophe.js etc.) and then put them in the
 <em>components</em> folder.</p>

@@ -48,6 +48,9 @@
         var UNVERIFIED= 1;
         var VERIFIED= 2;
         var FINISHED = 3;
+        var KEY = {
+            ENTER: 13
+        };
 
         // Default values
         var converse = this;
@@ -785,7 +788,7 @@
             keyPressed: function (ev) {
                 var $textarea = $(ev.target),
                     message, notify, composing;
-                if(ev.keyCode == 13) {
+                if(ev.keyCode == KEY.ENTER) {
                     ev.preventDefault();
                     message = $textarea.val();
                     $textarea.val('').focus();

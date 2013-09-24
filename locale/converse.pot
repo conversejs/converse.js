@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-13 16:02+0200\n"
+"POT-Creation-Date: 2013-09-24 23:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,43 +19,43 @@ msgstr ""
 
 #: converse.js:135
 msgid "Disconnected"
-msgstr ""
+msgstr "Kapcsolat megszakítva"
 
 #: converse.js:139
 msgid "Error"
-msgstr ""
+msgstr "Hiba"
 
 #: converse.js:141
 msgid "Connecting"
-msgstr ""
+msgstr "Kapcsolódás"
 
 #: converse.js:144
 msgid "Connection Failed"
-msgstr ""
+msgstr "Kapcsolódási hiba"
 
 #: converse.js:146
 msgid "Authenticating"
-msgstr ""
+msgstr "Azonosítás"
 
 #: converse.js:149
 msgid "Authentication Failed"
-msgstr ""
+msgstr "Azonosítási hiba"
 
 #: converse.js:151
 msgid "Disconnecting"
-msgstr ""
+msgstr "Kapcsolat bontása"
 
 #: converse.js:373
 msgid "me"
-msgstr ""
+msgstr "nekem"
 
 #: converse.js:417
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s gépel"
 
 #: converse.js:461 converse.js:1180
 msgid "Show this menu"
-msgstr ""
+msgstr "Mutasd ezt a menüt"
 
 #: converse.js:462 converse.js:1181
 msgid "Write in the third person"
@@ -63,59 +63,59 @@ msgstr ""
 
 #: converse.js:463 converse.js:1185
 msgid "Remove messages"
-msgstr ""
+msgstr "Üzenet törlése"
 
 #: converse.js:603
 msgid "Personal message"
-msgstr ""
+msgstr "Személyes üzenet"
 
 #: converse.js:677
 msgid "Contacts"
-msgstr ""
+msgstr "Kapcsolatok"
 
 #: converse.js:682
 msgid "Online"
-msgstr ""
+msgstr "Elérhető"
 
 #: converse.js:683
 msgid "Busy"
-msgstr ""
+msgstr "Foglalt"
 
 #: converse.js:684
 msgid "Away"
-msgstr ""
+msgstr "Távol"
 
 #: converse.js:685
 msgid "Offline"
-msgstr ""
+msgstr "Nem elérhető"
 
 #: converse.js:692
 msgid "Click to add new chat contacts"
-msgstr ""
+msgstr "Új kapcsolatok hozzáadása"
 
 #: converse.js:693
 msgid "Add a contact"
-msgstr ""
+msgstr "Egy új kapcsolat hozzááadása"
 
 #: converse.js:702
 msgid "Contact username"
-msgstr ""
+msgstr "Felhasználónév"
 
 #: converse.js:703
 msgid "Add"
-msgstr ""
+msgstr "Hozzáadás"
 
 #: converse.js:711
 msgid "Contact name"
-msgstr ""
+msgstr "Név"
 
 #: converse.js:712
 msgid "Search"
-msgstr ""
+msgstr "Keresés"
 
 #: converse.js:752
 msgid "No users found"
-msgstr ""
+msgstr "Nincs találat"
 
 #: converse.js:759
 msgid "Click to add as a chat contact"

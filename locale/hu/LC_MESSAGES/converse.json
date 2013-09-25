@@ -4,7 +4,7 @@
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
          "POT-Creation-Date": "2013-09-24 23:22+0200",
-         "PO-Revision-Date": "2013-09-25 17:04+0200",
+         "PO-Revision-Date": "2013-09-25 22:42+0200",
          "Last-Translator": "Krisztian Kompar <w3host@w3host.hu>",
          "Language-Team": "Hungarian",
          "Language": "hu",
@@ -17,7 +17,7 @@
       },
       "Disconnected": [
          null,
-         "Kapcsolat megszakítva"
+         "Szétkapcsolva"
       ],
       "Error": [
          null,
@@ -41,11 +41,11 @@
       ],
       "Disconnecting": [
          null,
-         "Kapcsolat bontása"
+         "Szétkapcsolás"
       ],
       "me": [
          null,
-         "nekem"
+         "én"
       ],
       "%1$s is typing": [
          null,
@@ -65,7 +65,7 @@
       ],
       "Personal message": [
          null,
-         "Személyes üzenet"
+         "Saját üzenet"
       ],
       "Contacts": [
          null,
@@ -93,7 +93,7 @@
       ],
       "Add a contact": [
          null,
-         "Egy új kapcsolat hozzááadása"
+         "Új kapcsolat"
       ],
       "Contact username": [
          null,
@@ -117,15 +117,15 @@
       ],
       "Click to add as a chat contact": [
          null,
-         "Ide klikkelve lehet csevegő kapcsolatként hozzáadni"
+         "Csevegő kapcsolatként hozzáad"
       ],
       "Click to open this room": [
          null,
-         "Ide klikkelve lehet belépni a csevegő szobába"
+         "Belépés a csevegő szobába"
       ],
       "Show more information on this room": [
          null,
-         "További információk mutatása erről a csevegő szobáról"
+         "További információk a csevegő szobáról"
       ],
       "Description:": [
          null,
@@ -161,11 +161,11 @@
       ],
       "Open room": [
          null,
-         "Nyitott csevegő szoba"
+         "Nyitott szoba"
       ],
       "Permanent room": [
          null,
-         "Állandó csevegő szoba"
+         "Állandó szoba"
       ],
       "Public": [
          null,
@@ -189,7 +189,7 @@
       ],
       "Room name": [
          null,
-         "Csevegő szoba neve"
+         "A szoba neve"
       ],
       "Nickname": [
          null,
@@ -205,7 +205,7 @@
       ],
       "Show rooms": [
          null,
-         "Csevegő szobák"
+         "Létező szobák"
       ],
       "No rooms on %1$s": [
          null,
@@ -213,11 +213,11 @@
       ],
       "Rooms on %1$s": [
          null,
-         "Csevegő szobák listája a(z) %1$s szerveren"
+         "Csevegő szobák a(z) %1$s szerveren"
       ],
       "Set chatroom topic": [
          null,
-         "A csevegőszoba témájának beállítása"
+         "Csevegőszoba téma beállítás"
       ],
       "Kick user from chatroom": [
          null,
@@ -245,7 +245,7 @@
       ],
       "This chatroom requires a password": [
          null,
-         "Ebbe a csevegő szobába csak jelszóval lehet belépni"
+         "A csevegő szoba belépéshez jelszó szükséges"
       ],
       "Password: ": [
          null,
@@ -257,39 +257,39 @@
       ],
       "This room is not anonymous": [
          null,
-         "Ez a csevegő szoba NEM névtelen"
+         "Ez a szoba NEM névtelen"
       ],
       "This room now shows unavailable members": [
          null,
-         "Ez a csevegő szoba mutatja az elérhetetlen tagokat"
+         "Ez a szoba mutatja az elérhetetlen tagokat"
       ],
       "This room does not show unavailable members": [
          null,
-         "Ez a csevegő szoba nem mutatja az elérhetetlen tagokat"
+         "Ez a szoba nem mutatja az elérhetetlen tagokat"
       ],
       "Non-privacy-related room configuration has changed": [
          null,
-         "A csevegő szoba általános konfigurációja módosult"
+         "A szoba általános konfigurációja módosult"
       ],
       "Room logging is now enabled": [
          null,
-         "A csevegő szobába a belépés lehetséges"
+         "A szobába a belépés lehetséges"
       ],
       "Room logging is now disabled": [
          null,
-         "A csevegő szobába a belépés szünetel"
+         "A szobába a belépés szünetel"
       ],
       "This room is now non-anonymous": [
          null,
-         "Ez a csevegő szoba most NEM névtelen"
+         "Ez a szoba most NEM névtelen"
       ],
       "This room is now semi-anonymous": [
          null,
-         "Ez a csevegő szoba most félig névtelen"
+         "Ez a szoba most félig névtelen"
       ],
       "This room is now fully-anonymous": [
          null,
-         "Ez a csevegő szoba most teljesen névtelen"
+         "Ez a szoba most teljesen névtelen"
       ],
       "A new room has been created": [
          null,
@@ -301,27 +301,27 @@
       ],
       "<strong>%1$s</strong> has been banned": [
          null,
-         "A csevegő szobából kitíltva: <strong>%1$s</strong>"
+         "A szobából kitíltva: <strong>%1$s</strong>"
       ],
       "<strong>%1$s</strong> has been kicked out": [
          null,
-         "A csevegő szobából kidobva: <strong>%1$s</strong>"
+         "A szobából kidobva: <strong>%1$s</strong>"
       ],
       "<strong>%1$s</strong> has been removed because of an affiliation change": [
          null,
-         "Taglista módosítás miatt a csevegő szobából kiléptetve: <strong>%1$s</strong>"
+         "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
       ],
       "<strong>%1$s</strong> has been removed for not being a member": [
          null,
-         "A taglistán nem szerepel így a csevegő szobából kiléptetve: <strong>%1$s</strong>"
+         "A taglistán nem szerepel így a szobából kiléptetve: <strong>%1$s</strong>"
       ],
       "You have been banned from this room": [
          null,
-         "Ki lettél tíltva ebből a csevegő szobából"
+         "Ki lettél tíltva ebből a szobából"
       ],
       "You have been kicked from this room": [
          null,
-         "Ki lettél dobva ebből a csevegő szobából"
+         "Ki lettél dobva ebből a szobából"
       ],
       "You have been removed from this room because of an affiliation change": [
          null,
@@ -341,7 +341,7 @@
       ],
       "No nickname was specified": [
          null,
-         "Nem adtál meg becenevet"
+         "Nem lett megadva becenév"
       ],
       "You are not allowed to create new rooms": [
          null,
@@ -357,7 +357,7 @@
       ],
       "This room does not (yet) exist": [
          null,
-         "Ez a csevegő szoba (még) nem létezik"
+         "Ez a szoba (még) nem létezik"
       ],
       "This room has reached it's maximum number of occupants": [
          null,
@@ -373,43 +373,43 @@
       ],
       "This user can send messages in this room": [
          null,
-         "Ez a felhasználó küldhet üzenetet ebbe a csevegő szobába"
+         "Ez a felhasználó küldhet üzenetet ebbe a szobába"
       ],
       "This user can NOT send messages in this room": [
          null,
-         "Ez a felhasználó NEM küldhet üzenetet ebbe a csevegő szobába"
+         "Ez a felhasználó NEM küldhet üzenetet ebbe a szobába"
       ],
       "Click to chat with this contact": [
          null,
-         "Ide klikkelve lehet csevegést indítani ezzel a kapcsolatunkkal"
+         "Csevegés indítása ezzel a kapcsolatunkkal"
       ],
       "Click to remove this contact": [
          null,
-         "Ide klikkelve törölhető ez a kapcsolat"
+         "A kapcsolat törlése"
       ],
       "This contact is busy": [
          null,
-         "Ez a kapcsolatunk elfoglalt"
+         "Elfoglalt"
       ],
       "This contact is online": [
          null,
-         "Ez a kapcsolatunk online"
+         "Online"
       ],
       "This contact is offline": [
          null,
-         "Ez a kapcsolatunk nincs bejelentkezve"
+         "Nincs bejelentkezve"
       ],
       "This contact is unavailable": [
          null,
-         "Ez a kapcsolatunk elérhetetlen"
+         "Elérhetetlen"
       ],
       "This contact is away for an extended period": [
          null,
-         "Ez a kapcsolatunk már hosszabb ideje van távol"
+         "Hosszabb ideje távol"
       ],
       "This contact is away": [
          null,
-         "Ez a kapcsolatunk éppen távol van"
+         "Távol"
       ],
       "Contact requests": [
          null,
@@ -417,23 +417,23 @@
       ],
       "My contacts": [
          null,
-         "Kapcsolataim"
+         "Kapcsolatok:"
       ],
       "Pending contacts": [
          null,
-         "Függőbben levő kapcsolatok"
+         "Függőben levő kapcsolatok"
       ],
       "Custom status": [
          null,
-         "Egyedi állapot"
+         "Egyedi státusz"
       ],
       "Click to change your chat status": [
          null,
-         "Ide klikkelve lehet átállítani a csevegő állapotot"
+         "Saját státusz beállítása"
       ],
       "Click here to write a custom status message": [
          null,
-         "Ide klikkelve lehet egyedi állapot üzenetet beállítani"
+         "Egyedi státusz üzenet írása"
       ],
       "online": [
          null,
@@ -457,7 +457,7 @@
       ],
       "Sign in": [
          null,
-         "Bejelentkezés"
+         "Belépés"
       ],
       "XMPP/Jabber Username:": [
          null,

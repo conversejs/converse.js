@@ -45,6 +45,7 @@ module.exports = function(grunt) {
                         "de": "locale/de/LC_MESSAGES/de",
                         "es": "locale/es/LC_MESSAGES/es",
                         "it": "locale/it/LC_MESSAGES/it",
+                        "ru": "locale/ru/LC_MESSAGES/ru",
                         "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
                         "tinysort": "components/tinysort/src/jquery.tinysort",
                         "underscore": "components/underscore/underscore",

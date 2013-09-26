@@ -1865,6 +1865,28 @@
                 var item = this.model,
                     ask = item.get('ask'),
                     subscription = item.get('subscription');
+
+                var statuses = {
+                    'dnd': __('This contact is busy'),
+                    'online': __('This contact is online'),
+                    'offline': __('This contact is offline'),
+                    'unavailable': __('This contact is unavailable'),
+                    'xa': __('This contact is away for an extended period'),
+                    'away': __('This contact is away')
+                }
+                var classes_to_remove = [
+                    'current-xmpp-contact',
+                    'pending-xmpp-contact',
+                    'requesting-xmpp-contact'
+                    ].concat(_.keys(statuses));
+
+                _.each(classes_to_remove,
+                    function (cls) {
+                        if (this.el.className.indexOf(cls) !== -1) {
+                            this.$el.removeClass(cls);
+                        }
+                    }, this);
+
                 this.$el.addClass(item.get('chat_status'));
 
                 if (ask === 'subscribe') {
@@ -1875,23 +1897,9 @@
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
-                    _.each(['pending-xmpp-contact', 'requesting-xmpp-contact'],
-                        function (cls) {
-                            if (this.el.className.indexOf(cls) !== -1) {
-                                this.$el.removeClass(cls);
-                            }
-                        }, this);
                     this.$el.addClass('current-xmpp-contact');
-                    var status_desc = {
-                        'dnd': __('This contact is busy'),
-                        'online': __('This contact is online'),
-                        'offline': __('This contact is offline'),
-                        'unavailable': __('This contact is unavailable'),
-                        'xa': __('This contact is away for an extended period'),
-                        'away': __('This contact is away')
-                        }[item.get('chat_status')||'offline'];
                     this.$el.html(this.template(
-                        _.extend(item.toJSON(), {'status_desc': status_desc})
+                        _.extend(item.toJSON(), {'status_desc': statuses[item.get('chat_status')||'offline']})
                         ));
                 }
                 return this;

@@ -48,6 +48,9 @@
         var UNVERIFIED= 1;
         var VERIFIED= 2;
         var FINISHED = 3;
+        var KEY = {
+            ENTER: 13
+        };
 
         // Default values
         var converse = this;
@@ -785,7 +788,7 @@
             keyPressed: function (ev) {
                 var $textarea = $(ev.target),
                     message, notify, composing;
-                if(ev.keyCode == 13) {
+                if(ev.keyCode == KEY.ENTER) {
                     ev.preventDefault();
                     message = $textarea.val();
                     $textarea.val('').focus();
@@ -2242,6 +2245,28 @@
                 var item = this.model,
                     ask = item.get('ask'),
                     subscription = item.get('subscription');
+
+                var statuses = {
+                    'dnd': __('This contact is busy'),
+                    'online': __('This contact is online'),
+                    'offline': __('This contact is offline'),
+                    'unavailable': __('This contact is unavailable'),
+                    'xa': __('This contact is away for an extended period'),
+                    'away': __('This contact is away')
+                }
+                var classes_to_remove = [
+                    'current-xmpp-contact',
+                    'pending-xmpp-contact',
+                    'requesting-xmpp-contact'
+                    ].concat(_.keys(statuses));
+
+                _.each(classes_to_remove,
+                    function (cls) {
+                        if (this.el.className.indexOf(cls) !== -1) {
+                            this.$el.removeClass(cls);
+                        }
+                    }, this);
+
                 this.$el.addClass(item.get('chat_status'));
 
                 if (ask === 'subscribe') {
@@ -2252,56 +2277,53 @@
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
-                    _.each(['pending-xmpp-contact', 'requesting-xmpp-contact'], 
-                        function (cls) {
-                            if (this.el.className.indexOf(cls) !== -1) {
-                                this.$el.removeClass(cls);
-                            }
-                        }, this);
                     this.$el.addClass('current-xmpp-contact');
-                    var status_desc = {
-                        'dnd': __('This contact is busy'),
-                        'online': __('This contact is online'),
-                        'offline': __('This contact is offline'),
-                        'unavailable': __('This contact is unavailable'),
-                        'xa': __('This contact is away for an extended period'),
-                        'away': __('This contact is away')
-                        }[item.get('chat_status')||'offline'];
                     this.$el.html(this.template(
-                        _.extend(item.toJSON(), {'status_desc': status_desc})
+                        _.extend(item.toJSON(), {'status_desc': statuses[item.get('chat_status')||'offline']})
                         ));
                 }
                 return this;
             },
-
-            initialize: function () {
-                this.options.model.on('change', function (item, changed) {
-                    if (_.has(item.changed, 'chat_status')) {
-                        this.$el.attr('class', item.changed.chat_status);
-                    }
-                }, this);
-            }
         });
 
         this.getVCard = function (jid, callback, errback) {
-            converse.connection.vcard.get($.proxy(function (iq) {
-                $vcard = $(iq).find('vCard');
-                var fullname = $vcard.find('FN').text(),
-                    img = $vcard.find('BINVAL').text(),
-                    img_type = $vcard.find('TYPE').text(),
-                    url = $vcard.find('URL').text();
-                var rosteritem = converse.roster.get(jid);
-                if (rosteritem) {
-                    rosteritem.save({
-                        'fullname': fullname || jid,
-                        'image_type': img_type,
-                        'image': img,
-                        'url': url,
-                        'vcard_updated': converse.toISOString(new Date())
-                    });
-                }
-                callback(jid, fullname, img, img_type, url);
-            }, this), jid, errback);
+            converse.connection.vcard.get(
+                $.proxy(function (iq) {
+                    // Successful callback
+                    $vcard = $(iq).find('vCard');
+                    var fullname = $vcard.find('FN').text(),
+                        img = $vcard.find('BINVAL').text(),
+                        img_type = $vcard.find('TYPE').text(),
+                        url = $vcard.find('URL').text();
+                    if (jid) {
+                        var rosteritem = converse.roster.get(jid);
+                        if (rosteritem) {
+                            rosteritem.save({
+                                'fullname': fullname || jid,
+                                'image_type': img_type,
+                                'image': img,
+                                'url': url,
+                                'vcard_updated': converse.toISOString(new Date())
+                            });
+                        }
+                    }
+                    if (callback) {
+                        callback(jid, fullname, img, img_type, url);
+                    }
+                }, this),
+                jid,
+                function (iq) {
+                    // Error callback
+                    var rosteritem = converse.roster.get(jid);
+                    if (rosteritem) {
+                        rosteritem.save({
+                            'vcard_updated': converse.toISOString(new Date())
+                        });
+                    }
+                    if (errback) {
+                        errback(iq);
+                    }
+                });
         };
 
         this.RosterItems = Backbone.Collection.extend({
@@ -2576,6 +2598,11 @@
                     var view = new converse.RosterItemView({model: item});
                     this.rosteritemviews[item.id] = view;
                     this.render(item);
+                    if (!item.get('vcard_updated')) {
+                        // This will update the vcard, which triggers a change
+                        // request which will rerender the roster item.
+                        converse.getVCard(item.get('jid'));
+                    }
                 }, this);
 
                 this.model.on('change', function (item, changed) {
@@ -2653,7 +2680,7 @@
                     if (changed_presence) {
                         this.sortRoster(changed_presence);
                         sorted = true;
-                    } 
+                    }
                     if (item.get('is_last')) {
                         if (!sorted) {
                             this.sortRoster(item.get('chat_status'));

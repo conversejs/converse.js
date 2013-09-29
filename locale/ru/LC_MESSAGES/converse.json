@@ -3,8 +3,8 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-25 14:41+0400",
-         "PO-Revision-Date": "2013-09-25 14:35+0300",
+         "POT-Creation-Date": "2013-09-15 22:06+0200",
+         "PO-Revision-Date": "2013-09-29 17:24+0300",
          "Last-Translator": "Boris Kocherov <bk@raskon.org>",
          "Language-Team": "<bk@raskon.ru>",
          "Language": "ru",
@@ -16,6 +16,18 @@
       "unencrypted": [
          null,
          "не зашифровано"
+      ],
+      "unverified": [
+         null,
+         "непроверено"
+      ],
+      "verified": [
+         null,
+         "проверено"
+      ],
+      "finished": [
+         null,
+         "закончено"
       ],
       "Disconnected": [
          null,
@@ -45,17 +57,57 @@
          null,
          "Отключаемся"
       ],
+      "Private key generated.": [
+         null,
+         "Приватный ключ сгенерирован."
+      ],
       "Personal message": [
          null,
          "Введите сообщение"
+      ],
+      "What's this?": [
+         null,
+         "Что это?"
       ],
       "me": [
          null,
          "Я"
       ],
+      "Show this menu": [
+         null,
+         "Показать это меню"
+      ],
       "Remove messages": [
          null,
          "Удалить сообщения"
+      ],
+      "Your message could not be sent": [
+         null,
+         "Ваше сообщение не послано"
+      ],
+      "Your messages are not encrypted anymore": [
+         null,
+         "Ваши сообщения больше не шифруются"
+      ],
+      "Your messages are now encrypted but your buddy's identity has not been verified.": [
+         null,
+         "Ваши сообщения шифруются, но ваша учётная запись не проверена вашим собеседником."
+      ],
+      "Your buddy's identify has been verified.": [
+         null,
+         "Ваша учётная запись проверена вашим собеседником."
+      ],
+      "Your messages are not encrypted. Click here to enable OTR encryption.": [
+         null,
+         "Ваши сообщения не шифруются. Нажмите здесь чтобы настроить шифрование."
+      ],
+      "Your messages are encrypted, but your buddy has not been verified.": [
+         null,
+         "Ваши сообщения шифруются, но ваш контакт не проверен."
+      ],
+      "Your messages are encrypted and your buddy verified.": [
+         null,
+         "Ваши сообщения шифруются и ваш контакт проверен"
       ],
       "Contacts": [
          null,
@@ -89,9 +141,21 @@
          null,
          "Имя пользователя"
       ],
+      "Add": [
+         null,
+         "Добавить"
+      ],
       "Contact name": [
          null,
          "Имя контакта"
+      ],
+      "Search": [
+         null,
+         "Поиск"
+      ],
+      "No users found": [
+         null,
+         "Пользователи не найдены"
       ],
       "Click to add as a chat contact": [
          null,
@@ -101,9 +165,29 @@
          null,
          "Зайти в конференцию"
       ],
+      "Show more information on this room": [
+         null,
+         "Показать больше информации об этой конференции"
+      ],
+      "Description:": [
+         null,
+         "Описание:"
+      ],
+      "Occupants:": [
+         null,
+         "Участники:"
+      ],
+      "Features:": [
+         null,
+         "Свойства:"
+      ],
       "Requires authentication": [
          null,
          "Требуется авторизация"
+      ],
+      "Hidden": [
+         null,
+         "Скрыто"
       ],
       "Requires an invitation": [
          null,
@@ -112,6 +196,30 @@
       "Moderated": [
          null,
          "Модерируемая"
+      ],
+      "Non-anonymous": [
+         null,
+         "Не анонимная"
+      ],
+      "Open room": [
+         null,
+         "Открыть конференцию"
+      ],
+      "Permanent room": [
+         null,
+         "Перманентная конференция"
+      ],
+      "Public": [
+         null,
+         "Публичный"
+      ],
+      "Semi-anonymous": [
+         null,
+         "Частично анонимная"
+      ],
+      "Temporary room": [
+         null,
+         "Временная конференция"
       ],
       "Unmoderated": [
          null,
@@ -129,6 +237,10 @@
          null,
          "Псевдоним"
       ],
+      "Server": [
+         null,
+         "Сервер"
+      ],
       "Join": [
          null,
          "Подключиться"
@@ -145,6 +257,18 @@
          null,
          "Конференции %1$s:"
       ],
+      "Set chatroom topic": [
+         null,
+         "Установить тему"
+      ],
+      "Kick user from chatroom": [
+         null,
+         "Отключить пользователя от кнофер."
+      ],
+      "Ban user from chatroom": [
+         null,
+         "Забанить пользователя в этой конф."
+      ],
       "Message": [
          null,
          "Сообщение"
@@ -156,6 +280,14 @@
       "Cancel": [
          null,
          "Отменить"
+      ],
+      "An error occurred while trying to save the form.": [
+         null,
+         "При сохранение формы произошла ошибка."
+      ],
+      "This chatroom requires a password": [
+         null,
+         "Для доступа в конфер. необходим пароль."
       ],
       "Password: ": [
          null,
@@ -197,6 +329,22 @@
          null,
          "Ваш псевдоним уже используется другим пользователем"
       ],
+      "<strong>%1$s</strong> has been banned": [
+         null,
+         "<strong>%1$s</strong> забанен"
+      ],
+      "<strong>%1$s</strong> has been kicked out": [
+         null,
+         "<strong>%1$s</strong> выдворен"
+      ],
+      "<strong>%1$s</strong> has been removed because of an affiliation change": [
+         null,
+         "<strong>%1$s</strong> has been removed because of an affiliation change"
+      ],
+      "<strong>%1$s</strong> has been removed for not being a member": [
+         null,
+         "<strong>%1$s</strong> удалён потому что не участник"
+      ],
       "You have been banned from this room": [
          null,
          "Вам запрещено подключатся к этой конференции"
@@ -204,6 +352,18 @@
       "You have been kicked from this room": [
          null,
          "Вам запрещено подключатся к этой конференции"
+      ],
+      "You have been removed from this room because of an affiliation change": [
+         null,
+         "<strong>%1$s</strong> удалён потому что изменились права"
+      ],
+      "You have been removed from this room because the room has changed to members-only and you're not a member": [
+         null,
+         "Вы отключены от этой конференции потому что режим изменился: только-участники"
+      ],
+      "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+         null,
+         "Вы отключены от этой конференции потому что сервись конференций выключен."
       ],
       "You are not on the member list of this room": [
          null,
@@ -213,6 +373,14 @@
          null,
          "Вы не указали псевдоним"
       ],
+      "You are not allowed to create new rooms": [
+         null,
+         "Вы не имеете права создавать конфер."
+      ],
+      "Your nickname doesn't conform to this room's policies": [
+         null,
+         "Псевдоним не согласуется с правилами конфер."
+      ],
       "Your nickname is already taken": [
          null,
          "Ваш ник уже используется другим пользователем"
@@ -221,9 +389,13 @@
          null,
          "Эта комната не существует"
       ],
+      "This room has reached it's maximum number of occupants": [
+         null,
+         "Конференция достигла максимального количества участников"
+      ],
       "Topic set by %1$s to: %2$s": [
          null,
-         "%2$s"
+         "Тема %2$s устатновлена %1$s"
       ],
       "This user is a moderator": [
          null,
@@ -263,7 +435,7 @@
       ],
       "This contact is away for an extended period": [
          null,
-         "Отошёл"
+         "На долго отошёл"
       ],
       "This contact is away": [
          null,
@@ -275,15 +447,23 @@
       ],
       "My contacts": [
          null,
-         "."
+         "Контакты"
       ],
       "Pending contacts": [
          null,
          "Собеседники ожидающие авторизации"
       ],
+      "Custom status": [
+         null,
+         "Произвольный статус"
+      ],
       "Click to change your chat status": [
          null,
          "Изменить ваш статус"
+      ],
+      "Click here to write a custom status message": [
+         null,
+         "Редактировать произвольный статус"
       ],
       "online": [
          null,
@@ -292,6 +472,10 @@
       "busy": [
          null,
          "занят"
+      ],
+      "away for long": [
+         null,
+         "отошёл на долго"
       ],
       "away": [
          null,

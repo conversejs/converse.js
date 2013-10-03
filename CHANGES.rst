@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.6.5 (Unreleased)
+------------------
+
+* Fetch vCards asynchronously once a roster contacts is added. [jcbrand]
+* Hungarian translation. [w3host]
+* Update CSS to avoid clash with bootstrap. [seocam]
+
 0.6.4 (2013-09-15)
 ------------------
 

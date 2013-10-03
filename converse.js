@@ -936,7 +936,7 @@
             updateVCard: function () {
                 var jid = this.model.get('jid'),
                     rosteritem = converse.roster.get(jid);
-                if ((rosteritem)&&(!rosteritem.get('vcard_updated'))) {
+                if ((rosteritem) && (!rosteritem.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
                         $.proxy(function (jid, fullname, image, image_type, url) {
@@ -944,8 +944,7 @@
                                 'fullname' : fullname || jid,
                                 'url': url,
                                 'image_type': image_type,
-                                'image': image,
-                                'vcard_updated': converse.toISOString(new Date())
+                                'image': image
                             });
                         }, this),
                         $.proxy(function (stanza) {
@@ -2110,9 +2109,13 @@
                 }
                 chatbox = this.get(partner_jid);
                 roster_item = converse.roster.get(partner_jid);
+
                 if (roster_item === undefined) {
+                    // The buddy was likely removed
                     converse.log('Could not get roster item for JID '+partner_jid, 'error');
+                    return true;
                 }
+
                 if (!chatbox) {
                     chatbox = this.create({
                         'id': partner_jid,
@@ -2287,21 +2290,21 @@
 
                 this.$el.addClass(item.get('chat_status'));
 
-                if (ask === 'subscribe') {
+                if ((ask === 'subscribe') && (converse.allow_contact_requests)) {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
-                } else if (ask === 'request') {
+                } else if ((ask === 'request') && (converse.allow_contact_requests)) {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
-                } else if (subscription === 'both' || subscription === 'to') {
+                } else if (subscription === 'both' || ((subscription === 'to') && converse.allow_contact_requests)) {
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(this.template(
                         _.extend(item.toJSON(), {'status_desc': statuses[item.get('chat_status')||'offline']})
                         ));
                 }
                 return this;
-            },
+            }
         });
 
         this.getVCard = function (jid, callback, errback) {
@@ -2549,6 +2552,10 @@
                 if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                     return true;
                 } else if (presence_type === 'subscribe') {
+                    if (!converse.allow_contact_requests) {
+                        converse.connection.roster.unauthorize(bare_jid);
+                        return true;
+                    }
                     if (converse.auto_subscribe) {
                         if ((!item) || (item.get('subscription') != 'to')) {
                             this.subscribeBack(jid);
@@ -2559,25 +2566,32 @@
                         if ((item) && (item.get('subscription') != 'none'))  {
                             converse.connection.roster.authorize(bare_jid);
                         } else {
-                            converse.getVCard(
-                                bare_jid,
-                                $.proxy(function (jid, fullname, img, img_type, url) {
-                                    this.add({
-                                        jid: bare_jid,
-                                        subscription: 'none',
-                                        ask: 'request',
-                                        fullname: fullname,
-                                        image: img,
-                                        image_type: img_type,
-                                        url: url,
-                                        is_last: true
-                                    });
-                                }, this),
-                                $.proxy(function (jid, fullname, img, img_type, url) {
-                                    converse.log("Error while retrieving vcard");
-                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
-                                }, this)
-                            );
+                            if (!this.get(bare_jid)) {
+                                // TODO: we can perhaps do the creation inside
+                                // getVCard.
+                                converse.getVCard(
+                                    bare_jid,
+                                    $.proxy(function (jid, fullname, img, img_type, url) {
+                                        this.add({
+                                            jid: bare_jid,
+                                            subscription: 'none',
+                                            ask: 'request',
+                                            fullname: fullname,
+                                            image: img,
+                                            image_type: img_type,
+                                            url: url,
+                                            vcard_updated: converse.toISOString(new Date()),
+                                            is_last: true
+                                        });
+                                    }, this),
+                                    $.proxy(function (jid, fullname, img, img_type, url) {
+                                        converse.log("Error while retrieving vcard");
+                                        this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                                    }, this)
+                                );
+                            } else {
+                                return true;
+                            }
                         }
                     }
                 } else if (presence_type === 'unsubscribed') {
@@ -2611,6 +2625,15 @@
                 }
             },
 
+            requesting_contacts_template: _.template(
+                '<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>'),
+
+            contacts_template: _.template(
+                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>'),
+
+            pending_contacts_template: _.template(
+                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
+
             initialize: function () {
                 this.model.on("add", function (item) {
                     var view = new converse.RosterItemView({model: item});
@@ -2634,7 +2657,12 @@
                 this.model.on("remove", function (item) { this.removeRosterItem(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
 
-                this.$el.hide().html(this.template());
+                var roster_markup = this.contacts_template()
+                if (converse.allow_contact_requests) {
+                    roster_markup = this.requesting_contacts_template() + roster_markup + this.pending_contacts_template();
+                }
+                this.$el.hide().html(roster_markup);
+
                 this.model.fetch({
                     add: true,
                     success: function (model, resp, options) {
@@ -2663,10 +2691,6 @@
                 }
                 chatbox.save(changes);
             },
-
-            template: _.template('<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>' +
-                                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>' +
-                                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
 
             render: function (item) {
                 var $my_contacts = this.$el.find('#xmpp-contacts'),

@@ -465,6 +465,16 @@ JS file so that it will include the new settings. Please refer to the
 Configuration variables
 =======================
 
+allow_contact_requests
+----------------------
+
+Default = ``true``
+
+Allow users to add one another as contacts. If this is set to false, the 
+**Add a contact** widget, **Contact Requests** and **Pending Contacts** roster
+sections will all not appear. Additionally, all incoming contact requests will be
+ignored.
+
 allow_muc
 ---------
 

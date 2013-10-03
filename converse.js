@@ -70,20 +70,19 @@
             'auto_list_rooms',
             'auto_subscribe',
             'bosh_service_url',
-            'fullname',
+            'connection',
             'debug',
+            'fullname',
             'hide_muc_server',
             'i18n',
-            'allow_muc',
-            'prebind',
-            'show_controlbox_by_default',
-            'xhr_user_search',
-            'xhr_custom_status',
-            'connection',
-            'testing',
             'jid',
+            'prebind',
+            'rid',
+            'show_controlbox_by_default',
             'sid',
-            'rid'
+            'testing',
+            'xhr_custom_status',
+            'xhr_user_search'
         ];
         _.extend(this, _.pick(settings, whitelist));
 

@@ -55,6 +55,7 @@
         };
 
         // Default values
+        this.allow_contact_requests = true;
         this.allow_muc = true;
         this.allow_otr = true;
         this.animate = true;
@@ -76,6 +77,7 @@
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
         whitelist = [
+            'allow_contact_requests',
             'allow_muc',
             'allow_otr',
             'animate',
@@ -1064,7 +1066,10 @@
                             '<option value="offline">'+__('Offline')+'</option>'+
                         '</select>'+
                     '</span>'+
-                '</form>'+
+                '</form>'
+            ),
+
+            add_contact_dropdown_template: _.template(
                 '<dl class="add-converse-contact dropdown">' +
                     '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
                         '<a class="toggle-xmpp-contact-form" href="#"'+
@@ -1075,7 +1080,7 @@
                 '</dl>'
             ),
 
-            add_contact_template: _.template(
+            add_contact_form_template: _.template(
                 '<li>'+
                     '<form class="add-xmpp-contact">' +
                         '<input type="text" name="identifier" class="username" placeholder="'+__('Contact username')+'"/>' +
@@ -1100,13 +1105,20 @@
 
             render: function () {
                 var markup;
+                var widgets = this.template();
+
                 this.$tabs.append(this.tab_template());
                 if (converse.xhr_user_search) {
                     markup = this.search_contact_template();
                 } else {
-                    markup = this.add_contact_template();
+                    markup = this.add_contact_form_template();
                 }
-                this.$el.html(this.template());
+
+                if (converse.allow_contact_requests) {
+                    widgets += this.add_contact_dropdown_template();
+                }
+                this.$el.html(widgets);
+
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
                 return this;

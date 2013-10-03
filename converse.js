@@ -63,6 +63,7 @@
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.allow_otr = true;
+        this.allow_muc = true;
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_toolbar = true;
@@ -73,6 +74,8 @@
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
         whitelist = [
+            'allow_muc',
+            'allow_otr',
             'animate',
             'auto_list_rooms',
             'auto_subscribe',
@@ -83,7 +86,6 @@
             'hide_muc_server',
             'i18n',
             'jid',
-            'allow_otr',
             'prebind',
             'rid',
             'show_controlbox_by_default',
@@ -1506,8 +1508,10 @@
                     this.contactspanel.render();
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                     converse.xmppstatusview.render();
-                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
-                    this.roomspanel.render();
+                    if (converse.allow_muc) {
+                        this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
+                        this.roomspanel.render();
+                    }
                 }
                 return this;
             }

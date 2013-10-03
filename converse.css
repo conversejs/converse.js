@@ -611,7 +611,7 @@ dd.available-chatroom:hover a.room-info {
     background-color: #DCEAC5;
 }
 
-.controlbox-panes {
+#chatpanel div.controlbox-panes {
     background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%); /* FF3.6+ */
     background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* IE10+ */
     background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* Opera 11.10+ */

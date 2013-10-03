@@ -50,6 +50,7 @@
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
+        this.allow_muc = true;
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.xhr_user_search = false;
@@ -68,6 +69,7 @@
             'debug',
             'hide_muc_server',
             'i18n',
+            'allow_muc',
             'prebind',
             'show_controlbox_by_default',
             'xhr_user_search',
@@ -1131,8 +1133,10 @@
                     this.contactspanel.render();
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                     converse.xmppstatusview.render();
-                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('#controlbox-panes')});
-                    this.roomspanel.render();
+                    if (converse.allow_muc) {
+                        this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
+                        this.roomspanel.render();
+                    }
                 }
                 return this;
             }

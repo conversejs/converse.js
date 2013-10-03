@@ -41,8 +41,11 @@
 }(this, function ($, _, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
-        // Default values
         var converse = this;
+        // Default values
+        this.allow_contact_requests = true;
+        this.allow_muc = true;
+        this.allow_otr = true;
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
@@ -50,17 +53,19 @@
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
-        this.allow_muc = true;
         this.prebind = false;
         this.show_controlbox_by_default = false;
-        this.xhr_user_search = false;
-        this.xhr_custom_status = false;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
+        this.xhr_custom_status = false;
+        this.xhr_user_search = false;
+
         this.callback = callback || function () {};
 
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.
         whitelist = [
+            'allow_contact_requests',
+            'allow_muc',
             'animate',
             'auto_list_rooms',
             'auto_subscribe',
@@ -557,7 +562,7 @@
             updateVCard: function () {
                 var jid = this.model.get('jid'),
                     rosteritem = converse.roster.get(jid);
-                if ((rosteritem)&&(!rosteritem.get('vcard_updated'))) {
+                if ((rosteritem) && (!rosteritem.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
                         $.proxy(function (jid, fullname, image, image_type, url) {
@@ -565,8 +570,7 @@
                                 'fullname' : fullname || jid,
                                 'url': url,
                                 'image_type': image_type,
-                                'image': image,
-                                'vcard_updated': converse.toISOString(new Date())
+                                'image': image
                             });
                         }, this),
                         $.proxy(function (stanza) {
@@ -687,7 +691,10 @@
                             '<option value="offline">'+__('Offline')+'</option>'+
                         '</select>'+
                     '</span>'+
-                '</form>'+
+                '</form>'
+            ),
+
+            add_contact_dropdown_template: _.template(
                 '<dl class="add-converse-contact dropdown">' +
                     '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
                         '<a class="toggle-xmpp-contact-form" href="#"'+
@@ -698,7 +705,7 @@
                 '</dl>'
             ),
 
-            add_contact_template: _.template(
+            add_contact_form_template: _.template(
                 '<li>'+
                     '<form class="add-xmpp-contact">' +
                         '<input type="text" name="identifier" class="username" placeholder="'+__('Contact username')+'"/>' +
@@ -723,13 +730,20 @@
 
             render: function () {
                 var markup;
+                var widgets = this.template();
+
                 this.$tabs.append(this.tab_template());
                 if (converse.xhr_user_search) {
                     markup = this.search_contact_template();
                 } else {
-                    markup = this.add_contact_template();
+                    markup = this.add_contact_form_template();
                 }
-                this.$el.html(this.template());
+
+                if (converse.allow_contact_requests) {
+                    widgets += this.add_contact_dropdown_template();
+                }
+                this.$el.html(widgets);
+
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
                 return this;
@@ -1719,6 +1733,11 @@
                 }
                 chatbox = this.get(partner_jid);
                 roster_item = converse.roster.get(partner_jid);
+                if (!roster_item) {
+                    // The buddy was likely removed
+                    return true;
+                }
+
                 if (!chatbox) {
                     chatbox = this.create({
                         'id': partner_jid,
@@ -1893,14 +1912,14 @@
 
                 this.$el.addClass(item.get('chat_status'));
 
-                if (ask === 'subscribe') {
+                if ((ask === 'subscribe') && (converse.allow_contact_requests)) {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
-                } else if (ask === 'request') {
+                } else if ((ask === 'request') && (converse.allow_contact_requests)) {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
-                } else if (subscription === 'both' || subscription === 'to') {
+                } else if (subscription === 'both' || ((subscription === 'to') && converse.allow_contact_requests)) {
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(this.template(
                         _.extend(item.toJSON(), {'status_desc': statuses[item.get('chat_status')||'offline']})
@@ -2155,6 +2174,10 @@
                 if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                     return true;
                 } else if (presence_type === 'subscribe') {
+                    if (!converse.allow_contact_requests) {
+                        converse.connection.roster.unauthorize(bare_jid);
+                        return true;
+                    }
                     if (converse.auto_subscribe) {
                         if ((!item) || (item.get('subscription') != 'to')) {
                             this.subscribeBack(jid);
@@ -2165,25 +2188,32 @@
                         if ((item) && (item.get('subscription') != 'none'))  {
                             converse.connection.roster.authorize(bare_jid);
                         } else {
-                            converse.getVCard(
-                                bare_jid,
-                                $.proxy(function (jid, fullname, img, img_type, url) {
-                                    this.add({
-                                        jid: bare_jid,
-                                        subscription: 'none',
-                                        ask: 'request',
-                                        fullname: fullname,
-                                        image: img,
-                                        image_type: img_type,
-                                        url: url,
-                                        is_last: true
-                                    });
-                                }, this),
-                                $.proxy(function (jid, fullname, img, img_type, url) {
-                                    converse.log("Error while retrieving vcard");
-                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
-                                }, this)
-                            );
+                            if (!this.get(bare_jid)) {
+                                // TODO: we can perhaps do the creation inside
+                                // getVCard.
+                                converse.getVCard(
+                                    bare_jid,
+                                    $.proxy(function (jid, fullname, img, img_type, url) {
+                                        this.add({
+                                            jid: bare_jid,
+                                            subscription: 'none',
+                                            ask: 'request',
+                                            fullname: fullname,
+                                            image: img,
+                                            image_type: img_type,
+                                            url: url,
+                                            vcard_updated: converse.toISOString(new Date()),
+                                            is_last: true
+                                        });
+                                    }, this),
+                                    $.proxy(function (jid, fullname, img, img_type, url) {
+                                        converse.log("Error while retrieving vcard");
+                                        this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                                    }, this)
+                                );
+                            } else {
+                                return true;
+                            }
                         }
                     }
                 } else if (presence_type === 'unsubscribed') {
@@ -2217,6 +2247,15 @@
                 }
             },
 
+            requesting_contacts_template: _.template(
+                '<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>'),
+
+            contacts_template: _.template(
+                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>'),
+
+            pending_contacts_template: _.template(
+                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
+
             initialize: function () {
                 this.model.on("add", function (item) {
                     var view = new converse.RosterItemView({model: item});
@@ -2240,7 +2279,12 @@
                 this.model.on("remove", function (item) { this.removeRosterItem(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
 
-                this.$el.hide().html(this.template());
+                var roster_markup = this.contacts_template()
+                if (converse.allow_contact_requests) {
+                    roster_markup = this.requesting_contacts_template() + roster_markup + this.pending_contacts_template();
+                }
+                this.$el.hide().html(roster_markup);
+
                 this.model.fetch({
                     add: true,
                     success: function (model, resp, options) {
@@ -2269,10 +2313,6 @@
                 }
                 chatbox.save(changes);
             },
-
-            template: _.template('<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>' +
-                                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>' +
-                                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
 
             render: function (item) {
                 var $my_contacts = this.$el.find('#xmpp-contacts'),

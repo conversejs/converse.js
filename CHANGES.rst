@@ -8,7 +8,8 @@ Changelog
 * Hungarian translation [w3host]
 * Russian translation [bkocherov]
 * Update CSS to avoid clash with bootstrap [seocam]
-* Add config option ``allow_muc`` to enable/disable multi-user chat (MUC) [jcbrand]
+* Add config option ``allow_muc`` to toggle multi-user chat (MUC) [jcbrand]
+* Add config option ``allow_contact_requests`` to toggle user adding [jcbrand]
 
 0.6.4 (2013-09-15)
 ------------------

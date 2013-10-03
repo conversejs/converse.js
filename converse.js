@@ -43,6 +43,8 @@
 }(this, function ($, _, crypto, otr, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
+        var converse = this;
+
         // Constants
         var UNENCRYPTED = 0;
         var UNVERIFIED= 1;
@@ -53,23 +55,23 @@
         };
 
         // Default values
-        var converse = this;
+        this.allow_muc = true;
+        this.allow_otr = true;
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
-        this.callback = callback || function () {};
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
-        this.allow_otr = true;
-        this.allow_muc = true;
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_toolbar = true;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
         this.xhr_user_search = false;
+
+        this.callback = callback || function () {};
 
         // Allow only the whitelisted settings attributes to be overwritten,
         // nothing else.

@@ -128,7 +128,7 @@
                     spyOn(this.rosterview, 'render').andCallThrough();
                     spyOn(this.xmppstatus, 'sendPresence');
                     this.roster.create({
-                        jid: pend_names[0].replace(' ','.').toLowerCase() + '@localhost',
+                        jid: pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
                         fullname: pend_names[0],
@@ -173,7 +173,7 @@
                     for (i=0; i<pend_names.length; i++) {
                         is_last = i===(pend_names.length-1);
                         this.roster.create({
-                            jid: pend_names[i].replace(' ','.').toLowerCase() + '@localhost',
+                            jid: pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'none',
                             ask: 'subscribe',
                             fullname: pend_names[i],
@@ -211,7 +211,7 @@
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=0; i<cur_names.length; i++) {
                         this.roster.create({
-                            jid: cur_names[i].replace(' ','.').toLowerCase() + '@localhost',
+                            jid: cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'both',
                             ask: null,
                             fullname: cur_names[i],
@@ -232,7 +232,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=0; i<3; i++) {
-                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -250,7 +250,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=3; i<6; i++) {
-                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -267,7 +267,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=6; i<9; i++) {
-                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -285,7 +285,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=9; i<12; i++) {
-                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -303,7 +303,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=12; i<15; i++) {
-                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -356,7 +356,7 @@
                     spyOn(this, 'showControlBox').andCallThrough();
                     for (i=0; i<req_names.length; i++) {
                         this.roster.create({
-                            jid: req_names[i].replace(' ','.').toLowerCase() + '@localhost',
+                            jid: req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'none',
                             ask: 'request',
                             fullname: req_names[i],
@@ -380,7 +380,7 @@
                     // TODO: Testing can be more thorough here, the user is
                     // actually not accepted/authorized because of
                     // mock_connection.
-                    var jid = req_names.sort()[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var jid = req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.rosterview.rosteritemviews[jid];
                     spyOn(this.connection.roster, 'authorize');
                     spyOn(view, 'acceptRequest').andCallThrough();
@@ -392,7 +392,7 @@
                 }, converse));
 
                 it("can have their requests denied by the user", $.proxy(function () {
-                    var jid = req_names.sort()[1].replace(' ','.').toLowerCase() + '@localhost';
+                    var jid = req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.rosterview.rosteritemviews[jid];
                     spyOn(this.connection.roster, 'unauthorize');
                     spyOn(this.rosterview, 'removeRosterItem').andCallThrough();
@@ -441,7 +441,7 @@
                     // In the next test suite, we need some online contacts, so
                     // we make some online now
                     for (i=0; i<5; i++) {
-                        jid = cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         view.model.set('chat_status', 'online');
                     }
@@ -472,7 +472,7 @@
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
-                    jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.rosteritemviews[jid];
                     spyOn(view, 'openChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -531,7 +531,7 @@
             describe("A Chat Message", $.proxy(function () {
                 it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
                     var message = 'This is a received message';
-                    var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var sender_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         msg = $msg({
                             from: sender_jid,
                             to: this.connection.jid,
@@ -576,7 +576,7 @@
                 }, converse));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
-                    var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
@@ -591,7 +591,7 @@
 
             describe("Special Messages", $.proxy(function () {
                 it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
-                    var contact_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is another sent from this chatbox';
                     // Lets make sure there is at least one message already
@@ -625,7 +625,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('blur');
                 var message = 'This message will increment the message counter';
-                var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                var sender_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,
@@ -654,7 +654,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('focus');
                 var message = 'This message will not increment the message counter';
-                var sender_jid = cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                var sender_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,

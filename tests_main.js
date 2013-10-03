@@ -12,6 +12,11 @@ require.config({
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
+        "otr": "components/otr/build/otr",
+        "bigint": "components/otr/build/dep/bigint",
+        "crypto": "components/otr/build/dep/crypto",
+        "eventemitter": "components/otr/build/dep/eventemitter",
+        "salsa20": "components/otr/build/dep/salsa20",
         "crypto.aes": "components/crypto-js/build/rollups/aes",
         // Extra test dependencies
         "jasmine": "components/jasmine/lib/jasmine-core/jasmine",

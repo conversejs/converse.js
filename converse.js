@@ -1095,7 +1095,7 @@
             },
 
             featureAdded: function (feature) {
-                if (feature.get('var') == 'http://jabber.org/protocol/muc') {
+                if ((feature.get('var') == 'http://jabber.org/protocol/muc') && (converse.allow_muc)) {
                     this.roomspanel.muc_domain = feature.get('from');
                     var $server= this.$el.find('input.new-chatroom-server');
                     if (! $server.is(':focus')) {
@@ -1696,6 +1696,14 @@
                 }
                 // This will make sure the Roster is set up
                 this.get('controlbox').set({connected:true});
+
+                // Register message handler
+                converse.connection.addHandler(
+                    $.proxy(function (message) {
+                        this.messageReceived(message);
+                        return true;
+                    }, this), null, 'message', 'chat');
+
                 // Get cached chatboxes from localstorage
                 this.fetch({
                     add: true,
@@ -2758,9 +2766,24 @@
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
                 hex_sha1('converse.rosteritems-'+converse.bare_jid));
+
+            // Register callbacks that depend on the roster
             this.connection.roster.registerCallback(
                 $.proxy(this.roster.rosterHandler, this.roster),
                 null, 'presence', null);
+
+            this.connection.addHandler(
+                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                'http://jabber.org/protocol/rosterx', 'message', null);
+
+            this.connection.addHandler(
+                $.proxy(function (presence) {
+                    this.presenceHandler(presence);
+                    return true;
+                }, this.roster), null, 'presence', null);
+
+            // No create the view which will fetch roster items from
+            // localStorage
             this.rosterview = new this.RosterView({'model':this.roster});
         };
 
@@ -2777,22 +2800,6 @@
             this.initStatus($.proxy(function () {
                 this.initRoster();
                 this.chatboxes.onConnected();
-                this.connection.addHandler(
-                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                    'http://jabber.org/protocol/rosterx', 'message', null);
-
-                this.connection.addHandler(
-                        $.proxy(function (presence) {
-                            this.presenceHandler(presence);
-                            return true;
-                        }, this.roster), null, 'presence', null);
-
-                this.connection.addHandler(
-                        $.proxy(function (message) {
-                            this.chatboxes.messageReceived(message);
-                            return true;
-                        }, this), null, 'message', 'chat');
-
                 this.connection.roster.get(function () {});
 
                 $(window).on("blur focus", $.proxy(function(e) {

@@ -15,7 +15,8 @@
             "es": "locale/es/LC_MESSAGES/es",
             "fr": "locale/fr/LC_MESSAGES/fr",
             "it": "locale/it/LC_MESSAGES/it",
-            "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR"
+            "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR",
+            "hu": "locale/hu/LC_MESSAGES/hu"
         }
     });
 
@@ -27,8 +28,9 @@
         'es',
         'fr',
         'it',
-        'pt_BR'
-        ], function (jed, af, de, en, es, fr, it, pt_BR) {
+        'pt_BR',
+        'hu'
+        ], function (jed, af, de, en, es, fr, it, pt_BR, hu) {
             root.locales = {
                 'af': af,
                 'de': de,
@@ -36,7 +38,8 @@
                 'es': es,
                 'fr': fr,
                 'it': it,
-                'pt-br': pt_BR
+                'pt-br': pt_BR,
+                'hu': hu
             };
         });
 })(this);

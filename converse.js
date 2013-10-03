@@ -13,7 +13,7 @@
     }
     if (typeof define === 'function' && define.amd) {
         define("converse", [
-            "components/otr/build/otr",
+            "otr",
             "crypto.aes",
             "locales",
             "backbone.localStorage",

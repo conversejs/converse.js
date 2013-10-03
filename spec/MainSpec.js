@@ -676,7 +676,7 @@
 
             it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
                 var cbview = this.chatboxesview.views.controlbox;
-                var $panels = cbview.$el.find('#controlbox-panes');
+                var $panels = cbview.$el.find('.controlbox-panes');
                 expect($panels.children().length).toBe(2);
                 expect($panels.children().first().attr('id')).toBe('users');
                 expect($panels.children().first().is(':visible')).toBe(true);
@@ -693,7 +693,7 @@
                 it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
                     var cbview = this.chatboxesview.views.controlbox;
                     var $tabs = cbview.$el.find('#controlbox-tabs');
-                    var $panels = cbview.$el.find('#controlbox-panes');
+                    var $panels = cbview.$el.find('.controlbox-panes');
                     var $contacts = $panels.children().first();
                     var $chatrooms = $panels.children().last();
                     spyOn(cbview, 'switchTab').andCallThrough();

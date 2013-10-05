@@ -2282,7 +2282,7 @@
                     'unavailable': __('This contact is unavailable'),
                     'xa': __('This contact is away for an extended period'),
                     'away': __('This contact is away')
-                }
+                };
                 var classes_to_remove = [
                     'current-xmpp-contact',
                     'pending-xmpp-contact',
@@ -2526,6 +2526,57 @@
                 }, this);
             },
 
+            handleIncomingSubscription: function (jid) {
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var item = this.getItem(bare_jid);
+
+                if (!converse.allow_contact_requests) {
+                    converse.connection.roster.unauthorize(bare_jid);
+                    return true;
+                }
+                if (converse.auto_subscribe) {
+                    if ((!item) || (item.get('subscription') != 'to')) {
+                        this.subscribeBack(jid);
+                    } else {
+                        converse.connection.roster.authorize(bare_jid);
+                    }
+                } else {
+                    if ((item) && (item.get('subscription') != 'none'))  {
+                        converse.connection.roster.authorize(bare_jid);
+                    } else {
+                        if (!this.get(bare_jid)) {
+                            // TODO: we can perhaps do the creation inside
+                            // getVCard.
+                            converse.getVCard(
+                                bare_jid,
+                                $.proxy(function (jid, fullname, img, img_type, url) {
+                                    this.add({
+                                        jid: bare_jid,
+                                        subscription: 'none',
+                                        ask: 'request',
+                                        fullname: fullname,
+                                        image: img,
+                                        image_type: img_type,
+                                        url: url,
+                                        vcard_updated: converse.toISOString(new Date()),
+                                        is_last: true
+                                    });
+                                }, this),
+                                $.proxy(function (jid, fullname, img, img_type, url) {
+                                    converse.log("Error while retrieving vcard");
+                                    // XXX: Should vcard_updated be set here as
+                                    // well?
+                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                                }, this)
+                            );
+                        } else {
+                            return true;
+                        }
+                    }
+                }
+                return true;
+            },
+
             presenceHandler: function (presence) {
                 var $presence = $(presence),
                     presence_type = $presence.attr('type');
@@ -2560,48 +2611,7 @@
                 if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                     return true;
                 } else if (presence_type === 'subscribe') {
-                    if (!converse.allow_contact_requests) {
-                        converse.connection.roster.unauthorize(bare_jid);
-                        return true;
-                    }
-                    if (converse.auto_subscribe) {
-                        if ((!item) || (item.get('subscription') != 'to')) {
-                            this.subscribeBack(jid);
-                        } else {
-                            converse.connection.roster.authorize(bare_jid);
-                        }
-                    } else {
-                        if ((item) && (item.get('subscription') != 'none'))  {
-                            converse.connection.roster.authorize(bare_jid);
-                        } else {
-                            if (!this.get(bare_jid)) {
-                                // TODO: we can perhaps do the creation inside
-                                // getVCard.
-                                converse.getVCard(
-                                    bare_jid,
-                                    $.proxy(function (jid, fullname, img, img_type, url) {
-                                        this.add({
-                                            jid: bare_jid,
-                                            subscription: 'none',
-                                            ask: 'request',
-                                            fullname: fullname,
-                                            image: img,
-                                            image_type: img_type,
-                                            url: url,
-                                            vcard_updated: converse.toISOString(new Date()),
-                                            is_last: true
-                                        });
-                                    }, this),
-                                    $.proxy(function (jid, fullname, img, img_type, url) {
-                                        converse.log("Error while retrieving vcard");
-                                        this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
-                                    }, this)
-                                );
-                            } else {
-                                return true;
-                            }
-                        }
-                    }
+                    return this.handleIncomingSubscription(jid);
                 } else if (presence_type === 'unsubscribed') {
                     this.unsubscribe(bare_jid);
                 } else if (presence_type === 'unavailable') {

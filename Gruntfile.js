@@ -28,47 +28,6 @@ module.exports = function(grunt) {
                 dest: 'converse.min.css',
                 src: ['converse.css']
             }
-        },
-        requirejs: {
-            compile: {
-                options: {
-                    baseUrl: ".",
-                    name: "main",
-                    out: "converse.min.js",
-                    paths: {
-                        "require": "components/requirejs/require",
-                        "jquery": "components/jquery/jquery",
-                        "jed": "components/jed/jed",
-                        "locales": "locale/locales",
-                        "af": "locale/af/LC_MESSAGES/af",
-                        "de": "locale/de/LC_MESSAGES/de",
-                        "en": "locale/en/LC_MESSAGES/en",
-                        "es": "locale/es/LC_MESSAGES/es",
-                        "hu": "locale/hu/LC_MESSAGES/hu",
-                        "it": "locale/it/LC_MESSAGES/it",
-                        "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
-                        "ru": "locale/ru/LC_MESSAGES/ru",
-                        "tinysort": "components/tinysort/src/jquery.tinysort",
-                        "underscore": "components/underscore/underscore",
-                        "backbone": "components/backbone/backbone",
-                        "localstorage": "components/backbone.localStorage/backbone.localStorage",
-                        "strophe": "components/strophe/strophe",
-                        "strophe.muc": "components/strophe.muc/index",
-                        "strophe.roster": "components/strophe.roster/index",
-                        "strophe.vcard": "components/strophe.vcard/index",
-                        "strophe.disco": "components/strophe.disco/index"
-                    },
-                    done: function(done, output) {
-                        var duplicates = require('rjs-build-analysis').duplicates(output);
-                        if (duplicates.length > 0) {
-                            grunt.log.subhead('Duplicates found in requirejs build:');
-                            grunt.log.warn(duplicates);
-                            done(new Error('r.js built duplicate modules, please check the excludes option.'));
-                        }
-                        done();
-                    }
-                }
-            }
         }
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -107,7 +66,22 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('minify', 'Create a new release', ['cssmin', 'requirejs']);
+    grunt.registerTask('jsmin', 'Create a new release', function () {
+        var done = this.async();
+        var child_process = require('child_process');
+        var exec = child_process.exec;
+        exec('./node_modules/requirejs/bin/r.js -o build.js',
+             function (err, stdout, stderr) {
+                if (err) {
+                    grunt.log.write('build failed with error code '+err.code);
+                    grunt.log.write(stderr);
+                }
+                grunt.log.write(stdout);
+                done();
+        });
+    });
+
+    grunt.registerTask('minify', 'Create a new release', ['cssmin', 'jsmin']);
 
     grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
         grunt.task.run('jshint', 'test');

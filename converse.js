@@ -57,6 +57,7 @@
         this.i18n = locales.en;
         this.prebind = false;
         this.show_controlbox_by_default = false;
+        this.show_only_online_users = false;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
         this.xhr_user_search = false;
@@ -78,6 +79,7 @@
             'prebind',
             'rid',
             'show_controlbox_by_default',
+            'show_only_online_users',
             'sid',
             'testing',
             'xhr_custom_status',
@@ -2225,8 +2227,6 @@
                         converse.connection.roster.authorize(bare_jid);
                     } else {
                         if (!this.get(bare_jid)) {
-                            // TODO: we can perhaps do the creation inside
-                            // getVCard.
                             converse.getVCard(
                                 bare_jid,
                                 $.proxy(function (jid, fullname, img, img_type, url) {
@@ -2355,7 +2355,7 @@
                 this.model.on("remove", function (item) { this.removeRosterItem(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
 
-                var roster_markup = this.contacts_template()
+                var roster_markup = this.contacts_template();
                 if (converse.allow_contact_requests) {
                     roster_markup = this.requesting_contacts_template() + roster_markup + this.pending_contacts_template();
                 }
@@ -2373,7 +2373,7 @@
                             // want to send a presence stanza, so we do it here.
                             converse.xmppstatus.sendPresence();
                         }
-                    },
+                    }
                 }); // Get the cached roster items from localstorage
             },
 
@@ -2390,11 +2390,17 @@
                 chatbox.save(changes);
             },
 
-            renderRosterItem: function () {
+            renderRosterItem: function (item, view) {
+                if (converse.show_only_online_users) {
+                    if (item.get('chat_status') !== 'online') {
+                        view.$el.remove();
+                        return;
+                    }
+                }
                 if ($.contains(document.documentElement, view.el)) {
                     view.render();
                 } else {
-                    $my_contacts.after(view.render().el);
+                    this.$el.find('#xmpp-contacts').after(view.render().el);
                 }
             },
 
@@ -2418,7 +2424,7 @@
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {
-                        this.renderRosterItem();
+                        this.renderRosterItem(item, view);
                     }
                     changed_presence = view.model.changed.chat_status;
                     if (changed_presence) {

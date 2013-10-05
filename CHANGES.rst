@@ -4,12 +4,13 @@ Changelog
 0.6.5 (Unreleased)
 ------------------
 
-* Fetch vCards asynchronously once a roster contacts is added [jcbrand]
+* Fetch vCards asynchronously once a roster contact is added [jcbrand]
 * Hungarian translation [w3host]
 * Russian translation [bkocherov]
 * Update CSS to avoid clash with bootstrap [seocam]
-* Add config option ``allow_muc`` to toggle multi-user chat (MUC) [jcbrand]
-* Add config option ``allow_contact_requests`` to toggle user adding [jcbrand]
+* New config option ``allow_muc`` toggles multi-user chat (MUC) [jcbrand]
+* New config option ``allow_contact_requests`` toggles user adding [jcbrand]
+* New config option ``show_only_online_users`` [jcbrand]
 
 0.6.4 (2013-09-15)
 ------------------

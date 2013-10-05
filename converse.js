@@ -42,7 +42,9 @@
     var converse = {};
     converse.initialize = function (settings, callback) {
         var converse = this;
-        // Default values
+
+        // Default configuration values
+        // ----------------------------
         this.allow_contact_requests = true;
         this.allow_muc = true;
         this.allow_otr = true;
@@ -59,11 +61,8 @@
         this.xhr_custom_status = false;
         this.xhr_user_search = false;
 
-        this.callback = callback || function () {};
-
-        // Allow only the whitelisted settings attributes to be overwritten,
-        // nothing else.
-        whitelist = [
+        // Allow only whitelisted configuration attributes to be overwritten
+        _.extend(this, _.pick(settings, [
             'allow_contact_requests',
             'allow_muc',
             'animate',
@@ -83,9 +82,10 @@
             'testing',
             'xhr_custom_status',
             'xhr_user_search'
-        ];
-        _.extend(this, _.pick(settings, whitelist));
+        ]));
 
+        // Translation machinery
+        // ---------------------
         var __ = $.proxy(function (str) {
             /* Translation factory
              */
@@ -111,7 +111,24 @@
             return str;
         };
 
+        // Translation aware constants
+        // ---------------------------
+        var STATUSES = {
+            'dnd': __('This contact is busy'),
+            'online': __('This contact is online'),
+            'offline': __('This contact is offline'),
+            'unavailable': __('This contact is unavailable'),
+            'xa': __('This contact is away for an extended period'),
+            'away': __('This contact is away')
+        };
+
+        // Module-level variables
+        // ----------------------
+        this.callback = callback || function () {};
         this.msg_counter = 0;
+
+        // Module-level functions
+        // ----------------------
         this.autoLink = function (text) {
             // Convert URLs into hyperlinks
             var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
@@ -130,6 +147,46 @@
             if (this.debug) {
                 console.log(txt);
             }
+        };
+
+        this.getVCard = function (jid, callback, errback) {
+            converse.connection.vcard.get(
+                $.proxy(function (iq) {
+                    // Successful callback
+                    $vcard = $(iq).find('vCard');
+                    var fullname = $vcard.find('FN').text(),
+                        img = $vcard.find('BINVAL').text(),
+                        img_type = $vcard.find('TYPE').text(),
+                        url = $vcard.find('URL').text();
+                    if (jid) {
+                        var rosteritem = converse.roster.get(jid);
+                        if (rosteritem) {
+                            rosteritem.save({
+                                'fullname': fullname || jid,
+                                'image_type': img_type,
+                                'image': img,
+                                'url': url,
+                                'vcard_updated': converse.toISOString(new Date())
+                            });
+                        }
+                    }
+                    if (callback) {
+                        callback(jid, fullname, img, img_type, url);
+                    }
+                }, this),
+                jid,
+                function (iq) {
+                    // Error callback
+                    var rosteritem = converse.roster.get(jid);
+                    if (rosteritem) {
+                        rosteritem.save({
+                            'vcard_updated': converse.toISOString(new Date())
+                        });
+                    }
+                    if (errback) {
+                        errback(iq);
+                    }
+                });
         };
 
         this.onConnect = function (status) {
@@ -227,51 +284,101 @@
             this.updateMsgCounter();
         };
 
-        this.collections = {
-            /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc
-            *  add-on for ejabberd wants the URL below. This might break for other
-            *  Jabber servers.
-            */
-            'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
-        };
-
-        this.collections.getLastCollection = function (jid, callback) {
-            var bare_jid = Strophe.getBareJidFromJid(jid),
-                iq = $iq({'type':'get'})
-                        .c('list', {'xmlns': this.URI,
-                                    'with': bare_jid
-                                    })
-                        .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
-                        .c('before').up()
-                        .c('max')
-                        .t('1');
-
-            converse.connection.sendIQ(iq,
-                callback,
-                function () {
-                    converse.log('Error while retrieving collections');
+        this.showControlBox = function () {
+            var controlbox = this.chatboxes.get('controlbox');
+            if (!controlbox) {
+                this.chatboxes.add({
+                    id: 'controlbox',
+                    box_id: 'controlbox',
+                    visible: true
                 });
+                if (this.connection) {
+                    this.chatboxes.get('controlbox').save();
+                }
+            } else {
+                controlbox.trigger('show');
+            }
         };
 
-        this.collections.getLastMessages = function (jid, callback) {
-            var that = this;
-            this.getLastCollection(jid, function (result) {
-                // Retrieve the last page of a collection (max 30 elements).
-                var $collection = $(result).find('chat'),
-                    jid = $collection.attr('with'),
-                    start = $collection.attr('start'),
-                    iq = $iq({'type':'get'})
-                            .c('retrieve', {'start': start,
-                                        'xmlns': that.URI,
-                                        'with': jid
-                                        })
-                            .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
-                            .c('max')
-                            .t('30');
-                converse.connection.sendIQ(iq, callback);
-            });
+        this.toggleControlBox = function () {
+            if ($("div#controlbox").is(':visible')) {
+                var controlbox = this.chatboxes.get('controlbox');
+                if (this.connection) {
+                    controlbox.destroy();
+                } else {
+                    controlbox.trigger('hide');
+                }
+            } else {
+                this.showControlBox();
+            }
         };
 
+        this.initStatus = function (callback) {
+            this.xmppstatus = new this.XMPPStatus();
+            var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
+            this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
+            this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
+            this.xmppstatus.fetch({success: callback, error: callback});
+        };
+
+        this.initRoster = function () {
+            // Set up the roster
+            this.roster = new this.RosterItems();
+            this.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-'+converse.bare_jid));
+
+            // Register callbacks that depend on the roster
+            this.connection.roster.registerCallback(
+                $.proxy(this.roster.rosterHandler, this.roster),
+                null, 'presence', null);
+
+            this.connection.addHandler(
+                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                'http://jabber.org/protocol/rosterx', 'message', null);
+
+            this.connection.addHandler(
+                $.proxy(function (presence) {
+                    this.presenceHandler(presence);
+                    return true;
+                }, this.roster), null, 'presence', null);
+
+            // No create the view which will fetch roster items from
+            // localStorage
+            this.rosterview = new this.RosterView({'model':this.roster});
+        };
+
+        this.onConnected = function () {
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+            }
+            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+            this.domain = Strophe.getDomainFromJid(this.connection.jid);
+            this.features = new this.Features();
+            this.initStatus($.proxy(function () {
+                this.initRoster();
+                this.chatboxes.onConnected();
+                this.connection.roster.get(function () {});
+
+                $(window).on("blur focus", $.proxy(function(e) {
+                    if ((this.windowState != e.type) && (e.type == 'focus')) {
+                        converse.clearMsgCounter();
+                    }
+                    this.windowState = e.type;
+                },this));
+                this.giveFeedback(__('Online Contacts'));
+                if (this.testing) {
+                    this.callback(this);
+                } else  {
+                    this.callback();
+                }
+            }, this));
+        };
+
+        // Backbone Models and Views
+        // -------------------------
         this.Message = Backbone.Model.extend();
 
         this.Messages = Backbone.Collection.extend({
@@ -1896,19 +2003,11 @@
                     ask = item.get('ask'),
                     subscription = item.get('subscription');
 
-                var statuses = {
-                    'dnd': __('This contact is busy'),
-                    'online': __('This contact is online'),
-                    'offline': __('This contact is offline'),
-                    'unavailable': __('This contact is unavailable'),
-                    'xa': __('This contact is away for an extended period'),
-                    'away': __('This contact is away')
-                };
                 var classes_to_remove = [
                     'current-xmpp-contact',
                     'pending-xmpp-contact',
                     'requesting-xmpp-contact'
-                    ].concat(_.keys(statuses));
+                    ].concat(_.keys(STATUSES));
 
                 _.each(classes_to_remove,
                     function (cls) {
@@ -1929,52 +2028,12 @@
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(this.template(
-                        _.extend(item.toJSON(), {'status_desc': statuses[item.get('chat_status')||'offline']})
+                        _.extend(item.toJSON(), {'status_desc': STATUSES[item.get('chat_status')||'offline']})
                     ));
                 }
                 return this;
-            },
+            }
         });
-
-        this.getVCard = function (jid, callback, errback) {
-            converse.connection.vcard.get(
-                $.proxy(function (iq) {
-                    // Successful callback
-                    $vcard = $(iq).find('vCard');
-                    var fullname = $vcard.find('FN').text(),
-                        img = $vcard.find('BINVAL').text(),
-                        img_type = $vcard.find('TYPE').text(),
-                        url = $vcard.find('URL').text();
-                    if (jid) {
-                        var rosteritem = converse.roster.get(jid);
-                        if (rosteritem) {
-                            rosteritem.save({
-                                'fullname': fullname || jid,
-                                'image_type': img_type,
-                                'image': img,
-                                'url': url,
-                                'vcard_updated': converse.toISOString(new Date())
-                            });
-                        }
-                    }
-                    if (callback) {
-                        callback(jid, fullname, img, img_type, url);
-                    }
-                }, this),
-                jid,
-                function (iq) {
-                    // Error callback
-                    var rosteritem = converse.roster.get(jid);
-                    if (rosteritem) {
-                        rosteritem.save({
-                            'vcard_updated': converse.toISOString(new Date())
-                        });
-                    }
-                    if (errback) {
-                        errback(iq);
-                    }
-                });
-        };
 
         this.RosterItems = Backbone.Collection.extend({
             model: converse.RosterItem,
@@ -2331,6 +2390,14 @@
                 chatbox.save(changes);
             },
 
+            renderRosterItem: function () {
+                if ($.contains(document.documentElement, view.el)) {
+                    view.render();
+                } else {
+                    $my_contacts.after(view.render().el);
+                }
+            },
+
             render: function (item) {
                 var $my_contacts = this.$el.find('#xmpp-contacts'),
                     $contact_requests = this.$el.find('#xmpp-contact-requests'),
@@ -2351,11 +2418,7 @@
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {
-                        if ($.contains(document.documentElement, view.el)) {
-                            view.render();
-                        } else {
-                            $my_contacts.after(view.render().el);
-                        }
+                        this.renderRosterItem();
                     }
                     changed_presence = view.model.changed.chat_status;
                     if (changed_presence) {
@@ -2678,7 +2741,7 @@
 
             showConnectButton: function () {
                 var $form = this.$el.find('#converse-login');
-                var $button = $form.find('input[type=submit]')
+                var $button = $form.find('input[type=submit]');
                 if ($button.length) {
                     $button.show().siblings('span').remove();
                 }
@@ -2733,98 +2796,8 @@
             }
         });
 
-        this.showControlBox = function () {
-            var controlbox = this.chatboxes.get('controlbox');
-            if (!controlbox) {
-                this.chatboxes.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox',
-                    visible: true
-                });
-                if (this.connection) {
-                    this.chatboxes.get('controlbox').save();
-                }
-            } else {
-                controlbox.trigger('show');
-            }
-        };
-
-        this.toggleControlBox = function () {
-            if ($("div#controlbox").is(':visible')) {
-                var controlbox = this.chatboxes.get('controlbox');
-                if (this.connection) {
-                    controlbox.destroy();
-                } else {
-                    controlbox.trigger('hide');
-                }
-            } else {
-                this.showControlBox();
-            }
-        };
-
-        this.initStatus = function (callback) {
-            this.xmppstatus = new this.XMPPStatus();
-            var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
-            this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
-            this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
-            this.xmppstatus.fetch({success: callback, error: callback});
-        };
-
-        this.initRoster = function () {
-            // Set up the roster
-            this.roster = new this.RosterItems();
-            this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+converse.bare_jid));
-
-            // Register callbacks that depend on the roster
-            this.connection.roster.registerCallback(
-                $.proxy(this.roster.rosterHandler, this.roster),
-                null, 'presence', null);
-
-            this.connection.addHandler(
-                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                'http://jabber.org/protocol/rosterx', 'message', null);
-
-            this.connection.addHandler(
-                $.proxy(function (presence) {
-                    this.presenceHandler(presence);
-                    return true;
-                }, this.roster), null, 'presence', null);
-
-            // No create the view which will fetch roster items from
-            // localStorage
-            this.rosterview = new this.RosterView({'model':this.roster});
-        };
-
-        this.onConnected = function () {
-            if (this.debug) {
-                this.connection.xmlInput = function (body) { console.log(body); };
-                this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
-            }
-            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.features = new this.Features();
-            this.initStatus($.proxy(function () {
-                this.initRoster();
-                this.chatboxes.onConnected();
-                this.connection.roster.get(function () {});
-
-                $(window).on("blur focus", $.proxy(function(e) {
-                    if ((this.windowState != e.type) && (e.type == 'focus')) {
-                        converse.clearMsgCounter();
-                    }
-                    this.windowState = e.type;
-                },this));
-                this.giveFeedback(__('Online Contacts'));
-                if (this.testing) {
-                    this.callback(this);
-                } else  {
-                    this.callback();
-                }
-            }, this));
-        };
+        // Initialization
+        // --------------
 
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();

@@ -616,15 +616,9 @@ To minify the Javascript and CSS, run the following command:
 
     grunt minify
 
-.. Note ::
-   Since release 0.6.0, I'm using `almond <https://github.com/jrburke/almond>`_
-   instead of `require.js <http://requirejs.org>`_. The
-   `grunt-contrib-requirejs <https://github.com/gruntjs/grunt-contrib-requirejs>`_
-   plugin however doesn't support *almond*. I therefore now build it manually
-   (the old way again), like this: ``r.js -o build.js``. CSS can be minimized
-   separately via ``grunt cssmin``.
+Javascript will be bundled and minified with `require.js`_'s optimization tool,
+using `almond <https://github.com/jrburke/almond>`_.
 
-Javascript will be bundled and minified via `require.js`_'s optimization tool.
 You can `read more about require.js's optimizer here`_.
 
 CSS is minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.

@@ -1919,18 +1919,18 @@
 
                 this.$el.addClass(item.get('chat_status'));
 
-                if ((ask === 'subscribe') && (converse.allow_contact_requests)) {
+                if (ask === 'subscribe') {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
-                } else if ((ask === 'request') && (converse.allow_contact_requests)) {
+                } else if (ask === 'request') {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
-                } else if (subscription === 'both' || ((subscription === 'to') && converse.allow_contact_requests)) {
+                } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(this.template(
                         _.extend(item.toJSON(), {'status_desc': statuses[item.get('chat_status')||'offline']})
-                        ));
+                    ));
                 }
                 return this;
             },

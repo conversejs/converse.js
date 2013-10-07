@@ -192,14 +192,19 @@
         };
 
         this.onConnect = function (status) {
+            var $button, $form;
             if (status === Strophe.Status.CONNECTED) {
                 converse.log('Connected');
                 converse.onConnected();
             } else if (status === Strophe.Status.DISCONNECTED) {
+                $form = $('#converse-login');
+                $button = $form.find('input[type=submit]');
                 if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Disconnected'), 'error');
                 converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
             } else if (status === Strophe.Status.Error) {
+                $form = $('#converse-login');
+                $button = $form.find('input[type=submit]');
                 if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
@@ -354,7 +359,9 @@
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
                 Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+                Strophe.error = function (msg) {
+                    console.log('ERROR: '+msg);
+                };
             }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
@@ -2314,15 +2321,6 @@
             id: 'converse-roster',
             rosteritemviews: {},
 
-            removeRosterItem: function (item) {
-                var view = this.rosteritemviews[item.id];
-                if (view) {
-                    view.$el.remove();
-                    delete this.rosteritemviews[item.id];
-                    this.render();
-                }
-            },
-
             requesting_contacts_template: _.template(
                 '<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>'),
 
@@ -2334,9 +2332,7 @@
 
             initialize: function () {
                 this.model.on("add", function (item) {
-                    var view = new converse.RosterItemView({model: item});
-                    this.rosteritemviews[item.id] = view;
-                    this.render(item);
+                    this.addRosterItemView(item).render(item);
                     if (!item.get('vcard_updated')) {
                         // This will update the vcard, which triggers a change
                         // request which will rerender the roster item.
@@ -2344,16 +2340,15 @@
                     }
                 }, this);
 
-                this.model.on('change', function (item, changed) {
+                this.model.on('change', function (item) {
                     if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                         return;
                     }
-                    this.updateChatBox(item, changed);
-                    this.render(item);
+                    this.updateChatBox(item).render(item);
                 }, this);
 
-                this.model.on("remove", function (item) { this.removeRosterItem(item); }, this);
-                this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
+                this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
+                this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
 
                 var roster_markup = this.contacts_template();
                 if (converse.allow_contact_requests) {
@@ -2380,7 +2375,9 @@
             updateChatBox: function (item, changed) {
                 var chatbox = converse.chatboxes.get(item.get('jid')),
                     changes = {};
-                if (!chatbox) { return; }
+                if (!chatbox) {
+                    return this;
+                }
                 if (_.has(item.changed, 'chat_status')) {
                     changes.chat_status = item.get('chat_status');
                 }
@@ -2388,14 +2385,30 @@
                     changes.status = item.get('status');
                 }
                 chatbox.save(changes);
+                return this;
+            },
+
+            addRosterItemView: function (item) {
+                var view = new converse.RosterItemView({model: item});
+                this.rosteritemviews[item.id] = view;
+                return this;
+            },
+
+            removeRosterItemView: function (item) {
+                var view = this.rosteritemviews[item.id];
+                if (view) {
+                    view.$el.remove();
+                    delete this.rosteritemviews[item.id];
+                    this.render();
+                }
+                return this;
             },
 
             renderRosterItem: function (item, view) {
-                if (converse.show_only_online_users) {
-                    if (item.get('chat_status') !== 'online') {
-                        view.$el.remove();
-                        return;
-                    }
+                if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
+                    view.$el.remove();
+                    view.delegateEvents();
+                    return this;
                 }
                 if ($.contains(document.documentElement, view.el)) {
                     view.render();
@@ -2426,7 +2439,7 @@
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.renderRosterItem(item, view);
                     }
-                    changed_presence = view.model.changed.chat_status;
+                    changed_presence = item.changed.chat_status;
                     if (changed_presence) {
                         this.sortRoster(changed_presence);
                         sorted = true;

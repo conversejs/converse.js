@@ -395,13 +395,13 @@
                     var jid = req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.rosterview.rosteritemviews[jid];
                     spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(this.rosterview, 'removeRosterItem').andCallThrough();
+                    spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
                     spyOn(view, 'declineRequest').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     var accept_button = view.$el.find('.decline-xmpp-request');
                     accept_button.click();
                     expect(view.declineRequest).toHaveBeenCalled();
-                    expect(this.rosterview.removeRosterItem).toHaveBeenCalled();
+                    expect(this.rosterview.removeRosterItemView).toHaveBeenCalled();
                     expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                     // There should now be one less contact
                     expect(this.roster.length).toEqual(num_contacts-1);

@@ -231,7 +231,11 @@
                 $button = $form.find('input[type=submit]');
                 if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Disconnected'), 'error');
-                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
+                converse.connection.connect(
+                    converse.connection.jid,
+                    converse.connection.pass,
+                    converse.onConnect
+                );
             } else if (status === Strophe.Status.Error) {
                 $form = $('#converse-login');
                 $button = $form.find('input[type=submit]');
@@ -249,7 +253,11 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
-                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
+                converse.connection.connect(
+                    converse.connection.jid,
+                    converse.connection.pass,
+                    converse.onConnect
+                );
             } else if (status === Strophe.Status.ATTACHED) {
                 converse.log('Attached');
                 converse.onConnected();
@@ -390,9 +398,7 @@
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
                 Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-                Strophe.error = function (msg) {
-                    console.log('ERROR: '+msg);
-                };
+                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
             }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);

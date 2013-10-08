@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {
@@ -35,5 +35,8 @@
     "bower": "~1.0.0",
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-contrib-cssmin": "~0.6.1"
+  },
+  "dependencies": {
+    "requirejs": "~2.1.8"
   }
 }

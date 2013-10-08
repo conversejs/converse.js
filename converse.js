@@ -41,8 +41,13 @@
 }(this, function ($, _, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
-        // Default values
         var converse = this;
+
+        // Default configuration values
+        // ----------------------------
+        this.allow_contact_requests = true;
+        this.allow_muc = true;
+        this.allow_otr = true;
         this.animate = true;
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
@@ -52,34 +57,37 @@
         this.i18n = locales.en;
         this.prebind = false;
         this.show_controlbox_by_default = false;
-        this.xhr_user_search = false;
-        this.xhr_custom_status = false;
+        this.show_only_online_users = false;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
-        this.callback = callback || function () {};
+        this.xhr_custom_status = false;
+        this.xhr_user_search = false;
 
-        // Allow only the whitelisted settings attributes to be overwritten,
-        // nothing else.
-        whitelist = [
+        // Allow only whitelisted configuration attributes to be overwritten
+        _.extend(this, _.pick(settings, [
+            'allow_contact_requests',
+            'allow_muc',
             'animate',
             'auto_list_rooms',
             'auto_subscribe',
             'bosh_service_url',
-            'fullname',
+            'connection',
             'debug',
+            'fullname',
             'hide_muc_server',
             'i18n',
-            'prebind',
-            'show_controlbox_by_default',
-            'xhr_user_search',
-            'xhr_custom_status',
-            'connection',
-            'testing',
             'jid',
+            'prebind',
+            'rid',
+            'show_controlbox_by_default',
+            'show_only_online_users',
             'sid',
-            'rid'
-        ];
-        _.extend(this, _.pick(settings, whitelist));
+            'testing',
+            'xhr_custom_status',
+            'xhr_user_search'
+        ]));
 
+        // Translation machinery
+        // ---------------------
         var __ = $.proxy(function (str) {
             /* Translation factory
              */
@@ -105,7 +113,24 @@
             return str;
         };
 
+        // Translation aware constants
+        // ---------------------------
+        var STATUSES = {
+            'dnd': __('This contact is busy'),
+            'online': __('This contact is online'),
+            'offline': __('This contact is offline'),
+            'unavailable': __('This contact is unavailable'),
+            'xa': __('This contact is away for an extended period'),
+            'away': __('This contact is away')
+        };
+
+        // Module-level variables
+        // ----------------------
+        this.callback = callback || function () {};
         this.msg_counter = 0;
+
+        // Module-level functions
+        // ----------------------
         this.autoLink = function (text) {
             // Convert URLs into hyperlinks
             var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
@@ -126,15 +151,64 @@
             }
         };
 
+        this.getVCard = function (jid, callback, errback) {
+            converse.connection.vcard.get(
+                $.proxy(function (iq) {
+                    // Successful callback
+                    $vcard = $(iq).find('vCard');
+                    var fullname = $vcard.find('FN').text(),
+                        img = $vcard.find('BINVAL').text(),
+                        img_type = $vcard.find('TYPE').text(),
+                        url = $vcard.find('URL').text();
+                    if (jid) {
+                        var rosteritem = converse.roster.get(jid);
+                        if (rosteritem) {
+                            rosteritem.save({
+                                'fullname': fullname || jid,
+                                'image_type': img_type,
+                                'image': img,
+                                'url': url,
+                                'vcard_updated': converse.toISOString(new Date())
+                            });
+                        }
+                    }
+                    if (callback) {
+                        callback(jid, fullname, img, img_type, url);
+                    }
+                }, this),
+                jid,
+                function (iq) {
+                    // Error callback
+                    var rosteritem = converse.roster.get(jid);
+                    if (rosteritem) {
+                        rosteritem.save({
+                            'vcard_updated': converse.toISOString(new Date())
+                        });
+                    }
+                    if (errback) {
+                        errback(iq);
+                    }
+                });
+        };
+
         this.onConnect = function (status) {
+            var $button, $form;
             if (status === Strophe.Status.CONNECTED) {
                 converse.log('Connected');
                 converse.onConnected();
             } else if (status === Strophe.Status.DISCONNECTED) {
+                $form = $('#converse-login');
+                $button = $form.find('input[type=submit]');
                 if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Disconnected'), 'error');
-                converse.connection.connect(connection.jid, connection.pass, converse.onConnect);
+                converse.connection.connect(
+                    converse.connection.jid,
+                    converse.connection.pass,
+                    converse.onConnect
+                );
             } else if (status === Strophe.Status.Error) {
+                $form = $('#converse-login');
+                $button = $form.find('input[type=submit]');
                 if ($button) { $button.show().siblings('span').remove(); }
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
@@ -149,6 +223,11 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
+                converse.connection.connect(
+                    converse.connection.jid,
+                    converse.connection.pass,
+                    converse.onConnect
+                );
             } else if (status === Strophe.Status.ATTACHED) {
                 converse.log('Attached');
                 converse.onConnected();
@@ -221,51 +300,101 @@
             this.updateMsgCounter();
         };
 
-        this.collections = {
-            /* FIXME: XEP-0136 specifies 'urn:xmpp:archive' but the mod_archive_odbc
-            *  add-on for ejabberd wants the URL below. This might break for other
-            *  Jabber servers.
-            */
-            'URI': 'http://www.xmpp.org/extensions/xep-0136.html#ns'
-        };
-
-        this.collections.getLastCollection = function (jid, callback) {
-            var bare_jid = Strophe.getBareJidFromJid(jid),
-                iq = $iq({'type':'get'})
-                        .c('list', {'xmlns': this.URI,
-                                    'with': bare_jid
-                                    })
-                        .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
-                        .c('before').up()
-                        .c('max')
-                        .t('1');
-
-            converse.connection.sendIQ(iq,
-                callback,
-                function () {
-                    converse.log('Error while retrieving collections');
+        this.showControlBox = function () {
+            var controlbox = this.chatboxes.get('controlbox');
+            if (!controlbox) {
+                this.chatboxes.add({
+                    id: 'controlbox',
+                    box_id: 'controlbox',
+                    visible: true
                 });
+                if (this.connection) {
+                    this.chatboxes.get('controlbox').save();
+                }
+            } else {
+                controlbox.trigger('show');
+            }
         };
 
-        this.collections.getLastMessages = function (jid, callback) {
-            var that = this;
-            this.getLastCollection(jid, function (result) {
-                // Retrieve the last page of a collection (max 30 elements).
-                var $collection = $(result).find('chat'),
-                    jid = $collection.attr('with'),
-                    start = $collection.attr('start'),
-                    iq = $iq({'type':'get'})
-                            .c('retrieve', {'start': start,
-                                        'xmlns': that.URI,
-                                        'with': jid
-                                        })
-                            .c('set', {'xmlns': 'http://jabber.org/protocol/rsm'})
-                            .c('max')
-                            .t('30');
-                converse.connection.sendIQ(iq, callback);
-            });
+        this.toggleControlBox = function () {
+            if ($("div#controlbox").is(':visible')) {
+                var controlbox = this.chatboxes.get('controlbox');
+                if (this.connection) {
+                    controlbox.destroy();
+                } else {
+                    controlbox.trigger('hide');
+                }
+            } else {
+                this.showControlBox();
+            }
         };
 
+        this.initStatus = function (callback) {
+            this.xmppstatus = new this.XMPPStatus();
+            var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
+            this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
+            this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
+            this.xmppstatus.fetch({success: callback, error: callback});
+        };
+
+        this.initRoster = function () {
+            // Set up the roster
+            this.roster = new this.RosterItems();
+            this.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-'+converse.bare_jid));
+
+            // Register callbacks that depend on the roster
+            this.connection.roster.registerCallback(
+                $.proxy(this.roster.rosterHandler, this.roster),
+                null, 'presence', null);
+
+            this.connection.addHandler(
+                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                'http://jabber.org/protocol/rosterx', 'message', null);
+
+            this.connection.addHandler(
+                $.proxy(function (presence) {
+                    this.presenceHandler(presence);
+                    return true;
+                }, this.roster), null, 'presence', null);
+
+            // No create the view which will fetch roster items from
+            // localStorage
+            this.rosterview = new this.RosterView({'model':this.roster});
+        };
+
+        this.onConnected = function () {
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+            }
+            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+            this.domain = Strophe.getDomainFromJid(this.connection.jid);
+            this.features = new this.Features();
+            this.initStatus($.proxy(function () {
+                this.initRoster();
+                this.chatboxes.onConnected();
+                this.connection.roster.get(function () {});
+
+                $(window).on("blur focus", $.proxy(function(e) {
+                    if ((this.windowState != e.type) && (e.type == 'focus')) {
+                        converse.clearMsgCounter();
+                    }
+                    this.windowState = e.type;
+                },this));
+                this.giveFeedback(__('Online Contacts'));
+                if (this.testing) {
+                    this.callback(this);
+                } else  {
+                    this.callback();
+                }
+            }, this));
+        };
+
+        // Backbone Models and Views
+        // -------------------------
         this.Message = Backbone.Model.extend();
 
         this.Messages = Backbone.Collection.extend({
@@ -555,7 +684,7 @@
             updateVCard: function () {
                 var jid = this.model.get('jid'),
                     rosteritem = converse.roster.get(jid);
-                if ((rosteritem)&&(!rosteritem.get('vcard_updated'))) {
+                if ((rosteritem) && (!rosteritem.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
                         $.proxy(function (jid, fullname, image, image_type, url) {
@@ -563,8 +692,7 @@
                                 'fullname' : fullname || jid,
                                 'url': url,
                                 'image_type': image_type,
-                                'image': image,
-                                'vcard_updated': converse.toISOString(new Date())
+                                'image': image
                             });
                         }, this),
                         $.proxy(function (stanza) {
@@ -685,7 +813,10 @@
                             '<option value="offline">'+__('Offline')+'</option>'+
                         '</select>'+
                     '</span>'+
-                '</form>'+
+                '</form>'
+            ),
+
+            add_contact_dropdown_template: _.template(
                 '<dl class="add-converse-contact dropdown">' +
                     '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
                         '<a class="toggle-xmpp-contact-form" href="#"'+
@@ -696,7 +827,7 @@
                 '</dl>'
             ),
 
-            add_contact_template: _.template(
+            add_contact_form_template: _.template(
                 '<li>'+
                     '<form class="add-xmpp-contact">' +
                         '<input type="text" name="identifier" class="username" placeholder="'+__('Contact username')+'"/>' +
@@ -721,13 +852,20 @@
 
             render: function () {
                 var markup;
+                var widgets = this.template();
+
                 this.$tabs.append(this.tab_template());
                 if (converse.xhr_user_search) {
                     markup = this.search_contact_template();
                 } else {
-                    markup = this.add_contact_template();
+                    markup = this.add_contact_form_template();
                 }
-                this.$el.html(this.template());
+
+                if (converse.allow_contact_requests) {
+                    widgets += this.add_contact_dropdown_template();
+                }
+                this.$el.html(widgets);
+
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
                 return this;
@@ -1079,7 +1217,7 @@
             },
 
             featureAdded: function (feature) {
-                if (feature.get('var') == 'http://jabber.org/protocol/muc') {
+                if ((feature.get('var') == 'http://jabber.org/protocol/muc') && (converse.allow_muc)) {
                     this.roomspanel.muc_domain = feature.get('from');
                     var $server= this.$el.find('input.new-chatroom-server');
                     if (! $server.is(':focus')) {
@@ -1096,7 +1234,7 @@
                     '<ul id="controlbox-tabs"></ul>'+
                     '<a class="close-chatbox-button icon-close"></a>'+
                 '</div>'+
-                '<div id="controlbox-panes"></div>'
+                '<div class="controlbox-panes"></div>'
             ),
 
             switchTab: function (ev) {
@@ -1123,16 +1261,18 @@
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
                     this.$el.html(this.template(this.model.toJSON()));
-                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('#controlbox-panes'), 'model': this});
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
                     this.loginpanel.render();
                 } else if (!this.contactspanel) {
                     this.$el.html(this.template(this.model.toJSON()));
-                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('#controlbox-panes')});
+                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
                     this.contactspanel.render();
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                     converse.xmppstatusview.render();
-                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('#controlbox-panes')});
-                    this.roomspanel.render();
+                    if (converse.allow_muc) {
+                        this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
+                        this.roomspanel.render();
+                    }
                 }
                 return this;
             }
@@ -1678,6 +1818,14 @@
                 }
                 // This will make sure the Roster is set up
                 this.get('controlbox').set({connected:true});
+
+                // Register message handler
+                converse.connection.addHandler(
+                    $.proxy(function (message) {
+                        this.messageReceived(message);
+                        return true;
+                    }, this), null, 'message', 'chat');
+
                 // Get cached chatboxes from localstorage
                 this.fetch({
                     add: true,
@@ -1715,6 +1863,11 @@
                 }
                 chatbox = this.get(partner_jid);
                 roster_item = converse.roster.get(partner_jid);
+                if (!roster_item) {
+                    // The buddy was likely removed
+                    return true;
+                }
+
                 if (!chatbox) {
                     chatbox = this.create({
                         'id': partner_jid,
@@ -1865,6 +2018,20 @@
                 var item = this.model,
                     ask = item.get('ask'),
                     subscription = item.get('subscription');
+
+                var classes_to_remove = [
+                    'current-xmpp-contact',
+                    'pending-xmpp-contact',
+                    'requesting-xmpp-contact'
+                    ].concat(_.keys(STATUSES));
+
+                _.each(classes_to_remove,
+                    function (cls) {
+                        if (this.el.className.indexOf(cls) !== -1) {
+                            this.$el.removeClass(cls);
+                        }
+                    }, this);
+
                 this.$el.addClass(item.get('chat_status'));
 
                 if (ask === 'subscribe') {
@@ -1875,57 +2042,14 @@
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
-                    _.each(['pending-xmpp-contact', 'requesting-xmpp-contact'], 
-                        function (cls) {
-                            if (this.el.className.indexOf(cls) !== -1) {
-                                this.$el.removeClass(cls);
-                            }
-                        }, this);
                     this.$el.addClass('current-xmpp-contact');
-                    var status_desc = {
-                        'dnd': __('This contact is busy'),
-                        'online': __('This contact is online'),
-                        'offline': __('This contact is offline'),
-                        'unavailable': __('This contact is unavailable'),
-                        'xa': __('This contact is away for an extended period'),
-                        'away': __('This contact is away')
-                        }[item.get('chat_status')||'offline'];
                     this.$el.html(this.template(
-                        _.extend(item.toJSON(), {'status_desc': status_desc})
-                        ));
+                        _.extend(item.toJSON(), {'status_desc': STATUSES[item.get('chat_status')||'offline']})
+                    ));
                 }
                 return this;
-            },
-
-            initialize: function () {
-                this.options.model.on('change', function (item, changed) {
-                    if (_.has(item.changed, 'chat_status')) {
-                        this.$el.attr('class', item.changed.chat_status);
-                    }
-                }, this);
             }
         });
-
-        this.getVCard = function (jid, callback, errback) {
-            converse.connection.vcard.get($.proxy(function (iq) {
-                $vcard = $(iq).find('vCard');
-                var fullname = $vcard.find('FN').text(),
-                    img = $vcard.find('BINVAL').text(),
-                    img_type = $vcard.find('TYPE').text(),
-                    url = $vcard.find('URL').text();
-                var rosteritem = converse.roster.get(jid);
-                if (rosteritem) {
-                    rosteritem.save({
-                        'fullname': fullname || jid,
-                        'image_type': img_type,
-                        'image': img,
-                        'url': url,
-                        'vcard_updated': converse.toISOString(new Date())
-                    });
-                }
-                callback(jid, fullname, img, img_type, url);
-            }, this), jid, errback);
-        };
 
         this.RosterItems = Backbone.Collection.extend({
             model: converse.RosterItem,
@@ -1974,12 +2098,8 @@
                 return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
             },
 
-            getItem: function (id) {
-                return Backbone.Collection.prototype.get.call(this, id);
-            },
-
             addResource: function (bare_jid, resource) {
-                var item = this.getItem(bare_jid),
+                var item = this.get(bare_jid),
                     resources;
                 if (item) {
                     resources = item.get('resources');
@@ -1995,7 +2115,7 @@
             },
 
             removeResource: function (bare_jid, resource) {
-                var item = this.getItem(bare_jid),
+                var item = this.get(bare_jid),
                     resources,
                     idx;
                 if (item) {
@@ -2064,7 +2184,7 @@
                 for (i=0; i < this.models.length; ++i) {
                     id = this.models[i].get('id');
                     if (_.indexOf(roster_ids, id) === -1) {
-                        this.getItem(id).destroy();
+                        this.get(id).destroy();
                     }
                 }
             },
@@ -2073,7 +2193,7 @@
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
-                    var model = this.getItem(item.jid);
+                    var model = this.get(item.jid);
                     if (!model) {
                         is_last = false;
                         if (index === (items.length-1)) { is_last = true; }
@@ -2096,6 +2216,55 @@
                         }
                     }
                 }, this);
+            },
+
+            handleIncomingSubscription: function (jid) {
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var item = this.get(bare_jid);
+
+                if (!converse.allow_contact_requests) {
+                    converse.connection.roster.unauthorize(bare_jid);
+                    return true;
+                }
+                if (converse.auto_subscribe) {
+                    if ((!item) || (item.get('subscription') != 'to')) {
+                        this.subscribeBack(jid);
+                    } else {
+                        converse.connection.roster.authorize(bare_jid);
+                    }
+                } else {
+                    if ((item) && (item.get('subscription') != 'none'))  {
+                        converse.connection.roster.authorize(bare_jid);
+                    } else {
+                        if (!this.get(bare_jid)) {
+                            converse.getVCard(
+                                bare_jid,
+                                $.proxy(function (jid, fullname, img, img_type, url) {
+                                    this.add({
+                                        jid: bare_jid,
+                                        subscription: 'none',
+                                        ask: 'request',
+                                        fullname: fullname,
+                                        image: img,
+                                        image_type: img_type,
+                                        url: url,
+                                        vcard_updated: converse.toISOString(new Date()),
+                                        is_last: true
+                                    });
+                                }, this),
+                                $.proxy(function (jid, fullname, img, img_type, url) {
+                                    converse.log("Error while retrieving vcard");
+                                    // XXX: Should vcard_updated be set here as
+                                    // well?
+                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                                }, this)
+                            );
+                        } else {
+                            return true;
+                        }
+                    }
+                }
+                return true;
             },
 
             presenceHandler: function (presence) {
@@ -2125,44 +2294,14 @@
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                     return true; // Ignore MUC
                 }
-                item = this.getItem(bare_jid);
+                item = this.get(bare_jid);
                 if (item && (status_message.text() != item.get('status'))) {
                     item.save({'status': status_message.text()});
                 }
                 if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                     return true;
                 } else if (presence_type === 'subscribe') {
-                    if (converse.auto_subscribe) {
-                        if ((!item) || (item.get('subscription') != 'to')) {
-                            this.subscribeBack(jid);
-                        } else {
-                            converse.connection.roster.authorize(bare_jid);
-                        }
-                    } else {
-                        if ((item) && (item.get('subscription') != 'none'))  {
-                            converse.connection.roster.authorize(bare_jid);
-                        } else {
-                            converse.getVCard(
-                                bare_jid,
-                                $.proxy(function (jid, fullname, img, img_type, url) {
-                                    this.add({
-                                        jid: bare_jid,
-                                        subscription: 'none',
-                                        ask: 'request',
-                                        fullname: fullname,
-                                        image: img,
-                                        image_type: img_type,
-                                        url: url,
-                                        is_last: true
-                                    });
-                                }, this),
-                                $.proxy(function (jid, fullname, img, img_type, url) {
-                                    converse.log("Error while retrieving vcard");
-                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
-                                }, this)
-                            );
-                        }
-                    }
+                    return this.handleIncomingSubscription(jid);
                 } else if (presence_type === 'unsubscribed') {
                     this.unsubscribe(bare_jid);
                 } else if (presence_type === 'unavailable') {
@@ -2185,34 +2324,41 @@
             id: 'converse-roster',
             rosteritemviews: {},
 
-            removeRosterItem: function (item) {
-                var view = this.rosteritemviews[item.id];
-                if (view) {
-                    view.$el.remove();
-                    delete this.rosteritemviews[item.id];
-                    this.render();
-                }
-            },
+            requesting_contacts_template: _.template(
+                '<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>'),
+
+            contacts_template: _.template(
+                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>'),
+
+            pending_contacts_template: _.template(
+                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
 
             initialize: function () {
                 this.model.on("add", function (item) {
-                    var view = new converse.RosterItemView({model: item});
-                    this.rosteritemviews[item.id] = view;
-                    this.render(item);
+                    this.addRosterItemView(item).render(item);
+                    if (!item.get('vcard_updated')) {
+                        // This will update the vcard, which triggers a change
+                        // request which will rerender the roster item.
+                        converse.getVCard(item.get('jid'));
+                    }
                 }, this);
 
-                this.model.on('change', function (item, changed) {
+                this.model.on('change', function (item) {
                     if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                         return;
                     }
-                    this.updateChatBox(item, changed);
-                    this.render(item);
+                    this.updateChatBox(item).render(item);
                 }, this);
 
-                this.model.on("remove", function (item) { this.removeRosterItem(item); }, this);
-                this.model.on("destroy", function (item) { this.removeRosterItem(item); }, this);
+                this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
+                this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
 
-                this.$el.hide().html(this.template());
+                var roster_markup = this.contacts_template();
+                if (converse.allow_contact_requests) {
+                    roster_markup = this.requesting_contacts_template() + roster_markup + this.pending_contacts_template();
+                }
+                this.$el.hide().html(roster_markup);
+
                 this.model.fetch({
                     add: true,
                     success: function (model, resp, options) {
@@ -2225,14 +2371,16 @@
                             // want to send a presence stanza, so we do it here.
                             converse.xmppstatus.sendPresence();
                         }
-                    },
+                    }
                 }); // Get the cached roster items from localstorage
             },
 
             updateChatBox: function (item, changed) {
                 var chatbox = converse.chatboxes.get(item.get('jid')),
                     changes = {};
-                if (!chatbox) { return; }
+                if (!chatbox) {
+                    return this;
+                }
                 if (_.has(item.changed, 'chat_status')) {
                     changes.chat_status = item.get('chat_status');
                 }
@@ -2240,11 +2388,37 @@
                     changes.status = item.get('status');
                 }
                 chatbox.save(changes);
+                return this;
             },
 
-            template: _.template('<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>' +
-                                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>' +
-                                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
+            addRosterItemView: function (item) {
+                var view = new converse.RosterItemView({model: item});
+                this.rosteritemviews[item.id] = view;
+                return this;
+            },
+
+            removeRosterItemView: function (item) {
+                var view = this.rosteritemviews[item.id];
+                if (view) {
+                    view.$el.remove();
+                    delete this.rosteritemviews[item.id];
+                    this.render();
+                }
+                return this;
+            },
+
+            renderRosterItem: function (item, view) {
+                if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
+                    view.$el.remove();
+                    view.delegateEvents();
+                    return this;
+                }
+                if ($.contains(document.documentElement, view.el)) {
+                    view.render();
+                } else {
+                    this.$el.find('#xmpp-contacts').after(view.render().el);
+                }
+            },
 
             render: function (item) {
                 var $my_contacts = this.$el.find('#xmpp-contacts'),
@@ -2266,17 +2440,13 @@
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {
-                        if ($.contains(document.documentElement, view.el)) {
-                            view.render();
-                        } else {
-                            $my_contacts.after(view.render().el);
-                        }
+                        this.renderRosterItem(item, view);
                     }
-                    changed_presence = view.model.changed.chat_status;
+                    changed_presence = item.changed.chat_status;
                     if (changed_presence) {
                         this.sortRoster(changed_presence);
                         sorted = true;
-                    } 
+                    }
                     if (item.get('is_last')) {
                         if (!sorted) {
                             this.sortRoster(item.get('chat_status'));
@@ -2593,7 +2763,7 @@
 
             showConnectButton: function () {
                 var $form = this.$el.find('#converse-login');
-                var $button = $form.find('input[type=submit]')
+                var $button = $form.find('input[type=submit]');
                 if ($button.length) {
                     $button.show().siblings('span').remove();
                 }
@@ -2648,99 +2818,8 @@
             }
         });
 
-        this.showControlBox = function () {
-            var controlbox = this.chatboxes.get('controlbox');
-            if (!controlbox) {
-                this.chatboxes.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox',
-                    visible: true
-                });
-                if (this.connection) {
-                    this.chatboxes.get('controlbox').save();
-                }
-            } else {
-                controlbox.trigger('show');
-            }
-        };
-
-        this.toggleControlBox = function () {
-            if ($("div#controlbox").is(':visible')) {
-                var controlbox = this.chatboxes.get('controlbox');
-                if (this.connection) {
-                    controlbox.destroy();
-                } else {
-                    controlbox.trigger('hide');
-                }
-            } else {
-                this.showControlBox();
-            }
-        };
-
-        this.initStatus = function (callback) {
-            this.xmppstatus = new this.XMPPStatus();
-            var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
-            this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
-            this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
-            this.xmppstatus.fetch({success: callback, error: callback});
-        };
-
-        this.initRoster = function () {
-            // Set up the roster
-            this.roster = new this.RosterItems();
-            this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+converse.bare_jid));
-            this.connection.roster.registerCallback(
-                $.proxy(this.roster.rosterHandler, this.roster),
-                null, 'presence', null);
-            this.rosterview = new this.RosterView({'model':this.roster});
-        };
-
-        this.onConnected = function () {
-            if (this.debug) {
-                this.connection.xmlInput = function (body) { console.log(body); };
-                this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
-            }
-            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.features = new this.Features();
-            this.initStatus($.proxy(function () {
-                this.initRoster();
-                this.chatboxes.onConnected();
-                this.connection.addHandler(
-                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                    'http://jabber.org/protocol/rosterx', 'message', null);
-
-                this.connection.addHandler(
-                        $.proxy(function (presence) {
-                            this.presenceHandler(presence);
-                            return true;
-                        }, this.roster), null, 'presence', null);
-
-                this.connection.addHandler(
-                        $.proxy(function (message) {
-                            this.chatboxes.messageReceived(message);
-                            return true;
-                        }, this), null, 'message', 'chat');
-
-                this.connection.roster.get(function () {});
-
-                $(window).on("blur focus", $.proxy(function(e) {
-                    if ((this.windowState != e.type) && (e.type == 'focus')) {
-                        converse.clearMsgCounter();
-                    }
-                    this.windowState = e.type;
-                },this));
-                this.giveFeedback(__('Online Contacts'));
-                if (this.testing) {
-                    this.callback(this);
-                } else  {
-                    this.callback();
-                }
-            }, this));
-        };
+        // Initialization
+        // --------------
 
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();

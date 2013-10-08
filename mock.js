@@ -28,17 +28,17 @@
         },
         'vcard': {
             'get': function (callback, jid) {
-                var firstname, lastname;
+                var fullname;
                 if (!jid) {
                     jid = 'dummy@localhost';
-                    firstname = 'Max';
-                    lastname = 'Mustermann';
+                    fullname = 'Max Mustermann' ;
                 } else {
-                    var name = jid.split('@')[0].replace('.', ' ').split(' ');
-                    firstname = name[0].charAt(0).toUpperCase()+name[0].slice(1);
-                    lastname = name[1].charAt(0).toUpperCase()+name[1].slice(1);
+                    var name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
+                    var last = name.length-1;
+                    name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
+                    name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
+                    fullname = name.join(' ');
                 }
-                var fullname = firstname+' '+lastname;
                 var vcard = $iq().c('vCard').c('FN').t(fullname);
                 callback(vcard.tree());
             }

@@ -465,17 +465,35 @@ JS file so that it will include the new settings. Please refer to the
 Configuration variables
 =======================
 
+allow_contact_requests
+----------------------
+
+Default = ``true``
+
+Allow users to add one another as contacts. If this is set to false, the 
+**Add a contact** widget, **Contact Requests** and **Pending Contacts** roster
+sections will all not appear. Additionally, all incoming contact requests will be
+ignored.
+
+allow_muc
+---------
+
+Default = ``true``
+
+Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
+the ``Chatrooms`` tab from the control box.
+
 animate
 -------
 
-Default = True
+Default = ``true``
 
 Show animations, for example when opening and closing chat boxes.
 
 auto_list_rooms
 ---------------
 
-Default = False
+Default = ``false``
 
 If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.
@@ -489,7 +507,7 @@ option will create lots of extra connection traffic.
 auto_subscribe
 --------------
 
-Default = False
+Default = ``false``
 
 If true, the user will automatically subscribe back to any contact requests.
 
@@ -504,6 +522,8 @@ See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for mo
 debug
 -----
 
+Default = ``false``
+
 If set to true, debugging output will be logged to the browser console.
 
 fullname
@@ -515,7 +535,7 @@ logged in user, otherwise the user's vCard will be fetched.
 hide_muc_server
 ---------------
 
-Default = false
+Default = ``false``
 
 Hide the ``server`` input field of the form inside the ``Room`` panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
@@ -530,7 +550,7 @@ Specify the locale/language. The language must be in the ``locales`` object. Ref
 prebind
 --------
 
-Default = false
+Default = ``false``
 
 Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).
@@ -550,7 +570,7 @@ Additionally, you have to specify ``bosh_service_url``.
 show_controlbox_by_default
 --------------------------
 
-Default = false
+Default = ``false``
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
@@ -561,11 +581,18 @@ the page with class *toggle-online-users*.
 If this options is set to true, the controlbox will by default be shown upon
 page load.
 
+show_only_online_users
+----------------------
+
+Default = ``false``
+
+If set to ``true``, only online users will be shown in the contacts roster.
+Users with any other status (e.g. away, busy etc.) will not be shown.
 
 xhr_user_search
 ---------------
 
-Default = False
+Default = ``false``
 
 There are two ways to add users. 
 

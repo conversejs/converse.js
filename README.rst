@@ -31,7 +31,7 @@ It has the following features:
 * Custom status messages
 * Typing notifications
 * Third person messages (/me )
-* Translated into multiple languages  (af, de, es, it, pt_BR)
+* Translated into multiple languages  (af, de, es, fr, it, hu, pt-BR, ru)
 
 -----------
 Screencasts

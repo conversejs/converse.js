@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.6.5 (Unreleased)
+0.6.5 (2013-10-08)
 ------------------
 
 * Fetch vCards asynchronously once a roster contact is added [jcbrand]

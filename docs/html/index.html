@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.6.4 documentation</title>
+    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.6.5 documentation</title>
     
     <link rel="stylesheet" href="_static/stylesheet.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.6.4',
+        VERSION:     '0.6.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Converse.js 0.6.4 documentation" href="#" /> 
+    <link rel="top" title="Converse.js 0.6.5 documentation" href="#" /> 
   </head>
   <body>
     <div id="header_wrap" class="outer">
@@ -49,7 +49,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">Converse.js 0.6.4 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.6.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
 <section id="main_content" class="inner">  
@@ -107,16 +107,17 @@
 <li><a class="reference internal" href="#i18n" id="id31">i18n</a></li>
 <li><a class="reference internal" href="#prebind" id="id32">prebind</a></li>
 <li><a class="reference internal" href="#show-controlbox-by-default" id="id33">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id34">xhr_user_search</a></li>
+<li><a class="reference internal" href="#show-only-online-users" id="id34">show_only_online_users</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id35">xhr_user_search</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id35">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript-and-css" id="id36">Minifying Javascript and CSS</a></li>
+<li><a class="reference internal" href="#minification" id="id36">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript-and-css" id="id37">Minifying Javascript and CSS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id37">Translations</a></li>
+<li><a class="reference internal" href="#translations" id="id38">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
@@ -540,8 +541,14 @@ the page with class <em>toggle-online-users</em>.</p>
 <p>If this options is set to true, the controlbox will by default be shown upon
 page load.</p>
 </div>
+<div class="section" id="show-only-online-users">
+<h3><a class="toc-backref" href="#id34">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
+<p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
+<p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, only online users will be shown in the contacts roster.
+Users with any other status (e.g. away, busy etc.) will not be shown.</p>
+</div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id34">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>There are two ways to add users.</p>
 <ul class="simple">
@@ -554,9 +561,9 @@ be used.</p>
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id35">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id36">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript-and-css">
-<h2><a class="toc-backref" href="#id36">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id37">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
 <p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
 all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
 and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
@@ -573,7 +580,7 @@ using <a class="reference external" href="https://github.com/jrburke/almond">alm
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id37">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id38">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.
@@ -662,7 +669,7 @@ those hoops you had to jump through.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">Converse.js 0.6.4 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.6.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
 </div>

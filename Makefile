@@ -43,7 +43,7 @@ merge:
 po2json:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec po2json {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
 
-bump:
+release:
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ package.json
 	sed -i s/v[0-9]\.[0-9]\.[0-9]\.zip/v$(VERSION)\.zip/ index.html
@@ -51,9 +51,7 @@ bump:
 	sed -i s/version\ =\ \'[0-9]\.[0-9]\.[0-9]\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	sed -i s/release\ =\ \'[0-9]\.[0-9]\.[0-9]\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" CHANGES.rst
-
-release: 
-	r.js -o build.js && grunt cssmin
+	grunt minify
 
 clean:
 	-rm -rf $(BUILDDIR)/*

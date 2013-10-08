@@ -581,6 +581,13 @@ the page with class *toggle-online-users*.
 If this options is set to true, the controlbox will by default be shown upon
 page load.
 
+show_only_online_users
+----------------------
+
+Default = ``false``
+
+If set to ``true``, only online users will be shown in the contacts roster.
+Users with any other status (e.g. away, busy etc.) will not be shown.
 
 xhr_user_search
 ---------------

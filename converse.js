@@ -2477,12 +2477,8 @@
                 return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
             },
 
-            getItem: function (id) {
-                return Backbone.Collection.prototype.get.call(this, id);
-            },
-
             addResource: function (bare_jid, resource) {
-                var item = this.getItem(bare_jid),
+                var item = this.get(bare_jid),
                     resources;
                 if (item) {
                     resources = item.get('resources');
@@ -2498,7 +2494,7 @@
             },
 
             removeResource: function (bare_jid, resource) {
-                var item = this.getItem(bare_jid),
+                var item = this.get(bare_jid),
                     resources,
                     idx;
                 if (item) {
@@ -2567,16 +2563,27 @@
                 for (i=0; i < this.models.length; ++i) {
                     id = this.models[i].get('id');
                     if (_.indexOf(roster_ids, id) === -1) {
-                        this.getItem(id).destroy();
+                        this.get(id).destroy();
                     }
                 }
             },
 
             rosterHandler: function (items) {
+                if ((items.length === 0) || (items.length === _.where(items, {subscription:'none'}).length)) {
+                    // The presence stanza is sent out once all
+                    // roster contacts have been added and rendered.
+                    // See RosterView's render method.
+                    //
+                    // If there aren't any roster contacts, we still
+                    // want to send a presence stanza, so we do it here.
+                    converse.xmppstatus.sendPresence();
+                    return true;
+                }
+
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
-                    var model = this.getItem(item.jid);
+                    var model = this.get(item.jid);
                     if (!model) {
                         is_last = false;
                         if (index === (items.length-1)) { is_last = true; }
@@ -2603,7 +2610,7 @@
 
             handleIncomingSubscription: function (jid) {
                 var bare_jid = Strophe.getBareJidFromJid(jid);
-                var item = this.getItem(bare_jid);
+                var item = this.get(bare_jid);
 
                 if (!converse.allow_contact_requests) {
                     converse.connection.roster.unauthorize(bare_jid);
@@ -2677,7 +2684,7 @@
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                     return true; // Ignore MUC
                 }
-                item = this.getItem(bare_jid);
+                item = this.get(bare_jid);
                 if (item && (status_message.text() != item.get('status'))) {
                     item.save({'status': status_message.text()});
                 }
@@ -2742,20 +2749,7 @@
                 }
                 this.$el.hide().html(roster_markup);
 
-                this.model.fetch({
-                    add: true,
-                    success: function (model, resp, options) {
-                        if (resp.length === 0) {
-                            // The presence stanza is sent out once all
-                            // roster contacts have been added and rendered.
-                            // See RosterView's render method.
-                            //
-                            // If there aren't any roster contacts, we still
-                            // want to send a presence stanza, so we do it here.
-                            converse.xmppstatus.sendPresence();
-                        }
-                    }
-                }); // Get the cached roster items from localstorage
+                this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 
             updateChatBox: function (item, changed) {

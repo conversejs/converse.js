@@ -2190,6 +2190,17 @@
             },
 
             rosterHandler: function (items) {
+                if ((items.length === 0) || (items.length === _.where(items, {subscription:'none'}).length)) {
+                    // The presence stanza is sent out once all
+                    // roster contacts have been added and rendered.
+                    // See RosterView's render method.
+                    //
+                    // If there aren't any roster contacts, we still
+                    // want to send a presence stanza, so we do it here.
+                    converse.xmppstatus.sendPresence();
+                    return true;
+                }
+
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
@@ -2359,20 +2370,7 @@
                 }
                 this.$el.hide().html(roster_markup);
 
-                this.model.fetch({
-                    add: true,
-                    success: function (model, resp, options) {
-                        if (resp.length === 0) {
-                            // The presence stanza is sent out once all
-                            // roster contacts have been added and rendered.
-                            // See RosterView's render method.
-                            //
-                            // If there aren't any roster contacts, we still
-                            // want to send a presence stanza, so we do it here.
-                            converse.xmppstatus.sendPresence();
-                        }
-                    }
-                }); // Get the cached roster items from localstorage
+                this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 
             updateChatBox: function (item, changed) {

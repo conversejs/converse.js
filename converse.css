@@ -482,12 +482,16 @@
     margin-top: 0.5em;
 }
 
-#chatpanel #available-chatrooms dd {
+#chatpanel dd.available-chatroom {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    width: 165px;
+    width: 175px;
+}
+
+#chatpanel dd.available-chatroom a.open-room {
+    width: 148px;
 }
 
 #chatpanel #available-chatrooms dt,

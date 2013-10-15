@@ -224,11 +224,6 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
-                converse.connection.connect(
-                    converse.connection.jid,
-                    converse.connection.pass,
-                    converse.onConnect
-                );
             } else if (status === Strophe.Status.ATTACHED) {
                 converse.log('Attached');
                 converse.onConnected();

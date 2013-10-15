@@ -127,6 +127,7 @@
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
+        this.initial_presence_sent = 0;
         this.msg_counter = 0;
 
         // Module-level functions
@@ -2190,17 +2191,6 @@
             },
 
             rosterHandler: function (items) {
-                if ((items.length === 0) || (items.length === _.where(items, {subscription:'none'}).length)) {
-                    // The presence stanza is sent out once all
-                    // roster contacts have been added and rendered.
-                    // See RosterView's render method.
-                    //
-                    // If there aren't any roster contacts, we still
-                    // want to send a presence stanza, so we do it here.
-                    converse.xmppstatus.sendPresence();
-                    return true;
-                }
-
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
@@ -2227,6 +2217,17 @@
                         }
                     }
                 }, this);
+
+                if (!converse.initial_presence_sent) {
+                    /* Once we've sent out our initial presence stanza, we'll
+                     * start receiving presence stanzas from our contacts.
+                     * We therefore only want to do this after our roster has
+                     * been set up (otherwise we can't meaningfully process
+                     * incoming presence stanzas).
+                     */
+                    converse.initial_presence_sent = 1;
+                    converse.xmppstatus.sendPresence();
+                }
             },
 
             handleIncomingSubscription: function (jid) {
@@ -2454,7 +2455,6 @@
                             // can show the roster.
                             this.$el.show();
                         }
-                        converse.xmppstatus.sendPresence();
                     }
                 }
                 // Hide the headings if there are no contacts under them

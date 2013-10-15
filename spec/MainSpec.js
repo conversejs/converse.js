@@ -126,7 +126,6 @@
 
                 it("can be added to the roster", $.proxy(function () {
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    spyOn(this.xmppstatus, 'sendPresence');
                     this.roster.create({
                         jid: pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
@@ -135,7 +134,6 @@
                         is_last: true 
                     });
                     expect(this.rosterview.$el.is(':visible')).toEqual(true);
-                    expect(this.xmppstatus.sendPresence).toHaveBeenCalled();
                     expect(this.rosterview.render).toHaveBeenCalled();
                 }, converse));
 
@@ -169,7 +167,6 @@
                 it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                     var i, t, is_last;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    spyOn(this.xmppstatus, 'sendPresence');
                     for (i=0; i<pend_names.length; i++) {
                         is_last = i===(pend_names.length-1);
                         this.roster.create({
@@ -179,11 +176,6 @@
                             fullname: pend_names[i],
                             is_last: is_last
                         });
-                        if (is_last) {
-                            expect(this.xmppstatus.sendPresence).toHaveBeenCalled();
-                        } else {
-                            expect(this.xmppstatus.sendPresence).not.toHaveBeenCalled();
-                        }
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();

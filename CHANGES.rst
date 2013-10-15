@@ -4,7 +4,8 @@ Changelog
 0.6.6 (2013-10-08)
 ------------------
 
-* Bugfix: Presence stanza sent out before roster has been initialized [jcbrand]
+* Bugfix: Presence stanza must be sent out after roster has been initialized [jcbrand]
+* Dutch translation [maartenkling]
 
 0.6.5 (2013-10-08)
 ------------------

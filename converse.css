@@ -17,8 +17,7 @@
     user-select: none;
 }
 
-#collective-xmpp-chat-data,
-#collective-xmpp-chat-data input {
+#chatpanel, #chatpanel input {
   color: rgb(79, 79, 79);
 }
 
@@ -365,6 +364,7 @@ form.search-xmpp-contact input {
 }
 
 a.configure-chatroom-button,
+a.minimize-chatbox-button,
 a.close-chatbox-button {
     font-size: 10px;
     padding: 3px 3px 2px 3px;
@@ -388,6 +388,7 @@ a.close-chatbox-button {
 }
 
 a.configure-chatroom-button:active,
+a.minimize-chatbox-button:active,
 a.close-chatbox-button:active {
     position:relative;
     top:1px;
@@ -685,7 +686,7 @@ select#select-xmpp-status {
     list-style: none;
     padding-left: 0;
     text-shadow: white 0 1px 0;
-    width: 40%;
+    width: 38%;
 }
 
 ul#controlbox-tabs li a {
@@ -789,7 +790,15 @@ ul.chat-toolbar {
     float: right;
 }
 
-.chat-toolbar .toggle-otr ul {
+.chat-toolbar ul li a {
+    color: rgb(79, 79, 79);
+}
+
+.chat-toolbar ul li a:hover {
+    color: #8f2831;
+}
+
+.chat-toolbar ul {
 	display: none;
     font-size:12px;
     position: absolute;
@@ -800,15 +809,29 @@ ul.chat-toolbar {
     box-shadow: -1px -2px 2px 1px rgba(0,0,0,0.4);
 }
 
-.chat-toolbar .toggle-otr ul li {
+.chat-toolbar ul li {
 	position: relative;
 	list-style: none;
 	cursor: pointer;
+}
+
+.chat-toolbar .toggle-smiley {
+    padding-left: 5px;
+}
+
+.chat-toolbar .toggle-smiley ul li {
+    font-size: 14px;
+    padding: 5px;
+    z-index: 98;
+}
+
+.chat-toolbar .toggle-otr ul li {
+    background-color: white;
     display: block;
     z-index: 99;
 }
 
-.chat-toolbar .toggle-otr ul li:hover {
+.chat-toolbar ul li:hover {
     background-color: #eee;
 }
 

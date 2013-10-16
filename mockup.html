@@ -20,32 +20,34 @@
 </div>
 
 <div id="chatpanel" style="width: 100%;">
-    <div id="collective-xmpp-chat-data">
-        <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
-            <div class="chat-head oc-chat-head">
-                <ul id="controlbox-tabs">
-                    <li><a class="current" href="#login">Sign in</a></li>
-                </ul>
-                <a class="close-chatbox-button icon-close"></a></div>
-                <div class="controlbox-panes">
-                    <div id="login-dialog">
-                    <form id="converse-login">
-                        <label>XMPP/Jabber Username:</label><input type="text" id="jid">
-                        <label>Password:</label><input type="password" id="password">
-                        <input class="login-submit" type="submit" value="Log In">
-                    </form>
-                </div>
+    <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
+        <div class="chat-head oc-chat-head">
+            <ul id="controlbox-tabs">
+                <li><a class="current" href="#login">Sign in</a></li>
+            </ul>
+            <a class="close-chatbox-button icon-close"></a>
+            <a class="minimize-chatbox-button icon-minus"></a>
+        </div>
+        <div class="controlbox-panes">
+            <div id="login-dialog">
+                <form id="converse-login">
+                    <label>XMPP/Jabber Username:</label><input type="text" id="jid">
+                    <label>Password:</label><input type="password" id="password">
+                    <input class="login-submit" type="submit" value="Log In">
+                </form>
             </div>
         </div>
+    </div>
 
-        <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
-            <div class="chat-head oc-chat-head">
-                <ul id="controlbox-tabs">
-                    <li><a class="s current" href="#users">Contacts</a></li>
-                    <li><a class="s" href="#chatrooms">Rooms</a></li>
-                </ul>
-                <a class="close-chatbox-button icon-close"></a>
-            </div>
+    <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
+        <div class="chat-head oc-chat-head">
+            <ul id="controlbox-tabs">
+                <li><a class="s current" href="#users">Contacts</a></li>
+                <li><a class="s" href="#chatrooms">Rooms</a></li>
+            </ul>
+            <a class="close-chatbox-button icon-close"></a>
+            <a class="minimize-chatbox-button icon-minus"></a>
+        </div>
         <div class="controlbox-panes">
             <div id="users" class="oc-chat-content" style="display: block;">
                 <form class="set-xmpp-status" action="" method="post">
@@ -192,6 +194,8 @@
     <div class="chatbox" id="37c0c87392010303765fe36b05c0967d62c6b70f" style="opacity: 1; display: inline;">
         <div class="chat-head chat-head-chatbox">
             <a class="close-chatbox-button icon-close"></a>
+            <a class="minimize-chatbox-button icon-minus"></a>
+
             <a href="http://opkode.com" target="_blank" class="user">
                 <canvas height="33px" width="33px" class="avatar" style="background-color: black"></canvas>
                 <div class="chat-title"> JC Brand </div>
@@ -226,11 +230,23 @@
         </div>
         <form class="sendXMPPMessage" action="" method="post">
             <ul class="chat-toolbar no-text-select">
-                <!--
-                <li class="icon-happy" title="Insert a smilery"></li>
-                <li class="icon-camera-2" title="Enable video chat"></li>
-                <li class="icon-newspaper" title="Fetch and show this user's vCard"></li>
-                -->
+                <li class="toggle-smiley icon-happy" title="Insert a smilery">
+                    <ul>
+                        <li><a class="icon-happy" href="#"></a></li>
+                        <li><a class="icon-wink" href="#"></a></li>
+                        <li><a class="icon-tongue" href="#"></a></li>
+                        <li><a class="icon-sad" href="#"></a></li>
+                        <li><a class="icon-confused" href="#"></a></li>
+                        <li><a class="icon-wondering" href="#"></a></li>
+                        <li><a class="icon-shocked" href="#"></a></li>
+                        <li><a class="icon-evil" href="#"></a></li>
+                        <li><a class="icon-angry" href="#"></a></li>
+                        <li><a class="icon-cool" href="#"></a></li>
+                        <li><a class="icon-grin" href="#"></a></li>
+                        <li><a class="icon-thumbs-up" href="#"></a></li>
+                        <li><a class="icon-heart" href="#"></a></li>
+                    </ul>
+                </li>
                 <li class="toggle-otr unencrypted" title="Turn on 'off-the-record' chat encryption">
                     <span class="chat-toolbar-text">unencrypted</span>
                     <span class="icon-unlocked"></span>
@@ -249,7 +265,9 @@
     <div class="chatroom" id="4a77380f1cd9d392627b0e1469688f9ca44e9392" style="opacity: 1; display: inline;">
         <div class="chat-head chat-head-chatroom">
             <a class="close-chatbox-button icon-close"></a>
+            <a class="minimize-chatbox-button icon-minus"></a>
             <a class="configure-chatroom-button icon-wrench" style=""></a>
+
             <div class="chat-title"> Chatroom </div>
             <p class="chatroom-topic"></p>
             <p></p>
@@ -299,6 +317,7 @@
     <div class="chatroom" id="6d8627960a0cb066d9216742f3edccc3dbbf85a9" style="opacity: 1; display: inline;">
         <div class="chat-head chat-head-chatroom">
             <a class="close-chatbox-button icon-close"></a>
+            <a class="minimize-chatbox-button icon-minus"></a>
             <a class="configure-chatroom-button" style="display:none">&nbsp;</a>
             <div class="chat-title"> Restricted Chatroom</div>
             <p class="chatroom-topic"></p>
@@ -314,17 +333,14 @@
         </div>
     </div>
 
-
-    </div>
     <div id="toggle-controlbox">
         <a href="#" class="chat toggle-online-users">
             <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
         </a>
     </div>
-
 </div>
-
 </body>
+
 <script>
 $(document).ready(function () {
     $('a[href=#chatrooms]').click(function (ev) { 
@@ -377,6 +393,12 @@ $(document).ready(function () {
     }
 
     $(function() {
+
+        $('.minimize-chatbox-button').click(function(ev) {
+            $(ev.target).parent().parent().find('div.chat-content').toggle();
+            $(ev.target).parent().parent().find('form.sendXMPPMessage').toggle();
+        });
+
         // Clickable Dropdown
         $('.toggle-otr').click(function(e) {
             $('.toggle-otr ul').slideToggle(200);
@@ -387,8 +409,17 @@ $(document).ready(function () {
                 $('.toggle-otr ul', this).slideUp(200);
             }
         });
+
+        $('.toggle-smiley').click(function(e) {
+            $('.toggle-smiley ul').slideToggle(200);
+            e.stopPropagation();
+        });
+        $(document).click(function() {
+            if ($('.toggle-smiley ul').is(':visible')) {
+                $('.toggle-smiley ul', this).slideUp(200);
+            }
+        });
     });
 });
 </script>
-<script src="http://devbox:9001/socket.js" type="text/javascript" charset="utf-8"></script>
 </html>

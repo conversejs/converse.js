@@ -77,6 +77,12 @@ Licence
 
 ``Converse.js`` is released under both the MIT_ and GPL_ licenses.
 
+------
+Donate
+------
+
+Bitcoins: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
+
 .. _Converse.js: http://conversejs.org
 .. _strophe.js: http://strophe.im/strophejs
 .. _backbone.js: http:/backbonejs.org

@@ -2260,7 +2260,7 @@
         });
 
         this.ChatBoxesView = Backbone.View.extend({
-            el: '#collective-xmpp-chat-data',
+            el: '#chatpanel',
 
             initialize: function () {
                 // boxesviewinit

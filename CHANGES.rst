@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.6.6 (2013-10-08)
+0.6.6 (2013-10-16)
 ------------------
 
 * Bugfix: Presence stanza must be sent out after roster has been initialized [jcbrand]
+* Bugfix: Don't reconnect while still disconnecting, causes endless authentication loops. [jcbrand]
 * Dutch translation [maartenkling]
 
 0.6.5 (2013-10-08)

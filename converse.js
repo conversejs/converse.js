@@ -127,6 +127,7 @@
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
+        this.initial_presence_sent = 0;
         this.msg_counter = 0;
 
         // Module-level functions
@@ -223,11 +224,6 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
-                converse.connection.connect(
-                    converse.connection.jid,
-                    converse.connection.pass,
-                    converse.onConnect
-                );
             } else if (status === Strophe.Status.ATTACHED) {
                 converse.log('Attached');
                 converse.onConnected();
@@ -2216,6 +2212,17 @@
                         }
                     }
                 }, this);
+
+                if (!converse.initial_presence_sent) {
+                    /* Once we've sent out our initial presence stanza, we'll
+                     * start receiving presence stanzas from our contacts.
+                     * We therefore only want to do this after our roster has
+                     * been set up (otherwise we can't meaningfully process
+                     * incoming presence stanzas).
+                     */
+                    converse.initial_presence_sent = 1;
+                    converse.xmppstatus.sendPresence();
+                }
             },
 
             handleIncomingSubscription: function (jid) {
@@ -2359,20 +2366,7 @@
                 }
                 this.$el.hide().html(roster_markup);
 
-                this.model.fetch({
-                    add: true,
-                    success: function (model, resp, options) {
-                        if (resp.length === 0) {
-                            // The presence stanza is sent out once all
-                            // roster contacts have been added and rendered.
-                            // See RosterView's render method.
-                            //
-                            // If there aren't any roster contacts, we still
-                            // want to send a presence stanza, so we do it here.
-                            converse.xmppstatus.sendPresence();
-                        }
-                    }
-                }); // Get the cached roster items from localstorage
+                this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 
             updateChatBox: function (item, changed) {
@@ -2456,7 +2450,6 @@
                             // can show the roster.
                             this.$el.show();
                         }
-                        converse.xmppstatus.sendPresence();
                     }
                 }
                 // Hide the headings if there are no contacts under them

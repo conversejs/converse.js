@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.7.0 (Unreleased)
+------------------
+
+* Add a toolbar for single user chat [jcbrand]
+* Add support for OTR (off-the-record) encryption [jcbrand]
+* Add smileys [jcbrand]
+* Simplified initial boilerplate markup [jcbrand]
+
 0.6.6 (2013-10-16)
 ------------------
 

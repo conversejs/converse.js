@@ -404,6 +404,16 @@
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
 
+                $(document).click(function() {
+                    if ($('.toggle-otr ul').is(':visible')) {
+                        $('.toggle-otr ul', this).slideUp();
+                    }
+                    if ($('.toggle-smiley ul').is(':visible')) {
+                        $('.toggle-smiley ul', this).slideUp();
+                    }
+                });
+
+
                 $(window).on("blur focus", $.proxy(function(e) {
                     if ((this.windowState != e.type) && (e.type == 'focus')) {
                         converse.clearMsgCounter();
@@ -640,6 +650,8 @@
             events: {
                 'click .close-chatbox-button': 'closeChat',
                 'keypress textarea.chat-textarea': 'keyPressed',
+                'click .toggle-smiley': 'toggleSmileyMenu',
+                'click .toggle-smiley ul li': 'insertSmiley',
                 'click .toggle-otr': 'toggleOTRMenu',
                 'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
@@ -667,6 +679,24 @@
             ),
 
             toolbar_template: _.template(
+                '<li class="toggle-smiley icon-happy" title="Insert a smilery">' +
+                    '<ul>' +
+                        '<li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>'+
+                        '<li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>'+
+                        '<li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>'+
+                        '<li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>'+
+                        '<li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>'+
+                        '<li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>'+
+                        '<li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>'+
+                        '<li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>'+
+                        '<li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>'+
+                        '<li><a class="icon-sad" href="#" data-emoticon=":("></a></li>'+
+                        '<li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>'+
+                        '<li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>'+
+                        '<li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>'+
+                    '</ul>' +
+                '</li>' +
+
                 '{[ if (allow_otr)  { ]}' +
                     '<li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">'+
                         '<span class="chat-toolbar-text">{{otr_translated_status}}</span>'+
@@ -941,15 +971,27 @@
                 }
             },
 
+            insertSmiley: function (ev) {
+                ev.stopPropagation();
+                this.$el.find('.toggle-smiley ul').slideToggle(200);
+                var $textbox = this.$el.find('textarea.chat-textarea');
+                var value = $textbox.val();
+                var $target = $(ev.target);
+                $target = $target.is('a') ? $target : $target.children('a');
+                if (value && (value[value.length-1] !== ' ')) {
+                    value = value + ' ';
+                }
+                $textbox.val(value+$target.data('emoticon')+' ');
+            },
+
+            toggleSmileyMenu: function (ev) {
+                ev.stopPropagation();
+                this.$el.find('.toggle-smiley ul').slideToggle(200);
+            },
+
             toggleOTRMenu: function (ev) {
                 ev.stopPropagation();
-                $(ev.currentTarget).children('ul').slideToggle(200, function () {
-                    $(document).click(function() {
-                        if ($('.toggle-otr ul').is(':visible')) {
-                            $('.toggle-otr ul', this).slideUp();
-                        }
-                    });
-                });
+                this.$el.find('.toggle-otr ul').slideToggle(200);
             },
 
             showOTRError: function (msg) {

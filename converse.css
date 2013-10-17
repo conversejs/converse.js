@@ -150,11 +150,11 @@ ul.participant-list li.moderator {
 
 .chat-content {
     position: relative;
-    padding: 0.3em;
+    padding: 4px;
     font-size: 13px;
     color: rgb(79, 79, 79);
     height:180px;
-    width: 190px;
+    width: 192px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;
@@ -803,10 +803,10 @@ ul.chat-toolbar {
     font-size:12px;
     position: absolute;
     bottom: 100%;
-    margin-bottom: 0;
+    margin-bottom: 1px;
     right: 0;
     background: #fff;
-    box-shadow: -1px -2px 2px 1px rgba(0,0,0,0.4);
+    box-shadow: 0 -1px 2px 0 rgba(0,0,0,0.4);
 }
 
 .chat-toolbar ul li {

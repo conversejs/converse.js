@@ -40,6 +40,16 @@ Screencasts
 * `In a static HTML page`_. Here we chat to external XMPP accounts on Jabber.org and Gmail.
 * `Integrated into a Plone site`_ via collective.xmpp.chat.
 
+Integration into other frameworks
+---------------------------------
+
+* `Plone <http://plone.org>`_: 
+    `collective.xmpp.chat <http://github.com/collective/collective.xmpp.chat>`_ is an add-on for Plone that uses *Converse.js*. Together with `collective.xmpp.core <http://github.com/collective/collective.xmpp.core>`_, it provides for single-signon-support (SSO) and also enables you to manually or automatically register your Plone users onto your XMPP server.
+* `Django <http://www.djangoproject.com>`_: 
+    `django-conversejs <https://pypi.python.org/pypi/django-conversejs>`_ is an app that makes it easer to integrate *Converse.js* into Django.
+* `Roundcube <http://roundcube.net>`_: 
+    `roundcube-converse.js-xmpp-plugin <https://github.com/thomascube/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
+
 ----
 Demo
 ----

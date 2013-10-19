@@ -8,7 +8,7 @@
 
 // AMD/global registrations
 (function (root, factory) {
-    if (console===undefined || console.log===undefined) {
+    if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
@@ -2612,6 +2612,10 @@
                     if (this.isSelf(item.jid)) { return; }
                     var model = this.get(item.jid);
                     if (!model) {
+                        if ((item.subscription === 'none') && (item.ask === null)) {
+                            // We're not interested in zombies
+                            return;
+                        }
                         is_last = false;
                         if (index === (items.length-1)) { is_last = true; }
                         this.create({

@@ -8,7 +8,7 @@
 
 // AMD/global registrations
 (function (root, factory) {
-    if (console===undefined || console.log===undefined) {
+    if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {

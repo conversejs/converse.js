@@ -195,7 +195,7 @@
 		if (!window.locales) {
 			window.locales = {};
 		}
-		window.locales.de = factory(new Jed(translations));
+		window.locales.hu = factory(new Jed(translations));
 	}
 }(this, function(hu) {
 	return hu;

@@ -42,14 +42,12 @@ Screencasts
 Integration into other frameworks
 ---------------------------------
 
-* Plone_: collective.xmpp.chat_ is an add-on for Plone that uses *Converse.js*.
-Together with _`collective.xmpp.core<http://github.com/collective/collective.xmpp.core>`, it provides for single-signon-support (SSO)
-and also enables you to manually or automatically register your Plone users onto your XMPP server.
-
-* _`Django<http://www.djangoproject.com>`: _`django-conversejs<https://pypi.python.org/pypi/django-conversejs>`
-is an app that makes it easer to integrate *Converse.js* into Django.
-
-* _`Roundcube<http://roundcube.net>`: _`roundcube-converse.js-xmpp-plugin<https://github.com/thomascube/roundcube-converse.js-xmpp-plugin>` is a plugin for Roundcube Webmail.
+* `Plone <http://plone.org>`_: 
+    `collective.xmpp.chat <http://github.com/collective/collective.xmpp.chat>`_ is an add-on for Plone that uses *Converse.js*. Together with `collective.xmpp.core <http://github.com/collective/collective.xmpp.core>`_, it provides for single-signon-support (SSO) and also enables you to manually or automatically register your Plone users onto your XMPP server.
+* `Django <http://www.djangoproject.com>`_: 
+    `django-conversejs <https://pypi.python.org/pypi/django-conversejs>`_ is an app that makes it easer to integrate *Converse.js* into Django.
+* `Roundcube <http://roundcube.net>`_: 
+    `roundcube-converse.js-xmpp-plugin <https://github.com/thomascube/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
 
 ----
 Demo

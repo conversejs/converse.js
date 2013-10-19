@@ -11,8 +11,6 @@ It enables you to add chat functionality to your website, independent of any
 specific backend. You will however need an XMPP server to connect to, either
 your own, or a public one.
 
-It is used by collective.xmpp.chat_, which is a Plone_ instant messaging add-on.
-
 --------
 Features
 --------
@@ -40,6 +38,18 @@ Screencasts
 
 * `In a static HTML page`_. Here we chat to external XMPP accounts on Jabber.org and Gmail.
 * `Integrated into a Plone site`_ via collective.xmpp.chat.
+
+Integration into other frameworks
+---------------------------------
+
+* Plone_: collective.xmpp.chat_ is an add-on for Plone that uses *Converse.js*.
+Together with _`collective.xmpp.core<http://github.com/collective/collective.xmpp.core>`, it provides for single-signon-support (SSO)
+and also enables you to manually or automatically register your Plone users onto your XMPP server.
+
+* _`Django<http://www.djangoproject.com>`: _`django-conversejs<https://pypi.python.org/pypi/django-conversejs>`
+is an app that makes it easer to integrate *Converse.js* into Django.
+
+* _`Roundcube<http://roundcube.net>`: _`roundcube-converse.js-xmpp-plugin<https://github.com/thomascube/roundcube-converse.js-xmpp-plugin>` is a plugin for Roundcube Webmail.
 
 ----
 Demo

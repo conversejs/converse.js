@@ -21,6 +21,11 @@
   color: rgb(79, 79, 79);
 }
 
+
+#chatpanel .emoticon {
+    font-size: 14px;
+}
+
 .hidden {
     display: none
 }

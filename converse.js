@@ -70,6 +70,7 @@
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
+        this.show_emoticons = true;
         this.show_toolbar = true;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
@@ -93,6 +94,7 @@
             'prebind',
             'rid',
             'show_controlbox_by_default',
+            'show_emoticons',
             'show_only_online_users',
             'show_toolbar',
             'sid',
@@ -679,24 +681,25 @@
             ),
 
             toolbar_template: _.template(
-                '<li class="toggle-smiley icon-happy" title="Insert a smilery">' +
-                    '<ul>' +
-                        '<li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>'+
-                        '<li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>'+
-                        '<li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>'+
-                        '<li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>'+
-                        '<li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>'+
-                        '<li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>'+
-                        '<li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>'+
-                        '<li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>'+
-                        '<li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>'+
-                        '<li><a class="icon-sad" href="#" data-emoticon=":("></a></li>'+
-                        '<li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>'+
-                        '<li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>'+
-                        '<li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>'+
-                    '</ul>' +
-                '</li>' +
-
+                '{[ if (show_emoticons)  { ]}' +
+                    '<li class="toggle-smiley icon-happy" title="Insert a smilery">' +
+                        '<ul>' +
+                            '<li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>'+
+                            '<li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>'+
+                            '<li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>'+
+                            '<li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>'+
+                            '<li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>'+
+                            '<li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>'+
+                            '<li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>'+
+                            '<li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>'+
+                            '<li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>'+
+                            '<li><a class="icon-sad" href="#" data-emoticon=":("></a></li>'+
+                            '<li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>'+
+                            '<li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>'+
+                            '<li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>'+
+                        '</ul>' +
+                    '</li>' +
+                '{[ } ]}' +
                 '{[ if (allow_otr)  { ]}' +
                     '<li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">'+
                         '<span class="chat-toolbar-text">{{otr_translated_status}}</span>'+
@@ -783,6 +786,34 @@
                 this.scrollDown();
             },
 
+            insertEmoticons: function (text) {
+                if (converse.show_emoticons) {
+                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
+                    text = text.replace(/>:\)/g, '<span class="emoticon icon-evil"></span>');
+                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
+                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/>:\(/g, '<span class="emoticon icon-angry"></span>');
+                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
+                    text = text.replace(/<3/g, '<span class="emoticon icon-heart"></span>');
+                }
+                return text;
+            },
+
             showMessage: function ($el, msg_dict) {
                 var this_date = converse.parseISO8601(msg_dict.time),
                     text = msg_dict.message,
@@ -803,7 +834,7 @@
                     template({
                         'sender': sender,
                         'time': this_date.toTimeString().substring(0,5),
-                        'message': text,
+                        'message': this.insertEmoticons(text),
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''
                     }));
@@ -1143,6 +1174,7 @@
                         data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
                     }
                     data.allow_otr = converse.allow_otr;
+                    data.show_emoticons = converse.show_emoticons;
                     data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
                     data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status]; 
                     this.$el.find('.chat-toolbar').html(this.toolbar_template(data));

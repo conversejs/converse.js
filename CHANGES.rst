@@ -8,6 +8,7 @@ Changelog
 * Add support for OTR (off-the-record) encryption [jcbrand]
 * Add support for smileys [jcbrand]
 * Simplified initial boilerplate markup [jcbrand]
+* New configuration settings, ``xhr_custom_status_url`` and ``xhr_user_search_url`` [jcbrand]
 
 0.6.6 (2013-10-16)
 ------------------

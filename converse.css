@@ -158,20 +158,12 @@ ul.participant-list li.moderator {
     padding: 4px;
     font-size: 13px;
     color: rgb(79, 79, 79);
-    height:180px;
+    height:190px;
     width: 192px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em;
-}
-
-.chatroom .chat-content {
-    height:200px;
-}
-
-.chatroom .chat-content {
-    height:200px;
 }
 
 .chat-info {
@@ -757,14 +749,13 @@ form.sendXMPPMessage {
     background-clip: padding-box;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    height: 85px;
     width: 200px;
+    height: 75px;
 }
 
 .chatroom form.sendXMPPMessage {
     -webkit-border-bottom-right-radius: 0;
     border-bottom-right-radius: 0;
-    height: 65px;
 }
 
 .chat-textarea {
@@ -775,7 +766,7 @@ form.sendXMPPMessage {
     padding: 3px;
     border-radius: 4px;
     resize: none;
-    height: 65px;
+    height: 55px;
 }
 
 ul.chat-toolbar {

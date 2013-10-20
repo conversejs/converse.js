@@ -648,12 +648,13 @@
             length: 200,
             tagName: 'div',
             className: 'chatbox',
+            is_chatroom: false,  // This is not a multi-user chatroom
 
             events: {
                 'click .close-chatbox-button': 'closeChat',
                 'keypress textarea.chat-textarea': 'keyPressed',
-                'click .toggle-smiley': 'toggleSmileyMenu',
-                'click .toggle-smiley ul li': 'insertSmiley',
+                'click .toggle-smiley': 'toggleEmoticonMenu',
+                'click .toggle-smiley ul li': 'addEmoticon',
                 'click .toggle-otr': 'toggleOTRMenu',
                 'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
@@ -679,6 +680,7 @@
                     'placeholder="'+__('Personal message')+'"/>'+
                 '</form>'
             ),
+
 
             toolbar_template: _.template(
                 '{[ if (show_emoticons)  { ]}' +
@@ -786,7 +788,7 @@
                 this.scrollDown();
             },
 
-            insertEmoticons: function (text) {
+            renderEmoticons: function (text) {
                 if (converse.show_emoticons) {
                     text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
                     text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
@@ -802,6 +804,7 @@
                     text = text.replace(/>:\)/g, '<span class="emoticon icon-evil"></span>');
                     text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
                     text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/:\//g, '<span class="emoticon icon-wondering"></span>');
                     text = text.replace(/>:\(/g, '<span class="emoticon icon-angry"></span>');
                     text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
                     text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
@@ -834,7 +837,7 @@
                     template({
                         'sender': sender,
                         'time': this_date.toTimeString().substring(0,5),
-                        'message': this.insertEmoticons(text),
+                        'message': this.renderEmoticons(text),
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''
                     }));
@@ -1002,7 +1005,7 @@
                 }
             },
 
-            insertSmiley: function (ev) {
+            addEmoticon: function (ev) {
                 ev.stopPropagation();
                 this.$el.find('.toggle-smiley ul').slideToggle(200);
                 var $textbox = this.$el.find('textarea.chat-textarea');
@@ -1012,10 +1015,10 @@
                 if (value && (value[value.length-1] !== ' ')) {
                     value = value + ' ';
                 }
-                $textbox.val(value+$target.data('emoticon')+' ');
+                $textbox.focus().val(value+$target.data('emoticon')+' ');
             },
 
-            toggleSmileyMenu: function (ev) {
+            toggleEmoticonMenu: function (ev) {
                 ev.stopPropagation();
                 this.$el.find('.toggle-smiley ul').slideToggle(200);
             },
@@ -1173,7 +1176,7 @@
                     } else if (data.otr_status == FINISHED){
                         data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
                     }
-                    data.allow_otr = converse.allow_otr;
+                    data.allow_otr = converse.allow_otr && !this.is_chatroom;
                     data.show_emoticons = converse.show_emoticons;
                     data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
                     data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status]; 
@@ -1730,9 +1733,12 @@
             events: {
                 'click a.close-chatbox-button': 'closeChat',
                 'click a.configure-chatroom-button': 'configureChatRoom',
+                'click .toggle-smiley': 'toggleEmoticonMenu',
+                'click .toggle-smiley ul li': 'addEmoticon',
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
             info_template: _.template('<div class="chat-info">{{message}}</div>'),
+            is_chatroom: true,
 
             sendChatRoomMessage: function (body) {
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
@@ -1792,6 +1798,9 @@
                 '<div class="chat-area">' +
                     '<div class="chat-content"></div>' +
                     '<form class="sendXMPPMessage" action="" method="post">' +
+                        '{[ if ('+converse.show_toolbar+') { ]}' +
+                            '<ul class="chat-toolbar no-text-select"></ul>'+
+                        '{[ } ]}' +
                         '<textarea type="text" class="chat-textarea" ' +
                             'placeholder="'+__('Message')+'"/>' +
                     '</form>' +
@@ -1810,6 +1819,7 @@
             renderChatArea: function () {
                 if (!this.$el.find('.chat-area').length) {
                     this.$el.find('.chat-body').empty().append(this.chatarea_template());
+                    this.renderToolbar();
                 }
                 return this;
             },

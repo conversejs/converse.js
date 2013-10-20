@@ -302,7 +302,27 @@
                         <span class="chat-message-content">Another message to check that scrolling works.</span>
                     </div>
                 </div>
+
                 <form class="sendXMPPMessage" action="" method="post">
+                    <ul class="chat-toolbar no-text-select">
+                        <li class="toggle-smiley icon-happy" title="Insert a smilery">
+                            <ul>
+                                <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>
+                                <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>
+                                <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>
+                                <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>
+                                <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>
+                                <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>
+                                <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>
+                                <li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>
+                                <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>
+                                <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>
+                                <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>
+                                <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>
+                                <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>
+                            </ul>
+                        </li>
+                    </ul>
                     <textarea type="text" class="chat-textarea" placeholder="Message"></textarea>
                 </form>
             </div>
@@ -407,17 +427,15 @@ $(document).ready(function () {
             $('.toggle-otr ul').slideToggle(200);
             e.stopPropagation();
         });
+
+        $('.toggle-smiley').click(function(e) {
+            $(e.target).find('ul').slideToggle(200);
+            e.stopPropagation();
+        });
         $(document).click(function() {
             if ($('.toggle-otr ul').is(':visible')) {
                 $('.toggle-otr ul', this).slideUp(200);
             }
-        });
-
-        $('.toggle-smiley').click(function(e) {
-            $('.toggle-smiley ul').slideToggle(200);
-            e.stopPropagation();
-        });
-        $(document).click(function() {
             if ($('.toggle-smiley ul').is(':visible')) {
                 $('.toggle-smiley ul', this).slideUp(200);
             }

@@ -74,7 +74,9 @@
         this.show_toolbar = true;
         this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
+        this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
+        this.xhr_user_search_url = '';
 
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, [
@@ -100,7 +102,9 @@
             'sid',
             'testing',
             'xhr_custom_status',
-            'xhr_user_search'
+            'xhr_custom_status_url',
+            'xhr_user_search',
+            'xhr_user_search_url'
         ]));
 
         // Translation machinery
@@ -1330,7 +1334,7 @@
 
             searchContacts: function (ev) {
                 ev.preventDefault();
-                $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
+                $.getJSON(xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
                     var $ul= $('.search-xmpp ul');
                     $ul.find('li.found-user').remove();
                     $ul.find('li.chat-info').remove();
@@ -3007,7 +3011,7 @@
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
                     $.ajax({
-                        url: 'set-custom-status',
+                        url:  this.xhr_custom_status_url,
                         type: 'POST',
                         data: {'msg': status_message}
                     });

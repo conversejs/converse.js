@@ -89,7 +89,7 @@ Introduction
 ============
 
 Even though you can connect to public XMPP servers on the `conversejs.org`_
-website, *Converse.js* is not really meant to be a "Software-as-a-service" (SaaS) 
+website, *Converse.js* is not really meant to be a "Software-as-a-service" (SaaS)
 webchat.
 
 Instead, its goal is to provide the means for website owners to add a tightly
@@ -153,7 +153,7 @@ Overcoming cross-domain request restrictions
 --------------------------------------------
 
 The domain of the *Converse.js* demo is *conversejs.org*, but the domain of the connection manager is *opkode.im*.
-HTTP requests are made by *Converse.js* to the connection manager via XmlHttpRequests (XHR).  
+HTTP requests are made by *Converse.js* to the connection manager via XmlHttpRequests (XHR).
 Until recently, it was not possible to make such requests to a different domain
 than the one currently being served (to prevent XSS attacks).
 
@@ -202,7 +202,7 @@ Apache
 ::
 
     <VirtualHost *:80>
-        ServerName mysite.com 
+        ServerName mysite.com
         RewriteEngine On
         RewriteRule ^/http-bind(.*) http://someothersite.com/http-bind$1 [P,L]
     </VirtualHost>
@@ -240,7 +240,7 @@ XMLHttpRequest call to your server and ask it to return them for you.
 Below is one example of how this could work. An Ajax call is made to the
 relative URL **/prebind** and it expects to receive JSON data back.
 
-:: 
+::
 
     $.getJSON('/prebind', function (data) {
         converse.initialize({
@@ -255,13 +255,13 @@ relative URL **/prebind** and it expects to receive JSON data back.
 **Here's what's happening:**
 
 The JSON data contains the user's JID (jabber ID), RID, SID and the URL to the
-BOSH connection manager. 
+BOSH connection manager.
 
 
 Facebook integration
 ====================
 
-.. Note :: 
+.. Note ::
     It should be possible to integrate Converse.js with Facebook chat, and
     below I'll provide some tips and documentation on how to achieve this. That
     said, I don't have a Facebook account and therefore haven't tried to do
@@ -270,10 +270,10 @@ Facebook integration
 
 
 Converse.js uses `Strophe.js <http://strophe.im/strophejs>`_ to connect and
-communicate with the XMPP server. One nice thing about Strophe.js is that it 
+communicate with the XMPP server. One nice thing about Strophe.js is that it
 can be extended via `plugins <http://github.com/strophe/strophejs-plugins>`_.
 
-Here is a `plugin for authenticating with facebook 
+Here is a `plugin for authenticating with facebook
 <https://github.com/kissrobber/turedsocial/blob/master/strophe-plugins/src/facebook.js>`_.
 
 You will need your own BOSH connection manager to act as a proxy between
@@ -284,7 +284,7 @@ The BOSH connection manager that I make available for
 testing purposes (at https://bind.opkode.im) uses `Punjab <https://github.com/twonds/punjab>`_,
 although there are quite a few other options available as well.
 
-When you configure Converse.js, via its ``initialize`` method, you must specify the 
+When you configure Converse.js, via its ``initialize`` method, you must specify the
 `bosh_service_url`_ value, which is to be your BOSH connection manager.
 
 Please note, to enable Facebook integration, you'll have to
@@ -339,7 +339,7 @@ directory:
     npm install
 
 This will install all the development dependencies for Converse.js. If you are
-curious to know what these are, take a look at whats under the *devDependencies* key in 
+curious to know what these are, take a look at whats under the *devDependencies* key in
 `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`.
 
 Install 3rd party dependencies
@@ -389,7 +389,7 @@ Without AMD and require.js
 ==========================
 
 Converse.js can also be used without require.js. If you for some reason prefer
-to use it this way, please refer to 
+to use it this way, please refer to
 `non_amd.html <https://github.com/jcbrand/converse.js/blob/master/non_amd.html>`_
 for an example of how and in what order all the Javascript files that converse.js
 depends on need to be loaded.
@@ -402,18 +402,18 @@ Add tests for your bugfix or feature
 ------------------------------------
 
 Add a test for any bug fixed or feature added. We use Jasmine
-for testing. 
+for testing.
 
 Take a look at ``tests.html`` and ``spec/MainSpec.js`` to see how
 the tests are implemented.
 
-If you are unsure how to write tests, please 
+If you are unsure how to write tests, please
 `contact me <http://opkode.com/contact>`_ and I'll be happy to help.
 
 Check that the tests pass
 -------------------------
 
-Check that the Jasmine tests complete sucessfully. Open 
+Check that the Jasmine tests complete sucessfully. Open
 `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
 in your browser, and the tests will run automatically.
 
@@ -470,7 +470,7 @@ allow_contact_requests
 
 Default = ``true``
 
-Allow users to add one another as contacts. If this is set to false, the 
+Allow users to add one another as contacts. If this is set to false, the
 **Add a contact** widget, **Contact Requests** and **Pending Contacts** roster
 sections will all not appear. Additionally, all incoming contact requests will be
 ignored.
@@ -501,7 +501,7 @@ multi-user chat, then a list of rooms on that server will be fetched.
 Not recommended for servers with lots of chat rooms.
 
 For each room on the server a query is made to fetch further details (e.g.
-features, number of occupants etc.), so on servers with many rooms this 
+features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.
 
 auto_subscribe
@@ -558,7 +558,7 @@ already authenticated (usually on the backend before page load).
 This is useful when you don't want to render the login form on the chat control
 box with each page load.
 
-For prebinding to work, your backend server must authenticate for you, and 
+For prebinding to work, your backend server must authenticate for you, and
 then return a JID (jabber ID), SID (session ID) and RID (Request ID).
 
 If you set ``prebind`` to ``true``, you have to make sure to also pass in these
@@ -589,18 +589,64 @@ Default = ``false``
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+xhr_custom_status
+-----------------
+
+Default = ``false``
+
+Note::
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+
+This option will let converse.js make an AJAX POST with your changed custom chat status to a
+remote server.
+
+xhr_custom_status_url
+---------------------
+
+Note::
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+
+Default = Empty string
+
+Used only in conjunction with ``xhr_custom_status``.
+
+This is the URL to which the AJAX POST request to set the user's custom status
+message will be made.
+
+The message itself is sent in the request under the key ``msg``.
+
 xhr_user_search
 ---------------
 
 Default = ``false``
 
-There are two ways to add users. 
+Note::
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+
+There are two ways to add users.
 
 * The user inputs a valid JID (Jabber ID), and the user is added as a pending contact.
-* The user inputs some text (for example part of a firstname or lastname), an XHR will be made to a backend, and a list of matches are returned. The user can then choose one of the matches to add as a contact.
+* The user inputs some text (for example part of a firstname or lastname), an XHR (Ajax Request) will be made to a remote server, and a list of matches are returned. The user can then choose one of the matches to add as a contact.
 
-This setting enables the second mechanism, otherwise by default the first will
-be used.
+This setting enables the second mechanism, otherwise by default the first will be used.
+
+*What is expected from the remote server?*
+
+A default JSON encoded list of objects must be returned. Each object
+corresponds to a matched user and needs the keys ``id`` and ``fullname``.
+
+xhr_user_search_url
+-------------------
+
+Note::
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+
+Default = Empty string
+
+Used only in conjunction with ``xhr_user_search``.
+
+This is the URL to which an AJAX GET request will be made to fetch user data from your remote server.
+The query string will be included in the request with ``q`` as its key.
 
 ============
 Minification
@@ -614,7 +660,7 @@ all development dependencies (long story short, you can run ``npm install``
 and then ``grunt fetch``).
 
 We  use `require.js`_ to keep track of *Converse.js* and its dependencies and to
-to bundle them together in a single minified file fit for deployment to a 
+to bundle them together in a single minified file fit for deployment to a
 production site.
 
 To minify the Javascript and CSS, run the following command:
@@ -635,7 +681,7 @@ CSS is minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.
 Translations
 ============
 
-.. Note :: 
+.. Note ::
    Translations take up a lot of space and will bloat your minified file.
    At the time of writing, all the translations add about 50KB of extra data to
    the minified javascript file. Therefore, make sure to only
@@ -686,9 +732,9 @@ that we're using.
     "domain: converse\n"
     "lang: de\n"
     "plural_forms: nplurals=2; plural=(n != 1);\n"
-    
 
-Unfortunately `Jed <http://slexaxton.github.io/Jed>`_ cannot use the PO files directly. We have to generate from it 
+
+Unfortunately `Jed <http://slexaxton.github.io/Jed>`_ cannot use the PO files directly. We have to generate from it
 a file in JSON format and then put that in a .js file for the specific
 language.
 
@@ -698,7 +744,7 @@ following command to install it (npm being the node.js package manager):
 ::
 
     npm install po2json
-    
+
 You can then convert the translations into JSON format:
 
 ::
@@ -722,13 +768,13 @@ create or update the file ./locale/LC_MESSAGES/de.js with the following code:
                 }
             })
         }
-    }(this, function (i18n) { 
-        return i18n; 
+    }(this, function (i18n) {
+        return i18n;
     }));
 
 making sure to also paste the JSON data as value to the "locale_data" key.
 
-.. Note :: 
+.. Note ::
     If you are adding translations for a new language that is not already supported,
     you'll have to make one more edit in ./locale/locales.js to make sure the
     language is loaded by require.js.

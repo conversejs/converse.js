@@ -2644,12 +2644,13 @@
                     if (this.isSelf(item.jid)) { return; }
                     var model = this.get(item.jid);
                     if (!model) {
-                        if ((item.subscription === 'none') && (item.ask === null)) {
+                        var is_last = (index === (items.length-1)) ? true : false;
+                        if ((item.subscription === 'none') && (item.ask === null) && !is_last) {
                             // We're not interested in zombies
+                            // (Hack: except if it's the last item, then we still
+                            // add it so that the roster will be shown).
                             return;
                         }
-                        is_last = false;
-                        if (index === (items.length-1)) { is_last = true; }
                         this.create({
                             jid: item.jid,
                             subscription: item.subscription,

@@ -46,11 +46,13 @@
                 // This spec will only pass if the controlbox is not currently
                 // open yet.
                 expect($("div#controlbox").is(':visible')).toBe(false);
-                spyOn(this, 'toggleControlBox').andCallThrough();
-                spyOn(this, 'showControlBox').andCallThrough();
+                spyOn(this.controlboxtoggle, 'onClick').andCallThrough();
+                spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
+                // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
+                this.controlboxtoggle.delegateEvents();
                 $('.toggle-online-users').click();
-                expect(this.toggleControlBox).toHaveBeenCalled();
-                expect(this.showControlBox).toHaveBeenCalled();
+                expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
+                expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
                 expect($("div#controlbox").is(':visible')).toBe(true);
             }, converse);
             it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
@@ -345,7 +347,7 @@
                 it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                     var i, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    spyOn(this, 'showControlBox').andCallThrough();
+                    spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
                     for (i=0; i<req_names.length; i++) {
                         this.roster.create({
                             jid: req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
@@ -360,7 +362,7 @@
                         expect(t).toEqual(req_names.slice(0,i+1).sort().join(''));
                         // When a requesting contact is added, the controlbox must
                         // be opened.
-                        expect(this.showControlBox).toHaveBeenCalled();
+                        expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
                     }
                 }, converse));
 

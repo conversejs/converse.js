@@ -57,14 +57,7 @@ Finally, Converse.js requires a special snippet of HTML markup to be included in
 
 ::
 
-    <div id="chatpanel">
-        <div id="collective-xmpp-chat-data"></div>
-        <div id="toggle-controlbox">
-            <a href="#" class="chat toggle-online-users">
-                <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
-            </a>
-        </div>
-    </div>
+    <div id="chatpanel"></div>
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
 Converse.js repository serves as a nice usable example of this.

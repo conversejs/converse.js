@@ -57,14 +57,7 @@ Finally, Converse.js requires a special snippet of HTML markup to be included in
 
 ::
 
-    <div id="chatpanel">
-        <div id="collective-xmpp-chat-data"></div>
-        <div id="toggle-controlbox">
-            <a href="#" class="chat toggle-online-users">
-                <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
-            </a>
-        </div>
-    </div>
+    <div id="conversejs"></div>
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
 Converse.js repository serves as a nice usable example of this.
@@ -222,7 +215,7 @@ but this will require custom code on your server.
 
 Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
 
-.. Note::
+.. Note ::
    If you want to enable single session support, make sure to pass **prebind: true**
    when you call **converse.initialize** (see ./index.html).
    Additionally you need to pass in valid **jid**, **sid**, **rid** and
@@ -594,7 +587,7 @@ xhr_custom_status
 
 Default = ``false``
 
-Note::
+.. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 This option will let converse.js make an AJAX POST with your changed custom chat status to a
@@ -603,7 +596,7 @@ remote server.
 xhr_custom_status_url
 ---------------------
 
-Note::
+.. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 Default = Empty string
@@ -620,7 +613,7 @@ xhr_user_search
 
 Default = ``false``
 
-Note::
+.. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 There are two ways to add users.
@@ -638,7 +631,7 @@ corresponds to a matched user and needs the keys ``id`` and ``fullname``.
 xhr_user_search_url
 -------------------
 
-Note::
+.. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 Default = Empty string

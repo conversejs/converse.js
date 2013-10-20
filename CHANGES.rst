@@ -4,10 +4,15 @@ Changelog
 0.7.0 (Unreleased)
 ------------------
 
+.. Note ::
+    This release introduces a backward incompatible change. The boilerplate
+    HTML needed in your webpage for converse.js to work has been reduced to a
+    single div: <div id="conversejs"></div>
+
 * Add a toolbar for single user chat [jcbrand]
 * Add support for OTR (off-the-record) encryption [jcbrand]
 * Add support for smileys [jcbrand]
-* Simplified initial boilerplate markup [jcbrand]
+* Simplified boilerplate markup [jcbrand]
 * New configuration settings, ``xhr_custom_status_url`` and ``xhr_user_search_url`` [jcbrand]
 
 0.6.6 (2013-10-16)

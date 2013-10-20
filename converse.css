@@ -17,12 +17,12 @@
     user-select: none;
 }
 
-#chatpanel, #chatpanel input {
+#conversejs, #conversejs input {
   color: rgb(79, 79, 79);
 }
 
 
-#chatpanel .emoticon {
+#conversejs .emoticon {
     font-size: 14px;
 }
 
@@ -54,7 +54,7 @@ span.spinner.hor_centered {
     position: absolute;
 }
 
-#chatpanel {
+#conversejs {
     z-index: 99; /*--Keeps the panel on top of all other elements--*/
     position: fixed;
     bottom: 0; right: 0;
@@ -478,7 +478,7 @@ a.close-chatbox-button:active {
     margin-top: 0.5em;
 }
 
-#chatpanel dd.available-chatroom {
+#conversejs dd.available-chatroom {
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -486,7 +486,7 @@ a.close-chatbox-button:active {
     width: 175px;
 }
 
-#chatpanel dd.available-chatroom a.open-room {
+#conversejs dd.available-chatroom a.open-room {
     width: 148px;
 }
 
@@ -613,7 +613,7 @@ dd.available-chatroom:hover a.room-info {
     background-color: #DCEAC5;
 }
 
-#chatpanel div.controlbox-panes {
+#conversejs div.controlbox-panes {
     background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%); /* FF3.6+ */
     background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* IE10+ */
     background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* Opera 11.10+ */

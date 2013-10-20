@@ -110,7 +110,7 @@
         // Translation machinery
         // ---------------------
         var __ = $.proxy(function (str) {
-            // Translation factory 
+            // Translation factory
             if (this.i18n === undefined) {
                 this.i18n = locales.en;
             }
@@ -332,35 +332,6 @@
             this.updateMsgCounter();
         };
 
-        this.showControlBox = function () {
-            var controlbox = this.chatboxes.get('controlbox');
-            if (!controlbox) {
-                this.chatboxes.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox',
-                    visible: true
-                });
-                if (this.connection) {
-                    this.chatboxes.get('controlbox').save();
-                }
-            } else {
-                controlbox.trigger('show');
-            }
-        };
-
-        this.toggleControlBox = function () {
-            if ($("div#controlbox").is(':visible')) {
-                var controlbox = this.chatboxes.get('controlbox');
-                if (this.connection) {
-                    controlbox.destroy();
-                } else {
-                    controlbox.trigger('hide');
-                }
-            } else {
-                this.showControlBox();
-            }
-        };
-
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
             var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
@@ -455,7 +426,7 @@
                     this.set({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
-                        'otr_status': this.get('otr_status') || UNENCRYPTED 
+                        'otr_status': this.get('otr_status') || UNENCRYPTED
                     });
                 }
             },
@@ -479,14 +450,14 @@
                             'instance_tag': instance_tag
                         };
                     }
-                } 
+                }
                 // We need to generate a new key and instance tag
                 result = alert(__('Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.'));
                 instance_tag = otr.OTR.makeInstanceTag();
                 key = new otr.DSA();
                 // Encrypt the key and set in sessionStorage. Also store
                 // instance tag
-                window.sessionStorage[hex_sha1(this.id+'priv_key')] = 
+                window.sessionStorage[hex_sha1(this.id+'priv_key')] =
                     cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString();
                 window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
 
@@ -1107,10 +1078,10 @@
                             this.$el.find('div.chat-event').remove();
                         }
                     }
-                } 
+                }
                 if (_.has(item.changed, 'status')) {
                     this.showStatusMessage(item.get('status'));
-                } 
+                }
                 if (_.has(item.changed, 'image')) {
                     this.renderAvatar();
                 }
@@ -1183,7 +1154,7 @@
                     data.allow_otr = converse.allow_otr && !this.is_chatroom;
                     data.show_emoticons = converse.show_emoticons;
                     data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
-                    data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status]; 
+                    data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status];
                     this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
                 }
                 return this;
@@ -2348,7 +2319,7 @@
         });
 
         this.ChatBoxesView = Backbone.View.extend({
-            el: '#chatpanel',
+            el: '#conversejs',
 
             initialize: function () {
                 // boxesviewinit
@@ -2503,7 +2474,7 @@
                 } else if (ask === 'request') {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
-                    converse.showControlBox();
+                    converse.controlboxtoggle.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(this.template(
@@ -3204,7 +3175,8 @@
                 'submit form#converse-login': 'authenticate'
             },
             tab_template: _.template(
-                '<li><a class="current" href="#login">'+__('Sign in')+'</a></li>'),
+                '<li><a class="current" href="#login">'+__('Sign in')+'</a></li>'
+            ),
             template: _.template(
                 '<form id="converse-login">' +
                 '<label>'+__('XMPP/Jabber Username:')+'</label>' +
@@ -3212,11 +3184,12 @@
                 '<label>'+__('Password:')+'</label>' +
                 '<input type="password" name="password">' +
                 '<input class="login-submit" type="submit" value="'+__('Log In')+'">' +
-                '</form">'),
-
+                '</form">'
+            ),
             bosh_url_input: _.template(
                 '<label>'+__('BOSH Service URL:')+'</label>' +
-                '<input type="text" id="bosh_service_url">'),
+                '<input type="text" id="bosh_service_url">'
+            ),
 
             connect: function ($form, jid, password) {
                 if ($form) {
@@ -3283,18 +3256,69 @@
             }
         });
 
+        this.ControlBoxToggle = Backbone.View.extend({
+            tagName: 'a',
+            className: 'toggle-online-users',
+            id: 'toggle-controlbox',
+            events: {
+                'click': 'onClick'
+            },
+            attributes: {
+                'href': "#"
+            },
+
+            template: _.template(
+                '<strong class="conn-feedback">Toggle chat</strong>'+
+                '<strong style="display: none" id="online-count">(0)</strong>'
+            ),
+
+            initialize: function () {
+                this.render();
+            },
+
+            render: function () {
+                $('#conversejs').append(this.$el.html(this.template()));
+                return this;
+            },
+
+            showControlBox: function () {
+                var controlbox = converse.chatboxes.get('controlbox');
+                if (!controlbox) {
+                    converse.chatboxes.add({
+                        id: 'controlbox',
+                        box_id: 'controlbox',
+                        visible: true
+                    });
+                    if (converse.connection) {
+                        converse.chatboxes.get('controlbox').save();
+                    }
+                } else {
+                    controlbox.trigger('show');
+                }
+            },
+
+            onClick: function (e) {
+                e.preventDefault();
+                if ($("div#controlbox").is(':visible')) {
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    if (converse.connection) {
+                        controlbox.destroy();
+                    } else {
+                        controlbox.trigger('hide');
+                    }
+                } else {
+                    this.showControlBox();
+                }
+            }
+        });
+
         // Initialization
         // --------------
-
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $('.toggle-online-users').bind(
-            'click',
-            $.proxy(function (e) {
-                e.preventDefault(); this.toggleControlBox();
-            }, this)
-        );
+        this.controlboxtoggle = new this.ControlBoxToggle();
+
         if ((this.prebind) && (!this.connection)) {
             if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
                 this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
@@ -3305,7 +3329,7 @@
         } else if (this.connection) {
             this.onConnected();
         }
-        if (this.show_controlbox_by_default) { this.showControlBox(); }
+        if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
     };
     return {
         'initialize': function (settings, callback) {

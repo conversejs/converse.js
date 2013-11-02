@@ -7,7 +7,7 @@
         }
     );
 } (this, function (mock, utils) {
-    var chatrooms_spec_callback = function(mock, utils) {
+    return describe("ChatRooms", $.proxy(function (mock, utils) {
         describe("A Chat Room", $.proxy(function () {
             beforeEach($.proxy(function () {
                 if (!$("div#controlbox").is(':visible')) {
@@ -262,6 +262,5 @@
                 expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");
             }, converse));
         }, converse));
-    };
-    return describe("ChatRooms", chatrooms_spec_callback.bind(converse, mock, utils));
+    }, converse, mock, utils));
 }));

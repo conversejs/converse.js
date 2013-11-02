@@ -7,7 +7,7 @@
         }
     );
 } (this, function (mock, utils) {
-    var spec_callback = function(mock, utils) {
+    return describe("Converse.js", $.proxy(function (mock, utils) {
         describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
@@ -705,6 +705,5 @@
                 }, converse));
             }, converse));
         }, converse));
-    };
-    return describe("Converse.js", spec_callback.bind(converse, mock, utils));
+    }, converse, mock, utils));
 }));

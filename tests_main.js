@@ -102,7 +102,8 @@ require([
             require([
                 "jasmine-console-reporter",
                 "jasmine-junit-reporter",
-                "spec/MainSpec",
+                "spec/ControlBoxSpec",
+                "spec/ChatBoxSpec",
                 "spec/ChatRoomSpec"
             ], function () {
                 // Jasmine stuff
@@ -119,7 +120,7 @@ require([
                     jasmineEnv.specFilter = function(spec) {
                         return htmlReporter.specFilter(spec);
                     };
-                    jasmineEnv.updateInterval = 20;
+                    jasmineEnv.updateInterval = 100;
                 }
                 jasmineEnv.execute();
             });

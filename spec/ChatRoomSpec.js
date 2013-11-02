@@ -9,10 +9,11 @@
 } (this, function (mock, utils) {
     return describe("ChatRooms", $.proxy(function (mock, utils) {
         describe("A Chat Room", $.proxy(function () {
+
             beforeEach($.proxy(function () {
-                if (!$("div#controlbox").is(':visible')) {
-                    $('.toggle-online-users').click();
-                }
+                utils.closeAllChatBoxes();
+                utils.openControlBox();
+                utils.openRoomsPanel();
                 var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');
                 var $nick = roomspanel.$el.find('input.new-chatroom-nick');

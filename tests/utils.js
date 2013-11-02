@@ -1,9 +1,12 @@
 (function (root, factory) {
-    define("utils", ['jquery'],
-        function($) {
-            return factory($);
+    define("utils", [
+        'jquery',
+        'mock'
+    ],
+        function($, mock) {
+            return factory($, mock);
         });
-}(this, function ($) {
+}(this, function ($, mock) {
     var utils = {};
     
     utils.closeAllChatBoxes = function () {
@@ -45,14 +48,22 @@
         $tabs.find('li').first().find('a').click();
     };
 
-    utils.createContactsRoster = function () {
-        for (i=0; i<cur_names.length; i++) {
-            this.roster.create({
-                jid: cur_names[i].replace(' ','.').toLowerCase() + '@localhost',
+    utils.openRoomsPanel = function () {
+        var cbview = converse.chatboxesview.views.controlbox;
+        var $tabs = cbview.$el.find('#controlbox-tabs');
+        $tabs.find('li').last().find('a').click();
+    };
+
+    utils.createCurrentContacts = function () {
+        // Create current (as opposed to requesting or pending) contacts
+        // for the user's roster.
+        for (i=0; i<mock.cur_names.length; i++) {
+            converse.roster.create({
+                jid: mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost',
                 subscription: 'both',
                 ask: null,
-                fullname: cur_names[i],
-                is_last: i===(cur_names.length-1)
+                fullname: mock.cur_names[i],
+                is_last: i===(mock.cur_names.length-1)
             });
         }
         return this;

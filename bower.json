@@ -2,7 +2,8 @@
   "name": "converse",
   "version": "0.6.6",
   "devDependencies": {
-    "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x"
+    "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
+    "otr": "0.2.7"
   },
   "dependencies": {
     "requirejs": "2.1.8",
@@ -17,7 +18,7 @@
     "strophe.vcard": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/vcard/strophe.vcard.js",
     "strophe.disco": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/disco/strophe.disco.js",
     "strophe.muc": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/muc/strophe.muc.js",
-    "otr": "https://github.com/arlolra/otr.git#e6cc5c247569df1118de8dd86ee57c2d1b3ce91e",
+    "otr": "0.2.7",
     "crypto-js": "~3.1.2",
     "almond": "~0.2.6"
   },

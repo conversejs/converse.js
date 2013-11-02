@@ -1,48 +1,19 @@
 (function (root, factory) {
     define([
-        "mock"
-        ], function (mock_connection) {
-            return factory(mock_connection);
+        "mock",
+        "utils"
+        ], function (mock, utils) {
+            return factory(mock, utils);
         }
     );
-} (this, function (mock_connection) {
-    return describe("Converse.js", function() {
-        // Names from http://www.fakenamegenerator.com/
-        var req_names = [
-            'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
-        ];
-        var pend_names = [
-            'Suleyman van Beusichem', 'Nanja van Yperen', 'Nicole Diederich'
-        ];
-        var cur_names = [
-            'Max Frankfurter', 'Candice van der Knijff', 'Irini Vlastuin', 'Rinse Sommer', 'Annegreet Gomez',
-            'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
-            'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers',
-            'Staal Burger', 'Brenner Brand', 'Vleis Visagie'
-        ];
-        var num_contacts = req_names.length + pend_names.length + cur_names.length;
-        var open_controlbox;
-
-        closeAllChatBoxes = function () {
-            var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
-            for (i=num_chatboxes-1; i>-1; i--) {
-                chatbox = converse.chatboxes.models[i];
-                converse.chatboxesview.views[chatbox.get('id')].closeChat();
-            }
-        };
-
-        openControlBox = function () {
-            if (!$("div#controlbox").is(':visible')) {
-                $('.toggle-online-users').click();
-            }
-        };
-
+} (this, function (mock, utils) {
+    var spec_callback = function(mock, utils) {
         describe("The Control Box", $.proxy(function () {
             it("is not shown by default", $.proxy(function () {
                 expect(this.rosterview.$el.is(':visible')).toEqual(false);
             }, converse));
 
-            open_controlbox = $.proxy(function () {
+            var open_controlbox = $.proxy(function () {
                 // This spec will only pass if the controlbox is not currently
                 // open yet.
                 expect($("div#controlbox").is(':visible')).toBe(false);
@@ -129,10 +100,10 @@
                 it("can be added to the roster", $.proxy(function () {
                     spyOn(this.rosterview, 'render').andCallThrough();
                     this.roster.create({
-                        jid: pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
-                        fullname: pend_names[0],
+                        fullname: mock.pend_names[0],
                         is_last: true 
                     });
                     expect(this.rosterview.$el.is(':visible')).toEqual(true);
@@ -169,19 +140,19 @@
                 it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                     var i, t, is_last;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    for (i=0; i<pend_names.length; i++) {
-                        is_last = i===(pend_names.length-1);
+                    for (i=0; i<mock.pend_names.length; i++) {
+                        is_last = i===(mock.pend_names.length-1);
                         this.roster.create({
-                            jid: pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'none',
                             ask: 'subscribe',
-                            fullname: pend_names[i],
+                            fullname: mock.pend_names[i],
                             is_last: is_last
                         });
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
-                        expect(t).toEqual(pend_names.slice(0,i+1).sort().join(''));
+                        expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -193,7 +164,7 @@
 
             describe("Existing Contacts", $.proxy(function () {
                 beforeEach($.proxy(function () {
-                    openControlBox();
+                    utils.openControlBox();
                 }, converse));
 
                 it("do not have a heading if there aren't any", $.proxy(function () {
@@ -203,18 +174,18 @@
                 it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                     var i, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
-                    for (i=0; i<cur_names.length; i++) {
+                    for (i=0; i<mock.cur_names.length; i++) {
                         this.roster.create({
-                            jid: cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'both',
                             ask: null,
-                            fullname: cur_names[i],
-                            is_last: i===(cur_names.length-1)
+                            fullname: mock.cur_names[i],
+                            is_last: i===(mock.cur_names.length-1)
                         });
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
+                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -226,7 +197,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=0; i<3; i++) {
-                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -236,7 +207,7 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(0,i+1).sort().join(''));
+                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -244,7 +215,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=3; i<6; i++) {
-                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -253,7 +224,7 @@
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(3,i+1).sort().join(''));
+                        expect(t).toEqual(mock.cur_names.slice(3,i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -261,7 +232,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=6; i<9; i++) {
-                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -271,7 +242,7 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(6,i+1).sort().join(''));
+                        expect(t).toEqual(mock.cur_names.slice(6,i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -279,7 +250,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=9; i<12; i++) {
-                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -289,7 +260,7 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(9,i+1).sort().join(''));
+                        expect(t).toEqual(mock.cur_names.slice(9,i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -297,7 +268,7 @@
                     var item, view, jid, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     for (i=12; i<15; i++) {
-                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         spyOn(view, 'render').andCallThrough();
                         item = view.model;
@@ -307,7 +278,7 @@
 
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
-                        expect(t).toEqual(cur_names.slice(12, i+1).sort().join(''));
+                        expect(t).toEqual(mock.cur_names.slice(12, i+1).sort().join(''));
                     }
                 }, converse));
 
@@ -329,7 +300,7 @@
                     for (i=12; i<15; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('unavailable');
                     }
-                    for (i=15; i<cur_names.length; i++) {
+                    for (i=15; i<mock.cur_names.length; i++) {
                         expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
                     }
                 }, converse));
@@ -348,18 +319,18 @@
                     var i, t;
                     spyOn(this.rosterview, 'render').andCallThrough();
                     spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
-                    for (i=0; i<req_names.length; i++) {
+                    for (i=0; i<mock.req_names.length; i++) {
                         this.roster.create({
-                            jid: req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'none',
                             ask: 'request',
-                            fullname: req_names[i],
-                            is_last: i===(req_names.length-1)
+                            fullname: mock.req_names[i],
+                            is_last: i===(mock.req_names.length-1)
                         });
                         expect(this.rosterview.render).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
-                        expect(t).toEqual(req_names.slice(0,i+1).sort().join(''));
+                        expect(t).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
                         // When a requesting contact is added, the controlbox must
                         // be opened.
                         expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
@@ -374,7 +345,7 @@
                     // TODO: Testing can be more thorough here, the user is
                     // actually not accepted/authorized because of
                     // mock_connection.
-                    var jid = req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var jid = mock.req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.rosterview.rosteritemviews[jid];
                     spyOn(this.connection.roster, 'authorize');
                     spyOn(view, 'acceptRequest').andCallThrough();
@@ -386,7 +357,7 @@
                 }, converse));
 
                 it("can have their requests denied by the user", $.proxy(function () {
-                    var jid = req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var jid = mock.req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.rosterview.rosteritemviews[jid];
                     spyOn(this.connection.roster, 'unauthorize');
                     spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
@@ -398,7 +369,7 @@
                     expect(this.rosterview.removeRosterItemView).toHaveBeenCalled();
                     expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                     // There should now be one less contact
-                    expect(this.roster.length).toEqual(num_contacts-1);
+                    expect(this.roster.length).toEqual(mock.num_contacts-1);
                 }, converse));
             }, converse));
 
@@ -435,7 +406,7 @@
                     // In the next test suite, we need some online contacts, so
                     // we make some online now
                     for (i=0; i<5; i++) {
-                        jid = cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         view = this.rosterview.rosteritemviews[jid];
                         view.model.set('chat_status', 'online');
                     }
@@ -457,6 +428,7 @@
         }, converse));
 
         describe("A Chatbox", $.proxy(function () {
+
             it("is created when you click on a roster item", $.proxy(function () {
                 var i, $el, click, jid, view;
                 // showControlBox was called earlier, so the controlbox is
@@ -474,6 +446,9 @@
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
                 }
+            }, converse));
+
+            it("has a toolbar", $.proxy(function () {
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
@@ -519,13 +494,13 @@
                 expect(newchatboxes.length).toEqual(0);
 
                 // Lets open the controlbox again, purely for visual feedback
-                open_controlbox();
+                utils.openControlBox();
             }, converse));
 
             describe("A Chat Message", $.proxy(function () {
                 it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
                     var message = 'This is a received message';
-                    var sender_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         msg = $msg({
                             from: sender_jid,
                             to: this.connection.jid,
@@ -556,7 +531,7 @@
                         expect(msg_obj.get('message')).toEqual(message);
                         // XXX: This is stupid, fullname is actually only the
                         // users first name
-                        expect(msg_obj.get('fullname')).toEqual(cur_names[0].split(' ')[0]);
+                        expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0].split(' ')[0]);
                         expect(msg_obj.get('sender')).toEqual('them');
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the
@@ -570,7 +545,7 @@
                 }, converse));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
-                    var contact_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
@@ -585,7 +560,7 @@
 
             describe("Special Messages", $.proxy(function () {
                 it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
-                    var contact_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is another sent from this chatbox';
                     // Lets make sure there is at least one message already
@@ -619,7 +594,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('blur');
                 var message = 'This message will increment the message counter';
-                var sender_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,
@@ -648,7 +623,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('focus');
                 var message = 'This message will not increment the message counter';
-                var sender_jid = cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,
@@ -664,8 +639,8 @@
 
         describe("The Controlbox Tabs", $.proxy(function () {
             beforeEach($.proxy(function () {
-                closeAllChatBoxes();
-                openControlBox();
+                utils.closeAllChatBoxes();
+                utils.openControlBox();
             }, converse));
 
             it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
@@ -680,8 +655,8 @@
 
             describe("The Chatrooms Panel", $.proxy(function () {
                 beforeEach($.proxy(function () {
-                    closeAllChatBoxes();
-                    openControlBox();
+                    utils.closeAllChatBoxes();
+                    utils.openControlBox();
                 }, converse));
 
                 it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
@@ -730,5 +705,6 @@
                 }, converse));
             }, converse));
         }, converse));
-    });
+    };
+    return describe("Converse.js", spec_callback.bind(converse, mock, utils));
 }));

@@ -72,7 +72,6 @@
         this.show_only_online_users = false;
         this.show_emoticons = true;
         this.show_toolbar = true;
-        this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
         this.xhr_custom_status = false;
         this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
@@ -100,7 +99,6 @@
             'show_only_online_users',
             'show_toolbar',
             'sid',
-            'testing',
             'xhr_custom_status',
             'xhr_custom_status_url',
             'xhr_user_search',
@@ -398,10 +396,22 @@
                     this.windowState = e.type;
                 },this));
                 this.giveFeedback(__('Online Contacts'));
-                if (this.testing) {
-                    this.callback(this);
-                } else  {
-                    this.callback();
+
+                if (this.callback) {
+                    if (this.connection.service === 'jasmine tests') {
+                        // XXX: Call back with the internal converse object. This
+                        // object should never be exposed to production systems.
+                        // 'jasmine tests' is an invalid http bind service value,
+                        // so we're sure that this is just for tests.
+                        //
+                        // TODO: We might need to consider websockets, which
+                        // probably won't use the 'service' attr. Current
+                        // strophe.js version used by converse.js doesn't support
+                        // websockets.
+                        this.callback(this);
+                    } else  {
+                        this.callback();
+                    }
                 }
             }, this));
         };

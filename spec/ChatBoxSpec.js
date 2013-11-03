@@ -8,22 +8,22 @@
     );
 } (this, function (mock, utils) {
     return describe("Chatboxes", $.proxy(function(mock, utils) {
-        window.localStorage.clear();
-
         describe("A Chatbox", $.proxy(function () {
-            beforeEach($.proxy(function () {
-                //utils.initRoster();
-                //utils.createCurrentContacts();
-                //utils.closeAllChatBoxes();
+            beforeEach(function () {
+                utils.closeAllChatBoxes();
+                utils.removeControlBox();
+                converse.roster.localStorage._clear();
+                utils.initConverse();
+                utils.createCurrentContacts();
                 utils.openControlBox();
                 utils.openContactsPanel();
-            }, converse));
+            });
 
             it("is created when you click on a roster item", $.proxy(function () {
                 var i, $el, click, jid, view;
-                // showControlBox was called earlier, so the controlbox is
+                // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
-                expect(this.chatboxes.length).toEqual(2);
+                expect(this.chatboxes.length).toEqual(1);
 
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
@@ -34,11 +34,14 @@
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     $el.click();
                     expect(view.openChat).toHaveBeenCalled();
-                    expect(this.chatboxes.length).toEqual(i+3);
+                    expect(this.chatboxes.length).toEqual(i+2);
                 }
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
+                utils.closeControlBox();
+                // First, we open 6 more chatboxes (controlbox is already open)
+                utils.openChatBoxes(6);
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
                 var newchatboxes = new this.ChatBoxes();
@@ -46,7 +49,7 @@
                 // The chatboxes will then be fetched from localStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
-                expect(newchatboxes.length).toEqual(7);
+                expect(newchatboxes.length).toEqual(6);
                 // Check that the chatboxes items retrieved from localStorage
                 // have the same attributes values as the original ones.
                 attrs = ['id', 'box_id', 'visible'];
@@ -73,6 +76,12 @@
 
             it("will be removed from localStorage when closed", $.proxy(function () {
                 this.chatboxes.localStorage._clear();
+                utils.closeControlBox();
+                expect(converse.chatboxes.length).toEqual(0);
+                utils.openChatBoxes(6);
+                expect(converse.chatboxes.length).toEqual(6);
+                utils.closeAllChatBoxes();
+                expect(converse.chatboxes.length).toEqual(0);
                 var newchatboxes = new this.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 // onConnected will fetch chatboxes in localStorage, but
@@ -131,6 +140,7 @@
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();

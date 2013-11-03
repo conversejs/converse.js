@@ -30,6 +30,12 @@
         return this;
     };
 
+    utils.initConverse = function () {
+        converse.chatboxes = new converse.ChatBoxes();
+        converse.chatboxesview = new converse.ChatBoxesView({model: converse.chatboxes});
+        converse.onConnected();
+    };
+
     utils.initRoster = function () {
         converse.roster.localStorage._clear();
         converse.initRoster();
@@ -42,6 +48,17 @@
         return this;
     };
 
+    utils.closeControlBox = function () {
+        if ($("#controlbox").is(':visible')) {
+            $('.toggle-online-users').click();
+        }
+        return this;
+    };
+
+    utils.removeControlBox = function () {
+        $('#controlbox').remove();
+    };
+
     utils.openContactsPanel = function () {
         var cbview = converse.chatboxesview.views.controlbox;
         var $tabs = cbview.$el.find('#controlbox-tabs');
@@ -52,6 +69,18 @@
         var cbview = converse.chatboxesview.views.controlbox;
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').last().find('a').click();
+    };
+
+    utils.openChatBoxes = function (amount) {
+        var i = 0, jid;
+        for (i; i<amount; i++) {
+            jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+            converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+        }
+    };
+
+    utils.openChatBoxFor = function (jid) {
+        converse.rosterview.rosteritemviews[jid].openChat(mock.event);
     };
 
     utils.createCurrentContacts = function () {

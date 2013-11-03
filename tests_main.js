@@ -106,6 +106,9 @@ require([
                 "spec/ChatBoxSpec",
                 "spec/ChatRoomSpec"
             ], function () {
+                // Make sure this callback is only called once.
+                delete converse.callback;
+
                 // Jasmine stuff
                 var jasmineEnv = jasmine.getEnv();
                 if (/PhantomJS/.test(navigator.userAgent)) {

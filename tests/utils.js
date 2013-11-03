@@ -10,8 +10,8 @@
     var utils = {};
     
     utils.closeAllChatBoxes = function () {
-        var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
-        for (i=num_chatboxes-1; i>-1; i--) {
+        var i, chatbox;
+        for (i=converse.chatboxes.models.length-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
             converse.chatboxesview.views[chatbox.get('id')].closeChat();
         }
@@ -81,6 +81,23 @@
 
     utils.openChatBoxFor = function (jid) {
         converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+    };
+
+    utils.createNewChatRoom = function (room, nick) {
+        var controlbox_was_visible = $("#controlbox").is(':visible');
+        utils.openControlBox();
+        utils.openRoomsPanel();
+        var roomspanel = converse.chatboxesview.views.controlbox.roomspanel;
+        var $input = roomspanel.$el.find('input.new-chatroom-name');
+        var $nick = roomspanel.$el.find('input.new-chatroom-nick');
+        var $server = roomspanel.$el.find('input.new-chatroom-server');
+        $input.val('lounge');
+        $nick.val('dummy');
+        $server.val('muc.localhost');
+        roomspanel.$el.find('form').submit();
+        if (!controlbox_was_visible) {
+            utils.closeControlBox();
+        }
     };
 
     utils.createCurrentContacts = function () {

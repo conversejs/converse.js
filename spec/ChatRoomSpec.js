@@ -10,20 +10,10 @@
     return describe("ChatRooms", $.proxy(function (mock, utils) {
         describe("A Chat Room", $.proxy(function () {
 
-            beforeEach($.proxy(function () {
+            beforeEach(function () {
                 utils.closeAllChatBoxes();
-                utils.openControlBox();
-                utils.openRoomsPanel();
-                var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
-                var $input = roomspanel.$el.find('input.new-chatroom-name');
-                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
-                var $server = roomspanel.$el.find('input.new-chatroom-server');
-                $input.val('lounge');
-                $nick.val('dummy');
-                $server.val('muc.localhost');
-                roomspanel.$el.find('form').submit();
-                $('.toggle-online-users').click();
-            }, converse));
+                utils.createNewChatRoom('lounge', 'dummy');
+            });
 
             it("shows users currently present in the room", $.proxy(function () {
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'],

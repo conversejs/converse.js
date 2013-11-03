@@ -1830,7 +1830,7 @@
                 this.connect(null);
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('destroy', function (model, response, options) {
-                    this.$el.hide('fast');
+                    this.hide();
                     converse.connection.muc.leave(
                         this.model.get('jid'),
                         this.model.get('nick'),

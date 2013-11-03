@@ -111,7 +111,7 @@
                         // messages
                         this.chatboxes.messageReceived(msg);
                     }, converse));
-                    waits(500);
+                    waits(300);
                     runs($.proxy(function () {
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);
@@ -136,6 +136,76 @@
                         var sender_txt = $chat_content.find('span.chat-message-them').text();
                         expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                     }, converse));
+                }, converse));
+
+                it("will indate when it has a time difference of more than a day between it and it's predecessor", $.proxy(function () {
+                    var contact_name = mock.cur_names[1];
+                    var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    utils.clearChatBoxMessages(contact_jid);
+
+                    var one_day_ago = new Date(new Date().setDate(new Date().getDate()-1));
+                    var message = 'This is a day old message';
+                    var chatbox = this.chatboxes.get(contact_jid);
+                    var chatboxview = this.chatboxesview.views[contact_jid];
+                    var $chat_content = chatboxview.$el.find('.chat-content');
+                    var msg_obj;
+                    var msg_txt;
+                    var sender_txt;
+
+                    this.chatboxes.messageReceived(
+                        $msg({
+                            from: contact_jid,
+                            to: this.connection.jid,
+                            type: 'chat',
+                            id: one_day_ago.getTime()
+                        }).c('body').t(message).up()
+                          .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: converse.toISOString(one_day_ago) })
+                          .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                    );
+                    expect(chatbox.messages.length).toEqual(1);
+                    msg_obj = chatbox.messages.models[0];
+                    expect(msg_obj.get('message')).toEqual(message);
+                    expect(msg_obj.get('fullname')).toEqual(contact_name.split(' ')[0]);
+                    expect(msg_obj.get('sender')).toEqual('them');
+                    expect(msg_obj.get('delayed')).toEqual(true);
+                    msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                    expect(msg_txt).toEqual(message);
+                    sender_txt = $chat_content.find('span.chat-message-them').text();
+                    expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
+
+                    message = 'This is a current message';
+                    this.chatboxes.messageReceived(
+                        $msg({
+                            from: contact_jid,
+                            to: this.connection.jid,
+                            type: 'chat',
+                            id: new Date().getTime()
+                        }).c('body').t(message).up()
+                          .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                    );
+
+                    // Check that there is a <time> element, with the required
+                    // props.
+                    var $time = $chat_content.find('time');
+                    var message_date = new Date();
+                    message_date.setUTCHours(0,0,0,0);
+                    expect($time.length).toEqual(1);
+                    expect($time.attr('class')).toEqual('chat-date');
+                    expect($time.attr('datetime')).toEqual(converse.toISOString(message_date));
+                    expect($time.text()).toEqual(message_date.toString().substring(0,15));
+
+                    // Normal checks for the 2nd message
+                    expect(chatbox.messages.length).toEqual(2);
+                    msg_obj = chatbox.messages.models[1];
+                    expect(msg_obj.get('message')).toEqual(message);
+                    expect(msg_obj.get('fullname')).toEqual(contact_name.split(' ')[0]);
+                    expect(msg_obj.get('sender')).toEqual('them');
+                    expect(msg_obj.get('delayed')).toEqual(false);
+                    msg_txt = $chat_content.find('.chat-message').last().find('.chat-message-content').text();
+                    expect(msg_txt).toEqual(message);
+                    sender_txt = $chat_content.find('span.chat-message-them').last().text();
+                    expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                 }, converse));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {

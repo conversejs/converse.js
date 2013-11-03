@@ -83,6 +83,12 @@
         converse.rosterview.rosteritemviews[jid].openChat(mock.event);
     };
 
+    utils.clearChatBoxMessages = function (jid) {
+        var view = converse.chatboxesview.views[jid];
+        view.$el.find('.chat-content').empty();
+        view.model.messages.reset().localStorage._clear();
+    };
+
     utils.createNewChatRoom = function (room, nick) {
         var controlbox_was_visible = $("#controlbox").is(':visible');
         utils.openControlBox();

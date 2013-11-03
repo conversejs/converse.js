@@ -639,7 +639,7 @@
                 'click .close-chatbox-button': 'closeChat',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
-                'click .toggle-smiley ul li': 'addEmoticon',
+                'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-otr': 'toggleOTRMenu',
                 'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
@@ -678,7 +678,7 @@
                             '<li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>'+
                             '<li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>'+
                             '<li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>'+
-                            '<li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>'+
+                            '<li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>'+
                             '<li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>'+
                             '<li><a class="icon-sad" href="#" data-emoticon=":("></a></li>'+
                             '<li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>'+
@@ -990,7 +990,7 @@
                 }
             },
 
-            addEmoticon: function (ev) {
+            insertEmoticon: function (ev) {
                 ev.stopPropagation();
                 this.$el.find('.toggle-smiley ul').slideToggle(200);
                 var $textbox = this.$el.find('textarea.chat-textarea');
@@ -1719,7 +1719,7 @@
                 'click a.close-chatbox-button': 'closeChat',
                 'click a.configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
-                'click .toggle-smiley ul li': 'addEmoticon',
+                'click .toggle-smiley ul li': 'insertEmoticon',
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
             info_template: _.template('<div class="chat-info">{{message}}</div>'),

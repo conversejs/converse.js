@@ -91,6 +91,105 @@
                 expect(newchatboxes.length).toEqual(0);
             }, converse));
 
+            describe("A chat toolbar", $.proxy(function () {
+                it("can be found on each chat box", $.proxy(function () {
+                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var chatbox = this.chatboxes.get(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    expect(chatbox).toBeDefined();
+                    expect(view).toBeDefined();
+                    var $toolbar = view.$el.find('ul.chat-toolbar');
+                    expect($toolbar.length).toBe(1);
+                    expect($toolbar.children('li').length).toBe(2);
+                }, converse));
+
+                it("contains a button for inserting emoticons", $.proxy(function () {
+                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var chatbox = this.chatboxes.get(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    var $toolbar = view.$el.find('ul.chat-toolbar');
+                    var $textarea = view.$el.find('textarea.chat-textarea');
+                    expect($toolbar.children('li.toggle-smiley').length).toBe(1);
+                    // Register spies
+                    spyOn(view, 'toggleEmoticonMenu').andCallThrough();
+                    spyOn(view, 'insertEmoticon').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
+                    runs(function () {
+                        $toolbar.children('li.toggle-smiley').click();
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect(view.toggleEmoticonMenu).toHaveBeenCalled();
+                        var $menu = view.$el.find('.toggle-smiley ul');
+                        var $items = $menu.children('li');
+                        expect($menu.is(':visible')).toBeTruthy();
+                        expect($items.length).toBe(13);
+                        expect($($items[0]).children('a').data('emoticon')).toBe(':)');
+                        expect($($items[1]).children('a').data('emoticon')).toBe(';)');
+                        expect($($items[2]).children('a').data('emoticon')).toBe(':D');
+                        expect($($items[3]).children('a').data('emoticon')).toBe(':P');
+                        expect($($items[4]).children('a').data('emoticon')).toBe('8)');
+                        expect($($items[5]).children('a').data('emoticon')).toBe('>:)');
+                        expect($($items[6]).children('a').data('emoticon')).toBe(':S');
+                        expect($($items[7]).children('a').data('emoticon')).toBe(':\\');
+                        expect($($items[8]).children('a').data('emoticon')).toBe('>:(');
+                        expect($($items[9]).children('a').data('emoticon')).toBe(':(');
+                        expect($($items[10]).children('a').data('emoticon')).toBe(':O');
+                        expect($($items[11]).children('a').data('emoticon')).toBe('(^.^)b');
+                        expect($($items[12]).children('a').data('emoticon')).toBe('<3');
+
+                        $items[0].click();
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect(view.insertEmoticon).toHaveBeenCalled();
+                        expect($textarea.val()).toBe(':) ');
+                        expect(view.$el.find('.toggle-smiley ul').is(':visible')).toBeFalsy();
+                        $toolbar.children('li.toggle-smiley').click();
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect(view.toggleEmoticonMenu).toHaveBeenCalled();
+                        expect(view.$el.find('.toggle-smiley ul').is(':visible')).toBeTruthy();
+                        view.$el.find('.toggle-smiley ul').children('li').last().click();
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect(view.insertEmoticon).toHaveBeenCalled();
+                        expect(view.$el.find('.toggle-smiley ul').is(':visible')).toBeFalsy();
+                        expect($textarea.val()).toBe(':) <3 ');
+                    });
+                }, converse));
+
+                it("contains a button for starting an encrypted chat session", $.proxy(function () {
+                    // TODO: More tests can be added here...
+                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var chatbox = this.chatboxes.get(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    var $toolbar = view.$el.find('ul.chat-toolbar');
+                    expect($toolbar.children('li.toggle-otr').length).toBe(1);
+                    // Register spies
+                    spyOn(view, 'toggleOTRMenu').andCallThrough();
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
+                    runs(function () {
+                        $toolbar.children('li.toggle-otr').click();
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect(view.toggleOTRMenu).toHaveBeenCalled();
+                        var $menu = view.$el.find('.toggle-otr ul');
+                        expect($menu.is(':visible')).toBeTruthy();
+                        expect($menu.children('li').length).toBe(2);
+                    });
+
+                }, converse));
+            }, converse));
+
             describe("A Chat Message", $.proxy(function () {
                 it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
                     var message = 'This is a received message';
@@ -233,7 +332,7 @@
                 // (e.g for when this test is run on its own).
                 view.$el.find('.chat-textarea').val(message).text(message);
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.model.messages.length > 0).toBeTruthy(); 
+                expect(view.model.messages.length > 0).toBeTruthy();
                 expect(view.model.messages.localStorage.records.length > 0).toBeTruthy();
 
                 message = '/clear';

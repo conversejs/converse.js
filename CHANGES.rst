@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.6.7 (Unreleased)
+------------------
+
+* Bugfix: If fullname doesn't exist, an exception *split method doesn't exist* is raised [chenhouwu]
+
 0.6.6 (2013-10-16)
 ------------------
 

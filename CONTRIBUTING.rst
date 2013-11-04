@@ -10,6 +10,11 @@ make your changes and then submit a pull request.
 Before submitting a pull request
 ================================
 
+Update the Changelog
+--------------------
+
+Add a short description of your change in the CHANGES.rst file.
+
 Add tests for your bugfix or feature
 ------------------------------------
 

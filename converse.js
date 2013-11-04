@@ -425,7 +425,7 @@
                     fullname = this.get('fullname'),
                     stamp, time, sender;
 
-                fullname = (_.isEmpty(fullname)? '': fullname).split(' ')[0];
+                fullname = (_.isEmpty(fullname)? from: fullname).split(' ')[0];
 
                 if (!body) {
                     if (composing.length) {
@@ -652,7 +652,7 @@
                 if (_.has(item.changed, 'chat_status')) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname');
-                    fullname = _.isEmpty(fullname)? '': fullname;
+                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
                     if (this.$el.is(':visible')) {
                         if (chat_status === 'offline') {
                             this.insertStatusNotification(fullname+' '+'has gone offline');
@@ -1842,7 +1842,7 @@
             },
 
             messageReceived: function (message) {
-                var partner_jid, $message = $(message),
+                var buddy_jid, $message = $(message),
                     message_from = $message.attr('from');
                 if (message_from == converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
@@ -1858,14 +1858,14 @@
                     resource, chatbox, roster_item;
                 if (from == converse.bare_jid) {
                     // I am the sender, so this must be a forwarded message...
-                    partner_jid = to;
+                    buddy_jid = to;
                     resource = Strophe.getResourceFromJid($message.attr('to'));
                 } else {
-                    partner_jid = from;
+                    buddy_jid = from;
                     resource = Strophe.getResourceFromJid(message_from);
                 }
-                chatbox = this.get(partner_jid);
-                roster_item = converse.roster.get(partner_jid);
+                chatbox = this.get(buddy_jid);
+                roster_item = converse.roster.get(buddy_jid);
                 if (!roster_item) {
                     // The buddy was likely removed
                     return true;
@@ -1873,10 +1873,10 @@
 
                 if (!chatbox) {
                     var fullname = roster_item.get('fullname');
-                    fullname = _.isEmpty(fullname)?jid: fullname;
+                    fullname = _.isEmpty(fullname)? buddy_jid: fullname;
                     chatbox = this.create({
-                        'id': partner_jid,
-                        'jid': partner_jid,
+                        'id': buddy_jid,
+                        'jid': buddy_jid,
                         'fullname': fullname,
                         'image_type': roster_item.get('image_type'),
                         'image': roster_item.get('image'),
@@ -1884,7 +1884,7 @@
                     });
                 }
                 chatbox.messageReceived(message);
-                converse.roster.addResource(partner_jid, resource);
+                converse.roster.addResource(buddy_jid, resource);
                 return true;
             }
         });

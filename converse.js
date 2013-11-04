@@ -403,10 +403,12 @@
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
+                    var fullname = this.get('fullname');
+                    fullname = _.isEmpty(fullname)? this.get('jid'): fullname;
                     this.set({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
-                        'fullname' : this.get('fullname'),
+                        'fullname' : fullname,
                         'url': this.get('url'),
                         'image_type': this.get('image_type'),
                         'image': this.get('image')
@@ -420,8 +422,10 @@
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     composing = $message.find('composing'),
                     delayed = $message.find('delay').length > 0,
-                    fullname = (this.get('fullname')||'').split(' ')[0],
+                    fullname = this.get('fullname'),
                     stamp, time, sender;
+
+                fullname = (_.isEmpty(fullname)? '': fullname).split(' ')[0];
 
                 if (!body) {
                     if (composing.length) {
@@ -603,8 +607,10 @@
                 converse.connection.send(message);
                 converse.connection.send(forwarded);
                 // Add the new message
+                var fullname = converse.xmppstatus.get('fullname');
+                fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
                 this.model.messages.create({
-                    fullname: converse.xmppstatus.get('fullname')||converse.bare_jid,
+                    fullname: fullname,
                     sender: 'me',
                     time: converse.toISOString(new Date()),
                     message: text
@@ -646,6 +652,7 @@
                 if (_.has(item.changed, 'chat_status')) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname');
+                    fullname = _.isEmpty(fullname)? '': fullname;
                     if (this.$el.is(':visible')) {
                         if (chat_status === 'offline') {
                             this.insertStatusNotification(fullname+' '+'has gone offline');
@@ -1865,10 +1872,12 @@
                 }
 
                 if (!chatbox) {
+                    var fullname = roster_item.get('fullname');
+                    fullname = _.isEmpty(fullname)?jid: fullname;
                     chatbox = this.create({
                         'id': partner_jid,
                         'jid': partner_jid,
-                        'fullname': roster_item.get('fullname') || jid,
+                        'fullname': fullname,
                         'image_type': roster_item.get('image_type'),
                         'image': roster_item.get('image'),
                         'url': roster_item.get('url')

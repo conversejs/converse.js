@@ -2468,6 +2468,7 @@
             render: function () {
                 var item = this.model,
                     ask = item.get('ask'),
+                    requesting  = item.get('requesting'),
                     subscription = item.get('subscription');
 
                 var classes_to_remove = [
@@ -2488,7 +2489,7 @@
                 if ((ask === 'subscribe') && (subscription == 'none')) {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
-                } else if ((ask === 'subscribe') && (subscription == 'from')) {
+                } else if (requesting === true) {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.controlboxtoggle.showControlBox();
@@ -2709,8 +2710,9 @@
                                 $.proxy(function (jid, fullname, img, img_type, url) {
                                     this.add({
                                         jid: bare_jid,
-                                        subscription: 'from',
-                                        ask: 'subscribe',
+                                        subscription: 'none',
+                                        ask: null,
+                                        requesting: true,
                                         fullname: fullname,
                                         image: img,
                                         image_type: img_type,
@@ -2725,8 +2727,9 @@
                                     // well?
                                     this.add({
                                         jid: bare_jid,
-                                        subscription: 'from',
-                                        ask: 'subscribe',
+                                        subscription: 'none',
+                                        ask: null,
+                                        requesting: true,
                                         fullname: jid,
                                         is_last: true
                                     });
@@ -2891,12 +2894,13 @@
                         view = this.rosteritemviews[item.id],
                         ask = item.get('ask'),
                         subscription = item.get('subscription'),
+                        requesting  = item.get('requesting'),
                         crit = {order:'asc'};
 
                     if ((ask === 'subscribe') && (subscription == 'none')) {
                         $pending_contacts.after(view.render().el);
                         $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if ((ask === 'subscribe') && (subscription == 'from')) {
+                    } else if (requesting === true) {
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {

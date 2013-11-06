@@ -321,8 +321,9 @@
                 for (i=0; i<mock.req_names.length; i++) {
                     this.roster.create({
                         jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        subscription: 'from',
-                        ask: 'subscribe',
+                        subscription: 'none',
+                        ask: null,
+                        requesting: true,
                         fullname: mock.req_names[i],
                         is_last: i===(mock.req_names.length-1)
                     });

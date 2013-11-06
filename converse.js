@@ -2668,7 +2668,7 @@
                         } else if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
                             // only modify model attributes if they are different from the
                             // ones that were already set when the rosterItem was added
-                            model.set({'subscription': item.subscription, 'ask': item.ask});
+                            model.set({'subscription': item.subscription, 'ask': item.ask, 'requesting': null});
                             model.save();
                         }
                     }

@@ -2486,7 +2486,7 @@
 
                 this.$el.addClass(item.get('chat_status'));
 
-                if ((ask === 'subscribe') && (subscription == 'none')) {
+                if (ask === 'subscribe') {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
                 } else if (requesting === true) {
@@ -2898,6 +2898,13 @@
                         crit = {order:'asc'};
 
                     if ((ask === 'subscribe') && (subscription == 'none')) {
+                        $pending_contacts.after(view.render().el);
+                        $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
+                    } else if ((ask === 'subscribe') && (subscription == 'from')) {
+                        // TODO: We have accepted an incoming subscription
+                        // request and (automatically) made our own subscription request back.
+                        // It would be useful to update the roster here to show
+                        // things are happening... (see docs/DEVELOPER.rst)
                         $pending_contacts.after(view.render().el);
                         $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
                     } else if (requesting === true) {

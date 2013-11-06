@@ -2485,10 +2485,10 @@
 
                 this.$el.addClass(item.get('chat_status'));
 
-                if (ask === 'subscribe') {
+                if ((ask === 'subscribe') && (subscription == 'none')) {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
-                } else if (ask === 'request') {
+                } else if ((ask === 'subscribe') && (subscription == 'from')) {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
                     converse.controlboxtoggle.showControlBox();
@@ -2709,8 +2709,8 @@
                                 $.proxy(function (jid, fullname, img, img_type, url) {
                                     this.add({
                                         jid: bare_jid,
-                                        subscription: 'none',
-                                        ask: 'request',
+                                        subscription: 'from',
+                                        ask: 'subscribe',
                                         fullname: fullname,
                                         image: img,
                                         image_type: img_type,
@@ -2723,7 +2723,13 @@
                                     converse.log("Error while retrieving vcard");
                                     // XXX: Should vcard_updated be set here as
                                     // well?
-                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                                    this.add({
+                                        jid: bare_jid,
+                                        subscription: 'from',
+                                        ask: 'subscribe',
+                                        fullname: jid,
+                                        is_last: true
+                                    });
                                 }, this)
                             );
                         } else {
@@ -2887,10 +2893,10 @@
                         subscription = item.get('subscription'),
                         crit = {order:'asc'};
 
-                    if (ask === 'subscribe') {
+                    if ((ask === 'subscribe') && (subscription == 'none')) {
                         $pending_contacts.after(view.render().el);
                         $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if (ask === 'request') {
+                    } else if ((ask === 'subscribe') && (subscription == 'from')) {
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {

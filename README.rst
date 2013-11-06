@@ -89,7 +89,8 @@ Licence
 Donate
 ------
 
-Bitcoin address: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
+Bitcoin: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
+Litecoin: LLvLH6qJch7HAamLguHkwobCrxmHLhiwZw
 
 .. _Converse.js: http://conversejs.org
 .. _strophe.js: http://strophe.im/strophejs

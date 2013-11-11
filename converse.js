@@ -506,7 +506,7 @@
                             [this.get('fullname'), data])));
                         break;
                     case 'trust':
-                        if (this.otr.trust === true) {
+                        if (data === true) {
                             this.save({'otr_status': VERIFIED});
                         } else {
                             this.trigger(

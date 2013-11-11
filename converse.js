@@ -529,7 +529,7 @@
                 // query message from our buddy. Otherwise, it is us who will
                 // send the query message to them.
                 this.save({'otr_status': UNENCRYPTED});
-                session = this.getSession();
+                var session = this.getSession();
                 this.otr = new otr.OTR({
                     fragment_size: 140,
                     send_interval: 200,
@@ -1045,6 +1045,10 @@
             },
 
             endOTR: function (ev) {
+                if (typeof ev !== "undefined") {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
                 this.model.endOTR();
             },
 

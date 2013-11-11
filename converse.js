@@ -190,7 +190,7 @@
             converse.connection.vcard.get(
                 $.proxy(function (iq) {
                     // Successful callback
-                    $vcard = $(iq).find('vCard');
+                    var $vcard = $(iq).find('vCard');
                     var fullname = $vcard.find('FN').text(),
                         img = $vcard.find('BINVAL').text(),
                         img_type = $vcard.find('TYPE').text(),
@@ -198,8 +198,9 @@
                     if (jid) {
                         var rosteritem = converse.roster.get(jid);
                         if (rosteritem) {
+                            fullname = _.isEmpty(fullname)? rosteritem.get('fullname') || jid: fullname;
                             rosteritem.save({
-                                'fullname': fullname || jid,
+                                'fullname': fullname,
                                 'image_type': img_type,
                                 'image': img,
                                 'url': url,

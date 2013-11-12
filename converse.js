@@ -451,7 +451,7 @@
                 var pass = converse.connection.pass;
                 var pass_check = this.get('pass_check');
                 var result, key;
-                if (saved_key && instance_tag && typeof pass_check !== undefined) {
+                if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
                     var decrypted = cipher.decrypt(crypto.algo.AES, saved_key, pass);
                     key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
                     if (cipher.decrypt(crypto.algo.AES, pass_check, pass).toString(crypto.enc.Latin1) === 'match') {

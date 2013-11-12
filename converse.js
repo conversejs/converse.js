@@ -449,11 +449,12 @@
                 var instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
                 var cipher = crypto.lib.PasswordBasedCipher;
                 var pass = converse.connection.pass;
+                var pass_check = this.get('pass_check');
                 var result, key;
-                if (saved_key && instance_tag) {
+                if (saved_key && instance_tag && typeof pass_check !== undefined) {
                     var decrypted = cipher.decrypt(crypto.algo.AES, saved_key, pass);
                     key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
-                    if (cipher.decrypt(crypto.algo.AES, this.get('pass_check'), pass).toString(crypto.enc.Latin1) === 'match') {
+                    if (cipher.decrypt(crypto.algo.AES, pass_check, pass).toString(crypto.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
                         this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
                         return {

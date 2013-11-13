@@ -13,8 +13,8 @@
     }
     if (typeof define === 'function' && define.amd) {
         define("converse", [
+            "crypto",
             "otr",
-            "crypto.aes",
             "locales",
             "backbone.localStorage",
             "jquery.tinysort",
@@ -23,13 +23,13 @@
             "strophe.roster",
             "strophe.vcard",
             "strophe.disco"
-            ], function(otr, crypto) {
+            ], function(CryptoJS, otr) {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory(jQuery, _, crypto, otr, console);
+                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
             }
         );
     } else {
@@ -38,9 +38,9 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, crypto, otr, console || {log: function(){}});
+        root.converse = factory(jQuery, _, CryptoJS, OTR, DSA, console || {log: function(){}});
     }
-}(this, function ($, _, crypto, otr, console) {
+}(this, function ($, _, CryptoJS, OTR, DSA, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
         var converse = this;
@@ -447,14 +447,14 @@
                 // user alert is required here...
                 var saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
                 var instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
-                var cipher = crypto.lib.PasswordBasedCipher;
+                var cipher = CryptoJS.lib.PasswordBasedCipher;
                 var pass = converse.connection.pass;
                 var pass_check = this.get('pass_check');
                 var result, key;
                 if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
-                    var decrypted = cipher.decrypt(crypto.algo.AES, saved_key, pass);
-                    key = otr.DSA.parsePrivate(decrypted.toString(crypto.enc.Latin1));
-                    if (cipher.decrypt(crypto.algo.AES, pass_check, pass).toString(crypto.enc.Latin1) === 'match') {
+                    var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
+                    key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
+                    if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
                         // Verified that the user's password is still the same
                         this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
                         return {
@@ -465,16 +465,16 @@
                 }
                 // We need to generate a new key and instance tag
                 result = alert(__('Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.'));
-                instance_tag = otr.OTR.makeInstanceTag();
-                key = new otr.DSA();
+                instance_tag = OTR.makeInstanceTag();
+                key = new DSA();
                 // Encrypt the key and set in sessionStorage. Also store
                 // instance tag
                 window.sessionStorage[hex_sha1(this.id+'priv_key')] =
-                    cipher.encrypt(crypto.algo.AES, key.packPrivate(), pass).toString();
+                    cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
                 window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
 
                 this.trigger('showHelpMessages', [__('Private key generated.')]);
-                this.save({'pass_check': cipher.encrypt(crypto.algo.AES, 'match', pass).toString()});
+                this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
                 return {
                     'key': key,
                     'instance_tag': instance_tag
@@ -483,15 +483,15 @@
 
             updateOTRStatus: function (state) {
                 switch (state) {
-                    case otr.OTR.CONST.STATUS_AKE_SUCCESS:
-                        if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_ENCRYPTED) {
+                    case OTR.CONST.STATUS_AKE_SUCCESS:
+                        if (this.otr.msgstate === OTR.CONST.MSGSTATE_ENCRYPTED) {
                             this.save({'otr_status': UNVERIFIED});
                         }
                         break;
-                    case otr.OTR.CONST.STATUS_END_OTR:
-                        if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
+                    case OTR.CONST.STATUS_END_OTR:
+                        if (this.otr.msgstate === OTR.CONST.MSGSTATE_FINISHED) {
                             this.save({'otr_status': FINISHED});
-                        } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_PLAINTEXT) {
+                        } else if (this.otr.msgstate === OTR.CONST.MSGSTATE_PLAINTEXT) {
                             this.save({'otr_status': UNENCRYPTED});
                         }
                         break;
@@ -532,7 +532,7 @@
                 // send the query message to them.
                 this.save({'otr_status': UNENCRYPTED});
                 var session = this.getSession();
-                this.otr = new otr.OTR({
+                this.otr = new OTR({
                     fragment_size: 140,
                     send_interval: 200,
                     priv: session.key,

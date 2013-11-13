@@ -8,6 +8,23 @@
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="components/otr/build/dep/salsa20.js"></script>
+    <script type="text/javascript" src="components/otr/build/dep/bigint.js"></script>
+    <!-- CryptoJS -->
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/core.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/enc-base64.js"></script>
+    <script type="text/javascript" src="components/crypto-js/src/md5.js"></script>
+    <script type="text/javascript" src="components/crypto-js/src/evpkdf.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/cipher-core.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/aes.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/sha1.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/sha256.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/hmac.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/pad-nopadding.js"></script>
+    <script type="text/javascript" src="components/otr/vendor/cryptojs/mode-ctr.js"></script>
+    <!-- until here -->
+    <script type="text/javascript" src="components/otr/build/dep/eventemitter.js"></script>
+    <script type="text/javascript" src="components/otr/build/otr.js"></script>
     <script type="text/javascript" src="components/strophe/strophe.js"></script>
     <script type="text/javascript" src="components/strophe.roster/index.js"></script>
     <script type="text/javascript" src="components/strophe.muc/index.js"></script>
@@ -163,14 +180,7 @@
     </footer>
 </div>
 
-<div id="conversejs">
-    <div id="collective-xmpp-chat-data"></div>
-    <div id="toggle-controlbox">
-        <a href="#" class="chat toggle-online-users">
-            <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
-        </a>
-    </div>
-</div>
+<div id="conversejs"></div>
 
 <script type="text/javascript">
     var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

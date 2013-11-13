@@ -25,6 +25,12 @@
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
-        "strophe.disco": "components/strophe.disco/index"
+        "strophe.disco": "components/strophe.disco/index",
+        "bigint": "components/otr/build/dep/bigint",
+        "crypto": "components/otr/build/dep/crypto",
+        "crypto.aes": "components/crypto-js/build/rollups/aes",
+        "eventemitter": "components/otr/build/dep/eventemitter",
+        "otr": "components/otr/build/otr",
+        "salsa20": "components/otr/build/dep/salsa20"
     }
 })

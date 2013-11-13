@@ -5,13 +5,38 @@
             return factory();
         });
 }(this, function (converse) {
-    var mock_connection = {
+    var mock = {};
+    // Names from http://www.fakenamegenerator.com/
+    mock.req_names = [
+        'Louw Spekman', 'Mohamad Stet', 'Dominik Beyer'
+    ];
+    mock.pend_names = [
+        'Suleyman van Beusichem', 'Nanja van Yperen', 'Nicole Diederich'
+    ];
+    mock.cur_names = [
+        'Max Frankfurter', 'Candice van der Knijff', 'Irini Vlastuin', 'Rinse Sommer', 'Annegreet Gomez',
+        'Robin Schook', 'Marcel Eberhardt', 'Simone Brauer', 'Asmaa Haakman', 'Felix Amsel',
+        'Lena Grunewald', 'Laura Grunewald', 'Mandy Seiler', 'Sven Bosch', 'Nuriye Cuypers'
+    ];
+    mock.num_contacts = mock.req_names.length + mock.pend_names.length + mock.cur_names.length;
+
+    mock.chatroom_names = [
+        'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
+    ];
+
+    mock.event = {
+        'preventDefault': function () {}
+    };
+
+    mock.mock_connection = {
+        'mock': true,
         'muc': {
             'listRooms': function () {},
             'join': function () {},
             'leave': function () {},
             'rooms': {}
         },
+        'service': 'jasmine tests',
         'jid': 'dummy@localhost',
         'addHandler': function (handler, ns, name, type, id, from, options) {
             return function () {};
@@ -48,5 +73,5 @@
             'items': function () {}
         }
     };
-    return mock_connection;
+    return mock;
 }));

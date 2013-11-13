@@ -18,8 +18,8 @@
         <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
         <h2 id="project_tagline">An XMPP chat client for your website</h2>
         <section id="downloads">
-            <a class="zip_download_link" href="https://github.com/jcbrand/converse.js/archive/v0.6.6.zip">Download the latest release as a .zip file</a>
-            <a class="tar_download_link" href="https://github.com/jcbrand/converse.js/archive/v0.6.6.tar.gz">Download the latest release as a tar.gz file</a>
+            <a class="zip_download_link" href="https://github.com/jcbrand/converse.js/archive/v0.7.0.zip">Download the latest release as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/jcbrand/converse.js/archive/v0.7.0.tar.gz">Download the latest release as a tar.gz file</a>
         </section>
     </header>
     </div>
@@ -42,18 +42,19 @@
     <h2>Features</h2>
     <ul>
         <li>Single-user chat</li>
-        <li>Multi-user chat in chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html">XEP 45</a>)</li>
-        <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html">XEP 54</a>)</li>
-        <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html">XEP 30</a>)</li>
+        <li>Multi-user chat in chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html" target="_blank">XEP 45</a>)</li>
+        <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html" target="_blank">XEP 54</a>)</li>
+        <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html" target="_blank">XEP 30</a>)</li>
         <li>Contact rosters</li>
         <li>Manually or automically subscribe to other contacts</li>
         <li>Accept or decline contact requests</li>
-        <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html">XEP 144</a>)</li>
+        <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html" target="_blank">XEP 144</a>)</li>
         <li>Chat statuses (online, busy, away, offline)</li>
         <li>Custom status messages</li>
         <li>Typing notifications</li>
         <li>Third person messages (/me )</li>
         <li>Translated into multiple languages  (af, de, es, fr, hu, it, nl, pt-BR, ru)</li>
+        <li>Off-the-record encryption (via <a href="http://arlolra.github.io/otr/" target="_blank">OTR.js</a>)</li>
     </ul>
 
     <h2>Screencasts</h2>
@@ -151,6 +152,7 @@
         <li><a href="http://jquery.com" target="_blank">JQuery</a></li>
         <li><a href="http://strophe.im/strophejs" target="_blank">strophe.js</a></li>
         <li><a href="http://backbonejs.org" target="_blank">backbone.js</a></li>
+        <li><a href="http://arlolra.github.io/otr/" target="_blank">OTR.js</a></li>
         <li><a href="http://requirejs.org" target="_blank">require.js</a> (optional dependency)</li>
     </ul>
 
@@ -175,14 +177,7 @@
     </footer>
 </div>
 
-<div id="chatpanel">
-    <div id="collective-xmpp-chat-data"></div>
-    <div id="toggle-controlbox">
-        <a href="#" class="chat toggle-online-users">
-            <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
-        </a>
-    </div>
-</div>
+<div id="conversejs"></div>
 
 <script type="text/javascript">
     var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -193,15 +188,16 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
+            allow_otr: true,
             auto_list_rooms: false,
             auto_subscribe: false,
             bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
+            debug: true ,
             hide_muc_server: false,
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
             prebind: false,
             show_controlbox_by_default: true,
             xhr_user_search: false,
-            debug: false
         });
     });
 </script>

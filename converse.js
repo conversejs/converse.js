@@ -8,11 +8,13 @@
 
 // AMD/global registrations
 (function (root, factory) {
-    if (console===undefined || console.log===undefined) {
+    if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
         define("converse", [
+            "crypto",
+            "otr",
             "locales",
             "backbone.localStorage",
             "jquery.tinysort",
@@ -21,13 +23,13 @@
             "strophe.roster",
             "strophe.vcard",
             "strophe.disco"
-            ], function() {
+            ], function(CryptoJS, otr) {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory(jQuery, _, console);
+                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
             }
         );
     } else {
@@ -36,12 +38,22 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, console || {log: function(){}});
+        root.converse = factory(jQuery, _, CryptoJS, OTR, DSA, console || {log: function(){}});
     }
-}(this, function ($, _, console) {
+}(this, function ($, _, CryptoJS, OTR, DSA, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
         var converse = this;
+
+        // Constants
+        // ---------
+        var UNENCRYPTED = 0;
+        var UNVERIFIED= 1;
+        var VERIFIED= 2;
+        var FINISHED = 3;
+        var KEY = {
+            ENTER: 13
+        };
 
         // Default configuration values
         // ----------------------------
@@ -58,14 +70,18 @@
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
-        this.testing = false; // Exposes sensitive data for testing. Never set to true in production systems!
+        this.show_emoticons = true;
+        this.show_toolbar = true;
         this.xhr_custom_status = false;
+        this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
+        this.xhr_user_search_url = '';
 
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, [
             'allow_contact_requests',
             'allow_muc',
+            'allow_otr',
             'animate',
             'auto_list_rooms',
             'auto_subscribe',
@@ -79,20 +95,22 @@
             'prebind',
             'rid',
             'show_controlbox_by_default',
+            'show_emoticons',
             'show_only_online_users',
+            'show_toolbar',
             'sid',
-            'testing',
             'xhr_custom_status',
-            'xhr_user_search'
+            'xhr_custom_status_url',
+            'xhr_user_search',
+            'xhr_user_search_url'
         ]));
 
         // Translation machinery
         // ---------------------
         var __ = $.proxy(function (str) {
-            /* Translation factory
-             */
+            // Translation factory
             if (this.i18n === undefined) {
-                this.i18n = locales['en'];
+                this.i18n = locales.en;
             }
             var t = this.i18n.translate(str);
             if (arguments.length>1) {
@@ -115,6 +133,18 @@
 
         // Translation aware constants
         // ---------------------------
+        var OTR_CLASS_MAPPING = {};
+        OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
+        OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
+        OTR_CLASS_MAPPING[VERIFIED] = 'verified';
+        OTR_CLASS_MAPPING[FINISHED] = 'finished';
+
+        var OTR_TRANSLATED_MAPPING  = {};
+        OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
+        OTR_TRANSLATED_MAPPING[UNVERIFIED] = __('unverified');
+        OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
+        OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
+
         var STATUSES = {
             'dnd': __('This contact is busy'),
             'online': __('This contact is online'),
@@ -146,9 +176,13 @@
             }
         };
 
-        this.log = function (txt) {
+        this.log = function (txt, level) {
             if (this.debug) {
-                console.log(txt);
+                if (level == 'error') {
+                    console.log('ERROR: '+txt);
+                } else {
+                    console.log(txt);
+                }
             }
         };
 
@@ -156,7 +190,7 @@
             converse.connection.vcard.get(
                 $.proxy(function (iq) {
                     // Successful callback
-                    $vcard = $(iq).find('vCard');
+                    var $vcard = $(iq).find('vCard');
                     var fullname = $vcard.find('FN').text(),
                         img = $vcard.find('BINVAL').text(),
                         img_type = $vcard.find('TYPE').text(),
@@ -164,8 +198,9 @@
                     if (jid) {
                         var rosteritem = converse.roster.get(jid);
                         if (rosteritem) {
+                            fullname = _.isEmpty(fullname)? rosteritem.get('fullname') || jid: fullname;
                             rosteritem.save({
-                                'fullname': fullname || jid,
+                                'fullname': fullname,
                                 'image_type': img_type,
                                 'image': img,
                                 'url': url,
@@ -296,35 +331,6 @@
             this.updateMsgCounter();
         };
 
-        this.showControlBox = function () {
-            var controlbox = this.chatboxes.get('controlbox');
-            if (!controlbox) {
-                this.chatboxes.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox',
-                    visible: true
-                });
-                if (this.connection) {
-                    this.chatboxes.get('controlbox').save();
-                }
-            } else {
-                controlbox.trigger('show');
-            }
-        };
-
-        this.toggleControlBox = function () {
-            if ($("div#controlbox").is(':visible')) {
-                var controlbox = this.chatboxes.get('controlbox');
-                if (this.connection) {
-                    controlbox.destroy();
-                } else {
-                    controlbox.trigger('hide');
-                }
-            } else {
-                this.showControlBox();
-            }
-        };
-
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
             var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
@@ -374,6 +380,16 @@
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
 
+                $(document).click(function() {
+                    if ($('.toggle-otr ul').is(':visible')) {
+                        $('.toggle-otr ul', this).slideUp();
+                    }
+                    if ($('.toggle-smiley ul').is(':visible')) {
+                        $('.toggle-smiley ul', this).slideUp();
+                    }
+                });
+
+
                 $(window).on("blur focus", $.proxy(function(e) {
                     if ((this.windowState != e.type) && (e.type == 'focus')) {
                         converse.clearMsgCounter();
@@ -381,10 +397,22 @@
                     this.windowState = e.type;
                 },this));
                 this.giveFeedback(__('Online Contacts'));
-                if (this.testing) {
-                    this.callback(this);
-                } else  {
-                    this.callback();
+
+                if (this.callback) {
+                    if (this.connection.service === 'jasmine tests') {
+                        // XXX: Call back with the internal converse object. This
+                        // object should never be exposed to production systems.
+                        // 'jasmine tests' is an invalid http bind service value,
+                        // so we're sure that this is just for tests.
+                        //
+                        // TODO: We might need to consider websockets, which
+                        // probably won't use the 'service' attr. Current
+                        // strophe.js version used by converse.js doesn't support
+                        // websockets.
+                        this.callback(this);
+                    } else  {
+                        this.callback();
+                    }
                 }
             }, this));
         };
@@ -400,28 +428,153 @@
         this.ChatBox = Backbone.Model.extend({
             initialize: function () {
                 if (this.get('box_id') !== 'controlbox') {
+                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                        this.initiateOTR();
+                    }
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.set({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
-                        'fullname' : this.get('fullname'),
-                        'url': this.get('url'),
-                        'image_type': this.get('image_type'),
-                        'image': this.get('image')
+                        'otr_status': this.get('otr_status') || UNENCRYPTED
                     });
                 }
             },
 
-            messageReceived: function (message) {
+            getSession: function () {
+                // XXX: sessionStorage is not supported in IE < 8. Perhaps a
+                // user alert is required here...
+                var saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
+                var instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
+                var cipher = CryptoJS.lib.PasswordBasedCipher;
+                var pass = converse.connection.pass;
+                var pass_check = this.get('pass_check');
+                var result, key;
+                if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
+                    var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
+                    key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
+                    if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
+                        // Verified that the user's password is still the same
+                        this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
+                        return {
+                            'key': key,
+                            'instance_tag': instance_tag
+                        };
+                    }
+                }
+                // We need to generate a new key and instance tag
+                result = alert(__('Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.'));
+                instance_tag = OTR.makeInstanceTag();
+                key = new DSA();
+                // Encrypt the key and set in sessionStorage. Also store
+                // instance tag
+                window.sessionStorage[hex_sha1(this.id+'priv_key')] =
+                    cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
+                window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
+
+                this.trigger('showHelpMessages', [__('Private key generated.')]);
+                this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
+                return {
+                    'key': key,
+                    'instance_tag': instance_tag
+                };
+            },
+
+            updateOTRStatus: function (state) {
+                switch (state) {
+                    case OTR.CONST.STATUS_AKE_SUCCESS:
+                        if (this.otr.msgstate === OTR.CONST.MSGSTATE_ENCRYPTED) {
+                            this.save({'otr_status': UNVERIFIED});
+                        }
+                        break;
+                    case OTR.CONST.STATUS_END_OTR:
+                        if (this.otr.msgstate === OTR.CONST.MSGSTATE_FINISHED) {
+                            this.save({'otr_status': FINISHED});
+                        } else if (this.otr.msgstate === OTR.CONST.MSGSTATE_PLAINTEXT) {
+                            this.save({'otr_status': UNENCRYPTED});
+                        }
+                        break;
+                }
+            },
+
+            onSMP: function (type, data) {
+                // Event handler for SMP (Socialist's Millionaire Protocol)
+                // used by OTR (off-the-record).
+                switch (type) {
+                    case 'question':
+                        this.otr.smpSecret(prompt(__(
+                            'Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s',
+                            [this.get('fullname'), data])));
+                        break;
+                    case 'trust':
+                        if (data === true) {
+                            this.save({'otr_status': VERIFIED});
+                        } else {
+                            this.trigger(
+                                'showHelpMessages',
+                                [__("Could not verify this user's identify.")],
+                                'error');
+                            this.save({'otr_status': UNVERIFIED});
+                        }
+                        break;
+                    default:
+                        throw new Error('Unknown type.');
+                }
+            },
+
+            initiateOTR: function (query_msg) {
+                // Sets up an OTR object through which we can send and receive
+                // encrypted messages.
+                //
+                // If 'query_msg' is passed in, it means there is an alread incoming
+                // query message from our buddy. Otherwise, it is us who will
+                // send the query message to them.
+                this.save({'otr_status': UNENCRYPTED});
+                var session = this.getSession();
+                this.otr = new OTR({
+                    fragment_size: 140,
+                    send_interval: 200,
+                    priv: session.key,
+                    instance_tag: session.instance_tag,
+                    debug: this.debug
+                });
+                this.otr.on('status', $.proxy(this.updateOTRStatus, this));
+                this.otr.on('smp', $.proxy(this.onSMP, this));
+
+                this.otr.on('ui', $.proxy(function (msg) {
+                    this.trigger('showReceivedOTRMessage', msg);
+                }, this));
+                this.otr.on('io', $.proxy(function (msg) {
+                    this.trigger('sendMessageStanza', msg);
+                }, this));
+                this.otr.on('error', $.proxy(function (msg) {
+                    this.trigger('showOTRError', msg);
+                }, this));
+
+                if (query_msg) {
+                    this.otr.receiveMsg(query_msg);
+                } else {
+                    this.otr.sendQueryMsg();
+                }
+            },
+
+            endOTR: function () {
+                if (this.otr) {
+                    this.otr.endOtr();
+                }
+                this.save({'otr_status': UNENCRYPTED});
+            },
+
+            createMessage: function (message) {
                 var $message = $(message),
                     body = converse.autoLink($message.children('body').text()),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     composing = $message.find('composing'),
                     delayed = $message.find('delay').length > 0,
-                    fullname = (this.get('fullname')||'').split(' ')[0],
+                    fullname = this.get('fullname'),
                     stamp, time, sender;
+                fullname = (_.isEmpty(fullname)? from: fullname).split(' ')[0];
 
                 if (!body) {
                     if (composing.length) {
@@ -453,6 +606,29 @@
                         message: body
                     });
                 }
+            },
+
+            messageReceived: function (message) {
+                var $body = $(message).children('body');
+                var text = ($body.length > 0 ? converse.autoLink($body.text()) : undefined);
+                if ((!text) || (!converse.allow_otr)) {
+                    return this.createMessage(message);
+                }
+                if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                    this.otr.receiveMsg(text);
+                } else {
+                    if (text.match(/^\?OTR/)) {
+                        // They want to initiate OTR
+                        if (!this.otr) {
+                            this.initiateOTR(text);
+                        } else {
+                            this.otr.receiveMsg(text);
+                        }
+                    } else {
+                        // Normal unencrypted message.
+                        this.createMessage(message);
+                    }
+                }
             }
         });
 
@@ -460,29 +636,176 @@
             length: 200,
             tagName: 'div',
             className: 'chatbox',
+            is_chatroom: false,  // This is not a multi-user chatroom
 
             events: {
                 'click .close-chatbox-button': 'closeChat',
-                'keypress textarea.chat-textarea': 'keyPressed'
+                'keypress textarea.chat-textarea': 'keyPressed',
+                'click .toggle-smiley': 'toggleEmoticonMenu',
+                'click .toggle-smiley ul li': 'insertEmoticon',
+                'click .toggle-otr': 'toggleOTRMenu',
+                'click .start-otr': 'startOTRFromToolbar',
+                'click .end-otr': 'endOTR',
+                'click .auth-otr': 'authOTR'
             },
 
+            template: _.template(
+                '<div class="chat-head chat-head-chatbox">' +
+                    '<a class="close-chatbox-button icon-close"></a>' +
+                    '<a href="{{url}}" target="_blank" class="user">' +
+                        '<div class="chat-title"> {{ fullname }} </div>' +
+                    '</a>' +
+                    '<p class="user-custom-message"><p/>' +
+                '</div>' +
+                '<div class="chat-content"></div>' +
+                '<form class="sendXMPPMessage" action="" method="post">' +
+                    '{[ if ('+converse.show_toolbar+') { ]}' +
+                        '<ul class="chat-toolbar no-text-select"></ul>'+
+                    '{[ } ]}' +
+                '<textarea ' +
+                    'type="text" ' +
+                    'class="chat-textarea" ' +
+                    'placeholder="'+__('Personal message')+'"/>'+
+                '</form>'
+            ),
+
+
+            toolbar_template: _.template(
+                '{[ if (show_emoticons)  { ]}' +
+                    '<li class="toggle-smiley icon-happy" title="Insert a smilery">' +
+                        '<ul>' +
+                            '<li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>'+
+                            '<li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>'+
+                            '<li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>'+
+                            '<li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>'+
+                            '<li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>'+
+                            '<li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>'+
+                            '<li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>'+
+                            '<li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>'+
+                            '<li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>'+
+                            '<li><a class="icon-sad" href="#" data-emoticon=":("></a></li>'+
+                            '<li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>'+
+                            '<li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>'+
+                            '<li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>'+
+                        '</ul>' +
+                    '</li>' +
+                '{[ } ]}' +
+                '{[ if (allow_otr)  { ]}' +
+                    '<li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">'+
+                        '<span class="chat-toolbar-text">{{otr_translated_status}}</span>'+
+                        '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
+                            '<span class="icon-unlocked"></span>'+
+                        '{[ } ]}' +
+                        '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
+                            '<span class="icon-lock"></span>'+
+                        '{[ } ]}' +
+                        '{[ if (otr_status == "'+VERIFIED+'") { ]}' +
+                            '<span class="icon-lock"></span>'+
+                        '{[ } ]}' +
+                        '{[ if (otr_status == "'+FINISHED+'") { ]}' +
+                            '<span class="icon-unlocked"></span>'+
+                        '{[ } ]}' +
+                        '<ul>'+
+                            '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
+                                '<li><a class="start-otr" href="#">'+__('Start encrypted conversation')+'</a></li>'+
+                            '{[ } ]}' +
+                            '{[ if (otr_status != "'+UNENCRYPTED+'") { ]}' +
+                                '<li><a class="start-otr" href="#">'+__('Refresh encrypted conversation')+'</a></li>'+
+                                '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
+                                '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
+                            '{[ } ]}' +
+                            '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
+                                '<li><a class="auth-otr" data-scheme="fingerprint" href="#">'+__('Verify with fingerprints')+'</a></li>'+
+                            '{[ } ]}' +
+                            '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
+                        '</ul>'+
+                    '</li>'+
+                '{[ } ]}'
+            ),
+
             message_template: _.template(
-                                '<div class="chat-message {{extra_classes}}">' +
-                                    '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' +
-                                    '<span class="chat-message-content">{{message}}</span>' +
-                                '</div>'),
+                '<div class="chat-message {{extra_classes}}">' +
+                    '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' +
+                    '<span class="chat-message-content">{{message}}</span>' +
+                '</div>'),
 
             action_template: _.template(
-                                '<div class="chat-message {{extra_classes}}">' +
-                                    '<span class="chat-message-{{sender}}">{{time}} **{{username}} </span>' +
-                                    '<span class="chat-message-content">{{message}}</span>' +
-                                '</div>'),
+                '<div class="chat-message {{extra_classes}}">' +
+                    '<span class="chat-message-{{sender}}">{{time}} **{{username}} </span>' +
+                    '<span class="chat-message-content">{{message}}</span>' +
+                '</div>'),
 
             new_day_template: _.template(
-                                '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
-                                ),
+                '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
+                ),
 
-            appendMessage: function ($el, msg_dict) {
+            initialize: function (){
+                this.model.messages.on('add', this.onMessageAdded, this);
+                this.model.on('show', this.show, this);
+                this.model.on('destroy', this.hide, this);
+                this.model.on('change', this.onChange, this);
+                this.model.on('showOTRError', this.showOTRError, this);
+                this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
+                this.model.on('showHelpMessages', this.showHelpMessages, this);
+                this.model.on('sendMessageStanza', this.sendMessageStanza, this);
+                this.model.on('showSentOTRMessage', function (text) {
+                    this.showOTRMessage(text, 'me');
+                }, this);
+                this.model.on('showReceivedOTRMessage', function (text) {
+                    this.showOTRMessage(text, 'them');
+                }, this);
+                this.updateVCard();
+                this.$el.appendTo(converse.chatboxesview.$el);
+                this.render().show().model.messages.fetch({add: true});
+                if (this.model.get('status')) {
+                    this.showStatusMessage(this.model.get('status'));
+                }
+            },
+
+            render: function () {
+                this.$el.attr('id', this.model.get('box_id'))
+                    .html(this.template(this.model.toJSON()));
+                this.renderToolbar().renderAvatar();
+                return this;
+            },
+
+            showStatusNotification: function (message, replace) {
+                var $chat_content = this.$el.find('.chat-content');
+                $chat_content.find('div.chat-event').remove().end()
+                    .append($('<div class="chat-event"></div>').text(message));
+                this.scrollDown();
+            },
+
+            renderEmoticons: function (text) {
+                if (converse.show_emoticons) {
+                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
+                    text = text.replace(/>:\)/g, '<span class="emoticon icon-evil"></span>');
+                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
+                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/:\//g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/>:\(/g, '<span class="emoticon icon-angry"></span>');
+                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
+                    text = text.replace(/<3/g, '<span class="emoticon icon-heart"></span>');
+                }
+                return text;
+            },
+
+            showMessage: function ($el, msg_dict) {
                 var this_date = converse.parseISO8601(msg_dict.time),
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
@@ -502,20 +825,41 @@
                     template({
                         'sender': sender,
                         'time': this_date.toTimeString().substring(0,5),
-                        'message': text,
+                        'message': this.renderEmoticons(text),
                         'username': username,
                         'extra_classes': msg_dict.delayed && 'delayed' || ''
                     }));
+                return this.scrollDown();
             },
 
-            insertStatusNotification: function (message, replace) {
-                var $chat_content = this.$el.find('.chat-content');
-                $chat_content.find('div.chat-event').remove().end()
-                    .append($('<div class="chat-event"></div>').text(message));
-                this.scrollDown();
+            showOTRMessage:  function (text, sender) {
+                /* "Off-the-record" messages are encrypted and not stored at all,
+                 * so we don't have a backbone converse.Message object to work with.
+                 */
+                var username = sender === 'me' && sender || this.model.get('fullname');
+                var $el = this.$el.find('.chat-content');
+                $el.find('div.chat-event').remove();
+                $el.append(
+                    this.message_template({
+                        'sender': sender,
+                        'time': (new Date()).toTimeString().substring(0,5),
+                        'message': text,
+                        'username': username,
+                        'extra_classes': ''
+                    }));
+                return this.scrollDown();
             },
 
-            showMessage: function (message) {
+            showHelpMessages: function (msgs, type) {
+                var $chat_content = this.$el.find('.chat-content'), i,
+                    msgs_length = msgs.length;
+                for (i=0; i<msgs_length; i++) {
+                    $chat_content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
+                }
+                return this.scrollDown();
+            },
+
+            onMessageAdded: function (message) {
                 var time = message.get('time'),
                     times = this.model.messages.pluck('time'),
                     this_date = converse.parseISO8601(time),
@@ -539,15 +883,15 @@
                     }
                 }
                 if (message.get('composing')) {
-                    this.insertStatusNotification(__('%1$s is typing', message.get('fullname')));
+                    this.showStatusNotification(message.get('fullname')+' '+'is typing');
                     return;
                 } else {
-                    this.appendMessage($chat_content, _.clone(message.attributes));
+                    this.showMessage($chat_content, _.clone(message.attributes));
                 }
                 if ((message.get('sender') != 'me') && (converse.windowState == 'blur')) {
                     converse.incrementMsgCounter();
                 }
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             isDifferentDay: function (prev_date, next_date) {
@@ -557,24 +901,31 @@
                     (next_date.getMonth() != prev_date.getMonth()));
             },
 
-            addHelpMessages: function (msgs) {
-                var $chat_content = this.$el.find('.chat-content'), i,
-                    msgs_length = msgs.length;
-                for (i=0; i<msgs_length; i++) {
-                    $chat_content.append($('<div class="chat-info">'+msgs[i]+'</div>'));
-                }
-                this.scrollDown();
-            },
-
-            sendMessage: function (text) {
+            sendMessageStanza: function (text) {
+                /*
+                 * Sends the actual XML stanza to the XMPP server.
+                 */
                 // TODO: Look in ChatPartners to see what resources we have for the recipient.
                 // if we have one resource, we sent to only that resources, if we have multiple
                 // we send to the bare jid.
-                var timestamp = (new Date()).getTime(),
-                    bare_jid = this.model.get('jid'),
-                    match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/),
-                    msgs;
+                var timestamp = (new Date()).getTime();
+                var bare_jid = this.model.get('jid');
+                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
+                    .c('body').t(text).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
+                // Forward the message, so that other connected resources are also aware of it.
+                // TODO: Forward the message only to other connected resources (inside the browser)
+                var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
+                                .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
+                                .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
+                                .cnode(message.tree());
 
+                converse.connection.send(message);
+                converse.connection.send(forwarded);
+            },
+
+            sendMessage: function (text) {
+                var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
                     if (match[1] === "clear") {
                         this.$el.find('.chat-content').empty();
@@ -587,34 +938,36 @@
                             '<strong>/me</strong>:'+__('Write in the third person')+'',
                             '<strong>/clear</strong>:'+__('Remove messages')+''
                             ];
-                        this.addHelpMessages(msgs);
+                        this.showHelpMessages(msgs);
                         return;
+                    } else if ((converse.allow_otr) || (match[1] === "endotr")) {
+                        return this.endOTR();
+                    } else if ((converse.allow_otr) || (match[1] === "otr")) {
+                        return this.model.initiateOTR();
                     }
                 }
-                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
-                    .c('body').t(text).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
-                // Forward the message, so that other connected resources are also aware of it.
-                // TODO: Forward the message only to other connected resources (inside the browser)
-                var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
-                                .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
-                                .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
-                                .cnode(message.tree());
-                converse.connection.send(message);
-                converse.connection.send(forwarded);
-                // Add the new message
-                this.model.messages.create({
-                    fullname: converse.xmppstatus.get('fullname')||converse.bare_jid,
-                    sender: 'me',
-                    time: converse.toISOString(new Date()),
-                    message: text
-                });
+                if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
+                    // Off-the-record encryption is active
+                    this.model.otr.sendMsg(text);
+                    this.model.trigger('showSentOTRMessage', text);
+                } else {
+                    // We only save unencrypted messages.
+                    var fullname = converse.xmppstatus.get('fullname');
+                    fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
+                    this.model.messages.create({
+                        fullname: fullname,
+                        sender: 'me',
+                        time: converse.toISOString(new Date()),
+                        message: text
+                    });
+                    this.sendMessageStanza(text);
+                }
             },
 
             keyPressed: function (ev) {
                 var $textarea = $(ev.target),
                     message, notify, composing;
-                if(ev.keyCode == 13) {
+                if(ev.keyCode == KEY.ENTER) {
                     ev.preventDefault();
                     message = $textarea.val();
                     $textarea.val('').focus();
@@ -642,25 +995,118 @@
                 }
             },
 
+            insertEmoticon: function (ev) {
+                ev.stopPropagation();
+                this.$el.find('.toggle-smiley ul').slideToggle(200);
+                var $textbox = this.$el.find('textarea.chat-textarea');
+                var value = $textbox.val();
+                var $target = $(ev.target);
+                $target = $target.is('a') ? $target : $target.children('a');
+                if (value && (value[value.length-1] !== ' ')) {
+                    value = value + ' ';
+                }
+                $textbox.focus().val(value+$target.data('emoticon')+' ');
+            },
+
+            toggleEmoticonMenu: function (ev) {
+                ev.stopPropagation();
+                this.$el.find('.toggle-smiley ul').slideToggle(200);
+            },
+
+            toggleOTRMenu: function (ev) {
+                ev.stopPropagation();
+                this.$el.find('.toggle-otr ul').slideToggle(200);
+            },
+
+            showOTRError: function (msg) {
+                if (msg == 'Message cannot be sent at this time.') {
+                    this.showHelpMessages(
+                        [__('Your message could not be sent')], 'error');
+                } else if (msg == 'Received an unencrypted message.') {
+                    this.showHelpMessages(
+                        [__('We received an unencrypted message')], 'error');
+                } else if (msg == 'Received an unreadable encrypted message.') {
+                    this.showHelpMessages(
+                        [__('We received an unreadable encrypted message')],
+                        'error');
+                } else {
+                    this.showHelpMessages(['Encryption error occured: '+msg], 'error');
+                }
+                console.log("OTR ERROR:"+msg);
+            },
+
+            buddyStartsOTR: function (ev) {
+                this.showHelpMessages([__('This user has requested an encrypted session.')]);
+                this.model.initiateOTR();
+            },
+
+            startOTRFromToolbar: function (ev) {
+                $(ev.target).parent().parent().slideUp();
+                ev.stopPropagation();
+                this.model.initiateOTR();
+            },
+
+            endOTR: function (ev) {
+                if (typeof ev !== "undefined") {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
+                this.model.endOTR();
+            },
+
+            authOTR: function (ev) {
+                var scheme = $(ev.target).data().scheme;
+                var result, question, answer;
+                if (scheme === 'fingerprint') {
+                    result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
+                            this.model.get('fullname'),
+                            converse.xmppstatus.get('fullname')||converse.bare_jid,
+                            this.model.otr.priv.fingerprint(),
+                            this.model.otr.their_priv_pk.fingerprint()
+                        ]
+                    ));
+                    if (result === true) {
+                        this.model.save({'otr_status': VERIFIED});
+                    } else {
+                        this.model.save({'otr_status': UNVERIFIED});
+                    }
+                } else if (scheme === 'smp') {
+                    alert(__('You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.'));
+                    question = prompt(__('What is your security question?'));
+                    if (question) {
+                        answer = prompt(__('What is the answer to the security question?'));
+                        this.model.otr.smpSecret(answer, question);
+                    }
+                } else {
+                    this.showHelpMessages([__('Invalid authentication scheme provided')], 'error');
+                }
+            },
+
             onChange: function (item, changed) {
                 if (_.has(item.changed, 'chat_status')) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname');
+                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
                     if (this.$el.is(':visible')) {
                         if (chat_status === 'offline') {
-                            this.insertStatusNotification(fullname+' '+'has gone offline');
+                            this.showStatusNotification(fullname+' '+'has gone offline');
                         } else if (chat_status === 'away') {
-                            this.insertStatusNotification(fullname+' '+'has gone away');
+                            this.showStatusNotification(fullname+' '+'has gone away');
                         } else if ((chat_status === 'dnd')) {
-                            this.insertStatusNotification(fullname+' '+'is busy');
+                            this.showStatusNotification(fullname+' '+'is busy');
                         } else if (chat_status === 'online') {
                             this.$el.find('div.chat-event').remove();
                         }
                     }
-                } if (_.has(item.changed, 'status')) {
+                }
+                if (_.has(item.changed, 'status')) {
                     this.showStatusMessage(item.get('status'));
-                } if (_.has(item.changed, 'image')) {
+                }
+                if (_.has(item.changed, 'image')) {
                     this.renderAvatar();
+                }
+                if (_.has(item.changed, 'otr_status')) {
+                    this.renderToolbar().informOTRChange();
                 }
                 // TODO check for changed fullname as well
             },
@@ -698,34 +1144,41 @@
                 }
             },
 
-            initialize: function (){
-                this.model.messages.on('add', this.showMessage, this);
-                this.model.on('show', this.show, this);
-                this.model.on('destroy', this.hide, this);
-                this.model.on('change', this.onChange, this);
-                this.updateVCard();
-                this.$el.appendTo(converse.chatboxesview.$el);
-                this.render().show().model.messages.fetch({add: true});
-                if (this.model.get('status')) {
-                    this.showStatusMessage(this.model.get('status'));
+            informOTRChange: function () {
+                var data = this.model.toJSON();
+                var msgs = [];
+                if (data.otr_status == UNENCRYPTED) {
+                    msgs.push(__("Your messages are not encrypted anymore"));
+                } else if (data.otr_status == UNVERIFIED){
+                    msgs.push(__("Your messages are now encrypted but your buddy's identity has not been verified."));
+                } else if (data.otr_status == VERIFIED){
+                    msgs.push(__("Your buddy's identify has been verified."));
+                } else if (data.otr_status == FINISHED){
+                    msgs.push(__("Your buddy has ended encryption on their end, you should do the same."));
                 }
+                return this.showHelpMessages(msgs);
             },
 
-            template: _.template(
-                '<div class="chat-head chat-head-chatbox">' +
-                    '<a class="close-chatbox-button icon-close"></a>' +
-                    '<a href="{{url}}" target="_blank" class="user">' +
-                        '<div class="chat-title"> {{ fullname }} </div>' +
-                    '</a>' +
-                    '<p class="user-custom-message"><p/>' +
-                '</div>' +
-                '<div class="chat-content"></div>' +
-                '<form class="sendXMPPMessage" action="" method="post">' +
-                '<textarea ' +
-                    'type="text" ' +
-                    'class="chat-textarea" ' +
-                    'placeholder="'+__('Personal message')+'"/>'+
-                '</form>'),
+            renderToolbar: function () {
+                if (converse.show_toolbar) {
+                    var data = this.model.toJSON();
+                    if (data.otr_status == UNENCRYPTED) {
+                        data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
+                    } else if (data.otr_status == UNVERIFIED){
+                        data.otr_tooltip = __('Your messages are encrypted, but your buddy has not been verified.');
+                    } else if (data.otr_status == VERIFIED){
+                        data.otr_tooltip = __('Your messages are encrypted and your buddy verified.');
+                    } else if (data.otr_status == FINISHED){
+                        data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
+                    }
+                    data.allow_otr = converse.allow_otr && !this.is_chatroom;
+                    data.show_emoticons = converse.show_emoticons;
+                    data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
+                    data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status];
+                    this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
+                }
+                return this;
+            },
 
             renderAvatar: function () {
                 if (!this.model.get('image')) {
@@ -741,12 +1194,6 @@
                 };
                 img.src = img_src;
                 this.$el.find('.chat-title').before(canvas);
-            },
-
-            render: function () {
-                this.$el.attr('id', this.model.get('box_id'))
-                    .html(this.template(this.model.toJSON()));
-                this.renderAvatar();
                 return this;
             },
 
@@ -878,7 +1325,7 @@
 
             searchContacts: function (ev) {
                 ev.preventDefault();
-                $.getJSON(portal_url + "/search-users?q=" + $(ev.target).find('input.username').val(), function (data) {
+                $.getJSON(xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
                     var $ul= $('.search-xmpp ul');
                     $ul.find('li.found-user').remove();
                     $ul.find('li.chat-info').remove();
@@ -1248,8 +1695,8 @@
                 });
             },
 
-            addHelpMessages: function (msgs) {
-                // Override addHelpMessages in ChatBoxView, for now do nothing.
+            showHelpMessages: function (msgs) {
+                // Override showHelpMessages in ChatBoxView, for now do nothing.
                 return;
             },
 
@@ -1281,9 +1728,12 @@
             events: {
                 'click a.close-chatbox-button': 'closeChat',
                 'click a.configure-chatroom-button': 'configureChatRoom',
+                'click .toggle-smiley': 'toggleEmoticonMenu',
+                'click .toggle-smiley ul li': 'insertEmoticon',
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
             info_template: _.template('<div class="chat-info">{{message}}</div>'),
+            is_chatroom: true,
 
             sendChatRoomMessage: function (body) {
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
@@ -1320,7 +1770,7 @@
                             '<strong>/ban</strong>:'+__('Ban user from chatroom')+'',
                             '<strong>/clear</strong>:'+__('Remove messages')+''
                             ];
-                        this.addHelpMessages(msgs);
+                        this.showHelpMessages(msgs);
                         break;
                     default:
                         this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);
@@ -1343,6 +1793,9 @@
                 '<div class="chat-area">' +
                     '<div class="chat-content"></div>' +
                     '<form class="sendXMPPMessage" action="" method="post">' +
+                        '{[ if ('+converse.show_toolbar+') { ]}' +
+                            '<ul class="chat-toolbar no-text-select"></ul>'+
+                        '{[ } ]}' +
                         '<textarea type="text" class="chat-textarea" ' +
                             'placeholder="'+__('Message')+'"/>' +
                     '</form>' +
@@ -1361,6 +1814,7 @@
             renderChatArea: function () {
                 if (!this.$el.find('.chat-area').length) {
                     this.$el.find('.chat-body').empty().append(this.chatarea_template());
+                    this.renderToolbar();
                 }
                 return this;
             },
@@ -1384,9 +1838,9 @@
 
             initialize: function () {
                 this.connect(null);
-                this.model.messages.on('add', this.showMessage, this);
+                this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('destroy', function (model, response, options) {
-                    this.$el.hide('fast');
+                    this.hide();
                     converse.connection.muc.leave(
                         this.model.get('jid'),
                         this.model.get('nick'),
@@ -1506,7 +1960,7 @@
             },
 
             onErrorConfigSaved: function (stanza) {
-                this.insertStatusNotification(__("An error occurred while trying to save the form."));
+                this.showStatusNotification(__("An error occurred while trying to save the form."));
             },
 
             cancelConfiguration: function (ev) {
@@ -1646,7 +2100,7 @@
                 for (i=0; i<action_msgs.length; i++) {
                     $chat_content.append(this.info_template({message: action_msgs[i]}));
                 }
-                this.scrollDown();
+                return this.scrollDown();
             },
 
             showErrorMessage: function ($error, room) {
@@ -1752,16 +2206,18 @@
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                     // # For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
                     // # Example: Topic set by JC Brand to: Hello World!
-                    $chat_content.append(this.info_template({'message': __('Topic set by %1$s to: %2$s', sender, subject)}));
+                    $chat_content.append(
+                        this.info_template({
+                            'message': __('Topic set by %1$s to: %2$s', sender, subject)
+                        }));
                 }
                 if (!body) { return true; }
-                this.appendMessage($chat_content,
+                this.showMessage($chat_content,
                                 {'message': body,
                                     'sender': sender === this.model.get('nick') && 'me' || 'room',
                                     'fullname': sender,
                                     'time': converse.toISOString(message_datetime)
                                 });
-                this.scrollDown();
                 return true;
             },
 
@@ -1835,7 +2291,7 @@
             },
 
             messageReceived: function (message) {
-                var partner_jid, $message = $(message),
+                var buddy_jid, $message = $(message),
                     message_from = $message.attr('from');
                 if (message_from == converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
@@ -1851,37 +2307,42 @@
                     resource, chatbox, roster_item;
                 if (from == converse.bare_jid) {
                     // I am the sender, so this must be a forwarded message...
-                    partner_jid = to;
+                    buddy_jid = to;
                     resource = Strophe.getResourceFromJid($message.attr('to'));
                 } else {
-                    partner_jid = from;
+                    buddy_jid = from;
                     resource = Strophe.getResourceFromJid(message_from);
                 }
-                chatbox = this.get(partner_jid);
-                roster_item = converse.roster.get(partner_jid);
-                if (!roster_item) {
+                chatbox = this.get(buddy_jid);
+                roster_item = converse.roster.get(buddy_jid);
+
+                if (roster_item === undefined) {
                     // The buddy was likely removed
+                    converse.log('Could not get roster item for JID '+buddy_jid, 'error');
                     return true;
                 }
 
                 if (!chatbox) {
+                    var fullname = roster_item.get('fullname');
+                    fullname = _.isEmpty(fullname)? buddy_jid: fullname;
+
                     chatbox = this.create({
-                        'id': partner_jid,
-                        'jid': partner_jid,
-                        'fullname': roster_item.get('fullname') || jid,
+                        'id': buddy_jid,
+                        'jid': buddy_jid,
+                        'fullname': fullname,
                         'image_type': roster_item.get('image_type'),
                         'image': roster_item.get('image'),
                         'url': roster_item.get('url')
                     });
                 }
                 chatbox.messageReceived(message);
-                converse.roster.addResource(partner_jid, resource);
+                converse.roster.addResource(buddy_jid, resource);
                 return true;
             }
         });
 
         this.ChatBoxesView = Backbone.View.extend({
-            el: '#collective-xmpp-chat-data',
+            el: '#conversejs',
 
             initialize: function () {
                 // boxesviewinit
@@ -2013,6 +2474,7 @@
             render: function () {
                 var item = this.model,
                     ask = item.get('ask'),
+                    requesting  = item.get('requesting'),
                     subscription = item.get('subscription');
 
                 var classes_to_remove = [
@@ -2033,10 +2495,10 @@
                 if (ask === 'subscribe') {
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(this.pending_template(item.toJSON()));
-                } else if (ask === 'request') {
+                } else if (requesting === true) {
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(this.request_template(item.toJSON()));
-                    converse.showControlBox();
+                    converse.controlboxtoggle.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(this.template(
@@ -2191,8 +2653,13 @@
                     if (this.isSelf(item.jid)) { return; }
                     var model = this.get(item.jid);
                     if (!model) {
-                        is_last = false;
-                        if (index === (items.length-1)) { is_last = true; }
+                        var is_last = (index === (items.length-1)) ? true : false;
+                        if ((item.subscription === 'none') && (item.ask === null) && !is_last) {
+                            // We're not interested in zombies
+                            // (Hack: except if it's the last item, then we still
+                            // add it so that the roster will be shown).
+                            return;
+                        }
                         this.create({
                             jid: item.jid,
                             subscription: item.subscription,
@@ -2207,7 +2674,7 @@
                         } else if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
                             // only modify model attributes if they are different from the
                             // ones that were already set when the rosterItem was added
-                            model.set({'subscription': item.subscription, 'ask': item.ask});
+                            model.set({'subscription': item.subscription, 'ask': item.ask, 'requesting': null});
                             model.save();
                         }
                     }
@@ -2250,7 +2717,8 @@
                                     this.add({
                                         jid: bare_jid,
                                         subscription: 'none',
-                                        ask: 'request',
+                                        ask: null,
+                                        requesting: true,
                                         fullname: fullname,
                                         image: img,
                                         image_type: img_type,
@@ -2263,7 +2731,14 @@
                                     converse.log("Error while retrieving vcard");
                                     // XXX: Should vcard_updated be set here as
                                     // well?
-                                    this.add({jid: bare_jid, subscription: 'none', ask: 'request', fullname: jid, is_last: true});
+                                    this.add({
+                                        jid: bare_jid,
+                                        subscription: 'none',
+                                        ask: null,
+                                        requesting: true,
+                                        fullname: jid,
+                                        is_last: true
+                                    });
                                 }, this)
                             );
                         } else {
@@ -2425,12 +2900,20 @@
                         view = this.rosteritemviews[item.id],
                         ask = item.get('ask'),
                         subscription = item.get('subscription'),
+                        requesting  = item.get('requesting'),
                         crit = {order:'asc'};
 
-                    if (ask === 'subscribe') {
+                    if ((ask === 'subscribe') && (subscription == 'none')) {
                         $pending_contacts.after(view.render().el);
                         $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if (ask === 'request') {
+                    } else if ((ask === 'subscribe') && (subscription == 'from')) {
+                        // TODO: We have accepted an incoming subscription
+                        // request and (automatically) made our own subscription request back.
+                        // It would be useful to update the roster here to show
+                        // things are happening... (see docs/DEVELOPER.rst)
+                        $pending_contacts.after(view.render().el);
+                        $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
+                    } else if (requesting === true) {
                         $contact_requests.after(view.render().el);
                         $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                     } else if (subscription === 'both' || subscription === 'to') {
@@ -2539,7 +3022,7 @@
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
                     $.ajax({
-                        url: 'set-custom-status',
+                        url:  this.xhr_custom_status_url,
                         type: 'POST',
                         data: {'msg': status_message}
                     });
@@ -2732,7 +3215,8 @@
                 'submit form#converse-login': 'authenticate'
             },
             tab_template: _.template(
-                '<li><a class="current" href="#login">'+__('Sign in')+'</a></li>'),
+                '<li><a class="current" href="#login">'+__('Sign in')+'</a></li>'
+            ),
             template: _.template(
                 '<form id="converse-login">' +
                 '<label>'+__('XMPP/Jabber Username:')+'</label>' +
@@ -2740,11 +3224,12 @@
                 '<label>'+__('Password:')+'</label>' +
                 '<input type="password" name="password">' +
                 '<input class="login-submit" type="submit" value="'+__('Log In')+'">' +
-                '</form">'),
-
+                '</form">'
+            ),
             bosh_url_input: _.template(
                 '<label>'+__('BOSH Service URL:')+'</label>' +
-                '<input type="text" id="bosh_service_url">'),
+                '<input type="text" id="bosh_service_url">'
+            ),
 
             connect: function ($form, jid, password) {
                 if ($form) {
@@ -2811,18 +3296,69 @@
             }
         });
 
+        this.ControlBoxToggle = Backbone.View.extend({
+            tagName: 'a',
+            className: 'toggle-online-users',
+            id: 'toggle-controlbox',
+            events: {
+                'click': 'onClick'
+            },
+            attributes: {
+                'href': "#"
+            },
+
+            template: _.template(
+                '<strong class="conn-feedback">Toggle chat</strong>'+
+                '<strong style="display: none" id="online-count">(0)</strong>'
+            ),
+
+            initialize: function () {
+                this.render();
+            },
+
+            render: function () {
+                $('#conversejs').append(this.$el.html(this.template()));
+                return this;
+            },
+
+            showControlBox: function () {
+                var controlbox = converse.chatboxes.get('controlbox');
+                if (!controlbox) {
+                    converse.chatboxes.add({
+                        id: 'controlbox',
+                        box_id: 'controlbox',
+                        visible: true
+                    });
+                    if (converse.connection) {
+                        converse.chatboxes.get('controlbox').save();
+                    }
+                } else {
+                    controlbox.trigger('show');
+                }
+            },
+
+            onClick: function (e) {
+                e.preventDefault();
+                if ($("div#controlbox").is(':visible')) {
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    if (converse.connection) {
+                        controlbox.destroy();
+                    } else {
+                        controlbox.trigger('hide');
+                    }
+                } else {
+                    this.showControlBox();
+                }
+            }
+        });
+
         // Initialization
         // --------------
-
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
-        $('.toggle-online-users').bind(
-            'click',
-            $.proxy(function (e) {
-                e.preventDefault(); this.toggleControlBox();
-            }, this)
-        );
+        this.controlboxtoggle = new this.ControlBoxToggle();
+
         if ((this.prebind) && (!this.connection)) {
             if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
                 this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
@@ -2833,7 +3369,7 @@
         } else if (this.connection) {
             this.onConnected();
         }
-        if (this.show_controlbox_by_default) { this.showControlBox(); }
+        if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
     };
     return {
         'initialize': function (settings, callback) {

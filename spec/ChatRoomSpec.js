@@ -1,46 +1,31 @@
 (function (root, factory) {
     define([
-        "mock"
-        ], function (mock_connection) {
-            return factory(mock_connection);
+        "mock",
+        "utils"
+        ], function (mock, utils) {
+            return factory(mock, utils);
         }
     );
-} (this, function (mock_connection) {
-    return describe("ChatRooms", $.proxy(function() {
-        var chatroom_names = [
-            'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
-        ];
-        closeChatRoom = function (name) {
-            converse.chatboxesview.views['lounge@muc.localhost'].closeChat();
-        };
-
+} (this, function (mock, utils) {
+    return describe("ChatRooms", $.proxy(function (mock, utils) {
         describe("A Chat Room", $.proxy(function () {
-            beforeEach($.proxy(function () {
-                if (!$("div#controlbox").is(':visible')) {
-                    $('.toggle-online-users').click();
-                }
-                var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
-                var $input = roomspanel.$el.find('input.new-chatroom-name');
-                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
-                var $server = roomspanel.$el.find('input.new-chatroom-server');
-                $input.val('lounge');
-                $nick.val('dummy');
-                $server.val('muc.localhost');
-                roomspanel.$el.find('form').submit();
-                $('.toggle-online-users').click();
-            }, converse));
+
+            beforeEach(function () {
+                utils.closeAllChatBoxes();
+                utils.createNewChatRoom('lounge', 'dummy');
+            });
 
             it("shows users currently present in the room", $.proxy(function () {
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'],
                     $participant_list;
                 var roster = {}, room = {}, i;
 
-                for (i=0; i<chatroom_names.length-1; i++) {
-                    roster[chatroom_names[i]] = {};
+                for (i=0; i<mock.chatroom_names.length-1; i++) {
+                    roster[mock.chatroom_names[i]] = {};
                     chatroomview.onChatRoomRoster(roster, room);
                     $participant_list = chatroomview.$el.find('.participant-list');
                     expect($participant_list.find('li').length).toBe(1+i);
-                    expect($($participant_list.find('li')[i]).text()).toBe(chatroom_names[i]);
+                    expect($($participant_list.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
                 }
                 roster[converse.bare_jid] = {};
                 chatroomview.onChatRoomRoster(roster, room);
@@ -48,13 +33,13 @@
 
             it("indicates moderators by means of a special css class and tooltip", $.proxy(function () {
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'];
-                var roster = {}, idx = chatroom_names.length-1;
-                roster[chatroom_names[idx]] = {};
-                roster[chatroom_names[idx]].role = 'moderator';
+                var roster = {}, idx = mock.chatroom_names.length-1;
+                roster[mock.chatroom_names[idx]] = {};
+                roster[mock.chatroom_names[idx]].role = 'moderator';
                 chatroomview.onChatRoomRoster(roster, {});
                 var occupant = chatroomview.$el.find('.participant-list').find('li');
                 expect(occupant.length).toBe(1);
-                expect($(occupant).text()).toBe(chatroom_names[idx]);
+                expect($(occupant).text()).toBe(mock.chatroom_names[idx]);
                 expect($(occupant).attr('class')).toBe('moderator');
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
             }, converse));
@@ -62,7 +47,7 @@
             it("shows received and sent groupchat messages", $.proxy(function () {
                 var view = this.chatboxesview.views['lounge@muc.localhost'];
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                var nick = chatroom_names[0];
+                var nick = mock.chatroom_names[0];
                 var text = 'This is a received message';
                 var message = $msg({
                     from: 'lounge@muc.localhost/'+nick,
@@ -268,5 +253,5 @@
                 expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");
             }, converse));
         }, converse));
-    }, converse));
+    }, converse, mock, utils));
 }));

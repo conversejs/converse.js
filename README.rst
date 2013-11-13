@@ -11,8 +11,6 @@ It enables you to add chat functionality to your website, independent of any
 specific backend. You will however need an XMPP server to connect to, either
 your own, or a public one.
 
-It is used by collective.xmpp.chat_, which is a Plone_ instant messaging add-on.
-
 --------
 Features
 --------
@@ -32,6 +30,7 @@ It has the following features:
 * Typing notifications
 * Third person messages (/me )
 * Translated into multiple languages  (af, de, es, fr, it, hu, pt-BR, ru)
+* Off-the-record encryption support (via `OTR.js <http://arlolra.github.io/otr>`_)
 
 -----------
 Screencasts
@@ -39,6 +38,16 @@ Screencasts
 
 * `In a static HTML page`_. Here we chat to external XMPP accounts on Jabber.org and Gmail.
 * `Integrated into a Plone site`_ via collective.xmpp.chat.
+
+Integration into other frameworks
+---------------------------------
+
+* `Plone <http://plone.org>`_: 
+    `collective.xmpp.chat <http://github.com/collective/collective.xmpp.chat>`_ is an add-on for Plone that uses *Converse.js*. Together with `collective.xmpp.core <http://github.com/collective/collective.xmpp.core>`_, it provides for single-signon-support (SSO) and also enables you to manually or automatically register your Plone users onto your XMPP server.
+* `Django <http://www.djangoproject.com>`_: 
+    `django-conversejs <https://pypi.python.org/pypi/django-conversejs>`_ is an app that makes it easer to integrate *Converse.js* into Django.
+* `Roundcube <http://roundcube.net>`_: 
+    `roundcube-converse.js-xmpp-plugin <https://github.com/thomascube/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
 
 ----
 Demo
@@ -80,7 +89,8 @@ Licence
 Donate
 ------
 
-Bitcoin address: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
+* Bitcoin: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
+* Litecoin: LLvLH6qJch7HAamLguHkwobCrxmHLhiwZw
 
 .. _Converse.js: http://conversejs.org
 .. _strophe.js: http://strophe.im/strophejs

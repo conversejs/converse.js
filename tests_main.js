@@ -1,4 +1,3 @@
-
 require.config({
     paths: {
         "jquery": "components/jquery/jquery",
@@ -12,7 +11,25 @@ require.config({
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
+        "salsa20": "components/otr/build/dep/salsa20",
+        "bigint": "components/otr/build/dep/bigint",
+        "crypto.core": "components/otr/vendor/cryptojs/core",
+        "crypto.enc-base64": "components/otr/vendor/cryptojs/enc-base64",
+        "crypto.md5": "components/crypto-js/src/md5",
+        "crypto.evpkdf": "components/crypto-js/src/evpkdf",
+        "crypto.cipher-core": "components/otr/vendor/cryptojs/cipher-core",
+        "crypto.aes": "components/otr/vendor/cryptojs/aes",
+        "crypto.sha1": "components/otr/vendor/cryptojs/sha1",
+        "crypto.sha256": "components/otr/vendor/cryptojs/sha256",
+        "crypto.hmac": "components/otr/vendor/cryptojs/hmac",
+        "crypto.pad-nopadding": "components/otr/vendor/cryptojs/pad-nopadding",
+        "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
+        "crypto": "crypto",
+        "eventemitter": "components/otr/build/dep/eventemitter",
+        "otr": "components/otr/build/otr",
         // Extra test dependencies
+        "mock": "tests/mock",
+        "utils": "tests/utils",
         "jasmine": "components/jasmine/lib/jasmine-core/jasmine",
         "jasmine-html": "components/jasmine/lib/jasmine-core/jasmine-html",
         "jasmine-console-reporter": "node_modules/jasmine-reporters/src/jasmine.console_reporter",
@@ -32,7 +49,7 @@ require.config({
             //module value.
             exports: 'Backbone'
         },
-        'tinysort': { deps: ['jquery'] },
+        'jquery.tinysort': { deps: ['jquery'] },
         'strophe': { deps: ['jquery'] },
         'underscore':   { exports: '_' },
         'strophe.muc':  { deps: ['strophe', 'jquery'] },
@@ -55,12 +72,32 @@ require.config({
     }
 });
 
+// Polyfill 'bind' which is not available in phantomjs < 2.0
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+        if (typeof this !== "function") {
+            // closest thing possible to the ECMAScript 5 internal IsCallable function
+            throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+        }
+        var aArgs = Array.prototype.slice.call(arguments, 1), 
+            fToBind = this, 
+            fNOP = function () {},
+            fBound = function () {
+            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
+                aArgs.concat(Array.prototype.slice.call(arguments)));
+            };
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
+        return fBound;
+    };
+}
+
 require([
     "jquery",
     "converse",
     "mock",
     "jasmine-html"
-    ], function($, converse, mock_connection, jasmine) {
+    ], function($, converse, mock, jasmine) {
         // Set up converse.js
         window.localStorage.clear();
         converse.initialize({
@@ -68,16 +105,20 @@ require([
             xhr_user_search: false,
             auto_subscribe: false,
             animate: false,
-            connection: mock_connection,
+            connection: mock.mock_connection,
             testing: true
         }, function (converse) {
             window.converse = converse;
             require([
                 "jasmine-console-reporter",
                 "jasmine-junit-reporter",
-                "spec/MainSpec",
+                "spec/ControlBoxSpec",
+                "spec/ChatBoxSpec",
                 "spec/ChatRoomSpec"
             ], function () {
+                // Make sure this callback is only called once.
+                delete converse.callback;
+
                 // Jasmine stuff
                 var jasmineEnv = jasmine.getEnv();
                 if (/PhantomJS/.test(navigator.userAgent)) {
@@ -92,7 +133,7 @@ require([
                     jasmineEnv.specFilter = function(spec) {
                         return htmlReporter.specFilter(spec);
                     };
-                    jasmineEnv.updateInterval = 200;
+                    jasmineEnv.updateInterval = 100;
                 }
                 jasmineEnv.execute();
             });

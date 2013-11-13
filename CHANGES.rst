@@ -1,6 +1,29 @@
 Changelog
 =========
 
+0.7.0 (2013-11-13)
+------------------
+
+.. Note ::
+    This release introduces a backward incompatible change. The boilerplate
+    HTML needed in your webpage for converse.js to work has been reduced to a
+    single div: <div id="conversejs"></div>
+
+Features:
+~~~~~~~~~
+
+* Add a toolbar for single user chat [jcbrand]
+* Add support for OTR (off-the-record) encryption [jcbrand]
+* Add support for smileys [jcbrand]
+* Simplified boilerplate markup [jcbrand]
+* New configuration settings, ``xhr_custom_status_url`` and ``xhr_user_search_url`` [jcbrand]
+
+Bugfixes:
+~~~~~~~~~
+
+* #58 Contact's name gets replaced with their JID [jcbrand]
+* #81 Requesting contacts appear as pending contacts [jcbrand]
+
 0.6.6 (2013-10-16)
 ------------------
 

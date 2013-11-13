@@ -6,19 +6,115 @@
                 "": {
                     "Project-Id-Version": "Converse.js 0.4",
                     "Report-Msgid-Bugs-To": "",
-                    "POT-Creation-Date": "2013-07-20 23:03+0200",
-                    "PO-Revision-Date": "2013-07-20 13:58+0200",
+                    "POT-Creation-Date": "2013-09-15 21:55+0200",
+                    "PO-Revision-Date": "2013-09-15 22:00+0200",
                     "Last-Translator": "Fabio Bas <ctrlaltca@gmail.com>",
                     "Language-Team": "Italian",
                     "Language": "it",
                     "MIME-Version": "1.0",
-                    "Content-Type": "text/plain; charset=ASCII",
+                    "Content-Type": "text/plain; charset=UTF-8",
                     "Content-Transfer-Encoding": "8bit",
                     "Plural-Forms": "nplurals=2; plural=(n != 1);",
                     "domain": "converse",
                     "lang": "it",
                     "plural_forms": "nplurals=2; plural=(n != 1);"
                 },
+                "unencrypted": [
+                    null,
+                    ""
+                ],
+                "unverified": [
+                    null,
+                    ""
+                ],
+                "verified": [
+                    null,
+                    ""
+                ],
+                "finished": [
+                    null,
+                    ""
+                ],
+                "Disconnected": [
+                    null,
+                    "Disconnesso"
+                ],
+                "Error": [
+                    null,
+                    "Errore"
+                ],
+                "Connecting": [
+                    null,
+                    "Connessione in corso"
+                ],
+                "Connection Failed": [
+                    null,
+                    "Connessione fallita"
+                ],
+                "Authenticating": [
+                    null,
+                    "Autenticazione in corso"
+                ],
+                "Authentication Failed": [
+                    null,
+                    "Autenticazione fallita"
+                ],
+                "Disconnecting": [
+                    null,
+                    "Disconnessione in corso"
+                ],
+                "Re-establishing encrypted session": [
+                    null,
+                    ""
+                ],
+                "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+                    null,
+                    ""
+                ],
+                "Private key generated.": [
+                    null,
+                    ""
+                ],
+                "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+                    null,
+                    ""
+                ],
+                "Could not verify this user's identify.": [
+                    null,
+                    ""
+                ],
+                "Personal message": [
+                    null,
+                    "Messaggio personale"
+                ],
+                "Start encrypted conversation": [
+                    null,
+                    ""
+                ],
+                "Refresh encrypted conversation": [
+                    null,
+                    ""
+                ],
+                "End encrypted conversation": [
+                    null,
+                    ""
+                ],
+                "Verify with SMP": [
+                    null,
+                    ""
+                ],
+                "Verify with fingerprints": [
+                    null,
+                    ""
+                ],
+                "What's this?": [
+                    null,
+                    ""
+                ],
+                "me": [
+                    null,
+                    ""
+                ],
                 "Show this menu": [
                     null,
                     "Mostra questo menu"
@@ -31,9 +127,73 @@
                     null,
                     "Rimuovi messaggi"
                 ],
-                "Personal message": [
+                "Your message could not be sent": [
                     null,
-                    "Messaggio personale"
+                    ""
+                ],
+                "We received an unencrypted message": [
+                    null,
+                    ""
+                ],
+                "We received an unreadable encrypted message": [
+                    null,
+                    ""
+                ],
+                "This user has requested an encrypted session.": [
+                    null,
+                    ""
+                ],
+                "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+                    null,
+                    ""
+                ],
+                "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+                    null,
+                    ""
+                ],
+                "What is your security question?": [
+                    null,
+                    ""
+                ],
+                "What is the answer to the security question?": [
+                    null,
+                    ""
+                ],
+                "Invalid authentication scheme provided": [
+                    null,
+                    ""
+                ],
+                "Your messages are not encrypted anymore": [
+                    null,
+                    ""
+                ],
+                "Your messages are now encrypted but your buddy's identity has not been verified.": [
+                    null,
+                    ""
+                ],
+                "Your buddy's identify has been verified.": [
+                    null,
+                    ""
+                ],
+                "Your buddy has ended encryption on their end, you should do the same.": [
+                    null,
+                    ""
+                ],
+                "Your messages are not encrypted. Click here to enable OTR encryption.": [
+                    null,
+                    ""
+                ],
+                "Your messages are encrypted, but your buddy has not been verified.": [
+                    null,
+                    ""
+                ],
+                "Your messages are encrypted and your buddy verified.": [
+                    null,
+                    ""
+                ],
+                "Your buddy has closed their end of the private session, you should do the same": [
+                    null,
+                    ""
                 ],
                 "Contacts": [
                     null,
@@ -61,7 +221,7 @@
                 ],
                 "Add a contact": [
                     null,
-                    "Aggiungi un contatto"
+                    "Aggiungi contatti"
                 ],
                 "Contact username": [
                     null,
@@ -93,7 +253,7 @@
                 ],
                 "Show more information on this room": [
                     null,
-                    "Mostra piÃ¹ informazioni su questa stanza"
+                    "Mostra più informazioni su questa stanza"
                 ],
                 "Description:": [
                     null,
@@ -105,7 +265,7 @@
                 ],
                 "Features:": [
                     null,
-                    "FunzionalitÃ :"
+                    "Funzionalità:"
                 ],
                 "Requires authentication": [
                     null,
@@ -225,7 +385,7 @@
                 ],
                 "This room is not anonymous": [
                     null,
-                    "Questa stanza non Ã¨ anonima"
+                    "Questa stanza non è anonima"
                 ],
                 "This room now shows unavailable members": [
                     null,
@@ -237,51 +397,51 @@
                 ],
                 "Non-privacy-related room configuration has changed": [
                     null,
-                    "Una configurazione della stanza non legata alla privacy Ã¨ stata modificata"
+                    "Una configurazione della stanza non legata alla privacy è stata modificata"
                 ],
                 "Room logging is now enabled": [
                     null,
-                    "La registrazione Ã¨ abilitata nella stanza"
+                    "La registrazione è abilitata nella stanza"
                 ],
                 "Room logging is now disabled": [
                     null,
-                    "La registrazione Ã¨ disabilitata nella stanza"
+                    "La registrazione è disabilitata nella stanza"
                 ],
                 "This room is now non-anonymous": [
                     null,
-                    "Questa stanza Ã¨ non-anonima"
+                    "Questa stanza è non-anonima"
                 ],
                 "This room is now semi-anonymous": [
                     null,
-                    "Questa stanza Ã¨ semi-anonima"
+                    "Questa stanza è semi-anonima"
                 ],
                 "This room is now fully-anonymous": [
                     null,
-                    "Questa stanza Ã¨ completamente-anonima"
+                    "Questa stanza è completamente-anonima"
                 ],
                 "A new room has been created": [
                     null,
-                    "Una nuova stanza Ã¨ stata creata"
+                    "Una nuova stanza è stata creata"
                 ],
                 "Your nickname has been changed": [
                     null,
-                    "Il tuo soprannome Ã¨ stato cambiato"
+                    "Il tuo soprannome è stato cambiato"
                 ],
                 "<strong>%1$s</strong> has been banned": [
                     null,
-                    "<strong>%1$s</strong> Ã¨ stato bandito"
+                    "<strong>%1$s</strong> è stato bandito"
                 ],
                 "<strong>%1$s</strong> has been kicked out": [
                     null,
-                    "<strong>%1$s</strong> Ã¨ stato espulso"
+                    "<strong>%1$s</strong> è stato espulso"
                 ],
                 "<strong>%1$s</strong> has been removed because of an affiliation change": [
                     null,
-                    "<strong>%1$s</strong> Ã¨ stato rimosso a causa di un cambio di affiliazione"
+                    "<strong>%1$s</strong> è stato rimosso a causa di un cambio di affiliazione"
                 ],
                 "<strong>%1$s</strong> has been removed for not being a member": [
                     null,
-                    "<strong>%1$s</strong> Ã¨ stato rimosso in quanto non membro"
+                    "<strong>%1$s</strong> è stato rimosso in quanto non membro"
                 ],
                 "You have been banned from this room": [
                     null,
@@ -297,11 +457,11 @@
                 ],
                 "You have been removed from this room because the room has changed to members-only and you're not a member": [
                     null,
-                    "Sei stato rimosso da questa stanza poichÃ© ora la stanza accetta solo membri"
+                    "Sei stato rimosso da questa stanza poiché ora la stanza accetta solo membri"
                 ],
                 "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
                     null,
-                    "Sei stato rimosso da questa stanza poichÃ© il servizio MUC (Chat multi utente) Ã¨ in fase di spegnimento"
+                    "Sei stato rimosso da questa stanza poiché il servizio MUC (Chat multi utente) è in fase di spegnimento"
                 ],
                 "You are not on the member list of this room": [
                     null,
@@ -313,15 +473,15 @@
                 ],
                 "You are not allowed to create new rooms": [
                     null,
-                    "Non ti Ã¨ permesso creare nuove stanze"
+                    "Non ti è permesso creare nuove stanze"
                 ],
                 "Your nickname doesn't conform to this room's policies": [
                     null,
-                    "Il tuo soprannome non Ã¨ conforme alle regole di questa stanza"
+                    "Il tuo soprannome non è conforme alle regole di questa stanza"
                 ],
                 "Your nickname is already taken": [
                     null,
-                    "Il tuo soprannome Ã¨ giÃ  utilizzato"
+                    "Il tuo soprannome è già utilizzato"
                 ],
                 "This room does not (yet) exist": [
                     null,
@@ -337,15 +497,15 @@
                 ],
                 "This user is a moderator": [
                     null,
-                    "Questo utente Ã¨ un moderatore"
+                    "Questo utente è un moderatore"
                 ],
                 "This user can send messages in this room": [
                     null,
-                    "Questo utente puÃ² inviare messaggi in questa stanza"
+                    "Questo utente può inviare messaggi in questa stanza"
                 ],
                 "This user can NOT send messages in this room": [
                     null,
-                    "Questo utente NON puÃ² inviare messaggi in questa stanza"
+                    "Questo utente NON può inviare messaggi in questa stanza"
                 ],
                 "Click to chat with this contact": [
                     null,
@@ -354,6 +514,30 @@
                 "Click to remove this contact": [
                     null,
                     "Clicca per rimuovere questo contatto"
+                ],
+                "This contact is busy": [
+                    null,
+                    ""
+                ],
+                "This contact is online": [
+                    null,
+                    ""
+                ],
+                "This contact is offline": [
+                    null,
+                    ""
+                ],
+                "This contact is unavailable": [
+                    null,
+                    "Questa stanza mostra i membri non disponibili al momento"
+                ],
+                "This contact is away for an extended period": [
+                    null,
+                    ""
+                ],
+                "This contact is away": [
+                    null,
+                    ""
                 ],
                 "Contact requests": [
                     null,
@@ -401,7 +585,7 @@
                 ],
                 "Sign in": [
                     null,
-                    "Entra"
+                    "Accesso"
                 ],
                 "XMPP/Jabber Username:": [
                     null,
@@ -419,45 +603,17 @@
                     null,
                     "Indirizzo servizio BOSH:"
                 ],
+                "Online Contacts": [
+                    null,
+                    "Contatti in linea"
+                ],
                 "Connected": [
                     null,
                     "Connesso"
                 ],
-                "Disconnected": [
-                    null,
-                    "Disconnesso"
-                ],
-                "Error": [
-                    null,
-                    "Errore"
-                ],
-                "Connecting": [
-                    null,
-                    "Connessione in corso"
-                ],
-                "Connection Failed": [
-                    null,
-                    "Connessione fallita"
-                ],
-                "Authenticating": [
-                    null,
-                    "Autenticazione in corso"
-                ],
-                "Authentication Failed": [
-                    null,
-                    "Autenticazione fallita"
-                ],
-                "Disconnecting": [
-                    null,
-                    "Disconnessione in corso"
-                ],
                 "Attached": [
                     null,
                     "Allegato"
-                ],
-                "Online Contacts": [
-                    null,
-                    "Contatti in linea"
                 ]
             }
         }

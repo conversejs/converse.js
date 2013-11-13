@@ -38,6 +38,7 @@ Screencasts
 
 * `In a static HTML page`_. Here we chat to external XMPP accounts on Jabber.org and Gmail.
 * `Integrated into a Plone site`_ via collective.xmpp.chat.
+* `Off-the-record encryption <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_ in Converse 0.7.
 
 Integration into other frameworks
 ---------------------------------

@@ -12,7 +12,7 @@ Changelog
 Features:
 ~~~~~~~~~
 
-* Add a toolbar for single user chat [jcbrand]
+* Add a toolbar to the chat boxes [jcbrand]
 * Add support for OTR (off-the-record) encryption [jcbrand]
 * Add support for smileys [jcbrand]
 * Simplified boilerplate markup [jcbrand]

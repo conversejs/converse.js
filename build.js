@@ -26,11 +26,21 @@
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
+        "salsa20": "components/otr/build/dep/salsa20",
         "bigint": "components/otr/build/dep/bigint",
-        "crypto": "components/otr/build/dep/crypto",
-        "crypto.aes": "components/crypto-js/build/rollups/aes",
+        "crypto.core": "components/otr/vendor/cryptojs/core",
+        "crypto.enc-base64": "components/otr/vendor/cryptojs/enc-base64",
+        "crypto.md5": "components/crypto-js/src/md5",
+        "crypto.evpkdf": "components/crypto-js/src/evpkdf",
+        "crypto.cipher-core": "components/otr/vendor/cryptojs/cipher-core",
+        "crypto.aes": "components/otr/vendor/cryptojs/aes",
+        "crypto.sha1": "components/otr/vendor/cryptojs/sha1",
+        "crypto.sha256": "components/otr/vendor/cryptojs/sha256",
+        "crypto.hmac": "components/otr/vendor/cryptojs/hmac",
+        "crypto.pad-nopadding": "components/otr/vendor/cryptojs/pad-nopadding",
+        "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
+        "crypto": "crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
-        "otr": "components/otr/build/otr",
-        "salsa20": "components/otr/build/dep/salsa20"
+        "otr": "components/otr/build/otr"
     }
 })

@@ -12,6 +12,18 @@
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
+        var on_load = function(CryptoJS, otr) {
+            // Use Mustache style syntax for variable interpolation
+            _.templateSettings = {
+                evaluate : /\{\[([\s\S]+?)\]\}/g,
+                interpolate : /\{\{([\s\S]+?)\}\}/g
+            };
+            if (typeof otr !== "undefined") {
+                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+            } else {
+                return factory(jQuery, _, undefined, undefined, undefined, console);
+            }
+        };
         var dependencies = [
             "crypto",
             "otr",
@@ -24,28 +36,25 @@
             "strophe.vcard",
             "strophe.disco"
         ];
-
-        if ((typeof crypto === 'undefined') ||
-            (    (typeof crypto.randomBytes !== 'function') &&
-                 (typeof crypto.getRandomValues !== 'function')
-            )) {
+        try {
+            define("converse", [
+                "crypto",
+                "otr",
+                "locales",
+                "backbone.localStorage",
+                "jquery.tinysort",
+                "strophe",
+                "strophe.muc",
+                "strophe.roster",
+                "strophe.vcard",
+                "strophe.disco"
+            ], on_load);
+        } catch (e) {
+            console.log(e);
             // Don't load crypto stuff if the browser doesn't have a CSRNG
             dependencies.splice(0, 2);
+            define("converse", dependencies, on_load);
         }
-        define("converse", dependencies, function(CryptoJS, otr) {
-                // Use Mustache style syntax for variable interpolation
-                _.templateSettings = {
-                    evaluate : /\{\[([\s\S]+?)\]\}/g,
-                    interpolate : /\{\{([\s\S]+?)\}\}/g
-                };
-                if (typeof otr !== "undefined") {
-                    return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
-                } else {
-                    return factory(jQuery, _, undefined, undefined, undefined, console);
-                }
-
-            }
-        );
     } else {
         // Browser globals
         _.templateSettings = {

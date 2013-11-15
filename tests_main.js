@@ -12,7 +12,7 @@ require.config({
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
         "salsa20": "components/otr/build/dep/salsa20",
-        "bigint": "components/otr/build/dep/bigint",
+        "bigint": "src/bigint",
         "crypto.core": "components/otr/vendor/cryptojs/core",
         "crypto.enc-base64": "components/otr/vendor/cryptojs/enc-base64",
         "crypto.md5": "components/crypto-js/src/md5",

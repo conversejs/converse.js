@@ -739,9 +739,13 @@
                     return;
                 }
                 var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                    canvas = $('<canvas height="33px" width="33px" class="avatar"></canvas>'),
-                    ctx = canvas.get(0).getContext('2d'),
-                    img = new Image();   // Create new Image object
+                    canvas = $('<canvas height="33px" width="33px" class="avatar"></canvas>').get(0);
+
+                if (!(canvas.getContext && canvas.getContext('2d'))) {
+                    return this;
+                }
+                var ctx = canvas.getContext('2d');
+                var img = new Image();   // Create new Image object
                 img.onload = function() {
                     var ratio = img.width/img.height;
                     ctx.drawImage(img, 0,0, 35*ratio, 35);

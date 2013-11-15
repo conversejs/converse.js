@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Don't load OTR crypto if the browser doesn't have a CSRNG [jcbrand]
+* Check if canvas is supported before trying to render the user avatar [jcbrand]
 
 0.7.0 (2013-11-13)
 ------------------

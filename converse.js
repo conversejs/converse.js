@@ -12,19 +12,7 @@
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
-        var on_load = function(CryptoJS, otr) {
-            // Use Mustache style syntax for variable interpolation
-            _.templateSettings = {
-                evaluate : /\{\[([\s\S]+?)\]\}/g,
-                interpolate : /\{\{([\s\S]+?)\}\}/g
-            };
-            if (typeof otr !== "undefined") {
-                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
-            } else {
-                return factory(jQuery, _, undefined, undefined, undefined, console);
-            }
-        };
-        var dependencies = [
+        define("converse", [
             "crypto",
             "otr",
             "locales",
@@ -35,26 +23,14 @@
             "strophe.roster",
             "strophe.vcard",
             "strophe.disco"
-        ];
-        try {
-            define("converse", [
-                "crypto",
-                "otr",
-                "locales",
-                "backbone.localStorage",
-                "jquery.tinysort",
-                "strophe",
-                "strophe.muc",
-                "strophe.roster",
-                "strophe.vcard",
-                "strophe.disco"
-            ], on_load);
-        } catch (e) {
-            console.log(e);
-            // Don't load crypto stuff if the browser doesn't have a CSRNG
-            dependencies.splice(0, 2);
-            define("converse", dependencies, on_load);
-        }
+        ], function(CryptoJS, otr) {
+            // Use Mustache style syntax for variable interpolation
+            _.templateSettings = {
+                evaluate : /\{\[([\s\S]+?)\]\}/g,
+                interpolate : /\{\{([\s\S]+?)\}\}/g
+            };
+            return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+        });
     } else {
         // Browser globals
         _.templateSettings = {
@@ -77,11 +53,10 @@
         var KEY = {
             ENTER: 13
         };
-        var HAS_CRYPTO = (
-            (typeof CryptoJS !== "undefined") &&
-            (typeof OTR !== "undefined") &&
-            (typeof DSA !== "undefined")
-        );
+        var HAS_CSPRNG = ((typeof crypto === 'undefined') || (
+            (typeof crypto.randomBytes !== 'function') &&
+            (typeof crypto.getRandomValues !== 'function')
+        ));
 
         // Default configuration values
         // ----------------------------
@@ -134,7 +109,7 @@
         ]));
 
         // Only allow OTR if we have the capability
-        this.allow_otr = this.allow_otr && HAS_CRYPTO;
+        this.allow_otr = this.allow_otr && HAS_CSPRNG;
 
         // Translation machinery
         // ---------------------

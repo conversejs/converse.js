@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.7.1 (Unreleased)
+------------------
+
+* Don't load OTR crypto if the browser doesn't have a CSRNG [jcbrand]
+
 0.7.0 (2013-11-13)
 ------------------
 

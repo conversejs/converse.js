@@ -12,7 +12,7 @@
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
-        define("converse", [
+        var dependencies = [
             "crypto",
             "otr",
             "locales",
@@ -23,13 +23,27 @@
             "strophe.roster",
             "strophe.vcard",
             "strophe.disco"
-            ], function(CryptoJS, otr) {
+        ];
+
+        if ((typeof crypto === 'undefined') ||
+            (    (typeof crypto.randomBytes !== 'function') &&
+                 (typeof crypto.getRandomValues !== 'function')
+            )) {
+            // Don't load crypto stuff if the browser doesn't have a CSRNG
+            dependencies.splice(0, 2);
+        }
+        define("converse", dependencies, function(CryptoJS, otr) {
                 // Use Mustache style syntax for variable interpolation
                 _.templateSettings = {
                     evaluate : /\{\[([\s\S]+?)\]\}/g,
                     interpolate : /\{\{([\s\S]+?)\}\}/g
                 };
-                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+                if (typeof otr !== "undefined") {
+                    return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+                } else {
+                    return factory(jQuery, _, undefined, undefined, undefined, console);
+                }
+
             }
         );
     } else {
@@ -54,6 +68,11 @@
         var KEY = {
             ENTER: 13
         };
+        var HAS_CRYPTO = (
+            (typeof CryptoJS !== "undefined") &&
+            (typeof OTR !== "undefined") &&
+            (typeof DSA !== "undefined")
+        );
 
         // Default configuration values
         // ----------------------------
@@ -104,6 +123,9 @@
             'xhr_user_search',
             'xhr_user_search_url'
         ]));
+
+        // Only allow OTR if we have the capability
+        this.allow_otr = this.allow_otr && HAS_CRYPTO;
 
         // Translation machinery
         // ---------------------

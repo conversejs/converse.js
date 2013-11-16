@@ -57,9 +57,9 @@
         var KEY = {
             ENTER: 13
         };
-        var HAS_CSPRNG = ((typeof crypto === 'undefined') || (
-            (typeof crypto.randomBytes !== 'function') &&
-            (typeof crypto.getRandomValues !== 'function')
+        var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
+            ((typeof crypto.randomBytes === 'function') ||
+                (typeof crypto.getRandomValues === 'function')
         ));
         var HAS_CRYPTO = HAS_CSPRNG && (
             (typeof CryptoJS !== "undefined") &&

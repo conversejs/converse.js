@@ -1666,9 +1666,9 @@
   }
 
   ;(function seed() {
-    var HAS_CSPRNG = ((typeof crypto === 'undefined') || 
-        ((typeof crypto.randomBytes !== 'function') &&
-            (typeof crypto.getRandomValues !== 'function')
+    var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
+        ((typeof crypto.randomBytes === 'function') ||
+            (typeof crypto.getRandomValues === 'function')
     ));
     if (!HAS_CSPRNG) {
         return;

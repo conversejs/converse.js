@@ -29,7 +29,11 @@
                 evaluate : /\{\[([\s\S]+?)\]\}/g,
                 interpolate : /\{\{([\s\S]+?)\}\}/g
             };
-            return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+            if (typeof otr !== "undefined") {
+                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+            } else {
+                return factory(jQuery, _, undefined, undefined, undefined, console);
+            }
         });
     } else {
         // Browser globals
@@ -57,6 +61,11 @@
             (typeof crypto.randomBytes !== 'function') &&
             (typeof crypto.getRandomValues !== 'function')
         ));
+        var HAS_CRYPTO = HAS_CSPRNG && (
+            (typeof CryptoJS !== "undefined") &&
+            (typeof OTR !== "undefined") &&
+            (typeof DSA !== "undefined")
+        );
 
         // Default configuration values
         // ----------------------------
@@ -109,7 +118,7 @@
         ]));
 
         // Only allow OTR if we have the capability
-        this.allow_otr = this.allow_otr && HAS_CSPRNG;
+        this.allow_otr = this.allow_otr && HAS_CRYPTO;
 
         // Translation machinery
         // ---------------------

@@ -5,15 +5,21 @@ Changelog
 ------------------
 
 * Don't load OTR crypto if the browser doesn't have a CSRNG [jcbrand]
+* Don't break when crypto libraries aren't defined. [jcbrand]
 * Check if canvas is supported before trying to render the user avatar [jcbrand]
 
 0.7.0 (2013-11-13)
 ------------------
 
-.. Note ::
-    This release introduces a backward incompatible change. The boilerplate
-    HTML needed in your webpage for converse.js to work has been reduced to a
-    single div: <div id="conversejs"></div>
+Important:
+**********
+
+This release includes support for [Off-the-record encryption](https://otr.cypherpunks.ca).
+For this to work, your browser needs a CSPRNG (Cryptographically secure pseudorandom number generator).
+
+Internet Explorer of all versions doesn't have one at all, neither does older versions of Firefox.
+
+If you need to support older browsers, please download the latest release from the 0.6 bran
 
 Features:
 ~~~~~~~~~
@@ -23,6 +29,11 @@ Features:
 * Add support for smileys [jcbrand]
 * Simplified boilerplate markup [jcbrand]
 * New configuration settings, ``xhr_custom_status_url`` and ``xhr_user_search_url`` [jcbrand]
+
+.. Note ::
+    This release introduces a backward incompatible change. The boilerplate
+    HTML needed in your webpage for converse.js to work has been reduced to a
+    single div: <div id="conversejs"></div>
 
 Bugfixes:
 ~~~~~~~~~

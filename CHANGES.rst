@@ -7,6 +7,11 @@ Changelog
 * Don't load OTR crypto if the browser doesn't have a CSRNG [jcbrand]
 * Don't break when crypto libraries aren't defined. [jcbrand]
 * Check if canvas is supported before trying to render the user avatar [jcbrand]
+* Use newest strophe.muc plugin. Fixes #85 [jcbrand]
+
+.. note ::
+    If you are using the development libraries, you'll need to run ```bower update```
+    to fetch the newest strophe.muc.plugin (for bugfix of #85).
 
 0.7.0 (2013-11-13)
 ------------------
@@ -30,7 +35,7 @@ Features:
 * Simplified boilerplate markup [jcbrand]
 * New configuration settings, ``xhr_custom_status_url`` and ``xhr_user_search_url`` [jcbrand]
 
-.. Note ::
+.. note ::
     This release introduces a backward incompatible change. The boilerplate
     HTML needed in your webpage for converse.js to work has been reduced to a
     single div: <div id="conversejs"></div>

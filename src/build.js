@@ -1,7 +1,7 @@
 ({
-    baseUrl: ".",
+    baseUrl: "../",
     name: "components/almond/almond.js",
-    out: "converse.min.js",
+    out: "../builds/converse.min.js",
     include: ['main'],
     paths: {
         "jquery": "components/jquery/jquery",
@@ -39,8 +39,9 @@
         "crypto.hmac": "components/otr/vendor/cryptojs/hmac",
         "crypto.pad-nopadding": "components/otr/vendor/cryptojs/pad-nopadding",
         "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
-        "crypto": "crypto",
+        "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
-        "otr": "components/otr/build/otr"
+        "otr": "components/otr/build/otr",
+        "converse-dependencies": "src/deps-full"
     }
 })

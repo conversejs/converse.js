@@ -12,27 +12,16 @@
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
-        define("converse", [
-            "crypto",
-            "otr",
-            "locales",
-            "backbone.localStorage",
-            "jquery.tinysort",
-            "strophe",
-            "strophe.muc",
-            "strophe.roster",
-            "strophe.vcard",
-            "strophe.disco"
-        ], function(CryptoJS, otr) {
+        define("converse", ["converse-dependencies"], function(otr) {
             // Use Mustache style syntax for variable interpolation
             _.templateSettings = {
                 evaluate : /\{\[([\s\S]+?)\]\}/g,
                 interpolate : /\{\{([\s\S]+?)\}\}/g
             };
             if (typeof otr !== "undefined") {
-                return factory(jQuery, _, CryptoJS, otr.OTR, otr.DSA, console);
+                return factory(jQuery, _, otr.OTR, otr.DSA, console);
             } else {
-                return factory(jQuery, _, undefined, undefined, undefined, console);
+                return factory(jQuery, _, undefined, undefined, console);
             }
         });
     } else {
@@ -41,9 +30,9 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, CryptoJS, OTR, DSA, console || {log: function(){}});
+        root.converse = factory(jQuery, _, OTR, DSA, console || {log: function(){}});
     }
-}(this, function ($, _, CryptoJS, OTR, DSA, console) {
+}(this, function ($, _, OTR, DSA, console) {
     var converse = {};
     converse.initialize = function (settings, callback) {
         var converse = this;

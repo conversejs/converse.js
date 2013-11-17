@@ -70,15 +70,17 @@ module.exports = function(grunt) {
         var done = this.async();
         var child_process = require('child_process');
         var exec = child_process.exec;
-        exec('./node_modules/requirejs/bin/r.js -o build.js',
-             function (err, stdout, stderr) {
-                if (err) {
-                    grunt.log.write('build failed with error code '+err.code);
-                    grunt.log.write(stderr);
-                }
-                grunt.log.write(stdout);
-                done();
-        });
+        var callback = function (err, stdout, stderr) {
+            if (err) {
+                grunt.log.write('build failed with error code '+err.code);
+                grunt.log.write(stderr);
+            }
+            grunt.log.write(stdout);
+            done();
+        };
+        exec('./node_modules/requirejs/bin/r.js -o src/build.js && ' +
+             './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ' +
+             './node_modules/requirejs/bin/r.js -o src/build-no-otr.js', callback);
     });
 
     grunt.registerTask('minify', 'Create a new release', ['cssmin', 'jsmin']);

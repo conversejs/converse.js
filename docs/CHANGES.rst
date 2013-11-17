@@ -13,6 +13,11 @@ Changelog
     If you are using the development libraries, you'll need to run ```bower update```
     to fetch the newest strophe.muc.plugin (for bugfix of #85).
 
+    This release contains 3 different builds:
+    - converse.min.js 
+    - converse-no-otr.min.js (Without OTR encryption)
+    - converse-no-locales-no-otr.min.js (Without OTR encryption or any translations)
+
 0.7.0 (2013-11-13)
 ------------------
 

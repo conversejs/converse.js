@@ -24,9 +24,10 @@ require.config({
         "crypto.hmac": "components/otr/vendor/cryptojs/hmac",
         "crypto.pad-nopadding": "components/otr/vendor/cryptojs/pad-nopadding",
         "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
-        "crypto": "crypto",
+        "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
-        "otr": "components/otr/build/otr"
+        "otr": "components/otr/build/otr",
+        "converse-dependencies": "src/deps-full"
     },
 
     // define module dependencies for modules not using define
@@ -41,9 +42,6 @@ require.config({
             //Once loaded, use the global 'Backbone' as the
             //module value.
             exports: 'Backbone'
-        },
-        'crypto.aes': {
-            exports: 'CryptoJS'
         },
         'jquery.tinysort': { deps: ['jquery'] },
         'strophe': { deps: ['jquery'] },

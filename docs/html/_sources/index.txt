@@ -211,21 +211,26 @@ Pre-binding and Single Session Support
 
 It's possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
-but this will require custom code on your server.
+
+To do this you will require a `BOSH server <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
+for converse.js to connect to (see the `bosh_service_url`_ under `Configuration variables`_)
+as well as a BOSH client on your own server that will do the pre-authentication before the web page
+loads.
+
+.. note::
+    A BOSH server acts as a bridge between HTTP, the protocol of the web, and
+    XMPP, the instant messaging protocol.
+    Converse.js can only communicate via HTTP, but we need to communicate with
+    an XMPP server in order to chat. So the BOSH server acts as a middle man,
+    translating our HTTP requests into XMPP stanzas and vice versa.
 
 Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
 
-.. Note ::
-   If you want to enable single session support, make sure to pass **prebind: true**
-   when you call **converse.initialize** (see ./index.html).
-   Additionally you need to pass in valid **jid**, **sid**, **rid** and
-   **bosh_service_url** values.
+When you authenticate to the XMPP server on your backend application (for
+example a BOSH client in Django), you'll receive two tokens, RID (request ID) and SID (session ID).
 
-When you authenticate to the XMPP server on your backend, you'll receive two
-tokens, RID (request ID) and SID (session ID).
-
-These tokens then need to be passed back to the javascript running in your
-browser, where you will need them to attach to the existing session.
+These tokens then need to be passed back to converse.js running in your
+browser, where you they will be used to attach to the existing session.
 
 You can embed the RID and SID tokens in your HTML markup or you can do an
 XMLHttpRequest call to your server and ask it to return them for you.
@@ -247,9 +252,25 @@ relative URL **/prebind** and it expects to receive JSON data back.
 
 **Here's what's happening:**
 
-The JSON data contains the user's JID (jabber ID), RID, SID and the URL to the
-BOSH connection manager.
+The JSON data returned from the Ajax call to example.com/prebind contains the user's JID (jabber ID), RID, SID and the URL to the
+BOSH server (also called a *connection manager*).
 
+These values are then passed to converse.js's ``initialize`` method.
+
+.. note::
+   If you want to enable single session support, you need to set **prebind: true**
+   when calling **converse.initialize** (see ./index.html).
+   Additionally you need to pass in valid **jid**, **sid**, **rid** and
+   **bosh_service_url** values.
+
+
+Setting up a BOSH server
+------------------------
+
+The `Movim <http://movim.eu/>`_ project wiki has a very thorough page on setting up a BOSH server for
+a wide variety of standalone or XMPP servers.
+
+http://wiki.movim.eu/manual:bosh_servers
 
 Facebook integration
 ====================

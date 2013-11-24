@@ -65,67 +65,75 @@
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#quickstart-to-get-a-demo-up-and-running" id="id2">Quickstart (to get a demo up and running)</a></li>
-<li><a class="reference internal" href="#introduction" id="id3">Introduction</a></li>
-<li><a class="reference internal" href="#what-you-will-need" id="id4">What you will need</a><ul>
-<li><a class="reference internal" href="#an-xmpp-jabber-server" id="id5">An XMPP/Jabber server</a></li>
-<li><a class="reference internal" href="#connection-manager" id="id6">Connection Manager</a><ul>
-<li><a class="reference internal" href="#overcoming-cross-domain-request-restrictions" id="id7">Overcoming cross-domain request restrictions</a></li>
+<li><a class="reference internal" href="#quickstart-to-get-a-demo-up-and-running" id="id3">Quickstart (to get a demo up and running)</a></li>
+<li><a class="reference internal" href="#introduction" id="id4">Introduction</a></li>
+<li><a class="reference internal" href="#what-you-will-need" id="id5">What you will need</a><ul>
+<li><a class="reference internal" href="#an-xmpp-jabber-server" id="id6">An XMPP/Jabber server</a></li>
+<li><a class="reference internal" href="#connection-manager" id="id7">Connection Manager</a><ul>
+<li><a class="reference internal" href="#overcoming-cross-domain-request-restrictions" id="id8">Overcoming cross-domain request restrictions</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#server-side-authentication" id="id8">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id9">Pre-binding and Single Session Support</a></li>
-<li><a class="reference internal" href="#setting-up-a-bosh-server" id="id10">Setting up a BOSH server</a></li>
+<li><a class="reference internal" href="#server-side-authentication" id="id9">Server-side authentication</a><ul>
+<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id10">Pre-binding and Single Session Support</a></li>
+<li><a class="reference internal" href="#setting-up-a-bosh-server" id="id11">Setting up a BOSH server</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#facebook-integration" id="id11">Facebook integration</a></li>
+<li><a class="reference internal" href="#facebook-integration" id="id12">Facebook integration</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#development" id="id12">Development</a><ul>
-<li><a class="reference internal" href="#install-node-js-and-development-dependencies" id="id13">Install Node.js and development dependencies</a></li>
-<li><a class="reference internal" href="#install-3rd-party-dependencies" id="id14">Install 3rd party dependencies</a></li>
-<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id15">With AMD and require.js (recommended)</a></li>
-<li><a class="reference internal" href="#without-amd-and-require-js" id="id16">Without AMD and require.js</a></li>
-<li><a class="reference internal" href="#before-submitting-a-pull-request" id="id17">Before submitting a pull request</a><ul>
-<li><a class="reference internal" href="#add-tests-for-your-bugfix-or-feature" id="id18">Add tests for your bugfix or feature</a></li>
-<li><a class="reference internal" href="#check-that-the-tests-pass" id="id19">Check that the tests pass</a></li>
-<li><a class="reference internal" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" id="id20">Check your code for errors or bad habits by running JSHint</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#configuration" id="id21">Configuration</a><ul>
-<li><a class="reference internal" href="#configuration-variables" id="id22">Configuration variables</a><ul>
-<li><a class="reference internal" href="#allow-contact-requests" id="id23">allow_contact_requests</a></li>
-<li><a class="reference internal" href="#allow-muc" id="id24">allow_muc</a></li>
-<li><a class="reference internal" href="#animate" id="id25">animate</a></li>
-<li><a class="reference internal" href="#auto-list-rooms" id="id26">auto_list_rooms</a></li>
-<li><a class="reference internal" href="#auto-subscribe" id="id27">auto_subscribe</a></li>
-<li><a class="reference internal" href="#bosh-service-url" id="id28">bosh_service_url</a></li>
-<li><a class="reference internal" href="#debug" id="id29">debug</a></li>
-<li><a class="reference internal" href="#fullname" id="id30">fullname</a></li>
-<li><a class="reference internal" href="#hide-muc-server" id="id31">hide_muc_server</a></li>
-<li><a class="reference internal" href="#i18n" id="id32">i18n</a></li>
-<li><a class="reference internal" href="#prebind" id="id33">prebind</a></li>
-<li><a class="reference internal" href="#show-controlbox-by-default" id="id34">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#show-only-online-users" id="id35">show_only_online_users</a></li>
-<li><a class="reference internal" href="#xhr-custom-status" id="id36">xhr_custom_status</a></li>
-<li><a class="reference internal" href="#xhr-custom-status-url" id="id37">xhr_custom_status_url</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id38">xhr_user_search</a></li>
-<li><a class="reference internal" href="#xhr-user-search-url" id="id39">xhr_user_search_url</a></li>
+<li><a class="reference internal" href="#development" id="id13">Development</a><ul>
+<li><a class="reference internal" href="#install-node-js-and-development-dependencies" id="id14">Install Node.js and development dependencies</a></li>
+<li><a class="reference internal" href="#install-3rd-party-dependencies" id="id15">Install 3rd party dependencies</a></li>
+<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id16">With AMD and require.js (recommended)</a></li>
+<li><a class="reference internal" href="#without-amd-and-require-js" id="id17">Without AMD and require.js</a></li>
+<li><a class="reference internal" href="#before-submitting-a-pull-request" id="id18">Before submitting a pull request</a><ul>
+<li><a class="reference internal" href="#add-tests-for-your-bugfix-or-feature" id="id19">Add tests for your bugfix or feature</a></li>
+<li><a class="reference internal" href="#check-that-the-tests-pass" id="id20">Check that the tests pass</a></li>
+<li><a class="reference internal" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" id="id21">Check your code for errors or bad habits by running JSHint</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id40">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript-and-css" id="id41">Minifying Javascript and CSS</a></li>
+<li><a class="reference internal" href="#troubleshooting" id="id22">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#conflicts-with-other-javascript-libraries" id="id23">Conflicts with other Javascript libraries</a><ul>
+<li><a class="reference internal" href="#problem" id="id24">Problem:</a></li>
+<li><a class="reference internal" href="#solution" id="id25">Solution:</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id42">Translations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration" id="id26">Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-variables" id="id27">Configuration variables</a><ul>
+<li><a class="reference internal" href="#allow-contact-requests" id="id28">allow_contact_requests</a></li>
+<li><a class="reference internal" href="#allow-muc" id="id29">allow_muc</a></li>
+<li><a class="reference internal" href="#animate" id="id30">animate</a></li>
+<li><a class="reference internal" href="#auto-list-rooms" id="id31">auto_list_rooms</a></li>
+<li><a class="reference internal" href="#auto-subscribe" id="id32">auto_subscribe</a></li>
+<li><a class="reference internal" href="#bosh-service-url" id="id33">bosh_service_url</a></li>
+<li><a class="reference internal" href="#debug" id="id34">debug</a></li>
+<li><a class="reference internal" href="#fullname" id="id35">fullname</a></li>
+<li><a class="reference internal" href="#hide-muc-server" id="id36">hide_muc_server</a></li>
+<li><a class="reference internal" href="#i18n" id="id37">i18n</a></li>
+<li><a class="reference internal" href="#prebind" id="id38">prebind</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id39">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#show-only-online-users" id="id40">show_only_online_users</a></li>
+<li><a class="reference internal" href="#xhr-custom-status" id="id41">xhr_custom_status</a></li>
+<li><a class="reference internal" href="#xhr-custom-status-url" id="id42">xhr_custom_status_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id43">xhr_user_search</a></li>
+<li><a class="reference internal" href="#xhr-user-search-url" id="id44">xhr_user_search_url</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#minification" id="id45">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript-and-css" id="id46">Minifying Javascript and CSS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#translations" id="id47">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
-<h1><a class="toc-backref" href="#id2">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id3">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
 <p>When you download a specific release of <em>Converse.js</em> there will be two minified files inside the zip file.</p>
 <ul class="simple">
 <li>converse.min.js</li>
@@ -172,7 +180,7 @@ the minified Javascript file. Read <a class="reference internal" href="#configur
 that.</p>
 </div>
 <div class="section" id="introduction">
-<h1><a class="toc-backref" href="#id3">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id4">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Even though you can connect to public XMPP servers on the <a class="reference external" href="http://conversejs.org">conversejs.org</a>
 website, <em>Converse.js</em> is not really meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
 webchat.</p>
@@ -191,9 +199,9 @@ code.</p>
 requirements.</p>
 </div>
 <div class="section" id="what-you-will-need">
-<h1><a class="toc-backref" href="#id4">What you will need</a><a class="headerlink" href="#what-you-will-need" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id5">What you will need</a><a class="headerlink" href="#what-you-will-need" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="an-xmpp-jabber-server">
-<h2><a class="toc-backref" href="#id5">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
 <p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
 <p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
@@ -202,7 +210,7 @@ have <a class="reference internal" href="#session-support">Session Support</a> y
 servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
 </div>
 <div class="section" id="connection-manager">
-<h2><a class="toc-backref" href="#id6">Connection Manager</a><a class="headerlink" href="#connection-manager" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">Connection Manager</a><a class="headerlink" href="#connection-manager" title="Permalink to this headline">¶</a></h2>
 <p>Your website and <em>Converse.js</em> use <a class="reference external" href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> as protocol to communicate with
 the webserver. HTTP connections are stateless and usually shortlived.</p>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> on the other hand, is the protocol that enables instant messaging, and
@@ -217,7 +225,7 @@ includes a connection manager (but you have to enable it).</p>
 This connection manager is for testing purposes only, please don&#8217;t use it in
 production.</p>
 <div class="section" id="overcoming-cross-domain-request-restrictions">
-<h3><a class="toc-backref" href="#id7">Overcoming cross-domain request restrictions</a><a class="headerlink" href="#overcoming-cross-domain-request-restrictions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">Overcoming cross-domain request restrictions</a><a class="headerlink" href="#overcoming-cross-domain-request-restrictions" title="Permalink to this headline">¶</a></h3>
 <p>The domain of the <em>Converse.js</em> demo is <em>conversejs.org</em>, but the domain of the connection manager is <em>opkode.im</em>.
 HTTP requests are made by <em>Converse.js</em> to the connection manager via XmlHttpRequests (XHR).
 Until recently, it was not possible to make such requests to a different domain
@@ -266,9 +274,9 @@ the cross-domain restriction is <tt class="docutils literal"><span class="pre">m
 </div>
 </div>
 <div class="section" id="server-side-authentication">
-<h2><a class="toc-backref" href="#id8">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id9">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="pre-binding-and-single-session-support">
-<span id="session-support"></span><h3><a class="toc-backref" href="#id9">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
+<span id="session-support"></span><h3><a class="toc-backref" href="#id10">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
 <p>It&#8217;s possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,</p>
 <p>To do this you will require a <a class="reference external" href="http://xmpp.org/about-xmpp/technology-overview/bosh/">BOSH server</a>
@@ -315,14 +323,14 @@ Additionally you need to pass in valid <strong>jid</strong>, <strong>sid</strong
 </div>
 </div>
 <div class="section" id="setting-up-a-bosh-server">
-<h3><a class="toc-backref" href="#id10">Setting up a BOSH server</a><a class="headerlink" href="#setting-up-a-bosh-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">Setting up a BOSH server</a><a class="headerlink" href="#setting-up-a-bosh-server" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference external" href="http://movim.eu/">Movim</a> project wiki has a very thorough page on setting up a BOSH server for
 a wide variety of standalone or XMPP servers.</p>
 <p><a class="reference external" href="http://wiki.movim.eu/manual:bosh_servers">http://wiki.movim.eu/manual:bosh_servers</a></p>
 </div>
 </div>
 <div class="section" id="facebook-integration">
-<h2><a class="toc-backref" href="#id11">Facebook integration</a><a class="headerlink" href="#facebook-integration" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Facebook integration</a><a class="headerlink" href="#facebook-integration" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">It should be possible to integrate Converse.js with Facebook chat, and
@@ -365,13 +373,13 @@ Until then, people will have to do this themselves.</p>
 </div>
 </div>
 <div class="section" id="development">
-<h1><a class="toc-backref" href="#id12">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id13">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
 <p>If you want to work with the non-minified Javascript and CSS files you&#8217;ll soon
 notice that there are references to a missing <em>components</em> folder. Please
 follow the instructions below to create this folder and fetch Converse&#8217;s
 3rd-party dependencies.</p>
 <div class="section" id="install-node-js-and-development-dependencies">
-<h2><a class="toc-backref" href="#id13">Install Node.js and development dependencies</a><a class="headerlink" href="#install-node-js-and-development-dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Install Node.js and development dependencies</a><a class="headerlink" href="#install-node-js-and-development-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>We use development tools (<a class="reference external" href="http://gruntjs.com">Grunt</a> and <a class="reference external" href="http://bower.io">Bower</a>)
 which depend on Node.js and npm (the Node package manager).</p>
 <p>If you don&#8217;t have Node.js installed, you can download and install the latest
@@ -385,7 +393,7 @@ curious to know what these are, take a look at whats under the <em>devDependenci
 <cite>package.json &lt;https://github.com/jcbrand/converse.js/blob/master/package.json&gt;</cite>.</p>
 </div>
 <div class="section" id="install-3rd-party-dependencies">
-<h2><a class="toc-backref" href="#id14">Install 3rd party dependencies</a><a class="headerlink" href="#install-3rd-party-dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Install 3rd party dependencies</a><a class="headerlink" href="#install-3rd-party-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>After running <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>, you will now have Grunt and Bower installed.</p>
 <p>We use Bower to manage Converse&#8217;s front-end dependencies (e.g. Javascript that
 should get loaded in the browser).</p>
@@ -403,7 +411,7 @@ dependencies (like backbone.js, strophe.js etc.) and then put them in the
 <em>components</em> folder.</p>
 </div>
 <div class="section" id="with-amd-and-require-js-recommended">
-<h2><a class="toc-backref" href="#id15">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js uses <a class="reference external" href="http://requirejs.org">require.js</a> to asynchronously load dependencies.</p>
 <p>If you want to develop or customize converse.js, you&#8217;ll want to load the
 non-minified javascript files.</p>
@@ -416,7 +424,7 @@ attribute on the <em>script</em> tag), which will in turn cause converse.js to b
 parsed.</p>
 </div>
 <div class="section" id="without-amd-and-require-js">
-<h2><a class="toc-backref" href="#id16">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js can also be used without require.js. If you for some reason prefer
 to use it this way, please refer to
 <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
@@ -424,9 +432,9 @@ for an example of how and in what order all the Javascript files that converse.j
 depends on need to be loaded.</p>
 </div>
 <div class="section" id="before-submitting-a-pull-request">
-<h2><a class="toc-backref" href="#id17">Before submitting a pull request</a><a class="headerlink" href="#before-submitting-a-pull-request" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">Before submitting a pull request</a><a class="headerlink" href="#before-submitting-a-pull-request" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="add-tests-for-your-bugfix-or-feature">
-<h3><a class="toc-backref" href="#id18">Add tests for your bugfix or feature</a><a class="headerlink" href="#add-tests-for-your-bugfix-or-feature" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">Add tests for your bugfix or feature</a><a class="headerlink" href="#add-tests-for-your-bugfix-or-feature" title="Permalink to this headline">¶</a></h3>
 <p>Add a test for any bug fixed or feature added. We use Jasmine
 for testing.</p>
 <p>Take a look at <tt class="docutils literal"><span class="pre">tests.html</span></tt> and <tt class="docutils literal"><span class="pre">spec/MainSpec.js</span></tt> to see how
@@ -435,7 +443,7 @@ the tests are implemented.</p>
 <a class="reference external" href="http://opkode.com/contact">contact me</a> and I&#8217;ll be happy to help.</p>
 </div>
 <div class="section" id="check-that-the-tests-pass">
-<h3><a class="toc-backref" href="#id19">Check that the tests pass</a><a class="headerlink" href="#check-that-the-tests-pass" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">Check that the tests pass</a><a class="headerlink" href="#check-that-the-tests-pass" title="Permalink to this headline">¶</a></h3>
 <p>Check that the Jasmine tests complete sucessfully. Open
 <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/tests.html">tests.html</a>
 in your browser, and the tests will run automatically.</p>
@@ -444,7 +452,7 @@ in your browser, and the tests will run automatically.</p>
 </div>
 </div>
 <div class="section" id="check-your-code-for-errors-or-bad-habits-by-running-jshint">
-<h3><a class="toc-backref" href="#id20">Check your code for errors or bad habits by running JSHint</a><a class="headerlink" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">Check your code for errors or bad habits by running JSHint</a><a class="headerlink" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://jshint.com">JSHint</a> will do a static analysis of your code and hightlight potential errors
 and/or bad habits.</p>
 <div class="highlight-python"><pre>grunt jshint</pre>
@@ -455,8 +463,61 @@ and/or bad habits.</p>
 </div>
 </div>
 </div>
+<div class="section" id="troubleshooting">
+<h1><a class="toc-backref" href="#id22">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="conflicts-with-other-javascript-libraries">
+<h2><a class="toc-backref" href="#id23">Conflicts with other Javascript libraries</a><a class="headerlink" href="#conflicts-with-other-javascript-libraries" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="problem">
+<h3><a class="toc-backref" href="#id24">Problem:</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h3>
+<p>You are using other Javascript libraries (like JQuery plugins), and
+get errors like these in your browser console:</p>
+<div class="highlight-python"><pre>Uncaught TypeError: Object [object Object] has no method 'xxx' from example.js</pre>
+</div>
+</div>
+<div class="section" id="solution">
+<h3><a class="toc-backref" href="#id25">Solution:</a><a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
+<p>First, find out which object is referred to by <tt class="docutils literal"><span class="pre">Object</span> <span class="pre">[object</span> <span class="pre">Object]</span></tt>.</p>
+<p>It will probably be the jQuery object <tt class="docutils literal"><span class="pre">$</span></tt> or perhaps the underscore.js object <tt class="docutils literal"><span class="pre">_</span></tt>.</p>
+<p>For the purpose of demonstration, I&#8217;m going to assume its <tt class="docutils literal"><span class="pre">$</span></tt>, but the same
+rules apply if its something else.</p>
+<p>The bundled and minified default build of converse.js, <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>
+includes within it all of converse.js&#8217;s dependencies, which include for example <em>jQuery</em>.</p>
+<p>If you are having conflicts where attributes or methods aren&#8217;t available
+on the jQuery object, you are probably loading <tt class="docutils literal"><span class="pre">converse.min.js</span></tt> (which
+includes jQuery) as well as your own jQuery version separately.</p>
+<p>What then happens is that there are two <tt class="docutils literal"><span class="pre">$</span></tt> objects (one from
+converse.js and one from the jQuery version you included manually)
+and only one of them has been extended to have the methods or attributes you require.</p>
+<p>Which jQuery object you get depends on the order in which you load the libraries.</p>
+<p>There are multiple ways to solve this issue.</p>
+<p>Firstly, make sure whether you really need to include a separate version of
+jQuery. Chances are that you don&#8217;t. If you can remove the separate
+version, your problem should be solved, as long as your libraries are loaded in
+the right order.</p>
+<p>Either case, whether you need to keep two versions or not, the solution depends
+on whether you&#8217;ll use require.js to manage your libraries or whether you&#8217;ll
+load them manually.</p>
+<div class="section" id="with-require-js">
+<h4>With require.js<a class="headerlink" href="#with-require-js" title="Permalink to this headline">¶</a></h4>
+<p>Instead of using <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>, manage all the libraries in your project
+(i.e. converse.js and its dependencies plus all other libraries you use) as one
+require.js project, making sure everything is loaded in the correct order.</p>
+<p>Then, before deployment, you make your own custom minified build that bundles everything
+you need.</p>
+</div>
+<div class="section" id="with-script-tags">
+<h4>With &lt;script&gt; tags<a class="headerlink" href="#with-script-tags" title="Permalink to this headline">¶</a></h4>
+<p>Take a look at <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
+in the converse.js repo.</p>
+<p>It shows in which order the libraries must be loaded via <tt class="docutils literal"><span class="pre">&lt;script&gt;</span></tt> tags. Add
+your own libraries, making sure that they are loaded in the correct order (e.g.
+jQuery plugins must load after jQuery).</p>
+</div>
+</div>
+</div>
+</div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#id21">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id26">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>The included minified JS and CSS files can be used for demoing or testing, but
 you&#8217;ll want to configure <em>Converse.js</em> to suit your needs before you deploy it
 on your website.</p>
@@ -470,9 +531,9 @@ all the available configuration settings.</p>
 JS file so that it will include the new settings. Please refer to the
 <a class="reference internal" href="#minification">Minification</a> section for more info on how to do this.</p>
 <div class="section" id="configuration-variables">
-<h2><a class="toc-backref" href="#id22">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="allow-contact-requests">
-<h3><a class="toc-backref" href="#id23">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow users to add one another as contacts. If this is set to false, the
 <strong>Add a contact</strong> widget, <strong>Contact Requests</strong> and <strong>Pending Contacts</strong> roster
@@ -480,18 +541,18 @@ sections will all not appear. Additionally, all incoming contact requests will b
 ignored.</p>
 </div>
 <div class="section" id="allow-muc">
-<h3><a class="toc-backref" href="#id24">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow multi-user chat (muc) in chatrooms. Setting this to <tt class="docutils literal"><span class="pre">false</span></tt> will remove
 the <tt class="docutils literal"><span class="pre">Chatrooms</span></tt> tab from the control box.</p>
 </div>
 <div class="section" id="animate">
-<h3><a class="toc-backref" href="#id25">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Show animations, for example when opening and closing chat boxes.</p>
 </div>
 <div class="section" id="auto-list-rooms">
-<h3><a class="toc-backref" href="#id26">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.</p>
@@ -501,40 +562,40 @@ features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.</p>
 </div>
 <div class="section" id="auto-subscribe">
-<h3><a class="toc-backref" href="#id27">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, the user will automatically subscribe back to any contact requests.</p>
 </div>
 <div class="section" id="bosh-service-url">
-<h3><a class="toc-backref" href="#id28">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id33">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
 <p>Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.</p>
 <p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">here</a> for more information.</p>
 </div>
 <div class="section" id="debug">
-<h3><a class="toc-backref" href="#id29">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to true, debugging output will be logged to the browser console.</p>
 </div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id30">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
 <p>If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user&#8217;s vCard will be fetched.</p>
 </div>
 <div class="section" id="hide-muc-server">
-<h3><a class="toc-backref" href="#id31">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id36">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Hide the <tt class="docutils literal"><span class="pre">server</span></tt> input field of the form inside the <tt class="docutils literal"><span class="pre">Room</span></tt> panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.</p>
 </div>
 <div class="section" id="i18n">
-<h3><a class="toc-backref" href="#id32">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id37">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
 <p>Specify the locale/language. The language must be in the <tt class="docutils literal"><span class="pre">locales</span></tt> object. Refer to
 <tt class="docutils literal"><span class="pre">./locale/locales.js</span></tt> to see which locales are supported.</p>
 </div>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id33">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id38">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
@@ -547,7 +608,7 @@ values as <tt class="docutils literal"><span class="pre">jid</span></tt>, <tt cl
 <p>Additionally, you have to specify <tt class="docutils literal"><span class="pre">bosh_service_url</span></tt>.</p>
 </div>
 <div class="section" id="show-controlbox-by-default">
-<h3><a class="toc-backref" href="#id34">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id39">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.</p>
@@ -557,13 +618,13 @@ the page with class <em>toggle-online-users</em>.</p>
 page load.</p>
 </div>
 <div class="section" id="show-only-online-users">
-<h3><a class="toc-backref" href="#id35">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id40">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 </div>
 <div class="section" id="xhr-custom-status">
-<h3><a class="toc-backref" href="#id36">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id41">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -573,7 +634,7 @@ Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 remote server.</p>
 </div>
 <div class="section" id="xhr-custom-status-url">
-<h3><a class="toc-backref" href="#id37">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -585,7 +646,7 @@ message will be made.</p>
 <p>The message itself is sent in the request under the key <tt class="docutils literal"><span class="pre">msg</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id38">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id43">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -602,7 +663,7 @@ message will be made.</p>
 corresponds to a matched user and needs the keys <tt class="docutils literal"><span class="pre">id</span></tt> and <tt class="docutils literal"><span class="pre">fullname</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search-url">
-<h3><a class="toc-backref" href="#id39">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -615,9 +676,9 @@ The query string will be included in the request with <tt class="docutils litera
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id40">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id45">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript-and-css">
-<h2><a class="toc-backref" href="#id41">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id46">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
 <p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
 all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
 and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
@@ -634,7 +695,7 @@ using <a class="reference external" href="https://github.com/jrburke/almond">alm
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id42">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id47">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.

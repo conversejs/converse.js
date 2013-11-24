@@ -455,6 +455,75 @@ You can run both the tests and jshint in one go by calling:
     grunt check
 
 
+===============
+Troubleshooting
+===============
+
+Conflicts with other Javascript libraries
+=========================================
+
+Problem: 
+---------
+
+You are using other Javascript libraries (like JQuery plugins), and
+get errors like these in your browser console::
+
+    Uncaught TypeError: Object [object Object] has no method 'xxx' from example.js
+
+Solution:
+---------
+
+First, find out which object is referred to by ``Object [object Object]``.
+
+It will probably be the jQuery object ``$`` or perhaps the underscore.js object ``_``.
+
+For the purpose of demonstration, I'm going to assume its ``$``, but the same
+rules apply if its something else.
+
+The bundled and minified default build of converse.js, ``converse.min.js``
+includes within it all of converse.js's dependencies, which include for example *jQuery*.
+
+If you are having conflicts where attributes or methods aren't available 
+on the jQuery object, you are probably loading ``converse.min.js`` (which
+includes jQuery) as well as your own jQuery version separately.
+
+What then happens is that there are two ``$`` objects (one from
+converse.js and one from the jQuery version you included manually)
+and only one of them has been extended to have the methods or attributes you require.
+
+Which jQuery object you get depends on the order in which you load the libraries.
+
+There are multiple ways to solve this issue.
+
+Firstly, make sure whether you really need to include a separate version of
+jQuery. Chances are that you don't. If you can remove the separate
+version, your problem should be solved, as long as your libraries are loaded in
+the right order.
+
+Either case, whether you need to keep two versions or not, the solution depends
+on whether you'll use require.js to manage your libraries or whether you'll
+load them manually.
+
+With require.js
+~~~~~~~~~~~~~~~
+
+Instead of using ``converse.min.js``, manage all the libraries in your project
+(i.e. converse.js and its dependencies plus all other libraries you use) as one
+require.js project, making sure everything is loaded in the correct order.
+
+Then, before deployment, you make your own custom minified build that bundles everything
+you need.
+
+With <script> tags
+~~~~~~~~~~~~~~~~~~
+
+Take a look at `non_amd.html <https://github.com/jcbrand/converse.js/blob/master/non_amd.html>`_
+in the converse.js repo.
+
+It shows in which order the libraries must be loaded via ``<script>`` tags. Add
+your own libraries, making sure that they are loaded in the correct order (e.g.
+jQuery plugins must load after jQuery).
+
 =============
 Configuration
 =============

@@ -144,6 +144,7 @@
         this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
         this.xhr_user_search_url = '';
+        this.use_otr_by_default = false;
 
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, [
@@ -171,11 +172,15 @@
             'xhr_custom_status',
             'xhr_custom_status_url',
             'xhr_user_search',
-            'xhr_user_search_url'
+            'xhr_user_search_url',
+            'use_otr_by_default'
         ]));
 
         // Only allow OTR if we have the capability
         this.allow_otr = this.allow_otr && HAS_CRYPTO;
+
+        // Only use OTR by default if allow OTR is enabled to begin with
+        this.use_otr_by_default = this.use_otr_by_default && this.allow_otr;
 
         // Translation machinery
         // ---------------------
@@ -836,8 +841,13 @@
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxesview.$el);
                 this.render().show().model.messages.fetch({add: true});
+
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
+                }
+
+                if (converse.use_otr_by_default) {
+                    this.model.initiateOTR();
                 }
             },
 

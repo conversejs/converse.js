@@ -206,16 +206,20 @@ Server-side authentication
 
 .. _`Session Support`:
 
-Pre-binding and Single Session Support
---------------------------------------
+Prebinding and Single Session Support
+-------------------------------------
 
 It's possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
 
+This session should also persist across page loads. In other words, we don't
+want the user to have to give their chat credentials every time they reload the
+page.
+
 To do this you will require a `BOSH server <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
 for converse.js to connect to (see the `bosh_service_url`_ under `Configuration variables`_)
-as well as a BOSH client on your own server that will do the pre-authentication before the web page
-loads.
+as well as a BOSH client on your own server (written for example in Python, Ruby or PHP) that will
+do the pre-authentication before the web page loads.
 
 .. note::
     A BOSH server acts as a bridge between HTTP, the protocol of the web, and
@@ -227,10 +231,19 @@ loads.
 Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
 
 When you authenticate to the XMPP server on your backend application (for
-example a BOSH client in Django), you'll receive two tokens, RID (request ID) and SID (session ID).
+example via a BOSH client in Django), you'll receive two tokens, RID (request ID) and SID (session ID).
 
-These tokens then need to be passed back to converse.js running in your
-browser, where you they will be used to attach to the existing session.
+The **Session ID (SID)** is a unique identifier for the current *session*. This
+number stays constant for the entire session.
+
+The **Request ID (RID)** is a unique identifier for the current *request* (i.e.
+page load). Each page load is a new request which requires a new unique RID.
+The best way to achieve this is to simply increment the RID with each page
+load.
+
+When you initialize converse.js in your browser, you need to pass it these two
+tokens. Converse.js will then use them to attach to the session you just
+created.
 
 You can embed the RID and SID tokens in your HTML markup or you can do an
 XMLHttpRequest call to your server and ask it to return them for you.

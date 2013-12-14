@@ -74,7 +74,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#server-side-authentication" id="id9">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#pre-binding-and-single-session-support" id="id10">Pre-binding and Single Session Support</a></li>
+<li><a class="reference internal" href="#prebinding-and-single-session-support" id="id10">Prebinding and Single Session Support</a></li>
 <li><a class="reference internal" href="#setting-up-a-bosh-server" id="id11">Setting up a BOSH server</a></li>
 </ul>
 </li>
@@ -174,7 +174,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read: <a class="reference internal" href="#pre-binding-and-single-session-support">Pre-binding and Single Session Support</a>.</p>
+<p>For more info on this, read: <a href="#id48"><span class="problematic" id="id49">`Pre-binding and Single Session Support`_</span></a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
@@ -275,14 +275,17 @@ the cross-domain restriction is <tt class="docutils literal"><span class="pre">m
 </div>
 <div class="section" id="server-side-authentication">
 <h2><a class="toc-backref" href="#id9">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pre-binding-and-single-session-support">
-<span id="session-support"></span><h3><a class="toc-backref" href="#id10">Pre-binding and Single Session Support</a><a class="headerlink" href="#pre-binding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="prebinding-and-single-session-support">
+<span id="session-support"></span><h3><a class="toc-backref" href="#id10">Prebinding and Single Session Support</a><a class="headerlink" href="#prebinding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
 <p>It&#8217;s possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,</p>
+<p>This session should also persist across page loads. In other words, we don&#8217;t
+want the user to have to give their chat credentials every time they reload the
+page.</p>
 <p>To do this you will require a <a class="reference external" href="http://xmpp.org/about-xmpp/technology-overview/bosh/">BOSH server</a>
 for converse.js to connect to (see the <a class="reference internal" href="#bosh-service-url">bosh_service_url</a> under <a class="reference internal" href="#configuration-variables">Configuration variables</a>)
-as well as a BOSH client on your own server that will do the pre-authentication before the web page
-loads.</p>
+as well as a BOSH client on your own server (written for example in Python, Ruby or PHP) that will
+do the pre-authentication before the web page loads.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">A BOSH server acts as a bridge between HTTP, the protocol of the web, and
@@ -293,9 +296,16 @@ translating our HTTP requests into XMPP stanzas and vice versa.</p>
 </div>
 <p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
 <p>When you authenticate to the XMPP server on your backend application (for
-example a BOSH client in Django), you&#8217;ll receive two tokens, RID (request ID) and SID (session ID).</p>
-<p>These tokens then need to be passed back to converse.js running in your
-browser, where you they will be used to attach to the existing session.</p>
+example via a BOSH client in Django), you&#8217;ll receive two tokens, RID (request ID) and SID (session ID).</p>
+<p>The <strong>Session ID (SID)</strong> is a unique identifier for the current <em>session</em>. This
+number stays constant for the entire session.</p>
+<p>The <strong>Request ID (RID)</strong> is a unique identifier for the current <em>request</em> (i.e.
+page load). Each page load is a new request which requires a new unique RID.
+The best way to achieve this is to simply increment the RID with each page
+load.</p>
+<p>When you initialize converse.js in your browser, you need to pass it these two
+tokens. Converse.js will then use them to attach to the session you just
+created.</p>
 <p>You can embed the RID and SID tokens in your HTML markup or you can do an
 XMLHttpRequest call to your server and ask it to return them for you.</p>
 <p>Below is one example of how this could work. An Ajax call is made to the

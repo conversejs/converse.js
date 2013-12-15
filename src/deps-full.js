@@ -2,6 +2,7 @@ define("converse-dependencies", [
     "otr",
     "locales",
     "backbone.localStorage",
+    "jquery.eventemitter",
     "jquery.tinysort",
     "strophe",
     "strophe.muc",

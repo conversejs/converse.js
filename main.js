@@ -26,6 +26,7 @@ require.config({
         "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
         "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
+        "jquery.eventemitter": "src/jquery.eventemitter",
         "otr": "components/otr/build/otr",
         "converse-dependencies": "src/deps-full"
     },

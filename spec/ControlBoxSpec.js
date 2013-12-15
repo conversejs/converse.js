@@ -40,6 +40,7 @@
                 var view = this.xmppstatusview;
                 spyOn(view, 'toggleOptions').andCallThrough();
                 spyOn(view, 'setStatus').andCallThrough();
+                spyOn(converse, 'emit');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 runs(function () {
                     view.$el.find('a.choose-xmpp-status').click();
@@ -49,8 +50,9 @@
                 runs(function () {
                     spyOn(view, 'updateStatusUI').andCallThrough();
                     view.initialize(); // Rebind events for spy
-                    $(view.$el.find('.dropdown dd ul li a')[1]).click();
+                    $(view.$el.find('.dropdown dd ul li a')[1]).click(); // Change status to "dnd"
                     expect(view.setStatus).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onStatusChanged', 'dnd');
                 });
                 waits(250);
                 runs($.proxy(function () {
@@ -66,6 +68,7 @@
                 this.xmppstatus.save({'status': 'online'});
                 spyOn(view, 'setStatusMessage').andCallThrough();
                 spyOn(view, 'renderStatusChangeForm').andCallThrough();
+                spyOn(converse, 'emit');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.$el.find('a.change-xmpp-status-message').click();
                 expect(view.renderStatusChangeForm).toHaveBeenCalled();
@@ -79,6 +82,7 @@
                 runs (function () {
                     view.$el.find('form#set-custom-xmpp-status').submit();
                     expect(view.setStatusMessage).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onStatusMessageChanged', msg);
                     expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
                     expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
                 });

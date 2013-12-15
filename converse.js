@@ -34,6 +34,20 @@
     }
 }(this, function ($, _, OTR, DSA, console) {
     var converse = {};
+
+    converse.emit = function(evt, data) {
+        $(this).trigger(evt, data);
+    };
+    once = function(evt, handler) {
+        $(this).one(evt, handler);
+    };
+    on = function(evt, handler) {
+        $(this).bind(evt, handler);
+    };
+    off = function(evt, handler) {
+        $(this).unbind(evt, handler);
+    };
+    
     converse.initialize = function (settings, callback) {
         var converse = this;
 
@@ -382,8 +396,7 @@
             this.initStatus($.proxy(function () {
                 this.initRoster();
                 this.chatboxes.onConnected();
-                this.connection.roster.get(function () {});
-
+                this.connection.roster.get();
                 $(document).click(function() {
                     if ($('.toggle-otr ul').is(':visible')) {
                         $('.toggle-otr ul', this).slideUp();
@@ -392,7 +405,6 @@
                         $('.toggle-smiley ul', this).slideUp();
                     }
                 });
-
 
                 $(window).on("blur focus", $.proxy(function(e) {
                     if ((this.windowState != e.type) && (e.type == 'focus')) {
@@ -929,6 +941,7 @@
             },
 
             sendMessage: function (text) {
+                converse.emit('onMessageSend', text);
                 var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
                     if (match[1] === "clear") {
@@ -1102,9 +1115,11 @@
                             this.$el.find('div.chat-event').remove();
                         }
                     }
+                    converse.emit('onBuddyStatusChanged', item.attributes, item.get('chat_status'));
                 }
                 if (_.has(item.changed, 'status')) {
                     this.showStatusMessage(item.get('status'));
+                    converse.emit('onBuddyStatusMessageChanged', item.attributes, item.get('status'));
                 }
                 if (_.has(item.changed, 'image')) {
                     this.renderAvatar();
@@ -1211,15 +1226,19 @@
             },
 
             hide: function () {
-                if (converse.animate) {
-                    this.$el.hide('fast');
-                } else {
-                    this.$el.hide();
+                if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
+                    if (converse.animate) {
+                        this.$el.hide('fast');
+                    } else {
+                        this.$el.hide();
+                    }
+                    converse.emit('onChatBoxClosed', this);
                 }
             },
 
             show: function () {
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
+                    converse.emit('onChatBoxFocused', this);
                     return this.focus();
                 }
                 if (converse.animate) {
@@ -1232,6 +1251,7 @@
                     // localstorage
                     this.model.save();
                 }
+                converse.emit('onChatBoxOpened', this);
                 return this;
             },
 
@@ -2306,6 +2326,7 @@
                     // not broadcasted
                     return true;
                 }
+                converse.emit('onMessage', message);
                 var $forwarded = $message.children('forwarded');
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
@@ -2656,6 +2677,7 @@
             },
 
             rosterHandler: function (items) {
+                this.emit('onRoster', items);
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
@@ -2979,7 +3001,7 @@
                 this.set({
                     'status' : this.get('status') || 'online'
                 });
-                this.on('change', $.proxy(function () {
+                this.on('change', $.proxy(function (item) {
                     if (this.get('fullname') === undefined) {
                         converse.getVCard(
                             null, // No 'to' attr when getting one's own vCard
@@ -2987,6 +3009,12 @@
                                 this.save({'fullname': fullname});
                             }, this)
                         );
+                    }
+                    if (_.has(item.changed, 'status')) {
+                        converse.emit('onStatusChanged', this.get('status'));
+                    }
+                    if (_.has(item.changed, 'status_message')) {
+                        converse.emit('onStatusMessageChanged', this.get('status_message'));
                     }
                 }, this));
             },
@@ -3382,6 +3410,15 @@
     return {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
+        },
+        'once': function(evt, handler) {
+            converse.once(evt, handler);
+        },
+        'on': function(evt, handler) {
+            converse.on(evt, handler);
+        },
+        'off': function(evt, handler) {
+            converse.off(evt, handler);
         }
     };
 }));

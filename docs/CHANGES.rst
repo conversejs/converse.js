@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.7.2 (Unreleased)
+------------------
+
+* #48 Add event emitter support and emit events. [jcbrand]
+
 0.7.1 (2013-11-17)
 ------------------
 

@@ -102,34 +102,39 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuration" id="id26">Configuration</a><ul>
-<li><a class="reference internal" href="#configuration-variables" id="id27">Configuration variables</a><ul>
-<li><a class="reference internal" href="#allow-contact-requests" id="id28">allow_contact_requests</a></li>
-<li><a class="reference internal" href="#allow-muc" id="id29">allow_muc</a></li>
-<li><a class="reference internal" href="#animate" id="id30">animate</a></li>
-<li><a class="reference internal" href="#auto-list-rooms" id="id31">auto_list_rooms</a></li>
-<li><a class="reference internal" href="#auto-subscribe" id="id32">auto_subscribe</a></li>
-<li><a class="reference internal" href="#bosh-service-url" id="id33">bosh_service_url</a></li>
-<li><a class="reference internal" href="#debug" id="id34">debug</a></li>
-<li><a class="reference internal" href="#fullname" id="id35">fullname</a></li>
-<li><a class="reference internal" href="#hide-muc-server" id="id36">hide_muc_server</a></li>
-<li><a class="reference internal" href="#i18n" id="id37">i18n</a></li>
-<li><a class="reference internal" href="#prebind" id="id38">prebind</a></li>
-<li><a class="reference internal" href="#show-controlbox-by-default" id="id39">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#show-only-online-users" id="id40">show_only_online_users</a></li>
-<li><a class="reference internal" href="#xhr-custom-status" id="id41">xhr_custom_status</a></li>
-<li><a class="reference internal" href="#xhr-custom-status-url" id="id42">xhr_custom_status_url</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id43">xhr_user_search</a></li>
-<li><a class="reference internal" href="#xhr-user-search-url" id="id44">xhr_user_search_url</a></li>
+<li><a class="reference internal" href="#events" id="id26">Events</a><ul>
+<li><a class="reference internal" href="#event-methods" id="id27">Event Methods</a></li>
+<li><a class="reference internal" href="#event-types" id="id28">Event Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration" id="id29">Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-variables" id="id30">Configuration variables</a><ul>
+<li><a class="reference internal" href="#allow-contact-requests" id="id31">allow_contact_requests</a></li>
+<li><a class="reference internal" href="#allow-muc" id="id32">allow_muc</a></li>
+<li><a class="reference internal" href="#animate" id="id33">animate</a></li>
+<li><a class="reference internal" href="#auto-list-rooms" id="id34">auto_list_rooms</a></li>
+<li><a class="reference internal" href="#auto-subscribe" id="id35">auto_subscribe</a></li>
+<li><a class="reference internal" href="#bosh-service-url" id="id36">bosh_service_url</a></li>
+<li><a class="reference internal" href="#debug" id="id37">debug</a></li>
+<li><a class="reference internal" href="#fullname" id="id38">fullname</a></li>
+<li><a class="reference internal" href="#hide-muc-server" id="id39">hide_muc_server</a></li>
+<li><a class="reference internal" href="#i18n" id="id40">i18n</a></li>
+<li><a class="reference internal" href="#prebind" id="id41">prebind</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id42">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#show-only-online-users" id="id43">show_only_online_users</a></li>
+<li><a class="reference internal" href="#xhr-custom-status" id="id44">xhr_custom_status</a></li>
+<li><a class="reference internal" href="#xhr-custom-status-url" id="id45">xhr_custom_status_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id46">xhr_user_search</a></li>
+<li><a class="reference internal" href="#xhr-user-search-url" id="id47">xhr_user_search_url</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id45">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript-and-css" id="id46">Minifying Javascript and CSS</a></li>
+<li><a class="reference internal" href="#minification" id="id48">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript-and-css" id="id49">Minifying Javascript and CSS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id47">Translations</a></li>
+<li><a class="reference internal" href="#translations" id="id50">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
@@ -174,7 +179,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read: <a href="#id48"><span class="problematic" id="id49">`Pre-binding and Single Session Support`_</span></a>.</p>
+<p>For more info on this, read: <a href="#id51"><span class="problematic" id="id52">`Pre-binding and Single Session Support`_</span></a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
@@ -526,8 +531,123 @@ jQuery plugins must load after jQuery).</p>
 </div>
 </div>
 </div>
+<div class="section" id="events">
+<h1><a class="toc-backref" href="#id26">Events</a><a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
+<p>Converse.js emits events to which you can subscribe from your own Javascript.</p>
+<p>Concerning events, the following methods are available:</p>
+<div class="section" id="event-methods">
+<h2><a class="toc-backref" href="#id27">Event Methods</a><a class="headerlink" href="#event-methods" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><strong>on(eventName, callback)</strong>:</p>
+<blockquote>
+<div><p>Calling the <tt class="docutils literal"><span class="pre">on</span></tt> method allows you to subscribe to an event.
+Every time the event fires, the callback method specified by <tt class="docutils literal"><span class="pre">callback</span></tt> will be
+called.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
+<li><tt class="docutils literal"><span class="pre">callback</span></tt> is the callback method to be called when the event is emitted.</li>
+</ul>
+<p>For example:</p>
+<div class="highlight-python"><pre>converse.on('onMessage', function (message) { ... });</pre>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>once(eventName, callback)</strong>:</p>
+<blockquote>
+<div><p>Calling the <tt class="docutils literal"><span class="pre">once</span></tt> method allows you to listen to an event
+exactly once.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
+<li><tt class="docutils literal"><span class="pre">callback</span></tt> is the callback method to be called when the event is emitted.</li>
+</ul>
+<p>For example:</p>
+<div class="highlight-python"><pre>converse.once('onMessage', function (message) { ... });</pre>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>off(eventName, callback)</strong></p>
+<blockquote>
+<div><p>To stop listening to an event, you can use the <tt class="docutils literal"><span class="pre">off</span></tt> method.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
+<li><tt class="docutils literal"><span class="pre">callback</span></tt> refers to the function that is to be no longer executed.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="event-types">
+<h2><a class="toc-backref" href="#id28">Event Types</a><a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
+<p>Here are the different events that are emitted:</p>
+<ul>
+<li><p class="first"><strong>onMessage</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onMessage',</span> <span class="pre">function</span> <span class="pre">(message)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when a message is received.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onMessageSend</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onMessageSend',</span> <span class="pre">function</span> <span class="pre">(message)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when a message will be sent out.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onRoster</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onRoster',</span> <span class="pre">function</span> <span class="pre">(items)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when the roster is updated.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onChatBoxFocused</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onChatBoxFocused',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when the focus has been moved to a chat box.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onChatBoxOpened</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onChatBoxOpened',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when a chat box has been opened.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onChatBoxClosed</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onChatBoxClosed',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when a chat box has been closed.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onStatusChanged</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onStatusChanged',</span> <span class="pre">function</span> <span class="pre">(status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when own chat status has changed.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onStatusMessageChanged</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onStatusMessageChanged',</span> <span class="pre">function</span> <span class="pre">(message)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when own custom status message has changed.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onBuddyStatusChanged</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onBuddyStatusChanged',</span> <span class="pre">function</span> <span class="pre">(buddy,</span> <span class="pre">status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when a chat buddy&#8217;s chat status has changed.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>onBuddyStatusMessageChanged</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onBuddyStatusMessageChanged',</span> <span class="pre">function</span> <span class="pre">(buddy,</span> <span class="pre">message)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered when a chat buddy&#8217;s custom status message has changed.</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#id26">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id29">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>The included minified JS and CSS files can be used for demoing or testing, but
 you&#8217;ll want to configure <em>Converse.js</em> to suit your needs before you deploy it
 on your website.</p>
@@ -541,9 +661,9 @@ all the available configuration settings.</p>
 JS file so that it will include the new settings. Please refer to the
 <a class="reference internal" href="#minification">Minification</a> section for more info on how to do this.</p>
 <div class="section" id="configuration-variables">
-<h2><a class="toc-backref" href="#id27">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id30">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="allow-contact-requests">
-<h3><a class="toc-backref" href="#id28">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow users to add one another as contacts. If this is set to false, the
 <strong>Add a contact</strong> widget, <strong>Contact Requests</strong> and <strong>Pending Contacts</strong> roster
@@ -551,18 +671,18 @@ sections will all not appear. Additionally, all incoming contact requests will b
 ignored.</p>
 </div>
 <div class="section" id="allow-muc">
-<h3><a class="toc-backref" href="#id29">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow multi-user chat (muc) in chatrooms. Setting this to <tt class="docutils literal"><span class="pre">false</span></tt> will remove
 the <tt class="docutils literal"><span class="pre">Chatrooms</span></tt> tab from the control box.</p>
 </div>
 <div class="section" id="animate">
-<h3><a class="toc-backref" href="#id30">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id33">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Show animations, for example when opening and closing chat boxes.</p>
 </div>
 <div class="section" id="auto-list-rooms">
-<h3><a class="toc-backref" href="#id31">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.</p>
@@ -572,40 +692,40 @@ features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.</p>
 </div>
 <div class="section" id="auto-subscribe">
-<h3><a class="toc-backref" href="#id32">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, the user will automatically subscribe back to any contact requests.</p>
 </div>
 <div class="section" id="bosh-service-url">
-<h3><a class="toc-backref" href="#id33">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id36">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
 <p>Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.</p>
 <p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">here</a> for more information.</p>
 </div>
 <div class="section" id="debug">
-<h3><a class="toc-backref" href="#id34">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id37">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to true, debugging output will be logged to the browser console.</p>
 </div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id35">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id38">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
 <p>If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user&#8217;s vCard will be fetched.</p>
 </div>
 <div class="section" id="hide-muc-server">
-<h3><a class="toc-backref" href="#id36">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id39">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Hide the <tt class="docutils literal"><span class="pre">server</span></tt> input field of the form inside the <tt class="docutils literal"><span class="pre">Room</span></tt> panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.</p>
 </div>
 <div class="section" id="i18n">
-<h3><a class="toc-backref" href="#id37">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id40">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
 <p>Specify the locale/language. The language must be in the <tt class="docutils literal"><span class="pre">locales</span></tt> object. Refer to
 <tt class="docutils literal"><span class="pre">./locale/locales.js</span></tt> to see which locales are supported.</p>
 </div>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id38">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id41">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
@@ -618,7 +738,7 @@ values as <tt class="docutils literal"><span class="pre">jid</span></tt>, <tt cl
 <p>Additionally, you have to specify <tt class="docutils literal"><span class="pre">bosh_service_url</span></tt>.</p>
 </div>
 <div class="section" id="show-controlbox-by-default">
-<h3><a class="toc-backref" href="#id39">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.</p>
@@ -628,13 +748,13 @@ the page with class <em>toggle-online-users</em>.</p>
 page load.</p>
 </div>
 <div class="section" id="show-only-online-users">
-<h3><a class="toc-backref" href="#id40">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id43">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 </div>
 <div class="section" id="xhr-custom-status">
-<h3><a class="toc-backref" href="#id41">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -644,7 +764,7 @@ Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 remote server.</p>
 </div>
 <div class="section" id="xhr-custom-status-url">
-<h3><a class="toc-backref" href="#id42">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -656,7 +776,7 @@ message will be made.</p>
 <p>The message itself is sent in the request under the key <tt class="docutils literal"><span class="pre">msg</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id43">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id46">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -673,7 +793,7 @@ message will be made.</p>
 corresponds to a matched user and needs the keys <tt class="docutils literal"><span class="pre">id</span></tt> and <tt class="docutils literal"><span class="pre">fullname</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search-url">
-<h3><a class="toc-backref" href="#id44">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id47">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -686,9 +806,9 @@ The query string will be included in the request with <tt class="docutils litera
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id45">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id48">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript-and-css">
-<h2><a class="toc-backref" href="#id46">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id49">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
 <p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
 all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
 and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
@@ -705,7 +825,7 @@ using <a class="reference external" href="https://github.com/jrburke/almond">alm
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id47">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id50">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.

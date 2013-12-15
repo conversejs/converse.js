@@ -537,6 +537,123 @@ It shows in which order the libraries must be loaded via ``<script>`` tags. Add
 your own libraries, making sure that they are loaded in the correct order (e.g.
 jQuery plugins must load after jQuery).
 
+
+======
+Events
+======
+
+Converse.js emits events to which you can subscribe from your own Javascript.
+
+Concerning events, the following methods are available:
+
+Event Methods
+=============
+
+* **on(eventName, callback)**: 
+
+    Calling the ``on`` method allows you to subscribe to an event.
+    Every time the event fires, the callback method specified by ``callback`` will be
+    called.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+
+    For example::
+
+        converse.on('onMessage', function (message) { ... });
+
+* **once(eventName, callback)**:
+
+    Calling the ``once`` method allows you to listen to an event
+    exactly once.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    
+    For example::
+
+        converse.once('onMessage', function (message) { ... });
+
+* **off(eventName, callback)**
+
+    To stop listening to an event, you can use the ``off`` method.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` refers to the function that is to be no longer executed.
+
+
+Event Types
+===========
+
+Here are the different events that are emitted:
+
+* **onMessage**
+
+    ``converse.on('onMessage', function (message) { ... });``
+
+    Triggered when a message is received.
+
+* **onMessageSend**
+
+    ``converse.on('onMessageSend', function (message) { ... });``
+
+    Triggered when a message will be sent out.
+
+* **onRoster**
+
+    ``converse.on('onRoster', function (items) { ... });``
+
+    Triggered when the roster is updated.
+
+* **onChatBoxFocused**
+
+    ``converse.on('onChatBoxFocused', function (chatbox) { ... });``
+
+    Triggered when the focus has been moved to a chat box.
+
+* **onChatBoxOpened**
+
+    ``converse.on('onChatBoxOpened', function (chatbox) { ... });``
+
+    Triggered when a chat box has been opened.
+
+* **onChatBoxClosed**
+
+    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+
+    Triggered when a chat box has been closed.
+
+* **onStatusChanged**
+
+    ``converse.on('onStatusChanged', function (status) { ... });``
+
+    Triggered when own chat status has changed.
+
+* **onStatusMessageChanged**
+
+    ``converse.on('onStatusMessageChanged', function (message) { ... });``
+
+    Triggered when own custom status message has changed.
+
+* **onBuddyStatusChanged**
+
+    ``converse.on('onBuddyStatusChanged', function (buddy, status) { ... });``
+
+    Triggered when a chat buddy's chat status has changed.
+
+* **onBuddyStatusMessageChanged**
+
+    ``converse.on('onBuddyStatusMessageChanged', function (buddy, message) { ... });``
+
+    Triggered when a chat buddy's custom status message has changed.
+
+
 =============
 Configuration
 =============

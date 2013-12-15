@@ -431,6 +431,7 @@
                     }
                 }
             }, this));
+            converse.emit('onReady');
         };
 
         // Backbone Models and Views
@@ -3406,6 +3407,7 @@
             this.onConnected();
         }
         if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
+        converse.emit('onInitialized');
     };
     return {
         'initialize': function (settings, callback) {

@@ -593,6 +593,19 @@ Event Types
 
 Here are the different events that are emitted:
 
+* **onInitialized**
+
+    ``converse.on('onMessage', function () { ... });``
+
+    Triggered once converse.js has been initialized.
+
+* **onReady**
+
+    Triggered after a connection has been established and converse.js has
+    got all its ducks in a row.
+
+    ``converse.on('onReady', function (message) { ... });``
+
 * **onMessage**
 
     ``converse.on('onMessage', function (message) { ... });``

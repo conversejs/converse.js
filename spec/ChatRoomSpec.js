@@ -18,7 +18,6 @@
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'],
                     $participant_list;
                 var roster = {}, room = {}, i;
-
                 for (i=0; i<mock.chatroom_names.length-1; i++) {
                     roster[mock.chatroom_names[i]] = {};
                     chatroomview.onChatRoomRoster(roster, room);
@@ -43,7 +42,8 @@
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
             }, converse));
 
-            it("shows received and sent groupchat messages", $.proxy(function () {
+            it("shows received groupchat messages", $.proxy(function () {
+                spyOn(converse, 'emit');
                 var view = this.chatboxesview.views['lounge@muc.localhost'];
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                 var nick = mock.chatroom_names[0];
@@ -58,6 +58,31 @@
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-message-content').text()).toBe(text);
+                expect(converse.emit).toHaveBeenCalledWith('onMessage', message.nodeTree);
+            }, converse));
+
+            it("shows sent groupchat messages", $.proxy(function () {
+                spyOn(converse, 'emit');
+                var view = this.chatboxesview.views['lounge@muc.localhost'];
+                if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                var nick = mock.chatroom_names[0];
+                var text = 'This is a sent message';
+                view.$el.find('.chat-textarea').text(text);
+                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                expect(converse.emit).toHaveBeenCalledWith('onMessageSend', text);
+
+                var message = $msg({
+                    from: 'lounge@muc.localhost/dummy',
+                    id: '2',
+                    to: 'dummy@localhost.com',
+                    type: 'groupchat'
+                }).c('body').t(text);
+                view.onChatRoomMessage(message.nodeTree);
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.find('.chat-message').length).toBe(1);
+                expect($chat_content.find('.chat-message-content').last().text()).toBe(text);
+                // We don't emit an event if it's our own message
+                expect(converse.emit.callCount, 1);
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
@@ -83,11 +108,13 @@
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
                 var view = this.chatboxesview.views['lounge@muc.localhost'], chatroom = view.model, $el;
                 spyOn(view, 'closeChat').andCallThrough();
+                spyOn(converse, 'emit');
                 spyOn(converse.connection.muc, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.$el.find('.close-chatbox-button').click();
                 expect(view.closeChat).toHaveBeenCalled();
                 expect(converse.connection.muc.leave).toHaveBeenCalled();
+                expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
             }, converse));
         }, converse));
 

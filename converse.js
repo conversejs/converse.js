@@ -942,7 +942,6 @@
             },
 
             sendMessage: function (text) {
-                converse.emit('onMessageSend', text);
                 var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
                     if (match[1] === "clear") {
@@ -995,6 +994,7 @@
                         } else {
                             this.sendMessage(message);
                         }
+                        converse.emit('onMessageSend', message);
                     }
                     this.$el.data('composing', false);
                 } else if (!this.model.get('chatroom')) {
@@ -2241,12 +2241,17 @@
                         }));
                 }
                 if (!body) { return true; }
-                this.showMessage($chat_content,
-                                {'message': body,
-                                    'sender': sender === this.model.get('nick') && 'me' || 'room',
-                                    'fullname': sender,
-                                    'time': converse.toISOString(message_datetime)
-                                });
+                var display_sender = sender === this.model.get('nick') && 'me' || 'room';
+                this.showMessage($chat_content, {
+                    'message': body,
+                    'sender': display_sender,
+                    'fullname': sender,
+                    'time': converse.toISOString(message_datetime)
+                });
+                if (display_sender === 'room') {
+                    // We only emit an event if it's not our own message
+                    converse.emit('onMessage', message);
+                }
                 return true;
             },
 

@@ -34,7 +34,8 @@
             'listRooms': function () {},
             'join': function () {},
             'leave': function () {},
-            'rooms': {}
+            'rooms': {},
+            'groupchat': function () {}
         },
         'service': 'jasmine tests',
         'jid': 'dummy@localhost',

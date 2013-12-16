@@ -113,9 +113,10 @@ require([
             require([
                 "jasmine-console-reporter",
                 "jasmine-junit-reporter",
-                "spec/ControlBoxSpec",
-                "spec/ChatBoxSpec",
-                "spec/ChatRoomSpec"
+                "spec/converse",
+                "spec/controlbox",
+                "spec/chatbox",
+                "spec/chatroom"
             ], function () {
                 // Make sure this callback is only called once.
                 delete converse.callback;

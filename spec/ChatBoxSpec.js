@@ -39,7 +39,10 @@
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
+                spyOn(converse, 'emit');
                 utils.closeControlBox();
+                expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+
                 // First, we open 6 more chatboxes (controlbox is already open)
                 utils.openChatBoxes(6);
                 // We instantiate a new ChatBoxes collection, which by default
@@ -62,6 +65,7 @@
             }, converse));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+                spyOn(converse, 'emit');
                 var chatbox, view, $el,
                     num_open_chats = this.chatboxes.length;
                 for (i=0; i<num_open_chats; i++) {
@@ -71,17 +75,21 @@
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     view.$el.find('.close-chatbox-button').click();
                     expect(view.closeChat).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                 }
             }, converse));
 
             it("will be removed from localStorage when closed", $.proxy(function () {
+                spyOn(converse, 'emit');
                 this.chatboxes.localStorage._clear();
                 utils.closeControlBox();
                 expect(converse.chatboxes.length).toEqual(0);
                 utils.openChatBoxes(6);
                 expect(converse.chatboxes.length).toEqual(6);
+                expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
                 utils.closeAllChatBoxes();
                 expect(converse.chatboxes.length).toEqual(0);
+                expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                 var newchatboxes = new this.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 // onConnected will fetch chatboxes in localStorage, but
@@ -140,7 +148,6 @@
                         expect($($items[10]).children('a').data('emoticon')).toBe(':O');
                         expect($($items[11]).children('a').data('emoticon')).toBe('(^.^)b');
                         expect($($items[12]).children('a').data('emoticon')).toBe('<3');
-
                         $items[0].click();
                     });
                     waits(250);
@@ -192,6 +199,7 @@
 
             describe("A Chat Message", $.proxy(function () {
                 it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
+                    spyOn(converse, 'emit');
                     var message = 'This is a received message';
                     var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                         msg = $msg({
@@ -209,6 +217,7 @@
                         // messageReceived is a handler for received XMPP
                         // messages
                         this.chatboxes.messageReceived(msg);
+                        expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     }, converse));
                     waits(300);
                     runs($.proxy(function () {
@@ -238,6 +247,7 @@
                 }, converse));
 
                 it("will indate when it has a time difference of more than a day between it and it's predecessor", $.proxy(function () {
+                    spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
@@ -252,16 +262,16 @@
                     var msg_txt;
                     var sender_txt;
 
-                    this.chatboxes.messageReceived(
-                        $msg({
-                            from: contact_jid,
-                            to: this.connection.jid,
-                            type: 'chat',
-                            id: one_day_ago.getTime()
-                        }).c('body').t(message).up()
-                          .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: converse.toISOString(one_day_ago) })
-                          .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-                    );
+                    var msg = $msg({
+                        from: contact_jid,
+                        to: this.connection.jid,
+                        type: 'chat',
+                        id: one_day_ago.getTime()
+                    }).c('body').t(message).up()
+                      .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: converse.toISOString(one_day_ago) })
+                      .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                    this.chatboxes.messageReceived(msg);
+                    expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     expect(chatbox.messages.length).toEqual(1);
                     msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(message);
@@ -274,16 +284,15 @@
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
 
                     message = 'This is a current message';
-                    this.chatboxes.messageReceived(
-                        $msg({
-                            from: contact_jid,
-                            to: this.connection.jid,
-                            type: 'chat',
-                            id: new Date().getTime()
-                        }).c('body').t(message).up()
-                          .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-                    );
-
+                    msg = $msg({
+                        from: contact_jid,
+                        to: this.connection.jid,
+                        type: 'chat',
+                        id: new Date().getTime()
+                    }).c('body').t(message).up()
+                      .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                    this.chatboxes.messageReceived(msg);
+                    expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     // Check that there is a <time> element, with the required
                     // props.
                     var $time = $chat_content.find('time');
@@ -308,8 +317,10 @@
                 }, converse));
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
+                    spyOn(converse, 'emit');
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
@@ -317,6 +328,8 @@
                     view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
+                    expect(converse.emit.callCount, 2);
+                    expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
                     var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
                     expect(txt).toEqual(message);
                 }, converse));
@@ -325,6 +338,7 @@
 
         describe("Special Messages", $.proxy(function () {
             it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
+                spyOn(converse, 'emit');
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var view = this.chatboxesview.views[contact_jid];
                 var message = 'This message is another sent from this chatbox';
@@ -334,6 +348,7 @@
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                 expect(view.model.messages.length > 0).toBeTruthy();
                 expect(view.model.messages.localStorage.records.length > 0).toBeTruthy();
+                expect(converse.emit).toHaveBeenCalledWith('onMessageSend', message);
 
                 message = '/clear';
                 var old_length = view.model.messages.length;
@@ -343,6 +358,8 @@
                 expect(view.sendMessage).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the modal
                 expect(view.model.messages.localStorage.records.length, 0); // And also from localStorage
+                expect(converse.emit.callCount, 1);
+                expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
             }, converse));
         }, converse));
 
@@ -352,6 +369,7 @@
             }, converse));
 
             it("is incremented when the message is received and the window is not focused", $.proxy(function () {
+                spyOn(converse, 'emit');
                 expect(this.msg_counter).toBe(0);
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('blur');
@@ -367,6 +385,7 @@
                 this.chatboxes.messageReceived(msg);
                 expect(converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(this.msg_counter).toBe(1);
+                expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
             }, converse));
 
             it("is cleared when the window is focused", $.proxy(function () {

@@ -9,7 +9,6 @@
 } (this, function (mock, utils) {
     return describe("ChatRooms", $.proxy(function (mock, utils) {
         describe("A Chat Room", $.proxy(function () {
-
             beforeEach(function () {
                 utils.closeAllChatBoxes();
                 utils.createNewChatRoom('lounge', 'dummy');

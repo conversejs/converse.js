@@ -2327,7 +2327,6 @@
                     // not broadcasted
                     return true;
                 }
-                converse.emit('onMessage', message);
                 var $forwarded = $message.children('forwarded');
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
@@ -2367,6 +2366,7 @@
                 }
                 chatbox.messageReceived(message);
                 converse.roster.addResource(buddy_jid, resource);
+                converse.emit('onMessage', message);
                 return true;
             }
         });

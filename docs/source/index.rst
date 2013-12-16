@@ -562,7 +562,7 @@ Event Methods
 
     For example::
 
-        converse.on('onMessage', function (message) { ... });
+        converse.on('onMessage', function (messageXML) { ... });
 
 * **once(eventName, callback)**:
 
@@ -576,7 +576,7 @@ Event Methods
     
     For example::
 
-        converse.once('onMessage', function (message) { ... });
+        converse.once('onMessage', function (messageXML) { ... });
 
 * **off(eventName, callback)**
 
@@ -595,7 +595,7 @@ Here are the different events that are emitted:
 
 * **onInitialized**
 
-    ``converse.on('onMessage', function () { ... });``
+    ``converse.on('onInitialized', function () { ... });``
 
     Triggered once converse.js has been initialized.
 
@@ -604,17 +604,17 @@ Here are the different events that are emitted:
     Triggered after a connection has been established and converse.js has
     got all its ducks in a row.
 
-    ``converse.on('onReady', function (message) { ... });``
+    ``converse.on('onReady', function () { ... });``
 
 * **onMessage**
 
-    ``converse.on('onMessage', function (message) { ... });``
+    ``converse.on('onMessage', function (messageXML) { ... });``
 
     Triggered when a message is received.
 
 * **onMessageSend**
 
-    ``converse.on('onMessageSend', function (message) { ... });``
+    ``converse.on('onMessageSend', function (messageText) { ... });``
 
     Triggered when a message will be sent out.
 
@@ -662,7 +662,7 @@ Here are the different events that are emitted:
 
 * **onBuddyStatusMessageChanged**
 
-    ``converse.on('onBuddyStatusMessageChanged', function (buddy, message) { ... });``
+    ``converse.on('onBuddyStatusMessageChanged', function (buddy, messageText) { ... });``
 
     Triggered when a chat buddy's custom status message has changed.
 

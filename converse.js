@@ -33,21 +33,21 @@
         root.converse = factory(jQuery, _, OTR, DSA, console || {log: function(){}});
     }
 }(this, function ($, _, OTR, DSA, console) {
-    var converse = {};
+    var converse = {
+        emit: function(evt, data) {
+            $(this).trigger(evt, data);
+        },
+        once: function(evt, handler) {
+            $(this).one(evt, handler);
+        },
+        on: function(evt, handler) {
+            $(this).bind(evt, handler);
+        },
+        off: function(evt, handler) {
+            $(this).unbind(evt, handler);
+        }
+    };
 
-    converse.emit = function(evt, data) {
-        $(this).trigger(evt, data);
-    };
-    once = function(evt, handler) {
-        $(this).one(evt, handler);
-    };
-    on = function(evt, handler) {
-        $(this).bind(evt, handler);
-    };
-    off = function(evt, handler) {
-        $(this).unbind(evt, handler);
-    };
-    
     converse.initialize = function (settings, callback) {
         var converse = this;
 
@@ -2678,7 +2678,7 @@
             },
 
             rosterHandler: function (items) {
-                this.emit('onRoster', items);
+                converse.emit('onRoster', items);
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }

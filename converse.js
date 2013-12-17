@@ -87,6 +87,7 @@
         this.show_only_online_users = false;
         this.show_emoticons = true;
         this.show_toolbar = true;
+        this.use_vcards = true;
         this.xhr_custom_status = false;
         this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
@@ -114,6 +115,7 @@
             'show_only_online_users',
             'show_toolbar',
             'sid',
+            'use_vcards',
             'xhr_custom_status',
             'xhr_custom_status_url',
             'xhr_user_search',
@@ -205,6 +207,12 @@
         };
 
         this.getVCard = function (jid, callback, errback) {
+            if (!this.use_vcards) {
+                if (callback) {
+                    callback(jid, jid);
+                }
+                return;
+            }
             converse.connection.vcard.get(
                 $.proxy(function (iq) {
                     // Successful callback
@@ -242,7 +250,8 @@
                     if (errback) {
                         errback(iq);
                     }
-                });
+                }
+            );
         };
 
         this.onConnect = function (status) {
@@ -1384,16 +1393,7 @@
                     $input.addClass('error');
                     return;
                 }
-                converse.getVCard(
-                    jid,
-                    $.proxy(function (jid, fullname, image, image_type, url) {
-                        this.addContact(jid, fullname);
-                    }, this),
-                    $.proxy(function (stanza) {
-                        converse.log("An error occured while fetching vcard");
-                        var jid = $(stanza).attr('from');
-                        this.addContact(jid, jid);
-                    }, this));
+                this.addContact(jid);
                 $('.search-xmpp').hide();
             },
 
@@ -1408,6 +1408,7 @@
             },
 
             addContact: function (jid, name) {
+                name = _.isEmpty(name)? jid: name;
                 converse.connection.roster.add(jid, name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });

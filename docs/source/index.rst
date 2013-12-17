@@ -815,6 +815,15 @@ Default = ``false``
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+use_vcards
+----------
+
+Default = ``true``
+
+Determines whether the XMPP server will be queried for roster contacts' VCards
+or not. VCards contain extra personal information such as your fullname and
+avatar image.
+
 xhr_custom_status
 -----------------
 

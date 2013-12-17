@@ -396,7 +396,7 @@
             this.initStatus($.proxy(function () {
                 this.initRoster();
                 this.chatboxes.onConnected();
-                this.connection.roster.get();
+                this.connection.roster.get(function () {});
                 $(document).click(function() {
                     if ($('.toggle-otr ul').is(':visible')) {
                         $('.toggle-otr ul', this).slideUp();

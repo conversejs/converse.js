@@ -2707,11 +2707,15 @@
 
             getNumOnlineContacts: function () {
                 var count = 0,
+                    ignored = ['offline', 'unavailable'],
                     models = this.models,
                     models_length = models.length,
                     i;
+                if (converse.show_only_online_users) {
+                    ignored = _.union(ignored, ['dnd', 'xa', 'away']);
+                }
                 for (i=0; i<models_length; i++) {
-                    if (_.indexOf(['offline', 'unavailable'], models[i].get('chat_status')) === -1) {
+                    if (_.indexOf(ignored, models[i].get('chat_status')) === -1) {
                         count++;
                     }
                 }

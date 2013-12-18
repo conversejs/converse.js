@@ -4,7 +4,10 @@ Changelog
 0.7.2 (Unreleased)
 ------------------
 
+.. note:: This release contains an important security fix.
+
 * #48 Add event emitter support and emit events. [jcbrand]
+* #97 Wrong number of online contacts shown with config option ``show_only_online_users``. [jcbrand]
 * #100 Make the fetching of vCards optional (enabled by default). [jcbrand]
 * Sanitize message text to avoid Javascript injection attacks. Thanks to hejsan for reporting. [jcbrand]
 

@@ -33,6 +33,58 @@
         root.converse = factory(jQuery, _, OTR, DSA, console || {log: function(){}});
     }
 }(this, function ($, _, OTR, DSA, console) {
+    $.fn.addHyperlinks = function() {
+        if (this.length > 0) {
+            this.each(function(i, obj) {
+                var x = $(obj).html();
+                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
+                if (list) {
+                    for (i=0; i<list.length; i++) {
+                        var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
+                        x = x.replace(list[i], "<a target='_blank' href='" + prot + list[i] + "'>"+ list[i] + "</a>" );
+                    }
+                }
+                $(obj).html(x);
+            });
+        }
+        return this;
+    };
+
+    $.fn.addEmoticons = function() {
+        if (converse.show_emoticons) {
+            if (this.length > 0) {
+                this.each(function(i, obj) {
+                    var text = $(obj).html();
+                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
+                    text = text.replace(/&gt;:\)/g, '<span class="emoticon icon-evil"></span>');
+                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
+                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/:\/ /g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/&gt;:\(/g, '<span class="emoticon icon-angry"></span>');
+                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
+                    text = text.replace(/<3/g, '<span class="emoticon icon-heart"></span>');
+                    $(obj).html(text);
+                });
+            }
+        }
+        return this;
+    };
+
     var converse = {
         emit: function(evt, data) {
             $(this).trigger(evt, data);
@@ -182,7 +234,8 @@
 
         // Module-level functions
         // ----------------------
-        this.autoLink = function (text) {
+        // TODO: REMOVE
+        this.createLinks = function (text) {
             // Convert URLs into hyperlinks
             var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
             return text.replace(re, '<a target="_blank" href="$1">$1</a>');
@@ -594,7 +647,7 @@
 
             createMessage: function (message) {
                 var $message = $(message),
-                    body = converse.autoLink($message.children('body').text()),
+                    body = $message.children('body').text(),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     composing = $message.find('composing'),
                     delayed = $message.find('delay').length > 0,
@@ -636,7 +689,7 @@
 
             messageReceived: function (message) {
                 var $body = $(message).children('body');
-                var text = ($body.length > 0 ? converse.autoLink($body.text()) : undefined);
+                var text = ($body.length > 0 ? $body.text() : undefined);
                 if ((!text) || (!converse.allow_otr)) {
                     return this.createMessage(message);
                 }
@@ -847,14 +900,14 @@
                     username = sender === 'me' && __('me') || msg_dict.fullname;
                 }
                 $el.find('div.chat-event').remove();
-                $el.append(
-                    template({
-                        'sender': sender,
-                        'time': this_date.toTimeString().substring(0,5),
-                        'message': this.renderEmoticons(text),
-                        'username': username,
-                        'extra_classes': msg_dict.delayed && 'delayed' || ''
-                    }));
+                var message = template({
+                    'sender': sender,
+                    'time': this_date.toTimeString().substring(0,5),
+                    'username': username,
+                    'message': '',
+                    'extra_classes': msg_dict.delayed && 'delayed' || ''
+                });
+                $el.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
                 return this.scrollDown();
             },
 

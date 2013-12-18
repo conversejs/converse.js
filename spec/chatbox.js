@@ -328,11 +328,25 @@
                     view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
-                    expect(converse.emit.callCount, 2);
+                    expect(converse.emit.callCount).toEqual(2);
                     expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
                     var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
                     expect(txt).toEqual(message);
                 }, converse));
+
+                it("are sanitized to prevent Javascript injection attacks", $.proxy(function () {
+                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    var message = 'This message contains <b>markup</b>';
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    view.$el.find('.chat-textarea').text(message);
+                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
+                    expect(txt).toEqual(message);
+                }, converse));
+
             }, converse));
         }, converse));
 

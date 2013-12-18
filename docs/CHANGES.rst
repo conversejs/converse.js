@@ -6,6 +6,7 @@ Changelog
 
 * #48 Add event emitter support and emit events. [jcbrand]
 * #100 Make the fetching of vCards optional (enabled by default). [jcbrand]
+* Sanitize message text to avoid Javascript injection attacks. Thanks to hejsan for reporting. [jcbrand]
 
 0.7.1 (2013-11-17)
 ------------------

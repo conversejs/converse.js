@@ -3041,6 +3041,7 @@
                 if (!$count.is(':visible')) {
                     $count.show();
                 }
+                converse.emit('onRosterViewUpdated');
                 return this;
             },
 

@@ -624,6 +624,12 @@ Here are the different events that are emitted:
 
     Triggered when the roster is updated.
 
+* **onRosterViewUpdated**
+
+    ``converse.on('onRosterViewUpdated', function (items) { ... });``
+
+    Triggered whenever the roster view (i.e. the rendered HTML) has changed.
+
 * **onChatBoxFocused**
 
     ``converse.on('onChatBoxFocused', function (chatbox) { ... });``

@@ -8,6 +8,8 @@
     );
 } (this, function (mock, utils) {
     return describe("Converse", $.proxy(function(mock, utils) {
+        window.localStorage.clear();
+
         it("allows you to subscribe to emitted events", function () {
             this.callback = function () {};
             spyOn(this, 'callback');

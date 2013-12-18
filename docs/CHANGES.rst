@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7.2 (Unreleased)
+0.7.2 (2013-12-18)
 ------------------
 
 .. note:: This release contains an important security fix.

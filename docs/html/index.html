@@ -122,19 +122,20 @@
 <li><a class="reference internal" href="#prebind" id="id41">prebind</a></li>
 <li><a class="reference internal" href="#show-controlbox-by-default" id="id42">show_controlbox_by_default</a></li>
 <li><a class="reference internal" href="#show-only-online-users" id="id43">show_only_online_users</a></li>
-<li><a class="reference internal" href="#xhr-custom-status" id="id44">xhr_custom_status</a></li>
-<li><a class="reference internal" href="#xhr-custom-status-url" id="id45">xhr_custom_status_url</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id46">xhr_user_search</a></li>
-<li><a class="reference internal" href="#xhr-user-search-url" id="id47">xhr_user_search_url</a></li>
+<li><a class="reference internal" href="#use-vcards" id="id44">use_vcards</a></li>
+<li><a class="reference internal" href="#xhr-custom-status" id="id45">xhr_custom_status</a></li>
+<li><a class="reference internal" href="#xhr-custom-status-url" id="id46">xhr_custom_status_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id47">xhr_user_search</a></li>
+<li><a class="reference internal" href="#xhr-user-search-url" id="id48">xhr_user_search_url</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id48">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript-and-css" id="id49">Minifying Javascript and CSS</a></li>
+<li><a class="reference internal" href="#minification" id="id49">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript-and-css" id="id50">Minifying Javascript and CSS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#translations" id="id50">Translations</a></li>
+<li><a class="reference internal" href="#translations" id="id51">Translations</a></li>
 </ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
@@ -179,7 +180,7 @@ practical.</p>
 <p>You&#8217;ll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.</p>
-<p>For more info on this, read: <a href="#id51"><span class="problematic" id="id52">`Pre-binding and Single Session Support`_</span></a>.</p>
+<p>For more info on this, read: <a href="#id52"><span class="problematic" id="id53">`Pre-binding and Single Session Support`_</span></a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
@@ -614,6 +615,12 @@ got all its ducks in a row.</p>
 <p>Triggered when the roster is updated.</p>
 </div></blockquote>
 </li>
+<li><p class="first"><strong>onRosterViewUpdated</strong></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">converse.on('onRosterViewUpdated',</span> <span class="pre">function</span> <span class="pre">(items)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
+<p>Triggered whenever the roster view (i.e. the rendered HTML) has changed.</p>
+</div></blockquote>
+</li>
 <li><p class="first"><strong>onChatBoxFocused</strong></p>
 <blockquote>
 <div><p><tt class="docutils literal"><span class="pre">converse.on('onChatBoxFocused',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></p>
@@ -766,8 +773,15 @@ page load.</p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 </div>
+<div class="section" id="use-vcards">
+<h3><a class="toc-backref" href="#id44">use_vcards</a><a class="headerlink" href="#use-vcards" title="Permalink to this headline">¶</a></h3>
+<p>Default = <tt class="docutils literal"><span class="pre">true</span></tt></p>
+<p>Determines whether the XMPP server will be queried for roster contacts&#8217; VCards
+or not. VCards contain extra personal information such as your fullname and
+avatar image.</p>
+</div>
 <div class="section" id="xhr-custom-status">
-<h3><a class="toc-backref" href="#id44">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -777,7 +791,7 @@ Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 remote server.</p>
 </div>
 <div class="section" id="xhr-custom-status-url">
-<h3><a class="toc-backref" href="#id45">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id46">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -789,7 +803,7 @@ message will be made.</p>
 <p>The message itself is sent in the request under the key <tt class="docutils literal"><span class="pre">msg</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id46">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id47">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default = <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -806,7 +820,7 @@ message will be made.</p>
 corresponds to a matched user and needs the keys <tt class="docutils literal"><span class="pre">id</span></tt> and <tt class="docutils literal"><span class="pre">fullname</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search-url">
-<h3><a class="toc-backref" href="#id47">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -819,9 +833,9 @@ The query string will be included in the request with <tt class="docutils litera
 </div>
 </div>
 <div class="section" id="minification">
-<h1><a class="toc-backref" href="#id48">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id49">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="minifying-javascript-and-css">
-<h2><a class="toc-backref" href="#id49">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id50">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h2>
 <p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
 all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
 and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
@@ -838,7 +852,7 @@ using <a class="reference external" href="https://github.com/jrburke/almond">alm
 </div>
 </div>
 <div class="section" id="translations">
-<h1><a class="toc-backref" href="#id50">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id51">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.

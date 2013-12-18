@@ -1083,6 +1083,10 @@ ul.chat-toolbar {
     float: right;
 }
 
+.chat-toolbar .toggle-call {
+	color: rgb(79, 79, 79);
+}
+
 .chat-toolbar ul li a {
     color: rgb(79, 79, 79);
 }

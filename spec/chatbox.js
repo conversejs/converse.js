@@ -197,6 +197,8 @@
                 }, converse));
 
                 it("contains a button for starting a call", $.proxy(function () {
+                    spyOn(converse, 'emit');
+
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
@@ -206,20 +208,9 @@
 
                     expect(callButton.length).toBe(1);
 
-                    var callEventTriggered = false;
-
-                    $(document).on('converse:callButtonClicked', function() {
-                        callEventTriggered = true;
-                    });
-
                     runs(function () {
                         callButton.click();
-                    });
-
-                    waits(50);
-
-                    runs(function () {
-                        expect(callEventTriggered).toBe(true);
+                        expect(converse.emit).toHaveBeenCalledWith('onCallButtonClicked', jasmine.any(Object));
                     });
                 }, converse));
             }, converse));

@@ -139,12 +139,12 @@
         this.show_only_online_users = false;
         this.show_emoticons = true;
         this.show_toolbar = true;
+        this.use_otr_by_default = false;
         this.use_vcards = true;
         this.xhr_custom_status = false;
         this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
         this.xhr_user_search_url = '';
-        this.use_otr_by_default = false;
 
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, [
@@ -168,12 +168,12 @@
             'show_only_online_users',
             'show_toolbar',
             'sid',
+            'use_otr_by_default',
             'use_vcards',
             'xhr_custom_status',
             'xhr_custom_status_url',
             'xhr_user_search',
-            'xhr_user_search_url',
-            'use_otr_by_default'
+            'xhr_user_search_url'
         ]));
 
         // Only allow OTR if we have the capability

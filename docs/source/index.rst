@@ -813,6 +813,28 @@ the page with class *toggle-online-users*.
 If this options is set to true, the controlbox will by default be shown upon
 page load.
 
+
+show_call_button
+----------------
+
+Default = ``false``
+
+Enable to display a call button on the chatbox toolbar.
+
+When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
+
+::
+
+    converse.on('onCallButtonClicked', function(event, data) {
+        console.log('Call button was clicked.');
+        console.log('Strophe connection is', data.connection);
+        console.log('Bare buddy JID is', data.model.get('jid'));
+
+        // ... Third-party library code ...
+    });
+
+
+
 show_only_online_users
 ----------------------
 

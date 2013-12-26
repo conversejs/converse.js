@@ -1172,7 +1172,8 @@
                 ev.stopPropagation();
 
                 converse.emit('onCallButtonClicked', {
-                    connection: converse.connection
+                    connection: converse.connection,
+                    model: this.model
                 });
             },
 

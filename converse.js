@@ -12,27 +12,26 @@
         console = { log: function () {}, error: function () {} };
     }
     if (typeof define === 'function' && define.amd) {
-        define("converse", ["converse-dependencies"], function(otr) {
-            // Use Mustache style syntax for variable interpolation
-            _.templateSettings = {
-                evaluate : /\{\[([\s\S]+?)\]\}/g,
-                interpolate : /\{\{([\s\S]+?)\}\}/g
-            };
-            if (typeof otr !== "undefined") {
-                return factory(jQuery, _, otr.OTR, otr.DSA, console);
-            } else {
-                return factory(jQuery, _, undefined, undefined, console);
+        define("converse",
+              ["converse-dependencies", "converse-templates"],
+            function(otr, templates) {
+                if (typeof otr !== "undefined") {
+                    return factory(jQuery, _, otr.OTR, otr.DSA, console, templates);
+                } else {
+                    return factory(jQuery, _, undefined, undefined, console, templates);
+                }
             }
-        });
+        );
     } else {
         // Browser globals
+        // FIXME
         _.templateSettings = {
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
         root.converse = factory(jQuery, _, OTR, DSA, console || {log: function(){}});
     }
-}(this, function ($, _, OTR, DSA, console) {
+}(this, function ($, _, OTR, DSA, console, templates) {
     $.fn.addHyperlinks = function() {
         if (this.length > 0) {
             this.each(function(i, obj) {
@@ -86,6 +85,7 @@
     };
 
     var converse = {
+        templates: templates,
         emit: function(evt, data) {
             $(this).trigger(evt, data);
         },
@@ -731,99 +731,6 @@
                 'click .toggle-call': 'toggleCall'
             },
 
-            template: _.template(
-                '<div class="chat-head chat-head-chatbox">' +
-                    '<a class="close-chatbox-button icon-close"></a>' +
-                    '<a href="{{url}}" target="_blank" class="user">' +
-                        '<div class="chat-title"> {{ fullname }} </div>' +
-                    '</a>' +
-                    '<p class="user-custom-message"><p/>' +
-                '</div>' +
-                '<div class="chat-content"></div>' +
-                '<form class="sendXMPPMessage" action="" method="post">' +
-                    '{[ if ('+converse.show_toolbar+') { ]}' +
-                        '<ul class="chat-toolbar no-text-select"></ul>'+
-                    '{[ } ]}' +
-                '<textarea ' +
-                    'type="text" ' +
-                    'class="chat-textarea" ' +
-                    'placeholder="'+__('Personal message')+'"/>'+
-                '</form>'
-            ),
-
-
-            toolbar_template: _.template(
-                '{[ if (show_emoticons)  { ]}' +
-                    '<li class="toggle-smiley icon-happy" title="Insert a smilery">' +
-                        '<ul>' +
-                            '<li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>'+
-                            '<li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>'+
-                            '<li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>'+
-                            '<li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>'+
-                            '<li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>'+
-                            '<li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>'+
-                            '<li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>'+
-                            '<li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>'+
-                            '<li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>'+
-                            '<li><a class="icon-sad" href="#" data-emoticon=":("></a></li>'+
-                            '<li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>'+
-                            '<li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>'+
-                            '<li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>'+
-                        '</ul>' +
-                    '</li>' +
-                '{[ } ]}' +
-                '{[ if (' + converse.show_call_button + ')  { ]}' +
-                    '<li><a class="toggle-call icon-phone" title="Start a call"></a></li>' +
-                '{[ } ]}' +
-                '{[ if (allow_otr)  { ]}' +
-                    '<li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">'+
-                        '<span class="chat-toolbar-text">{{otr_translated_status}}</span>'+
-                        '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
-                            '<span class="icon-unlocked"></span>'+
-                        '{[ } ]}' +
-                        '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
-                            '<span class="icon-lock"></span>'+
-                        '{[ } ]}' +
-                        '{[ if (otr_status == "'+VERIFIED+'") { ]}' +
-                            '<span class="icon-lock"></span>'+
-                        '{[ } ]}' +
-                        '{[ if (otr_status == "'+FINISHED+'") { ]}' +
-                            '<span class="icon-unlocked"></span>'+
-                        '{[ } ]}' +
-                        '<ul>'+
-                            '{[ if (otr_status == "'+UNENCRYPTED+'") { ]}' +
-                                '<li><a class="start-otr" href="#">'+__('Start encrypted conversation')+'</a></li>'+
-                            '{[ } ]}' +
-                            '{[ if (otr_status != "'+UNENCRYPTED+'") { ]}' +
-                                '<li><a class="start-otr" href="#">'+__('Refresh encrypted conversation')+'</a></li>'+
-                                '<li><a class="end-otr" href="#">'+__('End encrypted conversation')+'</a></li>'+
-                                '<li><a class="auth-otr" data-scheme="smp" href="#">'+__('Verify with SMP')+'</a></li>'+
-                            '{[ } ]}' +
-                            '{[ if (otr_status == "'+UNVERIFIED+'") { ]}' +
-                                '<li><a class="auth-otr" data-scheme="fingerprint" href="#">'+__('Verify with fingerprints')+'</a></li>'+
-                            '{[ } ]}' +
-                            '<li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">'+__("What\'s this?")+'</a></li>'+
-                        '</ul>'+
-                    '</li>'+
-                '{[ } ]}'
-            ),
-
-            message_template: _.template(
-                '<div class="chat-message {{extra_classes}}">' +
-                    '<span class="chat-message-{{sender}}">{{time}} {{username}}:&nbsp;</span>' +
-                    '<span class="chat-message-content">{{message}}</span>' +
-                '</div>'),
-
-            action_template: _.template(
-                '<div class="chat-message {{extra_classes}}">' +
-                    '<span class="chat-message-{{sender}}">{{time}} **{{username}} </span>' +
-                    '<span class="chat-message-content">{{message}}</span>' +
-                '</div>'),
-
-            new_day_template: _.template(
-                '<time class="chat-date" datetime="{{isodate}}">{{datestring}}</time>'
-                ),
-
             initialize: function (){
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
@@ -849,7 +756,17 @@
 
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
-                    .html(this.template(this.model.toJSON()));
+                    .html(
+                        converse.templates.chatbox(
+                            _.extend(
+                                this.model.toJSON(),
+                                {
+                                    show_toolbar: converse.show_toolbar,
+                                    label_personal_message: __('Personal message')
+                                }
+                            )
+                        )
+                    );
                 this.renderToolbar().renderAvatar();
                 return this;
             },
@@ -861,35 +778,6 @@
                 this.scrollDown();
             },
 
-            renderEmoticons: function (text) {
-                if (converse.show_emoticons) {
-                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
-                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
-                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
-                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
-                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
-                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
-                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
-                    text = text.replace(/>:\)/g, '<span class="emoticon icon-evil"></span>');
-                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
-                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
-                    text = text.replace(/:\//g, '<span class="emoticon icon-wondering"></span>');
-                    text = text.replace(/>:\(/g, '<span class="emoticon icon-angry"></span>');
-                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
-                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
-                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
-                    text = text.replace(/<3/g, '<span class="emoticon icon-heart"></span>');
-                }
-                return text;
-            },
-
             showMessage: function ($el, msg_dict) {
                 var this_date = converse.parseISO8601(msg_dict.time),
                     text = msg_dict.message,
@@ -899,10 +787,10 @@
 
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
-                    template = this.action_template;
+                    template = converse.templates.action_template;
                     username = msg_dict.fullname;
                 } else  {
-                    template = this.message_template;
+                    template = converse.templates.message;
                     username = sender === 'me' && __('me') || msg_dict.fullname;
                 }
                 $el.find('div.chat-event').remove();
@@ -925,7 +813,7 @@
                 var $el = this.$el.find('.chat-content');
                 $el.find('div.chat-event').remove();
                 $el.append(
-                    this.message_template({
+                    converse.templates.message({
                         'sender': sender,
                         'time': (new Date()).toTimeString().substring(0,5),
                         'message': text,
@@ -961,7 +849,7 @@
                     isodate.setUTCHours(0,0,0,0);
                     isodate = converse.toISOString(isodate);
                     if (this.isDifferentDay(prev_date, this_date)) {
-                        $chat_content.append(this.new_day_template({
+                        $chat_content.append(converse.templates.new_day({
                             isodate: isodate,
                             datestring: this_date.toString().substring(0,15)
                         }));
@@ -1268,11 +1156,27 @@
                     } else if (data.otr_status == FINISHED){
                         data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
                     }
-                    data.allow_otr = converse.allow_otr && !this.is_chatroom;
-                    data.show_emoticons = converse.show_emoticons;
-                    data.otr_translated_status = OTR_TRANSLATED_MAPPING[data.otr_status];
-                    data.otr_status_class = OTR_CLASS_MAPPING[data.otr_status];
-                    this.$el.find('.chat-toolbar').html(this.toolbar_template(data));
+                    this.$el.find('.chat-toolbar').html(
+                        converse.templates.toolbar(
+                            _.extend(data, {
+                                FINISHED: FINISHED,
+                                UNENCRYPTED: UNENCRYPTED,
+                                UNVERIFIED: UNVERIFIED,
+                                VERIFIED: VERIFIED, 
+                                allow_otr: converse.allow_otr && !this.is_chatroom,
+                                label_end_encrypted_conversation: __('End encrypted conversation'),
+                                label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
+                                label_start_encrypted_conversation: __('Start encrypted conversation'),
+                                label_verify_with_fingerprints: __('Verify with fingerprints'),
+                                label_verify_with_smp: __('Verify with SMP'),
+                                label_whats_this: __("What\'s this?"),
+                                otr_status_class: OTR_CLASS_MAPPING[data.otr_status],
+                                otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
+                                show_call_button: converse.show_call_button,
+                                show_emoticons: converse.show_emoticons
+                            })
+                        )
+                    );
                 }
                 return this;
             },
@@ -1351,49 +1255,6 @@
                 'click a.subscribe-to-user': 'addContactFromList'
             },
 
-            tab_template: _.template('<li><a class="s current" href="#users">'+__('Contacts')+'</a></li>'),
-            template: _.template(
-                '<form class="set-xmpp-status" action="" method="post">'+
-                    '<span id="xmpp-status-holder">'+
-                        '<select id="select-xmpp-status" style="display:none">'+
-                            '<option value="online">'+__('Online')+'</option>'+
-                            '<option value="dnd">'+__('Busy')+'</option>'+
-                            '<option value="away">'+__('Away')+'</option>'+
-                            '<option value="offline">'+__('Offline')+'</option>'+
-                        '</select>'+
-                    '</span>'+
-                '</form>'
-            ),
-
-            add_contact_dropdown_template: _.template(
-                '<dl class="add-converse-contact dropdown">' +
-                    '<dt id="xmpp-contact-search" class="fancy-dropdown">' +
-                        '<a class="toggle-xmpp-contact-form" href="#"'+
-                            'title="'+__('Click to add new chat contacts')+'">'+
-                        '<span class="icon-plus"></span>'+__('Add a contact')+'</a>' +
-                    '</dt>' +
-                    '<dd class="search-xmpp" style="display:none"><ul></ul></dd>' +
-                '</dl>'
-            ),
-
-            add_contact_form_template: _.template(
-                '<li>'+
-                    '<form class="add-xmpp-contact">' +
-                        '<input type="text" name="identifier" class="username" placeholder="'+__('Contact username')+'"/>' +
-                        '<button type="submit">'+__('Add')+'</button>' +
-                    '</form>'+
-                '<li>'
-            ),
-
-            search_contact_template: _.template(
-                '<li>'+
-                    '<form class="search-xmpp-contact">' +
-                        '<input type="text" name="identifier" class="username" placeholder="'+__('Contact name')+'"/>' +
-                        '<button type="submit">'+__('Search')+'</button>' +
-                    '</form>'+
-                '<li>'
-            ),
-
             initialize: function (cfg) {
                 cfg.$parent.append(this.$el);
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
@@ -1401,17 +1262,30 @@
 
             render: function () {
                 var markup;
-                var widgets = this.template();
-
-                this.$tabs.append(this.tab_template());
+                var widgets = converse.templates.contacts_panel({
+                    label_online: __('Online'),
+                    label_busy: __('Busy'),
+                    label_away: __('Away'),
+                    label_offline: __('Offline')
+                });
+                this.$tabs.append(converse.templates.contacts_tab({label_contacts: __('Contacts')}));
                 if (converse.xhr_user_search) {
-                    markup = this.search_contact_template();
+                    markup = converse.templates.search_contact({
+                        label_contact_name: __('Contact name'),
+                        label_search: __('Search')
+                    });
                 } else {
-                    markup = this.add_contact_form_template();
-                }
+                    markup = converse.templates.add_contact_form({
+                        label_contact_username: __('Contact username'),
+                        label_add: __('Add')
 
+                    });
+                }
                 if (converse.allow_contact_requests) {
-                    widgets += this.add_contact_dropdown_template();
+                    widgets += converse.templates.add_contact_dropdown({
+                        label_click_to_chat: __('Click to add new chat contacts'),
+                        label_add_contact: __('Add a contact')
+                    });
                 }
                 this.$el.html(widgets);
 
@@ -1543,8 +1417,6 @@
                 '</div>'
             ),
 
-            tab_template: _.template('<li><a class="s" href="#chatrooms">'+__('Rooms')+'</a></li>'),
-
             template: _.template(
                 '<form class="add-chatroom" action="" method="post">'+
                     '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="'+__('Room name')+'"/>'+
@@ -1579,7 +1451,7 @@
             },
 
             render: function () {
-                this.$tabs.append(this.tab_template());
+                this.$tabs.append(converse.templates.chatrooms_tab({label_rooms: __('Rooms')}));
                 return this;
             },
 
@@ -1770,14 +1642,6 @@
                 }
             },
 
-            template: _.template(
-                '<div class="chat-head oc-chat-head">'+
-                    '<ul id="controlbox-tabs"></ul>'+
-                    '<a class="close-chatbox-button icon-close"></a>'+
-                '</div>'+
-                '<div class="controlbox-panes"></div>'
-            ),
-
             switchTab: function (ev) {
                 ev.preventDefault();
                 var $tab = $(ev.target),
@@ -1801,11 +1665,11 @@
             render: function () {
                 if ((!converse.prebind) && (!converse.connection)) {
                     // Add login panel if the user still has to authenticate
-                    this.$el.html(this.template(this.model.toJSON()));
+                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                     this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
                     this.loginpanel.render();
                 } else if (!this.contactspanel) {
-                    this.$el.html(this.template(this.model.toJSON()));
+                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                     this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
                     this.contactspanel.render();
                     converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
@@ -1830,7 +1694,6 @@
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
-            info_template: _.template('<div class="chat-info">{{message}}</div>'),
             is_chatroom: true,
 
             sendChatRoomMessage: function (body) {
@@ -2193,10 +2056,10 @@
                 }
                 this.renderChatArea();
                 for (i=0; i<info_msgs.length; i++) {
-                    $chat_content.append(this.info_template({message: info_msgs[i]}));
+                    $chat_content.append(converse.templates.info({message: info_msgs[i]}));
                 }
                 for (i=0; i<action_msgs.length; i++) {
-                    $chat_content.append(this.info_template({message: action_msgs[i]}));
+                    $chat_content.append(converse.templates.info({message: action_msgs[i]}));
                 }
                 return this.scrollDown();
             },
@@ -2294,7 +2157,7 @@
                 message_date.setUTCHours(0,0,0,0);
                 isodate = converse.toISOString(message_date);
                 if (_.indexOf(dates, isodate) == -1) {
-                    $chat_content.append(this.new_day_template({
+                    $chat_content.append(converse.templates.new_day({
                         isodate: isodate,
                         datestring: message_date.toString().substring(0,15)
                     }));
@@ -2305,7 +2168,7 @@
                     // # For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
                     // # Example: Topic set by JC Brand to: Hello World!
                     $chat_content.append(
-                        this.info_template({
+                        converse.templates.info({
                             'message': __('Topic set by %1$s to: %2$s', sender, subject)
                         }));
                 }
@@ -3330,9 +3193,6 @@
             events: {
                 'submit form#converse-login': 'authenticate'
             },
-            tab_template: _.template(
-                '<li><a class="current" href="#login">'+__('Sign in')+'</a></li>'
-            ),
             template: _.template(
                 '<form id="converse-login">' +
                 '<label>'+__('XMPP/Jabber Username:')+'</label>' +
@@ -3371,7 +3231,7 @@
             },
 
             render: function () {
-                this.$tabs.append(this.tab_template());
+                this.$tabs.append(converse.templates.login_tab({label_sign_in: __('Sign in')}));
                 this.$el.find('input#jid').focus();
                 return this;
             },

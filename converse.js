@@ -137,6 +137,7 @@
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
+        this.show_call_button = false;
         this.show_emoticons = true;
         this.show_toolbar = true;
         this.use_vcards = true;
@@ -166,6 +167,7 @@
             'show_emoticons',
             'show_only_online_users',
             'show_toolbar',
+            'show_call_button',
             'sid',
             'use_vcards',
             'xhr_custom_status',
@@ -725,7 +727,8 @@
                 'click .toggle-otr': 'toggleOTRMenu',
                 'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
-                'click .auth-otr': 'authOTR'
+                'click .auth-otr': 'authOTR',
+                'click .toggle-call': 'toggleCall'
             },
 
             template: _.template(
@@ -768,6 +771,9 @@
                             '<li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>'+
                         '</ul>' +
                     '</li>' +
+                '{[ } ]}' +
+                '{[ if (' + converse.show_call_button + ')  { ]}' +
+                    '<li><a class="toggle-call icon-phone" title="Start a call"></a></li>' +
                 '{[ } ]}' +
                 '{[ if (allow_otr)  { ]}' +
                     '<li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">'+
@@ -1160,6 +1166,15 @@
                 } else {
                     this.showHelpMessages([__('Invalid authentication scheme provided')], 'error');
                 }
+            },
+
+            toggleCall: function (ev) {
+                ev.stopPropagation();
+
+                converse.emit('onCallButtonClicked', {
+                    connection: converse.connection,
+                    model: this.model
+                });
             },
 
             onChange: function (item, changed) {

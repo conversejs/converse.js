@@ -109,7 +109,7 @@
                     expect(view).toBeDefined();
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     expect($toolbar.length).toBe(1);
-                    expect($toolbar.children('li').length).toBe(2);
+                    expect($toolbar.children('li').length).toBe(3);
                 }, converse));
 
                 it("contains a button for inserting emoticons", $.proxy(function () {
@@ -194,6 +194,24 @@
                         expect($menu.children('li').length).toBe(2);
                     });
 
+                }, converse));
+
+                it("contains a button for starting a call", $.proxy(function () {
+                    spyOn(converse, 'emit');
+
+                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var chatbox = this.chatboxes.get(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    var $toolbar = view.$el.find('ul.chat-toolbar');
+                    var callButton = $toolbar.find('.toggle-call');
+
+                    expect(callButton.length).toBe(1);
+
+                    runs(function () {
+                        callButton.click();
+                        expect(converse.emit).toHaveBeenCalledWith('onCallButtonClicked', jasmine.any(Object));
+                    });
                 }, converse));
             }, converse));
 

@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 * Option to display a call button in the chatbox toolbar, to allow third-party libraries to provide a calling feature. [Aupajo]
+* #108 Japanese Translations. [mako09]
 
 0.7.2 (2013-12-18)
 ------------------

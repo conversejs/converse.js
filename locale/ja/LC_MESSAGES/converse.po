@@ -1,0 +1,662 @@
+# Language JA translations for Converse.js package.
+# Copyright (C) 2013 Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# Mako N <mako@pasero.net>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-07 11:12+0900\n"
+"PO-Revision-Date: 2014-01-07 11:32+0900\n"
+"Last-Translator: Mako N <mako@pasero.net>\n"
+"Language-Team: Language JA\n"
+"Language: JA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: converse.js:217
+msgid "unencrypted"
+msgstr "暗号化されていません"
+
+#: converse.js:218
+msgid "unverified"
+msgstr "検証されていません"
+
+#: converse.js:219
+msgid "verified"
+msgstr "検証されました"
+
+#: converse.js:220
+msgid "finished"
+msgstr "完了"
+
+#: converse.js:223
+msgid "This contact is busy"
+msgstr "この相手先は取り込み中です"
+
+#: converse.js:224
+msgid "This contact is online"
+msgstr "この相手先は在席しています"
+
+#: converse.js:225
+msgid "This contact is offline"
+msgstr "この相手先はオフラインです"
+
+#: converse.js:226
+msgid "This contact is unavailable"
+msgstr "この相手先は不通です"
+
+#: converse.js:227
+msgid "This contact is away for an extended period"
+msgstr "この相手先は不在です"
+
+#: converse.js:228
+msgid "This contact is away"
+msgstr "この相手先は離席中です"
+
+#: converse.js:321
+msgid "Disconnected"
+msgstr "切断中"
+
+#: converse.js:331
+msgid "Error"
+msgstr "エラー"
+
+#: converse.js:333
+msgid "Connecting"
+msgstr "接続中です"
+
+#: converse.js:336
+msgid "Connection Failed"
+msgstr "接続に失敗しました"
+
+#: converse.js:338
+msgid "Authenticating"
+msgstr "認証中"
+
+#: converse.js:341
+msgid "Authentication Failed"
+msgstr "認証に失敗"
+
+#: converse.js:343
+msgid "Disconnecting"
+msgstr "切断"
+
+#: converse.js:479
+msgid "Online Contacts"
+msgstr "オンラインの相手先"
+
+#: converse.js:540
+msgid "Re-establishing encrypted session"
+msgstr "暗号化セッションの再接続"
+
+#: converse.js:548
+msgid ""
+"Your browser needs to generate a private key, which will be used in your "
+"encrypted chat session. This can take up to 30 seconds during which your "
+"browser might freeze and become unresponsive."
+msgstr ""
+"暗号化チャットで使用する秘密鍵を生成する必要があります。これには30秒ほどかか"
+"り、そのあいだブラウザがフリーズして反応しないかもしれません。"
+
+#: converse.js:557
+msgid "Private key generated."
+msgstr "秘密鍵を生成しました。"
+
+#: converse.js:588
+msgid ""
+"Authentication request from %1$s\n"
+"\n"
+"Your buddy is attempting to verify your identity, by asking you the question "
+"below.\n"
+"\n"
+"%2$s"
+msgstr ""
+"%1$s からの認証のリクエスト\n"
+"\n"
+"相手はあなたの本人性を検証しようとしています。次の質問に答えてください。\n"
+"\n"
+"%2$s"
+
+#: converse.js:597
+msgid "Could not verify this user's identify."
+msgstr "このユーザーの本人性を検証できませんでした。"
+
+#: converse.js:750
+msgid "Personal message"
+msgstr "私信"
+
+#: converse.js:795
+msgid "Start encrypted conversation"
+msgstr "暗号化された会話を開始"
+
+#: converse.js:798
+msgid "Refresh encrypted conversation"
+msgstr "暗号化された会話をリフレッシュ"
+
+#: converse.js:799
+msgid "End encrypted conversation"
+msgstr "暗号化された会話を終了"
+
+#: converse.js:800
+msgid "Verify with SMP"
+msgstr "SMP で検証"
+
+#: converse.js:803
+msgid "Verify with fingerprints"
+msgstr "鍵指紋で検証"
+
+#: converse.js:805
+msgid "What's this?"
+msgstr "これは何ですか?"
+
+#: converse.js:906
+msgid "me"
+msgstr "私"
+
+#: converse.js:1022 converse.js:1864
+msgid "Show this menu"
+msgstr "このメニューを表示"
+
+#: converse.js:1023 converse.js:1865
+msgid "Write in the third person"
+msgstr "第三者に書く"
+
+#: converse.js:1024 converse.js:1869
+msgid "Remove messages"
+msgstr "メッセージを削除"
+
+#: converse.js:1110
+msgid "Your message could not be sent"
+msgstr "メッセージを送信できませんでした"
+
+#: converse.js:1113
+msgid "We received an unencrypted message"
+msgstr "暗号化されていないメッセージを受信しました"
+
+#: converse.js:1116
+msgid "We received an unreadable encrypted message"
+msgstr "読めない暗号化メッセージを受信しました"
+
+#: converse.js:1125
+msgid "This user has requested an encrypted session."
+msgstr "このユーザーは暗号化セッションを求めています。"
+
+#: converse.js:1147
+msgid ""
+"Here are the fingerprints, please confirm them with %1$s, outside of this "
+"chat.\n"
+"\n"
+"Fingerprint for you, %2$s: %3$s\n"
+"\n"
+"Fingerprint for %1$s: %4$s\n"
+"\n"
+"If you have confirmed that the fingerprints match, click OK, otherwise click "
+"Cancel."
+msgstr ""
+"これは鍵指紋です。チャット以外の方法でこれらを %1$s と確認してください。\n"
+"\n"
+"あなた %2$s の鍵指紋: %3$s\n"
+"\n"
+"%1$s の鍵指紋: %4$s\n"
+"\n"
+"確認して、鍵指紋が正しければ「OK」を、正しくなければ「キャンセル」をクリックしてください。"
+
+#: converse.js:1160
+msgid ""
+"You will be prompted to provide a security question and then an answer to "
+"that question.\n"
+"\n"
+"Your buddy will then be prompted the same question and if they type the "
+"exact same answer (case sensitive), their identity will have been verified."
+msgstr ""
+"秘密の質問を入力し、それに対して答えるように促されます。\n"
+"\n"
+"相手にも、同じ質問が表示され、正しく同じ答(大文字・小文字は区別されます)を入力することで、本人性を検証します。"
+
+#: converse.js:1161
+msgid "What is your security question?"
+msgstr "秘密の質問はなんですか?"
+
+#: converse.js:1163
+msgid "What is the answer to the security question?"
+msgstr "秘密の質問の答はなんですか?"
+
+#: converse.js:1167
+msgid "Invalid authentication scheme provided"
+msgstr "認証の方式が正しくありません"
+
+#: converse.js:1248
+msgid "Your messages are not encrypted anymore"
+msgstr "メッセージはもう暗号化されません"
+
+#: converse.js:1250
+msgid ""
+"Your messages are now encrypted but your buddy's identity has not been "
+"verified."
+msgstr ""
+"メッセージは暗号化されますが、相手が本人であることは検証されていません。"
+
+#: converse.js:1252
+msgid "Your buddy's identify has been verified."
+msgstr "相手の本人性を検証しました。"
+
+#: converse.js:1254
+msgid "Your buddy has ended encryption on their end, you should do the same."
+msgstr "相手は、暗号化を終了しました。あなたもそれに合わせる必要があります。"
+
+#: converse.js:1263
+msgid "Your messages are not encrypted. Click here to enable OTR encryption."
+msgstr ""
+"メッセージは暗号化されません。OTR 暗号化を有効にするにはここをクリックしてく"
+"ださい。"
+
+#: converse.js:1265
+msgid "Your messages are encrypted, but your buddy has not been verified."
+msgstr "メッセージは暗号化されますが、相手は検証されていません。"
+
+#: converse.js:1267
+msgid "Your messages are encrypted and your buddy verified."
+msgstr "メッセージは暗号化され、相手も検証されています。"
+
+#: converse.js:1269
+msgid ""
+"Your buddy has closed their end of the private session, you should do the "
+"same"
+msgstr "相手は私信を終了しました。あなたも同じようにしてください"
+
+#: converse.js:1354
+msgid "Contacts"
+msgstr "相手先"
+
+#: converse.js:1359
+msgid "Online"
+msgstr "オンライン"
+
+#: converse.js:1360
+msgid "Busy"
+msgstr "取り込み中"
+
+#: converse.js:1361
+msgid "Away"
+msgstr "離席中"
+
+#: converse.js:1362
+msgid "Offline"
+msgstr "オフライン"
+
+#: converse.js:1372
+msgid "Click to add new chat contacts"
+msgstr "クリックして新しいチャットの相手先を追加"
+
+#: converse.js:1373
+msgid "Add a contact"
+msgstr "相手先を追加"
+
+#: converse.js:1382
+msgid "Contact username"
+msgstr "相手先の名前"
+
+#: converse.js:1383
+msgid "Add"
+msgstr "追加"
+
+#: converse.js:1391
+msgid "Contact name"
+msgstr "名前"
+
+#: converse.js:1392
+msgid "Search"
+msgstr "検索"
+
+#: converse.js:1439
+msgid "No users found"
+msgstr "ユーザーが見つかりません"
+
+#: converse.js:1446
+msgid "Click to add as a chat contact"
+msgstr "クリックしてチャットの相手先として追加"
+
+#: converse.js:1498
+msgid "Click to open this room"
+msgstr "クリックしてこの談話室を開く"
+
+#: converse.js:1500
+msgid "Show more information on this room"
+msgstr "この談話室についての詳細を見る"
+
+#: converse.js:1506
+msgid "Description:"
+msgstr "説明: "
+
+#: converse.js:1507
+msgid "Occupants:"
+msgstr "入室者:"
+
+#: converse.js:1508
+msgid "Features:"
+msgstr "特徴:"
+
+#: converse.js:1510
+msgid "Requires authentication"
+msgstr "認証の要求"
+
+#: converse.js:1513
+msgid "Hidden"
+msgstr "非表示"
+
+#: converse.js:1516
+msgid "Requires an invitation"
+msgstr "招待の要求"
+
+#: converse.js:1519
+msgid "Moderated"
+msgstr "発言制限"
+
+#: converse.js:1522
+msgid "Non-anonymous"
+msgstr "非匿名"
+
+#: converse.js:1525
+msgid "Open room"
+msgstr "開放談話室"
+
+#: converse.js:1528
+msgid "Permanent room"
+msgstr "常設談話室"
+
+#: converse.js:1531
+msgid "Public"
+msgstr "公開談話室"
+
+#: converse.js:1534
+msgid "Semi-anonymous"
+msgstr "半匿名"
+
+#: converse.js:1537
+msgid "Temporary room"
+msgstr "臨時談話室"
+
+#: converse.js:1540
+msgid "Unmoderated"
+msgstr "発言制限なし"
+
+#: converse.js:1546
+msgid "Rooms"
+msgstr "談話室"
+
+#: converse.js:1550
+msgid "Room name"
+msgstr "談話室の名前"
+
+#: converse.js:1551
+msgid "Nickname"
+msgstr "ニックネーム"
+
+#: converse.js:1552
+msgid "Server"
+msgstr "サーバー"
+
+#: converse.js:1553
+msgid "Join"
+msgstr "入室"
+
+#: converse.js:1554
+msgid "Show rooms"
+msgstr "談話室一覧を見る"
+
+#. For translators: %1$s is a variable and will be replaced with the XMPP server name
+#: converse.js:1589
+msgid "No rooms on %1$s"
+msgstr "%1$s に談話室はありません"
+
+#. For translators: %1$s is a variable and will be
+#. replaced with the XMPP server name
+#: converse.js:1604
+msgid "Rooms on %1$s"
+msgstr "%1$s の談話室一覧"
+
+#: converse.js:1866
+msgid "Set chatroom topic"
+msgstr "談話室の話題を設定"
+
+#: converse.js:1867
+msgid "Kick user from chatroom"
+msgstr "ユーザーを談話室から蹴り出す"
+
+#: converse.js:1868
+msgid "Ban user from chatroom"
+msgstr "ユーザーを談話室から締め出す"
+
+#: converse.js:1898
+msgid "Message"
+msgstr "メッセージ"
+
+#: converse.js:2013 converse.js:3168
+msgid "Save"
+msgstr "保存"
+
+#: converse.js:2014
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: converse.js:2061
+msgid "An error occurred while trying to save the form."
+msgstr "フォームを保存する際にエラーが発生しました。"
+
+#: converse.js:2107
+msgid "This chatroom requires a password"
+msgstr "この談話室にはパスワードが必要です"
+
+#: converse.js:2108
+msgid "Password: "
+msgstr "パスワード:"
+
+#: converse.js:2109
+msgid "Submit"
+msgstr "送信"
+
+#: converse.js:2123
+msgid "This room is not anonymous"
+msgstr "この談話室は非匿名です"
+
+#: converse.js:2124
+msgid "This room now shows unavailable members"
+msgstr "この談話室はメンバー以外にも見えます"
+
+#: converse.js:2125
+msgid "This room does not show unavailable members"
+msgstr "この談話室はメンバー以外には見えません"
+
+#: converse.js:2126
+msgid "Non-privacy-related room configuration has changed"
+msgstr "談話室の設定(プライバシーに無関係)が変更されました"
+
+#: converse.js:2127
+msgid "Room logging is now enabled"
+msgstr "談話室の記録を取りはじめます"
+
+#: converse.js:2128
+msgid "Room logging is now disabled"
+msgstr "談話室の記録を止めます"
+
+#: converse.js:2129
+msgid "This room is now non-anonymous"
+msgstr "この談話室はただいま非匿名です"
+
+#: converse.js:2130
+msgid "This room is now semi-anonymous"
+msgstr "この談話室はただいま半匿名です"
+
+#: converse.js:2131
+msgid "This room is now fully-anonymous"
+msgstr "この談話室はただいま匿名です"
+
+#: converse.js:2132
+msgid "A new room has been created"
+msgstr "新しい談話室が作成されました"
+
+#: converse.js:2133
+msgid "Your nickname has been changed"
+msgstr "ニックネームを変更しました"
+
+#: converse.js:2147
+msgid "<strong>%1$s</strong> has been banned"
+msgstr "<strong>%1$s</strong> を締め出しました"
+
+#: converse.js:2148
+msgid "<strong>%1$s</strong> has been kicked out"
+msgstr "<strong>%1$s</strong> を蹴り出しました"
+
+#: converse.js:2149
+msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
+msgstr "分掌の変更のため、<strong>%1$s</strong> を削除しました"
+
+#: converse.js:2150
+msgid "<strong>%1$s</strong> has been removed for not being a member"
+msgstr "メンバーでなくなったため、<strong>%1$s</strong> を削除しました"
+
+#: converse.js:2154 converse.js:2214
+msgid "You have been banned from this room"
+msgstr "この談話室から締め出されました"
+
+#: converse.js:2155
+msgid "You have been kicked from this room"
+msgstr "この談話室から蹴り出されました"
+
+#: converse.js:2156
+msgid "You have been removed from this room because of an affiliation change"
+msgstr "分掌の変更のため、この談話室から削除されました"
+
+#: converse.js:2157
+msgid ""
+"You have been removed from this room because the room has changed to members-"
+"only and you're not a member"
+msgstr "談話室がメンバー制に変更されました。メンバーではないため、この談話室から削除されました"
+
+#: converse.js:2158
+msgid ""
+"You have been removed from this room because the MUC (Multi-user chat) "
+"service is being shut down."
+msgstr "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
+
+#: converse.js:2212
+msgid "You are not on the member list of this room"
+msgstr "この談話室のメンバー一覧にいません"
+
+#: converse.js:2218
+msgid "No nickname was specified"
+msgstr "ニックネームがありません"
+
+#: converse.js:2222
+msgid "You are not allowed to create new rooms"
+msgstr "新しい談話室を作成する権限がありません"
+
+#: converse.js:2224
+msgid "Your nickname doesn't conform to this room's policies"
+msgstr "ニックネームがこの談話室のポリシーに従っていません"
+
+#: converse.js:2226
+msgid "Your nickname is already taken"
+msgstr "ニックネームは既に使われています"
+
+#: converse.js:2228
+msgid "This room does not (yet) exist"
+msgstr "この談話室は存在しません"
+
+#: converse.js:2230
+msgid "This room has reached it's maximum number of occupants"
+msgstr "この談話室は入室者数の上限に達しています"
+
+#: converse.js:2309
+msgid "Topic set by %1$s to: %2$s"
+msgstr "%1$s が話題を設定しました: %2$s"
+
+#: converse.js:2330
+msgid "This user is a moderator"
+msgstr "このユーザーは司会者です"
+
+#: converse.js:2333
+msgid "This user can send messages in this room"
+msgstr "このユーザーはこの談話室で発言できます"
+
+#: converse.js:2336
+msgid "This user can NOT send messages in this room"
+msgstr "このユーザーはこの談話室で発言できません"
+
+#: converse.js:2562
+msgid "Click to chat with this contact"
+msgstr "クリックしてこの相手先とチャット"
+
+#: converse.js:2565 converse.js:2569
+msgid "Click to remove this contact"
+msgstr "クリックしてこの相手先を削除"
+
+#: converse.js:2919
+msgid "Contact requests"
+msgstr "会話に呼び出し"
+
+#: converse.js:2922
+msgid "My contacts"
+msgstr "相手先一覧"
+
+#: converse.js:2925
+msgid "Pending contacts"
+msgstr "保留中の相手先"
+
+#: converse.js:3167
+msgid "Custom status"
+msgstr "独自の在席状況"
+
+#: converse.js:3173
+msgid "Click to change your chat status"
+msgstr "クリックして、在席状況を変更"
+
+#: converse.js:3177
+msgid "Click here to write a custom status message"
+msgstr "状況メッセージを入力するには、ここをクリック"
+
+#: converse.js:3206 converse.js:3214
+msgid "online"
+msgstr "在席"
+
+#: converse.js:3208
+msgid "busy"
+msgstr "取り込み中"
+
+#: converse.js:3210
+msgid "away for long"
+msgstr "不在"
+
+#: converse.js:3212
+msgid "away"
+msgstr "離席中"
+
+#. For translators: the %1$s part gets replaced with the status
+#. Example, I am online
+#: converse.js:3226 converse.js:3263
+msgid "I am %1$s"
+msgstr "私はいま %1$s"
+
+#: converse.js:3334
+msgid "Sign in"
+msgstr "サインイン"
+
+#: converse.js:3338
+msgid "XMPP/Jabber Username:"
+msgstr "XMPP/Jabber ユーザー名:"
+
+#: converse.js:3340
+msgid "Password:"
+msgstr "パスワード:"
+
+#: converse.js:3342
+msgid "Log In"
+msgstr "ログイン"
+
+#: converse.js:3346
+msgid "BOSH Service URL:"
+msgstr "BOSH サービス URL:"

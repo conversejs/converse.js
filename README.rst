@@ -49,6 +49,8 @@ Integration into other frameworks
     `django-conversejs <https://pypi.python.org/pypi/django-conversejs>`_ is an app that makes it easer to integrate *Converse.js* into Django.
 * `Roundcube <http://roundcube.net>`_: 
     `roundcube-converse.js-xmpp-plugin <https://github.com/priyadi/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
+* `Wordpress <http://wordpress.org>`_:
+    `ConverseJS <http://wordpress.org/plugins/conversejs>'_
 
 ----
 Demo

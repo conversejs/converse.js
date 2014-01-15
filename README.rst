@@ -50,7 +50,7 @@ Integration into other frameworks
 * `Roundcube <http://roundcube.net>`_: 
     `roundcube-converse.js-xmpp-plugin <https://github.com/priyadi/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
 * `Wordpress <http://wordpress.org>`_:
-    `ConverseJS <http://wordpress.org/plugins/conversejs>'_
+    `ConverseJS <http://wordpress.org/plugins/conversejs>`_
 
 ----
 Demo

@@ -351,14 +351,6 @@ span.spinner.hor_centered {
     position: absolute;
 }
 
-#conversejs {
-    z-index: 99; /*--Keeps the panel on top of all other elements--*/
-    position: fixed;
-    bottom: 0; right: 0;
-    height: 332px;
-    width: auto;
-}
-
 #toggle-controlbox {
     position: fixed;
     font-size: 70%;
@@ -1263,3 +1255,45 @@ form.add-xmpp-contact input {
     color: rgb(79, 79, 79);
 }
 
+
+#conversejs {
+    bottom:0;
+    direction:ltr;
+    height:25px;
+    left: auto;
+    position:fixed;
+    right:0;
+    z-index:300
+}
+
+
+/* XXX ------ XXX */
+
+#conversejs {
+    bottom: 0;
+    direction: ltr;
+    height: 25px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    z-index: 300;
+}
+
+.converse-dock {
+    margin: 0 15px 0 0;
+}
+
+.converse-dock .nub-container {
+    float: right;
+}
+
+.nub {
+    height: 25px;
+    width: 200px;
+}
+
+.nub-flyout {
+    position: absolute;
+    display: block;
+    bottom: 0;
+}

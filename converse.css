@@ -869,12 +869,10 @@ dd.available-chatroom:hover a.room-info {
 
 .chatbox,
 .chatroom {
-    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.4);
-    display:none;
+    height: 25px;
     float: right;
     margin-right: 15px;
-    z-index: 20; /* So that it's higher than the content actions */
-    border-radius: 4px;
+    display: block;
 }
 
 .chatbox {
@@ -1255,45 +1253,23 @@ form.add-xmpp-contact input {
     color: rgb(79, 79, 79);
 }
 
-
-#conversejs {
-    bottom:0;
-    direction:ltr;
-    height:25px;
-    left: auto;
-    position:fixed;
-    right:0;
-    z-index:300
-}
-
-
 /* XXX ------ XXX */
 
 #conversejs {
-    bottom: 0;
+    bottom: 1px;
     direction: ltr;
     height: 25px;
     left: 0;
     position: fixed;
     right: 0;
     z-index: 300;
-}
-
-.converse-dock {
-    margin: 0 15px 0 0;
-}
-
-.converse-dock .nub-container {
-    float: right;
-}
-
-.nub {
-    height: 25px;
-    width: 200px;
+    display: block;
 }
 
 .nub-flyout {
     position: absolute;
     display: block;
     bottom: 0;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.4);
+    border-radius: 4px;
 }

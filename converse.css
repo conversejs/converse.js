@@ -1253,8 +1253,6 @@ form.add-xmpp-contact input {
     color: rgb(79, 79, 79);
 }
 
-/* XXX ------ XXX */
-
 #conversejs {
     bottom: 1px;
     direction: ltr;
@@ -1272,4 +1270,12 @@ form.add-xmpp-contact input {
     bottom: 0;
     box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.4);
     border-radius: 4px;
+}
+
+.chatbox .nub-flyout {
+    width: 200px;
+}
+
+.chatroom .nub-flyout {
+    width: 300px;
 }

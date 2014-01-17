@@ -432,7 +432,9 @@ $(document).ready(function () {
         $('.minimize-chatbox-button').click(function(ev) {
             var $grandparent = $(ev.target).parent().parent().parent();
             if ($grandparent.attr('id') == 'controlbox') {
-                $grandparent.find('.login-dialog').slideToggle(300);
+                $grandparent.find('.controlbox-panes').slideToggle(300);
+            } else if ($grandparent.attr('class') == 'chatroom') {
+                $grandparent.find('.chat-body').slideToggle(300);
             } else {
                 $grandparent.find('div.chat-content').slideToggle(300);
             }

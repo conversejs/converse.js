@@ -11,7 +11,19 @@ define("converse-templates", [
     "tpl!src/templates/chatrooms_tab",
     "tpl!src/templates/login_tab",
     "tpl!src/templates/add_contact_dropdown",
-    "tpl!src/templates/add_contact_form"
+    "tpl!src/templates/add_contact_form",
+    "tpl!src/templates/room_item",
+    "tpl!src/templates/room_description",
+    "tpl!src/templates/room_panel",
+    "tpl!src/templates/chatroom",
+    "tpl!src/templates/chatarea",
+    "tpl!src/templates/form_input",
+    "tpl!src/templates/select_option",
+    "tpl!src/templates/form_select",
+    "tpl!src/templates/form_checkbox",
+    "tpl!src/templates/field",
+    "tpl!src/templates/occupant",
+    "tpl!src/templates/roster_item"
 ], function () {
     return {
         action: arguments[0],
@@ -26,6 +38,18 @@ define("converse-templates", [
         chatrooms_tab: arguments[9],
         login_tab: arguments[10],
         add_contact_dropdown: arguments[11],
-        add_contact_form: arguments[12]
+        add_contact_form: arguments[12],
+        room_item: arguments[13],
+        room_description: arguments[14],
+        room_panel: arguments[15],
+        chatroom: arguments[16],
+        chatarea: arguments[17],
+        form_input: arguments[18],
+        select_option: arguments[19],
+        form_select: arguments[20],
+        form_checkbox: arguments[21],
+        field: arguments[22],
+        occupant: arguments[23],
+        roster_item: arguments[24]
     };
 });

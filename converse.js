@@ -1366,72 +1366,17 @@
                 'click a.open-room': 'createChatRoom',
                 'click a.room-info': 'showRoomInfo'
             },
-            room_template: _.template(
-                '<dd class="available-chatroom">'+
-                '<a class="open-room" data-room-jid="{{jid}}"'+
-                    'title="'+__('Click to open this room')+'" href="#">{{name}}</a>'+
-                '<a class="room-info icon-room-info" data-room-jid="{{jid}}"'+
-                    'title="'+__('Show more information on this room')+'" href="#">&nbsp;</a>'+
-                '</dd>'),
-
-            // FIXME: check markup in mockup
-            room_description_template: _.template(
-                '<div class="room-info">'+
-                '<p class="room-info"><strong>'+__('Description:')+'</strong> {{desc}}</p>' +
-                '<p class="room-info"><strong>'+__('Occupants:')+'</strong> {{occ}}</p>' +
-                '<p class="room-info"><strong>'+__('Features:')+'</strong> <ul>'+
-                '{[ if (passwordprotected) { ]}' +
-                    '<li class="room-info locked">'+__('Requires authentication')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (hidden) { ]}' +
-                    '<li class="room-info">'+__('Hidden')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (membersonly) { ]}' +
-                    '<li class="room-info">'+__('Requires an invitation')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (moderated) { ]}' +
-                    '<li class="room-info">'+__('Moderated')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (nonanonymous) { ]}' +
-                    '<li class="room-info">'+__('Non-anonymous')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (open) { ]}' +
-                    '<li class="room-info">'+__('Open room')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (persistent) { ]}' +
-                    '<li class="room-info">'+__('Permanent room')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (publicroom) { ]}' +
-                    '<li class="room-info">'+__('Public')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (semianonymous) { ]}' +
-                    '<li class="room-info">'+__('Semi-anonymous')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (temporary) { ]}' +
-                    '<li class="room-info">'+__('Temporary room')+'</li>' +
-                '{[ } ]}' +
-                '{[ if (unmoderated) { ]}' +
-                    '<li class="room-info">'+__('Unmoderated')+'</li>' +
-                '{[ } ]}' +
-                '</p>' +
-                '</div>'
-            ),
-
-            template: _.template(
-                '<form class="add-chatroom" action="" method="post">'+
-                    '<input type="text" name="chatroom" class="new-chatroom-name" placeholder="'+__('Room name')+'"/>'+
-                    '<input type="text" name="nick" class="new-chatroom-nick" placeholder="'+__('Nickname')+'"/>'+
-                    '<input type="{{ server_input_type }}" name="server" class="new-chatroom-server" placeholder="'+__('Server')+'"/>'+
-                    '<input type="submit" name="join" value="'+__('Join')+'"/>'+
-                    '<input type="button" name="show" id="show-rooms" value="'+__('Show rooms')+'"/>'+
-                '</form>'+
-                '<dl id="available-chatrooms"></dl>'),
 
             initialize: function (cfg) {
                 cfg.$parent.append(
                     this.$el.html(
-                        this.template({
-                            server_input_type: converse.hide_muc_server && 'hidden' || 'text'
+                        converse.templates.room_panel({
+                            'server_input_type': converse.hide_muc_server && 'hidden' || 'text',
+                            'label_room_name': __('Room name'),
+                            'label_nickname': __('Nickname'),
+                            'label_server': __('Server'),
+                            'label_join': __('Join'),
+                            'label_show_rooms': __('Show rooms')
                         })
                     ).hide());
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
@@ -1478,10 +1423,14 @@
                             for (i=0; i<this.rooms.length; i++) {
                                 name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
                                 jid = $(this.rooms[i]).attr('jid');
-                                fragment.appendChild($(this.room_template({
-                                    'name':name,
-                                    'jid':jid
-                                    }))[0]);
+                                fragment.appendChild($(
+                                    converse.templates.room_item({
+                                        'name':name,
+                                        'jid':jid,
+                                        'open_title': __('Click to open this room'),
+                                        'info_title': __('Show more information on this room')
+                                        })
+                                    )[0]);
                             }
                             $available_chatrooms.append(fragment);
                             $('input#show-rooms').show().siblings('span.spinner').remove();
@@ -1527,7 +1476,7 @@
                             var $stanza = $(stanza);
                             // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                             $dd.find('span.spinner').replaceWith(
-                                this.room_description_template({
+                                converse.templates.room_description({
                                     'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                                     'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
                                     'hidden': $stanza.find('feature[var="muc_hidden"]').length,
@@ -1540,7 +1489,21 @@
                                     'publicroom': $stanza.find('feature[var="muc_public"]').length,
                                     'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
                                     'temporary': $stanza.find('feature[var="muc_temporary"]').length,
-                                    'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length
+                                    'unmoderated': jstanza.find('feature[var="muc_unmoderated"]').length,
+                                    'label_desc': __('Description:'),
+                                    'label_occ': __('Occupants:'),
+                                    'label_features': __('Features:'),
+                                    'label_requires_auth': __('Requires authentication'),
+                                    'label_hidden': __('Hidden'),
+                                    'label_requires_invite': __('Requires an invitation'),
+                                    'label_moderated': __('Moderated'),
+                                    'label_non_anon': __('Non-anonymous'),
+                                    'label_open_room': __('Open room'),
+                                    'label_permanent_room': __('Permanent room'),
+                                    'label_public': __('Public'),
+                                    'label_semi_anon':  _('Semi-anonymous'),
+                                    'label_temp_room':  _('Temporary room'),
+                                    'label_unmoderated': __('Unmoderated')
                                 }));
                         }, this));
                 }
@@ -1739,42 +1702,20 @@
                 }
             },
 
-            template: _.template(
-                '<div class="chat-head chat-head-chatroom">' +
-                    '<a class="close-chatbox-button icon-close"></a>' +
-                    '<a class="configure-chatroom-button icon-wrench" style="display:none"></a>' +
-                    '<div class="chat-title"> {{ name }} </div>' +
-                    '<p class="chatroom-topic"><p/>' +
-                '</div>' +
-                '<div class="chat-body">' +
-                '<span class="spinner centered"/>' +
-                '</div>'),
-
-            chatarea_template: _.template(
-                '<div class="chat-area">' +
-                    '<div class="chat-content"></div>' +
-                    '<form class="sendXMPPMessage" action="" method="post">' +
-                        '{[ if ('+converse.show_toolbar+') { ]}' +
-                            '<ul class="chat-toolbar no-text-select"></ul>'+
-                        '{[ } ]}' +
-                        '<textarea type="text" class="chat-textarea" ' +
-                            'placeholder="'+__('Message')+'"/>' +
-                    '</form>' +
-                '</div>' +
-                '<div class="participants">' +
-                    '<ul class="participant-list"></ul>' +
-                '</div>'
-            ),
-
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
-                        .html(this.template(this.model.toJSON()));
+                        .html(converse.templates.chatroom(this.model.toJSON()));
                 return this;
             },
 
             renderChatArea: function () {
                 if (!this.$el.find('.chat-area').length) {
-                    this.$el.find('.chat-body').empty().append(this.chatarea_template());
+                    this.$el.find('.chat-body').empty().append(
+                        converse.templates.chatarea({
+                            'show_toolbar': converse.show_toolbar,
+                            'label_message': __('Message')
+                        })
+                    );
                     this.renderToolbar();
                 }
                 return this;
@@ -1817,11 +1758,6 @@
                 this.model.set('connected', false);
             },
 
-            form_input_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" value="{{value}}"></label>'),
-            select_option_template: _.template('<option value="{{value}}">{{label}}</option>'),
-            form_select_template: _.template('<label>{{label}}<select name="{{name}}">{{options}}</select></label>'),
-            form_checkbox_template: _.template('<label>{{label}}<input name="{{name}}" type="{{type}}" {{checked}}"></label>'),
-
             renderConfigurationForm: function (stanza) {
                 var $form= this.$el.find('form.chatroom-form'),
                     $stanza = $(stanza),
@@ -1847,7 +1783,7 @@
                         options = [];
                         $options = $field.find('option');
                         for (j=0; j<$options.length; j++) {
-                            options.push(this.select_option_template({
+                            options.push(converse.templates.select_option({
                                 value: $($options[j]).find('value').text(),
                                 label: $($options[j]).attr('label')
                             }));
@@ -1858,14 +1794,14 @@
                             options: options.join('')
                         }));
                     } else if ($field.attr('type') == 'boolean') {
-                        $form.append(this.form_checkbox_template({
+                        $form.append(converse.templates.form_checkbox({
                             name: $field.attr('var'),
                             type: input_types[$field.attr('type')],
                             label: $field.attr('label') || '',
                             checked: $field.find('value').text() === "1" && 'checked="1"' || ''
                         }));
                     } else {
-                        $form.append(this.form_input_template({
+                        $form.append(converse.templates.form_input({
                             name: $field.attr('var'),
                             type: input_types[$field.attr('type')],
                             label: $field.attr('label') || '',
@@ -1878,8 +1814,6 @@
                 $form.on('submit', $.proxy(this.saveConfiguration, this));
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
             },
-
-            field_template: _.template('<field var="{{name}}"><value>{{value}}</value></field>'),
 
             saveConfiguration: function (ev) {
                 ev.preventDefault();
@@ -1894,7 +1828,7 @@
                     } else {
                         value = $input.val();
                     }
-                    var cnode = $(that.field_template({
+                    var cnode = $(converse.templates.field({
                         name: $input.attr('name'),
                         value: value
                     }))[0];
@@ -2187,20 +2121,6 @@
                 return true;
             },
 
-            occupant_template: _.template(
-                '<li class="{{role}}" '+
-                    '{[ if (role === "moderator") { ]}' +
-                        'title="'+__('This user is a moderator')+'"' +
-                    '{[ } ]}'+
-                    '{[ if (role === "participant") { ]}' +
-                        'title="'+__('This user can send messages in this room')+'"' +
-                    '{[ } ]}'+
-                    '{[ if (role === "visitor") { ]}' +
-                        'title="'+__('This user can NOT send messages in this room')+'"' +
-                    '{[ } ]}'+
-                '>{{nick}}</li>'
-            ),
-
             onChatRoomRoster: function (roster, room) {
                 this.renderChatArea();
                 var controlboxview = converse.chatboxesview.views.controlbox,
@@ -2210,9 +2130,12 @@
                 this.$el.find('.participant-list').empty();
                 for (i=0; i<roster_size; i++) {
                     participants.push(
-                        this.occupant_template({
-                            role: roster[keys[i]].role,
-                            nick: Strophe.unescapeNode(keys[i])
+                        converse.templates.occupant({
+                            'role': roster[keys[i]].role,
+                            'nick': Strophe.unescapeNode(keys[i]),
+                            'desc_moderator': __('This user is a moderator'),
+                            'desc_participant': __('This user can send messages in this room'),
+                            'desc_visitor': __('This user can NOT send messages in this room')
                         }));
                 }
                 $participant_list.append(participants.join(""));
@@ -2421,12 +2344,6 @@
                 this.model.destroy();
             },
 
-            template: _.template(
-                '<a class="open-chat" title="'+__('Click to chat with this contact')+'" href="#">'+
-                    '<span class="icon-{{ chat_status }}" title="{{ status_desc }}"></span>{{ fullname }}'+
-                '</a>' +
-                '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
-
             pending_template: _.template(
                 '<span>{{ fullname }}</span>' +
                 '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
@@ -2468,8 +2385,12 @@
                     converse.controlboxtoggle.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
-                    this.$el.html(this.template(
-                        _.extend(item.toJSON(), {'status_desc': STATUSES[item.get('chat_status')||'offline']})
+                    this.$el.html(converse.templates.roster_item(
+                        _.extend(item.toJSON(), {
+                            'desc_status': STATUSES[item.get('chat_status')||'offline'],
+                            'desc_chat': __('Click to chat with this contact'),
+                            'desc_remove': __('Click to remove this contact')
+                        })
                     ));
                 }
                 return this;

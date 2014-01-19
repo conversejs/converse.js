@@ -1,8 +1,9 @@
 /* Required CSS classes: must be included in all pages using this script */
-/* Apply the element you want to drag/resize */
+/* Apply the element you want to drag/resize 
 .drsElement {
     position: relative;
 }
+*/
 
 /*
  The main mouse handle that moves the whole element.

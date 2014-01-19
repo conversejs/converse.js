@@ -112,9 +112,8 @@ DragResize.prototype.select = function(newElement) {
         // Activate and record our new dragging element.
         if (newElement && (newElement != element) && enabled) {
             element = newElement;
-            // Elevate it and give it resize handles.
+            // Elevate it
             element.style.zIndex = ++zIndex;
-            if (this.resizeHandleSet) this.resizeHandleSet(element, true);
             // Record element attributes for mouseMove().
             elmX = parseInt(element.style.left);
             elmY = parseInt(element.style.top);
@@ -134,7 +133,6 @@ DragResize.prototype.deselect = function(delHandles) {
 
         if (delHandles) {
             if (ondragblur) this.ondragblur();
-            if (this.resizeHandleSet) this.resizeHandleSet(element, false);
             element = null;
         }
         handle = null;
@@ -238,7 +236,6 @@ DragResize.prototype.mouseMove = function(e) { with (this) {
     }
 
     if (ondragmove) this.ondragmove(isResize);
-
     // Stop a normal drag event.
     cancelEvent(e);
 }};
@@ -252,27 +249,6 @@ DragResize.prototype.mouseUp = function(e) { with (this) {
     if (handle && ondragend) this.ondragend(hRE.test(handle.className));
     deselect(false);
 }};
-
-/* Resize Code -- can be deleted if you're not using it. */
-DragResize.prototype.resizeHandleSet = function(elm, show) { with (this) {
-    // Either creates, shows or hides the resize handles within an element.
-
-    // If we're showing them, and no handles have been created, create 4 new ones.
-    if (!elm._handle_tr) {
-        for (var h = 0; h < handles.length; h++) {
-            // Create 4 news divs, assign each a generic + specific class.
-            var hDiv = document.createElement('div');
-            hDiv.className = myName + ' ' +  myName + '-' + handles[h];
-            elm['_handle_' + handles[h]] = elm.appendChild(hDiv);
-        }
-    }
-
-    // We now have handles. Find them all and show/hide.
-    for (var h = 0; h < handles.length; h++) {
-        elm['_handle_' + handles[h]].style.visibility = show ? 'inherit' : 'hidden';
-    }
-}};
-
 
 DragResize.prototype.resizeHandleDrag = function(diffX, diffY) { with (this) {
     // Passed the mouse movement amounts. This function checks to see whether the

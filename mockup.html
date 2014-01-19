@@ -1,19 +1,72 @@
 <!DOCTYPE html>
 <html lang="en" id="facebook">
 <head>
-    <title id="pageTitle">Converse</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title id="pageTitle">Converse: Mockup</title>
     <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
+
     <link type="text/css" rel="stylesheet" href="stylesheets/stylesheet.css">
     <link type="text/css" rel="stylesheet" href="converse.css">
     <script src="components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="dragresize/dragresize_commented.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        //<![CDATA[
+            // Using DragResize is simple!
+            // You first declare a new DragResize() object, passing its own name and an object
+            // whose keys constitute optional parameters/settings:
+            var dragresize = new DragResize('dragresize', {
+                minWidth: 200,
+                minHeight: 250,
+                minLeft: 20,
+                minTop: 20,
+                maxLeft: 0,
+                maxTop: 600,
+                handles: ['tm'],
+            });
+
+            // Next, you must define two functions, isElement and isHandle. These are passed
+            // a given DOM element, and must "return true" if the element in question is a
+            // draggable element or draggable handle. Here, I'm checking for the CSS classname
+            // of the elements, but you have have any combination of conditions you like:
+            dragresize.isElement = function(elm) {
+                if (elm.className && elm.className.indexOf('box-flyout') > -1) return true;
+            };
+
+            // You can define optional functions that are called as elements are dragged/resized.
+            // Some are passed true if the source event was a resize, or false if it's a drag.
+            // The focus/blur events are called as handles are added/removed from an object,
+            // and the others are called as users drag, move and release the object's handles.
+            // You might use these to examine the properties of the DragResize object to sync
+            // other page elements, etc.
+            dragresize.ondragfocus = function() { };
+            dragresize.ondragstart = function(isResize) { };
+            dragresize.ondragmove = function(isResize) { };
+            dragresize.ondragend = function(isResize) { };
+            dragresize.ondragblur = function() { };
+
+            // Finally, you must apply() your DragResize object to a DOM node; all children of this
+            // node will then be made draggable. Here, I'm applying to the entire document.
+            dragresize.apply(document);
+        //]]>
+        });
+    </script>
 </head>
 <body>
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
+        <h2 id="project_tagline">Static Mockup</h2>
+    </header>
+</div>
 
 <div id="conversejs">
 
     <div id="controlbox" class="chatbox">
-        <div class="nub-flyout">
+        <div class="box-flyout">
+            <div class="dragresize dragresize-tm" style="visibility: inherit;"></div>
             <div class="chat-head oc-chat-head">
                 <ul id="controlbox-tabs">
                     <li><a class="current" href="#login">Sign in</a></li>
@@ -34,7 +87,8 @@
     </div>
 
     <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
-        <div class="nub-flyout">
+        <div class="box-flyout">
+            <div class="dragresize dragresize-tm" style="visibility: inherit;"></div>
             <div class="chat-head oc-chat-head">
                 <ul id="controlbox-tabs">
                     <li><a class="s current" href="#users">Contacts</a></li>
@@ -188,7 +242,8 @@
     </div>
 
     <div class="chatbox" id="37c0c87392010303765fe36b05c0967d62c6b70f">
-        <div class="nub-flyout">
+        <div class="box-flyout">
+            <div class="dragresize dragresize-tm" style="visibility: inherit;"></div>
             <div class="chat-head chat-head-chatbox">
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="minimize-chatbox-button icon-minus"></a>
@@ -264,7 +319,8 @@
     </div>
 
     <div class="chatroom" id="4a77380f1cd9d392627b0e1469688f9ca44e9392">
-        <div class="nub-flyout">
+        <div class="box-flyout">
+            <div class="dragresize dragresize-tm" style="visibility: inherit;"></div>
             <div class="chat-head chat-head-chatroom">
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="minimize-chatbox-button icon-minus"></a>
@@ -338,7 +394,8 @@
     </div>
 
     <div class="chatroom" id="6d8627960a0cb066d9216742f3edccc3dbbf85a9">
-        <div class="nub-flyout">
+        <div class="box-flyout">
+            <div class="dragresize dragresize-tm" style="visibility: inherit;"></div>
             <div class="chat-head chat-head-chatroom">
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="minimize-chatbox-button icon-minus"></a>
@@ -363,7 +420,6 @@
             <strong class="conn-feedback">Toggle chat</strong> <strong style="display: none" id="online-count">(0)</strong>
         </a>
     </div>
-
 </div>
 
 <script>
@@ -418,7 +474,6 @@ $(document).ready(function () {
     }
 
     $(function() {
-
         $('.close-chatbox-button').click(function(ev) {
             var $grandparent = $(ev.target).parent().parent().parent();
             $grandparent.hide(300, function () {

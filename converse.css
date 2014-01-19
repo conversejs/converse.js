@@ -447,12 +447,18 @@ ul.participant-list li.moderator {
     padding: 4px;
     font-size: 13px;
     color: rgb(79, 79, 79);
-    height:190px;
-    width: 192px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+
+    /* FIXME */
+    height: -webkit-calc(100% - 125px);
+    height: -moz-calc(100% - 125px);
+    height: -o-calc(100% - 125px);
+    height: calc(100% - 125px);
 }
 
 .chat-info {
@@ -1263,7 +1269,7 @@ form.add-xmpp-contact input {
     display: block;
 }
 
-.nub-flyout {
+.box-flyout {
     position: absolute;
     display: block;
     bottom: 0;
@@ -1271,10 +1277,22 @@ form.add-xmpp-contact input {
     border-radius: 4px;
 }
 
-.chatbox .nub-flyout {
+.chatbox .box-flyout {
     width: 200px;
 }
 
-.chatroom .nub-flyout {
+.chatroom .box-flyout {
     width: 300px;
+}
+
+.dragresize {
+    position: absolute;
+    width: 200px;
+    height: 5px;
+    background: transparent;
+    border: 0;
+    top: 0;
+    margin-left: 0;
+    cursor: n-resize;
+    z-index: 20;
 }

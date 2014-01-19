@@ -23,7 +23,18 @@ define("converse-templates", [
     "tpl!src/templates/form_checkbox",
     "tpl!src/templates/field",
     "tpl!src/templates/occupant",
-    "tpl!src/templates/roster_item"
+    "tpl!src/templates/roster_item",
+    "tpl!src/templates/pending_contact",
+    "tpl!src/templates/requesting_contact",
+    "tpl!src/templates/requesting_contacts",
+    "tpl!src/templates/pending_contacts",
+    "tpl!src/templates/contacts",
+    "tpl!src/templates/chat_status",
+    "tpl!src/templates/change_status_message",
+    "tpl!src/templates/choose_status",
+    "tpl!src/templates/status_option",
+    "tpl!src/templates/login_panel",
+    "tpl!src/templates/controlbox_toggle"
 ], function () {
     return {
         action: arguments[0],
@@ -50,6 +61,17 @@ define("converse-templates", [
         form_checkbox: arguments[21],
         field: arguments[22],
         occupant: arguments[23],
-        roster_item: arguments[24]
+        roster_item: arguments[24],
+        pending_contact: arguments[25],
+        requesting_contact: arguments[26],
+        requesting_contacts: arguments[27],
+        pending_contacts: arguments[28],
+        contacts: arguments[29],
+        chat_status: arguments[30],
+        change_status_message: arguments[31],
+        choose_status: arguments[32],
+        status_option: arguments[33],
+        login_panel: arguments[34],
+        controlbox_toggle: arguments[35]
     };
 });

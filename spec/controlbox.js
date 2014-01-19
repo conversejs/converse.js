@@ -164,7 +164,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
+                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').find('span').text();
                     expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
@@ -351,7 +351,7 @@
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
+                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('div').text().replace(/AcceptDecline/g, '');
                     expect(t).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
                     // When a requesting contact is added, the controlbox must
                     // be opened.

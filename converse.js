@@ -2344,17 +2344,6 @@
                 this.model.destroy();
             },
 
-            pending_template: _.template(
-                '<span>{{ fullname }}</span>' +
-                '<a class="remove-xmpp-contact icon-remove" title="'+__('Click to remove this contact')+'" href="#"></a>'),
-
-            request_template: _.template('<div>{{ fullname }}</div>' +
-                '<button type="button" class="accept-xmpp-request">' +
-                'Accept</button>' +
-                '<button type="button" class="decline-xmpp-request">' +
-                'Decline</button>' +
-                ''),
-
             render: function () {
                 var item = this.model,
                     ask = item.get('ask'),
@@ -2378,10 +2367,19 @@
 
                 if (ask === 'subscribe') {
                     this.$el.addClass('pending-xmpp-contact');
-                    this.$el.html(this.pending_template(item.toJSON()));
+                    this.$el.html(converse.templates.pending_contact(
+                        _.extend(item.toJSON(), {
+                            'desc_remove': __('Click to remove this contact')
+                        })
+                    ));
                 } else if (requesting === true) {
                     this.$el.addClass('requesting-xmpp-contact');
-                    this.$el.html(this.request_template(item.toJSON()));
+                    this.$el.html(converse.templates.requesting_contact(
+                        _.extend(item.toJSON(), {
+                            'label_accept': __('Accept'),
+                            'label_decline': __('Decline')
+                        })
+                    ));
                     converse.controlboxtoggle.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
@@ -2699,15 +2697,6 @@
             id: 'converse-roster',
             rosteritemviews: {},
 
-            requesting_contacts_template: _.template(
-                '<dt id="xmpp-contact-requests">'+__('Contact requests')+'</dt>'),
-
-            contacts_template: _.template(
-                '<dt id="xmpp-contacts">'+__('My contacts')+'</dt>'),
-
-            pending_contacts_template: _.template(
-                '<dt id="pending-xmpp-contacts">'+__('Pending contacts')+'</dt>'),
-
             initialize: function () {
                 this.model.on("add", function (item) {
                     this.addRosterItemView(item).render(item);
@@ -2728,9 +2717,18 @@
                 this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
 
-                var roster_markup = this.contacts_template();
+                var roster_markup = converse.templates.contacts({
+                    'label_contacts': __('My contacts')
+                });
                 if (converse.allow_contact_requests) {
-                    roster_markup = this.requesting_contacts_template() + roster_markup + this.pending_contacts_template();
+                    roster_markup = 
+                        converse.templates.requesting_contacts({
+                            'label_contact_requests': __('Contact requests')
+                        }) + 
+                        roster_markup + 
+                        converse.templates.pending_contacts({
+                            'label_pending_contacts': __('Pending contacts')
+                        });
                 }
                 this.$el.hide().html(roster_markup);
 
@@ -2945,26 +2943,14 @@
                 $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
             },
 
-            change_status_message_template: _.template(
-                '<form id="set-custom-xmpp-status">' +
-                    '<input type="text" class="custom-xmpp-status" {{ status_message }}"'+
-                        'placeholder="'+__('Custom status')+'"/>' +
-                    '<button type="submit">'+__('Save')+'</button>' +
-                '</form>'),
-
-            status_template: _.template(
-                '<div class="xmpp-status">' +
-                    '<a class="choose-xmpp-status {{ chat_status }}" data-value="{{status_message}}" href="#" title="'+__('Click to change your chat status')+'">' +
-                        '<span class="icon-{{ chat_status }}"></span>'+
-                        '{{ status_message }}' +
-                    '</a>' +
-                    '<a class="change-xmpp-status-message icon-pencil" href="#" title="'+__('Click here to write a custom status message')+'"></a>' +
-                '</div>'),
-
             renderStatusChangeForm: function (ev) {
                 ev.preventDefault();
                 var status_message = this.model.get('status') || 'offline';
-                var input = this.change_status_message_template({'status_message': status_message});
+                var input = converse.templates.change_status_message({
+                    'status_message': status_message,
+                    'label_custom_status': __('Custom status'),
+                    'label_save': __('Save')
+                });
                 this.$el.find('.xmpp-status').replaceWith(input);
                 this.$el.find('.custom-xmpp-status').focus().focus();
             },
@@ -3009,25 +2995,13 @@
                 // # Example, I am online
                 var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
                 this.$el.find('#fancy-xmpp-status-select').html(
-                    this.status_template({
+                    converse.templates.chat_status({
                         'chat_status': stat,
-                        'status_message': status_message
+                        'status_message': status_message,
+                        'desc_custom_status': __('Click here to write a custom status message'),
+                        'desc_change_status': __('Click to change your chat status')
                     }));
             },
-
-            choose_template: _.template(
-                '<dl id="target" class="dropdown">' +
-                    '<dt id="fancy-xmpp-status-select" class="fancy-dropdown"></dt>' +
-                    '<dd><ul class="xmpp-status-menu"></ul></dd>' +
-                '</dl>'),
-
-            option_template: _.template(
-                '<li>' +
-                    '<a href="#" class="{{ value }}" data-value="{{ value }}">'+
-                        '<span class="icon-{{ value }}"></span>'+
-                        '{{ text }}'+
-                    '</a>' +
-                '</li>'),
 
             initialize: function () {
                 this.model.on("change", this.updateStatusUI, this);
@@ -3041,17 +3015,20 @@
                     $options_target,
                     options_list = [],
                     that = this;
-                this.$el.html(this.choose_template());
+                this.$el.html(converse.templates.choose_status());
                 this.$el.find('#fancy-xmpp-status-select')
-                        .html(this.status_template({
+                        .html(converse.templates.chat_status({
                             'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
-                            'chat_status': chat_status
+                            'chat_status': chat_status,
+                            'desc_custom_status': __('Click here to write a custom status message'),
+                            'desc_change_status': __('Click to change your chat status')
                             }));
                 // iterate through all the <option> elements and add option values
                 options.each(function(){
-                    options_list.push(that.option_template({'value': $(this).val(),
-                                                            'text': this.text
-                                                            }));
+                    options_list.push(converse.templates.status_option({
+                        'value': $(this).val(),
+                        'text': this.text
+                    }));
                 });
                 $options_target = this.$el.find("#target dd ul").hide();
                 $options_target.append(options_list.join(''));
@@ -3114,19 +3091,6 @@
             events: {
                 'submit form#converse-login': 'authenticate'
             },
-            template: _.template(
-                '<form id="converse-login">' +
-                '<label>'+__('XMPP/Jabber Username:')+'</label>' +
-                '<input type="username" name="jid">' +
-                '<label>'+__('Password:')+'</label>' +
-                '<input type="password" name="password">' +
-                '<input class="login-submit" type="submit" value="'+__('Log In')+'">' +
-                '</form">'
-            ),
-            bosh_url_input: _.template(
-                '<label>'+__('BOSH Service URL:')+'</label>' +
-                '<input type="text" id="bosh_service_url">'
-            ),
 
             connect: function ($form, jid, password) {
                 if ($form) {
@@ -3145,7 +3109,13 @@
             },
 
             initialize: function (cfg) {
-                cfg.$parent.html(this.$el.html(this.template()));
+                cfg.$parent.html(this.$el.html(
+                    converse.templates.login_panel({
+                        'label_username': __('XMPP/Jabber Username:'),
+                        'label_password': __('Password:'),
+                        'label_login': __('Log In')
+                    })
+                ));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                 this.model.on('connection-fail', function () { this.showConnectButton(); }, this);
                 this.model.on('auth-fail', function () { this.showConnectButton(); }, this);
@@ -3204,17 +3174,16 @@
                 'href': "#"
             },
 
-            template: _.template(
-                '<strong class="conn-feedback">Toggle chat</strong>'+
-                '<strong style="display: none" id="online-count">(0)</strong>'
-            ),
-
             initialize: function () {
                 this.render();
             },
 
             render: function () {
-                $('#conversejs').append(this.$el.html(this.template()));
+                $('#conversejs').append(this.$el.html(
+                    converse.templates.controlbox_toggle({
+                        'label_toggle': __('Toggle chat')
+                    })
+                ));
                 return this;
             },
 

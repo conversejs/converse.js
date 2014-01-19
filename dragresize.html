@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
+    <link rel="stylesheet" type="text/css" href="dragresize/dragresize.css">
+    <script data-main="main" src="components/requirejs/require.js"></script>
+    <script type="text/javascript" src="dragresize/dragresize.js"></script>
+    <title>Converse.js Drag/Resize Demo</title>
+
+    
+    <style type="text/css">
+        /* converse.css overrides */
+        #chatpanel {
+            height: 320px;
+        }
+
+        .chatbox {
+            height: 100%;
+        }
+
+        .chat-content {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            width: 100%;
+            height: -webkit-calc(100% - 125px);
+            height: -moz-calc(100% - 125px);
+            height: -o-calc(100% - 125px);
+            height: calc(100% - 125px);
+        }
+
+        div.controlbox-panes,
+        div#login-dialog {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        form.sendXMPPMessage {
+            width: 100%;
+        }
+    </style>
+
+
+    <script type="text/javascript">
+        //<![CDATA[
+
+        // Using DragResize is simple!
+        // You first declare a new DragResize() object, passing its own name and an object
+        // whose keys constitute optional parameters/settings:
+
+        var dragresize = new DragResize('dragresize',
+        { minWidth: 50, minHeight: 50, minLeft: 20, minTop: 20, maxLeft: 600, maxTop: 600 });
+
+        // Optional settings/properties of the DragResize object are:
+        //  enabled: Toggle whether the object is active.
+        //  handles[]: An array of drag handles to use (see the .JS file).
+        //  minWidth, minHeight: Minimum size to which elements are resized (in pixels).
+        //  minLeft, maxLeft, minTop, maxTop: Bounding box (in pixels).
+
+        // Next, you must define two functions, isElement and isHandle. These are passed
+        // a given DOM element, and must "return true" if the element in question is a
+        // draggable element or draggable handle. Here, I'm checking for the CSS classname
+        // of the elements, but you have have any combination of conditions you like:
+
+        dragresize.isElement = function(elm) {
+            if (elm.className && elm.className.indexOf('drsElement') > -1) return true;
+        };
+        dragresize.isHandle = function(elm) {
+            if (elm.className && elm.className.indexOf('drsMoveHandle') > -1) return true;
+        };
+
+        // You can define optional functions that are called as elements are dragged/resized.
+        // Some are passed true if the source event was a resize, or false if it's a drag.
+        // The focus/blur events are called as handles are added/removed from an object,
+        // and the others are called as users drag, move and release the object's handles.
+        // You might use these to examine the properties of the DragResize object to sync
+        // other page elements, etc.
+
+        dragresize.ondragfocus = function() { };
+        dragresize.ondragstart = function(isResize) { };
+        dragresize.ondragmove = function(isResize) { };
+        dragresize.ondragend = function(isResize) { };
+        dragresize.ondragblur = function() { };
+
+        // Finally, you must apply() your DragResize object to a DOM node; all children of this
+        // node will then be made draggable. Here, I'm applying to the entire document.
+        dragresize.apply(document);
+        //]]>
+    </script>
+</head>
+
+<body>
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
+        <h2 id="project_tagline">Drag and drop</h2>
+    </header>
+</div>
+
+<div id="chatpanel" class="drsElement" style="width: 100%;">
+    <div id="controlbox" class="chatbox drsElement" style="opacity: 1; display: inline;">
+        <div class="chat-head oc-chat-head drsMoveHandle">
+            <ul id="controlbox-tabs">
+                <li><a class="current" href="#login">Sign in</a></li>
+            </ul>
+            <a class="close-chatbox-button icon-close"></a></div>
+            <div class="controlbox-panes">
+                <div id="login-dialog">
+                <form id="converse-login">
+                    <label>XMPP/Jabber Username:</label><input type="text" id="jid">
+                    <label>Password:</label><input type="password" id="password">
+                    <input class="login-submit" type="submit" value="Log In">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="chatbox drsElement" id="37c0c87392010303765fe36b05c0967d62c6b70f" style="opacity: 1; display: inline-block;">
+        <div class="chat-head chat-head-chatbox drsMoveHandle">
+            <a class="close-chatbox-button icon-close"></a>
+            <a href="http://opkode.com" target="_blank" class="user">
+                <canvas height="33px" width="33px" class="avatar" style="background-color: black"></canvas>
+                <div class="chat-title"> JC Brand </div>
+            </a>
+            <p class="user-custom-message" title="10000ft in the air">10000ft in the air</p>
+            <p></p>
+        </div>
+        <div class="chat-content">
+            <div class="chat-info"><strong>/help</strong>:Show this menu</div>
+            <div class="chat-info"><strong>/me</strong>:Write in the third person</div>
+            <div class="chat-message">
+                <span class="chat-message-me">09:35 me:&nbsp;</span>
+                <span class="chat-message-content">Hello world</span>
+            </div>
+            <div class="chat-message ">
+                <span class="chat-message-them">19:25 Benedict-John:&nbsp;</span>
+                <span class="chat-message-content">Dagsê</span>
+            </div>
+            <div class="chat-message">
+                <span class="chat-message-me">19:39 me:&nbsp;</span>
+                <span class="chat-message-content">This is a relatively long message to check that wrapping works as expected.</span>
+            </div>
+            <div class="chat-message">
+                <span class="chat-message-me">19:42 me:&nbsp;</span>
+                <span class="chat-message-content">Supercalifragilisticexpialidociousstillnotlongenough</span>
+            </div>
+            <div class="chat-event">JC Brand is busy</div>
+            <div class="chat-message ">
+                <span class="chat-message-me">19:43 me:&nbsp;</span>
+                <span class="chat-message-content">Another message to check that scrolling works.</span>
+            </div>
+        </div>
+        <form class="sendXMPPMessage" action="" method="post">
+            <ul class="chat-toolbar no-text-select">
+                <!--
+                <li class="icon-happy" title="Insert a smilery"></li>
+                <li class="icon-camera-2" title="Enable video chat"></li>
+                <li class="icon-newspaper" title="Fetch and show this user's vCard"></li>
+                -->
+                <li class="toggle-otr not-private" title="Turn on 'off-the-record' chat encryption">
+                    <span class="chat-toolbar-text">Not private</span>
+                    <span class="icon-unlocked"></span>
+                    <ul>
+                        <li><a href="#">Start private conversation</a></li>
+                        <li><a href="#">End private conversation</a></li>
+                        <li><a href="#">Authenticate buddy</a></li>
+                        <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What's this?</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
+        </form>
+    </div>
+</div>
+</body>
+</html>

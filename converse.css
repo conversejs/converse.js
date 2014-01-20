@@ -1213,7 +1213,7 @@ form.add-xmpp-contact {
 }
 
 form.add-xmpp-contact input {
-    width: 120px;
+    width: 108px;
 }
 
 .chatbox .dropdown dt a span {
@@ -1250,7 +1250,7 @@ form.add-xmpp-contact input {
     line-height: 24px;
 }
 
-.chatbox .dropdown dd ul a:hover {
+.chatbox .dropdown dd ul li:hover {
     background-color: #bed6e5;
 }
 

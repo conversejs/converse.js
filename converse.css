@@ -453,12 +453,12 @@ ul.participant-list li.moderator {
     line-height: 1.3em;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
+}
 
-    /* FIXME */
-    height: -webkit-calc(100% - 125px);
-    height: -moz-calc(100% - 125px);
-    height: -o-calc(100% - 125px);
-    height: calc(100% - 125px);
+.chatbox .chat-content {
+    height: -moz-calc(100% - 114px);
+    height: -o-calc(100% - 114px);
+    height: calc(100% - 114px);
 }
 
 .chat-info {
@@ -625,6 +625,7 @@ dl.add-converse-contact {
     float: right;
     clear: right;
     height: 22px;
+    width: 12px;
     padding: 0px 5px 0 0;
     color: rgb(79, 79, 79);
 }
@@ -762,14 +763,11 @@ a.close-chatbox-button:active {
 }
 
 #converse-roster {
-    height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
     margin: 0;
-    position: relative;
-    top: 0;
-    border: none;
+    position: absolute;
     margin-top: 0.5em;
 }
 
@@ -917,6 +915,11 @@ dd.available-chatroom:hover a.room-info {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     width: 200px;
+    height: -moz-calc(100% - 38px);
+    height: -o-calc(100% - 38px);
+    height: calc(100% - 38px);
+    overflow-y: auto;
+    position: relative;
 }
 
 form#converse-login {
@@ -1020,6 +1023,7 @@ div#settings {
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     width: 100%;
+    height: 100%;
 }
 
 div#chatrooms {
@@ -1200,7 +1204,7 @@ form#set-custom-xmpp-status {
 .chatbox .dropdown dd { position:relative; }
 
 input.custom-xmpp-status {
-    width: 138px;
+    width: 124px;
 }
 
 form.add-xmpp-contact {
@@ -1241,6 +1245,7 @@ form.add-xmpp-contact input {
 
 .chatbox .dropdown a {
     height: 22px;
+    width: 148px;
     display: inline-block;
     line-height: 24px;
 }
@@ -1272,13 +1277,15 @@ form.add-xmpp-contact input {
 .box-flyout {
     position: absolute;
     display: block;
-    bottom: 0;
+    bottom: 1px;
     box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.4);
     border-radius: 4px;
 }
 
 .chatbox .box-flyout {
+    background: white;
     width: 200px;
+    height: 324px;
 }
 
 .chatroom .box-flyout {

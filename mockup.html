@@ -74,14 +74,12 @@
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="minimize-chatbox-button icon-minus"></a>
             </div>
-            <div class="controlbox-panes">
-                <div id="login-dialog">
-                    <form id="converse-login">
-                        <label>XMPP/Jabber Username:</label><input type="text" id="jid">
-                        <label>Password:</label><input type="password" id="password">
-                        <input class="login-submit" type="submit" value="Log In">
-                    </form>
-                </div>
+            <div id="login-dialog">
+                <form id="converse-login">
+                    <label>XMPP/Jabber Username:</label><input type="text" id="jid">
+                    <label>Password:</label><input type="password" id="password">
+                    <input class="login-submit" type="submit" value="Log In">
+                </form>
             </div>
         </div>
     </div>
@@ -97,115 +95,114 @@
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="minimize-chatbox-button icon-minus"></a>
             </div>
-            <div class="controlbox-panes">
-                <div id="users" class="oc-chat-content" style="display: block;">
-                    <form class="set-xmpp-status" action="" method="post">
-                        <span id="xmpp-status-holder">
-                        <dl id="target" class="dropdown">
-                            <dt id="fancy-xmpp-status-select" class="fancy-dropdown">
-                                <div class="xmpp-status">
-                                    <a class="choose-xmpp-status online" data-value="I am online" href="#" title="Click to change your chat status">
-                                        <span class="icon-online"></span>
-                                        I am online
-                                    </a>
-                                    <a class="change-xmpp-status-message icon-pencil" href="#" title="Click here to write a custom status message"></a>
-                                </div>
-                            </dt>
-                            <dd>
-                                <ul style="display: none;" class="xmpp-status-menu">
-                                    <li>
-                                        <a href="#" class="online" data-value="online">
-                                        <span class="icon-online"></span>
-                                        Online</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="dnd" data-value="dnd">
-                                        <span class="icon-dnd"></span>
-                                        Busy</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="away" data-value="away">
-                                        <span class="icon-away"></span>
-                                        Away</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="offline" data-value="offline">
-                                        <span class="icon-offline"></span>
-                                        Offline</a>
-                                    </li>
-                                </ul>
-                            </dd>
-                        </dl>
-                        </span>
-                    </form>
-                    <dl class="add-converse-contact dropdown">
-                        <dt id="xmpp-contact-search" class="fancy-dropdown">
-                            <a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">
-                                <span class="icon-plus"></span>
-                                Add a contact
-                            </a>
+            <div id="users" class="oc-chat-content" style="display: block;">
+                <form class="set-xmpp-status" action="" method="post">
+                    <span id="xmpp-status-holder">
+                    <dl id="target" class="dropdown">
+                        <dt id="fancy-xmpp-status-select" class="fancy-dropdown">
+                            <div class="xmpp-status">
+                                <a class="choose-xmpp-status online" data-value="I am online" href="#" title="Click to change your chat status">
+                                    <span class="icon-online"></span>
+                                    I am online
+                                </a>
+                                <a class="change-xmpp-status-message icon-pencil" href="#" title="Click here to write a custom status message"></a>
+                            </div>
                         </dt>
-                        <dd class="search-xmpp" style="display:none">
-                            <ul>
+                        <dd>
+                            <ul style="display: none;" class="xmpp-status-menu">
                                 <li>
-                                    <form class="add-xmpp-contact">
-                                        <input type="text" name="identifier" class="username" placeholder="Contact username">
-                                        <button type="submit">Add</button>
-                                    </form>
+                                    <a href="#" class="online" data-value="online">
+                                    <span class="icon-online"></span>
+                                    Online</a>
                                 </li>
-                                <li></li>
+                                <li>
+                                    <a href="#" class="dnd" data-value="dnd">
+                                    <span class="icon-dnd"></span>
+                                    Busy</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="away" data-value="away">
+                                    <span class="icon-away"></span>
+                                    Away</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="offline" data-value="offline">
+                                    <span class="icon-offline"></span>
+                                    Offline</a>
+                                </li>
                             </ul>
                         </dd>
                     </dl>
-                    <dl id="converse-roster" style="display: block;">
-                        <dt id="xmpp-contacts" style="display: block;">My contacts</dt>
-                        <dd class="online current-xmpp-contact">
-                            <a class="open-chat" title="Click to chat with this contact" href="#">
-                            <span class="icon-online" title="This contact is online"></span>
-                            John Smit</a>
-                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
-                        </dd>
-                        <dd class="away current-xmpp-contact">
-                            <a class="open-chat" title="Click to chat with this contact" href="#">
-                            <span class="icon-away" title="this contact is away"></span>
-                            Francois Pienaar</a>
-                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
-                        </dd>
-                        <dd class="dnd current-xmpp-contact">
-                            <a class="open-chat" title="Click to chat with this contact" href="#">
-                            <span class="icon-dnd" title="This contact is busy"></span>
-                            Gary Teichmann</a>
-                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
-                        </dd>
-                        <dd class="offline current-xmpp-contact">
-                            <a class="open-chat" title="Click to chat with this contact" href="#">
-                            <span class="icon-offline" title="This contact is offline"></span>
-                            Corné Krige</a>
-                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
-                        </dd>
+                    </span>
+                </form>
+                <dl class="add-converse-contact dropdown">
+                    <dt id="xmpp-contact-search" class="fancy-dropdown">
+                        <a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">
+                            <span class="icon-plus"></span>
+                            Add a contact
+                        </a>
+                    </dt>
+                    <dd class="search-xmpp" style="display:none">
+                        <ul>
+                            <li>
+                                <form class="add-xmpp-contact">
+                                    <input type="text" name="identifier" class="username" placeholder="Contact username">
+                                    <button type="submit">Add</button>
+                                </form>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </dd>
+                </dl>
+                <dl id="converse-roster" style="display: block;">
+                    <dt id="xmpp-contacts" style="display: block;">My contacts</dt>
+                    <dd class="online current-xmpp-contact">
+                        <a class="open-chat" title="Click to chat with this contact" href="#">
+                        <span class="icon-online" title="This contact is online"></span>
+                        John Smit</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="away current-xmpp-contact">
+                        <a class="open-chat" title="Click to chat with this contact" href="#">
+                        <span class="icon-away" title="this contact is away"></span>
+                        Francois Pienaar</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="dnd current-xmpp-contact">
+                        <a class="open-chat" title="Click to chat with this contact" href="#">
+                        <span class="icon-dnd" title="This contact is busy"></span>
+                        Gary Teichmann</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="offline current-xmpp-contact">
+                        <a class="open-chat" title="Click to chat with this contact" href="#">
+                        <span class="icon-offline" title="This contact is offline"></span>
+                        Corné Krige</a>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
 
-                        <dt id="xmpp-contact-requests" style="display: block;">Contact requests</dt>
-                        <dd class="offline requesting-xmpp-contact">
-                            <div>Bob Skinstad</div>
-                            <button type="button" class="accept-xmpp-request">Accept</button>
-                            <button type="button" class="decline-xmpp-request">Decline</button>
-                        </dd>
-                        <dd class="offline requesting-xmpp-contact">
-                            <div>André Vos</div>
-                            <button type="button" class="accept-xmpp-request">Accept</button>
-                            <button type="button" class="decline-xmpp-request">Decline</button>
-                        </dd>
+                    <dt id="xmpp-contact-requests" style="display: block;">Contact requests</dt>
+                    <dd class="offline requesting-xmpp-contact">
+                        <div>Bob Skinstad</div>
+                        <button type="button" class="accept-xmpp-request">Accept</button>
+                        <button type="button" class="decline-xmpp-request">Decline</button>
+                    </dd>
+                    <dd class="offline requesting-xmpp-contact">
+                        <div>André Vos</div>
+                        <button type="button" class="accept-xmpp-request">Accept</button>
+                        <button type="button" class="decline-xmpp-request">Decline</button>
+                    </dd>
 
-                        <dt id="pending-xmpp-contacts" style="display: block;">Pending contacts</dt>
-                        <dd class="offline pending-xmpp-contact"><span>Rassie Erasmus</span>
-                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
-                        </dd>
-                        <dd class="offline pending-xmpp-contact"><span>Victor Matfield</span>
-                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
-                        </dd>
-                    </dl>
-                </div>
-                <div id="chatrooms" style="display: none;">
+                    <dt id="pending-xmpp-contacts" style="display: block;">Pending contacts</dt>
+                    <dd class="offline pending-xmpp-contact"><span>Rassie Erasmus</span>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                    <dd class="offline pending-xmpp-contact"><span>Victor Matfield</span>
+                        <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                    </dd>
+                </dl>
+            </div>
+            <div id="chatrooms" style="display: none;">
                 <form class="add-chatroom" action="" method="post">
                     <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
                     <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
@@ -236,7 +233,6 @@
                         </div>
                     </dd>
                 </dl>
-                </div>
             </div>
         </div>
     </div>

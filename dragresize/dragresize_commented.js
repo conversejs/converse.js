@@ -154,6 +154,7 @@ DragResize.prototype.mouseDown = function(e) {
         while (elm) {
             // Loop up the DOM looking for matching elements. Remember one if found.
             if (elm.className) {
+                if (!newHandle && (hRE.test(elm.className))) newHandle = elm;
                 if (isElement(elm)) { newElement = elm; break }
             }
             elm = elm.parentNode;

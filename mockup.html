@@ -487,6 +487,12 @@ $(document).ready(function () {
             } else {
                 $grandparent.find('div.chat-content').slideToggle(300);
             }
+            var flyout = $grandparent.find('.box-flyout')[0];
+            if (flyout.style.height == 'auto') {
+                flyout.style.height = '324px';
+            } else {
+                flyout.style.height = 'auto';
+            }
             $(ev.target).parent().parent().find('form.sendXMPPMessage').toggle();
         });
 

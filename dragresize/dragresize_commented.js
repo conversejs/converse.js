@@ -70,7 +70,6 @@ function DragResize(myName, config) {
         handles: ['tl', 'tm', 'tr',
         'ml', 'mr', 'bl', 'bm', 'br'],   // Array of drag handles: top/mid/bot/right.
         isElement: null,                 // Function ref to test for an element.
-        isHandle: null,                  // Function ref to test for move handle.
         element: null,                   // The currently selected element.
         handle: null,                    // Active handle reference of the element.
         minWidth: 10, minHeight: 10,     // Minimum pixel size of elements.
@@ -155,7 +154,6 @@ DragResize.prototype.mouseDown = function(e) {
         while (elm) {
             // Loop up the DOM looking for matching elements. Remember one if found.
             if (elm.className) {
-                if (!newHandle && (hRE.test(elm.className) || isHandle(elm))) newHandle = elm;
                 if (isElement(elm)) { newElement = elm; break }
             }
             elm = elm.parentNode;

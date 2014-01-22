@@ -1,0 +1,17 @@
+<div class="chat-head chat-head-chatbox">
+    <a class="close-chatbox-button icon-close"></a>
+    <a href="{{url}}" target="_blank" class="user">
+        <div class="chat-title"> {{ fullname }} </div>
+    </a>
+    <p class="user-custom-message"><p/>
+</div>
+<div class="chat-content"></div>
+<form class="sendXMPPMessage" action="" method="post">
+    {[ if (show_toolbar) { ]}
+        <ul class="chat-toolbar no-text-select"></ul>
+    {[ } ]}
+<textarea
+    type="text"
+    class="chat-textarea"
+    placeholder="{{label_personal_message}}"/>
+</form>

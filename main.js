@@ -1,4 +1,4 @@
-require.config({
+config = {
     paths: {
         "jquery": "components/jquery/jquery",
         "locales": "locale/locales",
@@ -6,6 +6,9 @@ require.config({
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
+        "text": 'components/requirejs-text/text',
+        "tpl": 'components/requirejs-tpl-jfparadis/tpl',
+        "converse-templates": "src/templates",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",
@@ -30,6 +33,14 @@ require.config({
         "converse-dependencies": "src/deps-full"
     },
 
+    tpl: {
+        // Use Mustache style syntax for variable interpolation
+        templateSettings: {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        }
+    },
+
     // define module dependencies for modules not using define
     shim: {
         'backbone': {
@@ -51,8 +62,11 @@ require.config({
         'strophe.vcard':    { deps: ['strophe'] },
         'strophe.disco':    { deps: ['strophe'] }
     }
-});
+};
 
-require(["jquery", "converse"], function(require, $, converse) {
-    window.converse = converse;
-});
+if (typeof(require) !== 'undefined') {
+    require.config(config);
+    require(["jquery", "converse"], function(require, $, converse) {
+        window.converse = converse;
+    });
+}

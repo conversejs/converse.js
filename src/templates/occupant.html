@@ -1,0 +1,11 @@
+<li class="{{role}}"
+    {[ if (role === "moderator") { ]}
+       title="{{desc_moderator}}"
+    {[ } ]}
+    {[ if (role === "participant") { ]}
+       title="{{desc_participant}}"
+    {[ } ]}
+    {[ if (role === "visitor") { ]}
+       title="{{desc_visitor}}"
+    {[ } ]}
+>{{nick}}</li>

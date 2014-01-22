@@ -19,6 +19,10 @@
                 utils.openContactsPanel();
             });
 
+            afterEach(function () {
+                utils.closeAllChatBoxes();
+            });
+
             it("is created when you click on a roster item", $.proxy(function () {
                 var i, $el, click, jid, view;
                 // openControlBox was called earlier, so the controlbox is

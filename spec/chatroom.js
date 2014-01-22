@@ -14,6 +14,10 @@
                 utils.createNewChatRoom('lounge', 'dummy');
             });
 
+            afterEach(function () {
+                utils.closeAllChatBoxes();
+            });
+
             it("shows users currently present in the room", $.proxy(function () {
                 var chatroomview = this.chatboxesview.views['lounge@muc.localhost'],
                     $participant_list;

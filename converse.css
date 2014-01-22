@@ -653,7 +653,7 @@ form.search-xmpp-contact input {
 }
 
 a.configure-chatroom-button,
-a.minimize-chatbox-button,
+a.toggle-chatbox-button,
 a.close-chatbox-button {
     font-size: 10px;
     padding: 3px 3px 2px 3px;
@@ -677,7 +677,7 @@ a.close-chatbox-button {
 }
 
 a.configure-chatroom-button:active,
-a.minimize-chatbox-button:active,
+a.toggle-chatbox-button:active,
 a.close-chatbox-button:active {
     position:relative;
     top:1px;

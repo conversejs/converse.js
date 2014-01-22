@@ -729,6 +729,7 @@
 
             events: {
                 'click .close-chatbox-button': 'closeChat',
+                'click .toggle-chatbox-button': 'toggleChat',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -1114,6 +1115,32 @@
                 } else {
                     this.model.trigger('hide');
                 }
+            },
+
+            saveToggleState: function () {
+                var flyout = this.$el.find('.box-flyout');
+                if (flyout.hasClass('minimized')) {
+                    flyout.removeClass('minimized');
+                    this.model.save({'minimized': false});
+                } else {
+                    flyout.addClass('minimized');
+                    this.model.save({'minimized': true});
+                }
+            },
+
+            swapToggleIcon: function ($el) {
+                if ($el.hasClass('icon-minus')) {
+                    $el.removeClass('icon-minus').addClass('icon-plus');
+                } else {
+                    $el.removeClass('icon-plus').addClass('icon-minus');
+                }
+            },
+
+            toggleChat: function (ev) {
+                this.saveToggleState();
+                this.$el.find('form.sendXMPPMessage').toggle();
+                this.$el.find('div.chat-content').slideToggle('fast');
+                this.swapToggleIcon($(ev.target));
             },
 
             updateVCard: function () {
@@ -1692,13 +1719,20 @@
             tagName: 'div',
             className: 'chatroom',
             events: {
-                'click a.close-chatbox-button': 'closeChat',
-                'click a.configure-chatroom-button': 'configureChatRoom',
+                'click .close-chatbox-button': 'closeChat',
+                'click .toggle-chatbox-button': 'toggleChat',
+                'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
             is_chatroom: true,
+
+            toggleChat: function (ev) {
+                this.saveToggleState();
+                this.$el.find('div.chat-body').slideToggle('fast');
+                this.swapToggleIcon($(ev.target));
+            },
 
             sendChatRoomMessage: function (body) {
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],

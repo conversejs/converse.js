@@ -1342,7 +1342,7 @@
 
         this.ContactsPanel = Backbone.View.extend({
             tagName: 'div',
-            className: 'oc-chat-content',
+            className: 'controlbox-pane',
             id: 'users',
             events: {
                 'click a.toggle-xmpp-contact-form': 'toggleContactForm',
@@ -1771,7 +1771,7 @@
             },
 
             template: _.template(
-                '<div class="chat-head oc-chat-head">'+
+                '<div class="chat-head controlbox-head">'+
                     '<ul id="controlbox-tabs"></ul>'+
                     '<a class="close-chatbox-button icon-close"></a>'+
                 '</div>'+

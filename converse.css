@@ -402,11 +402,7 @@ span.spinner.hor_centered {
 .chatroom .chat-area {
     float: left;
     width: 200px;
-}
-
-.chatroom .chat {
-    overflow: auto;
-    height: 400px;
+    height: 100%;
 }
 
 .chatroom .participants {
@@ -461,6 +457,12 @@ ul.participant-list li.moderator {
     height: -moz-calc(100% - 114px);
     height: -o-calc(100% - 114px);
     height: calc(100% - 114px);
+}
+
+.chatroom .chat-content {
+    height: -moz-calc(100% - 75px);
+    height: -o-calc(100% - 75px);
+    height: calc(100% - 75px);
 }
 
 .chat-info {
@@ -642,7 +644,7 @@ form.search-xmpp-contact input {
     width: 8em;
 }
 
-.oc-chat-head {
+.controlbox-head {
     margin: 0;
     color: #FFF;
     border-top-right-radius: 4px;
@@ -684,7 +686,7 @@ a.close-chatbox-button:active {
     top:1px;
 }
 
-.oc-chat-content dt {
+.controlbox-pane dt {
     margin: 0;
     padding-top: 0.5em;
 }
@@ -759,12 +761,14 @@ a.close-chatbox-button:active {
 }
 
 #converse-roster {
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
     width: 100%;
-    margin: 0;
-    position: absolute;
-    margin-top: 0.5em;
+    position: relative;
+    margin: 0.5em 0 0 0;
+    height: -moz-calc(100% - 70px);
+    height: -o-calc(100% - 70px);
+    height: calc(100% - 70px);
 }
 
 #conversejs dd.available-chatroom {
@@ -883,20 +887,19 @@ dd.available-chatroom:hover a.room-info {
     width: 300px;
 }
 
-.oc-chat-content {
-    height:274px;
+.controlbox-pane {
     padding: 0;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
 }
 
-.oc-chat-content dd {
+.controlbox-pane dd {
     margin-left: 0;
     margin-bottom: 0;
     padding: 1em;
 }
 
-.oc-chat-content dd.odd {
+.controlbox-pane dd.odd {
     background-color: #DCEAC5;
 }
 
@@ -1004,8 +1007,8 @@ div#settings {
     height: -moz-calc(100% - 38px);
     height: -o-calc(100% - 38px);
     height: calc(100% - 38px);
-    overflow-y: auto;
-    position: relative;
+    overflow-y: hidden;
+    position: absolute;
 }
 
 div#chatrooms {
@@ -1221,10 +1224,6 @@ form.add-xmpp-contact input {
     padding-left: 0;
 }
 
-.set-xmpp-status .dropdown dd ul {
-    z-index: 22;
-}
-
 .chatbox .dropdown a {
     height: 22px;
     width: 148px;
@@ -1245,6 +1244,10 @@ form.add-xmpp-contact input {
     color: rgb(79, 79, 79);
 }
 
+.set-xmpp-status .dropdown dd ul {
+    z-index: 22;
+}
+
 #conversejs {
     bottom: 1px;
     direction: ltr;
@@ -1252,11 +1255,12 @@ form.add-xmpp-contact input {
     left: 0;
     position: fixed;
     right: 0;
-    z-index: 300;
+    z-index: 30;
     display: block;
 }
 
 .box-flyout {
+    background: white;
     position: absolute;
     display: block;
     bottom: 1px;
@@ -1266,7 +1270,6 @@ form.add-xmpp-contact input {
 }
 
 .chatbox .box-flyout {
-    background: white;
     width: 200px;
 }
 

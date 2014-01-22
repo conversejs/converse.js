@@ -8,17 +8,16 @@
 
 // AMD/global registrations
 (function (root, factory) {
-    if (typeof console === "undefined" || typeof console.log === "undefined") {
-        console = { log: function () {}, error: function () {} };
-    }
     if (typeof define === 'function' && define.amd) {
         define("converse",
               ["converse-dependencies", "converse-templates"],
-            function(otr, templates) {
+            function(dependencies, templates) {
+                var DragResize = dependencies[0];
+                var otr = dependencies[1];
                 if (typeof otr !== "undefined") {
-                    return factory(jQuery, _, otr.OTR, otr.DSA, console, templates);
+                    return factory(jQuery, _, otr.OTR, otr.DSA, templates, DragResize);
                 } else {
-                    return factory(jQuery, _, undefined, undefined, console, templates);
+                    return factory(jQuery, _, undefined, undefined, templates, DragResize);
                 }
             }
         );
@@ -29,9 +28,31 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, OTR, DSA, console || {log: function(){}});
+        // TODO Templates not defined
+        root.converse = factory(jQuery, _, OTR, DSA, templates, DragResize);
     }
-}(this, function ($, _, OTR, DSA, console, templates) {
+}(this, function ($, _, OTR, DSA, templates, DragResize) {
+
+    var dragresize = new DragResize('dragresize', {
+        minWidth: 200,
+        minHeight: 250,
+        minLeft: 20,
+        minTop: 20,
+        maxLeft: 0,
+        maxTop: 600,
+        handles: ['tm']
+    });
+    dragresize.isElement = function(elm) {
+        if (elm.className && elm.className.indexOf('box-flyout') > -1) {
+            return true;
+        }
+    };
+    dragresize.apply(document);
+
+    if (typeof console === "undefined" || typeof console.log === "undefined") {
+        console = { log: function () {}, error: function () {} };
+    }
+
     $.fn.addHyperlinks = function() {
         if (this.length > 0) {
             this.each(function(i, obj) {

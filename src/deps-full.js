@@ -1,4 +1,5 @@
 define("converse-dependencies", [
+    "dragresize",
     "otr",
     "locales",
     "backbone.localStorage",
@@ -8,6 +9,6 @@ define("converse-dependencies", [
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function(otr) {
-    return otr;
+], function() {
+    return arguments;
 });

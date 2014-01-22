@@ -758,7 +758,7 @@ a.close-chatbox-button:active {
 }
 
 #converse-roster {
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
     position: relative;

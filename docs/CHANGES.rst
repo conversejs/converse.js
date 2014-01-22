@@ -1,8 +1,14 @@
 Changelog
 =========
 
-Unreleased
-----------
+0.8 (Unreleased)
+----------------
+
+* Chat boxes and rooms can now be resized vertically. [jcbrand]
+* Chat boxes and rooms can be minimized. [jcbrand]
+
+0.7.3 (Unreleased)
+------------------
 
 * Option to display a call button in the chatbox toolbar, to allow third-party libraries to provide a calling feature. [Aupajo]
 * #108 Japanese Translations. [mako09]

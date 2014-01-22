@@ -1268,6 +1268,10 @@ form.add-xmpp-contact input {
     height: 324px;
 }
 
+.box-flyout.minimized {
+    height: auto;
+}
+
 .chatbox .box-flyout {
     width: 200px;
 }

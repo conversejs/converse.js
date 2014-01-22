@@ -26,9 +26,9 @@
                 handles: ['tm'],
             });
 
-            // Next, you must define two functions, isElement and isHandle. These are passed
-            // a given DOM element, and must "return true" if the element in question is a
-            // draggable element or draggable handle. Here, I'm checking for the CSS classname
+            // Next, you must define isElement. These are passed a given DOM element, and must
+            // "return true" if the element in question is a draggable element.
+            // Here, I'm checking for the CSS classname
             // of the elements, but you have have any combination of conditions you like:
             dragresize.isElement = function(elm) {
                 if (elm.className && elm.className.indexOf('box-flyout') > -1) return true;
@@ -487,12 +487,13 @@ $(document).ready(function () {
             } else {
                 $grandparent.find('div.chat-content').slideToggle(300);
             }
-            var flyout = $grandparent.find('.box-flyout')[0];
-            if (flyout.style.height == 'auto') {
-                flyout.style.height = '324px';
+            var flyout = $grandparent.find('.box-flyout');
+            if (flyout.hasClass('minimized')) {
+                flyout.removeClass('minimized');
             } else {
-                flyout.style.height = 'auto';
+                flyout.addClass('minimized');
             }
+
             $(ev.target).parent().parent().find('form.sendXMPPMessage').toggle();
         });
 

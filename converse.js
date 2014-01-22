@@ -1631,7 +1631,6 @@
             hide: function (callback) {
                 this.$el.hide('fast', function () {
                     converse.controlboxtoggle.show(function () {
-                        converse.refresh();
                         if (typeof callback === "function") {
                             callback();
                         }
@@ -1640,23 +1639,21 @@
             },
 
             show: function () {
-                converse.controlboxtoggle.hide();
-                if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    return;
-                }
-                if (converse.animate) {
-                    this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, function () {
-                        converse.refresh();
-                    });
-                } else {
-                    this.$el.css({'opacity': 1, 'display': 'inline'}); converse.refresh();
-                }
-                if (converse.connection) {
-                    // Without a connection, we haven't yet initialized
-                    // localstorage
-                    this.model.save();
-                }
-                converse.emit('onControlBoxOpened', this);
+                converse.controlboxtoggle.hide($.proxy(function () {
+                    if (converse.animate) {
+                        this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, function () {
+                            converse.refresh();
+                        });
+                    } else {
+                        this.$el.css({'opacity': 1, 'display': 'inline'}); converse.refresh();
+                    }
+                    if (converse.connection) {
+                        // Without a connection, we haven't yet initialized
+                        // localstorage
+                        this.model.save();
+                    }
+                    converse.emit('onControlBoxOpened', this);
+                }, this));
                 return this;
             },
 

@@ -100,6 +100,14 @@
         }
     };
 
+    converse.refresh = function () {
+        // TODO: only do this for webkit browsers
+        var conversejs = document.getElementById('conversejs');
+        conversejs.style.display = 'none';
+        conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
+        conversejs.style.display = 'block';
+    };
+
     converse.initialize = function (settings, callback) {
         var converse = this;
 
@@ -1218,15 +1226,16 @@
                 }
             },
 
-            show: function () {
+            show: function (callback) {
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                     converse.emit('onChatBoxFocused', this);
                     return this.focus();
                 }
                 if (converse.animate) {
-                    this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200);
+                    this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, callback);
                 } else {
                     this.$el.css({'opacity': 1, 'display': 'inline'});
+                    callback();
                 }
                 if (converse.connection) {
                     // Without a connection, we haven't yet initialized
@@ -1590,6 +1599,38 @@
                 if (this.model.get('visible')) {
                     this.show();
                 }
+            },
+
+            hide: function (callback) {
+                this.$el.hide('fast', function () {
+                    converse.controlboxtoggle.show(function () {
+                        converse.refresh();
+                        if (typeof callback === "function") {
+                            callback();
+                        }
+                    });
+                });
+            },
+
+            show: function () {
+                converse.controlboxtoggle.hide();
+                if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
+                    return;
+                }
+                if (converse.animate) {
+                    this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, function () {
+                        converse.refresh();
+                    });
+                } else {
+                    this.$el.css({'opacity': 1, 'display': 'inline'}); converse.refresh();
+                }
+                if (converse.connection) {
+                    // Without a connection, we haven't yet initialized
+                    // localstorage
+                    this.model.save();
+                }
+                converse.emit('onControlBoxOpened', this);
+                return this;
             },
 
             featureAdded: function (feature) {
@@ -3185,6 +3226,14 @@
                     })
                 ));
                 return this;
+            },
+
+            hide: function (callback) {
+                this.$el.hide('fast', callback);
+            },
+
+            show: function (callback) {
+                this.$el.show('fast', callback);
             },
 
             showControlBox: function () {

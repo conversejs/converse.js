@@ -14,7 +14,7 @@ Simplified and modified for Converse.js by JC Brand https://opkode.com
     if (typeof define === 'function' && define.amd) {
         define("dragresize", [], function() { return factory(); });
     } else {
-        root.dragresize = factory();
+        root.DragResize = factory();
     }
 }(this, function () {
 

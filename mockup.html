@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" id="facebook">
+<html lang="en">
 <head>
     <title id="pageTitle">Converse: Mockup</title>
     <meta charset="utf-8">
@@ -9,7 +9,7 @@
     <link type="text/css" rel="stylesheet" href="stylesheets/stylesheet.css">
     <link type="text/css" rel="stylesheet" href="converse.css">
     <script src="components/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="dragresize/dragresize_commented.js"></script>
+    <script type="text/javascript" src="src/dragresize.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
         //<![CDATA[
@@ -245,74 +245,76 @@
             <div class="chat-head chat-head-chatbox">
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="toggle-chatbox-button icon-minus"></a>
-
-                <a href="http://opkode.com" target="_blank" class="user">
-                    <canvas height="33px" width="33px" class="avatar" style="background-color: black"></canvas>
-                    <div class="chat-title"> JC Brand </div>
-                </a>
+                <canvas height="33px" width="33px" class="avatar" style="background-color: black"></canvas>
+                <div class="chat-title">
+                    <a href="http://opkode.com" target="_blank" class="user">
+                        JC Brand
+                    </a>
+                </div>
                 <p class="user-custom-message" title="10000ft in the air">10000ft in the air</p>
-                <p></p>
             </div>
-            <div class="chat-content">
-                <div class="chat-info"><strong>/help</strong>:This is an info message</div>
-                <div class="chat-error">This is an error message</div>
-                <div class="chat-message">
-                    <span class="chat-message-me">09:35 me:&nbsp;</span>
-                    <span class="chat-message-content">
-                        Hello world
-                        <span class="icon-smiley"></span>
-                    </span>
+            <div class="chat-body">
+                <div class="chat-content">
+                    <div class="chat-info"><strong>/help</strong>:This is an info message</div>
+                    <div class="chat-error">This is an error message</div>
+                    <div class="chat-message">
+                        <span class="chat-message-me">09:35 me:&nbsp;</span>
+                        <span class="chat-message-content">
+                            Hello world
+                            <span class="icon-smiley"></span>
+                        </span>
+                    </div>
+                    <div class="chat-message ">
+                        <span class="chat-message-them">19:25 Benedict-John:&nbsp;</span>
+                        <span class="chat-message-content">Dagsê</span>
+                    </div>
+                    <div class="chat-message">
+                        <span class="chat-message-me">19:39 me:&nbsp;</span>
+                        <span class="chat-message-content">This is a relatively long message to check that wrapping works as expected.</span>
+                    </div>
+                    <div class="chat-message">
+                        <span class="chat-message-me">19:42 me:&nbsp;</span>
+                        <span class="chat-message-content">Supercalifragilisticexpialidociousstillnotlongenough</span>
+                    </div>
+                    <div class="chat-event">JC Brand is busy</div>
+                    <div class="chat-message ">
+                        <span class="chat-message-me">19:43 me:&nbsp;</span>
+                        <span class="chat-message-content">Another message to check that scrolling works.</span>
+                    </div>
                 </div>
-                <div class="chat-message ">
-                    <span class="chat-message-them">19:25 Benedict-John:&nbsp;</span>
-                    <span class="chat-message-content">Dagsê</span>
-                </div>
-                <div class="chat-message">
-                    <span class="chat-message-me">19:39 me:&nbsp;</span>
-                    <span class="chat-message-content">This is a relatively long message to check that wrapping works as expected.</span>
-                </div>
-                <div class="chat-message">
-                    <span class="chat-message-me">19:42 me:&nbsp;</span>
-                    <span class="chat-message-content">Supercalifragilisticexpialidociousstillnotlongenough</span>
-                </div>
-                <div class="chat-event">JC Brand is busy</div>
-                <div class="chat-message ">
-                    <span class="chat-message-me">19:43 me:&nbsp;</span>
-                    <span class="chat-message-content">Another message to check that scrolling works.</span>
-                </div>
+                <form class="sendXMPPMessage" action="" method="post">
+                    <ul class="chat-toolbar no-text-select">
+                        <li class="toggle-smiley icon-happy" title="Insert a smilery">
+                            <ul>
+                                <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>
+                                <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>
+                                <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>
+                                <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>
+                                <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>
+                                <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>
+                                <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>
+                                <li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>
+                                <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>
+                                <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>
+                                <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>
+                                <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>
+                                <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>
+                            </ul>
+                        </li>
+                        <li class="toggle-otr unencrypted" title="Turn on 'off-the-record' chat encryption">
+                            <span class="chat-toolbar-text">unencrypted</span>
+                            <span class="icon-unlocked"></span>
+                            <ul>
+                                <li><a href="#">Start private conversation</a></li>
+                                <li><a href="#">End private conversation</a></li>
+                                <li><a href="#">Authenticate buddy</a></li>
+                                <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What's this?</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
+                </form>
             </div>
-            <form class="sendXMPPMessage" action="" method="post">
-                <ul class="chat-toolbar no-text-select">
-                    <li class="toggle-smiley icon-happy" title="Insert a smilery">
-                        <ul>
-                            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>
-                            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>
-                            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>
-                            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>
-                            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>
-                            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>
-                            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>
-                            <li><a class="icon-wondering" href="#" data-emoticon=":\"></a></li>
-                            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>
-                            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>
-                            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>
-                            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>
-                            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>
-                        </ul>
-                    </li>
-                    <li class="toggle-otr unencrypted" title="Turn on 'off-the-record' chat encryption">
-                        <span class="chat-toolbar-text">unencrypted</span>
-                        <span class="icon-unlocked"></span>
-                        <ul>
-                            <li><a href="#">Start private conversation</a></li>
-                            <li><a href="#">End private conversation</a></li>
-                            <li><a href="#">Authenticate buddy</a></li>
-                            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">What's this?</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <textarea type="text" class="chat-textarea" placeholder="Personal message"></textarea>
-            </form>
         </div>
     </div>
 
@@ -325,8 +327,7 @@
                 <a class="configure-chatroom-button icon-wrench" style=""></a>
 
                 <div class="chat-title"> Chatroom </div>
-                <p class="chatroom-topic"></p>
-                <p></p>
+                <p class="chatroom-topic">May the force be with you</p>
             </div>
             <div class="chat-body">
                 <div class="chat-area">
@@ -479,19 +480,13 @@ $(document).ready(function () {
 
         $('.toggle-chatbox-button').click(function(ev) {
             var $grandparent = $(ev.target).parent().parent().parent();
-            if ($grandparent.attr('class') == 'chatroom') {
-                $grandparent.find('.chat-body').slideToggle(300);
-            } else {
-                $grandparent.find('div.chat-content').slideToggle(300);
-            }
+            $grandparent.find('.chat-body').slideToggle(300);
             var flyout = $grandparent.find('.box-flyout');
             if (flyout.hasClass('minimized')) {
                 flyout.removeClass('minimized');
             } else {
                 flyout.addClass('minimized');
             }
-
-            $(ev.target).parent().parent().find('form.sendXMPPMessage').toggle();
         });
 
         // Clickable Dropdown

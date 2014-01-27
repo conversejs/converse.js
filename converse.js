@@ -1149,19 +1149,21 @@
                 }
             },
 
-            swapToggleIcon: function ($el) {
-                if ($el.hasClass('icon-minus')) {
-                    $el.removeClass('icon-minus').addClass('icon-plus');
-                } else {
-                    $el.removeClass('icon-plus').addClass('icon-minus');
-                }
-            },
-
             toggleChat: function (ev) {
+                // FIXME: Restore chat box to original resized height.
+                // Requires that we save the custom height.
+                this.$el.children('.box-flyout').attr('style', '');
+
                 this.saveToggleState();
-                this.$el.find('form.sendXMPPMessage').toggle();
-                this.$el.find('div.chat-content').slideToggle('fast');
-                this.swapToggleIcon($(ev.target));
+                this.$el.find('div.chat-body').slideToggle('fast');
+                var $target = $(ev.target);
+                if ($target.hasClass('icon-minus')) {
+                    $target.removeClass('icon-minus').addClass('icon-plus');
+                } else {
+                    $target.removeClass('icon-plus').addClass('icon-minus');
+                }
+                // Toggle drag resize ability
+                this.$el.find('.dragresize-tm').toggle();
             },
 
             updateVCard: function () {
@@ -1745,12 +1747,6 @@
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
             is_chatroom: true,
-
-            toggleChat: function (ev) {
-                this.saveToggleState();
-                this.$el.find('div.chat-body').slideToggle('fast');
-                this.swapToggleIcon($(ev.target));
-            },
 
             sendChatRoomMessage: function (body) {
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],

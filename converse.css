@@ -386,14 +386,23 @@ span.spinner.hor_centered {
     background-color: #2D617A;
 }
 
-.chatroom .chat-body {
-    height: -moz-calc(100% - 38px);
-    height: -o-calc(100% - 38px);
-    height: calc(100% - 38px);
+.chat-body {
     background-color: white;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     border-top: 0;
+}
+
+.chatbox .chat-body {
+    height: -moz-calc(100% - 38px);
+    height: -o-calc(100% - 38px);
+    height: calc(100% - 38px);
+}
+
+.chatroom .chat-body {
+    height: -moz-calc(100% - 38px);
+    height: -o-calc(100% - 38px);
+    height: calc(100% - 38px);
 }
 
 .chatroom .chat-area {
@@ -450,16 +459,10 @@ ul.participant-list li.moderator {
     -moz-box-sizing: border-box;
 }
 
-.chatbox .chat-content {
-    height: -moz-calc(100% - 114px);
-    height: -o-calc(100% - 114px);
-    height: calc(100% - 114px);
-}
-
-.chatroom .chat-content {
-    height: -moz-calc(100% - 75px);
-    height: -o-calc(100% - 75px);
-    height: calc(100% - 75px);
+.chat-content {
+    height: -moz-calc(100% - 76px);
+    height: -o-calc(100% - 76px);
+    height: calc(100% - 76px);
 }
 
 .chat-info {
@@ -558,6 +561,10 @@ div.chat-title {
     height: 1em;
 }
 
+div.chat-title a {
+    color: white;
+}
+
 .chat-head-chatbox,
 .chat-head-chatroom {
     background: linear-gradient(top, rgba(206,220,231,1) 0%,rgba(79,106,114,1) 100%);
@@ -576,6 +583,9 @@ p.chatroom-topic {
     margin: 0;
 }
 
+div.chat-head-chatbox a.user-custom-message {
+    color: white;
+}
 .activated{
     display: block !important;
 }

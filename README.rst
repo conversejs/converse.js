@@ -29,7 +29,7 @@ It has the following features:
 * Custom status messages
 * Typing notifications
 * Third person messages (/me )
-* Translated into multiple languages  (af, de, es, fr, it, hu, pt-BR, ru)
+* Translated into multiple languages  (af, de, en, es, fr, he, hu, id, it, ja, nl, pt_BR, ru)
 * Off-the-record encryption support (via `OTR.js <http://arlolra.github.io/otr>`_)
 
 -----------

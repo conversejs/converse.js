@@ -15,6 +15,7 @@
             "es": "locale/es/LC_MESSAGES/es",
             "fr": "locale/fr/LC_MESSAGES/fr",
             "hu": "locale/hu/LC_MESSAGES/hu",
+            "id": "locale/id/LC_MESSAGES/id",
             "it": "locale/it/LC_MESSAGES/it",
             "ja": "locale/ja/LC_MESSAGES/ja",
             "nl": "locale/nl/LC_MESSAGES/nl",
@@ -31,12 +32,13 @@
         'es',
         'fr',
         'hu',
+        'id',
         'it',
         'ja',
         'nl',
         'pt_BR',
         'ru'
-        ], function (jed, af, de, en, es, fr, hu, it, ja, nl, pt_BR, ru) {
+        ], function (jed, af, de, en, es, fr, hu, id, it, ja, nl, pt_BR, ru) {
             root.locales = {
                 'af': af,
                 'de': de,
@@ -44,6 +46,7 @@
                 'es': es,
                 'fr': fr,
                 'hu': hu,
+                'id': id,
                 'it': it,
                 'ja': ja,
                 'nl': nl,

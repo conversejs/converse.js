@@ -277,6 +277,17 @@ These values are then passed to converse.js's ``initialize`` method.
    **bosh_service_url** values.
 
 
+Example code for server-side prebinding
+---------------------------------------
+
+* PHP: 
+    See `xmpp-prebind-php <https://github.com/candy-chat/xmpp-prebind-php>`_ by
+    Michael Weibel and the folks from Candy chat.
+
+* Python:
+    See this `example Django application`_ by Jack Moffitt.
+
+
 Setting up a BOSH server
 ------------------------
 

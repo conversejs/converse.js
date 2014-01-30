@@ -30,7 +30,11 @@
             evaluate : /\{\[([\s\S]+?)\]\}/g,
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
-        root.converse = factory(jQuery, _, OTR, DSA, console || {log: function(){}});
+        if ((typeof OTR !== "undefined") && (typeof DSA !== "undefined")) {
+            root.converse = factory(jQuery, _, OTR, DSA, console);
+        } else {
+            root.converse = factory(jQuery, _, undefined, undefined, console);
+        }
     }
 }(this, function ($, _, OTR, DSA, console) {
     $.fn.addHyperlinks = function() {

@@ -451,6 +451,24 @@
             this.rosterview = new this.RosterView({'model':this.roster});
         };
 
+        this.registerGlobalEventHandlers = function () {
+            $(document).click(function() {
+                if ($('.toggle-otr ul').is(':visible')) {
+                    $('.toggle-otr ul', this).slideUp();
+                }
+                if ($('.toggle-smiley ul').is(':visible')) {
+                    $('.toggle-smiley ul', this).slideUp();
+                }
+            });
+
+            $(window).on("blur focus", $.proxy(function(e) {
+                if ((this.windowState != e.type) && (e.type == 'focus')) {
+                    converse.clearMsgCounter();
+                }
+                this.windowState = e.type;
+            },this));
+        };
+
         this.onConnected = function () {
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
@@ -465,21 +483,7 @@
                 this.initRoster();
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
-                $(document).click(function() {
-                    if ($('.toggle-otr ul').is(':visible')) {
-                        $('.toggle-otr ul', this).slideUp();
-                    }
-                    if ($('.toggle-smiley ul').is(':visible')) {
-                        $('.toggle-smiley ul', this).slideUp();
-                    }
-                });
-
-                $(window).on("blur focus", $.proxy(function(e) {
-                    if ((this.windowState != e.type) && (e.type == 'focus')) {
-                        converse.clearMsgCounter();
-                    }
-                    this.windowState = e.type;
-                },this));
+                this.registerGlobalEventHandlers();
                 this.giveFeedback(__('Online Contacts'));
 
                 if (this.callback) {
@@ -513,9 +517,6 @@
         this.ChatBox = Backbone.Model.extend({
             initialize: function () {
                 if (this.get('box_id') !== 'controlbox') {
-                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                        this.initiateOTR();
-                    }
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
@@ -527,43 +528,53 @@
                 }
             },
 
-            getSession: function () {
-                // XXX: sessionStorage is not supported in IE < 8. Perhaps a
+            getSession: function (callback) {
+                // FIXME: sessionStorage is not supported in IE < 8. Perhaps a
                 // user alert is required here...
-                var saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
-                var instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
+                var result, pass, instance_tag, saved_key;
                 var cipher = CryptoJS.lib.PasswordBasedCipher;
-                var pass = converse.connection.pass;
-                var pass_check = this.get('pass_check');
-                var result, key;
-                if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
-                    var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
-                    key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
-                    if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
-                        // Verified that the user's password is still the same
-                        this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
-                        return {
-                            'key': key,
-                            'instance_tag': instance_tag
-                        };
+                if (typeof converse.connection.pass !== "undefined") {
+                    instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
+                    saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
+                    pass = converse.connection.pass;
+                    var pass_check = this.get('pass_check');
+                    if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
+                        var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
+                        var key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
+                        if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
+                            // Verified that the user's password is still the same
+                            this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
+                            callback({
+                                'key': key,
+                                'instance_tag': instance_tag
+                            });
+                        }
                     }
                 }
-                // We need to generate a new key and instance tag
-                result = alert(__('Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.'));
-                instance_tag = OTR.makeInstanceTag();
-                key = new DSA();
-                // Encrypt the key and set in sessionStorage. Also store
-                // instance tag
-                window.sessionStorage[hex_sha1(this.id+'priv_key')] =
-                    cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
-                window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
 
-                this.trigger('showHelpMessages', [__('Private key generated.')]);
-                this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
-                return {
-                    'key': key,
-                    'instance_tag': instance_tag
-                };
+                // We need to generate a new key and instance tag
+                instance_tag = OTR.makeInstanceTag();
+                this.trigger('showHelpMessages', [__('Generating private key.')]);
+                this.trigger('showHelpMessages', [__('Your browser might become unresponsive.')]);
+
+                var clb = callback;
+                setTimeout($.proxy(function () {
+                    var key = new DSA();
+                    if (typeof converse.connection.pass !== "undefined") {
+                        // Encrypt the key and set in sessionStorage. Also store
+                        // instance tag
+                        window.sessionStorage[hex_sha1(this.id+'priv_key')] =
+                            cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
+                        window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
+                            this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
+                    }
+                    this.trigger('showHelpMessages', [__('Private key generated.')]);
+                    clb({
+                        'key': key,
+                        'instance_tag': instance_tag
+                    });
+                }, this), 500);
+
             },
 
             updateOTRStatus: function (state) {
@@ -616,32 +627,34 @@
                 // query message from our buddy. Otherwise, it is us who will
                 // send the query message to them.
                 this.save({'otr_status': UNENCRYPTED});
-                var session = this.getSession();
-                this.otr = new OTR({
-                    fragment_size: 140,
-                    send_interval: 200,
-                    priv: session.key,
-                    instance_tag: session.instance_tag,
-                    debug: this.debug
-                });
-                this.otr.on('status', $.proxy(this.updateOTRStatus, this));
-                this.otr.on('smp', $.proxy(this.onSMP, this));
+                var session = this.getSession($.proxy(function (session) {
+                    this.otr = new OTR({
+                        fragment_size: 140,
+                        send_interval: 200,
+                        priv: session.key,
+                        instance_tag: session.instance_tag,
+                        debug: this.debug
+                    });
+                    this.otr.on('status', $.proxy(this.updateOTRStatus, this));
+                    this.otr.on('smp', $.proxy(this.onSMP, this));
 
-                this.otr.on('ui', $.proxy(function (msg) {
-                    this.trigger('showReceivedOTRMessage', msg);
-                }, this));
-                this.otr.on('io', $.proxy(function (msg) {
-                    this.trigger('sendMessageStanza', msg);
-                }, this));
-                this.otr.on('error', $.proxy(function (msg) {
-                    this.trigger('showOTRError', msg);
-                }, this));
+                    this.otr.on('ui', $.proxy(function (msg) {
+                        this.trigger('showReceivedOTRMessage', msg);
+                    }, this));
+                    this.otr.on('io', $.proxy(function (msg) {
+                        this.trigger('sendMessageStanza', msg);
+                    }, this));
+                    this.otr.on('error', $.proxy(function (msg) {
+                        this.trigger('showOTRError', msg);
+                    }, this));
 
-                if (query_msg) {
-                    this.otr.receiveMsg(query_msg);
-                } else {
-                    this.otr.sendQueryMsg();
-                }
+                    this.trigger('showHelpMessages', [__('Exchanging private key with buddy.')]);
+                    if (query_msg) {
+                        this.otr.receiveMsg(query_msg);
+                    } else {
+                        this.otr.sendQueryMsg();
+                    }
+                }, this));
             },
 
             endOTR: function () {
@@ -700,7 +713,11 @@
                     return this.createMessage(message);
                 }
                 if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                    this.otr.receiveMsg(text);
+                    if (text.match(/^\?OTRv23?/)) {
+                        this.initiateOTR(text);
+                    } else {
+                        this.otr.receiveMsg(text);
+                    }
                 } else {
                     if (text.match(/^\?OTR/)) {
                         // They want to initiate OTR
@@ -848,6 +865,10 @@
                 this.render().show().model.messages.fetch({add: true});
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
+                }
+
+                if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
+                    this.model.initiateOTR();
                 }
             },
 

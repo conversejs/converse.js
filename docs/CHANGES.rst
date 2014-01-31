@@ -6,6 +6,7 @@ Unreleased
 
 * Option to display a call button in the chatbox toolbar, to allow third-party libraries to provide a calling feature. [Aupajo]
 * #108 Japanese Translations [mako09]
+* #111 OTR not working when using converse.js with prebinding. [jseidl, jcbrand]
 * #114 Hewbrew Translations [GreenLunar]
 * #115 Indonesian Translations [priyadi]
 

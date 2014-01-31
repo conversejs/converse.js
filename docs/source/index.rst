@@ -306,7 +306,6 @@ Facebook integration
     this myself. Feedback and patches from people who have succesfully done this
     will be appreciated.
 
-
 Converse.js uses `Strophe.js <http://strophe.im/strophejs>`_ to connect and
 communicate with the XMPP server. One nice thing about Strophe.js is that it
 can be extended via `plugins <http://github.com/strophe/strophejs-plugins>`_.
@@ -762,6 +761,22 @@ Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.
 
 See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for more information.
+
+cache_otr_key
+-------------
+
+Default = ``false``
+
+Let the `OTR (Off-the-record encryption) <https://otr.cypherpunks.ca>`_ private
+key be cached in your browser's session storage.
+
+The browser's session storage persists across page loads but is deleted once
+the tab or window is closed.
+
+If this options is set to ``false``, a new OTR private key will be generated
+for each page load. While more inconvenient, this is a much more secure option.
+
+This setting can only be used together with ``allow_otr = true``.
 
 debug
 -----

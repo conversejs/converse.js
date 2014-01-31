@@ -135,6 +135,7 @@
         this.auto_list_rooms = false;
         this.auto_subscribe = false;
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
+        this.cache_otr_key = false;
         this.debug = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
@@ -159,6 +160,7 @@
             'auto_list_rooms',
             'auto_subscribe',
             'bosh_service_url',
+            'cache_otr_key',
             'connection',
             'debug',
             'fullname',
@@ -167,11 +169,11 @@
             'jid',
             'prebind',
             'rid',
+            'show_call_button',
             'show_controlbox_by_default',
             'show_emoticons',
             'show_only_online_users',
             'show_toolbar',
-            'show_call_button',
             'sid',
             'use_vcards',
             'xhr_custom_status',
@@ -528,30 +530,56 @@
                 }
             },
 
+            getSessionPassphrase: function () {
+                return converse.prebind ? converse.connection.jid : converse.connection.pass;
+            },
+
+            generatePrivateKey: function (callback, instance_tag) {
+                var cipher = CryptoJS.lib.PasswordBasedCipher;
+                var key = new DSA();
+                if (converse.cache_otr_key) {
+                    pass = this.getSessionPassphrase();
+                    if (typeof pass !== "undefined") {
+                        // Encrypt the key and set in sessionStorage. Also store instance tag.
+                        window.sessionStorage[hex_sha1(this.id+'priv_key')] =
+                            cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
+                        window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
+                            this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
+                    }
+                }
+                this.trigger('showHelpMessages', [__('Private key generated.')], null, false);
+                callback({
+                    'key': key,
+                    'instance_tag': instance_tag
+                });
+            },
+
             getSession: function (callback) {
                 // FIXME: sessionStorage is not supported in IE < 8. Perhaps a
                 // user alert is required here...
-                var result, pass, instance_tag, saved_key;
                 var cipher = CryptoJS.lib.PasswordBasedCipher;
-                if (typeof converse.connection.pass !== "undefined") {
-                    instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
-                    saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
-                    pass = converse.connection.pass;
-                    var pass_check = this.get('pass_check');
-                    if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
-                        var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
-                        var key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
-                        if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
-                            // Verified that the user's password is still the same
-                            this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
-                            callback({
-                                'key': key,
-                                'instance_tag': instance_tag
-                            });
+                var result, pass, instance_tag, saved_key;
+                if (converse.cache_otr_key) {
+                    pass = this.getSessionPassphrase();
+                    if (typeof pass !== "undefined") {
+                        instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
+                        saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
+                        var pass_check = this.get('pass_check');
+                        if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
+                            var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
+                            var key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
+                            if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
+                                // Verified that the passphrase is still the same
+                                this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
+                                callback({
+                                    'key': key,
+                                    'instance_tag': instance_tag
+                                });
+                                return; // Our work is done here
+                            }
                         }
                     }
                 }
-
                 // We need to generate a new key and instance tag
                 instance_tag = OTR.makeInstanceTag();
                 this.trigger('showHelpMessages', [
@@ -560,25 +588,7 @@
                     null,
                     true // show spinner
                 );
-
-                var clb = callback;
-                setTimeout($.proxy(function () {
-                    var key = new DSA();
-                    if (typeof converse.connection.pass !== "undefined") {
-                        // Encrypt the key and set in sessionStorage. Also store
-                        // instance tag
-                        window.sessionStorage[hex_sha1(this.id+'priv_key')] =
-                            cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
-                        window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
-                            this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
-                    }
-                    this.trigger('showHelpMessages', [__('Private key generated.')], null, false);
-                    clb({
-                        'key': key,
-                        'instance_tag': instance_tag
-                    });
-                }, this), 500);
-
+                setTimeout($.proxy(this.generatePrivateKey, this), 500, callback, instance_tag);
             },
 
             updateOTRStatus: function (state) {

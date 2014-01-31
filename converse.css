@@ -333,7 +333,6 @@ you can use the generic selector below, but it's slower:
 
 span.spinner {
     background: url(images/spinner.gif) no-repeat center;
-    width: 22px;
     height: 22px;
     padding: 0 2px 0 2px;
     display: block;
@@ -1166,6 +1165,7 @@ ul.chat-toolbar li {
     list-style: none;
     padding: 0 3px 0 3px;
     cursor: pointer; 
+    margin-top: 1px;
 }
 
 ul.chat-toolbar li:hover {

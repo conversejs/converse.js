@@ -554,8 +554,12 @@
 
                 // We need to generate a new key and instance tag
                 instance_tag = OTR.makeInstanceTag();
-                this.trigger('showHelpMessages', [__('Generating private key.')]);
-                this.trigger('showHelpMessages', [__('Your browser might become unresponsive.')]);
+                this.trigger('showHelpMessages', [
+                    __('Generating private key.'),
+                    __('Your browser might become unresponsive.')],
+                    null,
+                    true // show spinner
+                );
 
                 var clb = callback;
                 setTimeout($.proxy(function () {
@@ -568,7 +572,7 @@
                         window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
                             this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
                     }
-                    this.trigger('showHelpMessages', [__('Private key generated.')]);
+                    this.trigger('showHelpMessages', [__('Private key generated.')], null, false);
                     clb({
                         'key': key,
                         'instance_tag': instance_tag
@@ -712,23 +716,22 @@
                 if ((!text) || (!converse.allow_otr)) {
                     return this.createMessage(message);
                 }
-                if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                    if (text.match(/^\?OTRv23?/)) {
-                        this.initiateOTR(text);
-                    } else {
-                        this.otr.receiveMsg(text);
-                    }
+                if (text.match(/^\?OTRv23?/)) {
+                    this.initiateOTR(text);
                 } else {
-                    if (text.match(/^\?OTR/)) {
-                        // They want to initiate OTR
-                        if (!this.otr) {
-                            this.initiateOTR(text);
-                        } else {
-                            this.otr.receiveMsg(text);
-                        }
+                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                        this.otr.receiveMsg(text);
                     } else {
-                        // Normal unencrypted message.
-                        this.createMessage(message);
+                        if (text.match(/^\?OTR/)) {
+                            if (!this.otr) {
+                                this.initiateOTR(text);
+                            } else {
+                                this.otr.receiveMsg(text);
+                            }
+                        } else {
+                            // Normal unencrypted message.
+                            this.createMessage(message);
+                        }
                     }
                 }
             }
@@ -960,11 +963,16 @@
                 return this.scrollDown();
             },
 
-            showHelpMessages: function (msgs, type) {
+            showHelpMessages: function (msgs, type, spinner) {
                 var $chat_content = this.$el.find('.chat-content'), i,
                     msgs_length = msgs.length;
                 for (i=0; i<msgs_length; i++) {
                     $chat_content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
+                }
+                if (spinner === true) {
+                    $chat_content.append('<span class="spinner"/>');
+                } else if (spinner === false) {
+                    $chat_content.find('span.spinner').remove();
                 }
                 return this.scrollDown();
             },

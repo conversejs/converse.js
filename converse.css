@@ -339,15 +339,12 @@ span.spinner {
 }
 
 span.spinner.centered {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    margin: 0 0 0 -25%;
+    text-align: center;
+    padding-top: 5em;
 }
 
 span.spinner.hor_centered {
-    left: 40%;
-    position: absolute;
+    text-align: center;
 }
 
 #conversejs {

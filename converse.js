@@ -244,13 +244,6 @@
 
         // Module-level functions
         // ----------------------
-        // TODO: REMOVE
-        this.createLinks = function (text) {
-            // Convert URLs into hyperlinks
-            var re = /((http|https|ftp):\/\/[\w?=&.\/\-;#~%\-]+(?![\w\s?&.\/;#~%"=\-]*>))/g;
-            return text.replace(re, '<a target="_blank" href="$1">$1</a>');
-        };
-
         this.giveFeedback = function (message, klass) {
             $('.conn-feedback').text(message);
             $('.conn-feedback').attr('class', 'conn-feedback');
@@ -319,7 +312,6 @@
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
-            // XXX: Couldn't get the prebind case to work here.
             if (!converse.prebind) {
                 this.connection.connect(
                     this.connection.jid,
@@ -576,7 +568,17 @@
             },
 
             getSessionPassphrase: function () {
-                return converse.prebind ? converse.connection.jid : converse.connection.pass;
+                if (converse.prebind) {
+                    var key = hex_sha1(converse.connection.jid),
+                        pass = window.sessionStorage[key];
+                    if (typeof pass === 'undefined') {
+                        pass = Math.floor(Math.random()*4294967295);
+                        window.sessionStorage[key] = pass;
+                    }
+                    return pass;
+                } else {
+                    return converse.connection.pass;
+                }
             },
 
             generatePrivateKey: function (callback, instance_tag) {
@@ -2930,8 +2932,7 @@
                                 }, this),
                                 $.proxy(function (jid, fullname, img, img_type, url) {
                                     converse.log("Error while retrieving vcard");
-                                    // XXX: Should vcard_updated be set here as
-                                    // well?
+                                    // XXX: Should vcard_updated be set here as well?
                                     this.add({
                                         jid: bare_jid,
                                         subscription: 'none',
@@ -2954,8 +2955,6 @@
                 var $presence = $(presence),
                     presence_type = $presence.attr('type');
                 if (presence_type === 'error') {
-                    // TODO
-                    // error presence stanzas don't necessarily have a 'from' attr.
                     return true;
                 }
                 var jid = $presence.attr('from'),
@@ -3303,7 +3302,7 @@
                 } else if (stat === 'away') {
                     pretty_status = __('away');
                 } else {
-                    pretty_status = __(stat) || __('online'); // XXX: Is 'online' the right default choice here?
+                    pretty_status = __(stat) || __('online');
                 }
                 return pretty_status;
             },

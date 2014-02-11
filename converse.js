@@ -324,13 +324,17 @@
                     this.jid,
                     this.sid,
                     this.rid,
-                    this.onConnect
+                    function (status, condition) {
+                        converse.onConnect(status, condition, true);
+                    }
                 );
             } else {
                 this.connection.connect(
                     this.connection.jid,
                     this.connection.pass,
-                    converse.onConnect,
+                    function (status, condition) {
+                        converse.onConnect(status, condition, true);
+                    },
                     this.connection.wait,
                     this.connection.hold,
                     this.connection.route
@@ -345,12 +349,17 @@
             }
         };
 
-        this.onConnect = function (status, condition) {
+        this.onConnect = function (status, condition, reconnect) {
             var $button, $form;
             if ((status === Strophe.Status.CONNECTED) ||
                 (status === Strophe.Status.ATTACHED)) {
-                converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
-                converse.onConnected();
+                if ((typeof reconnect !== 'undefined') && (reconnect)) {
+                    converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
+                    converse.onReconnected();
+                } else {
+                    converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+                    converse.onConnected();
+                }
             } else if (status === Strophe.Status.DISCONNECTED) {
                 // TODO: Handle case where user manually logs out...
                 converse.giveFeedback(__('Disconnected'), 'error');
@@ -451,27 +460,35 @@
             this.xmppstatus.fetch({success: callback, error: callback});
         };
 
-        this.initRoster = function () {
-            // Set up the roster
-            this.roster = new this.RosterItems();
-            this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+converse.bare_jid));
-
-            // Register callbacks that depend on the roster
+        this.registerRosterHandler = function () {
+            // Register handlers that depend on the roster
             this.connection.roster.registerCallback(
                 $.proxy(this.roster.rosterHandler, this.roster),
                 null, 'presence', null);
+        };
 
+        this.registerRosterXHandler = function () {
             this.connection.addHandler(
                 $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
                 'http://jabber.org/protocol/rosterx', 'message', null);
+        };
 
+        this.registerPresenceHandler = function () {
             this.connection.addHandler(
                 $.proxy(function (presence) {
                     this.presenceHandler(presence);
                     return true;
                 }, this.roster), null, 'presence', null);
+        };
 
+        this.initRoster = function () {
+            // Set up the roster
+            this.roster = new this.RosterItems();
+            this.roster.localStorage = new Backbone.LocalStorage(
+                hex_sha1('converse.rosteritems-'+converse.bare_jid));
+            this.registerRosterHandler();
+            this.registerRosterXHandler();
+            this.registerPresenceHandler();
             // No create the view which will fetch roster items from
             // localStorage
             this.rosterview = new this.RosterView({'model':this.roster});
@@ -493,6 +510,18 @@
                 }
                 this.windowState = e.type;
             },this));
+        };
+
+        this.onReconnected = function () {
+            // We need to re-register all the event handlers on the newly
+            // created connection.
+            this.initStatus($.proxy(function () {
+                this.registerRosterXHandler();
+                this.registerPresenceHandler();
+                this.chatboxes.registerMessageHandler();
+                converse.xmppstatus.sendPresence();
+                this.giveFeedback(__('Online Contacts'));
+            }, this));
         };
 
         this.onConnected = function () {
@@ -2427,6 +2456,17 @@
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
 
+            registerMessageHandler: function () {
+                // TODO: Make this method global to converse, trigger an event
+                // and let messageReceived be called via a handler for that
+                // event.
+                converse.connection.addHandler(
+                    $.proxy(function (message) {
+                        this.messageReceived(message);
+                        return true;
+                    }, this), null, 'message', 'chat');
+            },
+
             onConnected: function () {
                 this.localStorage = new Backbone.LocalStorage(
                     hex_sha1('converse.chatboxes-'+converse.bare_jid));
@@ -2438,16 +2478,9 @@
                 } else {
                     this.get('controlbox').save();
                 }
-                // This will make sure the Roster is set up
+                // This line below will make sure the Roster is set up
                 this.get('controlbox').set({connected:true});
-
-                // Register message handler
-                converse.connection.addHandler(
-                    $.proxy(function (message) {
-                        this.messageReceived(message);
-                        return true;
-                    }, this), null, 'message', 'chat');
-
+                this.registerMessageHandler();
                 // Get cached chatboxes from localstorage
                 this.fetch({
                     add: true,

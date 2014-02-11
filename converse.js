@@ -133,6 +133,7 @@
         this.allow_otr = true;
         this.animate = true;
         this.auto_list_rooms = false;
+        this.auto_reconnect = true;
         this.auto_subscribe = false;
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
         this.cache_otr_key = false;
@@ -158,6 +159,7 @@
             'allow_otr',
             'animate',
             'auto_list_rooms',
+            'auto_reconnect',
             'auto_subscribe',
             'bosh_service_url',
             'cache_otr_key',
@@ -315,41 +317,63 @@
             );
         };
 
-        this.onConnect = function (status) {
+        this.reconnect = function () {
+            converse.giveFeedback(__('Reconnecting'), 'error');
+            if (converse.prebind) {
+                this.connection.attach(
+                    this.jid,
+                    this.sid,
+                    this.rid,
+                    this.onConnect
+                );
+            } else {
+                this.connection.connect(
+                    this.connection.jid,
+                    this.connection.pass,
+                    converse.onConnect,
+                    this.connection.wait,
+                    this.connection.hold,
+                    this.connection.route
+                );
+            }
+        };
+
+        this.showLoginButton = function () {
+            var view = converse.chatboxesview.views.controlbox;
+            if (typeof view.loginpanel !== 'undefined') {
+                view.loginpanel.showLoginButton();
+            }
+        };
+
+        this.onConnect = function (status, condition) {
             var $button, $form;
-            if (status === Strophe.Status.CONNECTED) {
-                converse.log('Connected');
+            if ((status === Strophe.Status.CONNECTED) ||
+                (status === Strophe.Status.ATTACHED)) {
+                converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
                 converse.onConnected();
             } else if (status === Strophe.Status.DISCONNECTED) {
-                $form = $('#converse-login');
-                $button = $form.find('input[type=submit]');
-                if ($button) { $button.show().siblings('span').remove(); }
+                // TODO: Handle case where user manually logs out...
                 converse.giveFeedback(__('Disconnected'), 'error');
-                converse.connection.connect(
-                    converse.connection.jid,
-                    converse.connection.pass,
-                    converse.onConnect
-                );
+                if (converse.auto_reconnect) {
+                    converse.reconnect();
+                } else {
+                    converse.showLoginButton();
+                }
             } else if (status === Strophe.Status.Error) {
-                $form = $('#converse-login');
-                $button = $form.find('input[type=submit]');
-                if ($button) { $button.show().siblings('span').remove(); }
+                converse.showLoginButton();
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.chatboxesview.views.controlbox.trigger('connection-fail');
+                converse.showLoginButton();
                 converse.giveFeedback(__('Connection Failed'), 'error');
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.chatboxesview.views.controlbox.trigger('auth-fail');
+                converse.showLoginButton();
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
-            } else if (status === Strophe.Status.ATTACHED) {
-                converse.log('Attached');
-                converse.onConnected();
             }
         };
 
@@ -374,7 +398,7 @@
         this.parseISO8601 = function (datestr) {
             /* Parses string formatted as 2013-02-14T11:27:08.268Z to a Date obj.
             */
-            var numericKeys = [1, 4, 5, 6, 7, 10, 11],
+            var numericKeys = [1, 4, 5, 6, 7, 10, 11],
                 struct = /^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.?\d*)Z\s*$/.exec(datestr),
                 minutesOffset = 0,
                 i, k;
@@ -3398,7 +3422,7 @@
                 converse.connection.connect(jid, password, converse.onConnect);
             },
 
-            showConnectButton: function () {
+            showLoginButton: function () {
                 var $form = this.$el.find('#converse-login');
                 var $button = $form.find('input[type=submit]');
                 if ($button.length) {
@@ -3409,8 +3433,6 @@
             initialize: function (cfg) {
                 cfg.$parent.html(this.$el.html(this.template()));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-                this.model.on('connection-fail', function () { this.showConnectButton(); }, this);
-                this.model.on('auth-fail', function () { this.showConnectButton(); }, this);
             },
 
             render: function () {

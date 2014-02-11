@@ -747,6 +747,14 @@ For each room on the server a query is made to fetch further details (e.g.
 features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.
 
+auto_reconnect
+--------------
+
+Default = ``true``
+
+Automatically reconnect to the XMPP server if the connection drops
+unexpectedly.
+
 auto_subscribe
 --------------
 

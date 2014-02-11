@@ -319,16 +319,8 @@
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
-            if (converse.prebind) {
-                this.connection.attach(
-                    this.jid,
-                    this.sid,
-                    this.rid,
-                    function (status, condition) {
-                        converse.onConnect(status, condition, true);
-                    }
-                );
-            } else {
+            // XXX: Couldn't get the prebind case to work here.
+            if (!converse.prebind) {
                 this.connection.connect(
                     this.connection.jid,
                     this.connection.pass,

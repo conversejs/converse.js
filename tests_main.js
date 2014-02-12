@@ -100,6 +100,7 @@ require([
     "jasmine-html"
     ], function($, converse, mock, jasmine) {
         // Set up converse.js
+        window.converse_api = converse;
         window.localStorage.clear();
         converse.initialize({
             prebind: false,
@@ -122,6 +123,7 @@ require([
             require([
                 "jasmine-console-reporter",
                 "jasmine-junit-reporter",
+                "spec/converse",
                 "spec/otr",
                 "spec/eventemitter",
                 "spec/controlbox",

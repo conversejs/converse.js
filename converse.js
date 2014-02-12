@@ -3585,6 +3585,12 @@
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
+        'getRID': function () {
+            if (typeof converse.connection !== "undefined") {
+                return converse.connection.rid;
+            }
+            return null;
+        },
         'once': function(evt, handler) {
             converse.once(evt, handler);
         },

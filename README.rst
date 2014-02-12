@@ -88,9 +88,16 @@ Licence
 
 ``Converse.js`` is released under both the MIT_ and GPL_ licenses.
 
-------
-Donate
-------
+-------
+Support
+-------
+
+For support queries and discussions, please join the mailing list: conversejs@librelist.com
+Issues can be logged on the `Github issue tracker <https://github.com/jcbrand/converse.js/issues>`_.
+
+---------------------------------
+Donations or tips are appreciated
+---------------------------------
 
 * Bitcoin: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
 * Litecoin: LLvLH6qJch7HAamLguHkwobCrxmHLhiwZw

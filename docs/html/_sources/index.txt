@@ -801,6 +801,16 @@ Default = ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
+expose_rid_and_sid
+------------------
+
+Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
+globally via the API. This allows other scripts served on the same page to use
+these values. 
+
+*Beware*: a malicious script could use these tokens to assume your identity
+and inject fake chat messages.
+
 fullname
 --------
 
@@ -885,6 +895,14 @@ Default = ``false``
 
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
+
+use_otr_by_default
+------------------
+
+Default = ``false``
+
+If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
+encrypted chat session every time you open a chat box.
 
 use_vcards
 ----------

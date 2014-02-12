@@ -7,7 +7,7 @@
         }
     );
 } (this, function (mock, utils) {
-    return describe("Converse", $.proxy(function(mock, utils) {
+    return describe("The OTR module", $.proxy(function(mock, utils) {
 
         beforeEach($.proxy(function () {
             window.localStorage.clear();
@@ -20,14 +20,14 @@
             // stored in session storage.
             this.prebind = false;
             this.connection.pass = 's3cr3t!';
-            expect(this.getSessionPassphrase()).toBe(this.connection.pass);
+            expect(this.otr.getSessionPassphrase()).toBe(this.connection.pass);
             expect(window.sessionStorage.length).toBe(0); 
             expect(window.localStorage.length).toBe(0); 
 
             // With prebind, a random passphrase is generated and stored in
             // session storage.
             this.prebind = true;
-            pp = this.getSessionPassphrase();
+            pp = this.otr.getSessionPassphrase();
             expect(pp).not.toBe(this.connection.pass);
             expect(window.sessionStorage.length).toBe(1);
             expect(window.localStorage.length).toBe(0); 
@@ -36,6 +36,5 @@
             // Clean up
             this.prebind = false;
         }, converse));
-
     }, converse, mock, utils));
 }));

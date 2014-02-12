@@ -262,20 +262,6 @@
             }
         };
 
-        this.getSessionPassphrase = function () {
-            if (this.prebind) {
-                var key = hex_sha1(this.connection.jid),
-                    pass = window.sessionStorage[key];
-                if (typeof pass === 'undefined') {
-                    pass = Math.floor(Math.random()*4294967295).toString();
-                    window.sessionStorage[key] = pass;
-                }
-                return pass;
-            } else {
-                return this.connection.pass;
-            }
-        };
-
         this.getVCard = function (jid, callback, errback) {
             if (!this.use_vcards) {
                 if (callback) {
@@ -561,6 +547,44 @@
 
         // Backbone Models and Views
         // -------------------------
+        this.OTR = Backbone.Model.extend({
+            // A model for managing OTR settings.
+            getSessionPassphrase: function () {
+                if (converse.prebind) {
+                    var key = hex_sha1(converse.connection.jid),
+                        pass = window.sessionStorage[key];
+                    if (typeof pass === 'undefined') {
+                        pass = Math.floor(Math.random()*4294967295).toString();
+                        window.sessionStorage[key] = pass;
+                    }
+                    return pass;
+                } else {
+                    return converse.connection.pass;
+                }
+            },
+
+            generatePrivateKey: function (callback, instance_tag) {
+                var key = new DSA();
+                var jid = converse.connection.jid;
+                if (converse.cache_otr_key) {
+                    var cipher = CryptoJS.lib.PasswordBasedCipher;
+                    var pass = this.getSessionPassphrase();
+                    if (typeof pass !== "undefined") {
+                        // Encrypt the key and set in sessionStorage. Also store instance tag.
+                        window.sessionStorage[hex_sha1(jid+'priv_key')] =
+                            cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
+                        window.sessionStorage[hex_sha1(jid+'instance_tag')] = instance_tag;
+                        window.sessionStorage[hex_sha1(jid+'pass_check')] = 
+                            cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString();
+                    }
+                }
+                callback({
+                    'key': key,
+                    'instance_tag': instance_tag
+                });
+            }
+        });
+
         this.Message = Backbone.Model.extend();
 
         this.Messages = Backbone.Collection.extend({
@@ -581,35 +605,15 @@
                 }
             },
 
-            generatePrivateKey: function (callback, instance_tag) {
-                var cipher = CryptoJS.lib.PasswordBasedCipher;
-                var key = new DSA();
-                if (converse.cache_otr_key) {
-                    pass = converse.getSessionPassphrase();
-                    if (typeof pass !== "undefined") {
-                        // Encrypt the key and set in sessionStorage. Also store instance tag.
-                        window.sessionStorage[hex_sha1(this.id+'priv_key')] =
-                            cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
-                        window.sessionStorage[hex_sha1(this.id+'instance_tag')] = instance_tag;
-                            this.save({'pass_check': cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString()});
-                    }
-                }
-                this.trigger('showHelpMessages', [__('Private key generated.')], null, false);
-                callback({
-                    'key': key,
-                    'instance_tag': instance_tag
-                });
-            },
-
             getSession: function (callback) {
                 var cipher = CryptoJS.lib.PasswordBasedCipher;
-                var result, pass, instance_tag, saved_key;
+                var result, pass, instance_tag, saved_key, pass_check;
                 if (converse.cache_otr_key) {
-                    pass = converse.getSessionPassphrase();
+                    pass = converse.otr.getSessionPassphrase();
                     if (typeof pass !== "undefined") {
                         instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
                         saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
-                        var pass_check = this.get('pass_check');
+                        pass_check = window.sessionStorage[hex_sha1(this.connection.jid+'pass_check')];
                         if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
                             var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
                             var key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
@@ -633,7 +637,7 @@
                     null,
                     true // show spinner
                 );
-                setTimeout($.proxy(this.generatePrivateKey, this), 500, callback, instance_tag);
+                setTimeout($.proxy(converse.otr.generatePrivateKey, this), 500, callback, instance_tag);
             },
 
             updateOTRStatus: function (state) {
@@ -3561,6 +3565,7 @@
         this.chatboxes = new this.ChatBoxes();
         this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
         this.controlboxtoggle = new this.ControlBoxToggle();
+        this.otr = new this.OTR();
 
         if ((this.prebind) && (!this.connection)) {
             if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {

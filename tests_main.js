@@ -111,10 +111,18 @@ require([
             testing: true
         }, function (converse) {
             window.converse = converse;
+            window.crypto = {
+                getRandomValues: function (buf) {
+                    var i;
+                    for (i=0, len=buf.length; i<len; i++) {
+                        buf[i] = Math.floor(Math.random()*256);
+                    } 
+                }
+            };
             require([
                 "jasmine-console-reporter",
                 "jasmine-junit-reporter",
-                "spec/converse",
+                "spec/otr",
                 "spec/eventemitter",
                 "spec/controlbox",
                 "spec/chatbox",

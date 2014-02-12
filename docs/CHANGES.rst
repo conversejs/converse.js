@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+0.7.3 (2014-02-15)
+------------------
 
 * #93 Add API methods exposing the RID and SID values. Can be disabled. [jcbrand]
 * #102 Option to enable OTR by default. [Aupajo]

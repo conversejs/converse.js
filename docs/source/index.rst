@@ -349,6 +349,39 @@ The connection is already created inside Converse.js, so the
 If someone submits a sane patch that does the above, I'll be happy to merge it.
 Until then, people will have to do this themselves.
 
+========
+Features
+========
+
+Off-the-record encryption
+=========================
+
+Converse.js supports `Off-the-record (OTR) <https://otr.cypherpunks.ca/>`_
+encrypted messaging.
+
+The OTR protocol not only **encrypts your messages**, it provides ways to
+**verify the identity** of the person you are talking to,
+**plausible deniability** and **perfect forward secrecy** by generating
+new encryption keys for each conversation.
+
+In its current state, Javascript cryptography is fraught with dangers and
+challenges that make it impossible to reach the same standard of security that
+is available with native "desktop" software.
+
+This is due to its runtime malleability, the way it is "installed" (e.g.
+served) and the browser's lack of cryptographic primitives needed to implement
+secure crypto.
+
+For harsh but fairly valid criticism of Javascript cryptography, read:
+`Javascript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
+
+To get an idea on how this applies to OTR support in Converse.js, please read
+`my thoughts on it <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_.
+
+For now, suffice to say that although its useful to have OTR support in
+Converse.js in order to avoid most eavesdroppers, if you need serious
+communications privacy, then you're much better off using native software.
+
 ===========
 Development
 ===========
@@ -477,6 +510,137 @@ You can run both the tests and jshint in one go by calling:
 ::
 
     grunt check
+
+Minification
+============
+
+Minifying Javascript and CSS
+----------------------------
+
+Please make sure to read the section `Development`_ and that you have installed
+all development dependencies (long story short, you can run ``npm install``
+and then ``grunt fetch``).
+
+We  use `require.js`_ to keep track of *Converse.js* and its dependencies and to
+to bundle them together in a single minified file fit for deployment to a
+production site.
+
+To minify the Javascript and CSS, run the following command:
+
+::
+
+    grunt minify
+
+Javascript will be bundled and minified with `require.js`_'s optimization tool,
+using `almond <https://github.com/jrburke/almond>`_.
+
+You can `read more about require.js's optimizer here`_.
+
+CSS is minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.
+
+Translations
+============
+
+.. Note ::
+   Translations take up a lot of space and will bloat your minified file.
+   At the time of writing, all the translations add about 50KB of extra data to
+   the minified javascript file. Therefore, make sure to only
+   include those languages that you intend to support and remove from
+   ./locale/locales.js those which you don't need. Remember to rebuild the
+   minified file afterwards.
+
+The gettext POT file located in ./locale/converse.pot is the template
+containing all translations and from which for each language an individual PO
+file is generated.
+
+The POT file contains all translateable strings extracted from converse.js.
+
+To make a user facing string translateable, wrap it in the double underscore helper
+function like so:
+
+::
+
+    __('This string will be translated at runtime');
+
+After adding the string, you'll need to regenerate the POT file, like so:
+
+::
+
+    make pot
+
+You can then create or update the PO file for a specific language by doing the following:
+
+::
+
+    msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
+
+To do this for ALL languages, run:
+
+::
+
+    make merge
+
+The resulting PO file is then what gets translated.
+
+If you've created a new PO file, please make sure to add the following
+attributes at the top of the file (under *Content-Transfer-Encoding*). They are
+required as configuration settings for Jed, the Javascript translations library
+that we're using.
+
+::
+
+    "domain: converse\n"
+    "lang: de\n"
+    "plural_forms: nplurals=2; plural=(n != 1);\n"
+
+
+Unfortunately `Jed <http://slexaxton.github.io/Jed>`_ cannot use the PO files directly. We have to generate from it
+a file in JSON format and then put that in a .js file for the specific
+language.
+
+To generate JSON from a PO file, you'll need po2json for node.js. Run the
+following command to install it (npm being the node.js package manager):
+
+::
+
+    npm install po2json
+
+You can then convert the translations into JSON format:
+
+::
+
+    po2json locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
+
+Now from converse.json paste the data as a value for the "locale_data" key in the
+object in the language's .js file.
+
+So, if you are for example translating into German (language code 'de'), you'll
+create or update the file ./locale/LC_MESSAGES/de.js with the following code:
+
+::
+
+    (function (root, factory) {
+        define("de", ['jed'], function () {
+            return factory(new Jed({
+                "domain": "converse",
+                "locale_data": {
+                    // Paste the JSON data from converse.json here
+                }
+            })
+        }
+    }(this, function (i18n) {
+        return i18n;
+    }));
+
+making sure to also paste the JSON data as value to the "locale_data" key.
+
+.. Note ::
+    If you are adding translations for a new language that is not already supported,
+    you'll have to make one more edit in ./locale/locales.js to make sure the
+    language is loaded by require.js.
+
+Congratulations, you've now succesfully added your translations. Sorry for all
+those hoops you had to jump through.
 
 
 ===============
@@ -971,140 +1135,6 @@ Used only in conjunction with ``xhr_user_search``.
 
 This is the URL to which an AJAX GET request will be made to fetch user data from your remote server.
 The query string will be included in the request with ``q`` as its key.
-
-============
-Minification
-============
-
-Minifying Javascript and CSS
-============================
-
-Please make sure to read the section `Development`_ and that you have installed
-all development dependencies (long story short, you can run ``npm install``
-and then ``grunt fetch``).
-
-We  use `require.js`_ to keep track of *Converse.js* and its dependencies and to
-to bundle them together in a single minified file fit for deployment to a
-production site.
-
-To minify the Javascript and CSS, run the following command:
-
-::
-
-    grunt minify
-
-Javascript will be bundled and minified with `require.js`_'s optimization tool,
-using `almond <https://github.com/jrburke/almond>`_.
-
-You can `read more about require.js's optimizer here`_.
-
-CSS is minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.
-
-
-============
-Translations
-============
-
-.. Note ::
-   Translations take up a lot of space and will bloat your minified file.
-   At the time of writing, all the translations add about 50KB of extra data to
-   the minified javascript file. Therefore, make sure to only
-   include those languages that you intend to support and remove from
-   ./locale/locales.js those which you don't need. Remember to rebuild the
-   minified file afterwards.
-
-The gettext POT file located in ./locale/converse.pot is the template
-containing all translations and from which for each language an individual PO
-file is generated.
-
-The POT file contains all translateable strings extracted from converse.js.
-
-To make a user facing string translateable, wrap it in the double underscore helper
-function like so:
-
-::
-
-    __('This string will be translated at runtime');
-
-After adding the string, you'll need to regenerate the POT file, like so:
-
-::
-
-    make pot
-
-You can then create or update the PO file for a specific language by doing the following:
-
-::
-
-    msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
-
-To do this for ALL languages, run:
-
-::
-
-    make merge
-
-The resulting PO file is then what gets translated.
-
-If you've created a new PO file, please make sure to add the following
-attributes at the top of the file (under *Content-Transfer-Encoding*). They are
-required as configuration settings for Jed, the Javascript translations library
-that we're using.
-
-::
-
-    "domain: converse\n"
-    "lang: de\n"
-    "plural_forms: nplurals=2; plural=(n != 1);\n"
-
-
-Unfortunately `Jed <http://slexaxton.github.io/Jed>`_ cannot use the PO files directly. We have to generate from it
-a file in JSON format and then put that in a .js file for the specific
-language.
-
-To generate JSON from a PO file, you'll need po2json for node.js. Run the
-following command to install it (npm being the node.js package manager):
-
-::
-
-    npm install po2json
-
-You can then convert the translations into JSON format:
-
-::
-
-    po2json locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
-
-Now from converse.json paste the data as a value for the "locale_data" key in the
-object in the language's .js file.
-
-So, if you are for example translating into German (language code 'de'), you'll
-create or update the file ./locale/LC_MESSAGES/de.js with the following code:
-
-::
-
-    (function (root, factory) {
-        define("de", ['jed'], function () {
-            return factory(new Jed({
-                "domain": "converse",
-                "locale_data": {
-                    // Paste the JSON data from converse.json here
-                }
-            })
-        }
-    }(this, function (i18n) {
-        return i18n;
-    }));
-
-making sure to also paste the JSON data as value to the "locale_data" key.
-
-.. Note ::
-    If you are adding translations for a new language that is not already supported,
-    you'll have to make one more edit in ./locale/locales.js to make sure the
-    language is loaded by require.js.
-
-Congratulations, you've now succesfully added your translations. Sorry for all
-those hoops you had to jump through.
 
 .. _`read more about require.js's optimizer here`: http://requirejs.org/docs/optimization.html
 .. _`HTTP`: https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol

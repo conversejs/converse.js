@@ -138,6 +138,7 @@
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
         this.cache_otr_key = false;
         this.debug = false;
+        this.expose_rid_and_sid = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.prebind = false;
@@ -165,6 +166,7 @@
             'cache_otr_key',
             'connection',
             'debug',
+            'expose_rid_and_sid',
             'fullname',
             'hide_muc_server',
             'i18n',
@@ -3586,8 +3588,14 @@
             converse.initialize(settings, callback);
         },
         'getRID': function () {
-            if (typeof converse.connection !== "undefined") {
+            if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
                 return converse.connection.rid;
+            }
+            return null;
+        },
+        'getSID': function () {
+            if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
+                return converse.connection.sid;
             }
             return null;
         },

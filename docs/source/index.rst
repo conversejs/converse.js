@@ -781,10 +781,18 @@ key be cached in your browser's session storage.
 The browser's session storage persists across page loads but is deleted once
 the tab or window is closed.
 
-If this options is set to ``false``, a new OTR private key will be generated
+If this option is set to ``false``, a new OTR private key will be generated
 for each page load. While more inconvenient, this is a much more secure option.
 
 This setting can only be used together with ``allow_otr = true``.
+
+
+.. Note :: 
+    A browser window's session storage is accessible by all javascript that
+    is served from the same domain. So if there is malicious javascript served by
+    the same server (or somehow injected via an attacker), then they will be able
+    to retrieve your private key and read your all the chat messages in your
+    current session. Previous sessions however cannot be decrypted.
 
 debug
 -----
@@ -792,6 +800,16 @@ debug
 Default = ``false``
 
 If set to true, debugging output will be logged to the browser console.
+
+expose_rid_and_sid
+------------------
+
+Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
+globally via the API. This allows other scripts served on the same page to use
+these values. 
+
+*Beware*: a malicious script could use these tokens to assume your identity
+and inject fake chat messages.
 
 fullname
 --------

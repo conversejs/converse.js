@@ -306,7 +306,6 @@ Facebook integration
     this myself. Feedback and patches from people who have succesfully done this
     will be appreciated.
 
-
 Converse.js uses `Strophe.js <http://strophe.im/strophejs>`_ to connect and
 communicate with the XMPP server. One nice thing about Strophe.js is that it
 can be extended via `plugins <http://github.com/strophe/strophejs-plugins>`_.
@@ -748,6 +747,14 @@ For each room on the server a query is made to fetch further details (e.g.
 features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.
 
+auto_reconnect
+--------------
+
+Default = ``true``
+
+Automatically reconnect to the XMPP server if the connection drops
+unexpectedly.
+
 auto_subscribe
 --------------
 
@@ -762,6 +769,30 @@ Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.
 
 See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for more information.
+
+cache_otr_key
+-------------
+
+Default = ``false``
+
+Let the `OTR (Off-the-record encryption) <https://otr.cypherpunks.ca>`_ private
+key be cached in your browser's session storage.
+
+The browser's session storage persists across page loads but is deleted once
+the tab or window is closed.
+
+If this option is set to ``false``, a new OTR private key will be generated
+for each page load. While more inconvenient, this is a much more secure option.
+
+This setting can only be used together with ``allow_otr = true``.
+
+
+.. Note :: 
+    A browser window's session storage is accessible by all javascript that
+    is served from the same domain. So if there is malicious javascript served by
+    the same server (or somehow injected via an attacker), then they will be able
+    to retrieve your private key and read your all the chat messages in your
+    current session. Previous sessions however cannot be decrypted.
 
 debug
 -----

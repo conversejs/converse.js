@@ -8,60 +8,34 @@
     );
 } (this, function (mock, utils) {
     return describe("Converse", $.proxy(function(mock, utils) {
-        window.localStorage.clear();
 
-        it("allows you to subscribe to emitted events", function () {
-            this.callback = function () {};
-            spyOn(this, 'callback');
-            converse.on('onInitialized', this.callback);
-            converse.emit('onInitialized');
-            expect(this.callback).toHaveBeenCalled();
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 2);
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 3);
-        });
+        beforeEach($.proxy(function () {
+            window.localStorage.clear();
+            window.sessionStorage.clear();
+        }, converse));
 
-        it("allows you to listen once for an emitted event", function () {
-            this.callback = function () {};
-            spyOn(this, 'callback');
-            converse.once('onInitialized', this.callback);
-            converse.emit('onInitialized');
-            expect(this.callback).toHaveBeenCalled();
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-        });
+        it("can store a session passphrase in session storage", $.proxy(function () {
+            var pp;
+            // With no prebind, the user's XMPP password is used and nothing is
+            // stored in session storage.
+            this.prebind = false;
+            this.connection.pass = 's3cr3t!';
+            expect(this.getSessionPassphrase()).toBe(this.connection.pass);
+            expect(window.sessionStorage.length).toBe(0); 
+            expect(window.localStorage.length).toBe(0); 
 
-        it("allows you to stop listening or subscribing to an event", function () {
-            this.callback = function () {};
-            this.anotherCallback = function () {};
-            this.neverCalled = function () {};
+            // With prebind, a random passphrase is generated and stored in
+            // session storage.
+            this.prebind = true;
+            pp = this.getSessionPassphrase();
+            expect(pp).not.toBe(this.connection.pass);
+            expect(window.sessionStorage.length).toBe(1);
+            expect(window.localStorage.length).toBe(0); 
+            expect(pp).toBe(window.sessionStorage[hex_sha1(converse.connection.jid)]);
 
-            spyOn(this, 'callback');
-            spyOn(this, 'anotherCallback');
-            spyOn(this, 'neverCalled');
-            converse.on('onInitialized', this.callback);
-            converse.on('onInitialized', this.anotherCallback);
+            // Clean up
+            this.prebind = false;
+        }, converse));
 
-            converse.emit('onInitialized');
-            expect(this.callback).toHaveBeenCalled();
-            expect(this.anotherCallback).toHaveBeenCalled();
-
-            converse.off('onInitialized', this.callback);
-
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-            expect(this.anotherCallback.callCount, 2);
-
-            converse.once('onInitialized', this.neverCalled);
-            converse.off('onInitialized', this.neverCalled);
-
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-            expect(this.anotherCallback.callCount, 3);
-            expect(this.neverCalled).not.toHaveBeenCalled();
-        });
     }, converse, mock, utils));
 }));

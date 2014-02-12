@@ -262,6 +262,20 @@
             }
         };
 
+        this.getSessionPassphrase = function () {
+            if (this.prebind) {
+                var key = hex_sha1(this.connection.jid),
+                    pass = window.sessionStorage[key];
+                if (typeof pass === 'undefined') {
+                    pass = Math.floor(Math.random()*4294967295).toString();
+                    window.sessionStorage[key] = pass;
+                }
+                return pass;
+            } else {
+                return this.connection.pass;
+            }
+        };
+
         this.getVCard = function (jid, callback, errback) {
             if (!this.use_vcards) {
                 if (callback) {
@@ -567,25 +581,11 @@
                 }
             },
 
-            getSessionPassphrase: function () {
-                if (converse.prebind) {
-                    var key = hex_sha1(converse.connection.jid),
-                        pass = window.sessionStorage[key];
-                    if (typeof pass === 'undefined') {
-                        pass = Math.floor(Math.random()*4294967295);
-                        window.sessionStorage[key] = pass;
-                    }
-                    return pass;
-                } else {
-                    return converse.connection.pass;
-                }
-            },
-
             generatePrivateKey: function (callback, instance_tag) {
                 var cipher = CryptoJS.lib.PasswordBasedCipher;
                 var key = new DSA();
                 if (converse.cache_otr_key) {
-                    pass = this.getSessionPassphrase();
+                    pass = converse.getSessionPassphrase();
                     if (typeof pass !== "undefined") {
                         // Encrypt the key and set in sessionStorage. Also store instance tag.
                         window.sessionStorage[hex_sha1(this.id+'priv_key')] =
@@ -602,12 +602,10 @@
             },
 
             getSession: function (callback) {
-                // FIXME: sessionStorage is not supported in IE < 8. Perhaps a
-                // user alert is required here...
                 var cipher = CryptoJS.lib.PasswordBasedCipher;
                 var result, pass, instance_tag, saved_key;
                 if (converse.cache_otr_key) {
-                    pass = this.getSessionPassphrase();
+                    pass = converse.getSessionPassphrase();
                     if (typeof pass !== "undefined") {
                         instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
                         saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];

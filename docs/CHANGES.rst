@@ -5,6 +5,7 @@ Unreleased
 ----------
 
 * #93 Add API methods exposing the RID and SID values. Can be disabled. [jcbrand]
+* #102 Option to enable OTR by default. [Aupajo]
 * #103 Option to display a call button in the chatbox toolbar, to allow third-party libraries to provide a calling feature. [Aupajo]
 * #108 Japanese Translations [mako09]
 * #111 OTR not working when using converse.js with prebinding. [jseidl, jcbrand]

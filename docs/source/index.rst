@@ -896,6 +896,14 @@ Default = ``false``
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+use_otr_by_default
+------------------
+
+Default = ``false``
+
+If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
+encrypted chat session every time you open a chat box.
+
 use_vcards
 ----------
 

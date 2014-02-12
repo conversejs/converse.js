@@ -147,6 +147,7 @@
         this.show_call_button = false;
         this.show_emoticons = true;
         this.show_toolbar = true;
+        this.use_otr_by_default = false;
         this.use_vcards = true;
         this.xhr_custom_status = false;
         this.xhr_custom_status_url = '';
@@ -179,6 +180,7 @@
             'show_only_online_users',
             'show_toolbar',
             'sid',
+            'use_otr_by_default',
             'use_vcards',
             'xhr_custom_status',
             'xhr_custom_status_url',
@@ -188,6 +190,9 @@
 
         // Only allow OTR if we have the capability
         this.allow_otr = this.allow_otr && HAS_CRYPTO;
+
+        // Only use OTR by default if allow OTR is enabled to begin with
+        this.use_otr_by_default = this.use_otr_by_default && this.allow_otr;
 
         // Translation machinery
         // ---------------------
@@ -928,11 +933,11 @@
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxesview.$el);
                 this.render().show().model.messages.fetch({add: true});
+
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
                 }
-
-                if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
+                if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
                 }
             },

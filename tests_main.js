@@ -115,6 +115,7 @@ require([
                 "jasmine-console-reporter",
                 "jasmine-junit-reporter",
                 "spec/converse",
+                "spec/eventemitter",
                 "spec/controlbox",
                 "spec/chatbox",
                 "spec/chatroom"

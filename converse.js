@@ -563,7 +563,7 @@
                 }
             },
 
-            generatePrivateKey: function (callback, instance_tag) {
+            generatePrivateKey: function () {
                 var key = new DSA();
                 var jid = converse.connection.jid;
                 if (converse.cache_otr_key) {
@@ -578,10 +578,7 @@
                             cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString();
                     }
                 }
-                callback({
-                    'key': key,
-                    'instance_tag': instance_tag
-                });
+                return key;
             }
         });
 
@@ -630,14 +627,18 @@
                     }
                 }
                 // We need to generate a new key and instance tag
-                instance_tag = OTR.makeInstanceTag();
                 this.trigger('showHelpMessages', [
                     __('Generating private key.'),
                     __('Your browser might become unresponsive.')],
                     null,
                     true // show spinner
                 );
-                setTimeout($.proxy(converse.otr.generatePrivateKey, this), 500, callback, instance_tag);
+                setTimeout(function () {
+                    callback({
+                        'key': converse.otr.generatePrivateKey.apply(this),
+                        'instance_tag': OTR.makeInstanceTag()
+                    });
+                }, 500);
             },
 
             updateOTRStatus: function (state) {
@@ -1345,7 +1346,7 @@
                 } else if (data.otr_status == FINISHED){
                     msgs.push(__("Your buddy has ended encryption on their end, you should do the same."));
                 }
-                return this.showHelpMessages(msgs);
+                return this.showHelpMessages(msgs, 'info', false);
             },
 
             renderToolbar: function () {

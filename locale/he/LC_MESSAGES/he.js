@@ -6,8 +6,8 @@
                 "": {
                     "Project-Id-Version": "Converse.js 0.7.0",
                     "Report-Msgid-Bugs-To": "",
-                    "POT-Creation-Date": "2014-01-22 17:07+0200",
-                    "PO-Revision-Date": "2014-01-24 15:40+0200",
+                    "POT-Creation-Date": "2014-01-28 03:50+0200",
+                    "PO-Revision-Date": "2014-02-21 06:07+0200",
                     "Last-Translator": "GreenLunar <GreenLunar@github.com>",
                     "Language-Team": "Rahut <http://sourceforge.net/projects/rahut/>",
                     "Language": "he",
@@ -172,7 +172,7 @@
                     null,
                     "הרי טביעות האצבע, אנא אמת אותן עם %1$s, מחוץ לשיחה זו.\n\nטביעת אצבע עבורך, %2$s: %3$s\n\nטביעת אצבע עבור %1$s: %4$s\n\nהיה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."
                 ],
-                "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+                "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
                     null,
                     "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\n\nהאישיות שכנגד תתבקש עובר זאת לאותה שאלת אבטחה ואם זו תקלידו את את אותה התשובה במדויק (case sensitive), זהותה תאומת."
                 ],
@@ -314,7 +314,7 @@
                 ],
                 "Open room": [
                     null,
-                    "פתח חדר"
+                    "חדר פתוח"
                 ],
                 "Permanent room": [
                     null,
@@ -370,7 +370,7 @@
                 ],
                 "Set chatroom topic": [
                     null,
-                    "רבע נושא חדר שיחה"
+                    "קבע נושא חדר שיחה"
                 ],
                 "Kick user from chatroom": [
                     null,
@@ -498,7 +498,7 @@
                 ],
                 "You are not allowed to create new rooms": [
                     null,
-                    "אין לך רשות ליצור חדרים חדשחם"
+                    "אין לך רשות ליצור חדרים חדשים"
                 ],
                 "Your nickname doesn't conform to this room's policies": [
                     null,
@@ -582,7 +582,7 @@
                 ],
                 "I am %1$s": [
                     null,
-                    "אני במצב %1$s"
+                    "מצבי כעת הינו %1$s"
                 ],
                 "Sign in": [
                     null,
@@ -617,6 +617,6 @@
         }
         window.locales.he = factory(new Jed(translations));
     }
-}(this, function (he) { 
-    return he; 
+}(this, function (he) {
+    return he;
 }));

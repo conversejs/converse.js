@@ -7,8 +7,8 @@
     <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
-    <script data-main="main" src="components/requirejs/require.js"></script>
-    <!--<script src="builds/converse.min.js"></script>-->
+    <!--<script data-main="main" src="components/requirejs/require.js"></script>-->
+    <script src="builds/converse.min.js"></script>
     <title>Converse.js</title>
 </head>
 
@@ -194,7 +194,7 @@
             allow_otr: true,
             auto_list_rooms: false,
             auto_subscribe: false,
-            bosh_service_url: 'https://conversejs.org/http-bind', // Please use this connection manager only for testing purposes
+            bosh_service_url: 'http://devbox:5280/http-bind', // Please use this connection manager only for testing purposes
             debug: true ,
             hide_muc_server: false,
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported

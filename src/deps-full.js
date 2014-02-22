@@ -1,5 +1,4 @@
 define("converse-dependencies", [
-    "dragresize",
     "otr",
     "locales",
     "backbone.localStorage",

@@ -12,12 +12,11 @@
         define("converse",
               ["converse-dependencies", "converse-templates"],
             function(dependencies, templates) {
-                var DragResize = dependencies[0];
-                var otr = dependencies[1];
+                var otr = dependencies[0];
                 if (typeof otr !== "undefined") {
-                    return factory(jQuery, _, otr.OTR, otr.DSA, templates, DragResize);
+                    return factory(jQuery, _, otr.OTR, otr.DSA, templates);
                 } else {
-                    return factory(jQuery, _, undefined, undefined, templates, DragResize);
+                    return factory(jQuery, _, undefined, undefined, templates);
                 }
             }
         );
@@ -29,26 +28,9 @@
             interpolate : /\{\{([\s\S]+?)\}\}/g
         };
         // TODO Templates not defined
-        root.converse = factory(jQuery, _, OTR, DSA, templates, DragResize);
+        root.converse = factory(jQuery, _, OTR, DSA, templates);
     }
-}(this, function ($, _, OTR, DSA, templates, DragResize) {
-
-    var dragresize = new DragResize('dragresize', {
-        minWidth: 200,
-        minHeight: 250,
-        minLeft: 20,
-        minTop: 20,
-        maxLeft: 0,
-        maxTop: 600,
-        handles: ['tm']
-    });
-    dragresize.isElement = function(elm) {
-        if (elm.className && elm.className.indexOf('box-flyout') > -1) {
-            return true;
-        }
-    };
-    dragresize.apply(document);
-
+}(this, function ($, _, OTR, DSA, templates) {
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
@@ -154,6 +136,7 @@
         // Default configuration values
         // ----------------------------
         this.allow_contact_requests = true;
+        this.allow_dragresize = true;
         this.allow_muc = true;
         this.allow_otr = true;
         this.animate = true;
@@ -178,6 +161,7 @@
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, [
             'allow_contact_requests',
+            'allow_dragresize',
             'allow_muc',
             'allow_otr',
             'animate',
@@ -499,7 +483,18 @@
                     }
                 });
 
-                $(window).on("blur focus", $.proxy(function(e) {
+                $(document).on('mousemove', $.proxy(function (ev) {
+                    if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
+                    ev.preventDefault();
+                    this.resized_chatbox.resizeChatbox(ev);
+                }, this));
+
+                $(document).on('mouseup', $.proxy(function (ev) {
+                    if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
+                    this.resized_chatbox = null;
+                }, this));
+
+                $(window).on("blur focus", $.proxy(function (e) {
                     if ((this.windowState != e.type) && (e.type == 'focus')) {
                         converse.clearMsgCounter();
                     }
@@ -758,7 +753,8 @@
                 'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
                 'click .auth-otr': 'authOTR',
-                'click .toggle-call': 'toggleCall'
+                'click .toggle-call': 'toggleCall',
+                'mousedown .dragresize-tm': 'onDragResizeStart'
             },
 
             initialize: function (){
@@ -782,6 +778,10 @@
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
                 }
+                // Drag to resize values
+                this.chatboxMinHeight = 250;
+                this.chatboxHeight = this.$el.children('.box-flyout').height();
+                this.prevPageY = 0; // To store last known mouse position
             },
 
             render: function () {
@@ -997,6 +997,25 @@
                         this.$el.data('composing', true);
                     }
                 }
+            },
+
+            onDragResizeStart: function (ev) {
+                if (!converse.allow_dragresize) { return true; }
+                // Record element attributes for mouseMove().
+                this.chatboxHeight = this.$el.children('.box-flyout').height();
+                converse.resized_chatbox = this;
+                this.prevPageY = ev.pageY;
+            },
+
+            resizeChatbox: function (ev) {
+                var diff = ev.pageY - this.prevPageY;
+                if (!diff) { return; }
+                if (this.chatboxHeight - diff < this.chatboxMinHeight) {
+                    diff = this.chatboxHeight - this.chatboxMinHeight;
+                }
+                this.chatboxHeight -= diff;
+                this.prevPageY = ev.pageY;
+                this.$el.children('.box-flyout')[0].style.height = this.chatboxHeight + 'px';
             },
 
             insertEmoticon: function (ev) {

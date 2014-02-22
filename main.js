@@ -2,7 +2,6 @@ config = {
     paths: {
         "jquery": "components/jquery/jquery",
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
-        "dragresize": "src/dragresize",
         "locales": "locale/locales",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",

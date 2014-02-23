@@ -103,12 +103,16 @@
         }
     };
 
-    converse.refresh = function () {
-        // TODO: only do this for webkit browsers
-        var conversejs = document.getElementById('conversejs');
-        conversejs.style.display = 'none';
-        conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
-        conversejs.style.display = 'block';
+    converse.refreshWebkit = function () {
+        /* This works around a webkit bug. Refresh the browser's viewport,
+         * otherwise chatboxes are not moved along when one is closed.
+         */
+        if ($.browser.webkit) {
+            var conversejs = document.getElementById('conversejs');
+            conversejs.style.display = 'none';
+            conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
+            conversejs.style.display = 'block';
+        }
     };
 
     converse.initialize = function (settings, callback) {
@@ -859,6 +863,7 @@
                 this.model.on('showReceivedOTRMessage', function (text) {
                     this.showOTRMessage(text, 'them');
                 }, this);
+
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxesview.$el);
                 this.render().show().model.messages.fetch({add: true});
@@ -1390,12 +1395,9 @@
             },
 
             hide: function () {
+                var speed = converse.animate ? 'fast' : null;
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    if (converse.animate) {
-                        this.$el.hide('fast');
-                    } else {
-                        this.$el.hide();
-                    }
+                    this.$el.hide(speed, converse.refreshWebkit);
                     converse.emit('onChatBoxClosed', this);
                 }
             },
@@ -1788,11 +1790,9 @@
             show: function () {
                 converse.controlboxtoggle.hide($.proxy(function () {
                     if (converse.animate) {
-                        this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, function () {
-                            converse.refresh();
-                        });
+                        this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, converse.refreshWebkit);
                     } else {
-                        this.$el.css({'opacity': 1, 'display': 'inline'}); converse.refresh();
+                        this.$el.css({'opacity': 1, 'display': 'inline'}); converse.refreshWebkit();
                     }
                     if (converse.connection) {
                         // Without a connection, we haven't yet initialized

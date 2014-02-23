@@ -868,9 +868,10 @@
                 }
 
                 // Drag to resize values
-                this.chatboxMinHeight = 250;
-                this.chatboxHeight = this.$el.children('.box-flyout').height();
-                this.prevPageY = 0; // To store last known mouse position
+                this.height = this.$el.children('.box-flyout').height();
+                this.min_height = 150;
+                this.original_height = this.height;
+                this.prev_pageY = 0; // To store last known mouse position
 
                 if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
@@ -1100,20 +1101,26 @@
             onDragResizeStart: function (ev) {
                 if (!converse.allow_dragresize) { return true; }
                 // Record element attributes for mouseMove().
-                this.chatboxHeight = this.$el.children('.box-flyout').height();
+                this.height = this.$el.children('.box-flyout').height();
                 converse.resized_chatbox = this;
-                this.prevPageY = ev.pageY;
+                this.prev_pageY = ev.pageY;
             },
 
             resizeChatbox: function (ev) {
-                var diff = ev.pageY - this.prevPageY;
+                var diff = ev.pageY - this.prev_pageY;
                 if (!diff) { return; }
-                if (this.chatboxHeight - diff < this.chatboxMinHeight) {
-                    diff = this.chatboxHeight - this.chatboxMinHeight;
+                if (this.height - diff < this.min_height) {
+                    diff = this.height - this.min_height;
                 }
-                this.chatboxHeight -= diff;
-                this.prevPageY = ev.pageY;
-                this.$el.children('.box-flyout')[0].style.height = this.chatboxHeight + 'px';
+                this.height -= diff;
+                this.prev_pageY = ev.pageY;
+                if (Math.abs(this.height - this.original_height) < 7) {
+                    // Add some resistance around the original height, to allow
+                    // users to more easily return to it.
+                    this.$el.children('.box-flyout')[0].style.height = this.original_height + 'px';
+                } else {
+                    this.$el.children('.box-flyout')[0].style.height = this.height + 'px';
+                }
             },
 
             insertEmoticon: function (ev) {

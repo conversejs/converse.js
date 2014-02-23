@@ -8,60 +8,40 @@
     );
 } (this, function (mock, utils) {
     return describe("Converse", $.proxy(function(mock, utils) {
-        window.localStorage.clear();
 
-        it("allows you to subscribe to emitted events", function () {
-            this.callback = function () {};
-            spyOn(this, 'callback');
-            converse.on('onInitialized', this.callback);
-            converse.emit('onInitialized');
-            expect(this.callback).toHaveBeenCalled();
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 2);
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 3);
-        });
+        beforeEach($.proxy(function () {
+            window.localStorage.clear();
+            window.sessionStorage.clear();
+        }, converse));
 
-        it("allows you to listen once for an emitted event", function () {
-            this.callback = function () {};
-            spyOn(this, 'callback');
-            converse.once('onInitialized', this.callback);
-            converse.emit('onInitialized');
-            expect(this.callback).toHaveBeenCalled();
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-        });
+        it("has an API method for retrieving the next RID", $.proxy(function () {
+            var old_connection = converse.connection;
+            converse.connection.rid = '1234';
+            converse.expose_rid_and_sid = false;
+            expect(converse_api.getRID()).toBe(null);
 
-        it("allows you to stop listening or subscribing to an event", function () {
-            this.callback = function () {};
-            this.anotherCallback = function () {};
-            this.neverCalled = function () {};
+            converse.expose_rid_and_sid = true;
+            expect(converse_api.getRID()).toBe('1234');
 
-            spyOn(this, 'callback');
-            spyOn(this, 'anotherCallback');
-            spyOn(this, 'neverCalled');
-            converse.on('onInitialized', this.callback);
-            converse.on('onInitialized', this.anotherCallback);
+            converse.connection = undefined;
+            expect(converse_api.getRID()).toBe(null);
+            // Restore the connection
+            converse.connection = old_connection;
+        }, converse));
 
-            converse.emit('onInitialized');
-            expect(this.callback).toHaveBeenCalled();
-            expect(this.anotherCallback).toHaveBeenCalled();
+        it("has an API method for retrieving the SID", $.proxy(function () {
+            var old_connection = converse.connection;
+            converse.connection.sid = '1234';
+            converse.expose_rid_and_sid = false;
+            expect(converse_api.getSID()).toBe(null);
 
-            converse.off('onInitialized', this.callback);
+            converse.expose_rid_and_sid = true;
+            expect(converse_api.getSID()).toBe('1234');
 
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-            expect(this.anotherCallback.callCount, 2);
-
-            converse.once('onInitialized', this.neverCalled);
-            converse.off('onInitialized', this.neverCalled);
-
-            converse.emit('onInitialized');
-            expect(this.callback.callCount, 1);
-            expect(this.anotherCallback.callCount, 3);
-            expect(this.neverCalled).not.toHaveBeenCalled();
-        });
+            converse.connection = undefined;
+            expect(converse_api.getSID()).toBe(null);
+            // Restore the connection
+            converse.connection = old_connection;
+        }, converse));
     }, converse, mock, utils));
 }));

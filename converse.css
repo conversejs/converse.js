@@ -333,22 +333,18 @@ you can use the generic selector below, but it's slower:
 
 span.spinner {
     background: url(images/spinner.gif) no-repeat center;
-    width: 22px;
     height: 22px;
     padding: 0 2px 0 2px;
     display: block;
 }
 
 span.spinner.centered {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    margin: 0 0 0 -25%;
+    text-align: center;
+    padding-top: 5em;
 }
 
 span.spinner.hor_centered {
-    left: 40%;
-    position: absolute;
+    text-align: center;
 }
 
 #toggle-controlbox {
@@ -1157,6 +1153,7 @@ ul.chat-toolbar li {
     list-style: none;
     padding: 0 3px 0 3px;
     cursor: pointer; 
+    margin-top: 1px;
 }
 
 ul.chat-toolbar li:hover {

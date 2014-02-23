@@ -7,11 +7,16 @@ Changelog
 * Chat boxes and rooms can now be resized vertically. [jcbrand]
 * Chat boxes and rooms can be minimized. [jcbrand]
 
-0.7.3 (Unreleased)
+0.7.3 (2014-02-23)
 ------------------
 
-* Option to display a call button in the chatbox toolbar, to allow third-party libraries to provide a calling feature. [Aupajo]
-* #108 Japanese Translations. [mako09]
+* #93 Add API methods exposing the RID and SID values. Can be disabled. [jcbrand]
+* #102 Option to enable OTR by default. [Aupajo]
+* #103 Option to display a call button in the chatbox toolbar, to allow third-party libraries to provide a calling feature. [Aupajo]
+* #108 Japanese Translations [mako09]
+* #111 OTR not working when using converse.js with prebinding. [jseidl, jcbrand]
+* #114, #124 Hewbrew Translations [GreenLunar]
+* #115 Indonesian Translations [priyadi]
 
 0.7.2 (2013-12-18)
 ------------------

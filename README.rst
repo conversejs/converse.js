@@ -29,7 +29,7 @@ It has the following features:
 * Custom status messages
 * Typing notifications
 * Third person messages (/me )
-* Translated into multiple languages  (af, de, es, fr, it, hu, pt-BR, ru)
+* Translated into multiple languages  (af, de, en, es, fr, he, hu, id, it, ja, nl, pt_BR, ru)
 * Off-the-record encryption support (via `OTR.js <http://arlolra.github.io/otr>`_)
 
 -----------
@@ -88,9 +88,16 @@ Licence
 
 ``Converse.js`` is released under both the MIT_ and GPL_ licenses.
 
-------
-Donate
-------
+-------
+Support
+-------
+
+For support queries and discussions, please join the mailing list: conversejs@librelist.com
+Issues can be logged on the `Github issue tracker <https://github.com/jcbrand/converse.js/issues>`_.
+
+---------------------------------
+Donations or tips are appreciated
+---------------------------------
 
 * Bitcoin: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
 * Litecoin: LLvLH6qJch7HAamLguHkwobCrxmHLhiwZw

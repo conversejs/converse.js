@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-22 17:07+0200\n"
-"PO-Revision-Date: 2014-01-24 15:40+0200\n"
+"POT-Creation-Date: 2014-01-28 03:50+0200\n"
+"PO-Revision-Date: 2014-02-21 06:07+0200\n"
 "Last-Translator: GreenLunar <GreenLunar@github.com>\n"
 "Language-Team: Rahut <http://sourceforge.net/projects/rahut/>\n"
 "Language: he\n"
@@ -215,7 +215,7 @@ msgid ""
 "that question.\n"
 "\n"
 "Your buddy will then be prompted the same question and if they type the "
-"exact same answer (case sensitive), their identity will have been verified."
+"exact same answer (case sensitive), their identity will be verified."
 msgstr ""
 "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\n"
 "\n"
@@ -365,7 +365,7 @@ msgstr "לא אנונימי"
 
 #: converse.js:1525
 msgid "Open room"
-msgstr "פתח חדר"
+msgstr "חדר פתוח"
 
 #: converse.js:1528
 msgid "Permanent room"
@@ -424,7 +424,7 @@ msgstr "חדרים על %1$s"
 
 #: converse.js:1866
 msgid "Set chatroom topic"
-msgstr "רבע נושא חדר שיחה"
+msgstr "קבע נושא חדר שיחה"
 
 #: converse.js:1867
 msgid "Kick user from chatroom"
@@ -561,7 +561,7 @@ msgstr "לא צוין שום שם כינוי"
 # אינך מורשה
 #: converse.js:2222
 msgid "You are not allowed to create new rooms"
-msgstr "אין לך רשות ליצור חדרים חדשחם"
+msgstr "אין לך רשות ליצור חדרים חדשים"
 
 #: converse.js:2224
 msgid "Your nickname doesn't conform to this room's policies"
@@ -644,11 +644,12 @@ msgstr "נעדר לזמן מה"
 msgid "away"
 msgstr "נעדר"
 
+# אני במצב
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
 #: converse.js:3226 converse.js:3263
 msgid "I am %1$s"
-msgstr "אני במצב %1$s"
+msgstr "מצבי כעת הינו %1$s"
 
 #: converse.js:3334
 msgid "Sign in"

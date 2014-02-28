@@ -100,18 +100,17 @@
         },
         off: function(evt, handler) {
             $(this).unbind(evt, handler);
-        }
-    };
-
-    converse.refreshWebkit = function () {
-        /* This works around a webkit bug. Refresh the browser's viewport,
-         * otherwise chatboxes are not moved along when one is closed.
-         */
-        if ($.browser.webkit) {
-            var conversejs = document.getElementById('conversejs');
-            conversejs.style.display = 'none';
-            conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
-            conversejs.style.display = 'block';
+        },
+        refreshWebkit: function () {
+            /* This works around a webkit bug. Refresh the browser's viewport,
+            * otherwise chatboxes are not moved along when one is closed.
+            */
+            if ($.browser.webkit) {
+                var conversejs = document.getElementById('conversejs');
+                conversejs.style.display = 'none';
+                conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
+                conversejs.style.display = 'block';
+            }
         }
     };
 
@@ -150,6 +149,7 @@
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
         this.cache_otr_key = false;
         this.debug = false;
+        this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
         this.expose_rid_and_sid = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
@@ -180,6 +180,7 @@
             'cache_otr_key',
             'connection',
             'debug',
+            'default_box_height',
             'expose_rid_and_sid',
             'fullname',
             'hide_muc_server',
@@ -432,6 +433,22 @@
             return new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
         };
 
+        this.applyHeightResistance = function (height) {
+            /* This method applies some resistance/gravity around the
+             * "default_box_height". If "height" is close enough to
+             * default_box_height, then that is returned instead.
+             */
+            if (typeof height === 'undefined') {
+                return converse.default_box_height;
+            }
+            var resistance = 10;
+            if ((height !== converse.default_box_height) && 
+                (Math.abs(height - converse.default_box_height) < resistance)) {
+                return converse.default_box_height;
+            }
+            return height;
+        };
+
         this.updateMsgCounter = function () {
             if (this.msg_counter > 0) {
                 if (document.title.search(/^Messages \(\d+\) /) == -1) {
@@ -516,10 +533,12 @@
 
             $(document).on('mouseup', $.proxy(function (ev) {
                 if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
+                ev.preventDefault();
+                var height = this.applyHeightResistance(this.resized_chatbox.height);
                 if (this.connection) {
-                    this.resized_chatbox.model.save({'height': this.resized_chatbox.height});
+                    this.resized_chatbox.model.save({'height': height});
                 } else {
-                    this.resized_chatbox.model.set({'height': this.resized_chatbox.height});
+                    this.resized_chatbox.model.set({'height': height});
                 }
                 this.resized_chatbox = null;
             }, this));
@@ -625,6 +644,7 @@
 
         this.ChatBox = Backbone.Model.extend({
             initialize: function () {
+                var height;
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
@@ -633,7 +653,8 @@
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
-                        'minimized': this.get('minimized') || false
+                        'minimized': this.get('minimized') || false,
+                        'height': converse.applyHeightResistance(this.get('height'))
                     });
                 }
             },
@@ -900,18 +921,11 @@
             },
 
             initDragResize: function () {
-                this.min_height = 150;
                 this.prev_pageY = 0; // To store last known mouse position
-                this.original_height = this.$el.children('.box-flyout').height();
                 if (converse.connection) {
                     this.height = this.model.get('height');
-                    if (this.height) {
-                        this.setChatBoxHeight(this.height);
-                    } else {
-                        this.height = this.original_height;
-                        this.model.save({'height': this.height});
-                    }
                 }
+                return this;
             },
 
             showStatusNotification: function (message, replace) {
@@ -1127,25 +1141,16 @@
 
             setChatBoxHeight: function (height) {
                 if (!this.model.get('minimized')) {
-                    this.$el.children('.box-flyout')[0].style.height = height+'px';
+                    this.$el.children('.box-flyout')[0].style.height = converse.applyHeightResistance(height)+'px';
                 }
             },
 
             resizeChatBox: function (ev) {
                 var diff = ev.pageY - this.prev_pageY;
                 if (!diff) { return; }
-                if (this.height - diff < this.min_height) {
-                    diff = this.height - this.min_height;
-                }
                 this.height -= diff;
                 this.prev_pageY = ev.pageY;
-                if (Math.abs(this.height - this.original_height) < 10) {
-                    // Add some resistance around the original height, to allow
-                    // users to more easily return to it.
-                    this.setChatBoxHeight(this.original_height);
-                } else {
-                    this.setChatBoxHeight(this.height);
-                }
+                this.setChatBoxHeight(this.height);
             },
 
             insertEmoticon: function (ev) {
@@ -1299,8 +1304,6 @@
             },
 
             toggleChatBox: function (ev) {
-                // TODO: Restore chat box to original resized height.
-                // Requires that we save the custom height.
                 this.$el.children('.box-flyout').attr('style', '');
                 this.saveToggleState();
                 this.$el.find('div.chat-body').slideToggle('fast');
@@ -1312,6 +1315,7 @@
                 }
                 // Toggle drag resize ability
                 this.$el.find('.dragresize-tm').toggle();
+                this.setChatBoxHeight(this.height);
             },
 
             updateVCard: function () {
@@ -1883,7 +1887,8 @@
                 'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
-                'keypress textarea.chat-textarea': 'keyPressed'
+                'keypress textarea.chat-textarea': 'keyPressed',
+                'mousedown .dragresize-tm': 'onDragResizeStart'
             },
             is_chatroom: true,
 
@@ -1901,6 +1906,7 @@
                 this);
                 this.$el.appendTo(converse.chatboxesview.$el);
                 this.render().show().model.messages.fetch({add: true});
+                this.initDragResize();
             },
 
             render: function () {
@@ -3431,7 +3437,8 @@
                     converse.chatboxes.add({
                         id: 'controlbox',
                         box_id: 'controlbox',
-                        visible: true
+                        visible: true,
+                        height: converse.default_box_height
                     });
                     if (converse.connection) {
                         converse.chatboxes.get('controlbox').save();

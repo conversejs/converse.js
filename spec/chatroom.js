@@ -10,12 +10,35 @@
     return describe("ChatRooms", $.proxy(function (mock, utils) {
         describe("A Chat Room", $.proxy(function () {
             beforeEach(function () {
-                utils.closeAllChatBoxes();
-                utils.createNewChatRoom('lounge', 'dummy');
-            });
-
-            afterEach(function () {
-                utils.closeAllChatBoxes();
+                runs(function () {
+                    utils.closeAllChatBoxes();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openRoomsPanel();
+                });
+                waits(300);
+                runs(function () {
+                    // Open a new chatroom
+                    var roomspanel = converse.chatboxesview.views.controlbox.roomspanel;
+                    var $input = roomspanel.$el.find('input.new-chatroom-name');
+                    var $nick = roomspanel.$el.find('input.new-chatroom-nick');
+                    var $server = roomspanel.$el.find('input.new-chatroom-server');
+                    $input.val('lounge');
+                    $nick.val('dummy');
+                    $server.val('muc.localhost');
+                    roomspanel.$el.find('form').submit();
+                });
+                waits(250);
+                runs(function () {
+                    utils.closeControlBox();
+                });
+                waits(250);
+                runs(function () {});
             });
 
             it("shows users currently present in the room", $.proxy(function () {
@@ -115,10 +138,15 @@
                 spyOn(converse, 'emit');
                 spyOn(converse.connection.muc, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                view.$el.find('.close-chatbox-button').click();
-                expect(view.closeChat).toHaveBeenCalled();
-                expect(converse.connection.muc.leave).toHaveBeenCalled();
-                expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                runs(function () {
+                    view.$el.find('.close-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(view.closeChat).toHaveBeenCalled();
+                    expect(this.connection.muc.leave).toHaveBeenCalled();
+                    expect(this.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                }.bind(converse));
             }, converse));
         }, converse));
 

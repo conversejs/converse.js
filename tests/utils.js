@@ -42,20 +42,26 @@
     };
 
     utils.openControlBox = function () {
+        var toggle = $(".toggle-online-users");
         if (!$("#controlbox").is(':visible')) {
-            $('.toggle-online-users').click();
+            if (!toggle.is(':visible')) {
+                toggle.show(toggle.click);
+            } else {
+                toggle.click();
+            }
         }
         return this;
     };
 
     utils.closeControlBox = function () {
         if ($("#controlbox").is(':visible')) {
-            $('.toggle-online-users').click();
+            $("#controlbox").find(".close-chatbox-button").click();
         }
         return this;
     };
 
     utils.removeControlBox = function () {
+        converse.controlboxtoggle.show();
         $('#controlbox').remove();
     };
 
@@ -87,23 +93,6 @@
         var view = converse.chatboxesview.views[jid];
         view.$el.find('.chat-content').empty();
         view.model.messages.reset().localStorage._clear();
-    };
-
-    utils.createNewChatRoom = function (room, nick) {
-        var controlbox_was_visible = $("#controlbox").is(':visible');
-        utils.openControlBox();
-        utils.openRoomsPanel();
-        var roomspanel = converse.chatboxesview.views.controlbox.roomspanel;
-        var $input = roomspanel.$el.find('input.new-chatroom-name');
-        var $nick = roomspanel.$el.find('input.new-chatroom-nick');
-        var $server = roomspanel.$el.find('input.new-chatroom-server');
-        $input.val('lounge');
-        $nick.val('dummy');
-        $server.val('muc.localhost');
-        roomspanel.$el.find('form').submit();
-        if (!controlbox_was_visible) {
-            utils.closeControlBox();
-        }
     };
 
     utils.createCurrentContacts = function () {

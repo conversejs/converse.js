@@ -605,7 +605,7 @@
                         window.sessionStorage[hex_sha1(jid+'priv_key')] =
                             cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
                         window.sessionStorage[hex_sha1(jid+'instance_tag')] = instance_tag;
-                        window.sessionStorage[hex_sha1(jid+'pass_check')] = 
+                        window.sessionStorage[hex_sha1(jid+'pass_check')] =
                             cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString();
                     }
                 }
@@ -866,7 +866,7 @@
 
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxesview.$el);
-                this.render().show().model.messages.fetch({add: true});
+                this.render().show().focus().model.messages.fetch({add: true});
 
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
@@ -897,6 +897,7 @@
                         )
                     );
                 this.renderToolbar().renderAvatar();
+                converse.emit('onChatBoxOpened', this);
                 return this;
             },
 
@@ -1349,7 +1350,7 @@
                                 FINISHED: FINISHED,
                                 UNENCRYPTED: UNENCRYPTED,
                                 UNVERIFIED: UNVERIFIED,
-                                VERIFIED: VERIFIED, 
+                                VERIFIED: VERIFIED,
                                 allow_otr: converse.allow_otr && !this.is_chatroom,
                                 label_end_encrypted_conversation: __('End encrypted conversation'),
                                 label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
@@ -1391,6 +1392,7 @@
 
             focus: function () {
                 this.$el.find('.chat-textarea').focus();
+                converse.emit('onChatBoxFocused', this);
                 return this;
             },
 
@@ -1404,14 +1406,13 @@
 
             show: function (callback) {
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    converse.emit('onChatBoxFocused', this);
-                    return this.focus();
+                    return this;
                 }
                 if (converse.animate) {
-                    this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, callback);
+                    this.$el.show(callback);
                 } else {
-                    this.$el.css({'opacity': 1, 'display': 'inline'});
-                    callback();
+                    this.$el.show();
+                    if (typeof callback === 'function') { callback(); }
                 }
                 if (converse.connection) {
                     // Without a connection, we haven't yet initialized
@@ -1779,6 +1780,7 @@
 
             hide: function (callback) {
                 this.$el.hide('fast', function () {
+                    converse.emit('onChatBoxClosed', this);
                     converse.controlboxtoggle.show(function () {
                         if (typeof callback === "function") {
                             callback();
@@ -1872,6 +1874,28 @@
             },
             is_chatroom: true,
 
+            initialize: function () {
+                this.connect(null);
+                this.model.messages.on('add', this.onMessageAdded, this);
+                this.model.on('destroy', function (model, response, options) {
+                    this.hide();
+                    converse.connection.muc.leave(
+                        this.model.get('jid'),
+                        this.model.get('nick'),
+                        $.proxy(this.onLeave, this),
+                        undefined);
+                },
+                this);
+                this.$el.appendTo(converse.chatboxesview.$el);
+                this.render().show().model.messages.fetch({add: true});
+            },
+
+            render: function () {
+                this.$el.attr('id', this.model.get('box_id'))
+                        .html(converse.templates.chatroom(this.model.toJSON()));
+                return this;
+            },
+
             sendChatRoomMessage: function (body) {
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
                     $chat_content;
@@ -1915,12 +1939,6 @@
                 }
             },
 
-            render: function () {
-                this.$el.attr('id', this.model.get('box_id'))
-                        .html(converse.templates.chatroom(this.model.toJSON()));
-                return this;
-            },
-
             renderChatArea: function () {
                 if (!this.$el.find('.chat-area').length) {
                     this.$el.find('.chat-body').empty().append(
@@ -1949,22 +1967,6 @@
                         $.proxy(this.onChatRoomRoster, this),
                         password);
                 }
-            },
-
-            initialize: function () {
-                this.connect(null);
-                this.model.messages.on('add', this.onMessageAdded, this);
-                this.model.on('destroy', function (model, response, options) {
-                    this.hide();
-                    converse.connection.muc.leave(
-                        this.model.get('jid'),
-                        this.model.get('nick'),
-                        $.proxy(this.onLeave, this),
-                        undefined);
-                },
-                this);
-                this.$el.appendTo(converse.chatboxesview.$el);
-                this.render().show().model.messages.fetch({add: true});
             },
 
             onLeave: function () {
@@ -2935,11 +2937,11 @@
                     'label_contacts': __('My contacts')
                 });
                 if (converse.allow_contact_requests) {
-                    roster_markup = 
+                    roster_markup =
                         converse.templates.requesting_contacts({
                             'label_contact_requests': __('Contact requests')
-                        }) + 
-                        roster_markup + 
+                        }) +
+                        roster_markup +
                         converse.templates.pending_contacts({
                             'label_pending_contacts': __('Pending contacts')
                         });
@@ -3391,11 +3393,15 @@
             },
 
             render: function () {
-                $('#conversejs').append(this.$el.html(
+                var toggle = this.$el.html(
                     converse.templates.controlbox_toggle({
                         'label_toggle': __('Toggle chat')
                     })
-                ));
+                );
+                if (converse.show_controlbox_by_default) {
+                    toggle.hide(); // It's either or
+                }
+                $('#conversejs').append(toggle);
                 return this;
             },
 

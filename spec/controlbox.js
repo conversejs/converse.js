@@ -8,26 +8,31 @@
     );
 } (this, function (mock, utils) {
     describe("The Control Box", $.proxy(function (mock, utils) {
-        window.localStorage.clear();
 
-        it("is not shown by default", $.proxy(function () {
-            expect(this.rosterview.$el.is(':visible')).toEqual(false);
+        it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
+            runs(function () {
+                utils.closeControlBox();
+            });
+            waits(250);
+            runs(function () {
+                // This spec will only pass if the controlbox is not currently
+                // open yet.
+                expect($("div#controlbox").is(':visible')).toBe(false);
+                spyOn(this.controlboxtoggle, 'onClick').andCallThrough();
+                spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
+                spyOn(converse, 'emit');
+                // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
+                this.controlboxtoggle.delegateEvents();
+                $('.toggle-online-users').click();
+            }.bind(converse));
+            waits(250);
+            runs(function () {
+                expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
+                expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
+                expect(this.emit).toHaveBeenCalledWith('onControlBoxOpened', jasmine.any(Object));
+                expect($("div#controlbox").is(':visible')).toBe(true);
+            }.bind(converse));
         }, converse));
-
-        var open_controlbox = $.proxy(function () {
-            // This spec will only pass if the controlbox is not currently
-            // open yet.
-            expect($("div#controlbox").is(':visible')).toBe(false);
-            spyOn(this.controlboxtoggle, 'onClick').andCallThrough();
-            spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
-            // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
-            this.controlboxtoggle.delegateEvents();
-            $('.toggle-online-users').click();
-            expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
-            expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
-            expect($("div#controlbox").is(':visible')).toBe(true);
-        }, converse);
-        it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
 
         describe("The Status Widget", $.proxy(function () {
             it("shows the user's chat status, which is online by default", $.proxy(function () {
@@ -88,13 +93,20 @@
                 });
             }, converse));
         }, converse));
-    }, converse, utils, mock));
+    }, converse, mock, utils));
 
-    describe("The Contacts Roster", $.proxy(function (utils, mock) {
+    describe("The Contacts Roster", $.proxy(function (mock, utils) {
         describe("Pending Contacts", $.proxy(function () {
             beforeEach(function () {
-                utils.openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+                waits(250);
+                runs(function () {});
             });
 
             it("do not have a heading if there aren't any", $.proxy(function () {
@@ -132,7 +144,7 @@
                 runs($.proxy(function () {
                     view.$el.find('.remove-xmpp-contact').click();
                 }, converse));
-                waits(500);
+                waits(250);
                 runs($.proxy(function () {
                     expect(window.confirm).toHaveBeenCalled();
                     expect(this.connection.roster.remove).toHaveBeenCalled();
@@ -177,8 +189,15 @@
 
         describe("Existing Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+                waits(250);
+                runs(function () {});
             }, converse));
 
             it("do not have a heading if there aren't any", $.proxy(function () {
@@ -437,9 +456,9 @@
                 }
             }, converse));
         }, converse));
-    }, converse, utils, mock));
+    }, converse, mock, utils));
 
-    describe("The 'Add Contact' widget", $.proxy(function (utils, mock) {
+    describe("The 'Add Contact' widget", $.proxy(function (mock, utils) {
         it("opens up an add form when you click on it", $.proxy(function () {
             var panel = this.chatboxesview.views.controlbox.contactspanel;
             spyOn(panel, 'toggleContactForm').andCallThrough();
@@ -450,12 +469,19 @@
             panel.$el.find('a.toggle-xmpp-contact-form').click();
         }, converse));
 
-    }, converse, utils, mock));
+    }, converse, mock, utils));
 
     describe("The Controlbox Tabs", $.proxy(function () {
         beforeEach($.proxy(function () {
-            utils.closeAllChatBoxes();
-            utils.openControlBox();
+            runs(function () {
+                utils.closeAllChatBoxes();
+            });
+            waits(250);
+            runs(function () {
+                utils.openControlBox();
+            });
+            waits(250);
+            runs(function () {});
         }, converse));
 
         it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
@@ -468,10 +494,17 @@
             expect($panels.children().last().is(':visible')).toBe(false);
         }, converse));
 
-        describe("The Chatrooms Panel", $.proxy(function () {
+        describe("chatrooms panel", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.closeAllChatBoxes();
-                utils.openControlBox();
+                runs(function () {
+                    utils.closeAllChatBoxes();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {});
             }, converse));
 
             it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {

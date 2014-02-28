@@ -511,11 +511,16 @@
             $(document).on('mousemove', $.proxy(function (ev) {
                 if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
-                this.resized_chatbox.resizeChatbox(ev);
+                this.resized_chatbox.resizeChatBox(ev);
             }, this));
 
             $(document).on('mouseup', $.proxy(function (ev) {
                 if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
+                if (this.connection) {
+                    this.resized_chatbox.model.save({'height': this.resized_chatbox.height});
+                } else {
+                    this.resized_chatbox.model.set({'height': this.resized_chatbox.height});
+                }
                 this.resized_chatbox = null;
             }, this));
 
@@ -553,7 +558,6 @@
                 this.initRoster();
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
-                this.registerGlobalEventHandlers();
                 this.giveFeedback(__('Online Contacts'));
 
                 if (this.callback) {
@@ -867,19 +871,27 @@
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxesview.$el);
                 this.render().show().focus().model.messages.fetch({add: true});
-
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
                 }
-
-                // Drag to resize values
-                this.height = this.$el.children('.box-flyout').height();
-                this.min_height = 150;
-                this.original_height = this.height;
-                this.prev_pageY = 0; // To store last known mouse position
-
+                this.initDragResize();
                 if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
+                }
+            },
+
+            initDragResize: function () {
+                this.min_height = 150;
+                this.prev_pageY = 0; // To store last known mouse position
+                this.original_height = this.$el.children('.box-flyout').height();
+                if (converse.connection) {
+                    this.height = this.model.get('height');
+                    if (this.height) {
+                        this.setChatBoxHeight(this.height);
+                    } else {
+                        this.height = this.original_height;
+                        this.model.save({'height': this.height});
+                    }
                 }
             },
 
@@ -1112,7 +1124,11 @@
                 this.prev_pageY = ev.pageY;
             },
 
-            resizeChatbox: function (ev) {
+            setChatBoxHeight: function (height) {
+                this.$el.children('.box-flyout')[0].style.height = height + 'px';
+            },
+
+            resizeChatBox: function (ev) {
                 var diff = ev.pageY - this.prev_pageY;
                 if (!diff) { return; }
                 if (this.height - diff < this.min_height) {
@@ -1120,12 +1136,12 @@
                 }
                 this.height -= diff;
                 this.prev_pageY = ev.pageY;
-                if (Math.abs(this.height - this.original_height) < 7) {
+                if (Math.abs(this.height - this.original_height) < 10) {
                     // Add some resistance around the original height, to allow
                     // users to more easily return to it.
-                    this.$el.children('.box-flyout')[0].style.height = this.original_height + 'px';
+                    this.setChatBoxHeight(this.original_height);
                 } else {
-                    this.$el.children('.box-flyout')[0].style.height = this.height + 'px';
+                    this.setChatBoxHeight(this.height);
                 }
             },
 
@@ -1498,7 +1514,6 @@
                     if (!data.length) {
                         $ul.append('<li class="chat-info">'+__('No users found')+'</li>');
                     }
-
                     $(data).each(function (idx, obj) {
                         $ul.append(
                             $('<li class="found-user"></li>')
@@ -1747,7 +1762,8 @@
             id: 'controlbox',
             events: {
                 'click a.close-chatbox-button': 'closeChat',
-                'click ul#controlbox-tabs li a': 'switchTab'
+                'click ul#controlbox-tabs li a': 'switchTab',
+                'mousedown .dragresize-tm': 'onDragResizeStart'
             },
 
             initialize: function () {
@@ -1778,6 +1794,28 @@
                 }
             },
 
+            render: function () {
+                if ((!converse.prebind) && (!converse.connection)) {
+                    // Add login panel if the user still has to authenticate
+                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
+                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
+                    this.loginpanel.render();
+                    this.initDragResize();
+                } else if (!this.contactspanel) {
+                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
+                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
+                    this.contactspanel.render();
+                    converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
+                    converse.xmppstatusview.render();
+                    if (converse.allow_muc) {
+                        this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
+                        this.roomspanel.render();
+                    }
+                    this.initDragResize();
+                }
+                return this;
+            },
+
             hide: function (callback) {
                 this.$el.hide('fast', function () {
                     converse.emit('onChatBoxClosed', this);
@@ -1791,16 +1829,9 @@
 
             show: function () {
                 converse.controlboxtoggle.hide($.proxy(function () {
-                    if (converse.animate) {
-                        this.$el.css({'opacity': 0, 'display': 'inline'}).animate({opacity: '1'}, 200, null, converse.refreshWebkit);
-                    } else {
-                        this.$el.css({'opacity': 1, 'display': 'inline'}); converse.refreshWebkit();
-                    }
-                    if (converse.connection) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
-                        this.model.save();
-                    }
+                    this.$el.show('fast', function () {
+                        converse.refreshWebkit();
+                    }.bind(this));
                     converse.emit('onControlBoxOpened', this);
                 }, this));
                 return this;
@@ -1837,26 +1868,6 @@
             showHelpMessages: function (msgs) {
                 // Override showHelpMessages in ChatBoxView, for now do nothing.
                 return;
-            },
-
-            render: function () {
-                if ((!converse.prebind) && (!converse.connection)) {
-                    // Add login panel if the user still has to authenticate
-                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                    this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
-                    this.loginpanel.render();
-                } else if (!this.contactspanel) {
-                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                    this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
-                    this.contactspanel.render();
-                    converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
-                    converse.xmppstatusview.render();
-                    if (converse.allow_muc) {
-                        this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
-                        this.roomspanel.render();
-                    }
-                }
-                return this;
             }
         });
 
@@ -2380,11 +2391,10 @@
                         id: 'controlbox',
                         box_id: 'controlbox'
                     });
-                } else {
-                    this.get('controlbox').save();
                 }
+                this.get('controlbox').fetch();
                 // This line below will make sure the Roster is set up
-                this.get('controlbox').set({connected:true});
+                this.get('controlbox').save({connected:true});
                 this.registerMessageHandler();
                 // Get cached chatboxes from localstorage
                 this.fetch({
@@ -3463,6 +3473,7 @@
             this.onConnected();
         }
         if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
+        this.registerGlobalEventHandlers();
         converse.emit('onInitialized');
     };
     return {

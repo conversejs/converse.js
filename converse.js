@@ -629,10 +629,11 @@
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
                         hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
-                    this.set({
+                    this.save({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : hex_sha1(this.get('jid')),
-                        'otr_status': this.get('otr_status') || UNENCRYPTED
+                        'otr_status': this.get('otr_status') || UNENCRYPTED,
+                        'minimized': this.get('minimized') || false
                     });
                 }
             },
@@ -840,7 +841,7 @@
 
             events: {
                 'click .close-chatbox-button': 'closeChat',
-                'click .toggle-chatbox-button': 'toggleChat',
+                'click .toggle-chatbox-button': 'toggleChatBox',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -880,21 +881,6 @@
                 }
             },
 
-            initDragResize: function () {
-                this.min_height = 150;
-                this.prev_pageY = 0; // To store last known mouse position
-                this.original_height = this.$el.children('.box-flyout').height();
-                if (converse.connection) {
-                    this.height = this.model.get('height');
-                    if (this.height) {
-                        this.setChatBoxHeight(this.height);
-                    } else {
-                        this.height = this.original_height;
-                        this.model.save({'height': this.height});
-                    }
-                }
-            },
-
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
                     .html(
@@ -911,6 +897,21 @@
                 this.renderToolbar().renderAvatar();
                 converse.emit('onChatBoxOpened', this);
                 return this;
+            },
+
+            initDragResize: function () {
+                this.min_height = 150;
+                this.prev_pageY = 0; // To store last known mouse position
+                this.original_height = this.$el.children('.box-flyout').height();
+                if (converse.connection) {
+                    this.height = this.model.get('height');
+                    if (this.height) {
+                        this.setChatBoxHeight(this.height);
+                    } else {
+                        this.height = this.original_height;
+                        this.model.save({'height': this.height});
+                    }
+                }
             },
 
             showStatusNotification: function (message, replace) {
@@ -1125,7 +1126,9 @@
             },
 
             setChatBoxHeight: function (height) {
-                this.$el.children('.box-flyout')[0].style.height = height + 'px';
+                if (!this.model.get('minimized')) {
+                    this.$el.children('.box-flyout')[0].style.height = height+'px';
+                }
             },
 
             resizeChatBox: function (ev) {
@@ -1295,11 +1298,10 @@
                 }
             },
 
-            toggleChat: function (ev) {
-                // FIXME: Restore chat box to original resized height.
+            toggleChatBox: function (ev) {
+                // TODO: Restore chat box to original resized height.
                 // Requires that we save the custom height.
                 this.$el.children('.box-flyout').attr('style', '');
-
                 this.saveToggleState();
                 this.$el.find('div.chat-body').slideToggle('fast');
                 var $target = $(ev.target);
@@ -1877,7 +1879,7 @@
             className: 'chatroom',
             events: {
                 'click .close-chatbox-button': 'closeChat',
-                'click .toggle-chatbox-button': 'toggleChat',
+                'click .toggle-chatbox-button': 'toggleChatBox',
                 'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',

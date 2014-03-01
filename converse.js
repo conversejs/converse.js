@@ -644,7 +644,7 @@
 
         this.ChatBox = Backbone.Model.extend({
             initialize: function () {
-                var height;
+                var height = converse.applyHeightResistance(this.get('height'));
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
@@ -654,8 +654,10 @@
                         'box_id' : hex_sha1(this.get('jid')),
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'minimized': this.get('minimized') || false,
-                        'height': converse.applyHeightResistance(this.get('height'))
+                        'height': height
                     });
+                } else {
+                    this.set({'height': height});
                 }
             },
 
@@ -1786,18 +1788,10 @@
                             this.featureAdded(feature);
                         }
                     }
-                    if (_.has(item.changed, 'visible')) {
-                        if (item.changed.visible === true) {
-                            this.show();
-                        }
-                    }
                 }, this));
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('hide', this.hide, this);
-                if (this.model.get('visible')) {
-                    this.show();
-                }
             },
 
             render: function () {
@@ -2402,7 +2396,7 @@
                 }
                 this.get('controlbox').fetch();
                 // This line below will make sure the Roster is set up
-                this.get('controlbox').save({connected:true});
+                this.get('controlbox').set({connected:true});
                 this.registerMessageHandler();
                 // Get cached chatboxes from localstorage
                 this.fetch({
@@ -2410,7 +2404,7 @@
                     success: $.proxy(function (collection, resp) {
                         if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
                             // If the controlbox was saved in localstorage, it must be visible
-                            this.get('controlbox').set({visible:true}).save();
+                            this.get('controlbox').trigger('show');
                         }
                     }, this)
                 });
@@ -3437,15 +3431,14 @@
                     converse.chatboxes.add({
                         id: 'controlbox',
                         box_id: 'controlbox',
-                        visible: true,
                         height: converse.default_box_height
                     });
+                    controlbox = converse.chatboxes.get('controlbox');
                     if (converse.connection) {
                         converse.chatboxes.get('controlbox').save();
                     }
-                } else {
-                    controlbox.trigger('show');
                 }
+                controlbox.trigger('show');
             },
 
             onClick: function (e) {

@@ -107,6 +107,40 @@
                 });
             }, converse));
 
+            it("can be toggled by clicking a DOM element with class 'toggle-chatbox-button'", function () {
+                var chatbox = utils.openChatBoxes(1)[0],
+                    chatview = this.chatboxviews.get(chatbox.get('jid'));
+                spyOn(chatview, 'toggleChatBox').andCallThrough();
+                spyOn(converse, 'emit');
+                // We need to rebind all events otherwise our spy won't be called
+                chatview.delegateEvents();
+
+                runs(function () {
+                    chatview.$el.find('.toggle-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(chatview.toggleChatBox).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
+                    expect(converse.emit.callCount, 2);
+                    expect(chatview.$el.find('.chat-body').is(':visible')).toBeFalsy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeFalsy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeTruthy();
+                    expect(chatview.model.get('minimized')).toBeTruthy();
+                    chatview.$el.find('.toggle-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(chatview.toggleChatBox).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
+                    expect(chatview.$el.find('.chat-body').is(':visible')).toBeTruthy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
+                    expect(chatview.model.get('minimized')).toBeFalsy();
+                    expect(converse.emit.callCount, 3);
+                });
+            }.bind(converse));
+
             it("will be removed from localStorage when closed", $.proxy(function () {
                 spyOn(converse, 'emit');
                 this.chatboxes.localStorage._clear();

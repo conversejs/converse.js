@@ -287,6 +287,15 @@
             }, converse));
 
             describe("A Chat Message", $.proxy(function () {
+
+                beforeEach(function () {
+                    runs(function () {
+                        utils.closeAllChatBoxes();
+                    });
+                    waits(250);
+                    runs(function () {});
+                });
+
                 it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var message = 'This is a received message';
@@ -303,9 +312,8 @@
                     expect(this.chatboxes.get(sender_jid)).not.toBeDefined();
 
                     runs($.proxy(function () {
-                        // messageReceived is a handler for received XMPP
-                        // messages
-                        this.chatboxes.messageReceived(msg);
+                        // onMessage is a handler for received XMPP messages
+                        this.chatboxes.onMessage(msg);
                         expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     }, converse));
                     waits(300);
@@ -359,7 +367,7 @@
                     }).c('body').t(message).up()
                       .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: converse.toISOString(one_day_ago) })
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    this.chatboxes.messageReceived(msg);
+                    this.chatboxes.onMessage(msg);
                     expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     expect(chatbox.messages.length).toEqual(1);
                     msg_obj = chatbox.messages.models[0];
@@ -380,7 +388,7 @@
                         id: new Date().getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    this.chatboxes.messageReceived(msg);
+                    this.chatboxes.onMessage(msg);
                     expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     // Check that there is a <time> element, with the required
                     // props.
@@ -489,7 +497,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                this.chatboxes.messageReceived(msg);
+                this.chatboxes.onMessage(msg);
                 expect(converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(this.msg_counter).toBe(1);
                 expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
@@ -519,7 +527,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                this.chatboxes.messageReceived(msg);
+                this.chatboxes.onMessage(msg);
                 expect(converse.incrementMsgCounter).not.toHaveBeenCalled();
                 expect(this.msg_counter).toBe(0);
             }, converse));

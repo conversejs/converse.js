@@ -87,7 +87,7 @@
     };
 
     utils.openChatBoxFor = function (jid) {
-        converse.rosterview.get(jid).openChat(mock.event);
+        return converse.rosterview.get(jid).openChat(mock.event);
     };
 
     utils.clearChatBoxMessages = function (jid) {

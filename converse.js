@@ -442,7 +442,7 @@
                 return converse.default_box_height;
             }
             var resistance = 10;
-            if ((height !== converse.default_box_height) && 
+            if ((height !== converse.default_box_height) &&
                 (Math.abs(height - converse.default_box_height) < resistance)) {
                 return converse.default_box_height;
             }
@@ -2925,9 +2925,14 @@
         this.RosterView = Backbone.View.extend({
             tagName: 'dl',
             id: 'converse-roster',
-            rosteritemviews: {},
 
             initialize: function () {
+                var views = {};
+                this.get = function (id) {
+                    return views[id];
+                };
+                this.set = function (id, view) { views[id] = view; };
+
                 this.model.on("add", function (item) {
                     this.addRosterItemView(item).render(item);
                     if (!item.get('vcard_updated')) {
@@ -2983,15 +2988,15 @@
 
             addRosterItemView: function (item) {
                 var view = new converse.RosterItemView({model: item});
-                this.rosteritemviews[item.id] = view;
+                this.set(item.id, view);
                 return this;
             },
 
             removeRosterItemView: function (item) {
-                var view = this.rosteritemviews[item.id];
+                var view = this.get(item.id);
                 if (view) {
                     view.$el.remove();
-                    delete this.rosteritemviews[item.id];
+                    delete this.get(item.id);
                     this.render();
                 }
                 return this;
@@ -3018,7 +3023,7 @@
                     $count, changed_presence;
                 if (item) {
                     var jid = item.id,
-                        view = this.rosteritemviews[item.id],
+                        view = this.get(item.id),
                         ask = item.get('ask'),
                         subscription = item.get('subscription'),
                         requesting  = item.get('requesting'),

@@ -39,7 +39,7 @@
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'openChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     $el.click();

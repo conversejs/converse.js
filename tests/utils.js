@@ -81,13 +81,13 @@
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
             jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-            views[i] = converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+            views[i] = converse.rosterview.get(jid).openChat(mock.event);
         }
         return views;
     };
 
     utils.openChatBoxFor = function (jid) {
-        converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+        converse.rosterview.get(jid).openChat(mock.event);
     };
 
     utils.clearChatBoxMessages = function (jid) {

@@ -9,6 +9,14 @@
 } (this, function (mock, utils) {
     describe("The Control Box", $.proxy(function (mock, utils) {
 
+        beforeEach(function () {
+            runs(function () {
+                utils.openControlBox();
+            });
+            waits(250);
+            runs(function () {});
+        });
+
         it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
             runs(function () {
                 utils.closeControlBox();
@@ -35,6 +43,15 @@
         }, converse));
 
         describe("The Status Widget", $.proxy(function () {
+
+            beforeEach(function () {
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {});
+            });
+
             it("shows the user's chat status, which is online by default", $.proxy(function () {
                 var view = this.xmppstatusview;
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
@@ -96,6 +113,9 @@
     }, converse, mock, utils));
 
     describe("The Contacts Roster", $.proxy(function (mock, utils) {
+        // FIXME: These tests are dependent on being run in order and cannot be
+        // run independently
+
         describe("Pending Contacts", $.proxy(function () {
             beforeEach(function () {
                 runs(function () {
@@ -134,7 +154,8 @@
             }, converse));
 
             it("can be removed by the user", $.proxy(function () {
-                var view = _.toArray(this.rosterview.rosteritemviews).pop();
+                var jid = mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var view = this.rosterview.get(jid);
                 spyOn(window, 'confirm').andReturn(true);
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'remove').andCallThrough();
@@ -234,7 +255,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=0; i<3; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'online');
@@ -253,7 +274,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=3; i<6; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'dnd');
@@ -272,7 +293,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=6; i<9; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'away');
@@ -291,7 +312,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=9; i<12; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'xa');
@@ -310,7 +331,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=12; i<15; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'unavailable');
@@ -388,7 +409,7 @@
                 // actually not accepted/authorized because of
                 // mock_connection.
                 var jid = mock.req_names.sort()[0].replace(' ','.').toLowerCase() + '@localhost';
-                var view = this.rosterview.rosteritemviews[jid];
+                var view = this.rosterview.get(jid);
                 spyOn(this.connection.roster, 'authorize');
                 spyOn(view, 'acceptRequest').andCallThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -400,7 +421,7 @@
 
             it("can have their requests denied by the user", $.proxy(function () {
                 var jid = mock.req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.rosterview.rosteritemviews[jid];
+                var view = this.rosterview.get(jid);
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
@@ -451,7 +472,7 @@
                 // we make some online now
                 for (i=0; i<5; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     view.model.set('chat_status', 'online');
                 }
             }, converse));

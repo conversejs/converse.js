@@ -1318,6 +1318,7 @@
                 // Toggle drag resize ability
                 this.$el.find('.dragresize-tm').toggle();
                 this.setChatBoxHeight(this.height);
+                converse.emit('onChatBoxToggled', this);
             },
 
             updateVCard: function () {

@@ -805,6 +805,12 @@ Here are the different events that are emitted:
 
     Triggered whenever the roster view (i.e. the rendered HTML) has changed.
 
+* **onChatBoxClosed**
+
+    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+
+    Triggered when a chat box has been closed.
+
 * **onChatBoxFocused**
 
     ``converse.on('onChatBoxFocused', function (chatbox) { ... });``
@@ -817,11 +823,11 @@ Here are the different events that are emitted:
 
     Triggered when a chat box has been opened.
 
-* **onChatBoxClosed**
+* **onChatBoxToggled**
 
-    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+    ``converse.on('onChatBoxToggled', function (chatbox) { ... });``
 
-    Triggered when a chat box has been closed.
+    Triggered when a chat box has been minimized or maximized.
 
 * **onStatusChanged**
 

@@ -79,8 +79,8 @@
 
             it("can be closed by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
                 var chatbox = utils.openChatBoxes(1)[0],
-                    controlview = this.chatboxesview.views.controlbox, // The controlbox is currently open
-                    chatview = this.chatboxesview.views[chatbox.get('jid')];
+                    controlview = this.chatboxesview.get('controlbox'), // The controlbox is currently open
+                    chatview = this.chatboxesview.get(chatbox.get('jid'));
                 spyOn(chatview, 'closeChat').andCallThrough();
                 spyOn(controlview, 'closeChat').andCallThrough();
                 spyOn(converse, 'emit');
@@ -141,7 +141,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxesview.get(contact_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
                     var $toolbar = view.$el.find('ul.chat-toolbar');
@@ -153,7 +153,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxesview.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     var $textarea = view.$el.find('textarea.chat-textarea');
                     expect($toolbar.children('li.toggle-smiley').length).toBe(1);
@@ -213,7 +213,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxesview.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     expect($toolbar.children('li.toggle-otr').length).toBe(1);
                     // Register spies
@@ -239,7 +239,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxesview.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     var callButton = $toolbar.find('.toggle-call');
 
@@ -278,7 +278,7 @@
                     runs($.proxy(function () {
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);
-                        var chatboxview = this.chatboxesview.views[sender_jid];
+                        var chatboxview = this.chatboxesview.get(sender_jid);
                         expect(chatbox).toBeDefined();
                         expect(chatboxview).toBeDefined();
                         // Check that the message was received and check the
@@ -311,7 +311,7 @@
                     var one_day_ago = new Date(new Date().setDate(new Date().getDate()-1));
                     var message = 'This is a day old message';
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var chatboxview = this.chatboxesview.views[contact_jid];
+                    var chatboxview = this.chatboxesview.get(contact_jid);
                     var $chat_content = chatboxview.$el.find('.chat-content');
                     var msg_obj;
                     var msg_txt;
@@ -380,7 +380,7 @@
                     waits(250);
                     runs(function () {
                         expect(converse.emit).toHaveBeenCalledWith('onChatBoxFocused', jasmine.any(Object));
-                        var view = this.chatboxesview.views[contact_jid];
+                        var view = this.chatboxesview.get(contact_jid);
                         var message = 'This message is sent from this chatbox';
                         spyOn(view, 'sendMessage').andCallThrough();
                         view.$el.find('.chat-textarea').text(message);
@@ -396,7 +396,7 @@
                 it("are sanitized to prevent Javascript injection attacks", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxesview.get(contact_jid);
                     var message = 'This message contains <b>markup</b>';
                     spyOn(view, 'sendMessage').andCallThrough();
                     view.$el.find('.chat-textarea').text(message);
@@ -413,7 +413,7 @@
             it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
                 spyOn(converse, 'emit');
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.chatboxesview.views[contact_jid];
+                var view = this.chatboxesview.get(contact_jid);
                 var message = 'This message is another sent from this chatbox';
                 // Lets make sure there is at least one message already
                 // (e.g for when this test is run on its own).

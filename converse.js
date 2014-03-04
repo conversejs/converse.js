@@ -348,7 +348,7 @@
         };
 
         this.showLoginButton = function () {
-            var view = converse.chatboxesview.views.controlbox;
+            var view = converse.chatboxesview.get('controlbox');
             if (typeof view.loginpanel !== 'undefined') {
                 view.loginpanel.showLoginButton();
             }
@@ -1759,7 +1759,7 @@
                     'box_id' : hex_sha1(jid)
                 });
                 if (!chatroom.get('connected')) {
-                    converse.chatboxesview.views[jid].connect(null);
+                    converse.chatboxesview.get(jid).connect(null);
                 }
             }
         });
@@ -2351,7 +2351,7 @@
 
             onChatRoomRoster: function (roster, room) {
                 this.renderChatArea();
-                var controlboxview = converse.chatboxesview.views.controlbox,
+                var controlboxview = converse.chatboxesview.get('controlbox'),
                     roster_size = _.size(roster),
                     $participant_list = this.$el.find('.participant-list'),
                     participants = [], keys = _.keys(roster), i;
@@ -2466,10 +2466,12 @@
             el: '#conversejs',
 
             initialize: function () {
-                // boxesviewinit
-                this.views = {};
+                var views = {};
+                this.get = function (id) { return views[id]; };
+                this.set = function (id, view) { views[id] = view; };
+
                 this.model.on("add", function (item) {
-                    var view = this.views[item.get('id')];
+                    var view = this.get(item.get('id'));
                     if (!view) {
                         if (item.get('chatroom')) {
                             view = new converse.ChatRoomView({'model': item});
@@ -2479,7 +2481,7 @@
                         } else {
                             view = new converse.ChatBoxView({model: item});
                         }
-                        this.views[item.get('id')] = view;
+                        this.set(item.get('id'), view);
                     } else {
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;

@@ -77,21 +77,34 @@
                 }.bind(converse));
             }, converse));
 
-            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+            it("can be closed by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+                var chatbox = utils.openChatBoxes(1)[0],
+                    controlview = this.chatboxesview.views.controlbox, // The controlbox is currently open
+                    chatview = this.chatboxesview.views[chatbox.get('jid')];
+                spyOn(chatview, 'closeChat').andCallThrough();
+                spyOn(controlview, 'closeChat').andCallThrough();
                 spyOn(converse, 'emit');
-                var view = this.chatboxesview.views.controlbox; // The controlbox is currently open
-                spyOn(view, 'closeChat').andCallThrough();
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
+                // We need to rebind all events otherwise our spy won't be called
+                controlview.delegateEvents();
+                chatview.delegateEvents();
 
                 runs(function () {
-                    view.$el.find('.close-chatbox-button').click();
+                    controlview.$el.find('.close-chatbox-button').click();
                 });
                 waits(250);
                 runs(function () {
-                    expect(view.closeChat).toHaveBeenCalled();
+                    expect(controlview.closeChat).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit.callCount, 1);
+                    chatview.$el.find('.close-chatbox-button').click();
                 });
-                // TODO: Open a normal chatbox and close it again...
+                waits(250);
+                runs(function () {
+                    expect(chatview.closeChat).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit.callCount, 2);
+                });
             }, converse));
 
             it("will be removed from localStorage when closed", $.proxy(function () {

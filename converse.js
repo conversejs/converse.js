@@ -2537,7 +2537,7 @@
 
             openChat: function (ev) {
                 ev.preventDefault();
-                converse.chatboxesview.showChatBox({
+                return converse.chatboxesview.showChatBox({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),

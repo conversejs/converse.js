@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.7.3 (Unreleased)
+------------------
+
+* #125 Fix crypto dependencies [jcbrand]
+
 0.7.3 (2014-02-23)
 ------------------
 

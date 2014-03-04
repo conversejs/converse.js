@@ -348,7 +348,7 @@
         };
 
         this.showLoginButton = function () {
-            var view = converse.chatboxesview.get('controlbox');
+            var view = converse.chatboxviews.get('controlbox');
             if (typeof view.loginpanel !== 'undefined') {
                 view.loginpanel.showLoginButton();
             }
@@ -893,7 +893,7 @@
                 }, this);
 
                 this.updateVCard();
-                this.$el.appendTo(converse.chatboxesview.$el);
+                this.$el.appendTo(converse.chatboxviews.$el);
                 this.render().show().focus().model.messages.fetch({add: true});
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
@@ -1750,7 +1750,7 @@
                     }
                 }
                 if (!nick) { return; }
-                chatroom = converse.chatboxesview.showChatBox({
+                chatroom = converse.chatboxviews.showChatBox({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -1759,7 +1759,7 @@
                     'box_id' : hex_sha1(jid)
                 });
                 if (!chatroom.get('connected')) {
-                    converse.chatboxesview.get(jid).connect(null);
+                    converse.chatboxviews.get(jid).connect(null);
                 }
             }
         });
@@ -1775,7 +1775,7 @@
             },
 
             initialize: function () {
-                this.$el.appendTo(converse.chatboxesview.$el);
+                this.$el.appendTo(converse.chatboxviews.$el);
                 this.model.on('change', $.proxy(function (item, changed) {
                     var i;
                     if (_.has(item.changed, 'connected')) {
@@ -1898,7 +1898,7 @@
                         undefined);
                 },
                 this);
-                this.$el.appendTo(converse.chatboxesview.$el);
+                this.$el.appendTo(converse.chatboxviews.$el);
                 this.render().show().model.messages.fetch({add: true});
                 this.initDragResize();
             },
@@ -2351,7 +2351,7 @@
 
             onChatRoomRoster: function (roster, room) {
                 this.renderChatArea();
-                var controlboxview = converse.chatboxesview.get('controlbox'),
+                var controlboxview = converse.chatboxviews.get('controlbox'),
                     roster_size = _.size(roster),
                     $participant_list = this.$el.find('.participant-list'),
                     participants = [], keys = _.keys(roster), i;
@@ -2462,7 +2462,7 @@
             }
         });
 
-        this.ChatBoxesView = Backbone.View.extend({
+        this.ChatBoxViews = Backbone.View.extend({
             el: '#conversejs',
 
             initialize: function () {
@@ -2539,7 +2539,7 @@
 
             openChat: function (ev) {
                 ev.preventDefault();
-                return converse.chatboxesview.showChatBox({
+                return converse.chatboxviews.showChatBox({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),
@@ -3467,7 +3467,7 @@
         // --------------
         // This is the end of the initialize method.
         this.chatboxes = new this.ChatBoxes();
-        this.chatboxesview = new this.ChatBoxesView({model: this.chatboxes});
+        this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
         this.controlboxtoggle = new this.ControlBoxToggle();
         this.otr = new this.OTR();
 

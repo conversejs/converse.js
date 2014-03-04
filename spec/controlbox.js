@@ -481,7 +481,7 @@
 
     describe("The 'Add Contact' widget", $.proxy(function (mock, utils) {
         it("opens up an add form when you click on it", $.proxy(function () {
-            var panel = this.chatboxesview.get('controlbox').contactspanel;
+            var panel = this.chatboxviews.get('controlbox').contactspanel;
             spyOn(panel, 'toggleContactForm').andCallThrough();
             panel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
             panel.$el.find('a.toggle-xmpp-contact-form').click();
@@ -506,7 +506,7 @@
         }, converse));
 
         it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
-            var cbview = this.chatboxesview.get('controlbox');
+            var cbview = this.chatboxviews.get('controlbox');
             var $panels = cbview.$el.find('.controlbox-panes');
             expect($panels.children().length).toBe(2);
             expect($panels.children().first().attr('id')).toBe('users');
@@ -529,7 +529,7 @@
             }, converse));
 
             it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
-                var cbview = this.chatboxesview.get('controlbox');
+                var cbview = this.chatboxviews.get('controlbox');
                 var $tabs = cbview.$el.find('#controlbox-tabs');
                 var $panels = cbview.$el.find('.controlbox-panes');
                 var $contacts = $panels.children().first();
@@ -548,7 +548,7 @@
             }, converse));
 
             it("contains a form through which a new chatroom can be created", $.proxy(function () {
-                var roomspanel = this.chatboxesview.get('controlbox').roomspanel;
+                var roomspanel = this.chatboxviews.get('controlbox').roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');
                 var $nick = roomspanel.$el.find('input.new-chatroom-nick');
                 var $server = roomspanel.$el.find('input.new-chatroom-server');

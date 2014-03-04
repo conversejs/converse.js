@@ -13,7 +13,7 @@
         var i, chatbox;
         for (i=converse.chatboxes.models.length-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
-            converse.chatboxesview.get(chatbox.get('id')).closeChat();
+            converse.chatboxviews.get(chatbox.get('id')).closeChat();
         }
         return this;
     };
@@ -22,17 +22,17 @@
         var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
         for (i=num_chatboxes-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
-            converse.chatboxesview.get(chatbox.get('id')).closeChat();
-            converse.chatboxesview.get(chatbox.get('id')).$el.remove();
+            converse.chatboxviews.get(chatbox.get('id')).closeChat();
+            converse.chatboxviews.get(chatbox.get('id')).$el.remove();
         }
-        converse.chatboxesview.get('controlbox').closeChat();
-        converse.chatboxesview.get('controlbox').$el.remove();
+        converse.chatboxviews.get('controlbox').closeChat();
+        converse.chatboxviews.get('controlbox').$el.remove();
         return this;
     };
 
     utils.initConverse = function () {
         converse.chatboxes = new converse.ChatBoxes();
-        converse.chatboxesview = new converse.ChatBoxesView({model: converse.chatboxes});
+        converse.chatboxviews = new converse.ChatBoxViews({model: converse.chatboxes});
         converse.onConnected();
     };
 
@@ -66,13 +66,13 @@
     };
 
     utils.openContactsPanel = function () {
-        var cbview = converse.chatboxesview.get('controlbox');
+        var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').first().find('a').click();
     };
 
     utils.openRoomsPanel = function () {
-        var cbview = converse.chatboxesview.get('controlbox');
+        var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').last().find('a').click();
     };
@@ -91,7 +91,7 @@
     };
 
     utils.clearChatBoxMessages = function (jid) {
-        var view = converse.chatboxesview.get(jid);
+        var view = converse.chatboxviews.get(jid);
         view.$el.find('.chat-content').empty();
         view.model.messages.reset().localStorage._clear();
     };

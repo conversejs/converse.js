@@ -80,7 +80,7 @@
     };
 
     utils.openChatBoxFor = function (jid) {
-        converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+        return converse.rosterview.rosteritemviews[jid].openChat(mock.event);
     };
 
     utils.clearChatBoxMessages = function (jid) {

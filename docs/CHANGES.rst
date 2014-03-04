@@ -4,7 +4,9 @@ Changelog
 0.7.3 (Unreleased)
 ------------------
 
-* #125 Fix crypto dependencies [jcbrand]
+* #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]
+* Bugfix: action messages (i.e. /me) didn't work in OTR mode. [jcbrand]
+
 
 0.7.3 (2014-02-23)
 ------------------

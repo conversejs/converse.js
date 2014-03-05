@@ -4,8 +4,11 @@ Changelog
 0.7.3 (Unreleased)
 ------------------
 
+.. note:: This release contains an important security fix.
+
 * #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]
 * Bugfix: action messages (i.e. /me) didn't work in OTR mode. [jcbrand]
+* Security fix: Ensure that message URLs are properly decoded. [jcbrand]
 
 
 0.7.3 (2014-02-23)

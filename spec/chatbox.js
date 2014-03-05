@@ -350,8 +350,7 @@
                     var view = this.chatboxesview.views[contact_jid];
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
-                    view.$el.find('.chat-textarea').text(message);
-                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
                     expect(converse.emit.callCount).toEqual(2);
@@ -360,32 +359,83 @@
                     expect(txt).toEqual(message);
                 }, converse));
 
-                it("are sanitized to prevent Javascript injection attacks", $.proxy(function () {
+                it("is sanitized to prevent Javascript injection attacks", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxesview.views[contact_jid];
-                    var message = 'This message contains <b>markup</b>';
+                    var message = '<p>This message contains <em>some</em> <b>markup</b></p>';
                     spyOn(view, 'sendMessage').andCallThrough();
-                    view.$el.find('.chat-textarea').text(message);
-                    view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                    utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
-                    expect(txt).toEqual(message);
+                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    expect(msg.text()).toEqual(message);
+                    expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
+                }, converse));
+
+                it("can contain hyperlinks, which will be clickable", $.proxy(function () {
+                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    var message = 'This message contains a hyperlink: www.opkode.com';
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    utils.sendMessage(view, message);
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    expect(msg.text()).toEqual(message);
+                    expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" href="http://www.opkode.com">www.opkode.com</a>');
+                }, converse));
+
+                it("will have properly escaped URLs", $.proxy(function () {
+                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var view = this.chatboxesview.views[contact_jid];
+                    spyOn(view, 'sendMessage').andCallThrough();
+
+                    var message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
+                    utils.sendMessage(view, message);
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    expect(msg.text()).toEqual(message);
+                    expect(msg.html()).toEqual('<a target="_blank" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
+
+                    message = "https://en.wikipedia.org/wiki/Ender's_Game";
+                    utils.sendMessage(view, message);
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    expect(msg.text()).toEqual(message);
+                    expect(msg.html()).toEqual('<a target="_blank" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
+
+                    message = "https://en.wikipedia.org/wiki/Ender%27s_Game";
+                    utils.sendMessage(view, message);
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    expect(msg.text()).toEqual(message);
+                    expect(msg.html()).toEqual('<a target="_blank" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
                 }, converse));
 
             }, converse));
         }, converse));
 
         describe("Special Messages", $.proxy(function () {
+            beforeEach(function () {
+                utils.closeAllChatBoxes();
+                utils.removeControlBox();
+                converse.roster.localStorage._clear();
+                utils.initConverse();
+                utils.createCurrentContacts();
+                utils.openControlBox();
+                utils.openContactsPanel();
+            });
+
             it("'/clear' can be used to clear messages in a conversation", $.proxy(function () {
                 spyOn(converse, 'emit');
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                utils.openChatBoxFor(contact_jid);
                 var view = this.chatboxesview.views[contact_jid];
                 var message = 'This message is another sent from this chatbox';
                 // Lets make sure there is at least one message already
                 // (e.g for when this test is run on its own).
-                view.$el.find('.chat-textarea').val(message).text(message);
-                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                utils.sendMessage(view, message);
                 expect(view.model.messages.length > 0).toBeTruthy();
                 expect(view.model.messages.localStorage.records.length > 0).toBeTruthy();
                 expect(converse.emit).toHaveBeenCalledWith('onMessageSend', message);
@@ -393,8 +443,7 @@
                 message = '/clear';
                 var old_length = view.model.messages.length;
                 spyOn(view, 'sendMessage').andCallThrough();
-                view.$el.find('.chat-textarea').val(message).text(message);
-                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                utils.sendMessage(view, message);
                 expect(view.sendMessage).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the modal
                 expect(view.model.messages.localStorage.records.length, 0); // And also from localStorage

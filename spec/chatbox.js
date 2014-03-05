@@ -343,6 +343,46 @@
                     }, converse));
                 }, converse));
 
+                // TODO: This feature is not yet implemented
+                xit("received for a minimized chat box will increment a counter on its header", $.proxy(function () {
+                    var contact_name = mock.cur_names[0];
+                    var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
+                    spyOn(this, 'emit');
+                    runs(function () {
+                        utils.openChatBoxFor(contact_jid);
+                    });
+                    waits(250);
+                    runs(function () {
+                        var chatview = converse.chatboxviews.get(contact_jid);
+                        expect(chatview.model.get('minimized')).toBeFalsy();
+                        chatview.$el.find('.toggle-chatbox-button').click();
+                    });
+                    waits(250);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+
+                        var message = 'This message is sent to a minimized chatbox';
+                        var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                            msg = $msg({
+                                from: sender_jid,
+                                to: this.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').t(message).up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                        this.chatboxes.onMessage(msg);
+                        expect(this.emit).toHaveBeenCalledWith('onMessage', msg);
+                    }, converse));
+                    waits(250);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        expect(chatview.$el.find('.chat-head-message-count').length).toBe(1);
+                    }, converse));
+                }, converse));
+
                 it("will indate when it has a time difference of more than a day between it and it's predecessor", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];

@@ -5,11 +5,11 @@ Changelog
 ------------------
 
 .. note:: This release contains an important security fix.
-   Thanks Renaud Dubourguais from `Synacktiv http://synacktiv.com`_ for reporting the vulnerability.
+   Thanks to Renaud Dubourguais from `Synacktiv http://synacktiv.com`_ for reporting the vulnerability.
 
 * #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]
 * Bugfix: action messages (i.e. /me) didn't work in OTR mode. [jcbrand]
-* Security fix: Ensure that message URLs are properly decoded. [jcbrand]
+* Security fix: Ensure that message URLs are properly encoded. [jcbrand]
 
 0.7.3 (2014-02-23)
 ------------------

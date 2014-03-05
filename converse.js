@@ -962,15 +962,16 @@
                     msg_date = msg_dict.time ? converse.parseISO8601(msg_dict.time) : new Date(),
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
+                    fullname = msg_dict.fullname || this.model.get('fullname'),
                     template, username;
 
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
                     template = this.action_template;
-                    username = msg_dict.fullname;
+                    username = fullname;
                 } else  {
                     template = this.message_template;
-                    username = msg_dict.sender === 'me' && __('me') || msg_dict.fullname || this.model.get('fullname');
+                    username = msg_dict.sender === 'me' && __('me') || fullname;
                 }
                 $el.find('div.chat-event').remove();
                 var message = template({

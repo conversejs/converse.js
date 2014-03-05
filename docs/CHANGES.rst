@@ -1,15 +1,15 @@
 Changelog
 =========
 
-0.7.3 (Unreleased)
+0.7.3 (2014-03-05)
 ------------------
 
 .. note:: This release contains an important security fix.
+   Thanks Renaud Dubourguais from `Synacktiv http://synacktiv.com`_ for reporting the vulnerability.
 
 * #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]
 * Bugfix: action messages (i.e. /me) didn't work in OTR mode. [jcbrand]
 * Security fix: Ensure that message URLs are properly decoded. [jcbrand]
-
 
 0.7.3 (2014-02-23)
 ------------------
@@ -26,11 +26,12 @@ Changelog
 ------------------
 
 .. note:: This release contains an important security fix.
+   Thanks to hejsan for reporting the vulnerability.
 
 * #48 Add event emitter support and emit events. [jcbrand]
 * #97 Wrong number of online contacts shown with config option ``show_only_online_users``. [jcbrand]
 * #100 Make the fetching of vCards optional (enabled by default). [jcbrand]
-* Sanitize message text to avoid Javascript injection attacks. Thanks to hejsan for reporting. [jcbrand]
+* Sanitize message text to avoid Javascript injection attacks.  [jcbrand]
 
 0.7.1 (2013-11-17)
 ------------------

@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7.3 (2014-03-05)
+0.7.4 (2014-03-05)
 ------------------
 
 .. note:: This release contains an important security fix.

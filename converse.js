@@ -1704,7 +1704,7 @@
                                     'publicroom': $stanza.find('feature[var="muc_public"]').length,
                                     'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
                                     'temporary': $stanza.find('feature[var="muc_temporary"]').length,
-                                    'unmoderated': jstanza.find('feature[var="muc_unmoderated"]').length,
+                                    'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
                                     'label_desc': __('Description:'),
                                     'label_occ': __('Occupants:'),
                                     'label_features': __('Features:'),
@@ -2022,7 +2022,7 @@
                                 label: $($options[j]).attr('label')
                             }));
                         }
-                        $form.append(this.form_select_template({
+                        $form.append(converse.templates.form_select({
                             name: $field.attr('var'),
                             label: $field.attr('label'),
                             options: options.join('')

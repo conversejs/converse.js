@@ -43,7 +43,8 @@
                 if (list) {
                     for (i=0; i<list.length; i++) {
                         var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        x = x.replace(list[i], "<a target='_blank' href='" + prot + list[i] + "'>"+ list[i] + "</a>" );
+                        var escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        x = x.replace(list[i], "<a target='_blank' href='" + prot + escaped_url + "'>"+ list[i] + "</a>" );
                     }
                 }
                 $(obj).html(x);
@@ -942,15 +943,16 @@
                     msg_date = msg_dict.time ? converse.parseISO8601(msg_dict.time) : new Date(),
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
+                    fullname = msg_dict.fullname || this.model.get('fullname'),
                     template, username;
 
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
                     template = converse.templates.action_template;
-                    username = msg_dict.fullname;
+                    username = fullname;
                 } else  {
                     template = converse.templates.message;
-                    username = msg_dict.sender === 'me' && __('me') || msg_dict.fullname || this.model.get('fullname');
+                    username = msg_dict.sender === 'me' && __('me') || fullname;
                 }
                 $el.find('div.chat-event').remove();
                 var message = template({

@@ -398,6 +398,13 @@
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
+                    message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
+                    utils.sendMessage(view, message);
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    expect(msg.text()).toEqual(message);
+                    expect(msg.html()).toEqual('<a target="_blank" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
+
                     message = "https://en.wikipedia.org/wiki/Ender's_Game";
                     utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();

@@ -343,8 +343,7 @@
                     }, converse));
                 }, converse));
 
-                // TODO: This feature is not yet implemented
-                xit("received for a minimized chat box will increment a counter on its header", $.proxy(function () {
+                it("received for a minimized chat box will increment a counter on its header", $.proxy(function () {
                     var contact_name = mock.cur_names[0];
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
                     spyOn(this, 'emit');
@@ -361,25 +360,54 @@
                     runs($.proxy(function () {
                         var chatview = this.chatboxviews.get(contact_jid);
                         expect(chatview.model.get('minimized')).toBeTruthy();
-
                         var message = 'This message is sent to a minimized chatbox';
                         var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
-                            msg = $msg({
-                                from: sender_jid,
-                                to: this.connection.jid,
-                                type: 'chat',
-                                id: (new Date()).getTime()
-                            }).c('body').t(message).up()
-                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-
+                        msg = $msg({
+                            from: sender_jid,
+                            to: this.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         this.chatboxes.onMessage(msg);
                         expect(this.emit).toHaveBeenCalledWith('onMessage', msg);
                     }, converse));
                     waits(250);
                     runs($.proxy(function () {
                         var chatview = this.chatboxviews.get(contact_jid);
+                        var $count = chatview.$el.find('.chat-head-message-count');
                         expect(chatview.model.get('minimized')).toBeTruthy();
-                        expect(chatview.$el.find('.chat-head-message-count').length).toBe(1);
+                        expect($count.is(':visible')).toBeTruthy();
+                        expect($count.data('count')).toBe(1);
+                        expect($count.html()).toBe('1');
+                        this.chatboxes.onMessage(
+                            $msg({
+                                from: mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost',
+                                to: this.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').t('This message is also sent to a minimized chatbox').up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                        );
+                    }, converse));
+                    waits(100);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        var $count = chatview.$el.find('.chat-head-message-count');
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        expect($count.is(':visible')).toBeTruthy();
+                        expect($count.data('count')).toBe(2);
+                        expect($count.html()).toBe('2');
+                        chatview.$el.find('.toggle-chatbox-button').click();
+                    }, converse));
+                    waits(250);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        var $count = chatview.$el.find('.chat-head-message-count');
+                        expect(chatview.model.get('minimized')).toBeFalsy();
+                        expect($count.is(':visible')).toBeFalsy();
+                        expect($count.data('count')).toBe(0);
+                        expect($count.html()).toBe('0');
                     }, converse));
                 }, converse));
 

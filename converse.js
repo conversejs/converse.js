@@ -655,6 +655,7 @@
                         'box_id' : hex_sha1(this.get('jid')),
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'minimized': this.get('minimized') || false,
+                        'time_minimized': this.get('time_minimized') || converse.toISOString(new Date()),
                         'height': height
                     });
                 } else {
@@ -892,7 +893,6 @@
                 this.model.on('showReceivedOTRMessage', function (text) {
                     this.showMessage({'message': text, 'sender': 'them'});
                 }, this);
-
                 this.updateVCard();
                 this.$el.appendTo(converse.chatboxviews.$el);
                 this.render().show().focus().model.messages.fetch({add: true});
@@ -938,23 +938,35 @@
                 this.scrollDown();
             },
 
+            updateUnreadMessagesCounter: function () {
+                /* If the chatbox is minimized, we show a counter with the
+                 * number of unread messages.
+                 */
+                var $count = this.$el.find('.chat-head-message-count');
+                var count = parseInt($count.data('count') || 0, 10) + 1;
+                $count.html(count).data('count', count);
+                if (!$count.is(':visible')) { $count.show('fast'); }
+                return this;
+            },
+
             showMessage: function (msg_dict) {
-                var $el = this.$el.find('.chat-content'),
-                    msg_date = msg_dict.time ? converse.parseISO8601(msg_dict.time) : new Date(),
+                var $content = this.$el.find('.chat-content'),
+                    iso_time = msg_dict.time || converse.toISOString(new Date()),
+                    msg_date = converse.parseISO8601(iso_time),
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
-                    fullname = msg_dict.fullname || this.model.get('fullname'),
+                    fullname = msg_dict.fullname || this.model.get('fullname'), // XXX Perhaps always use model's?
                     template, username;
 
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
-                    template = converse.templates.action_template;
+                    template = converse.templates.action;
                     username = fullname;
                 } else  {
                     template = converse.templates.message;
                     username = msg_dict.sender === 'me' && __('me') || fullname;
                 }
-                $el.find('div.chat-event').remove();
+                $content.find('div.chat-event').remove();
                 var message = template({
                     'sender': msg_dict.sender,
                     'time': msg_date.toTimeString().substring(0,5),
@@ -962,8 +974,11 @@
                     'message': '',
                     'extra_classes': msg_dict.delayed && 'delayed' || ''
                 });
-                $el.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
-                return this.scrollDown();
+                $content.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
+                if (this.model.get('minimized') && (iso_time > this.model.get('time_minimized'))) {
+                    this.updateUnreadMessagesCounter();
+                }
+                this.scrollDown();
             },
 
             showHelpMessages: function (msgs, type, spinner) {
@@ -1284,19 +1299,26 @@
                     this.model.save({'minimized': false});
                 } else {
                     flyout.addClass('minimized');
-                    this.model.save({'minimized': true});
+                    this.model.save({
+                        'minimized': true,
+                        'time_minimized': converse.toISOString(new Date())
+                    });
                 }
+                return this;
             },
 
             toggleChatBox: function (ev) {
-                this.$el.children('.box-flyout').attr('style', '');
+                var $target = $(ev.target), $count;
                 this.saveToggleState();
+                this.$el.children('.box-flyout').attr('style', '');
                 this.$el.find('div.chat-body').slideToggle('fast');
-                var $target = $(ev.target);
                 if ($target.hasClass('icon-minus')) {
                     $target.removeClass('icon-minus').addClass('icon-plus');
                 } else {
                     $target.removeClass('icon-plus').addClass('icon-minus');
+                    $count = this.$el.find('.chat-head-message-count');
+                    $count.html(0).data('count', 0);
+                    if ($count.is(':visible')) { $count.hide('fast'); }
                 }
                 // Toggle drag resize ability
                 this.$el.find('.dragresize-tm').toggle();

@@ -672,6 +672,7 @@ form.search-xmpp-contact input {
     padding: 2px 10px;
     font-size: 18px;
     text-align: center;
+    display: none;
 }
 
 .chat-head-chatroom .chat-head-message-count {

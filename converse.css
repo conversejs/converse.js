@@ -867,7 +867,10 @@ dd.available-chatroom:hover a.room-info {
     line-height: 21px;
     width: 85%;
 }
-#converse-roster  dd:hover a.open-chat {
+#converse-roster dd:hover a.open-chat {
+    width: 70%;
+}
+#converse-roster dd.pending-xmpp-contact:hover span {
     width: 70%;
 }
 

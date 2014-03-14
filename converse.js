@@ -511,7 +511,7 @@
             this.registerRosterHandler();
             this.registerRosterXHandler();
             this.registerPresenceHandler();
-            // No create the view which will fetch roster items from
+            // Now create the view which will fetch roster items from
             // localStorage
             this.rosterview = new this.RosterView({'model':this.roster});
         };
@@ -1824,6 +1824,7 @@
 
             hide: function (callback) {
                 this.$el.hide('fast', function () {
+                    converse.refreshWebkit();
                     converse.emit('onChatBoxClosed', this);
                     converse.controlboxtoggle.show(function () {
                         if (typeof callback === "function") {
@@ -2398,6 +2399,7 @@
                     });
                 }
                 this.get('controlbox').fetch();
+                this.get('controlbox').save();
                 // This line below will make sure the Roster is set up
                 this.get('controlbox').set({connected:true});
                 this.registerMessageHandler();

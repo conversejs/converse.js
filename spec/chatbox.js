@@ -411,7 +411,10 @@
                     }, converse));
                 }, converse));
 
-                it("will indate when it has a time difference of more than a day between it and it's predecessor", $.proxy(function () {
+                it("will indicate when it has a time difference of more than a day between it and its predecessor", $.proxy(function () {
+                    // FIXME: there are issues where with timezones (when
+                    // the browser is in a new day but the XMPP server is in
+                    // the previous day).
                     spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';

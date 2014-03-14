@@ -70,7 +70,7 @@ You'll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.
 
-For more info on this, read: `Pre-binding and Single Session Support`_.
+For more info on this, read: `Prebinding and Single Session Support`_.
 
 You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
@@ -392,8 +392,8 @@ follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
 
-Install Node.js and development dependencies
-============================================
+Install the development and front-end dependencies
+==================================================
 
 We use development tools (`Grunt <http://gruntjs.com>`_ and `Bower <http://bower.io>`_)
 which depend on Node.js and npm (the Node package manager).
@@ -406,36 +406,32 @@ directory:
 
 ::
 
-    npm install
+    make dev
 
-This will install all the development dependencies for Converse.js. If you are
-curious to know what these are, take a look at whats under the *devDependencies* key in
-`package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`.
+This will first install the Node.js development tools (like Grunt and Bower)
+and then use Bower to install all of Converse.js's front-end dependencies.
 
-Install 3rd party dependencies
-==============================
+The front-end dependencies are those javascript files on which
+Converse.js directly depends and which will therefore be loaded in the browser.
 
-After running ``npm install``, you will now have Grunt and Bower installed.
+If you are curious to know what these different dependencies are:
 
-We use Bower to manage Converse's front-end dependencies (e.g. Javascript that
-should get loaded in the browser).
+* Development dependencies: 
+    Take a look at whats under the *devDependencies* key in
+    `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
-To fetch these dependencies, run:
+* Front-end dependencies:
+    See *dependencies* in
+    `bower.json <https://github.com/jcbrand/converse.js/blob/master/bower.json>`_.
 
-::
 
-    grunt fetch
+.. Note:
+    After running ```make dev```, you should now have a new directory *components*,
+    which contains all the front-end dependencies of Converse.js.
+    If this directory does NOT exist, something must have gone wrong.
+    Double-check the output of ```make dev``` to see if there are any errors
+    listed.
 
-If you don't have grunt installed globally, you need to specify the relative
-path:
-
-::
-
-    ./node_modules/.bin/grunt fetch
-
-This will call Bower in the background to fetch all the front-end
-dependencies (like backbone.js, strophe.js etc.) and then put them in the
-*components* folder.
 
 With AMD and require.js (recommended)
 =====================================
@@ -578,7 +574,7 @@ To do this for ALL languages, run:
 
 ::
 
-    make merge
+    make po
 
 The resulting PO file is then what gets translated.
 
@@ -805,6 +801,12 @@ Here are the different events that are emitted:
 
     Triggered whenever the roster view (i.e. the rendered HTML) has changed.
 
+* **onChatBoxClosed**
+
+    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+
+    Triggered when a chat box has been closed.
+
 * **onChatBoxFocused**
 
     ``converse.on('onChatBoxFocused', function (chatbox) { ... });``
@@ -817,11 +819,11 @@ Here are the different events that are emitted:
 
     Triggered when a chat box has been opened.
 
-* **onChatBoxClosed**
+* **onChatBoxToggled**
 
-    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+    ``converse.on('onChatBoxToggled', function (chatbox) { ... });``
 
-    Triggered when a chat box has been closed.
+    Triggered when a chat box has been minimized or maximized.
 
 * **onStatusChanged**
 

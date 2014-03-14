@@ -1,8 +1,8 @@
 # You can set these variables from the command line.
-SPHINXOPTS    =
-SPHINXBUILD = sphinx-build
-PAPER         =
-BUILDDIR      = ./docs
+SPHINXOPTS   =
+SPHINXBUILD  = sphinx-build
+PAPER        =
+BUILDDIR     = ./docs
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -11,34 +11,42 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./d
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: help clean html dirhtml singlehtml json htmlhelp devhelp epub latex latexpdf text changes linkcheck doctest gettext
+.PHONY: all help clean html dirhtml singlehtml json htmlhelp devhelp epub latex latexpdf text changes linkcheck doctest gettext po pot po2json merge release
+
+all: dev
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  changes    to make an overview of all changed/added/deprecated items"
-	@echo "  devhelp    to make HTML files and a Devhelp project"
-	@echo "  dirhtml    to make HTML files named index.html in directories"
-	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
-	@echo "  epub       to export the documentation to epub"
+	@echo "  dev        to set up the development environment"
 	@echo "  gettext    to make PO message catalogs of the documentation"
 	@echo "  html       to make standalone HTML files of the documentation"
-	@echo "  htmlhelp   to make HTML files and a HTML help project from the documentation"
-	@echo "  info       to make Texinfo files and run them through makeinfo"
-	@echo "  json       to make JSON files"
-	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  latexpdf   to make LaTeX files and run them through pdflatex"
-	@echo "  linkcheck  to check all external links for integrity"
-	@echo "  pot        generates a gettext POT file to be used for translations"
+	@echo "  pot        to generate a gettext POT file to be used for translations"
+	@echo "  po         to generate gettext PO files for each i18n language"
+	@echo "  po2json    to generate JSON files from the language PO files"
 	@echo "  release    to make a new minified release"
-	@echo "  singlehtml to make a single large HTML file"
-	@echo "  texinfo    to make Texinfo files"
-	@echo "  text       to make text files"
+
+# @echo "  changes    to make an overview of all changed/added/deprecated items"
+# @echo "  devhelp    to make HTML files and a Devhelp project"
+# @echo "  dirhtml    to make HTML files named index.html in directories"
+# @echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+# @echo "  epub       to export the documentation to epub"
+# @echo "  htmlhelp   to make HTML files and a HTML help project from the documentation"
+# @echo "  info       to make Texinfo files and run them through makeinfo"
+# @echo "  json       to make JSON files"
+# @echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
+# @echo "  latexpdf   to make LaTeX files and run them through pdflatex"
+# @echo "  linkcheck  to check all external links for integrity"
+# @echo "  singlehtml to make a single large HTML file"
+# @echo "  texinfo    to make Texinfo files"
+# @echo "  text       to make text files"
 
 pot: 
 	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.7.0 -c --language="python";
 
-merge:
+po:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;
+
+merge: po
 
 po2json:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec po2json {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
@@ -52,6 +60,11 @@ release:
 	sed -i s/release\ =\ \'[0-9]\.[0-9]\.[0-9]\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.rst
 	grunt minify
+
+dev:
+	npm install
+	./node_modules/.bin/bower update;
+	cd ./components/strophe && make normal;
 
 clean:
 	-rm -rf $(BUILDDIR)/*

@@ -7,7 +7,7 @@ config = {
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
         "text": 'components/requirejs-text/text',
-        "tpl": 'components/requirejs-tpl-jfparadis/tpl',
+        "tpl": 'components/requirejs-tpl-jcbrand/tpl',
         "converse-templates": "src/templates",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",

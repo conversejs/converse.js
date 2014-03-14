@@ -5,7 +5,7 @@
     "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
     "otr": "0.2.7",
     "requirejs-text": "~2.0.10",
-    "requirejs-tpl-jfparadis": "*"
+    "requirejs-tpl-jcbrand": "*"
   },
   "dependencies": {
     "requirejs": "2.1.8",
@@ -24,7 +24,7 @@
     "crypto-js-evanvosberg": "~3.1.2",
     "almond": "~0.2.6",
     "requirejs-text": "~2.0.10",
-    "requirejs-tpl-jfparadis": "*"
+    "requirejs-tpl-jcbrand": "*"
   },
   "exportsOverride": {}
 }

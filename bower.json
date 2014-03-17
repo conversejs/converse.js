@@ -13,7 +13,7 @@
     "underscore": "1.5.1",
     "backbone": "1.0.0",
     "backbone.localStorage": "1.1.6",
-    "strophe": "git://github.com/strophe/strophejs.git#8e14efdf01856d184f6ba46b3b82c888beacdd98",
+    "strophe": "https://github.com/jcbrand/strophejs.git#converse",
     "strophe.roster": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/roster/strophe.roster.js",
     "strophe.vcard": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/vcard/strophe.vcard.js",
     "strophe.disco": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/disco/strophe.disco.js",

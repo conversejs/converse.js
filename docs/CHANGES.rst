@@ -4,7 +4,8 @@ Changelog
 0.7.4 (2014-03-05)
 ------------------
 
-.. note:: This release contains an important security fix.
+.. note::
+   This release contains an important security fix.
    Thanks to Renaud Dubourguais from `Synacktiv http://synacktiv.com`_ for reporting the vulnerability.
 
 * #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]
@@ -25,7 +26,8 @@ Changelog
 0.7.2 (2013-12-18)
 ------------------
 
-.. note:: This release contains an important security fix.
+.. note::
+   This release contains an important security fix.
    Thanks to hejsan for reporting the vulnerability.
 
 * #48 Add event emitter support and emit events. [jcbrand]
@@ -114,8 +116,9 @@ Bugfixes:
 0.6.3 (2013-09-12)
 ------------------
 
-NB: This release contains an important security fix. Please don't use older
-versions of the 0.6 branch.
+.. note::
+    This release contains an important security fix. Please don't use older
+    versions of the 0.6 branch.
 
 * French translations. [tdesvenain]
 * Bugfix: Messages were stored against buddy JID and not own JID. [jcbrand]

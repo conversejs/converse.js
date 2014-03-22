@@ -52,6 +52,8 @@ Integration into other frameworks
     `roundcube-converse.js-xmpp-plugin <https://github.com/priyadi/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
 * `Wordpress <http://wordpress.org>`_:
     `ConverseJS <http://wordpress.org/plugins/conversejs>`_
+* `Patternslib <http://patternslib.com>`_:
+    `patterns.converse`_: `patterns.converse <https://github.com/jcbrand/patterns.converse>`_ provides a Patternslib pattern for Converse.js
 
 ----
 Demo
@@ -64,7 +66,9 @@ Tests
 -----
 
 We use behavior-driven tests written with `jasmine.js <http://pivotal.github.io/jasmine>`_.
-They can run in your browser or in the command line via `phantom.js <http://phantomjs.org>`_.
+
+Open `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
+in your browser, and the tests will run automatically.
 
 -------------
 Documentation
@@ -76,8 +80,7 @@ The developer/integrator documentation can be found at `<https://conversejs.org/
 Licence
 -------
 
-``Converse.js`` is released under both the `MIT <http://opensource.org/licenses/mit-license.php>`_
-and `GPL <http://opensource.org/licenses/gpl-license.php>`_ licenses.
+``Converse.js`` is released under the `Mozilla Public License (MPL) <https://www.mozilla.org/MPL/2.0/index.txt>`_.
 
 -------
 Support

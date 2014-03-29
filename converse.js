@@ -550,6 +550,21 @@
                     }
                 }
             }, this));
+            
+            //enable carbons
+            var carbons_iq = new Strophe.Builder('iq', {
+                from: this.connection.jid,
+                id: 'enablecarbons',
+                type: 'set'
+              })
+              .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
+            this.connection.send(carbons_iq);
+            this.connection.addHandler(function(iq) {
+              //alert('Enabling carbons: received server response IQ');
+              //TODO: check if carbons was enabled:
+              //https://xmpp.org/extensions/xep-0280.html#enabling
+            }, null, "iq", null, "enablecarbons");
+                        
             converse.emit('onReady');
         };
 
@@ -2460,6 +2475,17 @@
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
                 }
+                else {
+                  //check if this is a carbon message
+                  var is_carbon = $message.children('received').attr('xmlns') 
+                                == 'urn:xmpp:carbons:2';                  
+                  if (is_carbon) {
+                    $message = $message.children('received')
+                               .children('forwarded')
+                               .children('message');
+                    message_from = $message.attr('from');
+                  }
+                }
                 var from = Strophe.getBareJidFromJid(message_from),
                     to = Strophe.getBareJidFromJid($message.attr('to')),
                     resource, chatbox, roster_item;
@@ -2492,9 +2518,9 @@
                         'url': roster_item.get('url')
                     });
                 }
-                chatbox.receiveMessage(message);
+                chatbox.receiveMessage($message);
                 converse.roster.addResource(buddy_jid, resource);
-                converse.emit('onMessage', message);
+                converse.emit('onMessage', $message);
                 return true;
             }
         });

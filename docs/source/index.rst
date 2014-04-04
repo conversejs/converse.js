@@ -70,7 +70,7 @@ You'll most likely want to implement some kind of single-signon solution for
 your website, where users authenticate once in your website and then stay
 logged into their XMPP session upon page reload.
 
-For more info on this, read: `Pre-binding and Single Session Support`_.
+For more info on this, read: `Prebinding and Single Session Support`_.
 
 You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read `Configuration`_ and `Minification`_ for more info on how to do
@@ -410,10 +410,12 @@ directory:
 
 This will install all the development dependencies for Converse.js. If you are
 curious to know what these are, take a look at whats under the *devDependencies* key in
-`package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`.
+`package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
 Install 3rd party dependencies
 ==============================
+
+Make sure you have ``git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
 
 After running ``npm install``, you will now have Grunt and Bower installed.
 

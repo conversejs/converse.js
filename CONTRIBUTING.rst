@@ -1,12 +1,13 @@
-===========================
-Contributing to Converse.js
-===========================
+=======================
+Contribution Guidelines
+=======================
 
 Thanks for contributing to `Converse.js <http://conversejs.org>`_.
 
 Support questions
 =================
 Please ask support and setup questions on the mailing list: conversejs@librelist.com
+
 The issue tracker is only for bugs (i.e. issues) and feature requests.
 
 Contributing Code
@@ -19,7 +20,6 @@ Before submitting a pull request
 
 Add tests for your bugfix or feature
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Add a test for any bug fixed or feature added. We use Jasmine
 for testing. 
 
@@ -29,12 +29,13 @@ to see how tests are implemented.
 
 Check that the tests pass
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Check that the Jasmine tests complete sucessfully. Open
 `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
 in your browser, and the tests will run automatically.
 
 Check your code for errors or bad habits by running JSHint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you haven't yet done so, run ``npm install`` to install all development
+dependencies.
 
-Run ``grunt jshint`` and check the output.
+Then run ``grunt jshint`` and check the output.

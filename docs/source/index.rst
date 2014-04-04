@@ -401,7 +401,9 @@ which depend on Node.js and npm (the Node package manager).
 If you don't have Node.js installed, you can download and install the latest
 version `here <https://nodejs.org/download>`_.
 
-Once you have Node.js installed, run the following command inside the Converse.js
+Also make sure you have ``git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
+
+Once you have *Node.js* and *git* installed, run the following command inside the Converse.js
 directory:
 
 ::
@@ -414,7 +416,7 @@ and then use Bower to install all of Converse.js's front-end dependencies.
 The front-end dependencies are those javascript files on which
 Converse.js directly depends and which will therefore be loaded in the browser.
 
-If you are curious to know what these different dependencies are:
+If you are curious to know what the different dependencies are:
 
 * Development dependencies: 
     Take a look at whats under the *devDependencies* key in
@@ -423,7 +425,6 @@ If you are curious to know what these different dependencies are:
 * Front-end dependencies:
     See *dependencies* in
     `bower.json <https://github.com/jcbrand/converse.js/blob/master/bower.json>`_.
-
 
 .. Note:
     After running ```make dev```, you should now have a new directory *components*,

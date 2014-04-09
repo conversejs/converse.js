@@ -169,7 +169,7 @@ bottom of your page (after the closing <em>&lt;/body&gt;</em> element).</p>
     converse.initialize({
         auto_list_rooms: false,
         auto_subscribe: false,
-        bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
+        bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
         hide_muc_server: false,
         i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
         prebind: false,
@@ -236,7 +236,7 @@ protocols.</p>
 <p>This is the job of a connection manager. A connection manager can be either a
 standalone application or part of an XMPP server. <a class="reference external" href="http://www.ejabberd.im">ejabberd</a> for example,
 includes a connection manager (but you have to enable it).</p>
-<p>The demo on the <a class="reference external" href="http://conversejs.org">Converse.js homepage</a> uses a a connection manager located at <a class="reference external" href="https://bind.opkode.im">https://bind.opkode.im</a>.
+<p>The demo on the <a class="reference external" href="http://conversejs.org">Converse.js homepage</a> uses a a connection manager located at <a class="reference external" href="https://bind.conversejs.org">https://bind.conversejs.org</a>.
 This connection manager is for testing purposes only, please don&#8217;t use it in
 production.</p>
 <div class="section" id="overcoming-cross-domain-request-restrictions">
@@ -390,7 +390,7 @@ can be extended via <a class="reference external" href="http://github.com/stroph
 Converse.js/Strophe.js and Facebook&#8217;s XMPP server. That is because Facebook&#8217;s
 XMPP server doesn&#8217;t support BOSH natively.</p>
 <p>The BOSH connection manager that I make available for
-testing purposes (at <a class="reference external" href="https://bind.opkode.im">https://bind.opkode.im</a>) uses <a class="reference external" href="https://github.com/twonds/punjab">Punjab</a>,
+testing purposes (at <a class="reference external" href="https://bind.conversejs.org">https://bind.conversejs.org</a>) uses <a class="reference external" href="https://github.com/twonds/punjab">Punjab</a>,
 although there are quite a few other options available as well.</p>
 <p>When you configure Converse.js, via its <tt class="docutils literal"><span class="pre">initialize</span></tt> method, you must specify the
 <a class="reference internal" href="#bosh-service-url">bosh_service_url</a> value, which is to be your BOSH connection manager.</p>
@@ -452,7 +452,8 @@ follow the instructions below to create this folder and fetch Converse&#8217;s
 which depend on Node.js and npm (the Node package manager).</p>
 <p>If you don&#8217;t have Node.js installed, you can download and install the latest
 version <a class="reference external" href="https://nodejs.org/download">here</a>.</p>
-<p>Once you have Node.js installed, run the following command inside the Converse.js
+<p>Also make sure you have <tt class="docutils literal"><span class="pre">git</span></tt> installed. <a class="reference external" href="http://git-scm.com/book/en/Getting-Started-Installing-Git">Details</a>.</p>
+<p>Once you have <em>Node.js</em> and <em>git</em> installed, run the following command inside the Converse.js
 directory:</p>
 <div class="highlight-python"><pre>make dev</pre>
 </div>
@@ -460,7 +461,7 @@ directory:</p>
 and then use Bower to install all of Converse.js&#8217;s front-end dependencies.</p>
 <p>The front-end dependencies are those javascript files on which
 Converse.js directly depends and which will therefore be loaded in the browser.</p>
-<p>If you are curious to know what these different dependencies are:</p>
+<p>If you are curious to know what the different dependencies are:</p>
 <ul>
 <li><dl class="first docutils">
 <dt>Development dependencies:</dt>

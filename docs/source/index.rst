@@ -43,7 +43,7 @@ bottom of your page (after the closing *</body>* element).
         converse.initialize({
             auto_list_rooms: false,
             auto_subscribe: false,
-            bosh_service_url: 'https://bind.opkode.im', // Please use this connection manager only for testing purposes
+            bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
             hide_muc_server: false,
             i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
             prebind: false,
@@ -138,7 +138,7 @@ This is the job of a connection manager. A connection manager can be either a
 standalone application or part of an XMPP server. `ejabberd`_ for example,
 includes a connection manager (but you have to enable it).
 
-The demo on the `Converse.js homepage`_ uses a a connection manager located at https://bind.opkode.im.
+The demo on the `Converse.js homepage`_ uses a a connection manager located at https://bind.conversejs.org.
 This connection manager is for testing purposes only, please don't use it in
 production.
 
@@ -318,7 +318,7 @@ Converse.js/Strophe.js and Facebook's XMPP server. That is because Facebook's
 XMPP server doesn't support BOSH natively.
 
 The BOSH connection manager that I make available for
-testing purposes (at https://bind.opkode.im) uses `Punjab <https://github.com/twonds/punjab>`_,
+testing purposes (at https://bind.conversejs.org) uses `Punjab <https://github.com/twonds/punjab>`_,
 although there are quite a few other options available as well.
 
 When you configure Converse.js, via its ``initialize`` method, you must specify the

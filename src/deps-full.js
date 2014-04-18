@@ -4,6 +4,7 @@ define("converse-dependencies", [
     "locales",
     "backbone.localStorage",
     "jquery.tinysort",
+    "jquery.browser",
     "strophe",
     "strophe.muc",
     "strophe.roster",

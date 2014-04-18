@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "requirejs": "2.1.11",
-    "jquery": "1.8.3",
+    "jquery": "1.11.0",
     "jed": "0.5.4",
     "tinysort": "git://github.com/Sjeiti/TinySort.git",
     "underscore": "1.5.1",
@@ -25,7 +25,8 @@
     "almond": "~0.2.6",
     "requirejs-text": "~2.0.10",
     "requirejs-tpl-jcbrand": "*",
-    "momentjs": "~2.6.0"
+    "momentjs": "~2.6.0",
+    "jquery.browser": "~0.0.6"
   },
   "exportsOverride": {}
 }

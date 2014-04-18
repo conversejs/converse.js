@@ -1,7 +1,8 @@
 config = {
     paths: {
-        "jquery": "components/jquery/jquery",
+        "jquery": "components/jquery/dist/jquery",
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
+        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "locales": "locale/locales",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",

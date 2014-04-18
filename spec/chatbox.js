@@ -628,8 +628,8 @@
             it("is cleared when the window is focused", $.proxy(function () {
                 spyOn(converse, 'clearMsgCounter').andCallThrough();
                 runs(function () {
-                    $(window).trigger('blur');
-                    $(window).trigger('focus');
+                    $(window).triggerHandler('blur');
+                    $(window).triggerHandler('focus');
                 });
                 waits(50);
                 runs(function () {

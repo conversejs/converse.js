@@ -3,19 +3,9 @@ config.paths.mock = "tests/mock";
 config.paths.utils = "tests/utils";
 config.paths.jasmine = "components/jasmine/lib/jasmine-core/jasmine";
 config.paths["jasmine-html"] = "components/jasmine/lib/jasmine-core/jasmine-html";
-config.paths["jasmine-console-reporter"] = "node_modules/jasmine-reporters/src/jasmine.console_reporter";
-config.paths["jasmine-junit-reporter"] = "node_modules/jasmine-reporters/src/jasmine.junit_reporter";
-
+config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
 config.shim['jasmine-html'] = {
     deps: ['jasmine'],
-    exports: 'jasmine'
-};
-config.shim['jasmine-console-reporter'] = {
-    deps: ['jasmine-html'],
-    exports: 'jasmine'
-};
-config.shim['jasmine-junit-reporter'] = {
-    deps: ['jasmine-html'],
     exports: 'jasmine'
 };
 require.config(config);
@@ -27,8 +17,8 @@ if (!Function.prototype.bind) {
             // closest thing possible to the ECMAScript 5 internal IsCallable function
             throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
         }
-        var aArgs = Array.prototype.slice.call(arguments, 1), 
-            fToBind = this, 
+        var aArgs = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
             fNOP = function () {},
             fBound = function () {
             return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
@@ -47,6 +37,7 @@ require([
     "jasmine-html"
     ], function($, converse, mock, jasmine) {
         // Set up converse.js
+        $.fx.off = true;
         window.converse_api = converse;
         window.localStorage.clear();
         converse.initialize({
@@ -64,12 +55,11 @@ require([
                     var i;
                     for (i=0, len=buf.length; i<len; i++) {
                         buf[i] = Math.floor(Math.random()*256);
-                    } 
+                    }
                 }
             };
             require([
-                "jasmine-console-reporter",
-                "jasmine-junit-reporter",
+                "console-runner",
                 "spec/converse",
                 "spec/otr",
                 "spec/eventemitter",
@@ -82,19 +72,19 @@ require([
 
                 // Jasmine stuff
                 var jasmineEnv = jasmine.getEnv();
+                var reporter;
                 if (/PhantomJS/.test(navigator.userAgent)) {
-                    jasmineEnv.addReporter(new jasmine.TrivialReporter());
-                    jasmineEnv.addReporter(new jasmine.JUnitXmlReporter('./test-reports/'));
-                    jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                    reporter = new jasmine.ConsoleReporter();
+                    window.console_reporter = reporter;
+                    jasmineEnv.addReporter(reporter);
                     jasmineEnv.updateInterval = 0;
                 } else {
-                    var htmlReporter = new jasmine.HtmlReporter();
-                    jasmineEnv.addReporter(htmlReporter);
-                    jasmineEnv.addReporter(new jasmine.ConsoleReporter());
+                    reporter = new jasmine.HtmlReporter();
+                    jasmineEnv.addReporter(reporter);
                     jasmineEnv.specFilter = function(spec) {
-                        return htmlReporter.specFilter(spec);
+                        return reporter.specFilter(spec);
                     };
-                    jasmineEnv.updateInterval = 100;
+                    jasmineEnv.updateInterval = 0;
                 }
                 jasmineEnv.execute();
             });

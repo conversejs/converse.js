@@ -5,6 +5,7 @@ PAPER        =
 BUILDDIR     = ./docs
 
 BOWER 		?= node_modules/.bin/bower
+PHANTOMJS	?= node_modules/.bin/phantomjs
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -51,12 +52,36 @@ release:
 	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.rst
 	grunt minify
 
-dev:
+
+########################################################################
+## Install dependencies
+
+stamp-npm: package.json
+	npm install
+	touch stamp-npm
+
+stamp-bower: stamp-npm bower.json
+	$(BOWER) install
+	touch stamp-bower
+
+clean::
+	rm -f stamp-npm stamp-bower
+	rm -rf node_modules components
+	-rm -rf $(BUILDDIR)/*
+
+dev: clean
 	npm install
 	${BOWER} update;
 
-clean:
-	-rm -rf $(BUILDDIR)/*
+
+########################################################################
+## Tests
+
+check:: stamp-npm
+	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
+
+########################################################################
+## Documentation
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

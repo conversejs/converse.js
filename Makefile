@@ -1,15 +1,12 @@
 # You can set these variables from the command line.
-SPHINXOPTS   =
-SPHINXBUILD  = sphinx-build
-PAPER        =
-BUILDDIR     = ./docs
-
 BOWER 		?= node_modules/.bin/bower
+BUILDDIR     = ./docs
+PAPER        =
 PHANTOMJS	?= node_modules/.bin/phantomjs
+SPHINXBUILD  = sphinx-build
+SPHINXOPTS   =
 
 # Internal variables.
-PAPEROPT_a4     = -D latex_paper_size=a4
-PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -31,7 +28,10 @@ help:
 	@echo "  epub       to export the documentation to epub"
 	@echo "  changes    to make an overview of all changed/added/deprecated items added to the documentation"
 
-pot: 
+########################################################################
+## Translation machinery
+
+pot:
 	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.7.0 -c --language="python";
 
 po:
@@ -42,6 +42,9 @@ merge: po
 po2json:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec po2json {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
 
+########################################################################
+## Release management
+
 release:
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ package.json
@@ -51,7 +54,6 @@ release:
 	sed -i s/release\ =\ \'[0-9]\.[0-9]\.[0-9]\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.rst
 	grunt minify
-
 
 ########################################################################
 ## Install dependencies

@@ -1,4 +1,5 @@
 define("converse-dependencies", [
+    "moment",
     "locales",
     "backbone.localStorage",
     "jquery.tinysort",
@@ -7,6 +8,9 @@ define("converse-dependencies", [
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function() {
-    return undefined;
+], function(moment) {
+    return {
+        'otr': undefined,
+        'moment': moment
+    };
 });

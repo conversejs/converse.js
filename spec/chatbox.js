@@ -412,15 +412,11 @@
                 }, converse));
 
                 it("will indicate when it has a time difference of more than a day between it and its predecessor", $.proxy(function () {
-                    // FIXME: there are issues where with timezones (when
-                    // the browser is in a new day but the XMPP server is in
-                    // the previous day).
                     spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     utils.clearChatBoxMessages(contact_jid);
-
                     var one_day_ago = new Date(new Date().setDate(new Date().getDate()-1));
                     var message = 'This is a day old message';
                     var chatbox = this.chatboxes.get(contact_jid);
@@ -465,11 +461,10 @@
                     // props.
                     var $time = $chat_content.find('time');
                     var message_date = new Date();
-                    message_date.setUTCHours(0,0,0,0);
                     expect($time.length).toEqual(1);
                     expect($time.attr('class')).toEqual('chat-date');
-                    expect($time.attr('datetime')).toEqual(converse.toISOString(message_date));
-                    expect($time.text()).toEqual(message_date.toString().substring(0,15));
+                    expect($time.attr('datetime')).toEqual(moment(message_date).format("YYYY-MM-DD"));
+                    expect($time.text()).toEqual(moment(message_date).format("dddd, MMMM Do YYYY"));
 
                     // Normal checks for the 2nd message
                     expect(chatbox.messages.length).toEqual(2);
@@ -633,6 +628,7 @@
             it("is cleared when the window is focused", $.proxy(function () {
                 spyOn(converse, 'clearMsgCounter').andCallThrough();
                 runs(function () {
+                    $(window).trigger('blur');
                     $(window).trigger('focus');
                 });
                 waits(50);

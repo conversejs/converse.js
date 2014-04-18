@@ -12,11 +12,12 @@
         define("converse",
               ["converse-dependencies", "converse-templates"],
             function(dependencies, templates) {
-                var otr = dependencies[0];
+                var otr = dependencies.otr,
+                    moment = dependencies.moment;
                 if (typeof otr !== "undefined") {
-                    return factory(jQuery, _, otr.OTR, otr.DSA, templates);
+                    return factory(jQuery, _, otr.OTR, otr.DSA, templates, moment);
                 } else {
-                    return factory(jQuery, _, undefined, undefined, templates);
+                    return factory(jQuery, _, undefined, undefined, templates, moment);
                 }
             }
         );
@@ -30,7 +31,7 @@
         // TODO Templates not defined
         root.converse = factory(jQuery, _, OTR, DSA, templates);
     }
-}(this, function ($, _, OTR, DSA, templates) {
+}(this, function ($, _, OTR, DSA, templates, moment) {
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
@@ -998,22 +999,19 @@
             onMessageAdded: function (message) {
                 var time = message.get('time'),
                     times = this.model.messages.pluck('time'),
-                    this_date = converse.parseISO8601(time),
-                    previous_message, idx, prev_date, isodate, text, match;
+                    previous_message, idx, this_date, prev_date, text, match;
 
                 // If this message is on a different day than the one received
                 // prior, then indicate it on the chatbox.
                 idx = _.indexOf(times, time)-1;
                 if (idx >= 0) {
                     previous_message = this.model.messages.at(idx);
-                    prev_date = converse.parseISO8601(previous_message.get('time'));
-                    isodate = new Date(this_date.getTime());
-                    isodate.setUTCHours(0,0,0,0);
-                    isodate = converse.toISOString(isodate);
-                    if (this.isDifferentDay(prev_date, this_date)) {
+                    prev_date = moment(previous_message.get('time'));
+                    if (prev_date.isBefore(time, 'day')) {
+                        this_date = moment(time);
                         this.$el.find('.chat-content').append(converse.templates.new_day({
-                            isodate: isodate,
-                            datestring: this_date.toString().substring(0,15)
+                            isodate: this_date.format("YYYY-MM-DD"),
+                            datestring: this_date.format("dddd, MMMM Do YYYY")
                         }));
                     }
                 }
@@ -1027,13 +1025,6 @@
                     converse.incrementMsgCounter();
                 }
                 return this.scrollDown();
-            },
-
-            isDifferentDay: function (prev_date, next_date) {
-                return (
-                    (next_date.getDate() != prev_date.getDate()) ||
-                    (next_date.getFullYear() != prev_date.getFullYear()) ||
-                    (next_date.getMonth() != prev_date.getMonth()));
             },
 
             sendMessageStanza: function (text) {

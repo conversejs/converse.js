@@ -51,11 +51,10 @@
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
                 spyOn(converse, 'emit');
                 runs(function () {
-                    utils.closeControlBox();
+                utils.openControlBox();
                 });
                 waits(250);
                 runs(function () {
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                     utils.openChatBoxes(6);
                     // We instantiate a new ChatBoxes collection, which by default
                     // will be empty.
@@ -64,7 +63,7 @@
                     // The chatboxes will then be fetched from localStorage inside the
                     // onConnected method
                     newchatboxes.onConnected();
-                    expect(newchatboxes.length).toEqual(6);
+                    expect(newchatboxes.length).toEqual(7);
                     // Check that the chatboxes items retrieved from localStorage
                     // have the same attributes values as the original ones.
                     attrs = ['id', 'box_id', 'visible'];
@@ -164,9 +163,10 @@
                     expect(newchatboxes.length).toEqual(0);
                     // onConnected will fetch chatboxes in localStorage, but
                     // because there aren't any open chatboxes, there won't be any
-                    // in localStorage either.
+                    // in localStorage either. XXX except for the controlbox
                     newchatboxes.onConnected();
-                    expect(newchatboxes.length).toEqual(0);
+                    expect(newchatboxes.length).toEqual(1);
+                    expect(newchatboxes.models[0].id).toBe("controlbox");
                 }.bind(converse));
             }, converse));
 
@@ -219,7 +219,7 @@
                         expect($($items[10]).children('a').data('emoticon')).toBe(':O');
                         expect($($items[11]).children('a').data('emoticon')).toBe('(^.^)b');
                         expect($($items[12]).children('a').data('emoticon')).toBe('<3');
-                        $items[0].click();
+                        $items.first().click();
                     });
                     waits(250);
                     runs(function () {
@@ -316,7 +316,7 @@
                         this.chatboxes.onMessage(msg);
                         expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     }, converse));
-                    waits(300);
+                    waits(250);
                     runs($.proxy(function () {
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);

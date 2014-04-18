@@ -109,7 +109,7 @@
             if ($.browser.webkit) {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';
-                conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
+                conversejs.offsetHeight = conversejs.offsetHeight; // no need to store this anywhere, the reference is enough
                 conversejs.style.display = 'block';
             }
         }

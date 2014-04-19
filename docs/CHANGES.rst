@@ -10,6 +10,7 @@ Changelog
   Message forwarding was before default behavior but is now optional (and disabled by default).
   [jcbrand]
 * #71 Chat boxes and rooms can be minimized. [jcbrand]
+* #130 Fixed bootstrap conflicts. [jcbrand]
 * #132 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html'>`_.
   Configured via `enable_message_carbons <https://conversejs.org/docs/html/index.html#enable_message_carbons>`_ 
   [hejazee]

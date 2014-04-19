@@ -10,13 +10,23 @@
     return describe("Chatboxes", $.proxy(function(mock, utils) {
         describe("A Chatbox", $.proxy(function () {
             beforeEach(function () {
-                utils.closeAllChatBoxes();
-                utils.removeControlBox();
-                converse.roster.localStorage._clear();
-                utils.initConverse();
-                utils.createCurrentContacts();
-                utils.openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.closeAllChatBoxes();
+                    utils.removeControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    converse.roster.localStorage._clear();
+                    utils.initConverse();
+                    utils.createCurrentContacts();
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+                waits(250);
+                runs(function () {});
             });
 
             it("is created when you click on a roster item", $.proxy(function () {
@@ -29,7 +39,7 @@
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'openChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     $el.click();
@@ -40,63 +50,124 @@
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
                 spyOn(converse, 'emit');
-                utils.closeControlBox();
-                expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
-
-                // First, we open 6 more chatboxes (controlbox is already open)
-                utils.openChatBoxes(6);
-                // We instantiate a new ChatBoxes collection, which by default
-                // will be empty.
-                var newchatboxes = new this.ChatBoxes();
-                expect(newchatboxes.length).toEqual(0);
-                // The chatboxes will then be fetched from localStorage inside the
-                // onConnected method
-                newchatboxes.onConnected();
-                expect(newchatboxes.length).toEqual(6);
-                // Check that the chatboxes items retrieved from localStorage
-                // have the same attributes values as the original ones.
-                attrs = ['id', 'box_id', 'visible'];
-                for (i=0; i<attrs.length; i++) {
-                    new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
-                    old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
-                    expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
-                }
-                this.rosterview.render();
+                runs(function () {
+                utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openChatBoxes(6);
+                    // We instantiate a new ChatBoxes collection, which by default
+                    // will be empty.
+                    var newchatboxes = new this.ChatBoxes();
+                    expect(newchatboxes.length).toEqual(0);
+                    // The chatboxes will then be fetched from localStorage inside the
+                    // onConnected method
+                    newchatboxes.onConnected();
+                    expect(newchatboxes.length).toEqual(7);
+                    // Check that the chatboxes items retrieved from localStorage
+                    // have the same attributes values as the original ones.
+                    attrs = ['id', 'box_id', 'visible'];
+                    for (i=0; i<attrs.length; i++) {
+                        new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
+                        old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
+                        expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
+                    }
+                    this.rosterview.render();
+                }.bind(converse));
             }, converse));
 
-            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+            it("can be closed by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+                var chatbox = utils.openChatBoxes(1)[0],
+                    controlview = this.chatboxviews.get('controlbox'), // The controlbox is currently open
+                    chatview = this.chatboxviews.get(chatbox.get('jid'));
+                spyOn(chatview, 'closeChat').andCallThrough();
+                spyOn(controlview, 'closeChat').andCallThrough();
                 spyOn(converse, 'emit');
-                var chatbox, view, $el,
-                    num_open_chats = this.chatboxes.length;
-                for (i=0; i<num_open_chats; i++) {
-                    chatbox = this.chatboxes.models[0];
-                    view = this.chatboxesview.views[chatbox.get('id')];
-                    spyOn(view, 'closeChat').andCallThrough();
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    view.$el.find('.close-chatbox-button').click();
-                    expect(view.closeChat).toHaveBeenCalled();
+
+                // We need to rebind all events otherwise our spy won't be called
+                controlview.delegateEvents();
+                chatview.delegateEvents();
+
+                runs(function () {
+                    controlview.$el.find('.close-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(controlview.closeChat).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
-                }
+                    expect(converse.emit.callCount, 1);
+                    chatview.$el.find('.close-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(chatview.closeChat).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit.callCount, 2);
+                });
             }, converse));
+
+            it("can be toggled by clicking a DOM element with class 'toggle-chatbox-button'", function () {
+                var chatbox = utils.openChatBoxes(1)[0],
+                    chatview = this.chatboxviews.get(chatbox.get('jid'));
+                spyOn(chatview, 'toggleChatBox').andCallThrough();
+                spyOn(converse, 'emit');
+                // We need to rebind all events otherwise our spy won't be called
+                chatview.delegateEvents();
+
+                runs(function () {
+                    chatview.$el.find('.toggle-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(chatview.toggleChatBox).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
+                    expect(converse.emit.callCount, 2);
+                    expect(chatview.$el.find('.chat-body').is(':visible')).toBeFalsy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeFalsy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeTruthy();
+                    expect(chatview.model.get('minimized')).toBeTruthy();
+                    chatview.$el.find('.toggle-chatbox-button').click();
+                });
+                waits(250);
+                runs(function () {
+                    expect(chatview.toggleChatBox).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
+                    expect(chatview.$el.find('.chat-body').is(':visible')).toBeTruthy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
+                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
+                    expect(chatview.model.get('minimized')).toBeFalsy();
+                    expect(converse.emit.callCount, 3);
+                });
+            }.bind(converse));
 
             it("will be removed from localStorage when closed", $.proxy(function () {
                 spyOn(converse, 'emit');
                 this.chatboxes.localStorage._clear();
-                utils.closeControlBox();
-                expect(converse.chatboxes.length).toEqual(0);
-                utils.openChatBoxes(6);
-                expect(converse.chatboxes.length).toEqual(6);
-                expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
-                utils.closeAllChatBoxes();
-                expect(converse.chatboxes.length).toEqual(0);
-                expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
-                var newchatboxes = new this.ChatBoxes();
-                expect(newchatboxes.length).toEqual(0);
-                // onConnected will fetch chatboxes in localStorage, but
-                // because there aren't any open chatboxes, there won't be any
-                // in localStorage either.
-                newchatboxes.onConnected();
-                expect(newchatboxes.length).toEqual(0);
+                runs(function () {
+                    utils.closeControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.chatboxes.length).toEqual(0);
+                    utils.openChatBoxes(6);
+                    expect(converse.chatboxes.length).toEqual(6);
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
+                    utils.closeAllChatBoxes();
+                });
+                waits(250);
+                runs(function () {
+                    expect(converse.chatboxes.length).toEqual(0);
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    var newchatboxes = new this.ChatBoxes();
+                    expect(newchatboxes.length).toEqual(0);
+                    // onConnected will fetch chatboxes in localStorage, but
+                    // because there aren't any open chatboxes, there won't be any
+                    // in localStorage either. XXX except for the controlbox
+                    newchatboxes.onConnected();
+                    expect(newchatboxes.length).toEqual(1);
+                    expect(newchatboxes.models[0].id).toBe("controlbox");
+                }.bind(converse));
             }, converse));
 
             describe("A chat toolbar", $.proxy(function () {
@@ -104,7 +175,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
                     var $toolbar = view.$el.find('ul.chat-toolbar');
@@ -116,7 +187,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     var $textarea = view.$el.find('textarea.chat-textarea');
                     expect($toolbar.children('li.toggle-smiley').length).toBe(1);
@@ -148,7 +219,7 @@
                         expect($($items[10]).children('a').data('emoticon')).toBe(':O');
                         expect($($items[11]).children('a').data('emoticon')).toBe('(^.^)b');
                         expect($($items[12]).children('a').data('emoticon')).toBe('<3');
-                        $items[0].click();
+                        $items.first().click();
                     });
                     waits(250);
                     runs(function () {
@@ -176,7 +247,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     expect($toolbar.children('li.toggle-otr').length).toBe(1);
                     // Register spies
@@ -202,7 +273,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     var callButton = $toolbar.find('.toggle-call');
 
@@ -245,11 +316,11 @@
                         this.chatboxes.onMessage(msg);
                         expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
                     }, converse));
-                    waits(300);
+                    waits(250);
                     runs($.proxy(function () {
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);
-                        var chatboxview = this.chatboxesview.views[sender_jid];
+                        var chatboxview = this.chatboxviews.get(sender_jid);
                         expect(chatbox).toBeDefined();
                         expect(chatboxview).toBeDefined();
                         // Check that the message was received and check the
@@ -272,17 +343,84 @@
                     }, converse));
                 }, converse));
 
-                it("will indate when it has a time difference of more than a day between it and it's predecessor", $.proxy(function () {
+                it("received for a minimized chat box will increment a counter on its header", $.proxy(function () {
+                    var contact_name = mock.cur_names[0];
+                    var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
+                    spyOn(this, 'emit');
+                    runs(function () {
+                        utils.openChatBoxFor(contact_jid);
+                    });
+                    waits(250);
+                    runs(function () {
+                        var chatview = converse.chatboxviews.get(contact_jid);
+                        expect(chatview.model.get('minimized')).toBeFalsy();
+                        chatview.$el.find('.toggle-chatbox-button').click();
+                    });
+                    waits(250);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        var message = 'This message is sent to a minimized chatbox';
+                        var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                        msg = $msg({
+                            from: sender_jid,
+                            to: this.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                        this.chatboxes.onMessage(msg);
+                        expect(this.emit).toHaveBeenCalledWith('onMessage', msg);
+                    }, converse));
+                    waits(250);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        var $count = chatview.$el.find('.chat-head-message-count');
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        expect($count.is(':visible')).toBeTruthy();
+                        expect($count.data('count')).toBe(1);
+                        expect($count.html()).toBe('1');
+                        this.chatboxes.onMessage(
+                            $msg({
+                                from: mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost',
+                                to: this.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').t('This message is also sent to a minimized chatbox').up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                        );
+                    }, converse));
+                    waits(100);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        var $count = chatview.$el.find('.chat-head-message-count');
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        expect($count.is(':visible')).toBeTruthy();
+                        expect($count.data('count')).toBe(2);
+                        expect($count.html()).toBe('2');
+                        chatview.$el.find('.toggle-chatbox-button').click();
+                    }, converse));
+                    waits(250);
+                    runs($.proxy(function () {
+                        var chatview = this.chatboxviews.get(contact_jid);
+                        var $count = chatview.$el.find('.chat-head-message-count');
+                        expect(chatview.model.get('minimized')).toBeFalsy();
+                        expect($count.is(':visible')).toBeFalsy();
+                        expect($count.data('count')).toBe(0);
+                        expect($count.html()).toBe('0');
+                    }, converse));
+                }, converse));
+
+                it("will indicate when it has a time difference of more than a day between it and its predecessor", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     utils.clearChatBoxMessages(contact_jid);
-
                     var one_day_ago = new Date(new Date().setDate(new Date().getDate()-1));
                     var message = 'This is a day old message';
                     var chatbox = this.chatboxes.get(contact_jid);
-                    var chatboxview = this.chatboxesview.views[contact_jid];
+                    var chatboxview = this.chatboxviews.get(contact_jid);
                     var $chat_content = chatboxview.$el.find('.chat-content');
                     var msg_obj;
                     var msg_txt;
@@ -323,11 +461,10 @@
                     // props.
                     var $time = $chat_content.find('time');
                     var message_date = new Date();
-                    message_date.setUTCHours(0,0,0,0);
                     expect($time.length).toEqual(1);
                     expect($time.attr('class')).toEqual('chat-date');
-                    expect($time.attr('datetime')).toEqual(converse.toISOString(message_date));
-                    expect($time.text()).toEqual(message_date.toString().substring(0,15));
+                    expect($time.attr('datetime')).toEqual(moment(message_date).format("YYYY-MM-DD"));
+                    expect($time.text()).toEqual(moment(message_date).format("dddd, MMMM Do YYYY"));
 
                     // Normal checks for the 2nd message
                     expect(chatbox.messages.length).toEqual(2);
@@ -345,24 +482,28 @@
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
-                    utils.openChatBoxFor(contact_jid);
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
-                    var view = this.chatboxesview.views[contact_jid];
-                    var message = 'This message is sent from this chatbox';
-                    spyOn(view, 'sendMessage').andCallThrough();
-                    utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
-                    expect(view.model.messages.length, 2);
-                    expect(converse.emit.callCount).toEqual(2);
-                    expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
-                    var txt = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text();
-                    expect(txt).toEqual(message);
+                    runs(function () {
+                        utils.openChatBoxFor(contact_jid);
+                    });
+                    waits(250);
+                    runs(function () {
+                        expect(converse.emit).toHaveBeenCalledWith('onChatBoxFocused', jasmine.any(Object));
+                        var view = this.chatboxviews.get(contact_jid);
+                        var message = 'This message is sent from this chatbox';
+                        spyOn(view, 'sendMessage').andCallThrough();
+                        utils.sendMessage(view, message);
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        expect(view.model.messages.length, 2);
+                        expect(converse.emit.callCount).toEqual(3);
+                        expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
+                        expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text()).toEqual(message);
+                    }.bind(converse));
                 }, converse));
 
                 it("is sanitized to prevent Javascript injection attacks", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     var message = '<p>This message contains <em>some</em> <b>markup</b></p>';
                     spyOn(view, 'sendMessage').andCallThrough();
                     utils.sendMessage(view, message);
@@ -375,7 +516,7 @@
                 it("can contain hyperlinks, which will be clickable", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     var message = 'This message contains a hyperlink: www.opkode.com';
                     spyOn(view, 'sendMessage').andCallThrough();
                     utils.sendMessage(view, message);
@@ -388,7 +529,7 @@
                 it("will have properly escaped URLs", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxesview.views[contact_jid];
+                    var view = this.chatboxviews.get(contact_jid);
                     spyOn(view, 'sendMessage').andCallThrough();
 
                     var message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
@@ -438,7 +579,7 @@
                 spyOn(converse, 'emit');
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 utils.openChatBoxFor(contact_jid);
-                var view = this.chatboxesview.views[contact_jid];
+                var view = this.chatboxviews.get(contact_jid);
                 var message = 'This message is another sent from this chatbox';
                 // Lets make sure there is at least one message already
                 // (e.g for when this test is run on its own).
@@ -487,7 +628,8 @@
             it("is cleared when the window is focused", $.proxy(function () {
                 spyOn(converse, 'clearMsgCounter').andCallThrough();
                 runs(function () {
-                    $(window).trigger('focus');
+                    $(window).triggerHandler('blur');
+                    $(window).triggerHandler('focus');
                 });
                 waits(50);
                 runs(function () {

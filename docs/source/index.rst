@@ -392,8 +392,8 @@ follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
 
-Install Node.js and development dependencies
-============================================
+Install the development and front-end dependencies
+==================================================
 
 We use development tools (`Grunt <http://gruntjs.com>`_ and `Bower <http://bower.io>`_)
 which depend on Node.js and npm (the Node package manager).
@@ -401,43 +401,38 @@ which depend on Node.js and npm (the Node package manager).
 If you don't have Node.js installed, you can download and install the latest
 version `here <https://nodejs.org/download>`_.
 
-Once you have Node.js installed, run the following command inside the Converse.js
+Also make sure you have ``git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
+
+Once you have *Node.js* and *git* installed, run the following command inside the Converse.js
 directory:
 
 ::
 
-    npm install
+    make dev
 
-This will install all the development dependencies for Converse.js. If you are
-curious to know what these are, take a look at whats under the *devDependencies* key in
-`package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
+This will first install the Node.js development tools (like Grunt and Bower)
+and then use Bower to install all of Converse.js's front-end dependencies.
 
-Install 3rd party dependencies
-==============================
+The front-end dependencies are those javascript files on which
+Converse.js directly depends and which will therefore be loaded in the browser.
 
-Make sure you have ``git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
+If you are curious to know what the different dependencies are:
 
-After running ``npm install``, you will now have Grunt and Bower installed.
+* Development dependencies: 
+    Take a look at whats under the *devDependencies* key in
+    `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
-We use Bower to manage Converse's front-end dependencies (e.g. Javascript that
-should get loaded in the browser).
+* Front-end dependencies:
+    See *dependencies* in
+    `bower.json <https://github.com/jcbrand/converse.js/blob/master/bower.json>`_.
 
-To fetch these dependencies, run:
+.. Note:
+    After running ```make dev```, you should now have a new directory *components*,
+    which contains all the front-end dependencies of Converse.js.
+    If this directory does NOT exist, something must have gone wrong.
+    Double-check the output of ```make dev``` to see if there are any errors
+    listed.
 
-::
-
-    grunt fetch
-
-If you don't have grunt installed globally, you need to specify the relative
-path:
-
-::
-
-    ./node_modules/.bin/grunt fetch
-
-This will call Bower in the background to fetch all the front-end
-dependencies (like backbone.js, strophe.js etc.) and then put them in the
-*components* folder.
 
 With AMD and require.js (recommended)
 =====================================
@@ -580,7 +575,7 @@ To do this for ALL languages, run:
 
 ::
 
-    make merge
+    make po
 
 The resulting PO file is then what gets translated.
 
@@ -807,6 +802,12 @@ Here are the different events that are emitted:
 
     Triggered whenever the roster view (i.e. the rendered HTML) has changed.
 
+* **onChatBoxClosed**
+
+    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+
+    Triggered when a chat box has been closed.
+
 * **onChatBoxFocused**
 
     ``converse.on('onChatBoxFocused', function (chatbox) { ... });``
@@ -819,11 +820,11 @@ Here are the different events that are emitted:
 
     Triggered when a chat box has been opened.
 
-* **onChatBoxClosed**
+* **onChatBoxToggled**
 
-    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
+    ``converse.on('onChatBoxToggled', function (chatbox) { ... });``
 
-    Triggered when a chat box has been closed.
+    Triggered when a chat box has been minimized or maximized.
 
 * **onStatusChanged**
 
@@ -967,8 +968,17 @@ Default = ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
+enable_message_carbons
+----------------------
+
+Default = ``false``
+
+Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
+
 expose_rid_and_sid
 ------------------
+
+Default = ``false``
 
 Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
 globally via the API. This allows other scripts served on the same page to use
@@ -976,6 +986,19 @@ these values.
 
 *Beware*: a malicious script could use these tokens to assume your identity
 and inject fake chat messages.
+
+forward_messages
+----------------
+
+Default = ``false``
+
+If set to ``true``, sent messages will also be forwarded to other connected
+XMPP resources (e.g. chat clients) of the same user.
+
+This is useful for example if converse.js is running in multiple tabs of the
+browser and you want sent messages to appear in all of them.
+
+See also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 fullname
 --------

@@ -1,14 +1,12 @@
 # You can set these variables from the command line.
-SPHINXOPTS    =
-SPHINXBUILD = sphinx-build
-PAPER         =
-BUILDDIR      = ./docs
-
 BOWER 		?= node_modules/.bin/bower
+BUILDDIR     = ./docs
+PAPER        =
+PHANTOMJS	?= node_modules/.bin/phantomjs
+SPHINXBUILD  = sphinx-build
+SPHINXOPTS   =
 
 # Internal variables.
-PAPEROPT_a4     = -D latex_paper_size=a4
-PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -19,33 +17,33 @@ all: dev
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  changes    to make an overview of all changed/added/deprecated items"
-	@echo "  devhelp    to make HTML files and a Devhelp project"
-	@echo "  dirhtml    to make HTML files named index.html in directories"
-	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
-	@echo "  epub       to export the documentation to epub"
+	@echo "  dev        to set up the development environment"
 	@echo "  gettext    to make PO message catalogs of the documentation"
 	@echo "  html       to make standalone HTML files of the documentation"
-	@echo "  htmlhelp   to make HTML files and a HTML help project from the documentation"
-	@echo "  info       to make Texinfo files and run them through makeinfo"
-	@echo "  json       to make JSON files"
-	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  latexpdf   to make LaTeX files and run them through pdflatex"
-	@echo "  linkcheck  to check all external links for integrity"
-	@echo "  pot        generates a gettext POT file to be used for translations"
+	@echo "  pot        to generate a gettext POT file to be used for translations"
+	@echo "  po         to generate gettext PO files for each i18n language"
+	@echo "  po2json    to generate JSON files from the language PO files"
 	@echo "  release    to make a new minified release"
 	@echo "  linkcheck  to check all documentation external links for integrity"
 	@echo "  epub       to export the documentation to epub"
 	@echo "  changes    to make an overview of all changed/added/deprecated items added to the documentation"
 
-pot: 
+########################################################################
+## Translation machinery
+
+pot:
 	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.7.0 -c --language="python";
 
-merge:
+po:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;
+
+merge: po
 
 po2json:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec po2json {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
+
+########################################################################
+## Release management
 
 release:
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
@@ -57,12 +55,35 @@ release:
 	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.rst
 	grunt minify
 
-dev:
+########################################################################
+## Install dependencies
+
+stamp-npm: package.json
+	npm install
+	touch stamp-npm
+
+stamp-bower: stamp-npm bower.json
+	$(BOWER) install
+	touch stamp-bower
+
+clean::
+	rm -f stamp-npm stamp-bower
+	rm -rf node_modules components
+	-rm -rf $(BUILDDIR)/*
+
+dev: clean
 	npm install
 	${BOWER} update;
 
-clean:
-	-rm -rf $(BUILDDIR)/*
+
+########################################################################
+## Tests
+
+check:: stamp-npm
+	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
+
+########################################################################
+## Documentation
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

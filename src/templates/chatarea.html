@@ -1,0 +1,13 @@
+<div class="chat-area">
+    <div class="chat-content"></div>
+    <form class="sendXMPPMessage" action="" method="post">
+        {[ if (show_toolbar) { ]}
+            <ul class="chat-toolbar no-text-select"></ul>
+        {[ } ]}
+        <textarea type="text" class="chat-textarea" 
+            placeholder="{{label_message}}"/>
+    </form>
+</div>
+<div class="participants">
+    <ul class="participant-list"></ul>
+</div>

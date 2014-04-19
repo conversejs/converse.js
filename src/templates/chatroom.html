@@ -1,0 +1,18 @@
+<div class="box-flyout {[if (minimized) {]} minimized {[}]}"
+    {[if (!minimized) {]} style="height: {{height}}px" {[}]}>
+    <div class="dragresize dragresize-tm" {[ if (minimized) { ]} style="display:none" {[ } ]}></div>
+    <div class="chat-head chat-head-chatroom">
+        <div class="chat-head-message-count">0</div>
+        <a class="close-chatbox-button icon-close"></a>
+        <a class="toggle-chatbox-button
+                  {[ if (minimized) { ]} icon-plus {[ } ]}
+                  {[ if (!minimized) { ]} icon-minus {[ } ]}
+                 "></a>
+        <a class="configure-chatroom-button icon-wrench" style="display:none"></a>
+        <div class="chat-title"> {{ name }} </div>
+        <p class="chatroom-topic"><p/>
+    </div>
+    <div class="chat-body" {[ if (minimized) { ]} style="display:none" {[ } ]}>
+        <span class="spinner centered"/>
+    </div>
+</div>

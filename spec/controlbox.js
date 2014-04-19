@@ -8,28 +8,50 @@
     );
 } (this, function (mock, utils) {
     describe("The Control Box", $.proxy(function (mock, utils) {
-        window.localStorage.clear();
 
-        it("is not shown by default", $.proxy(function () {
-            expect(this.rosterview.$el.is(':visible')).toEqual(false);
+        beforeEach(function () {
+            runs(function () {
+                utils.openControlBox();
+            });
+            waits(250);
+            runs(function () {});
+        });
+
+        it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
+            runs(function () {
+                utils.closeControlBox();
+            });
+            waits(250);
+            runs(function () {
+                // This spec will only pass if the controlbox is not currently
+                // open yet.
+                expect($("div#controlbox").is(':visible')).toBe(false);
+                spyOn(this.controlboxtoggle, 'onClick').andCallThrough();
+                spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
+                spyOn(converse, 'emit');
+                // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
+                this.controlboxtoggle.delegateEvents();
+                $('.toggle-online-users').click();
+            }.bind(converse));
+            waits(250);
+            runs(function () {
+                expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
+                expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
+                expect(this.emit).toHaveBeenCalledWith('onControlBoxOpened', jasmine.any(Object));
+                expect($("div#controlbox").is(':visible')).toBe(true);
+            }.bind(converse));
         }, converse));
 
-        var open_controlbox = $.proxy(function () {
-            // This spec will only pass if the controlbox is not currently
-            // open yet.
-            expect($("div#controlbox").is(':visible')).toBe(false);
-            spyOn(this.controlboxtoggle, 'onClick').andCallThrough();
-            spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
-            // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
-            this.controlboxtoggle.delegateEvents();
-            $('.toggle-online-users').click();
-            expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
-            expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
-            expect($("div#controlbox").is(':visible')).toBe(true);
-        }, converse);
-        it("can be opened by clicking a DOM element with class 'toggle-online-users'", open_controlbox);
-
         describe("The Status Widget", $.proxy(function () {
+
+            beforeEach(function () {
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {});
+            });
+
             it("shows the user's chat status, which is online by default", $.proxy(function () {
                 var view = this.xmppstatusview;
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
@@ -88,13 +110,23 @@
                 });
             }, converse));
         }, converse));
-    }, converse, utils, mock));
+    }, converse, mock, utils));
 
-    describe("The Contacts Roster", $.proxy(function (utils, mock) {
+    describe("The Contacts Roster", $.proxy(function (mock, utils) {
+        // FIXME: These tests are dependent on being run in order and cannot be
+        // run independently
+
         describe("Pending Contacts", $.proxy(function () {
             beforeEach(function () {
-                utils.openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+                waits(250);
+                runs(function () {});
             });
 
             it("do not have a heading if there aren't any", $.proxy(function () {
@@ -122,7 +154,8 @@
             }, converse));
 
             it("can be removed by the user", $.proxy(function () {
-                var view = _.toArray(this.rosterview.rosteritemviews).pop();
+                var jid = mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var view = this.rosterview.get(jid);
                 spyOn(window, 'confirm').andReturn(true);
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'remove').andCallThrough();
@@ -132,7 +165,7 @@
                 runs($.proxy(function () {
                     view.$el.find('.remove-xmpp-contact').click();
                 }, converse));
-                waits(500);
+                waits(250);
                 runs($.proxy(function () {
                     expect(window.confirm).toHaveBeenCalled();
                     expect(this.connection.roster.remove).toHaveBeenCalled();
@@ -164,7 +197,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').text();
+                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').find('span').text();
                     expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
@@ -177,8 +210,15 @@
 
         describe("Existing Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+                waits(250);
+                runs(function () {});
             }, converse));
 
             it("do not have a heading if there aren't any", $.proxy(function () {
@@ -215,7 +255,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=0; i<3; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'online');
@@ -234,7 +274,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=3; i<6; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'dnd');
@@ -253,7 +293,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=6; i<9; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'away');
@@ -272,7 +312,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=9; i<12; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'xa');
@@ -291,7 +331,7 @@
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=12; i<15; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
                     item.set('chat_status', 'unavailable');
@@ -351,7 +391,7 @@
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').text().replace(/AcceptDecline/g, '');
+                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('div').text().replace(/AcceptDecline/g, '');
                     expect(t).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
                     // When a requesting contact is added, the controlbox must
                     // be opened.
@@ -369,7 +409,7 @@
                 // actually not accepted/authorized because of
                 // mock_connection.
                 var jid = mock.req_names.sort()[0].replace(' ','.').toLowerCase() + '@localhost';
-                var view = this.rosterview.rosteritemviews[jid];
+                var view = this.rosterview.get(jid);
                 spyOn(this.connection.roster, 'authorize');
                 spyOn(view, 'acceptRequest').andCallThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -381,7 +421,7 @@
 
             it("can have their requests denied by the user", $.proxy(function () {
                 var jid = mock.req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.rosterview.rosteritemviews[jid];
+                var view = this.rosterview.get(jid);
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
@@ -407,7 +447,7 @@
                 expect(new_roster.length).toEqual(0);
 
                 new_roster.localStorage = new Backbone.LocalStorage(
-                    hex_sha1('converse.rosteritems-dummy@localhost'));
+                    b64_sha1('converse.rosteritems-dummy@localhost'));
 
                 new_roster.fetch();
                 expect(this.roster.length).toEqual(num_contacts);
@@ -432,16 +472,16 @@
                 // we make some online now
                 for (i=0; i<5; i++) {
                     jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-                    view = this.rosterview.rosteritemviews[jid];
+                    view = this.rosterview.get(jid);
                     view.model.set('chat_status', 'online');
                 }
             }, converse));
         }, converse));
-    }, converse, utils, mock));
+    }, converse, mock, utils));
 
-    describe("The 'Add Contact' widget", $.proxy(function (utils, mock) {
+    describe("The 'Add Contact' widget", $.proxy(function (mock, utils) {
         it("opens up an add form when you click on it", $.proxy(function () {
-            var panel = this.chatboxesview.views.controlbox.contactspanel;
+            var panel = this.chatboxviews.get('controlbox').contactspanel;
             spyOn(panel, 'toggleContactForm').andCallThrough();
             panel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
             panel.$el.find('a.toggle-xmpp-contact-form').click();
@@ -450,16 +490,23 @@
             panel.$el.find('a.toggle-xmpp-contact-form').click();
         }, converse));
 
-    }, converse, utils, mock));
+    }, converse, mock, utils));
 
     describe("The Controlbox Tabs", $.proxy(function () {
         beforeEach($.proxy(function () {
-            utils.closeAllChatBoxes();
-            utils.openControlBox();
+            runs(function () {
+                utils.closeAllChatBoxes();
+            });
+            waits(250);
+            runs(function () {
+                utils.openControlBox();
+            });
+            waits(250);
+            runs(function () {});
         }, converse));
 
         it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
-            var cbview = this.chatboxesview.views.controlbox;
+            var cbview = this.chatboxviews.get('controlbox');
             var $panels = cbview.$el.find('.controlbox-panes');
             expect($panels.children().length).toBe(2);
             expect($panels.children().first().attr('id')).toBe('users');
@@ -468,14 +515,21 @@
             expect($panels.children().last().is(':visible')).toBe(false);
         }, converse));
 
-        describe("The Chatrooms Panel", $.proxy(function () {
+        describe("chatrooms panel", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.closeAllChatBoxes();
-                utils.openControlBox();
+                runs(function () {
+                    utils.closeAllChatBoxes();
+                });
+                waits(250);
+                runs(function () {
+                    utils.openControlBox();
+                });
+                waits(250);
+                runs(function () {});
             }, converse));
 
             it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {
-                var cbview = this.chatboxesview.views.controlbox;
+                var cbview = this.chatboxviews.get('controlbox');
                 var $tabs = cbview.$el.find('#controlbox-tabs');
                 var $panels = cbview.$el.find('.controlbox-panes');
                 var $contacts = $panels.children().first();
@@ -494,7 +548,7 @@
             }, converse));
 
             it("contains a form through which a new chatroom can be created", $.proxy(function () {
-                var roomspanel = this.chatboxesview.views.controlbox.roomspanel;
+                var roomspanel = this.chatboxviews.get('controlbox').roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');
                 var $nick = roomspanel.$el.find('input.new-chatroom-nick');
                 var $server = roomspanel.$el.find('input.new-chatroom-server');

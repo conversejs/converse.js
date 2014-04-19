@@ -1,0 +1,11 @@
+<form class="add-chatroom" action="" method="post">
+    <input type="text" name="chatroom" class="new-chatroom-name"
+        placeholder="{{label_room_name}}"/>
+    <input type="text" name="nick" class="new-chatroom-nick"
+        placeholder="{{label_nickname}}"/>
+    <input type="{{server_input_type}}" name="server" class="new-chatroom-server"
+        placeholder="{{label_server}}"/>
+    <input type="submit" name="join" value="{{label_join}}"/>
+    <input type="button" name="show" id="show-rooms" value="{{label_show_rooms}}"/>
+</form>
+<dl id="available-chatrooms"></dl>

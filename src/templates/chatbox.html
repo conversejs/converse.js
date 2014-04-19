@@ -1,0 +1,34 @@
+<div class="box-flyout {[if (minimized) {]} minimized {[}]}"
+    {[if (!minimized) {]} style="height: {{height}}px" {[}]}>
+    <div class="dragresize dragresize-tm" {[ if (minimized) { ]} style="display:none" {[ } ]}></div>
+    <div class="chat-head chat-head-chatbox">
+        <div class="chat-head-message-count">0</div>
+        <a class="close-chatbox-button icon-close"></a>
+        <a class="toggle-chatbox-button
+                  {[ if (minimized) { ]} icon-plus {[ } ]}
+                  {[ if (!minimized) { ]} icon-minus {[ } ]}
+                 "></a>
+        <div class="chat-title">
+            {[ if (url) { ]}
+                <a href="{{url}}" target="_blank" class="user">
+            {[ } ]}
+                    {{ fullname }}
+            {[ if (url) { ]}
+                </a>
+            {[ } ]}
+        </div>
+        <p class="user-custom-message"><p/>
+    </div>
+    <div class="chat-body" {[ if (minimized) { ]} style="display:none" {[ } ]}>
+        <div class="chat-content"></div>
+        <form class="sendXMPPMessage" action="" method="post">
+            {[ if (show_toolbar) { ]}
+                <ul class="chat-toolbar no-text-select"></ul>
+            {[ } ]}
+        <textarea
+            type="text"
+            class="chat-textarea"
+            placeholder="{{label_personal_message}}"/>
+        </form>
+    </div>
+</div>

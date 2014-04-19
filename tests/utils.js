@@ -13,7 +13,7 @@
         var i, chatbox;
         for (i=converse.chatboxes.models.length-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
-            converse.chatboxesview.views[chatbox.get('id')].closeChat();
+            converse.chatboxviews.get(chatbox.get('id')).closeChat();
         }
         return this;
     };
@@ -22,17 +22,17 @@
         var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
         for (i=num_chatboxes-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
-            converse.chatboxesview.views[chatbox.get('id')].closeChat();
-            converse.chatboxesview.views[chatbox.get('id')].$el.remove();
+            converse.chatboxviews.get(chatbox.get('id')).closeChat();
+            converse.chatboxviews.get(chatbox.get('id')).$el.remove();
         }
-        converse.chatboxesview.views.controlbox.closeChat();
-        converse.chatboxesview.views.controlbox.$el.remove();
+        converse.chatboxviews.get('controlbox').closeChat();
+        converse.chatboxviews.get('controlbox').$el.remove();
         return this;
     };
 
     utils.initConverse = function () {
         converse.chatboxes = new converse.ChatBoxes();
-        converse.chatboxesview = new converse.ChatBoxesView({model: converse.chatboxes});
+        converse.chatboxviews = new converse.ChatBoxViews({model: converse.chatboxes});
         converse.onConnected();
     };
 
@@ -42,68 +42,59 @@
     };
 
     utils.openControlBox = function () {
+        var toggle = $(".toggle-online-users");
         if (!$("#controlbox").is(':visible')) {
-            $('.toggle-online-users').click();
+            if (!toggle.is(':visible')) {
+                toggle.show(toggle.click);
+            } else {
+                toggle.click();
+            }
         }
         return this;
     };
 
     utils.closeControlBox = function () {
         if ($("#controlbox").is(':visible')) {
-            $('.toggle-online-users').click();
+            $("#controlbox").find(".close-chatbox-button").click();
         }
         return this;
     };
 
     utils.removeControlBox = function () {
+        converse.controlboxtoggle.show();
         $('#controlbox').remove();
     };
 
     utils.openContactsPanel = function () {
-        var cbview = converse.chatboxesview.views.controlbox;
+        var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').first().find('a').click();
     };
 
     utils.openRoomsPanel = function () {
-        var cbview = converse.chatboxesview.views.controlbox;
+        var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').last().find('a').click();
     };
 
     utils.openChatBoxes = function (amount) {
-        var i = 0, jid;
+        var i = 0, jid, views = [];
         for (i; i<amount; i++) {
             jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
-            converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+            views[i] = converse.rosterview.get(jid).openChat(mock.event);
         }
+        return views;
     };
 
     utils.openChatBoxFor = function (jid) {
-        return converse.rosterview.rosteritemviews[jid].openChat(mock.event);
+        return converse.rosterview.get(jid).openChat(mock.event);
     };
 
     utils.clearChatBoxMessages = function (jid) {
-        var view = converse.chatboxesview.views[jid];
+        var view = converse.chatboxviews.get(jid);
         view.$el.find('.chat-content').empty();
-        view.model.messages.reset().localStorage._clear();
-    };
-
-    utils.createNewChatRoom = function (room, nick) {
-        var controlbox_was_visible = $("#controlbox").is(':visible');
-        utils.openControlBox();
-        utils.openRoomsPanel();
-        var roomspanel = converse.chatboxesview.views.controlbox.roomspanel;
-        var $input = roomspanel.$el.find('input.new-chatroom-name');
-        var $nick = roomspanel.$el.find('input.new-chatroom-nick');
-        var $server = roomspanel.$el.find('input.new-chatroom-server');
-        $input.val('lounge');
-        $nick.val('dummy');
-        $server.val('muc.localhost');
-        roomspanel.$el.find('form').submit();
-        if (!controlbox_was_visible) {
-            utils.closeControlBox();
-        }
+        view.model.messages.reset();
+        view.model.messages.localStorage._clear();
     };
 
     utils.createCurrentContacts = function () {

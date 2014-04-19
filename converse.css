@@ -347,27 +347,15 @@ span.spinner.hor_centered {
     text-align: center;
 }
 
-#conversejs {
-    z-index: 99; /*--Keeps the panel on top of all other elements--*/
-    position: fixed;
-    bottom: 0; right: 0;
-    height: 332px;
-    width: auto;
-}
-
 #toggle-controlbox {
-    position: fixed;
-    font-size: 70%;
-    bottom: 0;
-    right: 0;
+    float: right;
+    font-size: 85%;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
-    background: #e3e2e2;
-    border: 1px solid #c3c3c3;
-    border-bottom: none;
-    padding: 1px 3px;
+    background-color: rgba(83, 144, 200, 100);
+    padding: 4px 8px;
     margin-right: 15px;
-    height: 16px;
+    color: white;
 }
 
 #connecting-to-chat {
@@ -393,27 +381,34 @@ span.spinner.hor_centered {
     background-color: #2D617A;
 }
 
-.chatroom .chat-body {
-    height: 274px;
+.chat-body {
     background-color: white;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     border-top: 0;
 }
 
+.chatbox .chat-body {
+    height: -moz-calc(100% - 38px);
+    height: -o-calc(100% - 38px);
+    height: calc(100% - 38px);
+}
+
+.chatroom .chat-body {
+    height: -moz-calc(100% - 38px);
+    height: -o-calc(100% - 38px);
+    height: calc(100% - 38px);
+}
+
 .chatroom .chat-area {
     float: left;
     width: 200px;
-}
-
-.chatroom .chat {
-    overflow: auto;
-    height: 400px;
+    height: 100%;
 }
 
 .chatroom .participants {
     float: left;
-    height: 274px;
+    height: 100%;
     background-color: white;
     overflow: auto;
     border-left: 1px solid #AAA;
@@ -451,12 +446,18 @@ ul.participant-list li.moderator {
     padding: 4px;
     font-size: 13px;
     color: rgb(79, 79, 79);
-    height:190px;
-    width: 192px;
     overflow-y:auto;
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+.chat-content {
+    height: -moz-calc(100% - 76px);
+    height: -o-calc(100% - 76px);
+    height: calc(100% - 76px);
 }
 
 .chat-info {
@@ -508,11 +509,6 @@ li.chat-info {
     padding-top: 10px;
 }
 
-div#chatrooms,
-div#login-dialog {
-    height: 274px;
-}
-
 p.not-implemented {
     margin-top: 3em;
     margin-left: 0.3em;
@@ -560,6 +556,10 @@ div.chat-title {
     height: 1em;
 }
 
+div.chat-title a {
+    color: white;
+}
+
 .chat-head-chatbox,
 .chat-head-chatroom {
     background: linear-gradient(top, rgba(206,220,231,1) 0%,rgba(79,106,114,1) 100%);
@@ -578,6 +578,9 @@ p.chatroom-topic {
     margin: 0;
 }
 
+div.chat-head-chatbox a.user-custom-message {
+    color: white;
+}
 .activated{
     display: block !important;
 }
@@ -623,6 +626,7 @@ dl.add-converse-contact {
     float: right;
     clear: right;
     height: 22px;
+    width: 12px;
     padding: 0px 5px 0 0;
     color: rgb(79, 79, 79);
 }
@@ -642,7 +646,7 @@ form.search-xmpp-contact input {
     width: 8em;
 }
 
-.oc-chat-head {
+.controlbox-head {
     margin: 0;
     color: #FFF;
     border-top-right-radius: 4px;
@@ -653,8 +657,30 @@ form.search-xmpp-contact input {
     padding: 3px 0 0 0;
 }
 
+.chat-head-message-count {
+    font-weight: bold;
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.35, #f6f6f6), color-stop(1, grey) );
+    background: -moz-linear-gradient(center top, yellow 5%, #f6f6f6 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='yellow', endColorstr='#f6f6f6');
+    border: 3px solid rgb(79, 106, 114);
+    text-shadow: 1px 1px 0 #ccc;
+    color: darkred;
+    border-radius: 20%;
+    padding: 2px 10px;
+    font-size: 18px;
+    text-align: center;
+    display: none;
+}
+
+.chat-head-chatroom .chat-head-message-count {
+    border: 3px solid #2D617A;
+}
+
 a.configure-chatroom-button,
-a.minimize-chatbox-button,
+a.toggle-chatbox-button,
 a.close-chatbox-button {
     font-size: 10px;
     padding: 3px 3px 2px 3px;
@@ -664,8 +690,8 @@ a.close-chatbox-button {
     -moz-box-shadow:inset 0 1px 0 0 #ffffff;
     -webkit-box-shadow:inset 0 1px 0 0 #ffffff;
     box-shadow:inset 0 1px 0 0 #ffffff;
-    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f6f6f6) );
-    background:-moz-linear-gradient( center top, #ffffff 5%, #f6f6f6 100% );
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f6f6f6) );
+    background:-moz-linear-gradient(center top, #ffffff 5%, #f6f6f6 100%);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f6f6f6');
     -moz-border-radius:6px;
     -webkit-border-radius:6px;
@@ -678,21 +704,20 @@ a.close-chatbox-button {
 }
 
 a.configure-chatroom-button:active,
-a.minimize-chatbox-button:active,
+a.toggle-chatbox-button:active,
 a.close-chatbox-button:active {
     position:relative;
     top:1px;
 }
 
-.oc-chat-content dt {
+.controlbox-pane dt {
     margin: 0;
     padding-top: 0.5em;
 }
 
 .chatroom-form-container {
+    height: 100%;
     color: #666;
-    padding: 5px;
-    height: 262px;
     overflow-y: auto;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -760,15 +785,14 @@ a.close-chatbox-button:active {
 }
 
 #converse-roster {
-    height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
-    margin: 0;
     position: relative;
-    top: 0;
-    border: none;
-    margin-top: 0.5em;
+    margin: 0.5em 0 0 0;
+    height: -moz-calc(100% - 70px);
+    height: -o-calc(100% - 70px);
+    height: calc(100% - 70px);
 }
 
 #conversejs dd.available-chatroom {
@@ -876,12 +900,10 @@ dd.available-chatroom:hover a.room-info {
 
 .chatbox,
 .chatroom {
-    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.4);
-    display:none;
+    height: 25px;
     float: right;
     margin-right: 15px;
-    z-index: 20; /* So that it's higher than the content actions */
-    border-radius: 4px;
+    display: block;
 }
 
 .chatbox {
@@ -892,36 +914,21 @@ dd.available-chatroom:hover a.room-info {
     width: 300px;
 }
 
-.oc-chat-content {
-    height:274px;
+.controlbox-pane {
     padding: 0;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
 }
 
-.oc-chat-content dd {
+.controlbox-pane dd {
     margin-left: 0;
     margin-bottom: 0;
     padding: 1em;
 }
 
-.oc-chat-content dd.odd {
+.controlbox-pane dd.odd {
     background-color: #DCEAC5;
 }
-
-#conversejs div.controlbox-panes {
-    background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%); /* FF3.6+ */
-    background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* IE10+ */
-    background: -o-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* Opera 11.10+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(240,240,240,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: linear-gradient(top, rgba(255,255,255,1) 0%,rgba(240,240,240,1) 100%); /* W3C */
-    background-color: white;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    width: 200px;
-}
-
 
 form#converse-login {
     background: white;
@@ -975,7 +982,7 @@ select#select-xmpp-status {
 
 /* single tab */
 .chat-head #controlbox-tabs li {
-    float:left;
+    float: left;
     list-style: none;
     padding-left: 0;
     text-shadow: white 0 1px 0;
@@ -983,16 +990,16 @@ select#select-xmpp-status {
 }
 
 ul#controlbox-tabs li a {
-    display:block;
-    font-size:12px;
+    display: block;
+    font-size: 12px;
     height: 34px;
-    line-height:34px;
+    line-height: 34px;
     margin: 0;
-    text-align:center;
-    text-decoration:none;
+    text-align: center;
+    text-decoration: none;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
-    color:#666;
+    color: #666;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
@@ -1024,6 +1031,11 @@ div#settings {
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     width: 100%;
+    height: -moz-calc(100% - 38px);
+    height: -o-calc(100% - 38px);
+    height: calc(100% - 38px);
+    overflow-y: hidden;
+    position: absolute;
 }
 
 div#chatrooms {
@@ -1191,6 +1203,10 @@ form#set-custom-xmpp-status {
     padding: 1px 2px 1px 1px;
 }
 
+#controlbox {
+    display: none;
+}
+
 #controlbox div.xmpp-status {
     display: inline;
 }
@@ -1205,7 +1221,7 @@ form#set-custom-xmpp-status {
 .chatbox .dropdown dd { position:relative; }
 
 input.custom-xmpp-status {
-    width: 138px;
+    width: 124px;
 }
 
 form.add-xmpp-contact {
@@ -1214,7 +1230,7 @@ form.add-xmpp-contact {
 }
 
 form.add-xmpp-contact input {
-    width: 120px;
+    width: 108px;
 }
 
 .chatbox .dropdown dt a span {
@@ -1240,17 +1256,14 @@ form.add-xmpp-contact input {
     padding-left: 0;
 }
 
-.set-xmpp-status .dropdown dd ul {
-    z-index: 22;
-}
-
 .chatbox .dropdown a {
     height: 22px;
+    width: 148px;
     display: inline-block;
     line-height: 24px;
 }
 
-.chatbox .dropdown dd ul a:hover {
+.chatbox .dropdown dd ul li:hover {
     background-color: #bed6e5;
 }
 
@@ -1263,3 +1276,51 @@ form.add-xmpp-contact input {
     color: rgb(79, 79, 79);
 }
 
+.set-xmpp-status .dropdown dd ul {
+    z-index: 22;
+}
+
+#conversejs {
+    bottom: 1px;
+    direction: ltr;
+    height: 25px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    z-index: 30;
+    display: block;
+}
+
+.box-flyout {
+    background: white;
+    position: absolute;
+    display: block;
+    bottom: 1px;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.4);
+    border-radius: 4px;
+    height: 324px;
+}
+
+.box-flyout.minimized {
+    height: auto;
+}
+
+.chatbox .box-flyout {
+    width: 200px;
+}
+
+.chatroom .box-flyout {
+    width: 300px;
+}
+
+.dragresize {
+    position: absolute;
+    width: 200px;
+    height: 5px;
+    background: transparent;
+    border: 0;
+    top: 0;
+    margin-left: 0;
+    cursor: n-resize;
+    z-index: 20;
+}

@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {
@@ -27,16 +27,16 @@
     "url": "https://github.com/jcbrand/converse.js/issues"
   },
   "devDependencies": {
-    "grunt-cli": "~0.1.9",
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.0",
-    "phantomjs": "~1.9.1-0",
-    "jasmine-reporters": "~0.2.1",
-    "bower": "~1.0.0",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-cssmin": "~0.6.1"
+    "grunt-cli": "~0.1.13",
+    "grunt": "~0.4.4",
+    "grunt-contrib-jshint": "~0.10.0",
+    "phantom-jasmine": "0.1.8",
+    "phantomjs": "~1.9.7-1",
+    "bower": "latest",
+    "grunt-contrib-requirejs": "~0.4.3",
+    "grunt-contrib-cssmin": "~0.9.0"
   },
   "dependencies": {
-    "requirejs": "~2.1.8"
+    "requirejs": "~2.1.11"
   }
 }

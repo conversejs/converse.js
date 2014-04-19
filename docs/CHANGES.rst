@@ -1,12 +1,24 @@
 Changelog
 =========
 
+0.8 (Unreleased)
+----------------
+
+* Chat boxes and rooms can now be resized vertically. [jcbrand]
+* Upgraded many dependencies to their latest versions. [jcbrand]
+* Add new configuration setting `forward_messages <https://conversejs.org/docs/html/index.html#forward_messages>`_ 
+  Message forwarding was before default behavior but is now optional (and disabled by default).
+  [jcbrand]
+* #71 Chat boxes and rooms can be minimized. [jcbrand]
+* #132 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html'>`_.
+  Configured via `enable_message_carbons <https://conversejs.org/docs/html/index.html#enable_message_carbons>`_ 
+  [hejazee]
+
 0.7.4 (2014-03-05)
 ------------------
 
-.. note::
-   This release contains an important security fix.
-   Thanks to Renaud Dubourguais from `Synacktiv http://synacktiv.com`_ for reporting the vulnerability.
+.. note:: This release contains an important security fix.
+   Thanks to Renaud Dubourguais from `Synacktiv <http://synacktiv.com>`_ for reporting the vulnerability.
 
 * #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]
 * Bugfix: action messages (i.e. /me) didn't work in OTR mode. [jcbrand]
@@ -26,8 +38,7 @@ Changelog
 0.7.2 (2013-12-18)
 ------------------
 
-.. note::
-   This release contains an important security fix.
+.. note:: This release contains an important security fix.
    Thanks to hejsan for reporting the vulnerability.
 
 * #48 Add event emitter support and emit events. [jcbrand]
@@ -116,9 +127,8 @@ Bugfixes:
 0.6.3 (2013-09-12)
 ------------------
 
-.. note::
-    This release contains an important security fix. Please don't use older
-    versions of the 0.6 branch.
+NB: This release contains an important security fix. Please don't use older
+versions of the 0.6 branch.
 
 * French translations. [tdesvenain]
 * Bugfix: Messages were stored against buddy JID and not own JID. [jcbrand]
@@ -128,7 +138,7 @@ Bugfixes:
 
 * Bugfix. The remove icon wasn't appearing in the contacts roster. [jcbrand]
 * Bugfix. With auto_subscribe=True, the "Pending Contacts" header didn't disappear
-after a new user was accepted. [jcbrand]
+  after a new user was accepted. [jcbrand]
 
 0.6.1 (2013-08-28)
 ------------------

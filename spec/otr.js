@@ -21,8 +21,8 @@
             this.prebind = false;
             this.connection.pass = 's3cr3t!';
             expect(this.otr.getSessionPassphrase()).toBe(this.connection.pass);
-            expect(window.sessionStorage.length).toBe(0); 
-            expect(window.localStorage.length).toBe(0); 
+            expect(window.sessionStorage.length).toBe(0);
+            expect(window.localStorage.length).toBe(0);
 
             // With prebind, a random passphrase is generated and stored in
             // session storage.
@@ -30,8 +30,8 @@
             pp = this.otr.getSessionPassphrase();
             expect(pp).not.toBe(this.connection.pass);
             expect(window.sessionStorage.length).toBe(1);
-            expect(window.localStorage.length).toBe(0); 
-            expect(pp).toBe(window.sessionStorage[hex_sha1(converse.connection.jid)]);
+            expect(window.localStorage.length).toBe(0);
+            expect(pp).toBe(window.sessionStorage[b64_sha1(converse.connection.jid)]);
 
             // Clean up
             this.prebind = false;

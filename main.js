@@ -1,11 +1,15 @@
-require.config({
+config = {
     paths: {
-        "jquery": "components/jquery/jquery",
-        "locales": "locale/locales",
+        "jquery": "components/jquery/dist/jquery",
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
+        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "locales": "locale/locales",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
+        "text": 'components/requirejs-text/text',
+        "tpl": 'components/requirejs-tpl-jcbrand/tpl',
+        "converse-templates": "src/templates",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",
@@ -26,8 +30,17 @@ require.config({
         "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
         "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
+        "moment": "components/momentjs/moment",
         "otr": "components/otr/build/otr",
         "converse-dependencies": "src/deps-full"
+    },
+
+    tpl: {
+        // Use Mustache style syntax for variable interpolation
+        templateSettings: {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        }
     },
 
     // define module dependencies for modules not using define
@@ -61,8 +74,11 @@ require.config({
         'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }
     }
-});
+};
 
-require(["jquery", "converse"], function(require, $, converse) {
-    window.converse = converse;
-});
+if (typeof(require) !== 'undefined') {
+    require.config(config);
+    require(["jquery", "converse"], function(require, $, converse) {
+        window.converse = converse;
+    });
+}

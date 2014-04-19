@@ -1,0 +1,42 @@
+<!-- FIXME: check markup in mockup -->
+<div class="room-info">
+<p class="room-info"><strong>{{label_desc}}</strong> {{desc}}</p>
+<p class="room-info"><strong>{{label_occ}}</strong> {{occ}}</p>
+<p class="room-info"><strong>{{label_features}}</strong>
+    <ul>
+        {[ if (passwordprotected) { ]}
+        <li class="room-info locked">{{label_requires_auth}}</li>
+        {[ } ]}
+        {[ if (hidden) { ]}
+        <li class="room-info">{{label_hidden}}</li>
+        {[ } ]}
+        {[ if (membersonly) { ]}
+        <li class="room-info">{{label_requires_invite}}</li>
+        {[ } ]}
+        {[ if (moderated) { ]}
+        <li class="room-info">{{label_moderated}}</li>
+        {[ } ]}
+        {[ if (nonanonymous) { ]}
+        <li class="room-info">{{label_non_anon}}</li>
+        {[ } ]}
+        {[ if (open) { ]}
+        <li class="room-info">{{label_open_room}}</li>
+        {[ } ]}
+        {[ if (persistent) { ]}
+        <li class="room-info">{{label_permanent_room}}</li>
+        {[ } ]}
+        {[ if (publicroom) { ]}
+        <li class="room-info">{{label_public}}</li>
+        {[ } ]}
+        {[ if (semianonymous) { ]}
+        <li class="room-info">{{label_semi_anon}}</li>
+        {[ } ]}
+        {[ if (temporary) { ]}
+        <li class="room-info">{{label_temp_room}}</li>
+        {[ } ]}
+        {[ if (unmoderated) { ]}
+        <li class="room-info">{{label_unmoderated}}</li>
+        {[ } ]}
+    </ul>
+</p>
+</div>

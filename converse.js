@@ -152,6 +152,7 @@
         this.cache_otr_key = false;
         this.debug = false;
         this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
+        this.enable_message_carbons = false;
         this.expose_rid_and_sid = false;
         this.forward_messages = false;
         this.hide_muc_server = false;
@@ -184,6 +185,7 @@
             'connection',
             'debug',
             'default_box_height',
+            'enable_message_carbons',
             'expose_rid_and_sid',
             'forward_messages',
             'fullname',
@@ -567,6 +569,25 @@
             }, this));
         };
 
+        this.enableCarbons = function () {
+            /* Ask the XMPP server to enable Message Carbons
+             * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
+             */
+            if (!this.enable_message_carbons) {
+                return;
+            }
+            var carbons_iq = new Strophe.Builder('iq', {
+                from: this.connection.jid,
+                id: 'enablecarbons',
+                type: 'set'
+              })
+              .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
+            this.connection.send(carbons_iq);
+            this.connection.addHandler(function(iq) {
+                //TODO: check if carbons was enabled:
+            }, null, "iq", null, "enablecarbons");
+        };
+
         this.onConnected = function () {
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
@@ -577,12 +598,12 @@
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.features = new this.Features();
+            this.enableCarbons();
             this.initStatus($.proxy(function () {
                 this.initRoster();
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
                 this.giveFeedback(__('Online Contacts'));
-
                 if (this.callback) {
                     if (this.connection.service === 'jasmine tests') {
                         // XXX: Call back with the internal converse object. This
@@ -792,9 +813,8 @@
                 this.save({'otr_status': UNENCRYPTED});
             },
 
-            createMessage: function (message) {
-                var $message = $(message),
-                    body = $message.children('body').text(),
+            createMessage: function ($message) {
+                var body = $message.children('body').text(),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     composing = $message.find('composing'),
                     delayed = $message.find('delay').length > 0,
@@ -834,11 +854,11 @@
                 }
             },
 
-            receiveMessage: function (message) {
-                var $body = $(message).children('body');
+            receiveMessage: function ($message) {
+                var $body = $message.children('body');
                 var text = ($body.length > 0 ? $body.text() : undefined);
                 if ((!text) || (!converse.allow_otr)) {
-                    return this.createMessage(message);
+                    return this.createMessage($message);
                 }
                 if (text.match(/^\?OTRv23?/)) {
                     this.initiateOTR(text);
@@ -854,7 +874,7 @@
                             }
                         } else {
                             // Normal unencrypted message.
-                            this.createMessage(message);
+                            this.createMessage($message);
                         }
                     }
                 }
@@ -2412,14 +2432,18 @@
             onMessage: function (message) {
                 var buddy_jid, $message = $(message),
                     message_from = $message.attr('from');
-                if (message_from == converse.connection.jid) {
+                if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted
                     return true;
                 }
                 var $forwarded = $message.children('forwarded');
+                var $received = $message.children('received');
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
+                } else if ($received.length && $received.attr('xmlns') === 'urn:xmpp:carbons:2') {
+                    $message = $message.children('received').children('forwarded').children('message');
+                    message_from = $message.attr('from');
                 }
                 var from = Strophe.getBareJidFromJid(message_from),
                     to = Strophe.getBareJidFromJid($message.attr('to')),
@@ -2453,7 +2477,7 @@
                         'url': roster_item.get('url')
                     });
                 }
-                chatbox.receiveMessage(message);
+                chatbox.receiveMessage($message);
                 converse.roster.addResource(buddy_jid, resource);
                 converse.emit('onMessage', message);
                 return true;

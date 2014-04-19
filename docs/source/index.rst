@@ -968,6 +968,13 @@ Default = ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
+enable_message_carbons
+----------------------
+
+Default = ``false``
+
+Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
+
 expose_rid_and_sid
 ------------------
 

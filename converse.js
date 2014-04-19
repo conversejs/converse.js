@@ -153,6 +153,7 @@
         this.debug = false;
         this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
         this.expose_rid_and_sid = false;
+        this.forward_messages = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
         this.prebind = false;
@@ -184,6 +185,7 @@
             'debug',
             'default_box_height',
             'expose_rid_and_sid',
+            'forward_messages',
             'fullname',
             'hide_muc_server',
             'i18n',
@@ -1039,15 +1041,15 @@
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
-                // Forward the message, so that other connected resources are also aware of it.
-                // TODO: Forward the message only to other connected resources (inside the browser)
-                var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
-                                .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
-                                .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
-                                .cnode(message.tree());
-
                 converse.connection.send(message);
-                converse.connection.send(forwarded);
+                if (converse.forward_messages) {
+                    // Forward the message, so that other connected resources are also aware of it.
+                    var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
+                                    .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
+                                    .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
+                                    .cnode(message.tree());
+                    converse.connection.send(forwarded);
+                }
             },
 
             sendMessage: function (text) {
@@ -2991,6 +2993,7 @@
             removeRosterItemView: function (item) {
                 if (this.get(item.id)) {
                     this.get(item.id).remove();
+                    this.render();
                 }
                 return this;
             },

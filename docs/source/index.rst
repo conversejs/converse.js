@@ -971,12 +971,27 @@ If set to true, debugging output will be logged to the browser console.
 expose_rid_and_sid
 ------------------
 
+Default = ``false``
+
 Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
 globally via the API. This allows other scripts served on the same page to use
 these values. 
 
 *Beware*: a malicious script could use these tokens to assume your identity
 and inject fake chat messages.
+
+forward_messages
+----------------
+
+Default = ``false``
+
+If set to ``true``, sent messages will also be forwarded to other connected
+XMPP resources (e.g. chat clients) of the same user.
+
+This is useful for example if converse.js is running in multiple tabs of the
+browser and you want sent messages to appear in all of them.
+
+See also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 fullname
 --------

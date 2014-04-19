@@ -477,7 +477,7 @@
 
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
-            var id = hex_sha1('converse.xmppstatus-'+this.bare_jid);
+            var id = b64_sha1('converse.xmppstatus-'+this.bare_jid);
             this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
             this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
             this.xmppstatus.fetch({success: callback, error: callback});
@@ -508,7 +508,7 @@
             // Set up the roster
             this.roster = new this.RosterItems();
             this.roster.localStorage = new Backbone.LocalStorage(
-                hex_sha1('converse.rosteritems-'+converse.bare_jid));
+                b64_sha1('converse.rosteritems-'+converse.bare_jid));
             this.registerRosterHandler();
             this.registerRosterXHandler();
             this.registerPresenceHandler();
@@ -607,7 +607,7 @@
             // A model for managing OTR settings.
             getSessionPassphrase: function () {
                 if (converse.prebind) {
-                    var key = hex_sha1(converse.connection.jid),
+                    var key = b64_sha1(converse.connection.jid),
                         pass = window.sessionStorage[key];
                     if (typeof pass === 'undefined') {
                         pass = Math.floor(Math.random()*4294967295).toString();
@@ -627,10 +627,10 @@
                     var pass = this.getSessionPassphrase();
                     if (typeof pass !== "undefined") {
                         // Encrypt the key and set in sessionStorage. Also store instance tag.
-                        window.sessionStorage[hex_sha1(jid+'priv_key')] =
+                        window.sessionStorage[b64_sha1(jid+'priv_key')] =
                             cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
-                        window.sessionStorage[hex_sha1(jid+'instance_tag')] = instance_tag;
-                        window.sessionStorage[hex_sha1(jid+'pass_check')] =
+                        window.sessionStorage[b64_sha1(jid+'instance_tag')] = instance_tag;
+                        window.sessionStorage[b64_sha1(jid+'pass_check')] =
                             cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString();
                     }
                 }
@@ -650,10 +650,10 @@
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.localStorage = new Backbone.LocalStorage(
-                        hex_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
+                        b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.save({
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-                        'box_id' : hex_sha1(this.get('jid')),
+                        'box_id' : b64_sha1(this.get('jid')),
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'minimized': this.get('minimized') || false,
                         'time_minimized': this.get('time_minimized') || converse.toISOString(new Date()),
@@ -670,9 +670,9 @@
                 if (converse.cache_otr_key) {
                     pass = converse.otr.getSessionPassphrase();
                     if (typeof pass !== "undefined") {
-                        instance_tag = window.sessionStorage[hex_sha1(this.id+'instance_tag')];
-                        saved_key = window.sessionStorage[hex_sha1(this.id+'priv_key')];
-                        pass_check = window.sessionStorage[hex_sha1(this.connection.jid+'pass_check')];
+                        instance_tag = window.sessionStorage[b64_sha1(this.id+'instance_tag')];
+                        saved_key = window.sessionStorage[b64_sha1(this.id+'priv_key')];
+                        pass_check = window.sessionStorage[b64_sha1(this.connection.jid+'pass_check')];
                         if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
                             var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
                             var key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
@@ -1055,7 +1055,8 @@
                 if (match) {
                     if (match[1] === "clear") {
                         this.$el.find('.chat-content').empty();
-                        this.model.messages.reset().localStorage._clear();
+                        this.model.messages.reset();
+                        this.model.messages.localStorage._clear();
                         return;
                     }
                     else if (match[1] === "help") {
@@ -1753,7 +1754,7 @@
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                     'nick': nick,
                     'chatroom': true,
-                    'box_id' : hex_sha1(jid)
+                    'box_id' : b64_sha1(jid)
                 });
                 if (!chatroom.get('connected')) {
                     converse.chatboxviews.get(jid).connect(null);
@@ -2382,7 +2383,7 @@
 
             onConnected: function () {
                 this.localStorage = new Backbone.LocalStorage(
-                    hex_sha1('converse.chatboxes-'+converse.bare_jid));
+                    b64_sha1('converse.chatboxes-'+converse.bare_jid));
                 if (!this.get('controlbox')) {
                     this.add({
                         id: 'controlbox',
@@ -2988,11 +2989,8 @@
             },
 
             removeRosterItemView: function (item) {
-                var view = this.get(item.id);
-                if (view) {
-                    view.$el.remove();
-                    delete this.get(item.id);
-                    this.render();
+                if (this.get(item.id)) {
+                    this.get(item.id).remove();
                 }
                 return this;
             },
@@ -3279,7 +3277,7 @@
             model: converse.Feature,
             initialize: function () {
                 this.localStorage = new Backbone.LocalStorage(
-                    hex_sha1('converse.features'+converse.bare_jid));
+                    b64_sha1('converse.features'+converse.bare_jid));
                 if (this.localStorage.records.length === 0) {
                     // localStorage is empty, so we've likely never queried this
                     // domain for features yet

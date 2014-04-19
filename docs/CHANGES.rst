@@ -6,6 +6,7 @@ Changelog
 
 * Chat boxes and rooms can now be resized vertically. [jcbrand]
 * Chat boxes and rooms can be minimized. [jcbrand]
+* Upgraded many dependencies to their latest versions. [jcrand]
 
 0.7.4 (2014-03-05)
 ------------------

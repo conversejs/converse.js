@@ -447,7 +447,7 @@
                 expect(new_roster.length).toEqual(0);
 
                 new_roster.localStorage = new Backbone.LocalStorage(
-                    hex_sha1('converse.rosteritems-dummy@localhost'));
+                    b64_sha1('converse.rosteritems-dummy@localhost'));
 
                 new_roster.fetch();
                 expect(this.roster.length).toEqual(num_contacts);

@@ -93,7 +93,8 @@
     utils.clearChatBoxMessages = function (jid) {
         var view = converse.chatboxviews.get(jid);
         view.$el.find('.chat-content').empty();
-        view.model.messages.reset().localStorage._clear();
+        view.model.messages.reset();
+        view.model.messages.localStorage._clear();
     };
 
     utils.createCurrentContacts = function () {

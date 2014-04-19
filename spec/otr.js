@@ -31,7 +31,7 @@
             expect(pp).not.toBe(this.connection.pass);
             expect(window.sessionStorage.length).toBe(1);
             expect(window.localStorage.length).toBe(0);
-            expect(pp).toBe(window.sessionStorage[hex_sha1(converse.connection.jid)]);
+            expect(pp).toBe(window.sessionStorage[b64_sha1(converse.connection.jid)]);
 
             // Clean up
             this.prebind = false;

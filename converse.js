@@ -1479,11 +1479,12 @@
                     this.$el.hide('fast', converse.refreshWebkit);
                     converse.emit('onChatBoxClosed', this);
                 }
+                return this;
             },
 
             show: function (callback) {
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    return this;
+                    return this.focus();
                 }
                 this.$el.show(callback);
                 if (converse.connection) {

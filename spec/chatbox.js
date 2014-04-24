@@ -35,7 +35,7 @@
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
 
-                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat');
+                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
@@ -46,6 +46,26 @@
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
                 }
+            }, converse));
+
+            it("is focused if its already open and you click on its corresponding roster item", $.proxy(function () {
+                var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                var i, $el, click, jid, view, chatboxview, chatbox;
+                // openControlBox was called earlier, so the controlbox is
+                // visible, but no other chat boxes have been created.
+                expect(this.chatboxes.length).toEqual(1);
+                chatbox = utils.openChatBoxFor(contact_jid);
+                chatboxview = this.chatboxviews.get(contact_jid);
+                spyOn(chatboxview, 'focus');
+                var $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                view = this.rosterview.get(jid);
+                spyOn(view, 'openChat').andCallThrough();
+                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                $el.click();
+                expect(view.openChat).toHaveBeenCalled();
+                expect(this.chatboxes.length).toEqual(2);
+                expect(chatboxview.focus).toHaveBeenCalled();
             }, converse));
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
@@ -527,7 +547,6 @@
                         utils.sendMessage(view, message);
                         expect(view.sendMessage).toHaveBeenCalled();
                         expect(view.model.messages.length, 2);
-                        expect(converse.emit.callCount).toEqual(3);
                         expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
                         expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text()).toEqual(message);
                     }.bind(converse));

@@ -826,7 +826,7 @@ Configuration variables
 allow_contact_requests
 ----------------------
 
-Default = ``true``
+Default:  ``true``
 
 Allow users to add one another as contacts. If this is set to false, the
 **Add a contact** widget, **Contact Requests** and **Pending Contacts** roster
@@ -836,22 +836,29 @@ ignored.
 allow_muc
 ---------
 
-Default = ``true``
+Default:  ``true``
 
 Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
 the ``Chatrooms`` tab from the control box.
 
+allow_muc
+---------
+
+Default:  ``true``
+
+Allow Off-the-record encryption of single-user chat messages.
+
 animate
 -------
 
-Default = ``true``
+Default:  ``true``
 
 Show animations, for example when opening and closing chat boxes.
 
 auto_list_rooms
 ---------------
 
-Default = ``false``
+Default:  ``false``
 
 If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.
@@ -865,7 +872,7 @@ option will create lots of extra connection traffic.
 auto_reconnect
 --------------
 
-Default = ``true``
+Default:  ``true``
 
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
@@ -873,7 +880,7 @@ unexpectedly.
 auto_subscribe
 --------------
 
-Default = ``false``
+Default:  ``false``
 
 If true, the user will automatically subscribe back to any contact requests.
 
@@ -888,7 +895,7 @@ See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for mo
 cache_otr_key
 -------------
 
-Default = ``false``
+Default:  ``false``
 
 Let the `OTR (Off-the-record encryption) <https://otr.cypherpunks.ca>`_ private
 key be cached in your browser's session storage.
@@ -912,21 +919,21 @@ This setting can only be used together with ``allow_otr = true``.
 debug
 -----
 
-Default = ``false``
+Default:  ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
 enable_message_carbons
 ----------------------
 
-Default = ``false``
+Default:  ``false``
 
 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
 
 expose_rid_and_sid
 ------------------
 
-Default = ``false``
+Default:  ``false``
 
 Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
 globally via the API. This allows other scripts served on the same page to use
@@ -938,7 +945,7 @@ and inject fake chat messages.
 forward_messages
 ----------------
 
-Default = ``false``
+Default:  ``false``
 
 If set to ``true``, sent messages will also be forwarded to other connected
 XMPP resources (e.g. chat clients) of the same user.
@@ -957,7 +964,7 @@ logged in user, otherwise the user's vCard will be fetched.
 hide_muc_server
 ---------------
 
-Default = ``false``
+Default:  ``false``
 
 Hide the ``server`` input field of the form inside the ``Room`` panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
@@ -972,7 +979,7 @@ Specify the locale/language. The language must be in the ``locales`` object. Ref
 prebind
 --------
 
-Default = ``false``
+Default:  ``false``
 
 Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).
@@ -992,7 +999,7 @@ Additionally, you have to specify ``bosh_service_url``.
 show_controlbox_by_default
 --------------------------
 
-Default = ``false``
+Default:  ``false``
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
@@ -1003,32 +1010,10 @@ the page with class *toggle-online-users*.
 If this options is set to true, the controlbox will by default be shown upon
 page load.
 
-
-show_call_button
-----------------
-
-Default = ``false``
-
-Enable to display a call button on the chatbox toolbar.
-
-When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
-
-::
-
-    converse.on('onCallButtonClicked', function(event, data) {
-        console.log('Call button was clicked.');
-        console.log('Strophe connection is', data.connection);
-        console.log('Bare buddy JID is', data.model.get('jid'));
-
-        // ... Third-party library code ...
-    });
-
-
-
 show_only_online_users
 ----------------------
 
-Default = ``false``
+Default:  ``false``
 
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
@@ -1036,7 +1021,7 @@ Users with any other status (e.g. away, busy etc.) will not be shown.
 use_otr_by_default
 ------------------
 
-Default = ``false``
+Default:  ``false``
 
 If set to ``true``, Converse.js will automatically try to initiate an OTR (off-the-record)
 encrypted chat session every time you open a chat box.
@@ -1044,16 +1029,48 @@ encrypted chat session every time you open a chat box.
 use_vcards
 ----------
 
-Default = ``true``
+Default:  ``true``
 
 Determines whether the XMPP server will be queried for roster contacts' VCards
 or not. VCards contain extra personal information such as your fullname and
 avatar image.
 
+visible_toolbar_buttons
+-----------------------
+
+Default:
+
+::
+
+    {
+        'emoticons': true,
+        'call': false,
+        'clear': true
+    }
+
+Allows you to show or hide buttons on the chat boxes' toolbars.
+
+* *emoticons*: 
+    Enables rendering of emoticons and provides a toolbar button for choosing them.
+* *call*: 
+    Provides a button with a picture of a telephone on it.
+    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
+
+    ::
+
+        converse.on('onCallButtonClicked', function(event, data) {
+            console.log('Strophe connection is', data.connection);
+            console.log('Bare buddy JID is', data.model.get('jid'));
+            // ... Third-party library code ...
+        });
+* *clear*: 
+    Provides a button for clearing messages from a chat box.
+
+
 xhr_custom_status
 -----------------
 
-Default = ``false``
+Default:  ``false``
 
 .. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
@@ -1067,7 +1084,7 @@ xhr_custom_status_url
 .. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
-Default = Empty string
+Default:  Empty string
 
 Used only in conjunction with ``xhr_custom_status``.
 
@@ -1079,7 +1096,7 @@ The message itself is sent in the request under the key ``msg``.
 xhr_user_search
 ---------------
 
-Default = ``false``
+Default:  ``false``
 
 .. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
@@ -1102,7 +1119,7 @@ xhr_user_search_url
 .. Note ::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
-Default = Empty string
+Default:  Empty string
 
 Used only in conjunction with ``xhr_user_search``.
 

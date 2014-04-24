@@ -207,6 +207,7 @@
             'xhr_user_search',
             'xhr_user_search_url'
         ]));
+        $.fx.off = !this.animate;
 
         // Only allow OTR if we have the capability
         this.allow_otr = this.allow_otr && HAS_CRYPTO;
@@ -917,7 +918,7 @@
                     this.showMessage({'message': text, 'sender': 'them'});
                 }, this);
                 this.updateVCard();
-                this.$el.appendTo(converse.chatboxviews.$el);
+                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
                 this.render().show().focus().model.messages.fetch({add: true});
                 if (this.model.get('status')) {
                     this.showStatusMessage(this.model.get('status'));
@@ -932,9 +933,7 @@
                 this.$el.attr('id', this.model.get('box_id'))
                     .html(
                         converse.templates.chatbox(
-                            _.extend(
-                                this.model.toJSON(),
-                                {
+                            _.extend(this.model.toJSON(), {
                                     show_toolbar: converse.show_toolbar,
                                     label_personal_message: __('Personal message')
                                 }
@@ -943,6 +942,9 @@
                     );
                 this.renderToolbar().renderAvatar();
                 converse.emit('onChatBoxOpened', this);
+                setTimeout(function () {
+                    converse.refreshWebkit();
+                }, 50);
                 return this;
             },
 
@@ -1441,9 +1443,8 @@
             },
 
             hide: function () {
-                var speed = converse.animate ? 'fast' : null;
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    this.$el.hide(speed, converse.refreshWebkit);
+                    this.$el.hide('fast', converse.refreshWebkit);
                     converse.emit('onChatBoxClosed', this);
                 }
             },
@@ -1452,12 +1453,7 @@
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                     return this;
                 }
-                if (converse.animate) {
-                    this.$el.show(callback);
-                } else {
-                    this.$el.show();
-                    if (typeof callback === 'function') { callback(); }
-                }
+                this.$el.show(callback);
                 if (converse.connection) {
                     // Without a connection, we haven't yet initialized
                     // localstorage
@@ -1795,7 +1791,7 @@
             },
 
             initialize: function () {
-                this.$el.appendTo(converse.chatboxviews.$el);
+                this.$el.insertAfter(converse.controlboxtoggle.$el);
                 this.model.on('change', $.proxy(function (item, changed) {
                     var i;
                     if (_.has(item.changed, 'connected')) {
@@ -2508,10 +2504,6 @@
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;
                         view.initialize();
-                        if (item.get('id') !== 'controlbox') {
-                            // XXX: Why is it necessary to again append chatboxes?
-                            view.$el.appendTo(this.$el);
-                        }
                     }
                 }, this);
             },

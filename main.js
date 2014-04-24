@@ -68,6 +68,7 @@ config = {
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'jquery.tinysort':      { deps: ['jquery'] },
+        'jquery.browser':       { deps: ['jquery'] },
         'strophe':              { deps: ['jquery'] },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe', 'jquery'] },

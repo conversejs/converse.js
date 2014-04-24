@@ -37,7 +37,6 @@ require([
     "jasmine-html"
     ], function($, converse, mock, jasmine) {
         // Set up converse.js
-        $.fx.off = true;
         window.converse_api = converse;
         window.localStorage.clear();
         converse.initialize({

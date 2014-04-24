@@ -209,12 +209,14 @@
             'xhr_user_search',
             'xhr_user_search_url'
         ]));
-        _.extend(
-            this.visible_toolbar_buttons,
-            _.pick(settings.visible_toolbar_buttons, [
-                'emoticons', 'call', 'clear'
-            ]
-        ));
+        if (settings.visible_toolbar_buttons) {
+            _.extend(
+                this.visible_toolbar_buttons,
+                _.pick(settings.visible_toolbar_buttons, [
+                    'emoticons', 'call', 'clear'
+                ]
+            ));
+        }
         $.fx.off = !this.animate;
 
         // Only allow OTR if we have the capability
@@ -1185,7 +1187,9 @@
             },
 
             clearMessages: function (ev) {
-                ev.stopPropagation();
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
                 var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                 if (result === true) {
                     this.$el.find('.chat-content').empty();
@@ -1332,6 +1336,7 @@
                 } else {
                     this.model.trigger('hide');
                 }
+                return this;
             },
 
             saveToggleState: function () {

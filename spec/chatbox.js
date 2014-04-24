@@ -186,7 +186,6 @@
                 it("contains a button for inserting emoticons", $.proxy(function () {
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
-                    var chatbox = this.chatboxes.get(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     var $textarea = view.$el.find('textarea.chat-textarea');
@@ -246,7 +245,6 @@
                     // TODO: More tests can be added here...
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
-                    var chatbox = this.chatboxes.get(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     expect($toolbar.children('li.toggle-otr').length).toBe(1);
@@ -267,23 +265,58 @@
 
                 }, converse));
 
-                it("contains a button for starting a call", $.proxy(function () {
-                    spyOn(converse, 'emit');
-
+                it("can contain a button for starting a call", $.proxy(function () {
+                    var view, callButton, $toolbar;
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    spyOn(converse, 'emit');
+                    // First check that the button doesn't show if it's not enabled
+                    // via "visible_toolbar_buttons"
+                    converse.visible_toolbar_buttons['call'] = false;
                     utils.openChatBoxFor(contact_jid);
-                    var chatbox = this.chatboxes.get(contact_jid);
-                    var view = this.chatboxviews.get(contact_jid);
-                    var $toolbar = view.$el.find('ul.chat-toolbar');
-                    var callButton = $toolbar.find('.toggle-call');
-
+                    view = this.chatboxviews.get(contact_jid);
+                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    callButton = $toolbar.find('.toggle-call');
+                    expect(callButton.length).toBe(0);
+                    view.closeChat();
+                    // Now check that it's shown if enabled and that it emits
+                    // onCallButtonClicked
+                    converse.visible_toolbar_buttons['call'] = true; // enable the button
+                    utils.openChatBoxFor(contact_jid);
+                    view = this.chatboxviews.get(contact_jid);
+                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    callButton = $toolbar.find('.toggle-call');
                     expect(callButton.length).toBe(1);
-
-                    runs(function () {
-                        callButton.click();
-                        expect(converse.emit).toHaveBeenCalledWith('onCallButtonClicked', jasmine.any(Object));
-                    });
+                    callButton.click();
+                    expect(converse.emit).toHaveBeenCalledWith('onCallButtonClicked', jasmine.any(Object));
                 }, converse));
+
+                it("can contain a button for clearing messages", $.proxy(function () {
+                    var view, clearButton, $toolbar;
+                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    // First check that the button doesn't show if it's not enabled
+                    // via "visible_toolbar_buttons"
+                    converse.visible_toolbar_buttons['clear'] = false;
+                    utils.openChatBoxFor(contact_jid);
+                    view = this.chatboxviews.get(contact_jid);
+                    view = this.chatboxviews.get(contact_jid);
+                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    clearButton = $toolbar.find('.toggle-clear');
+                    expect(clearButton.length).toBe(0);
+                    view.closeChat();
+                    // Now check that it's shown if enabled and that it calls
+                    // clearMessages
+                    converse.visible_toolbar_buttons['clear'] = true; // enable the button
+                    utils.openChatBoxFor(contact_jid);
+                    view = this.chatboxviews.get(contact_jid);
+                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    clearButton = $toolbar.find('.toggle-clear');
+                    expect(clearButton.length).toBe(1);
+                    spyOn(view, 'clearMessages');
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    clearButton.click();
+                    expect(view.clearMessages).toHaveBeenCalled();
+                }, converse));
+
             }, converse));
 
             describe("A Chat Message", $.proxy(function () {
@@ -591,9 +624,15 @@
                 message = '/clear';
                 var old_length = view.model.messages.length;
                 spyOn(view, 'sendMessage').andCallThrough();
+                spyOn(view, 'clearMessages').andCallThrough();
+                spyOn(window, 'confirm').andCallFake(function () {
+                    return true;
+                });
                 utils.sendMessage(view, message);
                 expect(view.sendMessage).toHaveBeenCalled();
-                expect(view.model.messages.length, 0); // The messages must be removed from the modal
+                expect(view.clearMessages).toHaveBeenCalled();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
                 expect(view.model.messages.localStorage.records.length, 0); // And also from localStorage
                 expect(converse.emit.callCount, 1);
                 expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);

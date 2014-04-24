@@ -44,7 +44,6 @@ require([
             xhr_user_search: false,
             auto_subscribe: false,
             animate: false,
-            show_call_button: true,
             connection: mock.mock_connection,
             testing: true
         }, function (converse) {

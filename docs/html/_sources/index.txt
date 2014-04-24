@@ -280,7 +280,7 @@ These values are then passed to converse.js's ``initialize`` method.
 Example code for server-side prebinding
 ---------------------------------------
 
-* PHP: 
+* PHP:
     See `xmpp-prebind-php <https://github.com/candy-chat/xmpp-prebind-php>`_ by
     Michael Weibel and the folks from Candy chat.
 
@@ -418,7 +418,7 @@ Converse.js directly depends and which will therefore be loaded in the browser.
 
 If you are curious to know what the different dependencies are:
 
-* Development dependencies: 
+* Development dependencies:
     Take a look at whats under the *devDependencies* key in
     `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
@@ -647,7 +647,7 @@ Troubleshooting
 Conflicts with other Javascript libraries
 =========================================
 
-Problem: 
+Problem:
 ---------
 
 You are using other Javascript libraries (like JQuery plugins), and
@@ -668,7 +668,7 @@ rules apply if its something else.
 The bundled and minified default build of converse.js, ``converse.min.js``
 includes within it all of converse.js's dependencies, which include for example *jQuery*.
 
-If you are having conflicts where attributes or methods aren't available 
+If you are having conflicts where attributes or methods aren't available
 on the jQuery object, you are probably loading ``converse.min.js`` (which
 includes jQuery) as well as your own jQuery version separately.
 
@@ -721,7 +721,7 @@ Concerning events, the following methods are available:
 Event Methods
 =============
 
-* **on(eventName, callback)**: 
+* **on(eventName, callback)**:
 
     Calling the ``on`` method allows you to subscribe to an event.
     Every time the event fires, the callback method specified by ``callback`` will be
@@ -745,7 +745,7 @@ Event Methods
 
     * ``eventName`` is the event name as a string.
     * ``callback`` is the callback method to be called when the event is emitted.
-    
+
     For example::
 
         converse.once('onMessage', function (messageXML) { ... });
@@ -765,91 +765,39 @@ Event Types
 
 Here are the different events that are emitted:
 
-* **onInitialized**
-
-    ``converse.on('onInitialized', function () { ... });``
-
-    Triggered once converse.js has been initialized.
-
-* **onReady**
-
-    Triggered after a connection has been established and converse.js has
-    got all its ducks in a row.
-
-    ``converse.on('onReady', function () { ... });``
-
-* **onMessage**
-
-    ``converse.on('onMessage', function (messageXML) { ... });``
-
-    Triggered when a message is received.
-
-* **onMessageSend**
-
-    ``converse.on('onMessageSend', function (messageText) { ... });``
-
-    Triggered when a message will be sent out.
-
-* **onRoster**
-
-    ``converse.on('onRoster', function (items) { ... });``
-
-    Triggered when the roster is updated.
-
-* **onRosterViewUpdated**
-
-    ``converse.on('onRosterViewUpdated', function (items) { ... });``
-
-    Triggered whenever the roster view (i.e. the rendered HTML) has changed.
-
-* **onChatBoxClosed**
-
-    ``converse.on('onChatBoxClosed', function (chatbox) { ... });``
-
-    Triggered when a chat box has been closed.
-
-* **onChatBoxFocused**
-
-    ``converse.on('onChatBoxFocused', function (chatbox) { ... });``
-
-    Triggered when the focus has been moved to a chat box.
-
-* **onChatBoxOpened**
-
-    ``converse.on('onChatBoxOpened', function (chatbox) { ... });``
-
-    Triggered when a chat box has been opened.
-
-* **onChatBoxToggled**
-
-    ``converse.on('onChatBoxToggled', function (chatbox) { ... });``
-
-    Triggered when a chat box has been minimized or maximized.
-
-* **onStatusChanged**
-
-    ``converse.on('onStatusChanged', function (status) { ... });``
-
-    Triggered when own chat status has changed.
-
-* **onStatusMessageChanged**
-
-    ``converse.on('onStatusMessageChanged', function (message) { ... });``
-
-    Triggered when own custom status message has changed.
-
-* **onBuddyStatusChanged**
-
-    ``converse.on('onBuddyStatusChanged', function (buddy, status) { ... });``
-
-    Triggered when a chat buddy's chat status has changed.
-
-* **onBuddyStatusMessageChanged**
-
-    ``converse.on('onBuddyStatusMessageChanged', function (buddy, messageText) { ... });``
-
-    Triggered when a chat buddy's custom status message has changed.
-
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| Event Type                       | When is it triggered?                                                                             | Example                                                                                 |
++==================================+===================================================================================================+=========================================================================================+
+| **onInitialized**                | Once converse.js has been initialized.                                                            | ``converse.on('onInitialized', function () { ... });``                                  |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onReady**                      | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.on('onReady', function () { ... });``                                        |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onReconnect**                  | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.on('onReconnect', function () { ... });``                                    |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onMessage**                    | When a message is received.                                                                       | ``converse.on('onMessage', function (messageXML) { ... });``                            |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onMessageSend**                | When a message will be sent out.                                                                  | ``converse.on('onMessageSend', function (messageText) { ... });``                       |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onRoster**                     | When the roster is updated.                                                                       | ``converse.on('onRoster', function (items) { ... });``                                  |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onRosterViewUpdated**          | Whenever the roster view (i.e. the rendered HTML) has changed.                                    | ``converse.on('onRosterViewUpdated', function (items) { ... });``                       |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onChatBoxOpened**              | When a chat box has been opened.                                                                  | ``converse.on('onChatBoxOpened', function (chatbox) { ... });``                         |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onChatBoxClosed**              | When a chat box has been closed.                                                                  | ``converse.on('onChatBoxClosed', function (chatbox) { ... });``                         |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onChatBoxFocused**             | When the focus has been moved to a chat box.                                                      | ``converse.on('onChatBoxFocused', function (chatbox) { ... });``                        |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onChatBoxToggled**             | When a chat box has been minimized or maximized.                                                  | ``converse.on('onChatBoxToggled', function (chatbox) { ... });``                        |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onStatusChanged**              | When own chat status has changed.                                                                 | ``converse.on('onStatusChanged', function (status) { ... });``                          |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onStatusMessageChanged**       | When own custom status message has changed.                                                       | ``converse.on('onStatusMessageChanged', function (message) { ... });``                  |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onBuddyStatusChanged**         | When a chat buddy's chat status has changed.                                                      | ``converse.on('onBuddyStatusChanged', function (buddy, status) { ... });``              |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **onBuddyStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('onBuddyStatusMessageChanged', function (buddy, messageText) { ... });``  |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 
 =============
 Configuration
@@ -954,7 +902,7 @@ for each page load. While more inconvenient, this is a much more secure option.
 This setting can only be used together with ``allow_otr = true``.
 
 
-.. Note :: 
+.. Note ::
     A browser window's session storage is accessible by all javascript that
     is served from the same domain. So if there is malicious javascript served by
     the same server (or somehow injected via an attacker), then they will be able
@@ -982,7 +930,7 @@ Default = ``false``
 
 Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
 globally via the API. This allows other scripts served on the same page to use
-these values. 
+these values.
 
 *Beware*: a malicious script could use these tokens to assume your identity
 and inject fake chat messages.
@@ -1160,6 +1108,10 @@ Used only in conjunction with ``xhr_user_search``.
 
 This is the URL to which an AJAX GET request will be made to fetch user data from your remote server.
 The query string will be included in the request with ``q`` as its key.
+
+The calendar can be configured through a `data-pat-calendar` attribute.
+The available options are:
+
 
 .. _`read more about require.js's optimizer here`: http://requirejs.org/docs/optimization.html
 .. _`HTTP`: https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol

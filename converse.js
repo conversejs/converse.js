@@ -5,6 +5,7 @@
  * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
  * Dual licensed under the MIT and GPL Licenses
  */
+"use strict";
 
 // AMD/global registrations
 (function (root, factory) {
@@ -340,6 +341,7 @@
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
+            converse.emit('onReconnect');
             if (!converse.prebind) {
                 this.connection.connect(
                     this.connection.jid,
@@ -3219,6 +3221,7 @@
             },
 
             getPrettyStatus: function (stat) {
+                var pretty_status;
                 if (stat === 'chat') {
                     pretty_status = __('online');
                 } else if (stat === 'dnd') {

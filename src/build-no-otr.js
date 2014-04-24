@@ -4,7 +4,7 @@
     out: "../builds/converse-no-otr.min.js",
     include: ['main'],
     paths: {
-        "jquery": "components/jquery/jquery",
+        "jquery": "components/jquery/dist/jquery",
         "jed": "components/jed/jed",
         "locales": "locale/locales",
         "af": "locale/af/LC_MESSAGES/af",
@@ -29,6 +29,11 @@
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
-        "converse-dependencies": "src/deps-no-otr"
+        "converse-dependencies": "src/deps-no-otr",
+        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "moment":"components/momentjs/moment",
+        "converse-templates":"src/templates",
+        "tpl": "components/requirejs-tpl-jcbrand/tpl",
+        "text": "components/requirejs-text/text"
     }
 })

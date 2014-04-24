@@ -4,7 +4,7 @@
     out: "../builds/converse.min.js",
     include: ['main'],
     paths: {
-        "jquery": "components/jquery/jquery",
+        "jquery": "components/jquery/dist/jquery",
         "jed": "components/jed/jed",
         "locales": "locale/locales",
         "af": "locale/af/LC_MESSAGES/af",
@@ -45,6 +45,11 @@
         "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
         "otr": "components/otr/build/otr",
-        "converse-dependencies": "src/deps-full"
+        "converse-dependencies": "src/deps-full",
+        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "moment":"components/momentjs/moment",
+        "converse-templates":"src/templates",
+        "tpl": "components/requirejs-tpl-jcbrand/tpl",
+        "text": "components/requirejs-text/text"
     }
 })

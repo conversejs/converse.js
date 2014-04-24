@@ -1208,22 +1208,15 @@ select#select-xmpp-status {
     height: 20px;
     display: block;
     width: 195px;
-    /* XXX:  CHECKME */
-    float: right;
-    display: inline-block;
-    height: 20px;
 }
 
+#conversejs .chat-toolbar .toggle-clear,
 #conversejs .chat-toolbar .toggle-otr {
     float: right;
 }
 
-#conversejs .chat-toolbar .toggle-call {
+#conversejs .chat-toolbar a {
 	color: rgb(79, 79, 79);
-}
-
-#conversejs .chat-toolbar ul li a {
-    color: rgb(79, 79, 79);
 }
 
 #conversejs .chat-toolbar ul li a:hover {

@@ -18,7 +18,10 @@
     </li>
 {[ } ]}
 {[ if (show_call_button)  { ]}
-    <li><a class="toggle-call icon-phone" title="Start a call"></a></li>
+    <li class="toggle-call"><a class="icon-phone" title="Start a call"></a></li>
+{[ } ]}
+{[ if (show_clear_button)  { ]}
+    <li class="toggle-clear"><a class="icon-remove" title="Clear all messages"></a></li>
 {[ } ]}
 {[ if (allow_otr)  { ]}
     <li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">

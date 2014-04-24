@@ -56,7 +56,7 @@
     };
 
     $.fn.addEmoticons = function() {
-        if (converse.show_emoticons) {
+        if (converse.visible_toolbar_buttons['emoticons']) {
             if (this.length > 0) {
                 this.each(function(i, obj) {
                     var text = $(obj).html();
@@ -161,11 +161,14 @@
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
-        this.show_call_button = false;
-        this.show_emoticons = true;
         this.show_toolbar = true;
         this.use_otr_by_default = false;
         this.use_vcards = true;
+        this.visible_toolbar_buttons = {
+            'emoticons': true,
+            'call': false,
+            'clear': true
+        };
         this.xhr_custom_status = false;
         this.xhr_custom_status_url = '';
         this.xhr_user_search = false;
@@ -195,9 +198,7 @@
             'jid',
             'prebind',
             'rid',
-            'show_call_button',
             'show_controlbox_by_default',
-            'show_emoticons',
             'show_only_online_users',
             'show_toolbar',
             'sid',
@@ -208,6 +209,12 @@
             'xhr_user_search',
             'xhr_user_search_url'
         ]));
+        _.extend(
+            this.visible_toolbar_buttons,
+            _.pick(settings.visible_toolbar_buttons, [
+                'emoticons', 'call', 'clear'
+            ]
+        ));
         $.fx.off = !this.animate;
 
         // Only allow OTR if we have the capability
@@ -896,6 +903,7 @@
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
+                'click .toggle-clear': 'clearMessages',
                 'click .toggle-otr': 'toggleOTRMenu',
                 'click .start-otr': 'startOTRFromToolbar',
                 'click .end-otr': 'endOTR',
@@ -933,8 +941,7 @@
 
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
-                    .html(
-                        converse.templates.chatbox(
+                    .html(converse.templates.chatbox(
                             _.extend(this.model.toJSON(), {
                                     show_toolbar: converse.show_toolbar,
                                     label_personal_message: __('Personal message')
@@ -973,6 +980,15 @@
                 var count = parseInt($count.data('count') || 0, 10) + 1;
                 $count.html(count).data('count', count);
                 if (!$count.is(':visible')) { $count.show('fast'); }
+                return this;
+            },
+
+            clearChatRoomMessages: function (ev) {
+                ev.stopPropagation();
+                var result = confirm(__("Are you sure you want to clear the messages from this room?"));
+                if (result === true) {
+                    this.$el.find('.chat-content').empty();
+                }
                 return this;
             },
 
@@ -1080,10 +1096,7 @@
                 var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
                     if (match[1] === "clear") {
-                        this.$el.find('.chat-content').empty();
-                        this.model.messages.reset();
-                        this.model.messages.localStorage._clear();
-                        return;
+                        return this.clearMessages();
                     }
                     else if (match[1] === "help") {
                         msgs = [
@@ -1169,6 +1182,17 @@
                 this.height -= diff;
                 this.prev_pageY = ev.pageY;
                 this.setChatBoxHeight(this.height);
+            },
+
+            clearMessages: function (ev) {
+                ev.stopPropagation();
+                var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
+                if (result === true) {
+                    this.$el.find('.chat-content').empty();
+                    this.model.messages.reset();
+                    this.model.messages.localStorage._clear();
+                }
+                return this;
             },
 
             insertEmoticon: function (ev) {
@@ -1408,8 +1432,9 @@
                                 label_whats_this: __("What\'s this?"),
                                 otr_status_class: OTR_CLASS_MAPPING[data.otr_status],
                                 otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
-                                show_call_button: converse.show_call_button,
-                                show_emoticons: converse.show_emoticons
+                                show_call_button: converse.visible_toolbar_buttons['call'],
+                                show_clear_button: converse.visible_toolbar_buttons['clear'],
+                                show_emoticons: converse.visible_toolbar_buttons['emoticons']
                             })
                         )
                     );
@@ -1900,6 +1925,7 @@
                 'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
+                'click .toggle-clear': 'clearChatRoomMessages',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'mousedown .dragresize-tm': 'onDragResizeStart'
             },
@@ -1936,7 +1962,7 @@
                         // TODO: Private messages
                         break;
                     case 'clear':
-                        this.$el.find('.chat-content').empty();
+                        this.clearChatRoomMessages();
                         break;
                     case 'topic':
                         converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
@@ -2568,7 +2594,7 @@
 
             removeContact: function (ev) {
                 ev.preventDefault();
-                var result = confirm("Are you sure you want to remove this contact?");
+                var result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
                     var bare_jid = this.model.get('jid');
                     converse.connection.roster.remove(bare_jid, function (iq) {

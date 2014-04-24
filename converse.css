@@ -411,6 +411,10 @@ you can use the generic selector below, but it's slower:
     display: block;
 }
 
+#conversejs form {
+    padding: 0;
+}
+
 #conversejs,
 #conversejs input {
   color: rgb(79, 79, 79);

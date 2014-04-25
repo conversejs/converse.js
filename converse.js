@@ -978,7 +978,7 @@
                     'extra_classes': msg_dict.delayed && 'delayed' || ''
                 });
                 $content.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
-                if (this.model.get('minimized') && (msg_time.isAfter(this.model.get('time_minimized')))) {
+                if (this.model.get('minimized') && (!msg_time.isBefore(this.model.get('time_minimized')))) {
                     this.updateUnreadMessagesCounter();
                 }
                 this.scrollDown();

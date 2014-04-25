@@ -57,7 +57,7 @@
                 chatbox = utils.openChatBoxFor(contact_jid);
                 chatboxview = this.chatboxviews.get(contact_jid);
                 spyOn(chatboxview, 'focus');
-                var $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
                 jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
                 view = this.rosterview.get(jid);
                 spyOn(view, 'openChat').andCallThrough();
@@ -291,7 +291,7 @@
                     spyOn(converse, 'emit');
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
-                    converse.visible_toolbar_buttons['call'] = false;
+                    converse.visible_toolbar_buttons.call = false;
                     utils.openChatBoxFor(contact_jid);
                     view = this.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
@@ -300,7 +300,7 @@
                     view.closeChat();
                     // Now check that it's shown if enabled and that it emits
                     // onCallButtonClicked
-                    converse.visible_toolbar_buttons['call'] = true; // enable the button
+                    converse.visible_toolbar_buttons.call = true; // enable the button
                     utils.openChatBoxFor(contact_jid);
                     view = this.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
@@ -315,7 +315,7 @@
                     var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
-                    converse.visible_toolbar_buttons['clear'] = false;
+                    converse.visible_toolbar_buttons.clear = false;
                     utils.openChatBoxFor(contact_jid);
                     view = this.chatboxviews.get(contact_jid);
                     view = this.chatboxviews.get(contact_jid);
@@ -325,7 +325,7 @@
                     view.closeChat();
                     // Now check that it's shown if enabled and that it calls
                     // clearMessages
-                    converse.visible_toolbar_buttons['clear'] = true; // enable the button
+                    converse.visible_toolbar_buttons.clear = true; // enable the button
                     utils.openChatBoxFor(contact_jid);
                     view = this.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
@@ -470,7 +470,8 @@
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     utils.clearChatBoxMessages(contact_jid);
-                    var one_day_ago = new Date(new Date().setDate(new Date().getDate()-1));
+                    var one_day_ago = moment()
+                    one_day_ago.subtract('days', 1);
                     var message = 'This is a day old message';
                     var chatbox = this.chatboxes.get(contact_jid);
                     var chatboxview = this.chatboxviews.get(contact_jid);
@@ -483,9 +484,9 @@
                         from: contact_jid,
                         to: this.connection.jid,
                         type: 'chat',
-                        id: one_day_ago.getTime()
+                        id: one_day_ago.unix()
                     }).c('body').t(message).up()
-                      .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: converse.toISOString(one_day_ago) })
+                      .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     this.chatboxes.onMessage(msg);
                     expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
@@ -517,7 +518,7 @@
                     expect($time.length).toEqual(1);
                     expect($time.attr('class')).toEqual('chat-date');
                     expect($time.attr('datetime')).toEqual(moment(message_date).format("YYYY-MM-DD"));
-                    expect($time.text()).toEqual(moment(message_date).format("dddd, MMMM Do YYYY"));
+                    expect($time.text()).toEqual(moment(message_date).format("dddd MMM Do YYYY"));
 
                     // Normal checks for the 2nd message
                     expect(chatbox.messages.length).toEqual(2);

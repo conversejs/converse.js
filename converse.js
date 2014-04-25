@@ -5,7 +5,6 @@
  * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
  * Dual licensed under the MIT and GPL Licenses
  */
-"use strict";
 
 // AMD/global registrations
 (function (root, factory) {
@@ -33,6 +32,7 @@
         root.converse = factory(jQuery, _, OTR, DSA, templates);
     }
 }(this, function ($, _, OTR, DSA, templates, moment) {
+    "use strict";
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
@@ -56,7 +56,7 @@
     };
 
     $.fn.addEmoticons = function() {
-        if (converse.visible_toolbar_buttons['emoticons']) {
+        if (converse.visible_toolbar_buttons.emoticons) {
             if (this.length > 0) {
                 this.each(function(i, obj) {
                     var text = $(obj).html();
@@ -324,7 +324,7 @@
                                 'image_type': img_type,
                                 'image': img,
                                 'url': url,
-                                'vcard_updated': converse.toISOString(new Date())
+                                'vcard_updated': moment().format()
                             });
                         }
                     }
@@ -338,7 +338,7 @@
                     var rosteritem = converse.roster.get(jid);
                     if (rosteritem) {
                         rosteritem.save({
-                            'vcard_updated': converse.toISOString(new Date())
+                            'vcard_updated': moment().format()
                         });
                     }
                     if (errback) {
@@ -407,48 +407,6 @@
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.giveFeedback(__('Disconnecting'), 'error');
             }
-        };
-
-        this.toISOString = function (date) {
-            var pad;
-            if (typeof date.toISOString !== 'undefined') {
-                return date.toISOString();
-            } else {
-                // IE <= 8 Doesn't have toISOStringMethod
-                pad = function (num) {
-                    return (num < 10) ? '0' + num : '' + num;
-                };
-                return date.getUTCFullYear() + '-' +
-                    pad(date.getUTCMonth() + 1) + '-' +
-                    pad(date.getUTCDate()) + 'T' +
-                    pad(date.getUTCHours()) + ':' +
-                    pad(date.getUTCMinutes()) + ':' +
-                    pad(date.getUTCSeconds()) + '.000Z';
-            }
-        };
-
-        this.parseISO8601 = function (datestr) {
-            /* Parses string formatted as 2013-02-14T11:27:08.268Z to a Date obj.
-            */
-            var numericKeys = [1, 4, 5, 6, 7, 10, 11],
-                struct = /^\s*(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}\.?\d*)Z\s*$/.exec(datestr),
-                minutesOffset = 0,
-                i, k;
-
-            for (i = 0; (k = numericKeys[i]); ++i) {
-                struct[k] = +struct[k] || 0;
-            }
-            // allow undefined days and months
-            struct[2] = (+struct[2] || 1) - 1;
-            struct[3] = +struct[3] || 1;
-            if (struct[8] !== 'Z' && struct[9] !== undefined) {
-                minutesOffset = struct[10] * 60 + struct[11];
-
-                if (struct[9] === '+') {
-                    minutesOffset = 0 - minutesOffset;
-                }
-            }
-            return new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
         };
 
         this.applyHeightResistance = function (height) {
@@ -691,7 +649,7 @@
                         'box_id' : b64_sha1(this.get('jid')),
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'minimized': this.get('minimized') || false,
-                        'time_minimized': this.get('time_minimized') || converse.toISOString(new Date()),
+                        'time_minimized': this.get('time_minimized') || moment(),
                         'height': height
                     });
                 } else {
@@ -840,7 +798,7 @@
                             fullname: fullname,
                             sender: 'them',
                             delayed: delayed,
-                            time: converse.toISOString(new Date()),
+                            time: moment().format(),
                             composing: composing.length
                         });
                     }
@@ -849,7 +807,7 @@
                         stamp = $message.find('delay').attr('stamp');
                         time = stamp;
                     } else {
-                        time = converse.toISOString(new Date());
+                        time = moment().format();
                     }
                     if (from == converse.bare_jid) {
                         sender = 'me';
@@ -997,8 +955,7 @@
 
             showMessage: function (msg_dict) {
                 var $content = this.$el.find('.chat-content'),
-                    iso_time = msg_dict.time || converse.toISOString(new Date()),
-                    msg_date = converse.parseISO8601(iso_time),
+                    msg_time = moment(msg_dict.time) || moment,
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     fullname = msg_dict.fullname || this.model.get('fullname'), // XXX Perhaps always use model's?
@@ -1015,13 +972,13 @@
                 $content.find('div.chat-event').remove();
                 var message = template({
                     'sender': msg_dict.sender,
-                    'time': msg_date.toTimeString().substring(0,5),
+                    'time': msg_time.format('hh:mm'),
                     'username': username,
                     'message': '',
                     'extra_classes': msg_dict.delayed && 'delayed' || ''
                 });
                 $content.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
-                if (this.model.get('minimized') && (iso_time > this.model.get('time_minimized'))) {
+                if (this.model.get('minimized') && (msg_time.isAfter(this.model.get('time_minimized')))) {
                     this.updateUnreadMessagesCounter();
                 }
                 this.scrollDown();
@@ -1056,7 +1013,7 @@
                         this_date = moment(time);
                         this.$el.find('.chat-content').append(converse.templates.new_day({
                             isodate: this_date.format("YYYY-MM-DD"),
-                            datestring: this_date.format("dddd, MMMM Do YYYY")
+                            datestring: this_date.format("dddd MMM Do YYYY")
                         }));
                     }
                 }
@@ -1126,7 +1083,7 @@
                     this.model.messages.create({
                         fullname: fullname,
                         sender: 'me',
-                        time: converse.toISOString(new Date()),
+                        time: moment().format(),
                         message: text
                     });
                     this.sendMessageStanza(text);
@@ -1349,7 +1306,7 @@
                     flyout.addClass('minimized');
                     this.model.save({
                         'minimized': true,
-                        'time_minimized': converse.toISOString(new Date())
+                        'time_minimized': moment().format()
                     });
                 }
                 return this;
@@ -1438,9 +1395,9 @@
                                 label_whats_this: __("What\'s this?"),
                                 otr_status_class: OTR_CLASS_MAPPING[data.otr_status],
                                 otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
-                                show_call_button: converse.visible_toolbar_buttons['call'],
-                                show_clear_button: converse.visible_toolbar_buttons['clear'],
-                                show_emoticons: converse.visible_toolbar_buttons['emoticons']
+                                show_call_button: converse.visible_toolbar_buttons.call,
+                                show_clear_button: converse.visible_toolbar_buttons.clear,
+                                show_emoticons: converse.visible_toolbar_buttons.emoticons
                             })
                         )
                     );
@@ -2355,26 +2312,25 @@
                     sender = resource && Strophe.unescapeNode(resource) || '',
                     delayed = $message.find('delay').length > 0,
                     subject = $message.children('subject').text(),
-                    match, template, message_datetime, message_date, dates, isodate, stamp;
+                    match, template, dates, message_datetime, message_date, message_date_str;
 
                 if (delayed) {
-                    stamp = $message.find('delay').attr('stamp');
-                    message_datetime = converse.parseISO8601(stamp);
+                    message_datetime = moment($message.find('delay').attr('stamp'));
                 } else {
-                    message_datetime = new Date();
+                    message_datetime = moment();
                 }
                 // If this message is on a different day than the one received
                 // prior, then indicate it on the chatbox.
                 dates = $chat_content.find("time").map(function(){return $(this).attr("datetime");}).get();
-                message_date = new Date(message_datetime.getTime());
-                message_date.setUTCHours(0,0,0,0);
-                isodate = converse.toISOString(message_date);
-                if (_.indexOf(dates, isodate) == -1) {
+                message_date = message_datetime.clone().startOf('day');
+                message_date_str = message_date.format("YYYY-MM-DD");
+                if (_.indexOf(dates, message_date_str) === -1) {
                     $chat_content.append(converse.templates.new_day({
-                        isodate: isodate,
-                        datestring: message_date.toString().substring(0,15)
+                        isodate: message_date_str,
+                        datestring: message_date.format("dddd MMM Do YYYY")
                     }));
                 }
+
                 this.showStatusMessages($message);
                 if (subject) {
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
@@ -2391,7 +2347,7 @@
                     'message': body,
                     'sender': display_sender,
                     'fullname': sender,
-                    'time': converse.toISOString(message_datetime)
+                    'time': message_datetime.format()
                 });
                 if (display_sender === 'room') {
                     // We only emit an event if it's not our own message
@@ -2914,7 +2870,7 @@
                                         image: img,
                                         image_type: img_type,
                                         url: url,
-                                        vcard_updated: converse.toISOString(new Date()),
+                                        vcard_updated: moment().format(),
                                         is_last: true
                                     });
                                 }, this),

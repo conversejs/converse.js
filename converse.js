@@ -942,6 +942,7 @@
             },
 
             render: function () {
+                converse.emit('beforeChatBoxOpens', this);
                 this.$el.attr('id', this.model.get('box_id'))
                     .html(converse.templates.chatbox(
                             _.extend(this.model.toJSON(), {
@@ -1492,7 +1493,6 @@
                     // localstorage
                     this.model.save();
                 }
-                converse.emit('onChatBoxOpened', this);
                 return this;
             },
 
@@ -2540,6 +2540,25 @@
                         view.initialize();
                     }
                 }, this);
+
+                converse.on('beforeChatBoxOpens', function (ev, view) {
+                    var total_width = this.$el.width();
+                    var box_width = view.$el.outerWidth();
+                    var num_views = _.keys(views).length;
+                    var toggle_width = 0; // TODO
+                    var num_visible_views = 1; // Include view about to be opened
+                    _.each(views, function (v) {
+                        if (v.$el.is(':visible')) {
+                            num_visible_views += 1;
+                        }
+                    });
+                    if (num_visible_views === 1) {
+                        return;
+                    }
+                    if ((num_visible_views*box_width + toggle_width) > total_width) {
+                        // TODO: close the oldest checkbox
+                    }
+                }.bind(this));
             },
 
             showChatBox: function (attrs) {

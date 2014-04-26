@@ -34,6 +34,7 @@
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
+                spyOn(this.chatboxviews, 'trimOpenChats');
 
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
@@ -45,6 +46,7 @@
                     $el.click();
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
+                    expect(this.chatboxviews.trimOpenChats).toHaveBeenCalled();
                 }
             }, converse));
 
@@ -70,12 +72,14 @@
 
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
                 spyOn(converse, 'emit');
+                spyOn(this.chatboxviews, 'trimOpenChats');
                 runs(function () {
-                utils.openControlBox();
+                    utils.openControlBox();
                 });
                 waits(250);
                 runs(function () {
                     utils.openChatBoxes(6);
+                    expect(this.chatboxviews.trimOpenChats).toHaveBeenCalled();
                     // We instantiate a new ChatBoxes collection, which by default
                     // will be empty.
                     var newchatboxes = new this.ChatBoxes();
@@ -162,6 +166,7 @@
 
             it("will be removed from localStorage when closed", $.proxy(function () {
                 spyOn(converse, 'emit');
+                spyOn(converse.chatboxviews, 'trimOpenChats');
                 this.chatboxes.localStorage._clear();
                 runs(function () {
                     utils.closeControlBox();
@@ -171,6 +176,7 @@
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                     expect(converse.chatboxes.length).toEqual(0);
                     utils.openChatBoxes(6);
+                    expect(converse.chatboxviews.trimOpenChats).toHaveBeenCalled();
                     expect(converse.chatboxes.length).toEqual(6);
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
                     utils.closeAllChatBoxes();
@@ -470,7 +476,7 @@
                     var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     utils.clearChatBoxMessages(contact_jid);
-                    var one_day_ago = moment()
+                    var one_day_ago = moment();
                     one_day_ago.subtract('days', 1);
                     var message = 'This is a day old message';
                     var chatbox = this.chatboxes.get(contact_jid);

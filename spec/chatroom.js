@@ -115,12 +115,14 @@
             it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
+                spyOn(this.chatboxviews, 'trimOpenChats');
                 utils.openControlBox();
                 var newchatboxes = new this.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 // The chatboxes will then be fetched from localStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
+                expect(this.chatboxviews.trimOpenChats).toHaveBeenCalled();
                 expect(newchatboxes.length).toEqual(2); // XXX: Includes controlbox, is this a bug?
                 // Check that the chatrooms retrieved from localStorage
                 // have the same attributes values as the original ones.

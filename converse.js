@@ -650,6 +650,7 @@
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'minimized': this.get('minimized') || false,
                         'time_minimized': this.get('time_minimized') || moment(),
+                        'time_opened': this.get('time_opened') || moment(),
                         'height': height
                     });
                 } else {
@@ -900,7 +901,6 @@
             },
 
             render: function () {
-                converse.emit('beforeChatBoxOpens', this);
                 this.$el.attr('id', this.model.get('box_id'))
                     .html(converse.templates.chatbox(
                             _.extend(this.model.toJSON(), {
@@ -1434,7 +1434,7 @@
 
             hide: function () {
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    this.$el.hide('fast', converse.refreshWebkit);
+                    this.$el.fadeOut('fast', converse.refreshWebkit);
                     converse.emit('onChatBoxClosed', this);
                 }
                 return this;
@@ -1444,7 +1444,7 @@
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                     return this.focus();
                 }
-                this.$el.show(callback);
+                this.$el.fadeIn(callback);
                 if (converse.connection) {
                     // Without a connection, we haven't yet initialized
                     // localstorage
@@ -2477,8 +2477,10 @@
                 var views = {};
                 this.get = function (id) { return views[id]; };
                 this.set = function (id, view) { views[id] = view; };
+                this.getAll = function () { return views; };
 
                 this.model.on("add", function (item) {
+                    this.trimOpenChats();
                     var view = this.get(item.get('id'));
                     if (!view) {
                         if (item.get('chatroom')) {
@@ -2496,25 +2498,51 @@
                         view.initialize();
                     }
                 }, this);
+            },
 
-                converse.on('beforeChatBoxOpens', function (ev, view) {
-                    var total_width = this.$el.width();
-                    var box_width = view.$el.outerWidth();
-                    var num_views = _.keys(views).length;
-                    var toggle_width = 0; // TODO
-                    var num_visible_views = 1; // Include view about to be opened
+            trimOpenChats: function () {
+                /* This method is called before a new chat box will be opened.
+                 *
+                 * Check whether there is enough space in the page to show
+                 * another chat box. Otherwise, close the oldest chat box.
+                 */
+                var toggle_width = 0;
+                var controlbox = this.get('controlbox');
+                if (!controlbox || !controlbox.$el.is(':visible')) {
+                    toggle_width = converse.controlboxtoggle.$el.width();
+                }
+                var views = this.getAll();
+                var oldest = moment();
+                var oldest_view;
+                var total_width = this.$el.width();
+                var view_list = _.values(views);
+                if (view_list.length === 0) {
+                    return;
+                }
+                var box_width = view_list[0].$el.outerWidth();
+                var num_visible_views = 1; // Include view about to be opened
+                _.each(views, function (v) {
+                    if (v.$el.is(':visible')) {
+                        num_visible_views += 1;
+                    }
+                });
+                if (num_visible_views === 1) {
+                    return;
+                }
+                if ((num_visible_views*box_width + toggle_width) > total_width) {
                     _.each(views, function (v) {
-                        if (v.$el.is(':visible')) {
-                            num_visible_views += 1;
+                        if (v.id === 'controlbox' || !v.$el.is(':visible')) {
+                            return;
+                        }
+                        var opened = v.model.get('time_opened');
+                        if (moment(opened).isBefore(oldest)) {
+                            oldest = opened;
+                            oldest_view = v;
                         }
                     });
-                    if (num_visible_views === 1) {
-                        return;
-                    }
-                    if ((num_visible_views*box_width + toggle_width) > total_width) {
-                        // TODO: close the oldest checkbox
-                    }
-                }.bind(this));
+                    oldest_view.$el.hide(); // Hide it immediately to avoid flashes on the screen
+                    oldest_view.closeChat();
+                }
             },
 
             showChatBox: function (attrs) {
@@ -3447,7 +3475,7 @@
             },
 
             hide: function (callback) {
-                this.$el.hide('fast', callback);
+                this.$el.fadeOut('fast', callback);
             },
 
             show: function (callback) {

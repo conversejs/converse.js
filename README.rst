@@ -87,6 +87,8 @@ Support
 -------
 
 For support queries and discussions, please join the mailing list: conversejs@librelist.com
+Also take a look at the `mailing list archives <http://librelist.com/browser/conversejs>`_.
+
 Issues can be logged on the `Github issue tracker <https://github.com/jcbrand/converse.js/issues>`_.
 
 ----------------------------------

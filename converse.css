@@ -411,6 +411,12 @@ you can use the generic selector below, but it's slower:
     display: block;
 }
 
+#conversejs a {
+  text-decoration: none;
+  color: #436976;
+  text-shadow: none;
+}
+
 #conversejs form {
     padding: 0;
 }

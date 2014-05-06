@@ -128,19 +128,38 @@ a:focus {
     }
 }
 
-.intro {
+.features-section, .outro, .intro {
     display: table;
     width: 100%;
     height: auto;
     padding: 100px 0;
     text-align: center;
     color: #fff;
+}
+
+.intro {
     background: url(images/header.jpg) no-repeat bottom center scroll;
     background-color: #000;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
     -o-background-size: cover;
+}
+
+.features-section {
+    background: url('images/bgtr.svg') top right no-repeat,
+        url('images/bgbl.svg') bottom left no-repeat,
+        url('images/bgbl.svg') bottom left no-repeat,
+        url('images/overlay.png'),
+        linear-gradient(45deg, #b39c68, #a56365, #412e4c);
+}
+
+.outro {
+    height: 100%;
+    background: url('images/bgtr.svg') top right no-repeat,
+        url('images/bgbl.svg') bottom left no-repeat,
+        url('images/overlay.png'),
+        linear-gradient(45deg, #384955, #655361, #85505f);
 }
 
 .intro-body {

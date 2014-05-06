@@ -1,0 +1,113 @@
+/*********************************************************************************/
+/* Basic                                                                         */
+/*********************************************************************************/
+
+	.image,
+	.image img,
+	.button	
+	{
+		position: relative;
+		-ms-behavior: url('css/ie/PIE.htc');
+	}
+
+	/* Lists */
+
+		ul.icons
+		{
+		}	
+		
+			ul.icons li
+			{
+			}
+			
+				ul.icons a
+				{
+					position: relative;
+					-ms-behavior: url('css/ie/PIE.htc');
+					border: solid 1px #ddd;
+				}
+
+	/* Forms */
+
+		form
+		{
+		}
+		
+			form input.text,
+			form select,
+			form textarea
+			{
+				position: relative;
+				-ms-behavior: url('css/ie/PIE.htc');
+				border: solid 1px #ddd;
+				line-height: 1.25em;
+			}
+
+	/* Buttons */
+		
+		.button.alt
+		{
+			border: solid 1px #ddd;
+		}
+
+	/* Feature Icon */
+
+		.feature-icon
+		{
+			padding-bottom: 0;
+		}
+		
+			.feature-icon:before,
+			.feature-icon:after
+			{
+				display: none;
+			}
+
+			.feature-icon .fa
+			{
+				position: relative;
+				-ms-behavior: url('css/ie/PIE.htc');
+				background: #fff;
+			}
+
+				.feature-icon .fa:before
+				{
+					font-size: 6em;
+					color: #3d3d3d;
+				}
+	
+/*********************************************************************************/
+/* Header                                                                        */
+/*********************************************************************************/
+
+	#header
+	{
+		-ms-behavior: url('css/ie/backgroundsize.min.htc');
+	}
+
+/*********************************************************************************/
+/* Main Sections                                                                 */
+/*********************************************************************************/
+
+	.main
+	{
+	}
+
+		.main > .content
+		{
+		}
+
+		.main > .content.style1
+		{
+			filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#412e4c, endColorstr=#a56365);
+		}
+
+		.main > .content.style2
+		{
+			filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#85505f, endColorstr=#384955);
+		}
+
+		.main > .content.style3
+		{
+			filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#2f394e, endColorstr=#5f796b);
+		}

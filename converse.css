@@ -413,7 +413,7 @@ you can use the generic selector below, but it's slower:
 
 #conversejs a {
   text-decoration: none;
-  color: #436976;
+  color: #2D617A;
   text-shadow: none;
 }
 
@@ -532,12 +532,11 @@ span.spinner.hor_centered {
 }
 
 #conversejs .chat-head-chatbox {
-    background-color: rgb(79, 106, 114);
-    background-color: rgba(79, 106, 114, 1);
+    background-color: #2D617A;
 }
 
 #conversejs .chat-head-chatroom {
-    background-color: #2D617A;
+    background-color: #0F592F;
 }
 
 #conversejs .chat-body {
@@ -648,7 +647,7 @@ span.spinner.hor_centered {
 }
 
 #conversejs .chat-message-me {
-    color: #436976;
+    color: #2D617A;
 }
 
 #conversejs .chat-message-room {
@@ -814,7 +813,7 @@ dl.add-converse-contact {
     border-top-left-radius: 4px;
     height: 35px;
     clear: right;
-    background-color: #5390C8;
+    background-color: #2D617A;
     padding: 3px 0 0 0;
 }
 

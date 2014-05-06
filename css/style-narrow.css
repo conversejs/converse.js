@@ -1,0 +1,124 @@
+/*
+	Tessellate 1.0 by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+*/
+
+/*********************************************************************************/
+/* Basic                                                                         */
+/*********************************************************************************/
+
+	header, footer, h2, h3, h4, h5, h6
+	{
+		text-align: center;
+	}
+	
+		header > p
+		{
+			text-align: center;
+		}
+
+	/* Sections/Articles */
+
+		section,
+		article,
+		.row > section,
+		.row > article
+		{
+			margin: 0 0 2.5em 0 !important;
+		}
+	
+	/* Tables */
+	
+		.table-wrapper
+		{
+			width: 100%;
+			overflow-x: scroll;
+			padding-left: 1px;
+			-webkit-overflow-scrolling: touch;
+		}
+
+	/* Lists */
+
+		ul.actions
+		{
+			text-align: center;
+		}
+
+/*********************************************************************************/
+/* Header                                                                        */
+/*********************************************************************************/
+
+	#header
+	{
+		margin: 0 !important;
+		padding: 8em 2em 8em 2em;
+	}
+	
+		#header header
+		{
+		}
+		
+			#header header p
+			{
+				margin-top: 1em;
+			}
+
+		#header footer
+		{
+			padding-top: 1.25em;
+		}
+	
+/*********************************************************************************/
+/* Main Sections                                                                 */
+/*********************************************************************************/
+
+	.main
+	{
+		margin: 0 !important;
+	}
+	
+		.main > header
+		{
+			padding: 3.5em 2em 3.5em 2em;
+		}
+
+			.main > header h2
+			{
+				font-size: 1.85em;
+			}
+
+			.main > header br
+			{
+				display: none;
+			}
+
+			.main > header p
+			{
+				margin: 1.5em 0 0 0;
+			}
+
+		.main > .content
+		{
+			padding: 3.5em 20px 3.5em 20px;
+		}
+		
+			.main > .content > .container > :last-child
+			{
+				margin-bottom: 0 !important;
+			}
+		
+/*********************************************************************************/
+/* Footer                                                                        */
+/*********************************************************************************/
+
+	#footer
+	{
+		margin: 0 !important;
+		padding: 3em 0 3em 0;
+	}
+	
+		#footer .copyright
+		{
+			margin-top: 2em;
+		}

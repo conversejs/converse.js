@@ -1,4 +1,5 @@
 config = {
+    baseUrl: '.',
     paths: {
         "jquery": "components/jquery/dist/jquery",
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",

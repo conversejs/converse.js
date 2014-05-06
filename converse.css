@@ -20,7 +20,7 @@
 }
 
 /* Use the following CSS code if you want to use data attributes for inserting your icons */
-[data-icon]:before {
+#conversejs [data-icon]:before {
 	font-family: 'Converse-js';
 	content: attr(data-icon);
 	speak: none;
@@ -409,6 +409,85 @@ you can use the generic selector below, but it's slower:
     right: 0;
     z-index: 30;
     display: block;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#conversejs div,
+#conversejs span,
+#conversejs h1,
+#conversejs h2,
+#conversejs h3,
+#conversejs h4,
+#conversejs h5,
+#conversejs h6,
+#conversejs p,
+#conversejs blockquote,
+#conversejs pre,
+#conversejs a,
+#conversejs em,
+#conversejs img,
+#conversejs strong,
+#conversejs dl,
+#conversejs dt,
+#conversejs dd,
+#conversejs ol,
+#conversejs ul,
+#conversejs li,
+#conversejs fieldset,
+#conversejs form,
+#conversejs label,
+#conversejs legend,
+#conversejs table,
+#conversejs caption,
+#conversejs tbody,
+#conversejs tfoot,
+#conversejs thead,
+#conversejs tr,
+#conversejs th,
+#conversejs td,
+#conversejs article,
+#conversejs aside,
+#conversejs canvas,
+#conversejs details,
+#conversejs embed,
+#conversejs figure,
+#conversejs figcaption,
+#conversejs footer,
+#conversejs header,
+#conversejs hgroup,
+#conversejs menu,
+#conversejs nav,
+#conversejs output,
+#conversejs ruby,
+#conversejs section,
+#conversejs summary,
+#conversejs time,
+#conversejs mark,
+#conversejs audio,
+#conversejs video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+#conversejs,
+#conversejs input,
+#conversejs textarea {
+    font-size: 14px;
+    color: rgb(79, 79, 79);
+}
+
+#conversejs ol,
+#conversejs ul {
+	list-style: none;
+}
+
+#conversejs li {
+    height: 10px;
 }
 
 #conversejs a {
@@ -417,32 +496,11 @@ you can use the generic selector below, but it's slower:
   text-shadow: none;
 }
 
-#conversejs form {
-    padding: 0;
-}
-
-#conversejs,
-#conversejs input {
-  color: rgb(79, 79, 79);
-}
-
-#conversejs a {
-  text-decoration: none;
-}
-
-#conversejs ol,
-#conversejs ul {
-  list-style: none;
-}
-
 #conversejs ul,
 #conversejs ol,
 #conversejs dl {
-  border: 0;
   font: inherit;
   margin: 0 0 15px 0;
-  padding: 0;
-  vertical-align: baseline;
 }
 
 #conversejs .emoticon {

@@ -1,190 +1,221 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Converse.js</title>
-    <meta charset='utf-8' />
+    <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="author" content="JC Brand">
     <meta name="keywords" content="xmpp chat webchat converse.js" />
-    <link href="http://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,400,400italic"
-          rel="stylesheet" type="text/css" />
-    <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
-    <script src="js/jquery.min.js"></script>
-    <script src="js/skel.min.js"></script>
-    <script src="js/init.js"></script>
-    <noscript>
-        <link rel="stylesheet" href="css/skel-noscript.css" />
-        <link rel="stylesheet" href="css/style.css" />
-        <link rel="stylesheet" href="css/style-wide.css" />
-    </noscript>
-    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-    <!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
-    <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="css/theme.css" rel="stylesheet">
+    <link href="converse.css" rel="stylesheet" type="text/css" media="screen">
     <script data-main="main" src="components/requirejs/require.js"></script>
 </head>
-<body>
-    <!-- Header -->
-        <section id="header" class="dark" style="padding-top: 1em;">
-            <header>
-            <ul class="icons" style="margin-bottom: 13em;">
-                <li><a href="https://twitter.com/jcopkode" target="_blank" class="fa fa-twitter solo" title="Twitter"><span>Twitter</span></a></li>
-                <li><a href="#" target="_blank" class="fa fa-github solo" title="GitHub"><span>GitHub</span></a></li>
-                <li><a href="#" target="_blank" class="fa fa-dribbble solo" title="XMPP"><span>XMPP</span></a></li>
-            </ul>
-            </header>
-            <header>
-                <h1>Converse.js</h1>
-                <p>An XMPP/Jabber webchat client for your website</p>
-            </header>
-            <footer>
-                <a href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank">Download</a>
-                <a href="#first" class="button scrolly">Learn More</a>
-            </footer>
-        </section>
-        
-    <!-- First -->
-        <section id="first" class="main">
-            <header>
-                <div class="container">
-                    <h2><strong>Converse.js</strong> is a free and open source webchat client that runs in the browser and can be integrated into any website.</h3>
-                    <p>Similar to <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a> but it also supports multi-user chatrooms.</p>
-                    <p>
-                        <strong>Converse.js</strong> can connect to any accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server,
-                        either from a public provider such as <a href="http://jabber.org">jabber.org</a>, or one you have set up yourself.
-                    </p>
-                    <p>
-                        It's possible to enable single-site-login, whereby users already authenticated in your website will also automatically be logged in on the chat server.
-                        Please refer to the <strong><a target="_blank" href="/docs/html/index.html">documentation</a></strong> for more info.
-                    </p>
-                </div>
-            </header>
-            <div class="content dark style1 featured">
-                <div class="container">
-                    <div class="row">
-                        <div class="4u">
-                            <section>
-                                <span class="feature-icon"><span class="fa fa-cloud"></span></span>
-                                <header>
-                                    <h3>Integration</h3>
-                                </header>
-                                <ul class="integration">
-                                    <li><a href="http://github.com/collective/collective.xmpp.chat" target="_blank">Plone</a></li>
-                                    <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank">Django</a></li>
-                                    <li><a href="https://github.com/priyadi/roundcube-converse.js-xmpp-plugin" target="_blank">Roundcube</a></li>
-                                    <li><a href="http://wordpress.org/plugins/conversejs" target="_blank">Wordpress</a></li>
-                                </ul>
-                            </section>
-                        </div>
-                        <div class="4u">
-                            <section>
-                                <span class="feature-icon"><span class="fa fa-bolt"></span></span>
-                            </section>
-                                <header>
-                                    <h3>Features</h3>
-                                </header>
-                                <ul class="features">
-                                    <li>Single-user chat</li>
-                                    <li>Multi-user chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html" target="_blank">XEP 45</a>)</li>
-                                    <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html" target="_blank">XEP 54</a>)</li>
-                                    <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html" target="_blank">XEP 30</a>)</li>
-                                    <li>Contact rosters</li>
-                                    <li>Contact subscriptions</li>
-                                    <li>Accept or decline contact requests</li>
-                                    <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html" target="_blank">XEP 144</a>)</li>
-                                    <li>Chat statuses (online, busy, away, offline)</li>
-                                    <li>Custom status messages</li>
-                                    <li>Typing notifications</li>
-                                    <li>Third person messages (/me )</li>
-                                    <li>Translated into 13 languages</li>
-                                    <li>Off-the-record encryption (via <a href="http://arlolra.github.io/otr/" target="_blank">OTR.js</a>)</li>
-                                </ul>
-                        </div>
-                        <div class="4u">
-                            <section>
-                                <span class="feature-icon"><span class="fa fa-clock-o"></span></span>
-                                <header>
-                                    <h3>Screencasts</h3>
-                                </header>
-                                <ul class="screencasts">
-                                    <li>
-                                        <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp" target="_blank">
-                                            In a Plone site.
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript" target="_blank">
-                                            Chatting with buddies from Jabber.org and Gmail.
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="https://opkode.com/media/blog/2013/11/11/conversejs-otr-support" target="_blank">
-                                            Off-the-record encryption.
-                                        </a>
-                                    </li>
-                                </ul>
-                            </section>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="#page-top">
+                    <i class="fa fa-play-circle"></i>  <span class="light">Home</span>
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#about">About</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#features">Features</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#donate">Donate</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#contact">Contact</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank">Download</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="/docs/html/index.html" target="_blank">Documentation</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <section class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading">Converse.js</h1>
+                        <p class="intro-text">An XMPP/Jabber webchat client for your website</p>
+                        <div class="page-scroll">
+                            <a href="#about" class="btn btn-default btn-lg">Learn More</a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-    <!-- Second -->
-        <section id="second" class="main">
-            <header>
-                <div class="container">
-                    <h2>Is it secure?</h2>
-                    <p> 
-                        <strong>Converse.js</strong> uses <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to make
-                        encrypted HTTPS requests to a <em>connection manager</em>, which in turn makes a TLS encrypted connection to your XMPP server (if the server supports it).
-                    </p>
-                    <p>
-                        If you are planning on integrating <strong>converse.js</strong> in your own website, it's important that you serve your pages via <a href="https://en.wikipedia.org/wiki/Https">HTTPS</a>.
-                    </p>
-                    <p>
-                        That said, the developers don't assume any liability for any loss or damages as a result of using this software. Use at your own risk. 
-                    </p>
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2 banner-social-buttons">
+                        <ul class="list-inline">
+                            <li><a href="https://twitter.com/jcopkode" class="btn btn-circle btn-lg" title="Twitter" target="_blank"><i class="fa fa-twitter"></i></a>
+                            </li>
+                            <li><a href="https://github.com/jcbrand/converse.js" class="btn btn-circle btn-lg" title="GitHub" target="_blank"><i class="fa fa-github"></i></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </header>
-            <div class="content dark style2">
-                <div class="container">
-                    <h3>Licence</h3>
-                    <p>The <a href="https://www.mozilla.org/MPL/2.0/index.txt" target="_blank">Mozilla Public License (MPL)</a>.</p>
+            </div>
+        </div>
+    </section>
 
-                    <h3>Documentation</h3>
-                    <p>
-                        The documentation is included in the source download under the <strong>docs</strong>
-                        folder, or <a href="/docs/html/index.html" target="_blank">can be read online</a>.
-                    </p>
-                    
+    <section id="about" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2><strong>Converse.js</strong> is a free and open source chat client that runs in your browser and can be integrated into any website.</h3>
+                <p>Similar to <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a> but it also supports multi-user chatrooms.</p>
+                <p>
+                    <strong>Converse.js</strong> can connect to any accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server,
+                    either from a public provider such as <a href="http://jabber.org">jabber.org</a>, or one you have set up yourself.
+                </p>
+                <p>
+                    It's possible to enable single-site-login, whereby users already authenticated in your website will also automatically be logged in on the chat server.
+                    Please refer to the <strong><a target="_blank" href="/docs/html/index.html">documentation</a></strong> for more info.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="intro content-section" id="features">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <section>
+                        <span class="feature-icon"><span class="fa fa-globe"></span></span>
+                        <header>
+                            <h2>Integration</h2>
+                        </header>
+                        <ul class="integration">
+                            <li><a href="http://github.com/collective/collective.xmpp.chat" target="_blank">Plone</a></li>
+                            <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank">Django</a></li>
+                            <li><a href="https://github.com/priyadi/roundcube-converse.js-xmpp-plugin" target="_blank">Roundcube</a></li>
+                            <li><a href="http://wordpress.org/plugins/conversejs" target="_blank">Wordpress</a></li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="col-lg-4">
+                    <section>
+                        <span class="feature-icon"><span class="fa fa-check-square-o"></span></span>
+                    </section>
+                        <header>
+                            <h2>Features</h2>
+                        </header>
+                        <ul class="features">
+                            <li>Single-user chat</li>
+                            <li>Multi-user chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html" target="_blank">XEP 45</a>)</li>
+                            <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html" target="_blank">XEP 54</a>)</li>
+                            <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html" target="_blank">XEP 30</a>)</li>
+                            <li>Contact rosters</li>
+                            <li>Contact subscriptions</li>
+                            <li>Accept or decline contact requests</li>
+                            <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html" target="_blank">XEP 144</a>)</li>
+                            <li>Chat statuses (online, busy, away, offline)</li>
+                            <li>Custom status messages</li>
+                            <li>Typing notifications</li>
+                            <li>Third person messages (/me )</li>
+                            <li>Translated into 13 languages</li>
+                            <li>Off-the-record encryption
+                        </ul>
+                </div>
+                <div class="col-lg-4">
+                    <section>
+                        <span class="feature-icon"><span class="fa fa-video-camera"></span></span>
+                        <header>
+                            <h2>Screencasts</h2>
+                        </header>
+                        <ul class="screencasts">
+                            <li>
+                                <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp" target="_blank">
+                                    In a Plone site
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript" target="_blank">
+                                    Chatting with buddies from Jabber.org and Gmail
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://opkode.com/media/blog/2013/11/11/conversejs-otr-support" target="_blank">
+                                    Off-the-record encryption
+                                </a>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="donate" class="donate-section content-section text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
                     <h3>Donate</h3>
-                    <p><strong>Bitcoin:</strong> 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS</p>
-
-                    <h3>Contact</h3>
-                    <p>
-                        <ul class="default">
-                            <li>Follow me on <a href="http://twitter.com/jcopkode" target="_blank">Twitter</a>.</li>
-                            <li>Chat with me via XMPP: <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a>.</li>
-                            <li>For <strong>support queries</strong>, please write to the mailing list: <a href="mailto:conversejs@librelist.com">conversejs@librelist.com</a>.</li>
-                            <li>Please <a target="_blank" href="https://github.com/jcbrand/converse.js/issues">file <strong>bugs</strong> on Github</a>.</li>
-                            <li>I'm available for special features and consulting work. Please <a href="http://opkode.com/contact" target="_blank">contact me here</a>.</li>
-                        <ul>
+                    <p>Thank you for your donations. They allow me to spend more time working on <strong>converse.js</strong>.
                     </p>
-
+                    <p class="bitcoin-header"><strong>Bitcoin</strong></p>
+                    <img src="css/images/bitcoin_qr_code.png"/>
+                    <p>16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS</p>
                 </div>
             </div>
-        </section>
-        
-        <!-- Footer -->
-        <section id="footer">
-            <div class="copyright">
-                <ul class="menu">
-                    <li>&copy; <a href="http://opkode.com" target="_blank">JC Brand</a></li>
-                    <li>Design: <a href="http://html5up.net/">HTML5 UP</a></li>
-                </ul>
+        </div>
+    </section>
+
+    <section class="intro content-section" id="contact">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <h2>Contact</h2>
+                        <p>
+                            <ul class="contact">
+                                <li>Follow me on <a href="http://twitter.com/jcopkode" target="_blank">Twitter</a>.</li>
+                                <li>Chat with me via XMPP: <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a>.</li>
+                                <li>For <strong>support queries</strong>, please write to: <a href="mailto:conversejs@librelist.com">conversejs@librelist.com</a>.</li>
+                                <li>Please <a target="_blank" href="https://github.com/jcbrand/converse.js/issues">file <strong>bugs</strong> on Github</a>.</li>
+                                <li>I'm available for features and consulting. Please <a href="http://opkode.com/contact" target="_blank">contact me here</a>.</li>
+                            <ul>
+                        </p>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
+
+    <!-- Core JavaScript Files -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="js/init.js"></script>
+
     <div id="conversejs"></div>
 </body>
 

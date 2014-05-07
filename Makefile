@@ -11,7 +11,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./d
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release
+.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css
 
 all: dev
 
@@ -75,6 +75,12 @@ dev: clean
 	npm install
 	${BOWER} update;
 
+########################################################################
+## Builds
+
+css::
+	./node_modules/.bin/lessc less/styles.less > css/theme.css
+	./node_modules/.bin/lessc less/converse.less > css/converse.css
 
 ########################################################################
 ## Tests

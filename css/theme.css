@@ -34,7 +34,7 @@ p {
   }
 }
 a {
-  color: #28c3ab;
+  color: #66ccff;
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
@@ -42,7 +42,7 @@ a {
 a:hover,
 a:focus {
   text-decoration: none;
-  color: #176e61;
+  color: #00aaff;
 }
 .light {
   font-weight: 400;
@@ -121,6 +121,9 @@ a:focus {
 }
 .features-section {
   background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #b39c68, #a56365, #412e4c);
+}
+.features-section a {
+  color: #66ccff;
 }
 .outro {
   background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
@@ -241,16 +244,16 @@ a:focus {
   transition: all 0.3s ease-in-out;
 }
 .btn-default {
-  border: 1px solid #28c3ab;
-  color: #28c3ab;
+  border: 1px solid #66ccff;
+  color: #66ccff;
   background-color: transparent;
 }
 .btn-default:hover,
 .btn-default:focus {
-  border: 1px solid #28c3ab;
+  border: 1px solid #66ccff;
   outline: none;
   color: #000000;
-  background-color: #28c3ab;
+  background-color: #66ccff;
 }
 .btn-huge {
   padding: 25px;

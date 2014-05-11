@@ -1421,7 +1421,7 @@
                     return;
                 }
                 var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                    canvas = $('<canvas height="33px" width="33px" class="avatar"></canvas>').get(0);
+                    canvas = $('<canvas height="31px" width="31px" class="avatar"></canvas>').get(0);
 
                 if (!(canvas.getContext && canvas.getContext('2d'))) {
                     return this;
@@ -1872,15 +1872,11 @@
                 ev.preventDefault();
                 var $tab = $(ev.target),
                     $sibling = $tab.parent().siblings('li').children('a'),
-                    $tab_panel = $($tab.attr('href')),
-                    $sibling_panel = $($sibling.attr('href'));
-
-                $sibling_panel.fadeOut('fast', function () {
-                    $sibling.removeClass('current');
-                    $tab.addClass('current');
-                    $tab_panel.fadeIn('fast', function () {
-                    });
-                });
+                    $tab_panel = $($tab.attr('href'));
+                $($sibling.attr('href')).hide();
+                $sibling.removeClass('current');
+                $tab.addClass('current');
+                $tab_panel.show();
             },
 
             showHelpMessages: function (msgs) {

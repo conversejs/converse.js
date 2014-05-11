@@ -4,12 +4,13 @@
     <title id="pageTitle">Converse.js: Mockup</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="description" content="Converse.js: Chat Client for Websites" />
-    <link type="text/css" rel="stylesheet" href="../stylesheets/stylesheet.css">
-    <link type="text/css" rel="stylesheet" href="../converse.css">
+    <meta name="description" content="Converse.js: Mockup" />
+    <link type="text/css" href="../css/theme.css" rel="stylesheet" media="screen" />
+    <link type="text/css" href="../css/converse.css" rel="stylesheet" media="screen" />
     <script src="../components/jquery/dist/jquery.min.js"></script>
 </head>
-<body>
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+
 <!-- HEADER -->
 <div id="header_wrap" class="outer">
     <header class="inner">
@@ -201,7 +202,7 @@
             <div class="chat-head chat-head-chatbox">
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="toggle-chatbox-button icon-minus"></a>
-                <canvas height="33px" width="33px" class="avatar" style="background-color: black"></canvas>
+                <canvas height="31px" width="31px" class="avatar" style="background-color: black"></canvas>
                 <div class="chat-title">
                     <a href="http://opkode.com" target="_blank" class="user">
                         JC Brand
@@ -438,12 +439,10 @@ $(document).ready(function () {
             $tab_panel = $($tab.attr('href')),
             $sibling_panel = $($sibling.attr('href'));
 
-        $sibling_panel.fadeOut('fast', function () {
-            $sibling.removeClass('current');
-            $tab.addClass('current');
-            $tab_panel.fadeIn('fast', function () {
-            });
-        });
+        $sibling_panel.hide();
+        $sibling.removeClass('current');
+        $tab.addClass('current');
+        $tab_panel.show();
     }
 
     $(function() {
@@ -459,7 +458,7 @@ $(document).ready(function () {
 
         $('.toggle-chatbox-button').click(function(ev) {
             var $grandparent = $(ev.target).parent().parent().parent();
-            $grandparent.find('.chat-body').slideToggle(300);
+            $grandparent.find('.chat-body').slideToggle('fast');
             var flyout = $grandparent.find('.box-flyout');
             if (flyout.hasClass('minimized')) {
                 flyout.removeClass('minimized');

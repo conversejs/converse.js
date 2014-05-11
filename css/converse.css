@@ -406,6 +406,12 @@ you can use the generic selector below, but it's slower:
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
+#conversejs div {
+  box-sizing: border-box;
+}
+#conversejs ul li {
+  height: auto;
+}
 #conversejs div,
 #conversejs span,
 #conversejs h1,
@@ -535,11 +541,10 @@ span.spinner.hor_centered {
   height: auto;
 }
 #conversejs #offscreen-chatboxes .box-flyout .chat-head {
-  margin: 0;
   font-size: 100%;
   border-radius: 4px;
   padding: 3px 0 0 5px;
-  margin-bottom: 2px;
+  margin: 0 0 2px 2px;
   box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
   height: 24px;
 }
@@ -555,11 +560,11 @@ span.spinner.hor_centered {
 }
 #conversejs .chat-head {
   color: #ffffff;
-  margin: 0;
   font-size: 100%;
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
-  padding: 3px 0 0 3px;
+  padding: 2px 2px 2px 4px;
+  margin: 0;
 }
 #conversejs .chat-head-chatbox {
   background-color: #2D617A;
@@ -571,17 +576,8 @@ span.spinner.hor_centered {
   background-color: white;
   border-bottom-right-radius: 4px;
   border-bottom-left-radius: 4px;
+  height: 289px;
   border-top: 0;
-}
-#conversejs .chatbox .chat-body {
-  height: -moz-calc(62%);
-  height: -o-calc(62%);
-  height: calc(62%);
-}
-#conversejs .chatroom .chat-body {
-  height: -moz-calc(62%);
-  height: -o-calc(62%);
-  height: calc(62%);
 }
 #conversejs .chatroom .chat-area {
   float: left;
@@ -590,12 +586,12 @@ span.spinner.hor_centered {
 }
 #conversejs .chatroom .participants {
   float: left;
-  height: 100%;
   background-color: white;
   overflow: auto;
   border-left: 1px solid #AAA;
-  max-width: 98px;
+  width: 100px;
   border-bottom-right-radius: 4px;
+  height: 289px;
 }
 #conversejs .participants ul.participant-list li {
   overflow: hidden;
@@ -702,12 +698,11 @@ input.error {
   margin-right: 6px;
 }
 #conversejs .chat-title {
+  padding: 1px 0;
   color: white;
   font-weight: bold;
   line-height: 15px;
   display: block;
-  margin-top: 2px;
-  margin-right: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -732,6 +727,7 @@ input.error {
   text-overflow: ellipsis;
   white-space: nowrap;
   margin: 0;
+  padding: 1px 0;
 }
 #conversejs div.chat-head-chatbox a.user-custom-message {
   color: white;
@@ -1159,6 +1155,9 @@ select#select-xmpp-status {
   resize: none;
   height: 62px;
 }
+#conversejs .chatroom .chat-textarea {
+  border-bottom-right-radius: 0;
+}
 #conversejs ul.chat-toolbar {
   font-size: 14px;
   margin: 0;
@@ -1329,15 +1328,18 @@ input.custom-xmpp-status {
   z-index: 22;
 }
 #conversejs .box-flyout {
-  position: absolute;
-  display: block;
+  border-radius: 4px;
   bottom: 6px;
   box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
-  border-radius: 4px;
+  display: block;
   height: 324px;
+  position: absolute;
 }
 #conversejs .box-flyout.minimized {
   height: auto;
+}
+#conversejs .box-flyout.minimized .chat-head {
+  border-radius: 4px;
 }
 #conversejs .chatbox .box-flyout {
   width: 200px;

@@ -1304,6 +1304,7 @@
             trimChat: function () {
                 // TODO: Instead of closing the chat, we should add it to
                 // div#offscreen-chatboxes
+                this.model.set('trimmed', true);
                 this.$el.hide(); // Hide it immediately to avoid flashes on the screen
                 this.closeChat();
             },
@@ -2960,6 +2961,32 @@
                     item.set({'chat_status': chat_status});
                 }
                 return true;
+            }
+        });
+
+        this.TrimmedChatBoxes = Backbone.View.extend({
+            /* A view for trimmed chat boxes and chat rooms.
+             * XXX: Add this view inside ChatBoxViews's $el (i.e. #conversejs)
+             */
+            tagName: 'div',
+            id: 'trimmed-chatboxes',
+            initialize: function () {
+                var views = {};
+                this.get = function (id) { return views[id]; };
+                this.set = function (id, view) { views[id] = view; };
+                this.getAll = function () { return views; };
+
+                this.$el.html(converse.templates.trimmed_chats());
+                this.model.on("add", function (item) {
+                    if (!item.get('trimmed')) {
+                        return;
+                    }
+                    this.show(item);
+                }, this);
+            },
+
+            show: function (item) {
+                this.$('.box-flyout').append(converse.templates.trim_chat());
             }
         });
 

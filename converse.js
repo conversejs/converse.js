@@ -662,6 +662,24 @@
                 }
             },
 
+            save: function(key, val, options) {
+                /* Override the backbone function and exclude the 'trimmed'
+                 * attribute from being persisted.
+                 */
+                var attrs;
+                // Handle both `"key", value` and `{key: value}` -style arguments.
+                if (key == null || typeof key === 'object') {
+                    attrs = key;
+                    options = val;
+                } else {
+                    (attrs = {})[key] = val;
+                }
+                if (typeof attrs === 'object') {
+                    delete attrs.trimmed;
+                }
+                Backbone.Model.prototype.save.call(this, attrs, options);
+            },
+
             getSession: function (callback) {
                 var cipher = CryptoJS.lib.PasswordBasedCipher;
                 var result, pass, instance_tag, saved_key, pass_check;

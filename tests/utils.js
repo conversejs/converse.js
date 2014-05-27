@@ -31,8 +31,7 @@
     };
 
     utils.initConverse = function () {
-        converse.chatboxes = new converse.ChatBoxes();
-        converse.chatboxviews = new converse.ChatBoxViews({model: converse.chatboxes});
+        converse._initialize();
         converse.onConnected();
     };
 

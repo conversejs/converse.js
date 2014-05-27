@@ -45,7 +45,7 @@ require([
             auto_subscribe: false,
             animate: false,
             connection: mock.mock_connection,
-            testing: true
+            no_trimming: true
         }, function (converse) {
             window.converse = converse;
             window.crypto = {

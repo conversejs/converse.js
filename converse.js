@@ -158,6 +158,7 @@
         this.forward_messages = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
+        this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
         this.prebind = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
@@ -195,6 +196,7 @@
             'fullname',
             'hide_muc_server',
             'i18n',
+            'no_trimming',
             'jid',
             'prebind',
             'rid',
@@ -2556,6 +2558,9 @@
                  * Check whether there is enough space in the page to show
                  * another chat box. Otherwise, close the oldest chat box.
                  */
+                if (converse.no_trimming) {
+                    return;
+                }
                 var toggle_width = 0,
                     trimmed_chats_width,
                     boxes_width = view.$el.outerWidth(true),
@@ -3630,14 +3635,17 @@
             }
         });
 
+        this._initialize = function () {
+            this.chatboxes = new this.ChatBoxes();
+            this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
+            this.controlboxtoggle = new this.ControlBoxToggle();
+            this.otr = new this.OTR();
+        };
+
         // Initialization
         // --------------
         // This is the end of the initialize method.
-        this.chatboxes = new this.ChatBoxes();
-        this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
-        this.controlboxtoggle = new this.ControlBoxToggle();
-        this.otr = new this.OTR();
-
+        this._initialize();
         if ((this.prebind) && (!this.connection)) {
             if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
                 this.log('If you set prebind=true, you MUST supply JID, RID and SID values');

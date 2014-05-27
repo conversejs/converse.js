@@ -668,14 +668,16 @@
                  */
                 var attrs;
                 // Handle both `"key", value` and `{key: value}` -style arguments.
-                if (key == null || typeof key === 'object') {
+                if (key === null || typeof key === 'object') {
                     attrs = key;
                     options = val;
                 } else {
                     (attrs = {})[key] = val;
                 }
-                if (typeof attrs === 'object' && attrs.trimmed) {
-                    delete attrs.trimmed;
+                if (typeof attrs === 'object' && attrs !== null) {
+                    if (attrs.trimmed) {
+                        delete attrs.trimmed;
+                    }
                 }
                 Backbone.Model.prototype.save.call(this, attrs, options);
             },
@@ -881,7 +883,7 @@
             is_chatroom: false,  // This is not a multi-user chatroom
 
             events: {
-                'click .close-chatbox-button': 'closeChat',
+                'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'toggleChatBox',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
@@ -1303,6 +1305,9 @@
                 if (_.has(item.changed, 'otr_status')) {
                     this.renderToolbar().informOTRChange();
                 }
+                if (_.has(item.changed, 'trimmed')) {
+                    this.trim();
+                }
                 // TODO check for changed fullname as well
             },
 
@@ -1310,7 +1315,7 @@
                 this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
             },
 
-            closeChat: function () {
+            close: function () {
                 if (converse.connection) {
                     this.model.destroy();
                 } else {
@@ -1319,12 +1324,8 @@
                 return this;
             },
 
-            trimChat: function () {
-                // TODO: Instead of closing the chat, we should add it to
-                // div#offscreen-chatboxes
-                this.model.set('trimmed', true);
-                this.$el.hide(); // Hide it immediately to avoid flashes on the screen
-                this.closeChat();
+            trim: function () {
+                this.$el.hide();
             },
 
             saveToggleState: function () {
@@ -1786,7 +1787,7 @@
                     }
                 }
                 if (!nick) { return; }
-                chatroom = converse.chatboxviews.showChatBox({
+                chatroom = converse.chatboxviews.showChat({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -1805,7 +1806,7 @@
             className: 'chatbox',
             id: 'controlbox',
             events: {
-                'click a.close-chatbox-button': 'closeChat',
+                'click a.close-chatbox-button': 'close',
                 'click ul#controlbox-tabs li a': 'switchTab',
                 'mousedown .dragresize-tm': 'onDragResizeStart'
             },
@@ -1909,7 +1910,7 @@
             tagName: 'div',
             className: 'chatroom',
             events: {
-                'click .close-chatbox-button': 'closeChat',
+                'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'toggleChatBox',
                 'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
@@ -2406,7 +2407,7 @@
 
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
-            comparator : 'time_opened',
+            comparator: 'time_opened',
 
             registerMessageHandler: function () {
                 converse.connection.addHandler(
@@ -2525,7 +2526,7 @@
                         view.model = item;
                         view.initialize();
                     }
-                    this.trimOpenChats(view);
+                    this.trimChats(view);
                 }, this);
             },
 
@@ -2549,13 +2550,14 @@
                 }
             },
 
-            trimOpenChats: function (view) {
+            trimChats: function (view) {
                 /* This method is called before a new chat box will be opened.
                  *
                  * Check whether there is enough space in the page to show
                  * another chat box. Otherwise, close the oldest chat box.
                  */
                 var toggle_width = 0,
+                    trimmed_chats_width,
                     boxes_width = view.$el.outerWidth(true),
                     controlbox = this.get('controlbox');
                 if (!controlbox || !controlbox.$el.is(':visible')) {
@@ -2570,13 +2572,24 @@
                 if (this.model.length <= 1) {
                     return;
                 }
-                if ((boxes_width + toggle_width) > this.$el.width()) {
-                    // trim oldest view (which is not controlbox)
-                    this.get(this.model.at(1).get('id')).trimChat();
+                trimmed_chats_width = this.trimmed_chatboxes_view.$('.box-flyout').outerWidth(true) || 0;
+                if ((trimmed_chats_width + boxes_width + toggle_width) > this.$el.width()) {
+                    this.getOldestNonTrimmedChat().set('trimmed', true);
                 }
             },
 
-            showChatBox: function (attrs) {
+            getOldestNonTrimmedChat: function () {
+                // Get oldest view (which is not controlbox)
+                var i = 0;
+                var model = this.model.at(i);
+                while (model.get('id') === 'controlbox' || model.get('trimmed') === true) {
+                    i++;
+                    model = this.model.at(i);
+                }
+                return model;
+            },
+
+            showChat: function (attrs) {
                 var chatbox  = this.model.get(attrs.jid);
                 if (chatbox) {
                     chatbox.trigger('show');
@@ -2592,22 +2605,32 @@
         });
 
         this.TrimmedChatBoxView = Backbone.View.extend({
-            render: function () {
-                return this.$el;
+            tagName: 'div',
+            className: 'chat-head',
+
+            events: {
+                'click .close-chatbox-button': 'close',
+                'click .restore-chat': 'restore'
             },
 
-            _ensureElement: function() {
-                /* Override method from backbone.js
-                * Make sure that the el and $el attributes point to a DOM snippet
-                * from src/templates/trimmed_chat.html
-                */
-                if (!this.el) {
-                    var $el = $(converse.templates.trimmed_chat());
-                    this.setElement($el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
+            render: function () {
+                return this.$el.addClass('chat-head-chatbox').html(
+                    converse.templates.trimmed_chat(this.model.toJSON()));
             },
+
+            close: function (ev) {
+                ev.preventDefault();
+                this.$el.remove();
+                this.model.destroy();
+                return this;
+            },
+
+            restore: function (ev) {
+                ev.preventDefault();
+                this.model.set('trimmed', false);
+                this.$el.remove();
+                return this;
+            }
         });
 
         this.TrimmedChatBoxesView = Backbone.View.extend({
@@ -2628,7 +2651,7 @@
                     var view;
                     if (item.get('trimmed')) {
                         view = new converse.TrimmedChatBoxView({model: item});
-                        this.$el.append(view.render());
+                        this.$('.box-flyout').append(view.render());
                         views[item.get('id')] = view;
                     } else {
                         this.remove(item.get('id'));
@@ -2684,7 +2707,7 @@
 
             openChat: function (ev) {
                 ev.preventDefault();
-                return converse.chatboxviews.showChatBox({
+                return converse.chatboxviews.showChat({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
                     'fullname': this.model.get('fullname'),

@@ -174,7 +174,7 @@
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
                 var view = this.chatboxviews.get('lounge@muc.localhost'), chatroom = view.model, $el;
-                spyOn(view, 'closeChat').andCallThrough();
+                spyOn(view, 'close').andCallThrough();
                 spyOn(converse, 'emit');
                 spyOn(converse.connection.muc, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -183,7 +183,7 @@
                 });
                 waits(250);
                 runs(function () {
-                    expect(view.closeChat).toHaveBeenCalled();
+                    expect(view.close).toHaveBeenCalled();
                     expect(this.connection.muc.leave).toHaveBeenCalled();
                     expect(this.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                 }.bind(converse));
@@ -204,7 +204,7 @@
 
             afterEach($.proxy(function () {
                 var view = this.chatboxviews.get('problematic@muc.localhost');
-                view.closeChat();
+                view.close();
             }, converse));
 
             it("will show an error message if the room requires a password", $.proxy(function () {

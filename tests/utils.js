@@ -13,7 +13,7 @@
         var i, chatbox;
         for (i=converse.chatboxes.models.length-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
-            converse.chatboxviews.get(chatbox.get('id')).closeChat();
+            converse.chatboxviews.get(chatbox.get('id')).close();
         }
         return this;
     };
@@ -22,10 +22,10 @@
         var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
         for (i=num_chatboxes-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
-            converse.chatboxviews.get(chatbox.get('id')).closeChat();
+            converse.chatboxviews.get(chatbox.get('id')).close();
             converse.chatboxviews.get(chatbox.get('id')).$el.remove();
         }
-        converse.chatboxviews.get('controlbox').closeChat();
+        converse.chatboxviews.get('controlbox').close();
         converse.chatboxviews.get('controlbox').$el.remove();
         return this;
     };

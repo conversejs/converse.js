@@ -104,8 +104,8 @@
                 var chatbox = utils.openChatBoxes(1)[0],
                     controlview = this.chatboxviews.get('controlbox'), // The controlbox is currently open
                     chatview = this.chatboxviews.get(chatbox.get('jid'));
-                spyOn(chatview, 'closeChat').andCallThrough();
-                spyOn(controlview, 'closeChat').andCallThrough();
+                spyOn(chatview, 'close').andCallThrough();
+                spyOn(controlview, 'close').andCallThrough();
                 spyOn(converse, 'emit');
 
                 // We need to rebind all events otherwise our spy won't be called
@@ -117,14 +117,14 @@
                 });
                 waits(250);
                 runs(function () {
-                    expect(controlview.closeChat).toHaveBeenCalled();
+                    expect(controlview.close).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                     expect(converse.emit.callCount, 1);
                     chatview.$el.find('.close-chatbox-button').click();
                 });
                 waits(250);
                 runs(function () {
-                    expect(chatview.closeChat).toHaveBeenCalled();
+                    expect(chatview.close).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
                 });
@@ -303,7 +303,7 @@
                     $toolbar = view.$el.find('ul.chat-toolbar');
                     callButton = $toolbar.find('.toggle-call');
                     expect(callButton.length).toBe(0);
-                    view.closeChat();
+                    view.close();
                     // Now check that it's shown if enabled and that it emits
                     // onCallButtonClicked
                     converse.visible_toolbar_buttons.call = true; // enable the button
@@ -328,7 +328,7 @@
                     $toolbar = view.$el.find('ul.chat-toolbar');
                     clearButton = $toolbar.find('.toggle-clear');
                     expect(clearButton.length).toBe(0);
-                    view.closeChat();
+                    view.close();
                     // Now check that it's shown if enabled and that it calls
                     // clearMessages
                     converse.visible_toolbar_buttons.clear = true; // enable the button

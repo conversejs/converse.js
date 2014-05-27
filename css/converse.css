@@ -2,8 +2,8 @@
  * Converse.js (Web-based XMPP instant messaging client)
  * http://conversejs.org
  *
- * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
- * Dual licensed under the MIT and GPL Licenses
+ * Copyright (c) 2012-2014, Jan-Carel Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License 
  */
 @font-face {
   font-family: 'Converse-js';
@@ -504,11 +504,53 @@ you can use the generic selector below, but it's slower:
 #conversejs .locked {
   padding-right: 22px;
 }
+@-moz-keyframes spin {
+  0% {
+    -moz-transform: rotate(0deg);
+  }
+  100% {
+    -moz-transform: rotate(359deg);
+  }
+}
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+  }
+}
+@-o-keyframes spin {
+  0% {
+    -o-transform: rotate(0deg);
+  }
+  100% {
+    -o-transform: rotate(359deg);
+  }
+}
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+span.spinner:before {
+  font-size: 24px;
+  font-family: 'Converse-js' !important;
+  content: "\231b";
+}
 span.spinner {
-  background: url(images/spinner.gif) no-repeat center;
-  height: 22px;
-  padding: 0 2px 0 2px;
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+  width: 100%;
   display: block;
+  text-align: center;
 }
 span.spinner.centered {
   text-align: center;
@@ -553,10 +595,6 @@ span.spinner.hor_centered {
 }
 #conversejs #toggle-controlbox {
   float: right;
-}
-#conversejs #connecting-to-chat {
-  background: url(images/spinner.gif) no-repeat left;
-  padding-left: 1.4em;
 }
 #conversejs .chat-head {
   color: #ffffff;

@@ -674,7 +674,7 @@
                 } else {
                     (attrs = {})[key] = val;
                 }
-                if (typeof attrs === 'object') {
+                if (typeof attrs === 'object' && attrs.trimmed) {
                     delete attrs.trimmed;
                 }
                 Backbone.Model.prototype.save.call(this, attrs, options);
@@ -2500,12 +2500,13 @@
         this.ChatBoxViews = Backbone.View.extend({
 
             initialize: function () {
-                this.render();
-
                 var views = {};
                 this.get = function (id) { return views[id]; };
                 this.set = function (id, view) { views[id] = view; };
                 this.getAll = function () { return views; };
+
+                this.trimmed_chatboxes_view = new converse.TrimmedChatBoxesView({model: this.model});
+                this.render();
 
                 this.model.on("add", function (item) {
                     var view = this.get(item.get('id'));
@@ -2529,10 +2530,13 @@
             },
 
             render: function () {
-                this.$el.html(converse.templates.trimmed_chats());
+                this.$el.html(this.trimmed_chatboxes_view.render());
             },
 
             _ensureElement: function() {
+                /* Override method from backbone.js
+                 * If the #conversejs element doesn't exist, create it.
+                 */
                 if (!this.el) {
                     var $el = $('#conversejs');
                     if (!$el.length) {
@@ -2551,7 +2555,7 @@
                  * Check whether there is enough space in the page to show
                  * another chat box. Otherwise, close the oldest chat box.
                  */
-                var toggle_width = 0, 
+                var toggle_width = 0,
                     boxes_width = view.$el.outerWidth(true),
                     controlbox = this.get('controlbox');
                 if (!controlbox || !controlbox.$el.is(':visible')) {
@@ -2585,6 +2589,69 @@
                 }
                 return chatbox;
             }
+        });
+
+        this.TrimmedChatBoxView = Backbone.View.extend({
+            render: function () {
+                return this.$el;
+            },
+
+            _ensureElement: function() {
+                /* Override method from backbone.js
+                * Make sure that the el and $el attributes point to a DOM snippet
+                * from src/templates/trimmed_chat.html
+                */
+                if (!this.el) {
+                    var $el = $(converse.templates.trimmed_chat());
+                    this.setElement($el, false);
+                } else {
+                    this.setElement(_.result(this, 'el'), false);
+                }
+            },
+        });
+
+        this.TrimmedChatBoxesView = Backbone.View.extend({
+
+            initialize: function () {
+                var views = {};
+                this.get = function (id) { return views[id]; };
+                this.set = function (id, view) { views[id] = view; };
+                this.remove = function (id) {
+                    var view = views[id];
+                    if (view) {
+                        view.remove();
+                        delete views[id];
+                    }
+                };
+
+                this.model.on("change:trimmed", function (item) {
+                    var view;
+                    if (item.get('trimmed')) {
+                        view = new converse.TrimmedChatBoxView({model: item});
+                        this.$el.append(view.render());
+                        views[item.get('id')] = view;
+                    } else {
+                        this.remove(item.get('id'));
+                    }
+                }, this);
+            },
+
+            render: function () {
+                return this.$el;
+            },
+
+            _ensureElement: function() {
+                /* Override method from backbone.js
+                * Make sure that the el and $el attributes point to a DOM snippet
+                * from src/templates/trimmed_chats.html
+                */
+                if (!this.el) {
+                    var $el = $(converse.templates.trimmed_chats());
+                    this.setElement($el, false);
+                } else {
+                    this.setElement(_.result(this, 'el'), false);
+                }
+            },
         });
 
         this.RosterItem = Backbone.Model.extend({

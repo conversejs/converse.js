@@ -35,7 +35,8 @@ define("converse-templates", [
     "tpl!src/templates/select_option",
     "tpl!src/templates/status_option",
     "tpl!src/templates/toolbar",
-    "tpl!src/templates/trimmed_chats",
+    "tpl!src/templates/trimmed_chat",
+    "tpl!src/templates/trimmed_chats"
 ], function () {
     return {
         action:                 arguments[0],
@@ -74,6 +75,7 @@ define("converse-templates", [
         select_option:          arguments[33],
         status_option:          arguments[34],
         toolbar:                arguments[35],
-        trimmed_chats:          arguments[36]
+        trimmed_chat:           arguments[36],
+        trimmed_chats:          arguments[37]
     };
 });

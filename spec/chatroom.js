@@ -142,7 +142,7 @@
             it("can be toggled by clicking a DOM element with class 'toggle-chatbox-button'", function () {
                 var view = this.chatboxviews.get('lounge@muc.localhost'),
                     chatroom = view.model, $el;
-                spyOn(view, 'toggleChatBox').andCallThrough();
+                spyOn(view, 'toggle').andCallThrough();
                 spyOn(converse, 'emit');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 runs(function () {
@@ -150,7 +150,7 @@
                 });
                 waits(250);
                 runs(function () {
-                    expect(view.toggleChatBox).toHaveBeenCalled();
+                    expect(view.toggle).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
                     expect(view.$el.find('.chat-body').is(':visible')).toBeFalsy();
@@ -161,7 +161,7 @@
                 });
                 waits(250);
                 runs(function () {
-                    expect(view.toggleChatBox).toHaveBeenCalled();
+                    expect(view.toggle).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
                     expect(view.$el.find('.chat-body').is(':visible')).toBeTruthy();
                     expect(view.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();

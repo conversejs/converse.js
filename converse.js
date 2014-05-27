@@ -886,7 +886,7 @@
 
             events: {
                 'click .close-chatbox-button': 'close',
-                'click .toggle-chatbox-button': 'toggleChatBox',
+                'click .toggle-chatbox-button': 'toggle',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -1308,7 +1308,11 @@
                     this.renderToolbar().informOTRChange();
                 }
                 if (_.has(item.changed, 'trimmed')) {
-                    this.trim();
+                    if (item.get('trimmed')) {
+                        this.trim();
+                    } else {
+                        this.grow();
+                    }
                 }
                 // TODO check for changed fullname as well
             },
@@ -1327,7 +1331,13 @@
             },
 
             trim: function () {
-                this.$el.hide();
+                this.$el.hide('fast', converse.refreshWebkit);
+            },
+
+            grow: function () {
+                // the opposite of trim, i.e. restoring a trimmed chat box
+                this.$el.show();
+                this.model.trigger('grow', this.model);
             },
 
             saveToggleState: function () {
@@ -1345,7 +1355,7 @@
                 return this;
             },
 
-            toggleChatBox: function (ev) {
+            toggle: function (ev) {
                 var $target = $(ev.target), $count;
                 this.saveToggleState();
                 this.$el.children('.box-flyout').attr('style', '');
@@ -1913,7 +1923,7 @@
             className: 'chatroom',
             events: {
                 'click .close-chatbox-button': 'close',
-                'click .toggle-chatbox-button': 'toggleChatBox',
+                'click .toggle-chatbox-button': 'toggle',
                 'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -2530,6 +2540,10 @@
                     }
                     this.trimChats(view);
                 }, this);
+
+                this.model.on("grow", function (item) {
+                    this.trimChats(this.get(item.get('id')));
+                }, this);
             },
 
             render: function () {
@@ -2586,7 +2600,7 @@
             getOldestNonTrimmedChat: function () {
                 // Get oldest view (which is not controlbox)
                 var i = 0;
-                var model = this.model.at(i);
+                var model = this.model.sort().at(i);
                 while (model.get('id') === 'controlbox' || model.get('trimmed') === true) {
                     i++;
                     model = this.model.at(i);
@@ -2597,7 +2611,11 @@
             showChat: function (attrs) {
                 var chatbox  = this.model.get(attrs.jid);
                 if (chatbox) {
-                    chatbox.trigger('show');
+                    if (chatbox.get('trimmed')) {
+                        chatbox.set({'trimmed': false});
+                    } else {
+                        chatbox.trigger('show');
+                    }
                 } else {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
@@ -2632,8 +2650,11 @@
 
             restore: function (ev) {
                 ev.preventDefault();
-                this.model.set('trimmed', false);
                 this.$el.remove();
+                this.model.set({
+                    'time_opened': moment().format(),
+                    'trimmed': false
+                });
                 return this;
             }
         });

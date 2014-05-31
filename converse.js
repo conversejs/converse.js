@@ -914,6 +914,7 @@
                 this.model.on('showReceivedOTRMessage', function (text) {
                     this.showMessage({'message': text, 'sender': 'them'});
                 }, this);
+
                 this.updateVCard();
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
                 this.render().show().focus().model.messages.fetch({add: true});
@@ -1331,12 +1332,13 @@
             },
 
             trim: function () {
-                this.$el.hide('fast', converse.refreshWebkit);
+                this.$el.hide('fast', converse.refreshwebkit);
             },
 
             grow: function () {
                 // the opposite of trim, i.e. restoring a trimmed chat box
-                this.$el.show();
+                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show();
+                this.focus();
                 this.model.trigger('grow', this.model);
             },
 
@@ -2515,32 +2517,13 @@
             initialize: function () {
                 var views = {};
                 this.get = function (id) { return views[id]; };
-                this.set = function (id, view) { views[id] = view; };
+                this.add = function (id, view) { views[id] = view; };
                 this.getAll = function () { return views; };
 
                 this.trimmed_chatboxes_view = new converse.TrimmedChatBoxesView({model: this.model});
                 this.render();
 
-                this.model.on("add", function (item) {
-                    var view = this.get(item.get('id'));
-                    if (!view) {
-                        if (item.get('chatroom')) {
-                            view = new converse.ChatRoomView({'model': item});
-                        } else if (item.get('box_id') === 'controlbox') {
-                            view = new converse.ControlBoxView({model: item});
-                            view.render();
-                        } else {
-                            view = new converse.ChatBoxView({model: item});
-                        }
-                        this.set(item.get('id'), view);
-                    } else {
-                        delete view.model; // Remove ref to old model to help garbage collection
-                        view.model = item;
-                        view.initialize();
-                    }
-                    this.trimChats(view);
-                }, this);
-
+                this.model.on("add", this.onChatAdded, this);
                 this.model.on("grow", function (item) {
                     this.trimChats(this.get(item.get('id')));
                 }, this);
@@ -2564,6 +2547,26 @@
                 } else {
                     this.setElement(_.result(this, 'el'), false);
                 }
+            },
+
+            onChatAdded: function (item) {
+                var view = this.get(item.get('id'));
+                if (!view) {
+                    if (item.get('chatroom')) {
+                        view = new converse.ChatRoomView({'model': item});
+                    } else if (item.get('box_id') === 'controlbox') {
+                        view = new converse.ControlBoxView({model: item});
+                        view.render();
+                    } else {
+                        view = new converse.ChatBoxView({model: item});
+                    }
+                    this.add(item.get('id'), view);
+                } else {
+                    delete view.model; // Remove ref to old model to help garbage collection
+                    view.model = item;
+                    view.initialize();
+                }
+                this.trimChats(view);
             },
 
             trimChats: function (view) {
@@ -2642,6 +2645,9 @@
             },
 
             close: function (ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
                 ev.preventDefault();
                 this.$el.remove();
                 this.model.destroy();
@@ -2649,7 +2655,9 @@
             },
 
             restore: function (ev) {
-                ev.preventDefault();
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
                 this.$el.remove();
                 this.model.set({
                     'time_opened': moment().format(),
@@ -2664,7 +2672,7 @@
             initialize: function () {
                 var views = {};
                 this.get = function (id) { return views[id]; };
-                this.set = function (id, view) { views[id] = view; };
+                this.add = function (id, view) { views[id] = view; };
                 this.remove = function (id) {
                     var view = views[id];
                     if (view) {
@@ -2678,9 +2686,10 @@
                     if (item.get('trimmed')) {
                         view = new converse.TrimmedChatBoxView({model: item});
                         this.$('.box-flyout').append(view.render());
-                        views[item.get('id')] = view;
+                        this.add(item.get('id'), view);
                     } else {
-                        this.remove(item.get('id'));
+                        view = this.get(item.get('id'));
+                        view.restore();
                     }
                 }, this);
             },
@@ -3122,10 +3131,8 @@
 
             initialize: function () {
                 var views = {};
-                this.get = function (id) {
-                    return views[id];
-                };
-                this.set = function (id, view) { views[id] = view; };
+                this.get = function (id) { return views[id]; };
+                this.add = function (id, view) { views[id] = view; };
 
                 this.model.on("add", function (item) {
                     this.addRosterItemView(item).render(item);
@@ -3182,7 +3189,7 @@
 
             addRosterItemView: function (item) {
                 var view = new converse.RosterItemView({model: item});
-                this.set(item.id, view);
+                this.add(item.id, view);
                 return this;
             },
 

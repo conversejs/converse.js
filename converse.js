@@ -3,7 +3,7 @@
  * http://conversejs.org
  *
  * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
- * Dual licensed under the MIT and GPL Licenses
+ * Licensed under the Mozilla Public License (MPL) 
  */
 
 // AMD/global registrations
@@ -1339,6 +1339,7 @@
                 // the opposite of trim, i.e. restoring a trimmed chat box
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show();
                 this.focus();
+                converse.refreshWebkit();
                 this.model.trigger('grow', this.model);
             },
 
@@ -2512,17 +2513,11 @@
             }
         });
 
-        this.ChatBoxViews = Backbone.View.extend({
+        this.ChatBoxViews = Backbone.Overview.extend({
 
             initialize: function () {
-                var views = {};
-                this.get = function (id) { return views[id]; };
-                this.add = function (id, view) { views[id] = view; };
-                this.getAll = function () { return views; };
-
                 this.trimmed_chatboxes_view = new converse.TrimmedChatBoxesView({model: this.model});
                 this.render();
-
                 this.model.on("add", this.onChatAdded, this);
                 this.model.on("grow", function (item) {
                     this.trimChats(this.get(item.get('id')));
@@ -2667,20 +2662,9 @@
             }
         });
 
-        this.TrimmedChatBoxesView = Backbone.View.extend({
+        this.TrimmedChatBoxesView = Backbone.Overview.extend({
 
             initialize: function () {
-                var views = {};
-                this.get = function (id) { return views[id]; };
-                this.add = function (id, view) { views[id] = view; };
-                this.remove = function (id) {
-                    var view = views[id];
-                    if (view) {
-                        view.remove();
-                        delete views[id];
-                    }
-                };
-
                 this.model.on("change:trimmed", function (item) {
                     var view;
                     if (item.get('trimmed')) {
@@ -3125,15 +3109,11 @@
             }
         });
 
-        this.RosterView = Backbone.View.extend({
+        this.RosterView = Backbone.Overview.extend({
             tagName: 'dl',
             id: 'converse-roster',
 
             initialize: function () {
-                var views = {};
-                this.get = function (id) { return views[id]; };
-                this.add = function (id, view) { views[id] = view; };
-
                 this.model.on("add", function (item) {
                     this.addRosterItemView(item).render(item);
                     if (!item.get('vcard_updated')) {
@@ -3167,7 +3147,6 @@
                         });
                 }
                 this.$el.hide().html(roster_markup);
-
                 this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 

@@ -56,6 +56,38 @@
                 }
             }, converse));
 
+            it("can be trimmed to conserve space", $.proxy(function () {
+                var i, $el, click, jid, view, chatboxview;
+                // openControlBox was called earlier, so the controlbox is
+                // visible, but no other chat boxes have been created.
+                var trimmed_chatboxes = converse.chatboxviews.trimmed_chatboxes_view;
+                expect(this.chatboxes.length).toEqual(1);
+                spyOn(this.chatboxviews, 'trimChats');
+                spyOn(trimmed_chatboxes, 'onChanged').andCallThrough();
+
+                expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
+
+                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                for (i=0; i<online_contacts.length; i++) {
+                    $el = $(online_contacts[i]);
+                    jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                    view = this.rosterview.get(jid);
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    $el.click();
+                    expect(this.chatboxviews.trimChats).toHaveBeenCalled();
+
+                    chatboxview = this.chatboxviews.get(jid);
+                    spyOn(chatboxview, 'trim').andCallThrough();
+                    chatboxview.model.set({'trimmed': true});
+
+                    expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
+                    expect(chatboxview.trim).toHaveBeenCalled();
+
+                    trimmedview = trimmed_chatboxes.get(jid);
+                    expect(trimmedview.$el.is(":visible")).toBeTruthy();
+                }
+            }, converse));
+
             it("is focused if its already open and you click on its corresponding roster item", $.proxy(function () {
                 var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
                 var i, $el, click, jid, view, chatboxview, chatbox;

@@ -2666,15 +2666,7 @@
 
             initialize: function () {
                 this.model.on("change:trimmed", function (item) {
-                    var view;
-                    if (item.get('trimmed')) {
-                        view = new converse.TrimmedChatBoxView({model: item});
-                        this.$('.box-flyout').append(view.render());
-                        this.add(item.get('id'), view);
-                    } else {
-                        view = this.get(item.get('id'));
-                        view.restore();
-                    }
+                    this.onChanged(item);
                 }, this);
             },
 
@@ -2682,7 +2674,7 @@
                 return this.$el;
             },
 
-            _ensureElement: function() {
+            _ensureElement: function () {
                 /* Override method from backbone.js
                 * Make sure that the el and $el attributes point to a DOM snippet
                 * from src/templates/trimmed_chats.html
@@ -2694,6 +2686,18 @@
                     this.setElement(_.result(this, 'el'), false);
                 }
             },
+
+            onChanged: function (item) {
+                var view;
+                if (item.get('trimmed')) {
+                    view = new converse.TrimmedChatBoxView({model: item});
+                    this.$('.box-flyout').append(view.render());
+                    this.add(item.get('id'), view);
+                } else {
+                    view = this.get(item.get('id'));
+                    view.restore();
+                }
+            }
         });
 
         this.RosterItem = Backbone.Model.extend({

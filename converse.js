@@ -2517,8 +2517,7 @@
                     if (item.get('chatroom')) {
                         view = new converse.ChatRoomView({'model': item});
                     } else if (item.get('box_id') === 'controlbox') {
-                        view = new converse.ControlBoxView({model: item});
-                        view.render();
+                        view = new converse.ControlBoxView({model: item}).render();
                     } else {
                         view = new converse.ChatBoxView({model: item});
                     }
@@ -3580,7 +3579,7 @@
                 if (converse.show_controlbox_by_default) {
                     toggle.hide(); // It's either or
                 }
-                $('#conversejs').append(toggle);
+                $('#conversejs').prepend(toggle);
                 return this;
             },
 

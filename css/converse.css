@@ -589,6 +589,7 @@ span.spinner.hor_centered {
   margin: 0 0 2px 2px;
   box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
   height: 24px;
+  width: 130px;
 }
 #conversejs #trimmed-chatboxes .chat-head-chatroom {
   width: 100px;

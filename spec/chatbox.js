@@ -77,14 +77,14 @@
                     expect(this.chatboxviews.trimChats).toHaveBeenCalled();
 
                     chatboxview = this.chatboxviews.get(jid);
-                    spyOn(chatboxview, 'trim').andCallThrough();
-                    chatboxview.model.set({'trimmed': true});
+                    spyOn(chatboxview, 'hide').andCallThrough();
+                    chatboxview.model.set({'minimized': true});
                     expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
-                    expect(chatboxview.trim).toHaveBeenCalled();
+                    expect(chatboxview.hide).toHaveBeenCalled();
                     trimmedview = trimmed_chatboxes.get(jid);
                     expect(trimmedview.$el.is(":visible")).toBeTruthy();
                 }
-                // Test that they can be restored/grown again
+                // Test that they can be maximized again
                 var chatboxviews = this.chatboxviews.getAll();
                 var keys = _.keys(chatboxviews);
                 for (i=0; i<keys.length; i++) {
@@ -94,10 +94,10 @@
                     }
                     chatboxview = chatboxviews[key];
                     trimmedview = trimmed_chatboxes.get(key);
-                    spyOn(chatboxview, 'grow').andCallThrough();
+                    spyOn(chatboxview, 'maximize').andCallThrough();
                     trimmedview.$("a.restore-chat").click();
                     expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
-                    expect(chatboxview.grow).toHaveBeenCalled();
+                    expect(chatboxview.maximize).toHaveBeenCalled();
                 }
             }, converse));
 
@@ -183,35 +183,38 @@
 
             it("can be toggled by clicking a DOM element with class 'toggle-chatbox-button'", function () {
                 var chatbox = utils.openChatBoxes(1)[0],
-                    chatview = this.chatboxviews.get(chatbox.get('jid'));
+                    chatview = this.chatboxviews.get(chatbox.get('jid')),
+                    trimmed_chatboxes = this.chatboxviews.trimmed_chatboxes_view;
+                spyOn(chatview, 'maximize').andCallThrough();
                 spyOn(chatview, 'toggle').andCallThrough();
                 spyOn(converse, 'emit');
+                spyOn(trimmed_chatboxes, 'onChanged').andCallThrough();
                 // We need to rebind all events otherwise our spy won't be called
                 chatview.delegateEvents();
 
                 runs(function () {
                     chatview.$el.find('.toggle-chatbox-button').click();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
                     expect(chatview.toggle).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
-                    expect(chatview.$el.find('.chat-body').is(':visible')).toBeFalsy();
-                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeFalsy();
-                    expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeTruthy();
+                    expect(chatview.$el.is(':visible')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeTruthy();
                     chatview.$el.find('.toggle-chatbox-button').click();
+
+                    trimmedview = trimmed_chatboxes.get(chatview.model.get('id'));
+                    trimmedview.$("a.restore-chat").click();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
-                    expect(chatview.toggle).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
+                    expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
+                    expect(chatview.maximize).toHaveBeenCalled();
                     expect(chatview.$el.find('.chat-body').is(':visible')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeFalsy();
-                    expect(converse.emit.callCount, 3);
                 });
             }.bind(converse));
 

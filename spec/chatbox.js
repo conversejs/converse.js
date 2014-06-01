@@ -57,16 +57,16 @@
             }, converse));
 
             it("can be trimmed to conserve space", $.proxy(function () {
-                var i, $el, click, jid, view, chatboxview;
+                var i, $el, click, jid, key, view, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 var trimmed_chatboxes = converse.chatboxviews.trimmed_chatboxes_view;
                 expect(this.chatboxes.length).toEqual(1);
                 spyOn(this.chatboxviews, 'trimChats');
                 spyOn(trimmed_chatboxes, 'onChanged').andCallThrough();
-
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
+                // Test that they can be trimmed
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
@@ -79,12 +79,25 @@
                     chatboxview = this.chatboxviews.get(jid);
                     spyOn(chatboxview, 'trim').andCallThrough();
                     chatboxview.model.set({'trimmed': true});
-
                     expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
                     expect(chatboxview.trim).toHaveBeenCalled();
-
                     trimmedview = trimmed_chatboxes.get(jid);
                     expect(trimmedview.$el.is(":visible")).toBeTruthy();
+                }
+                // Test that they can be restored/grown again
+                var chatboxviews = this.chatboxviews.getAll();
+                var keys = _.keys(chatboxviews);
+                for (i=0; i<keys.length; i++) {
+                    key = keys[i];
+                    if (key === 'controlbox') {
+                        continue;
+                    }
+                    chatboxview = chatboxviews[key];
+                    trimmedview = trimmed_chatboxes.get(key);
+                    spyOn(chatboxview, 'grow').andCallThrough();
+                    trimmedview.$("a.restore-chat").click();
+                    expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
+                    expect(chatboxview.grow).toHaveBeenCalled();
                 }
             }, converse));
 

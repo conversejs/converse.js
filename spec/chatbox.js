@@ -30,11 +30,12 @@
             });
 
             it("is created when you click on a roster item", $.proxy(function () {
-                var i, $el, click, jid, view;
+                var i, $el, click, jid, view, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
                 spyOn(this.chatboxviews, 'trimChats');
+                expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
@@ -44,9 +45,14 @@
                     spyOn(view, 'openChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     $el.click();
+                    chatboxview = this.chatboxviews.get(jid);
                     expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
                     expect(this.chatboxviews.trimChats).toHaveBeenCalled();
+                    // Check that new chat boxes are created to the left of the
+                    // controlbox (but to the right of all existing chat boxes)
+                    expect($("#conversejs .chatbox").length).toBe(i+2);
+                    expect($("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
                 }
             }, converse));
 

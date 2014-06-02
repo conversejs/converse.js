@@ -1463,8 +1463,10 @@
             },
 
             scrollDown: function () {
-                var $content = this.$el.find('.chat-content');
-                $content.scrollTop($content[0].scrollHeight);
+                var $content = this.$('.chat-content');
+                if ($content.is(':visible')) {
+                    $content.scrollTop($content[0].scrollHeight);
+                }
                 return this;
             }
         });

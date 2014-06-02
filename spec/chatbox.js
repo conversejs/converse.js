@@ -464,13 +464,13 @@
                     runs(function () {
                         utils.openChatBoxFor(contact_jid);
                     });
-                    waits(250);
+                    waits(50);
                     runs(function () {
                         var chatview = converse.chatboxviews.get(contact_jid);
                         expect(chatview.model.get('minimized')).toBeFalsy();
                         chatview.$el.find('.toggle-chatbox-button').click();
                     });
-                    waits(250);
+                    waits(50);
                     runs($.proxy(function () {
                         var chatview = this.chatboxviews.get(contact_jid);
                         expect(chatview.model.get('minimized')).toBeTruthy();
@@ -486,10 +486,12 @@
                         this.chatboxes.onMessage(msg);
                         expect(this.emit).toHaveBeenCalledWith('onMessage', msg);
                     }, converse));
-                    waits(250);
+                    waits(50);
                     runs($.proxy(function () {
                         var chatview = this.chatboxviews.get(contact_jid);
-                        var $count = chatview.$el.find('.chat-head-message-count');
+                        var trimmed_chatboxes = this.chatboxviews.trimmed_chatboxes_view;
+                        var trimmedview = trimmed_chatboxes.get(contact_jid);
+                        var $count = trimmedview.$el.find('.chat-head-message-count');
                         expect(chatview.model.get('minimized')).toBeTruthy();
                         expect($count.is(':visible')).toBeTruthy();
                         expect($count.data('count')).toBe(1);
@@ -504,7 +506,7 @@
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                         );
                     }, converse));
-                    waits(100);
+                    waits(50);
                     runs($.proxy(function () {
                         var chatview = this.chatboxviews.get(contact_jid);
                         var $count = chatview.$el.find('.chat-head-message-count');
@@ -514,7 +516,7 @@
                         expect($count.html()).toBe('2');
                         chatview.$el.find('.toggle-chatbox-button').click();
                     }, converse));
-                    waits(250);
+                    waits(50);
                     runs($.proxy(function () {
                         var chatview = this.chatboxviews.get(contact_jid);
                         var $count = chatview.$el.find('.chat-head-message-count');

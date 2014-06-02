@@ -181,12 +181,12 @@
                 });
             }, converse));
 
-            it("can be toggled by clicking a DOM element with class 'toggle-chatbox-button'", function () {
+            it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'", function () {
                 var chatbox = utils.openChatBoxes(1)[0],
                     chatview = this.chatboxviews.get(chatbox.get('jid')),
                     trimmed_chatboxes = this.chatboxviews.trimmed_chatboxes_view;
                 spyOn(chatview, 'maximize').andCallThrough();
-                spyOn(chatview, 'toggle').andCallThrough();
+                spyOn(chatview, 'minimize').andCallThrough();
                 spyOn(converse, 'emit');
                 spyOn(trimmed_chatboxes, 'onChanged').andCallThrough();
                 // We need to rebind all events otherwise our spy won't be called
@@ -197,8 +197,8 @@
                 });
                 waits(50);
                 runs(function () {
-                    expect(chatview.toggle).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxToggled', jasmine.any(Object));
+                    expect(chatview.minimize).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxMinimized', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
                     expect(chatview.$el.is(':visible')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeTruthy();
@@ -211,6 +211,7 @@
                 runs(function () {
                     expect(trimmed_chatboxes.onChanged).toHaveBeenCalled();
                     expect(chatview.maximize).toHaveBeenCalled();
+                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxMaximized', jasmine.any(Object));
                     expect(chatview.$el.find('.chat-body').is(':visible')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();

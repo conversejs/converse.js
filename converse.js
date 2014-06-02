@@ -1314,6 +1314,7 @@
                 } else {
                     this.model.trigger('hide');
                 }
+                converse.emit('onChatBoxClosed', this);
                 return this;
             },
 
@@ -1323,6 +1324,7 @@
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show();
                 this.focus();
                 converse.refreshWebkit();
+                converse.emit('onChatBoxMaximized', this);
                 this.model.trigger('maximized', this.model);
             },
 
@@ -1334,7 +1336,7 @@
                     'time_minimized': moment().format()
                 });
                 this.$el.hide('fast', converse.refreshwebkit);
-                converse.emit('onChatBoxToggled', this);
+                converse.emit('onChatBoxMinimized', this);
             },
 
             updateVCard: function () {

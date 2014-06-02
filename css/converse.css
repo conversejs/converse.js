@@ -743,6 +743,8 @@ input.error {
 }
 #conversejs .chat-title a {
   color: white;
+  width: 100%;
+  display: block;
 }
 #conversejs .chat-head-chatbox,
 #conversejs .chat-head-chatroom {

@@ -3,7 +3,7 @@
  * http://conversejs.org
  *
  * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL) 
+ * Licensed under the Mozilla Public License (MPL)
  */
 
 // AMD/global registrations
@@ -866,7 +866,7 @@
 
             events: {
                 'click .close-chatbox-button': 'close',
-                'click .toggle-chatbox-button': 'toggle',
+                'click .toggle-chatbox-button': 'minimize',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -897,9 +897,8 @@
 
                 this.updateVCard();
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-
                 this.model.messages.fetch({add: true});
-                this.render().showStatusMessage();
+                this.render();
                 if (this.model.get('minimized')) {
                     this.hide();
                 } else {
@@ -925,7 +924,7 @@
                 setTimeout(function () {
                     converse.refreshWebkit();
                 }, 50);
-                return this;
+                return this.showStatusMessage();
             },
 
             initDragResize: function () {
@@ -1306,6 +1305,7 @@
                 if (msg) {
                     this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
                 }
+                return this;
             },
 
             close: function () {
@@ -1318,15 +1318,16 @@
             },
 
             maximize: function () {
-                // the opposite of trim, i.e. restoring a trimmed chat box
+                /* Restores a minimized chat box
+                 */
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show();
                 this.focus();
                 converse.refreshWebkit();
                 this.model.trigger('maximized', this.model);
             },
 
-            toggle: function (ev) {
-                /* Minimizes or maximizes a chat box
+            minimize: function (ev) {
+                /* Minimizes a chat box
                  */
                 this.model.save({
                     'minimized': true,
@@ -1439,8 +1440,8 @@
 
             hide: function () {
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                    this.$el.fadeOut('fast', converse.refreshWebkit);
-                    converse.emit('onChatBoxClosed', this);
+                    this.$el.hide();
+                    converse.refreshWebkit();
                 }
                 return this;
             },
@@ -1886,7 +1887,7 @@
             className: 'chatroom',
             events: {
                 'click .close-chatbox-button': 'close',
-                'click .toggle-chatbox-button': 'toggle',
+                'click .toggle-chatbox-button': 'minimize',
                 'click .configure-chatroom-button': 'configureChatRoom',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -1915,9 +1916,13 @@
                         undefined);
                 },
                 this);
-                this.$el.appendTo(converse.chatboxviews.$el);
-                this.render().show().model.messages.fetch({add: true});
-                this.initDragResize();
+                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                this.render().model.messages.fetch({add: true});
+                if (this.model.get('minimized')) {
+                    this.hide();
+                } else {
+                    this.show();
+                }
             },
 
             render: function () {
@@ -2601,8 +2606,15 @@
             },
 
             render: function () {
-                return this.$el.addClass('chat-head-chatbox').html(
-                    converse.templates.trimmed_chat(this.model.toJSON()));
+                var data = this.model.toJSON();
+                if (this.model.get('chatroom')) {
+                    data['title'] = this.model.get('name');
+                    this.$el.addClass('chat-head-chatroom');
+                } else {
+                    data['title'] = this.model.get('fullname');
+                    this.$el.addClass('chat-head-chatbox');
+                }
+                return this.$el.html(converse.templates.trimmed_chat(data));
             },
 
             close: function (ev) {
@@ -2612,6 +2624,7 @@
                 ev.preventDefault();
                 this.$el.remove();
                 this.model.destroy();
+                converse.emit('onChatBoxClosed', this);
                 return this;
             },
 

@@ -841,8 +841,8 @@ dl.add-converse-contact {
   text-shadow: 1px 1px 0 #ccc;
   color: darkred;
   border-radius: 20%;
-  padding: 1px 3px;
-  font-size: 13px;
+  padding: 2px 4px;
+  font-size: 15px;
   text-align: center;
   display: none;
 }

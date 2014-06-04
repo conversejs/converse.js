@@ -942,17 +942,6 @@
                 this.scrollDown();
             },
 
-            updateUnreadMessagesCounter: function () {
-                /* If the chatbox is minimized, we show a counter with the
-                 * number of unread messages.
-                 */
-                var $count = this.$el.find('.chat-head-message-count');
-                var count = parseInt($count.data('count') || 0, 10) + 1;
-                $count.html(count).data('count', count);
-                if (!$count.is(':visible')) { $count.show('fast'); }
-                return this;
-            },
-
             clearChatRoomMessages: function (ev) {
                 ev.stopPropagation();
                 var result = confirm(__("Are you sure you want to clear the messages from this room?"));
@@ -987,9 +976,6 @@
                     'extra_classes': msg_dict.delayed && 'delayed' || ''
                 });
                 $content.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
-                if (this.model.get('minimized') && (!msg_time.isBefore(this.model.get('time_minimized')))) {
-                    this.updateUnreadMessagesCounter();
-                }
                 this.scrollDown();
             },
 
@@ -2609,16 +2595,43 @@
                 'click .restore-chat': 'restore'
             },
 
+            initialize: function () {
+                this.model.messages.on('add', function (msg) {
+                    this.updateUnreadMessagesCounter(_.clone(msg.attributes));
+                }, this);
+                this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
+                this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
+                this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
+            },
+
             render: function () {
                 var data = this.model.toJSON();
                 if (this.model.get('chatroom')) {
-                    data['title'] = this.model.get('name');
+                    data.title = this.model.get('name');
                     this.$el.addClass('chat-head-chatroom');
                 } else {
-                    data['title'] = this.model.get('fullname');
+                    data.title = this.model.get('fullname');
                     this.$el.addClass('chat-head-chatbox');
                 }
                 return this.$el.html(converse.templates.trimmed_chat(data));
+            },
+
+            clearUnreadMessagesCounter: function () {
+                if (!this.model.get('minimized')) {
+                    this.$el.find('.chat-head-message-count').html(0).data('count', 0).hide();
+                }
+            },
+
+            updateUnreadMessagesCounter: function (msg_dict) {
+                var count, $count;
+                var msg_time = (typeof msg_dict === 'object' && moment(msg_dict.time)) || moment;
+                if (this.model.get('minimized') && (!msg_time.isBefore(this.model.get('time_minimized')))) {
+                    $count = this.$el.find('.chat-head-message-count');
+                    count = parseInt($count.data('count') || 0, 10) + 1;
+                    $count.html(count).data('count', count);
+                    if (!$count.is(':visible')) { $count.show('fast'); }
+                }
+                return this;
             },
 
             close: function (ev) {

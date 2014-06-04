@@ -488,11 +488,10 @@
                     }, converse));
                     waits(50);
                     runs($.proxy(function () {
-                        var chatview = this.chatboxviews.get(contact_jid);
                         var trimmed_chatboxes = this.chatboxviews.trimmed_chatboxes_view;
                         var trimmedview = trimmed_chatboxes.get(contact_jid);
                         var $count = trimmedview.$el.find('.chat-head-message-count');
-                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        expect(trimmedview.model.get('minimized')).toBeTruthy();
                         expect($count.is(':visible')).toBeTruthy();
                         expect($count.data('count')).toBe(1);
                         expect($count.html()).toBe('1');
@@ -508,21 +507,23 @@
                     }, converse));
                     waits(50);
                     runs($.proxy(function () {
-                        var chatview = this.chatboxviews.get(contact_jid);
-                        var $count = chatview.$el.find('.chat-head-message-count');
-                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        var trimmed_chatboxes = this.chatboxviews.trimmed_chatboxes_view;
+                        var trimmedview = trimmed_chatboxes.get(contact_jid);
+                        var $count = trimmedview.$el.find('.chat-head-message-count');
+                        expect(trimmedview.model.get('minimized')).toBeTruthy();
                         expect($count.is(':visible')).toBeTruthy();
                         expect($count.data('count')).toBe(2);
                         expect($count.html()).toBe('2');
-                        chatview.$el.find('.toggle-chatbox-button').click();
+                        trimmedview.$el.find('.restore-chat').click();
                     }, converse));
                     waits(50);
                     runs($.proxy(function () {
-                        var chatview = this.chatboxviews.get(contact_jid);
-                        var $count = chatview.$el.find('.chat-head-message-count');
-                        expect(chatview.model.get('minimized')).toBeFalsy();
+                        var trimmed_chatboxes = this.chatboxviews.trimmed_chatboxes_view;
+                        var trimmedview = trimmed_chatboxes.get(contact_jid);
+                        var $count = trimmedview.$el.find('.chat-head-message-count');
+                        expect(trimmedview.model.get('minimized')).toBeFalsy();
                         expect($count.is(':visible')).toBeFalsy();
-                        expect($count.data('count')).toBe(0);
+                        expect($count.data('count')).toBeFalsy();
                         expect($count.html()).toBe('0');
                     }, converse));
                 }, converse));

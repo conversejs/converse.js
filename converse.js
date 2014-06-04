@@ -3587,7 +3587,7 @@
 
         this.ControlBoxToggle = Backbone.View.extend({
             tagName: 'a',
-            className: 'toggle-online-users',
+            className: 'toggle-controlbox',
             id: 'toggle-controlbox',
             events: {
                 'click': 'onClick'

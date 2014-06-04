@@ -559,15 +559,6 @@ span.spinner.centered {
 span.spinner.hor_centered {
   text-align: center;
 }
-#conversejs #toggle-controlbox {
-  font-size: 85%;
-  border-top-right-radius: 4px;
-  border-top-left-radius: 4px;
-  background-color: #5390c8;
-  padding: 4px 8px;
-  margin-right: 5px;
-  color: white;
-}
 #conversejs #trimmed-chatboxes .box-flyout {
   position: absolute;
   display: block;
@@ -588,8 +579,16 @@ span.spinner.hor_centered {
 #conversejs #trimmed-chatboxes .chat-head-chatroom {
   width: 100px;
 }
-#conversejs #toggle-controlbox {
+#conversejs .toggle-controlbox,
+#conversejs .toggle-minimized-chats {
   float: right;
+  font-size: 85%;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  background-color: #5390c8;
+  padding: 4px 8px;
+  margin-right: 5px;
+  color: white;
 }
 #conversejs .chat-head {
   color: #ffffff;

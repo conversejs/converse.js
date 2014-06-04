@@ -52,13 +52,6 @@ bottom of your page (after the closing *</body>* element).
         });
     });
 
-
-Finally, Converse.js requires a special snippet of HTML markup to be included in your page:
-
-::
-
-    <div id="conversejs"></div>
-
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
 Converse.js repository serves as a nice usable example of this.
 

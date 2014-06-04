@@ -2,6 +2,7 @@ define("converse-dependencies", [
     "moment",
     "locales",
     "backbone.localStorage",
+    "backbone.overview",
     "jquery.tinysort",
     "jquery.browser",
     "strophe",

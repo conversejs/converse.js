@@ -598,14 +598,7 @@ span.spinner.hor_centered {
     color: white;
 }
 
-#conversejs #offscreen-chatboxes {
-    float: left;
-    height: 25px;
-    margin-left: 5px;
-    display: block;
-}
-
-#conversejs #offscreen-chatboxes .box-flyout {
+#conversejs #trimmed-chatboxes .box-flyout {
     position: absolute;
     display: block;
     bottom: 1px;
@@ -614,16 +607,17 @@ span.spinner.hor_centered {
     height: auto;
 }
 
-#conversejs #offscreen-chatboxes .box-flyout .chat-head {
+#conversejs #trimmed-chatboxes .box-flyout .chat-head {
     font-size: 100%;
     border-radius: 4px;
     padding: 3px 0 0 5px;
     margin: 0 0 2px 2px;
     box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.4);
     height: 24px;
+    width: 130px;
 }
 
-#conversejs #offscreen-chatboxes .chat-head-chatroom {
+#conversejs #trimmed-chatboxes .chat-head-chatroom {
     width: 100px;
 }
 
@@ -808,11 +802,12 @@ input.error {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-shadow: rgba(0,0,0,0.51) 0 -1px 0;
-    height: 1em;
 }
 
 #conversejs .chat-title a {
     color: white;
+    width: 100%;
+    display: block;
 }
 
 #conversejs .chat-head-chatbox,
@@ -916,23 +911,19 @@ dl.add-converse-contact {
 #conversejs .chat-head-message-count {
     font-weight: bold;
     position: absolute;
-    left: -6px;
-    top: -6px;
+    left: -5px;
+    top: 2px;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.35, #f6f6f6), color-stop(1, grey) );
     background: -moz-linear-gradient(center top, yellow 5%, #f6f6f6 100%);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='yellow', endColorstr='#f6f6f6');
-    border: 3px solid rgb(79, 106, 114);
+    border: 1px solid;
     text-shadow: 1px 1px 0 #ccc;
     color: darkred;
     border-radius: 20%;
-    padding: 2px 10px;
-    font-size: 18px;
+    padding: 2px 4px;
+    font-size: 15px;
     text-align: center;
     display: none;
-}
-
-#conversejs .chat-head-chatroom .chat-head-message-count {
-    border: 3px solid #2D617A;
 }
 
 #conversejs a.configure-chatroom-button,
@@ -1152,12 +1143,17 @@ dl.add-converse-contact {
     width: 70%;
 }
 
+#conversejs #trimmed-chatboxes,
 #conversejs .chatbox,
 #conversejs .chatroom {
     height: 25px;
     float: right;
     margin-right: 15px;
     display: block;
+}
+
+#conversejs #trimmed-chatboxes {
+    width: 130px;
 }
 
 #conversejs .chatbox {

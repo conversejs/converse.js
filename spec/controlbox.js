@@ -8,13 +8,10 @@
     );
 } (this, function (mock, utils) {
     describe("The Control Box", $.proxy(function (mock, utils) {
-
         beforeEach(function () {
             runs(function () {
                 utils.openControlBox();
             });
-            waits(250);
-            runs(function () {});
         });
 
         it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
@@ -501,8 +498,6 @@
             runs(function () {
                 utils.openControlBox();
             });
-            waits(250);
-            runs(function () {});
         }, converse));
 
         it("contains two tabs, 'Contacts' and 'ChatRooms'", $.proxy(function () {
@@ -524,8 +519,6 @@
                 runs(function () {
                     utils.openControlBox();
                 });
-                waits(250);
-                runs(function () {});
             }, converse));
 
             it("is opened by clicking the 'Chatrooms' tab", $.proxy(function () {

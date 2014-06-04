@@ -8,6 +8,7 @@ config = {
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
+        "backbone.overview": "components/backbone.overview/backbone.overview",
         "text": 'components/requirejs-text/text',
         "tpl": 'components/requirejs-tpl-jcbrand/tpl',
         "converse-templates": "src/templates",

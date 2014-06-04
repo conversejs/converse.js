@@ -373,27 +373,72 @@
         </div>
     </div>
 
-    <div id="offscreen-chatboxes">
+    <div id="trimmed-chatboxes">
         <div class="box-flyout">
             <div class="chat-head chat-head-chatroom">
                 <a class="close-chatbox-button icon-close"></a>
-                <div class="chat-title"> Restricted Chatroom</div>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        <div class="chat-head-message-count" style="display:block">3</div>
+                        Restricted Chatroom
+                    </a>
+                </div>
             </div>
             <div class="chat-head chat-head-chatbox">
                 <a class="close-chatbox-button icon-close"></a>
                 <div class="chat-title">
-                    <a href="http://opkode.com" target="_blank" class="user">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        <div class="chat-head-message-count" style="display:block">42</div>
                         JC Brand
                     </a>
                 </div>
             </div>
             <div class="chat-head chat-head-chatroom">
                 <a class="close-chatbox-button icon-close"></a>
-                <div class="chat-title"> My Chatroom</div>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        My Chatroom
+                    </a>
+                </div>
+            </div>
+            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        Annegreet Gomez
+                    </a>
+                </div>
+            </div>
+            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        <div class="chat-head-message-count" style="display:block">842</div>
+                        Asmaa Haakman
+                    </a>
+                </div>
+            </div>
+            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        Candice van der Knijff
+                    </a>
+                </div>
+            </div>
+            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat" title="Click to maximize this chat">
+                        Laura Grunewald
+                    </a>
+                </div>
+            </div>
+            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+                <div class="chat-title">
+                    <a href="#" class="restore-chat">
+                        Lena Grunewald
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
@@ -458,13 +503,7 @@ $(document).ready(function () {
 
         $('.toggle-chatbox-button').click(function(ev) {
             var $grandparent = $(ev.target).parent().parent().parent();
-            $grandparent.find('.chat-body').slideToggle('fast');
-            var flyout = $grandparent.find('.box-flyout');
-            if (flyout.hasClass('minimized')) {
-                flyout.removeClass('minimized');
-            } else {
-                flyout.addClass('minimized');
-            }
+            $grandparent.fadeOut('fast');
         });
 
         // Clickable Dropdown

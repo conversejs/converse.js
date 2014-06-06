@@ -403,7 +403,7 @@ you can use the generic selector below, but it's slower:
 }
 
 #conversejs {
-    bottom: 1px;
+    bottom: 0;
     direction: ltr;
     height: 25px;
     left: 0;
@@ -591,17 +591,16 @@ span.spinner.hor_centered {
 #conversejs #trimmed-chatboxes .box-flyout {
     position: absolute;
     display: block;
-    bottom: 1px;
-    box-shadow: none;
-    border-radius: 4px;
     height: auto;
+    bottom: 25px;
+    margin-left: -8px;
 }
 
 #conversejs #trimmed-chatboxes .box-flyout .chat-head {
     font-size: 100%;
     border-radius: 4px;
     padding: 3px 0 0 5px;
-    margin: 0 0 2px 2px;
+    margin: 0 0 1px 0;
     box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.4);
     height: 24px;
     width: 130px;
@@ -611,16 +610,24 @@ span.spinner.hor_centered {
     width: 100px;
 }
 
-#conversejs .toggle-controlbox,
-#conversejs .toggle-minimized-chats {
+#conversejs #trimmed-chatboxes,
+#conversejs .toggle-controlbox {
     float: right;
-    font-size: 85%;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    background-color: rgba(83, 144, 200, 100);
+    font-size: 90%;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    background-color: #F4F4F4;
     padding: 4px 8px;
     margin-right: 5px;
-    color: white;
+    color: #080808;
+    height: 100%;
+}
+
+#conversejs .toggle-minimized-chats {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: #080808;
 }
 
 #conversejs .chat-head {
@@ -805,7 +812,8 @@ input.error {
 #conversejs .chat-title a {
     color: white;
     width: 100%;
-    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 #conversejs .chat-head-chatbox,
@@ -908,9 +916,6 @@ dl.add-converse-contact {
 
 #conversejs .chat-head-message-count {
     font-weight: bold;
-    position: absolute;
-    left: -5px;
-    top: 2px;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.35, #f6f6f6), color-stop(1, grey) );
     background: -moz-linear-gradient(center top, yellow 5%, #f6f6f6 100%);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='yellow', endColorstr='#f6f6f6');
@@ -922,6 +927,9 @@ dl.add-converse-contact {
     font-size: 15px;
     text-align: center;
     display: none;
+    position: absolute;
+    right: 22px;
+    bottom: 1px;
 }
 
 #conversejs a.configure-chatroom-button,
@@ -1141,7 +1149,6 @@ dl.add-converse-contact {
     width: 70%;
 }
 
-#conversejs #trimmed-chatboxes,
 #conversejs .chatbox,
 #conversejs .chatroom {
     height: 25px;

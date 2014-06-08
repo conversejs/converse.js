@@ -569,6 +569,7 @@
             }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
+            this.minimized_chats = new converse.MinimizedChats({model: this.chatboxes});
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
@@ -653,15 +654,29 @@
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'minimized': this.get('minimized') || false,
                         'time_minimized': this.get('time_minimized') || moment(),
-                        'time_opened': this.get('time_opened') || moment().format(),
+                        'time_opened': this.get('time_opened') || moment().valueOf(),
                         'height': height
                     });
                 } else {
                     this.set({
                         'height': height,
-                        'time_opened': moment(0).format()
+                        'time_opened': moment(0).valueOf()
                     });
                 }
+            },
+
+            maximize: function () {
+                this.save({
+                    'minimized': false,
+                    'time_opened': moment().valueOf()
+                });
+            },
+
+            minimize: function () {
+                this.save({
+                    'minimized': true,
+                    'time_minimized': moment().format()
+                });
             },
 
             getSession: function (callback) {
@@ -1305,22 +1320,18 @@
             },
 
             maximize: function () {
-                /* Restores a minimized chat box
-                 */
-                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show();
-                this.focus();
-                converse.refreshWebkit();
-                converse.emit('onChatBoxMaximized', this);
+                // Restores a minimized chat box
                 this.model.trigger('maximized', this.model);
+                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
+                    converse.refreshWebkit();
+                    this.focus();
+                    converse.emit('onChatBoxMaximized', this);
+                }, this));
             },
 
             minimize: function (ev) {
-                /* Minimizes a chat box
-                 */
-                this.model.save({
-                    'minimized': true,
-                    'time_minimized': moment().format()
-                });
+                // Minimizes a chat box
+                this.model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);
                 converse.emit('onChatBoxMinimized', this);
             },
@@ -2478,16 +2489,10 @@
         this.ChatBoxViews = Backbone.Overview.extend({
 
             initialize: function () {
-                this.trimmed_chatboxes_view = new converse.MinimizedChatBoxesView({model: this.model});
-                this.render();
                 this.model.on("add", this.onChatAdded, this);
                 this.model.on("maximized", function (item) {
                     this.trimChats(this.get(item.get('id')));
                 }, this);
-            },
-
-            render: function () {
-                this.$el.html(this.trimmed_chatboxes_view.render());
             },
 
             _ensureElement: function() {
@@ -2500,6 +2505,7 @@
                         $el = $('<div id="conversejs">');
                         $('body').append($el);
                     }
+                    $el.html(converse.templates.chats_panel());
                     this.setElement($el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
@@ -2525,34 +2531,38 @@
                 this.trimChats(view);
             },
 
-            trimChats: function (view) {
-                /* This method is called before a new chat box will be opened.
+            trimChats: function (newchat) {
+                /* This method is called when a newly created chat box will
+                 * be shown.
                  *
-                 * Check whether there is enough space in the page to show
-                 * another chat box. Otherwise, close the oldest chat box.
+                 * It checks whether there is enough space on the page to show
+                 * another chat box. Otherwise it minimize the oldest chat box
+                 * to create space.
                  */
-                if (converse.no_trimming) {
+                if (converse.no_trimming || (this.model.length <= 1)) {
                     return;
                 }
-                var toggle_width = 0,
-                    trimmed_chats_width,
-                    boxes_width = view.$el.outerWidth(true),
+                var controlbox_width = 0,
+                    $minimized = converse.minimized_chats.$el,
+                    minimized_width = $minimized.is(':visible') ? $minimized.outerWidth(true) : 0,
+                    boxes_width = newchat.$el.outerWidth(true),
                     controlbox = this.get('controlbox');
+
                 if (!controlbox || !controlbox.$el.is(':visible')) {
-                    toggle_width = converse.controlboxtoggle.$el.width();
+                    controlbox_width = converse.controlboxtoggle.$el.outerWidth(true);
+                } else {
+                    controlbox_width = controlbox.$el.outerWidth(true);
                 }
-                this.$el.find('.chatbox').addBack('.chatroom').each(function (idx, el) {
-                    var $el = $(el);
-                    if ($el.is(':visible')) {
-                        boxes_width += $el.outerWidth(true);
+
+                _.each(this.getAll(), function (view) {
+                    var id = view.model.get('id');
+                    if (view.$el.is(':visible') && (id !== 'controlbox') && (id !== newchat.model.get('id'))) { 
+                        boxes_width += view.$el.outerWidth(true);
                     }
                 });
-                if (this.model.length <= 1) {
-                    return;
-                }
-                trimmed_chats_width = this.trimmed_chatboxes_view.$('.box-flyout').outerWidth(true) || 0;
-                if ((trimmed_chats_width + boxes_width + toggle_width) > this.$el.width()) {
-                    this.getOldestMaximizedChat().set('minimized', true);
+
+                if ((minimized_width + boxes_width + controlbox_width) > this.$el.outerWidth(true)) {
+                    this.getOldestMaximizedChat().minimize();
                 }
             },
 
@@ -2560,6 +2570,9 @@
                 // Get oldest view (which is not controlbox)
                 var i = 0;
                 var model = this.model.sort().at(i);
+                console.log(this.model.pluck('time_opened'));
+                console.log(this.model.pluck('id'));
+                console.log(this.model.pluck('minimized'));
                 while (model.get('id') === 'controlbox' || model.get('minimized') === true) {
                     i++;
                     model = this.model.at(i);
@@ -2571,7 +2584,7 @@
                 var chatbox  = this.model.get(attrs.jid);
                 if (chatbox) {
                     if (chatbox.get('minimized')) {
-                        chatbox.set({'minimized': false});
+                        chatbox.maximize();
                     } else {
                         chatbox.trigger('show');
                     }
@@ -2605,7 +2618,10 @@
             },
 
             render: function () {
-                var data = this.model.toJSON();
+                var data = _.extend(
+                    this.model.toJSON(),
+                    { 'tooltip': __('Click to restore this chat') }
+                );
                 if (this.model.get('chatroom')) {
                     data.title = this.model.get('name');
                     this.$el.addClass('chat-head-chatroom');
@@ -2650,21 +2666,30 @@
                     ev.preventDefault();
                 }
                 this.$el.remove();
-                this.model.set({
-                    'time_opened': moment().format(),
-                    'minimized': false
-                });
+                this.model.maximize();
                 return this;
             }
         });
 
-        this.MinimizedChatBoxesView = Backbone.Overview.extend({
+        this.MinimizedChats = Backbone.Overview.extend({
+            el: "#minimized-chats",
+
+            events: {
+                "click #toggle-minimized-chats": "toggle"
+            },
 
             initialize: function () {
+                this.chats_toggle = new converse.MinimizedChatsToggle();
+                this.chats_toggle_view = new converse.MinimizedChatsToggleView({model: this.chats_toggle});
+
                 this.model.on("add", function (item) {
                     if (item.get('minimized')) {
                         this.addChat(item);
                     }
+                }, this);
+                this.model.on("destroy", function (item) {
+                    this.remove(item.get('id'));
+                    this.render();
                 }, this);
                 this.model.on("change:minimized", function (item) {
                     this.onChanged(item);
@@ -2672,38 +2697,71 @@
             },
 
             render: function () {
+                if (this.keys().length === 0) {
+                    this.$el.hide('fast');
+                } else if (this.keys().length === 1) {
+                    this.$el.show('fast');
+                }
                 return this.$el;
             },
 
-            _ensureElement: function () {
-                /* Override method from backbone.js
-                * Make sure that the el and $el attributes point to a DOM snippet
-                * from src/templates/trimmed_chats.html
-                */
-                if (!this.el) {
-                    var $el = $(converse.templates.trimmed_chats());
-                    this.setElement($el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
+            toggle: function () {
+                this.chats_toggle.set({'visible': !this.chats_toggle.get('visible')})
+                this.$('.minimized-chats-flyout').toggle();
             },
 
             onChanged: function (item) {
-                var view;
                 if (item.get('minimized')) {
                     this.addChat(item);
                 } else {
-                    view = this.get(item.get('id'));
-                    view.restore();
+                    this.removeChat(item);
                 }
             },
 
             addChat: function (item) {
+                if (this.get(item.get('id'))) {
+                    return;
+                }
                 var view = new converse.MinimizedChatBoxView({model: item});
-                this.$('.box-flyout').append(view.render());
+                this.$('.minimized-chats-flyout').append(view.render());
                 this.add(item.get('id'), view);
-            }
+                this.chats_toggle.set({'num_minimized': this.keys().length});
+                this.render();
+            },
 
+            removeChat: function (item) {
+                this.remove(item.get('id')).restore();
+                this.chats_toggle.set({'num_minimized': this.keys().length});
+                this.render();
+            }
+        });
+
+        this.MinimizedChatsToggle = Backbone.Model.extend({
+            localStorage: new Backbone.LocalStorage(
+                b64_sha1('converse.minimized-chats-toggle'+converse.bare_jid)),
+
+            initialize: function () {
+                this.set({
+                    'visible': this.get('visible') || false,
+                    'num_minimized': 0
+                });
+            }
+        });
+
+        this.MinimizedChatsToggleView = Backbone.View.extend({
+            el: '#toggle-minimized-chats',
+
+            initialize: function () {
+                this.model.on('change:num_minimized', this.render, this);
+            },
+
+            render: function () {
+                this.$el.html(converse.templates.toggle_chats({
+                    'Minimized': __('Minimized'),
+                    'num_minimized': this.model.get('num_minimized')
+                }));
+                return this.$el;
+            },
         });
 
         this.RosterItem = Backbone.Model.extend({
@@ -3461,7 +3519,7 @@
             }
         });
 
-        this.Feature = Backbone.Model.extend();
+        this.Feature = Backbone.Model;
         this.Features = Backbone.Collection.extend({
             /* Service Discovery
             * -----------------

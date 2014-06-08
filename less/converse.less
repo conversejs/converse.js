@@ -588,7 +588,7 @@ span.spinner.hor_centered {
     text-align: center;
 }
 
-#conversejs #trimmed-chatboxes .box-flyout {
+#conversejs #minimized-chats .box-flyout {
     position: absolute;
     display: block;
     height: auto;
@@ -596,7 +596,7 @@ span.spinner.hor_centered {
     margin-left: 0;
 }
 
-#conversejs #trimmed-chatboxes .box-flyout .chat-head {
+#conversejs #minimized-chats .box-flyout .chat-head {
     font-size: 100%;
     border-radius: 4px;
     padding: 3px 0 0 5px;
@@ -606,11 +606,7 @@ span.spinner.hor_centered {
     width: 130px;
 }
 
-#conversejs #trimmed-chatboxes .chat-head-chatroom {
-    width: 100px;
-}
-
-#conversejs #trimmed-chatboxes,
+#conversejs #minimized-chats,
 #conversejs .toggle-controlbox {
     float: right;
     font-size: 90%;
@@ -624,13 +620,24 @@ span.spinner.hor_centered {
     height: 100%;
 }
 
-#conversejs .toggle-minimized-chats {
+#conversejs #minimized-chats {
+    width: 130px;
+    padding: 0;
+    display: none;
+}
+
+#conversejs #toggle-minimized-chats {
     position: relative;
     padding: 4px 0 0 4px;
     display: block;
     width: 100%;
     height: 100%;
     color: #0f0f0f;
+}
+
+#conversejs #toggle-minimized-chats .unread-message-count {
+    right: 5px;
+    bottom: 5px;
 }
 
 #conversejs .chat-head {
@@ -917,11 +924,6 @@ dl.add-converse-contact {
     padding: 3px 0 0 0;
 }
 
-#conversejs .toggle-minimized-chats .unread-message-count {
-    right: 5px;
-    bottom: 5px;
-}
-
 #conversejs .unread-message-count,
 #conversejs .chat-head-message-count {
     font-weight: bold;
@@ -1164,12 +1166,6 @@ dl.add-converse-contact {
     float: right;
     margin-right: 15px;
     display: block;
-}
-
-#conversejs #trimmed-chatboxes {
-    width: 130px;
-    padding: 0;
-    display: none;
 }
 
 #conversejs .chatbox {
@@ -1551,6 +1547,7 @@ input.custom-xmpp-status {
     z-index: 22;
 }
 
+#conversejs .minimized-chats-flyout,
 #conversejs .box-flyout {
     border-radius: 4px;
     bottom: 6px;
@@ -1560,12 +1557,26 @@ input.custom-xmpp-status {
     position: absolute;
 }
 
-#conversejs .box-flyout.minimized {
+#conversejs .minimized-chats-flyout {
+    border-radius: 4px;
+    bottom: 25px;
+    box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.4);
+    display: block;
+    position: absolute;
+    height: auto;
+    width: 130px;
+}
+
+#conversejs .minimized-chats-flyout.minimized {
     height: auto;
 }
 
-#conversejs .box-flyout.minimized .chat-head {
+#conversejs .minimized-chats-flyout .chat-head-chatroom,
+#conversejs .minimized-chats-flyout .chat-head {
     border-radius: 4px;
+    width: 130px;
+    height: 25px;
+    margin-bottom: 1px;
 }
 
 #conversejs .chatbox .box-flyout {

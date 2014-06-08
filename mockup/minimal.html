@@ -45,12 +45,12 @@
     </div>
 
 
-    <div id="trimmed-chatboxes">
-        <a class="toggle-minimized-chats" href="#">
-            <span class="conn-feedback">Minimized</span> <span id="online-count">(0)</span>
+    <div id="minimized-chats" style="display: block">
+        <a id="toggle-minimized-chats" href="#">
+            <span>Minimized <span id="minimized-count">(0)</span>
             <span class="unread-message-count" href="#" style="display:block">322</span>
         </a>
-        <div class="box-flyout minimized-chats">
+        <div class="minimized-chats-flyout">
             <div class="chat-head chat-head-chatroom">
                 <a class="close-chatbox-button icon-close"></a>
                 <a class="chat-head-message-count" href="#" style="display:block">3</a>
@@ -194,7 +194,7 @@ $(document).ready(function () {
         });
 
         $('.toggle-minimized-chats').click(function(ev) {
-            $('.minimized-chats').toggle();
+            $('.minimized-chats-flyout').toggle();
         });
 
         // Clickable Dropdown

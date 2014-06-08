@@ -1057,6 +1057,7 @@ dl.add-converse-contact {
 #conversejs #trimmed-chatboxes {
   width: 130px;
   padding: 0;
+  display: none;
 }
 #conversejs .chatbox {
   width: 200px;

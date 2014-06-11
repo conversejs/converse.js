@@ -1321,7 +1321,6 @@
 
             maximize: function () {
                 // Restores a minimized chat box
-                this.model.trigger('maximized', this.model);
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
                     converse.refreshWebkit();
                     this.focus();
@@ -2490,8 +2489,12 @@
 
             initialize: function () {
                 this.model.on("add", this.onChatAdded, this);
-                this.model.on("maximized", function (item) {
-                    this.trimChats(this.get(item.get('id')));
+                this.model.on("change:minimized", function (item) {
+                    if (item.get('minimized') === false) {
+                         this.trimChats(this.get(item.get('id')));
+                    } else {
+                         this.trimChats();
+                    }
                 }, this);
             },
 
@@ -2545,7 +2548,8 @@
                 var controlbox_width = 0,
                     $minimized = converse.minimized_chats.$el,
                     minimized_width = $minimized.is(':visible') ? $minimized.outerWidth(true) : 0,
-                    boxes_width = newchat.$el.outerWidth(true),
+                    boxes_width = newchat ? newchat.$el.outerWidth(true) : 0,
+                    new_id = newchat ? newchat.model.get('id') : 0,
                     controlbox = this.get('controlbox');
 
                 if (!controlbox || !controlbox.$el.is(':visible')) {
@@ -2556,7 +2560,7 @@
 
                 _.each(this.getAll(), function (view) {
                     var id = view.model.get('id');
-                    if (view.$el.is(':visible') && (id !== 'controlbox') && (id !== newchat.model.get('id'))) { 
+                    if ((id !== 'controlbox') && (id !== new_id) && (!view.model.get('minimized'))) {
                         boxes_width += view.$el.outerWidth(true);
                     }
                 });
@@ -2661,14 +2665,14 @@
                 return this;
             },
 
-            restore: function (ev) {
+            restore: _.debounce(function (ev) {
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
                 this.$el.remove();
                 this.model.maximize();
                 return this;
-            }
+            }, 200)
         });
 
         this.MinimizedChats = Backbone.Overview.extend({

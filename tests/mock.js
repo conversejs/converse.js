@@ -29,6 +29,7 @@
     };
 
     mock.mock_connection = {
+        '_proto': {},
         'mock': true,
         'muc': {
             'listRooms': function () {},

@@ -69,7 +69,7 @@ require([
                 delete converse.callback;
                 // Stub the trimChat method. It causes havoc when running with
                 // phantomJS.
-                converse.ChatBoxView.prototype.trimChat = function () {};
+                converse.ChatBoxViews.prototype.trimChat = function () {};
 
                 // Jasmine stuff
                 var jasmineEnv = jasmine.getEnv();

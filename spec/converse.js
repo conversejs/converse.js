@@ -16,7 +16,7 @@
 
         it("has an API method for retrieving the next RID", $.proxy(function () {
             var old_connection = converse.connection;
-            converse.connection.rid = '1234';
+            converse.connection._proto.rid = '1234';
             converse.expose_rid_and_sid = false;
             expect(converse_api.getRID()).toBe(null);
 
@@ -31,7 +31,7 @@
 
         it("has an API method for retrieving the SID", $.proxy(function () {
             var old_connection = converse.connection;
-            converse.connection.sid = '1234';
+            converse.connection._proto.sid = '1234';
             converse.expose_rid_and_sid = false;
             expect(converse_api.getSID()).toBe(null);
 

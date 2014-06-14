@@ -2706,7 +2706,7 @@
                 var id = b64_sha1('converse.minchatstoggle'+this.bare_jid);
                 this.toggleview.model.id = id; // Appears to be necessary for backbone.localStorage
                 this.toggleview.model.localStorage = new Backbone.LocalStorage(id);
-                this.toggleview.model.fetch({success: callback, error: callback});
+                this.toggleview.model.fetch();
             },
 
             render: function () {

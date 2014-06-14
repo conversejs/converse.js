@@ -454,7 +454,7 @@
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
             var id = b64_sha1('converse.xmppstatus-'+this.bare_jid);
-            this.xmppstatus.id = id; // This appears to be necessary for backbone.localStorage
+            this.xmppstatus.id = id; // Appears to be necessary for backbone.localStorage
             this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
             this.xmppstatus.fetch({success: callback, error: callback});
         };
@@ -2689,10 +2689,7 @@
             },
 
             initialize: function () {
-                this.toggleview = new converse.MinimizedChatsToggleView({
-                    model: new converse.MinimizedChatsToggle()
-                });
-
+                this.initToggle();
                 this.model.on("add", function (item) {
                     if (item.get('minimized')) {
                         this.addChat(item);
@@ -2700,6 +2697,16 @@
                 }, this);
                 this.model.on("destroy", this.removeChat, this);
                 this.model.on("change:minimized", this.onChanged, this);
+            },
+
+            initToggle: function () {
+                this.toggleview = new converse.MinimizedChatsToggleView({
+                    model: new converse.MinimizedChatsToggle()
+                });
+                var id = b64_sha1('converse.minchatstoggle'+this.bare_jid);
+                this.toggleview.model.id = id; // Appears to be necessary for backbone.localStorage
+                this.toggleview.model.localStorage = new Backbone.LocalStorage(id);
+                this.toggleview.model.fetch({success: callback, error: callback});
             },
 
             render: function () {
@@ -2711,8 +2718,11 @@
                 return this.$el;
             },
 
-            toggle: function () {
-                this.toggleview.model.set({'visible': !this.toggleview.model.get('visible')})
+            toggle: function (ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
+                this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')})
                 this.$('.minimized-chats-flyout').toggle();
             },
 
@@ -2744,12 +2754,9 @@
         });
 
         this.MinimizedChatsToggle = Backbone.Model.extend({
-            localStorage: new Backbone.LocalStorage(
-                b64_sha1('converse.minimized-chats-toggle'+converse.bare_jid)),
-
             initialize: function () {
                 this.set({
-                    'visible': this.get('visible') || false,
+                    'collapsed': this.get('collapsed') || false,
                     'num_minimized': 0
                 });
             }
@@ -2760,13 +2767,18 @@
 
             initialize: function () {
                 this.model.on('change:num_minimized', this.render, this);
+                this.$flyout = this.$el.siblings('.minimized-chats-flyout');
             },
 
             render: function () {
-                this.$el.html(converse.templates.toggle_chats({
-                    'Minimized': __('Minimized'),
-                    'num_minimized': this.model.get('num_minimized')
-                }));
+                this.$el.html(converse.templates.toggle_chats(
+                    _.extend(this.model.toJSON(), {'Minimized': __('Minimized')})
+                ));
+                if (this.model.get('collapsed')) {
+                    this.$flyout.hide();
+                } else {
+                    this.$flyout.show();
+                }
                 return this.$el;
             },
         });

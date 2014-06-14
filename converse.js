@@ -2690,8 +2690,9 @@
             },
 
             initialize: function () {
-                this.chats_toggle = new converse.MinimizedChatsToggle();
-                this.chats_toggle_view = new converse.MinimizedChatsToggleView({model: this.chats_toggle});
+                this.toggleview = new converse.MinimizedChatsToggleView({
+                    model: new converse.MinimizedChatsToggle()
+                });
 
                 this.model.on("add", function (item) {
                     if (item.get('minimized')) {
@@ -2716,7 +2717,7 @@
             },
 
             toggle: function () {
-                this.chats_toggle.set({'visible': !this.chats_toggle.get('visible')})
+                this.toggleview.model.set({'visible': !this.toggleview.model.get('visible')})
                 this.$('.minimized-chats-flyout').toggle();
             },
 
@@ -2736,13 +2737,13 @@
                 var view = new converse.MinimizedChatBoxView({model: item});
                 this.$('.minimized-chats-flyout').append(view.render());
                 this.add(item.get('id'), view);
-                this.chats_toggle.set({'num_minimized': this.keys().length});
+                this.toggleview.model.set({'num_minimized': this.keys().length});
                 this.render();
             },
 
             removeChat: function (item) {
                 this.remove(item.get('id'));
-                this.chats_toggle.set({'num_minimized': this.keys().length});
+                this.toggleview.model.set({'num_minimized': this.keys().length});
                 this.render();
             }
         });

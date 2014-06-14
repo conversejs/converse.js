@@ -3760,13 +3760,13 @@
         },
         'getRID': function () {
             if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
-                return converse.connection.rid;
+                return converse.connection._proto.rid;
             }
             return null;
         },
         'getSID': function () {
             if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
-                return converse.connection.sid;
+                return converse.connection._proto.sid;
             }
             return null;
         },

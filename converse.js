@@ -521,12 +521,16 @@
                 this.resized_chatbox = null;
             }, this));
 
-            $(window).on("blur focus", $.proxy(function(e) {
-                if ((this.windowState != e.type) && (e.type == 'focus')) {
+            $(window).on("blur focus", $.proxy(function (ev) {
+                if ((this.windowState != ev.type) && (ev.type == 'focus')) {
                     converse.clearMsgCounter();
                 }
-                this.windowState = e.type;
+                this.windowState = ev.type;
             },this));
+
+            $(window).on("resize", _.debounce($.proxy(function (ev) {
+                this.chatboxviews.trimChats();
+            },this), 200));
         };
 
         this.onReconnected = function () {
@@ -2547,9 +2551,9 @@
                 }
                 var controlbox_width = 0,
                     $minimized = converse.minimized_chats.$el,
-                    minimized_width = $minimized.is(':visible') ? $minimized.outerWidth(true) : 0,
+                    minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                     boxes_width = newchat ? newchat.$el.outerWidth(true) : 0,
-                    new_id = newchat ? newchat.model.get('id') : 0,
+                    new_id = newchat ? newchat.model.get('id') : null,
                     controlbox = this.get('controlbox');
 
                 if (!controlbox || !controlbox.$el.is(':visible')) {
@@ -2734,7 +2738,7 @@
             },
 
             removeChat: function (item) {
-                this.remove(item.get('id')).restore();
+                this.remove(item.get('id'));
                 this.chats_toggle.set({'num_minimized': this.keys().length});
                 this.render();
             }

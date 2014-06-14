@@ -2666,8 +2666,7 @@
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
-                ev.preventDefault();
-                this.$el.remove();
+                this.remove();
                 this.model.destroy();
                 converse.emit('onChatBoxClosed', this);
                 return this;
@@ -2699,12 +2698,8 @@
                         this.addChat(item);
                     }
                 }, this);
-                this.model.on("destroy", function (item) {
-                    this.removeChat(item);
-                }, this);
-                this.model.on("change:minimized", function (item) {
-                    this.onChanged(item);
-                }, this);
+                this.model.on("destroy", this.removeChat, this);
+                this.model.on("change:minimized", this.onChanged, this);
             },
 
             render: function () {

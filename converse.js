@@ -2549,7 +2549,8 @@
                 if (converse.no_trimming || (this.model.length <= 1)) {
                     return;
                 }
-                var controlbox_width = 0,
+                var oldest_chat,
+                    controlbox_width = 0,
                     $minimized = converse.minimized_chats.$el,
                     minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                     boxes_width = newchat ? newchat.$el.outerWidth(true) : 0,
@@ -2570,7 +2571,10 @@
                 });
 
                 if ((minimized_width + boxes_width + controlbox_width) > this.$el.outerWidth(true)) {
-                    this.getOldestMaximizedChat().minimize();
+                    oldest_chat = this.getOldestMaximizedChat();
+                    if (oldest_chat) {
+                        oldest_chat.minimize();
+                    }
                 }
             },
 
@@ -2578,12 +2582,12 @@
                 // Get oldest view (which is not controlbox)
                 var i = 0;
                 var model = this.model.sort().at(i);
-                console.log(this.model.pluck('time_opened'));
-                console.log(this.model.pluck('id'));
-                console.log(this.model.pluck('minimized'));
                 while (model.get('id') === 'controlbox' || model.get('minimized') === true) {
                     i++;
                     model = this.model.at(i);
+                    if (!model) {
+                        return null;
+                    }
                 }
                 return model;
             },
@@ -2673,9 +2677,8 @@
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
-                this.$el.remove();
+                this.remove();
                 this.model.maximize();
-                return this;
             }, 200)
         });
 
@@ -2696,8 +2699,7 @@
                     }
                 }, this);
                 this.model.on("destroy", function (item) {
-                    this.remove(item.get('id'));
-                    this.render();
+                    this.removeChat(item);
                 }, this);
                 this.model.on("change:minimized", function (item) {
                     this.onChanged(item);
@@ -2727,7 +2729,8 @@
             },
 
             addChat: function (item) {
-                if (this.get(item.get('id'))) {
+                var existing = this.get(item.get('id'));
+                if (existing && existing.$el.parent().length !== 0) {
                     return;
                 }
                 var view = new converse.MinimizedChatBoxView({model: item});

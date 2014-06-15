@@ -14,7 +14,7 @@
             });
         });
 
-        it("can be opened by clicking a DOM element with class 'toggle-online-users'", $.proxy(function () {
+        it("can be opened by clicking a DOM element with class 'toggle-controlbox'", $.proxy(function () {
             runs(function () {
                 utils.closeControlBox();
             });
@@ -28,7 +28,7 @@
                 spyOn(converse, 'emit');
                 // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
                 this.controlboxtoggle.delegateEvents();
-                $('.toggle-online-users').click();
+                $('.toggle-controlbox').click();
             }.bind(converse));
             waits(250);
             runs(function () {

@@ -1,0 +1,87 @@
+(function (root, factory) {
+    define([
+        "mock",
+        "utils"
+        ], function (mock, utils) {
+            return factory(mock, utils);
+        }
+    );
+} (this, function (mock, utils) {
+    return describe("The Minimized Chats Widget", $.proxy(function(mock, utils) {
+
+        beforeEach(function () {
+            runs(function () {
+                utils.closeAllChatBoxes();
+                utils.removeControlBox();
+                converse.roster.localStorage._clear();
+                utils.initConverse();
+                utils.createCurrentContacts();
+                utils.openControlBox();
+                utils.openContactsPanel();
+                converse.minimized_chats.toggleview.model.localStorage._clear();
+                converse.minimized_chats.initToggle();
+            });
+        });
+
+        it("shows chats that have been minimized",  $.proxy(function () {
+            var contact_jid, chatview;
+            contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+            utils.openChatBoxFor(contact_jid);
+            chatview = converse.chatboxviews.get(contact_jid);
+            expect(chatview.model.get('minimized')).toBeFalsy();
+            expect(this.minimized_chats.$el.is(':visible')).toBeFalsy();
+            chatview.$el.find('.toggle-chatbox-button').click();
+            expect(chatview.model.get('minimized')).toBeTruthy();
+            expect(this.minimized_chats.$el.is(':visible')).toBeTruthy();
+            expect(this.minimized_chats.keys().length).toBe(1);
+            expect(this.minimized_chats.keys()[0]).toBe(contact_jid);
+
+            contact_jid = mock.cur_names[1].replace(' ','.').toLowerCase() + '@localhost';
+            utils.openChatBoxFor(contact_jid);
+            chatview = converse.chatboxviews.get(contact_jid);
+            expect(chatview.model.get('minimized')).toBeFalsy();
+            chatview.$el.find('.toggle-chatbox-button').click();
+            expect(chatview.model.get('minimized')).toBeTruthy();
+            expect(this.minimized_chats.$el.is(':visible')).toBeTruthy();
+            expect(this.minimized_chats.keys().length).toBe(2);
+            expect(_.contains(this.minimized_chats.keys(), contact_jid)).toBeTruthy();
+        }, converse));
+
+        it("can be toggled to hide or show minimized chats",  $.proxy(function () {
+            var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+            utils.openChatBoxFor(contact_jid);
+            var chatview = converse.chatboxviews.get(contact_jid);
+            expect(this.minimized_chats.$el.is(':visible')).toBeFalsy();
+            chatview.model.set({'minimized': true});
+            expect(this.minimized_chats.$el.is(':visible')).toBeTruthy();
+            expect(this.minimized_chats.keys().length).toBe(1);
+            expect(this.minimized_chats.keys()[0]).toBe(contact_jid);
+            expect(this.minimized_chats.$('.minimized-chats-flyout').is(':visible')).toBeTruthy();
+            expect(this.minimized_chats.toggleview.model.get('collapsed')).toBeFalsy();
+            this.minimized_chats.$('#toggle-minimized-chats').click();
+            expect(this.minimized_chats.$('.minimized-chats-flyout').is(':visible')).toBeFalsy();
+            expect(this.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
+        }, converse));
+
+        it("shows the number messages received to minimized chats",  $.proxy(function () {
+            var i, contact_jid, chatview, msg;
+            var sender_jid = mock.cur_names[4].replace(' ','.').toLowerCase() + '@localhost';
+            this.minimized_chats.toggleview.model.set({'collapsed': true});
+            for (i=0; i<3; i++) {
+                contact_jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                utils.openChatBoxFor(contact_jid);
+                chatview = converse.chatboxviews.get(contact_jid);
+                chatview.model.set({'minimized': true});
+                msg = $msg({
+                    from: contact_jid,
+                    to: this.connection.jid,
+                    type: 'chat',
+                    id: (new Date()).getTime()
+                }).c('body').t('This message is sent to a minimized chatbox').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                this.chatboxes.onMessage(msg);
+            }
+        }, converse));
+
+    }, converse, mock, utils));
+}));

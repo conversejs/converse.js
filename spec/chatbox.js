@@ -13,16 +13,10 @@
                 runs(function () {
                     utils.closeAllChatBoxes();
                     utils.removeControlBox();
-                });
-                waits(250);
-                runs(function () {
                     converse.roster.localStorage._clear();
                     utils.initConverse();
                     utils.createCurrentContacts();
                     utils.openControlBox();
-                });
-                waits(250);
-                runs(function () {
                     utils.openContactsPanel();
                 });
             });
@@ -462,9 +456,6 @@
                     spyOn(this, 'emit');
                     runs(function () {
                         utils.openChatBoxFor(contact_jid);
-                    });
-                    waits(50);
-                    runs(function () {
                         var chatview = converse.chatboxviews.get(contact_jid);
                         expect(chatview.model.get('minimized')).toBeFalsy();
                         chatview.$el.find('.toggle-chatbox-button').click();
@@ -521,7 +512,7 @@
                         expect(trimmed_chatboxes.keys().length).toBe(0);
                     }, converse));
                 }, converse));
-
+ 
                 it("will indicate when it has a time difference of more than a day between it and its predecessor", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];

@@ -63,7 +63,8 @@ require([
                 "spec/eventemitter",
                 "spec/controlbox",
                 "spec/chatbox",
-                "spec/chatroom"
+                "spec/chatroom",
+                "spec/minchats"
             ], function () {
                 // Make sure this callback is only called once.
                 delete converse.callback;

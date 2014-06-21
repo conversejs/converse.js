@@ -2690,11 +2690,7 @@
 
             initialize: function () {
                 this.initToggle();
-                this.model.on("add", function (item) {
-                    if (item.get('minimized')) {
-                        this.addChat(item);
-                    }
-                }, this);
+                this.model.on("add", this.onChanged, this);
                 this.model.on("destroy", this.removeChat, this);
                 this.model.on("change:minimized", this.onChanged, this);
             },
@@ -2722,14 +2718,14 @@
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
-                this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')})
+                this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')});
                 this.$('.minimized-chats-flyout').toggle();
             },
 
             onChanged: function (item) {
-                if (item.get('minimized')) {
+                if (item.get('id') !== 'controlbox' && item.get('minimized')) {
                     this.addChat(item);
-                } else {
+                } else if (this.get(item.get('id'))) {
                     this.removeChat(item);
                 }
             },

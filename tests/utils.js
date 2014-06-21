@@ -41,7 +41,7 @@
     };
 
     utils.openControlBox = function () {
-        var toggle = $(".toggle-online-users");
+        var toggle = $(".toggle-controlbox");
         if (!$("#controlbox").is(':visible')) {
             if (!toggle.is(':visible')) {
                 toggle.show(toggle.click);

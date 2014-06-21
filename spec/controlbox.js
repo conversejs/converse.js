@@ -494,7 +494,7 @@
             runs(function () {
                 utils.closeAllChatBoxes();
             });
-            waits(250);
+            waits(50);
             runs(function () {
                 utils.openControlBox();
             });

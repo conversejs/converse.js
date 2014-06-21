@@ -515,15 +515,10 @@
                         expect($count.html()).toBe('2');
                         trimmedview.$el.find('.restore-chat').click();
                     }, converse));
-                    waits(50);
+                    waits(250);
                     runs($.proxy(function () {
                         var trimmed_chatboxes = this.minimized_chats;
-                        var trimmedview = trimmed_chatboxes.get(contact_jid);
-                        var $count = trimmedview.$el.find('.chat-head-message-count');
-                        expect(trimmedview.model.get('minimized')).toBeFalsy();
-                        expect($count.is(':visible')).toBeFalsy();
-                        expect($count.data('count')).toBeFalsy();
-                        expect($count.html()).toBe('0');
+                        expect(trimmed_chatboxes.keys().length).toBe(0);
                     }, converse));
                 }, converse));
 

@@ -1,2 +1,4 @@
 {{Minimized}} <span id="minimized-count">({{num_minimized}})</span>
-<span class="unread-message-count" href="#">0</span>
+<span class="unread-message-count"
+    {[ if (!num_unread) { ]} style="display: none" {[ } ]}
+    href="#">{{num_unread}}</span>

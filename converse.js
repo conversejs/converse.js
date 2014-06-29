@@ -653,18 +653,20 @@
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
 
                     this.save({
-                        'user_id' : Strophe.getNodeFromJid(this.get('jid')),
                         'box_id' : b64_sha1(this.get('jid')),
-                        'otr_status': this.get('otr_status') || UNENCRYPTED,
+                        'height': height,
                         'minimized': this.get('minimized') || false,
+                        'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'time_minimized': this.get('time_minimized') || moment(),
                         'time_opened': this.get('time_opened') || moment().valueOf(),
-                        'height': height
+                        'user_id' : Strophe.getNodeFromJid(this.get('jid')),
+                        'num_unread': this.get('num_unread') || 0
                     });
                 } else {
                     this.set({
                         'height': height,
-                        'time_opened': moment(0).valueOf()
+                        'time_opened': moment(0).valueOf(),
+                        'num_unread': this.get('num_unread') || 0
                     });
                 }
             },
@@ -2621,9 +2623,7 @@
             },
 
             initialize: function () {
-                this.model.messages.on('add', function (msg) {
-                    this.updateUnreadMessagesCounter(_.clone(msg.attributes));
-                }, this);
+                this.model.messages.on('add', this.updateUnreadMessagesCounter, this);
                 this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
                 this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
                 this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
@@ -2645,21 +2645,14 @@
             },
 
             clearUnreadMessagesCounter: function () {
-                if (!this.model.get('minimized')) {
-                    this.$el.find('.chat-head-message-count').html(0).data('count', 0).hide();
-                }
+                this.model.set({'num_unread': 0});
+                this.render();
             },
 
-            updateUnreadMessagesCounter: function (msg_dict) {
-                var count, $count;
-                var msg_time = (typeof msg_dict === 'object' && moment(msg_dict.time)) || moment;
-                if (this.model.get('minimized') && (!msg_time.isBefore(this.model.get('time_minimized')))) {
-                    $count = this.$el.find('.chat-head-message-count');
-                    count = parseInt($count.data('count') || 0, 10) + 1;
-                    $count.html(count).data('count', count);
-                    if (!$count.is(':visible')) { $count.show('fast'); }
-                }
-                return this;
+            updateUnreadMessagesCounter: function () {
+                var count = this.model.get('num_unread') + 1;
+                this.model.set({'num_unread': count});
+                this.render();
             },
 
             close: function (ev) {
@@ -2693,6 +2686,7 @@
                 this.model.on("add", this.onChanged, this);
                 this.model.on("destroy", this.removeChat, this);
                 this.model.on("change:minimized", this.onChanged, this);
+                this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
             },
 
             initToggle: function () {
@@ -2746,6 +2740,13 @@
                 this.remove(item.get('id'));
                 this.toggleview.model.set({'num_minimized': this.keys().length});
                 this.render();
+            },
+
+            updateUnreadMessagesCounter: function () {
+                var ls = this.model.pluck('num_unread'), count = 0;
+                for (i=0; i<ls.length; i++) { count += ls[i]; }
+                this.toggleview.model.set({'num_unread': count});
+                this.render();
             }
         });
 
@@ -2753,7 +2754,8 @@
             initialize: function () {
                 this.set({
                     'collapsed': this.get('collapsed') || false,
-                    'num_minimized': 0
+                    'num_minimized': this.get('num_minimized') || 0,
+                    'num_unread':  this.get('num_unread') || 0,
                 });
             }
         });
@@ -2768,7 +2770,9 @@
 
             render: function () {
                 this.$el.html(converse.templates.toggle_chats(
-                    _.extend(this.model.toJSON(), {'Minimized': __('Minimized')})
+                    _.extend(this.model.toJSON(), {
+                        'Minimized': __('Minimized')
+                    })
                 ));
                 if (this.model.get('collapsed')) {
                     this.$flyout.hide();

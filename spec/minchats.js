@@ -67,6 +67,7 @@
             var i, contact_jid, chatview, msg;
             var sender_jid = mock.cur_names[4].replace(' ','.').toLowerCase() + '@localhost';
             this.minimized_chats.toggleview.model.set({'collapsed': true});
+            expect(this.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeFalsy();
             for (i=0; i<3; i++) {
                 contact_jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
                 utils.openChatBoxFor(contact_jid);
@@ -80,6 +81,8 @@
                 }).c('body').t('This message is sent to a minimized chatbox').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 this.chatboxes.onMessage(msg);
+                expect(this.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
+                expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe(i.toString());
             }
         }, converse));
 

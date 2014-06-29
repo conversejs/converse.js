@@ -24,6 +24,7 @@
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
+        "backbone.overview": "components/backbone.overview/backbone.overview",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",

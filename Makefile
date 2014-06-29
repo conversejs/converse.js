@@ -11,7 +11,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./d
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css
+.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs
 
 all: dev
 
@@ -44,6 +44,12 @@ po2json:
 
 ########################################################################
 ## Release management
+
+minjs: 
+	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js
+
+mincss:
+	grunt cssmin
 
 release:
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json

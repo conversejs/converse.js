@@ -25,8 +25,8 @@ module.exports = function(grunt) {
                         "*/"
             },
             minify: {
-                dest: 'converse.min.css',
-                src: ['converse.css']
+                dest: 'css/converse.min.css',
+                src: ['css/converse.css']
             }
         }
     });

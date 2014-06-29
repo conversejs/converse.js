@@ -18,7 +18,7 @@
             runs(function () {
                 utils.closeControlBox();
             });
-            waits(250);
+            waits(50);
             runs(function () {
                 // This spec will only pass if the controlbox is not currently
                 // open yet.
@@ -30,7 +30,7 @@
                 this.controlboxtoggle.delegateEvents();
                 $('.toggle-controlbox').click();
             }.bind(converse));
-            waits(250);
+            waits(50);
             runs(function () {
                 expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
                 expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();

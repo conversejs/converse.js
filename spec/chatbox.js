@@ -483,7 +483,6 @@
                         var $count = trimmedview.$el.find('.chat-head-message-count');
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
                         expect($count.is(':visible')).toBeTruthy();
-                        expect($count.data('count')).toBe(1);
                         expect($count.html()).toBe('1');
                         this.chatboxes.onMessage(
                             $msg({
@@ -502,7 +501,6 @@
                         var $count = trimmedview.$el.find('.chat-head-message-count');
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
                         expect($count.is(':visible')).toBeTruthy();
-                        expect($count.data('count')).toBe(2);
                         expect($count.html()).toBe('2');
                         trimmedview.$el.find('.restore-chat').click();
                     }, converse));

@@ -2650,8 +2650,7 @@
             },
 
             updateUnreadMessagesCounter: function () {
-                var count = this.model.get('num_unread') + 1;
-                this.model.set({'num_unread': count});
+                this.model.set({'num_unread': this.model.get('num_unread') + 1});
                 this.render();
             },
 
@@ -2765,6 +2764,7 @@
 
             initialize: function () {
                 this.model.on('change:num_minimized', this.render, this);
+                this.model.on('change:num_unread', this.render, this);
                 this.$flyout = this.$el.siblings('.minimized-chats-flyout');
             },
 

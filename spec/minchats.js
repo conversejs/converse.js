@@ -82,7 +82,7 @@
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 this.chatboxes.onMessage(msg);
                 expect(this.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
-                expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe(i.toString());
+                expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i+1).toString());
             }
         }, converse));
 

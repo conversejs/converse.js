@@ -89,6 +89,11 @@
         return converse.rosterview.get(jid).openChat(mock.event);
     };
 
+    utils.clearBrowserStorage = function () {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+    };
+
     utils.clearChatBoxMessages = function (jid) {
         var view = converse.chatboxviews.get(jid);
         view.$el.find('.chat-content').empty();

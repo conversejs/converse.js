@@ -204,6 +204,11 @@
         describe("Existing Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
+                    converse.rosterview.model.reset();
+                    converse.rosterview.render();
+                });
+                waits(50);
+                runs(function () {
                     utils.openControlBox();
                 });
                 waits(50);

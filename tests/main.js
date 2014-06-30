@@ -39,6 +39,7 @@ require([
         // Set up converse.js
         window.converse_api = converse;
         window.localStorage.clear();
+        window.sessionStorage.clear();
         converse.initialize({
             prebind: false,
             xhr_user_search: false,

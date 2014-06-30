@@ -9,6 +9,7 @@
 } (this, function (mock, utils) {
     return describe("The Converse Event Emitter", $.proxy(function(mock, utils) {
         window.localStorage.clear();
+        window.sessionStorage.clear();
 
         it("allows you to subscribe to emitted events", function () {
             this.callback = function () {};

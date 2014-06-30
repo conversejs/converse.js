@@ -7,7 +7,7 @@ config = {
         "locales": "locale/locales",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
-        "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
+        "backbone.browserStorage": "components/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview": "components/backbone.overview/backbone.overview",
         "text": 'components/requirejs-text/text',
         "tpl": 'components/requirejs-tpl-jcbrand/tpl',

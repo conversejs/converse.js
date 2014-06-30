@@ -163,6 +163,7 @@
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
         this.show_toolbar = true;
+        this.storage = 'session';
         this.use_otr_by_default = false;
         this.use_vcards = true;
         this.visible_toolbar_buttons = {
@@ -204,6 +205,7 @@
             'show_only_online_users',
             'show_toolbar',
             'sid',
+            'storage',
             'use_otr_by_default',
             'use_vcards',
             'xhr_custom_status',
@@ -453,9 +455,9 @@
 
         this.initStatus = function (callback) {
             this.xmppstatus = new this.XMPPStatus();
-            var id = b64_sha1('converse.xmppstatus-'+this.bare_jid);
-            this.xmppstatus.id = id; // Appears to be necessary for backbone.localStorage
-            this.xmppstatus.localStorage = new Backbone.LocalStorage(id);
+            var id = b64_sha1('converse.xmppstatus-'+converse.bare_jid);
+            this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
+            this.xmppstatus.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.xmppstatus.fetch({success: callback, error: callback});
         };
 
@@ -483,13 +485,13 @@
         this.initRoster = function () {
             // Set up the roster
             this.roster = new this.RosterItems();
-            this.roster.localStorage = new Backbone.LocalStorage(
+            this.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
                 b64_sha1('converse.rosteritems-'+converse.bare_jid));
             this.registerRosterHandler();
             this.registerRosterXHandler();
             this.registerPresenceHandler();
             // Now create the view which will fetch roster items from
-            // localStorage
+            // browserStorage
             this.rosterview = new this.RosterView({'model':this.roster});
         };
 
@@ -569,7 +571,9 @@
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
                 Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-                Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+                Strophe.error = function (msg) { 
+                    console.log('ERROR: '+msg);
+                };
             }
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
@@ -649,7 +653,7 @@
                 var height = converse.applyHeightResistance(this.get('height'));
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
-                    this.messages.localStorage = new Backbone.LocalStorage(
+                    this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
 
                     this.save({
@@ -1168,7 +1172,7 @@
                 if (result === true) {
                     this.$el.find('.chat-content').empty();
                     this.model.messages.reset();
-                    this.model.messages.localStorage._clear();
+                    this.model.messages.browserStorage._clear();
                 }
                 return this;
             },
@@ -2411,7 +2415,7 @@
             },
 
             onConnected: function () {
-                this.localStorage = new Backbone.LocalStorage(
+                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.chatboxes-'+converse.bare_jid));
                 if (!this.get('controlbox')) {
                     this.add({
@@ -2692,9 +2696,9 @@
                 this.toggleview = new converse.MinimizedChatsToggleView({
                     model: new converse.MinimizedChatsToggle()
                 });
-                var id = b64_sha1('converse.minchatstoggle'+this.bare_jid);
-                this.toggleview.model.id = id; // Appears to be necessary for backbone.localStorage
-                this.toggleview.model.localStorage = new Backbone.LocalStorage(id);
+                var id = b64_sha1('converse.minchatstoggle'+converse.bare_jid);
+                this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
+                this.toggleview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
                 this.toggleview.model.fetch();
             },
 
@@ -3549,10 +3553,10 @@
             */
             model: converse.Feature,
             initialize: function () {
-                this.localStorage = new Backbone.LocalStorage(
+                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.features'+converse.bare_jid));
-                if (this.localStorage.records.length === 0) {
-                    // localStorage is empty, so we've likely never queried this
+                if (this.browserStorage.records.length === 0) {
+                    // browserStorage is empty, so we've likely never queried this
                     // domain for features yet
                     converse.connection.disco.info(converse.domain, null, $.proxy(this.onInfo, this));
                     converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this));

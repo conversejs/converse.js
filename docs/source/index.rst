@@ -1011,6 +1011,25 @@ Default:  ``false``
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+storage
+-------
+
+Default: ``session``
+
+Valid options: ``session``, ``local``.
+
+This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_ 
+(``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
+
+Originally converse.js used only localStorage, however sessionStorage is from a
+privacy perspective a better choice.
+
+The main difference between the two is that sessionStorage only persists while
+the current tab or window containing a converse.js instance is open. As soon as
+it's closed, the data is cleared.
+
+Data in localStorage on the other hand is kept indefinitely.
+
 use_otr_by_default
 ------------------
 

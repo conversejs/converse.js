@@ -32,7 +32,7 @@
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
-                    jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     spyOn(view, 'openChat').andCallThrough();
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -63,7 +63,7 @@
                 var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
-                    jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     $el.click();
                     expect(this.chatboxviews.trimChats).toHaveBeenCalled();
@@ -96,7 +96,7 @@
             }, converse));
 
             it("is focused if its already open and you click on its corresponding roster item", $.proxy(function () {
-                var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var i, $el, click, jid, view, chatboxview, chatbox;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
@@ -105,7 +105,7 @@
                 chatboxview = this.chatboxviews.get(contact_jid);
                 spyOn(chatboxview, 'focus');
                 $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
-                jid = $el.text().replace(' ','.').toLowerCase() + '@localhost';
+                jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                 view = this.rosterview.get(jid);
                 spyOn(view, 'openChat').andCallThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -246,7 +246,7 @@
 
             describe("A chat toolbar", $.proxy(function () {
                 it("can be found on each chat box", $.proxy(function () {
-                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var chatbox = this.chatboxes.get(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
@@ -258,7 +258,7 @@
                 }, converse));
 
                 it("contains a button for inserting emoticons", $.proxy(function () {
-                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
@@ -317,7 +317,7 @@
 
                 it("contains a button for starting an encrypted chat session", $.proxy(function () {
                     // TODO: More tests can be added here...
-                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
@@ -341,7 +341,7 @@
 
                 it("can contain a button for starting a call", $.proxy(function () {
                     var view, callButton, $toolbar;
-                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     spyOn(converse, 'emit');
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
@@ -366,7 +366,7 @@
 
                 it("can contain a button for clearing messages", $.proxy(function () {
                     var view, clearButton, $toolbar;
-                    var contact_jid = mock.cur_names[2].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
                     converse.visible_toolbar_buttons.clear = false;
@@ -406,7 +406,7 @@
                 it("can be received which will open a chatbox and be displayed inside it", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var message = 'This is a received message';
-                    var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         msg = $msg({
                             from: sender_jid,
                             to: this.connection.jid,
@@ -452,7 +452,7 @@
 
                 it("received for a minimized chat box will increment a counter on its header", $.proxy(function () {
                     var contact_name = mock.cur_names[0];
-                    var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     spyOn(this, 'emit');
                     runs(function () {
                         utils.openChatBoxFor(contact_jid);
@@ -465,7 +465,7 @@
                         var chatview = this.chatboxviews.get(contact_jid);
                         expect(chatview.model.get('minimized')).toBeTruthy();
                         var message = 'This message is sent to a minimized chatbox';
-                        var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         msg = $msg({
                             from: sender_jid,
                             to: this.connection.jid,
@@ -486,7 +486,7 @@
                         expect($count.html()).toBe('1');
                         this.chatboxes.onMessage(
                             $msg({
-                                from: mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost',
+                                from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                                 to: this.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
@@ -514,7 +514,7 @@
                 it("will indicate when it has a time difference of more than a day between it and its predecessor", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var contact_name = mock.cur_names[1];
-                    var contact_jid = contact_name.replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     utils.clearChatBoxMessages(contact_jid);
                     var one_day_ago = moment();
@@ -582,7 +582,7 @@
 
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
                     spyOn(converse, 'emit');
-                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     runs(function () {
                         utils.openChatBoxFor(contact_jid);
                     });
@@ -601,7 +601,7 @@
                 }, converse));
 
                 it("is sanitized to prevent Javascript injection attacks", $.proxy(function () {
-                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var message = '<p>This message contains <em>some</em> <b>markup</b></p>';
@@ -614,7 +614,7 @@
                 }, converse));
 
                 it("can contain hyperlinks, which will be clickable", $.proxy(function () {
-                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var message = 'This message contains a hyperlink: www.opkode.com';
@@ -627,7 +627,7 @@
                 }, converse));
 
                 it("should display emoticons correctly", $.proxy(function () {
-                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     var messages = [':)', ';)', ':D', ':P', '8)', '>:)', ':S', ':\\', '>:(', ':(', ':O', '(^.^)b', '<3'];
@@ -651,7 +651,7 @@
                 }, converse));
 
                 it("will have properly escaped URLs", $.proxy(function () {
-                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);
                     var view = this.chatboxviews.get(contact_jid);
                     spyOn(view, 'sendMessage').andCallThrough();
@@ -741,7 +741,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('blur');
                 var message = 'This message will increment the message counter';
-                var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,
@@ -772,7 +772,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('focus');
                 var message = 'This message will not increment the message counter';
-                var sender_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,

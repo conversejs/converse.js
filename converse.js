@@ -3223,6 +3223,7 @@
 
                 this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
+                this.model.on("reset", function () { this.removeAllRosterItemViewss(); }, this);
 
                 var roster_markup = converse.templates.contacts({
                     'label_contacts': __('My contacts')
@@ -3260,6 +3261,12 @@
             addRosterItemView: function (item) {
                 var view = new converse.RosterItemView({model: item});
                 this.add(item.id, view);
+                return this;
+            },
+
+            removeAllRosterItemViewss: function () {
+                var views = this.removeAll();
+                this.render();
                 return this;
             },
 

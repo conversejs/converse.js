@@ -205,7 +205,7 @@
             beforeEach($.proxy(function () {
                 runs(function () {
                     converse.rosterview.model.reset();
-                    converse.rosterview.render();
+                    utils.createCurrentContacts();
                 });
                 waits(50);
                 runs(function () {
@@ -218,16 +218,18 @@
             }, converse));
 
             it("do not have a heading if there aren't any", $.proxy(function () {
+                converse.rosterview.model.reset();
                 expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                 var i, t;
+                converse.rosterview.model.reset();
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     this.roster.create({
-                        jid: mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost',
+                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
                         fullname: mock.cur_names[i],
@@ -249,8 +251,8 @@
                 var item, view, jid, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
-                for (i=0; i<3; i++) {
-                    jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                for (i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
@@ -268,8 +270,8 @@
                 var item, view, jid, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
-                for (i=3; i<6; i++) {
-                    jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                for (i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
@@ -279,7 +281,7 @@
                     expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
-                    expect(t).toEqual(mock.cur_names.slice(3,i+1).sort().join(''));
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
@@ -287,8 +289,8 @@
                 var item, view, jid, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
-                for (i=6; i<9; i++) {
-                    jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                for (i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
                     item = view.model;
@@ -298,7 +300,7 @@
                     expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
-                    expect(t).toEqual(mock.cur_names.slice(6,i+1).sort().join(''));
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
@@ -306,7 +308,7 @@
                 var item, view, jid, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
-                for (i=9; i<12; i++) {
+                for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
@@ -317,7 +319,7 @@
                     expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
-                    expect(t).toEqual(mock.cur_names.slice(9,i+1).sort().join(''));
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
@@ -325,7 +327,7 @@
                 var item, view, jid, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
-                for (i=12; i<15; i++) {
+                for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     spyOn(view, 'render').andCallThrough();
@@ -336,13 +338,39 @@
                     expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
-                    expect(t).toEqual(mock.cur_names.slice(12, i+1).sort().join(''));
+                    expect(t).toEqual(mock.cur_names.slice(0, i+1).sort().join(''));
                 }
             }, converse));
 
             it("are ordered according to status: online, busy, away, xa, unavailable, offline", $.proxy(function () {
-                var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                 var i;
+                for (i=0; i<3; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    view = this.rosterview.get(jid);
+                    view.model.set('chat_status', 'online');
+                }
+                for (i=3; i<6; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    view = this.rosterview.get(jid);
+                    view.model.set('chat_status', 'dnd');
+                }
+                for (i=6; i<9; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    view = this.rosterview.get(jid);
+                    view.model.set('chat_status', 'away');
+                }
+                for (i=9; i<12; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    view = this.rosterview.get(jid);
+                    view.model.set('chat_status', 'xa');
+                }
+                for (i=12; i<15; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    view = this.rosterview.get(jid);
+                    view.model.set('chat_status', 'unavailable');
+                }
+
+                var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                 for (i=0; i<3; i++) {
                     expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('online');
                 }
@@ -404,7 +432,7 @@
                 // TODO: Testing can be more thorough here, the user is
                 // actually not accepted/authorized because of
                 // mock_connection.
-                var jid = mock.req_names.sort()[0].replace(' ','.').toLowerCase() + '@localhost';
+                var jid = mock.req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var view = this.rosterview.get(jid);
                 spyOn(this.connection.roster, 'authorize');
                 spyOn(view, 'acceptRequest').andCallThrough();
@@ -467,7 +495,7 @@
                 // In the next test suite, we need some online contacts, so
                 // we make some online now
                 for (i=0; i<5; i++) {
-                    jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                     view = this.rosterview.get(jid);
                     view.model.set('chat_status', 'online');
                 }

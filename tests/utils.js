@@ -79,7 +79,7 @@
     utils.openChatBoxes = function (amount) {
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
-            jid = mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost';
+            jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
             views[i] = converse.rosterview.get(jid).openChat(mock.event);
         }
         return views;
@@ -106,7 +106,7 @@
         // for the user's roster.
         for (i=0; i<mock.cur_names.length; i++) {
             converse.roster.create({
-                jid: mock.cur_names[i].replace(' ','.').toLowerCase() + '@localhost',
+                jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                 subscription: 'both',
                 ask: null,
                 fullname: mock.cur_names[i],

@@ -3,6 +3,13 @@
     name: "components/almond/almond.js",
     out: "../builds/converse-no-locales-no-otr.min.js",
     include: ['main'],
+    tpl: {
+        // Use Mustache style syntax for variable interpolation
+        templateSettings: {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        }
+    },
     paths: {
         "jquery": "components/jquery/dist/jquery",
         "jed": "components/jed/jed",

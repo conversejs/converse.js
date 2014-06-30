@@ -3,6 +3,13 @@
     name: "components/almond/almond.js",
     out: "../builds/converse.min.js",
     include: ['main'],
+    tpl: {
+        // Use Mustache style syntax for variable interpolation
+        templateSettings: {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        }
+    },
     paths: {
         "jquery": "components/jquery/dist/jquery",
         "jed": "components/jed/jed",
@@ -21,6 +28,7 @@
         "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
         "ru": "locale/ru/LC_MESSAGES/ru",
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
+        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
@@ -47,7 +55,6 @@
         "eventemitter": "components/otr/build/dep/eventemitter",
         "otr": "components/otr/build/otr",
         "converse-dependencies": "src/deps-full",
-        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "moment":"components/momentjs/moment",
         "converse-templates":"src/templates",
         "tpl": "components/requirejs-tpl-jcbrand/tpl",

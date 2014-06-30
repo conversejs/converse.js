@@ -13,7 +13,7 @@
                 runs(function () {
                     utils.closeAllChatBoxes();
                     utils.removeControlBox();
-                    converse.roster.localStorage._clear();
+                    converse.roster.browserStorage._clear();
                     utils.initConverse();
                     utils.createCurrentContacts();
                     utils.openControlBox();
@@ -115,7 +115,7 @@
                 expect(chatboxview.focus).toHaveBeenCalled();
             }, converse));
 
-            it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
+            it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {
                 spyOn(converse, 'emit');
                 spyOn(this.chatboxviews, 'trimChats');
                 runs(function () {
@@ -129,11 +129,11 @@
                     // will be empty.
                     var newchatboxes = new this.ChatBoxes();
                     expect(newchatboxes.length).toEqual(0);
-                    // The chatboxes will then be fetched from localStorage inside the
+                    // The chatboxes will then be fetched from browserStorage inside the
                     // onConnected method
                     newchatboxes.onConnected();
                     expect(newchatboxes.length).toEqual(7);
-                    // Check that the chatboxes items retrieved from localStorage
+                    // Check that the chatboxes items retrieved from browserStorage
                     // have the same attributes values as the original ones.
                     attrs = ['id', 'box_id', 'visible'];
                     for (i=0; i<attrs.length; i++) {
@@ -212,10 +212,10 @@
                 });
             }.bind(converse));
 
-            it("will be removed from localStorage when closed", $.proxy(function () {
+            it("will be removed from browserStorage when closed", $.proxy(function () {
                 spyOn(converse, 'emit');
                 spyOn(converse.chatboxviews, 'trimChats');
-                this.chatboxes.localStorage._clear();
+                this.chatboxes.browserStorage._clear();
                 runs(function () {
                     utils.closeControlBox();
                 });
@@ -235,9 +235,9 @@
                     expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
                     var newchatboxes = new this.ChatBoxes();
                     expect(newchatboxes.length).toEqual(0);
-                    // onConnected will fetch chatboxes in localStorage, but
+                    // onConnected will fetch chatboxes in browserStorage, but
                     // because there aren't any open chatboxes, there won't be any
-                    // in localStorage either. XXX except for the controlbox
+                    // in browserStorage either. XXX except for the controlbox
                     newchatboxes.onConnected();
                     expect(newchatboxes.length).toEqual(1);
                     expect(newchatboxes.models[0].id).toBe("controlbox");
@@ -692,7 +692,7 @@
             beforeEach(function () {
                 utils.closeAllChatBoxes();
                 utils.removeControlBox();
-                converse.roster.localStorage._clear();
+                converse.roster.browserStorage._clear();
                 utils.initConverse();
                 utils.createCurrentContacts();
                 utils.openControlBox();
@@ -709,7 +709,7 @@
                 // (e.g for when this test is run on its own).
                 utils.sendMessage(view, message);
                 expect(view.model.messages.length > 0).toBeTruthy();
-                expect(view.model.messages.localStorage.records.length > 0).toBeTruthy();
+                expect(view.model.messages.browserStorage.records.length > 0).toBeTruthy();
                 expect(converse.emit).toHaveBeenCalledWith('onMessageSend', message);
 
                 message = '/clear';
@@ -724,7 +724,7 @@
                 expect(view.clearMessages).toHaveBeenCalled();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
-                expect(view.model.messages.localStorage.records.length, 0); // And also from localStorage
+                expect(view.model.messages.browserStorage.records.length, 0); // And also from browserStorage
                 expect(converse.emit.callCount, 1);
                 expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
             }, converse));

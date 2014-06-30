@@ -13,12 +13,12 @@
             runs(function () {
                 utils.closeAllChatBoxes();
                 utils.removeControlBox();
-                converse.roster.localStorage._clear();
+                converse.roster.browserStorage._clear();
                 utils.initConverse();
                 utils.createCurrentContacts();
                 utils.openControlBox();
                 utils.openContactsPanel();
-                converse.minimized_chats.toggleview.model.localStorage._clear();
+                converse.minimized_chats.toggleview.model.browserStorage._clear();
                 converse.minimized_chats.initToggle();
             });
         });

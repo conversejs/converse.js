@@ -112,19 +112,19 @@
                 expect(converse.emit.callCount, 1);
             }, converse));
 
-            it("can be saved to, and retrieved from, localStorage", $.proxy(function () {
+            it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
                 spyOn(this.chatboxviews, 'trimChats');
                 utils.openControlBox();
                 var newchatboxes = new this.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
-                // The chatboxes will then be fetched from localStorage inside the
+                // The chatboxes will then be fetched from browserStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
                 expect(this.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(newchatboxes.length).toEqual(2); // XXX: Includes controlbox, is this a bug?
-                // Check that the chatrooms retrieved from localStorage
+                // Check that the chatrooms retrieved from browserStorage
                 // have the same attributes values as the original ones.
                 attrs = ['id', 'box_id', 'visible'];
                 for (i=0; i<attrs.length; i++) {

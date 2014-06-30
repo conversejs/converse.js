@@ -42,11 +42,7 @@
         describe("The Status Widget", $.proxy(function () {
 
             beforeEach(function () {
-                runs(function () {
-                    utils.openControlBox();
-                });
-                waits(250);
-                runs(function () {});
+                utils.openControlBox();
             });
 
             it("shows the user's chat status, which is online by default", $.proxy(function () {
@@ -118,11 +114,11 @@
                 runs(function () {
                     utils.openControlBox();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
                     utils.openContactsPanel();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {});
             });
 
@@ -210,12 +206,10 @@
                 runs(function () {
                     utils.openControlBox();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
                     utils.openContactsPanel();
                 });
-                waits(250);
-                runs(function () {});
             }, converse));
 
             it("do not have a heading if there aren't any", $.proxy(function () {
@@ -436,19 +430,19 @@
         }, converse));
 
         describe("All Contacts", $.proxy(function () {
-            it("are saved to, and can be retrieved from, localStorage", $.proxy(function () {
+            it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
                 var new_attrs, old_attrs, attrs, old_roster;
                 var num_contacts = this.roster.length;
                 new_roster = new this.RosterItems();
-                // Roster items are yet to be fetched from localStorage
+                // Roster items are yet to be fetched from browserStorage
                 expect(new_roster.length).toEqual(0);
 
-                new_roster.localStorage = new Backbone.LocalStorage(
+                new_roster.browserStorage = new Backbone.BrowserStorage.session(
                     b64_sha1('converse.rosteritems-dummy@localhost'));
 
                 new_roster.fetch();
-                expect(this.roster.length).toEqual(num_contacts);
-                // Check that the roster items retrieved from localStorage
+                expect(new_roster.length).toEqual(num_contacts);
+                // Check that the roster items retrieved from browserStorage
                 // have the same attributes values as the original ones.
                 attrs = ['jid', 'fullname', 'subscription', 'ask'];
                 for (i=0; i<attrs.length; i++) {
@@ -463,7 +457,7 @@
             }, converse));
 
             afterEach($.proxy(function () {
-                // Contacts retrieved from localStorage have chat_status of
+                // Contacts retrieved from browserStorage have chat_status of
                 // "offline".
                 // In the next test suite, we need some online contacts, so
                 // we make some online now
@@ -515,7 +509,7 @@
                 runs(function () {
                     utils.closeAllChatBoxes();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
                     utils.openControlBox();
                 });

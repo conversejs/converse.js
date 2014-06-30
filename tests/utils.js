@@ -36,7 +36,7 @@
     };
 
     utils.initRoster = function () {
-        converse.roster.localStorage._clear();
+        converse.roster.browserStorage._clear();
         converse.initRoster();
     };
 
@@ -93,7 +93,7 @@
         var view = converse.chatboxviews.get(jid);
         view.$el.find('.chat-content').empty();
         view.model.messages.reset();
-        view.model.messages.localStorage._clear();
+        view.model.messages.browserStorage._clear();
     };
 
     utils.createCurrentContacts = function () {

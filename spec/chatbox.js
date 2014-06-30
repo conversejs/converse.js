@@ -626,6 +626,30 @@
                     expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" href="http://www.opkode.com">www.opkode.com</a>');
                 }, converse));
 
+                it("should display emoticons correctly", $.proxy(function () {
+                    var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
+                    utils.openChatBoxFor(contact_jid);
+                    var view = this.chatboxviews.get(contact_jid);
+                    var messages = [':)', ';)', ':D', ':P', '8)', '>:)', ':S', ':\\', '>:(', ':(', ':O', '(^.^)b', '<3'];
+                    var emoticons = [
+                        '<span class="emoticon icon-smiley"></span>', '<span class="emoticon icon-wink"></span>',
+                        '<span class="emoticon icon-grin"></span>', '<span class="emoticon icon-tongue"></span>',
+                        '<span class="emoticon icon-cool"></span>', '<span class="emoticon icon-evil"></span>',
+                        '<span class="emoticon icon-confused"></span>', '<span class="emoticon icon-wondering"></span>',
+                        '<span class="emoticon icon-angry"></span>', '<span class="emoticon icon-sad"></span>',
+                        '<span class="emoticon icon-shocked"></span>', '<span class="emoticon icon-thumbs-up"></span>',
+                        '<span class="emoticon icon-heart"></span>'
+                        ];
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    for (var i = 0; i < messages.length; i++) {
+                        var message = messages[i];
+                        utils.sendMessage(view, message);
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                        expect(msg.html()).toEqual(emoticons[i]);
+                    }
+                }, converse));
+
                 it("will have properly escaped URLs", $.proxy(function () {
                     var contact_jid = mock.cur_names[0].replace(' ','.').toLowerCase() + '@localhost';
                     utils.openChatBoxFor(contact_jid);

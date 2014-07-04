@@ -106,27 +106,30 @@
     }, converse, mock, utils));
 
     describe("The Contacts Roster", $.proxy(function (mock, utils) {
-        // FIXME: These tests are dependent on being run in order and cannot be
-        // run independently
 
         describe("Pending Contacts", $.proxy(function () {
-            beforeEach(function () {
+            beforeEach($.proxy(function () {
                 runs(function () {
-                    utils.openControlBox();
+                    converse.rosterview.model.reset();
+                    utils.createContacts('pending').openControlBox();
                 });
                 waits(50);
                 runs(function () {
                     utils.openContactsPanel();
                 });
-                waits(50);
-                runs(function () {});
-            });
+            }, converse));
 
             it("do not have a heading if there aren't any", $.proxy(function () {
+                converse.rosterview.model.reset();
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
             }, converse));
 
+            it("will have their own heading once they have been added", $.proxy(function () {
+                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
+            }, converse));
+
             it("can be added to the roster", $.proxy(function () {
+                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
                 runs($.proxy(function () {
@@ -155,26 +158,28 @@
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview.model, 'remove').andCallThrough();
 
-                runs($.proxy(function () {
-                    view.$el.find('.remove-xmpp-contact').click();
-                }, converse));
-                waits(250);
-                runs($.proxy(function () {
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.remove).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                    expect(this.rosterview.model.remove).toHaveBeenCalled();
-                    // The element must now be detached from the DOM.
-                    expect(view.$el.closest('html').length).toBeFalsy();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
-                }, converse));
+                view.$el.find('.remove-xmpp-contact').click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(this.connection.roster.remove).toHaveBeenCalled();
+                expect(this.connection.roster.unauthorize).toHaveBeenCalled();
+                expect(this.rosterview.model.remove).toHaveBeenCalled();
+                // The element must now be detached from the DOM.
+                expect(view.$el.closest('html').length).toBeFalsy();
+                expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
             }, converse));
 
             it("will lose their own heading once the last one has been removed", $.proxy(function () {
+                var view;
+                spyOn(window, 'confirm').andReturn(true);
+                for (i=0; i<mock.pend_names.length; i++) {
+                    view = this.rosterview.get(mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost');
+                    view.$el.find('.remove-xmpp-contact').click();
+                }
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
+                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 var i, t, is_last;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
@@ -195,21 +200,13 @@
                 }
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
-            }, converse));
-
         }, converse));
 
         describe("Existing Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
                     converse.rosterview.model.reset();
-                    utils.createCurrentContacts();
-                });
-                waits(50);
-                runs(function () {
-                    utils.openControlBox();
+                    utils.createContacts().openControlBox();
                 });
                 waits(50);
                 runs(function () {
@@ -393,13 +390,26 @@
         }, converse));
 
         describe("Requesting Contacts", $.proxy(function () {
-            // by default the dts are hidden from css class and only later they will be hidden
-            // by jQuery therefore for the first check we will see if visible instead of none
+            beforeEach($.proxy(function () {
+                runs(function () {
+                    converse.rosterview.model.reset();
+                    utils.createContacts('requesting').openControlBox();
+                });
+                waits(50);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+            }, converse));
+
             it("do not have a heading if there aren't any", $.proxy(function () {
+                // by default the dts are hidden from css class and only later they will be hidden
+                // by jQuery therefore for the first check we will see if visible instead of none
+                converse.rosterview.model.reset();
                 expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
+                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 var i, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
@@ -458,11 +468,24 @@
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
                 // There should now be one less contact
-                expect(this.roster.length).toEqual(mock.num_contacts-1);
+                expect(this.roster.length).toEqual(mock.req_names.length-1);
             }, converse));
         }, converse));
 
         describe("All Contacts", $.proxy(function () {
+            beforeEach($.proxy(function () {
+                runs(function () {
+                    utils.clearBrowserStorage();
+                    converse.rosterview.model.reset();
+                    converse.rosterview.model.browserStorage._clear();
+                    utils.createContacts('all').openControlBox();
+                });
+                waits(50);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
+            }, converse));
+
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
                 var new_attrs, old_attrs, attrs, old_roster;
                 var num_contacts = this.roster.length;

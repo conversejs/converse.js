@@ -15,7 +15,7 @@
                     utils.removeControlBox();
                     converse.roster.browserStorage._clear();
                     utils.initConverse();
-                    utils.createCurrentContacts();
+                    utils.createContacts();
                     utils.openControlBox();
                     utils.openContactsPanel();
                 });
@@ -694,7 +694,7 @@
                 utils.removeControlBox();
                 converse.roster.browserStorage._clear();
                 utils.initConverse();
-                utils.createCurrentContacts();
+                utils.createContacts();
                 utils.openControlBox();
                 utils.openContactsPanel();
             });

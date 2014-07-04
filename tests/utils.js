@@ -92,6 +92,7 @@
     utils.clearBrowserStorage = function () {
         window.localStorage.clear();
         window.sessionStorage.clear();
+        return this;
     };
 
     utils.clearChatBoxMessages = function (jid) {
@@ -101,16 +102,37 @@
         view.model.messages.browserStorage._clear();
     };
 
-    utils.createCurrentContacts = function () {
+    utils.createContacts = function (type) {
         // Create current (as opposed to requesting or pending) contacts
         // for the user's roster.
-        for (i=0; i<mock.cur_names.length; i++) {
+        var names;
+        if (type === 'requesting') {
+            names = mock.req_names;
+            subscription = 'none';
+            requesting = true;
+            ask = null;
+        } else if (type === 'pending') {
+            names = mock.pend_names;
+            subscription = 'none';
+            requesting = false;
+            ask = 'subscribe';
+        } else if (type === 'all') {
+            this.createContacts().createContacts('request').createContacts('pending');
+            return this;
+        } else {
+            names = mock.cur_names;
+            subscription = 'both';
+            requesting = false;
+            ask = null;
+        }
+        for (i=0; i<names.length; i++) {
             converse.roster.create({
-                jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                subscription: 'both',
-                ask: null,
-                fullname: mock.cur_names[i],
-                is_last: i===(mock.cur_names.length-1)
+                ask: ask,
+                fullname: names[i],
+                is_last: i===(names.length-1),
+                jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                requesting: requesting,
+                subscription: subscription
             });
         }
         return this;

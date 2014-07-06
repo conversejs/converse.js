@@ -347,7 +347,7 @@
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
-            converse.emit('onReconnect');
+            converse.emit('reconnect');
             if (!converse.prebind) {
                 this.connection.connect(
                     this.connection.jid,
@@ -595,7 +595,7 @@
                     }
                 }
             }, this));
-            converse.emit('onReady');
+            converse.emit('ready');
         };
 
         // Backbone Models and Views
@@ -938,7 +938,7 @@
                         )
                     );
                 this.renderToolbar().renderAvatar();
-                converse.emit('onChatBoxOpened', this);
+                converse.emit('chatBoxOpened', this);
                 setTimeout(function () {
                     converse.refreshWebkit();
                 }, 50);
@@ -1116,7 +1116,7 @@
                         } else {
                             this.sendMessage(message);
                         }
-                        converse.emit('onMessageSend', message);
+                        converse.emit('messageSend', message);
                     }
                     this.$el.data('composing', false);
                 } else if (!this.model.get('chatroom')) {
@@ -1260,7 +1260,7 @@
             toggleCall: function (ev) {
                 ev.stopPropagation();
 
-                converse.emit('onCallButtonClicked', {
+                converse.emit('callButtonClicked', {
                     connection: converse.connection,
                     model: this.model
                 });
@@ -1282,11 +1282,11 @@
                             this.$el.find('div.chat-event').remove();
                         }
                     }
-                    converse.emit('onBuddyStatusChanged', item.attributes, item.get('chat_status'));
+                    converse.emit('buddyStatusChanged', item.attributes, item.get('chat_status'));
                 }
                 if (_.has(item.changed, 'status')) {
                     this.showStatusMessage();
-                    converse.emit('onBuddyStatusMessageChanged', item.attributes, item.get('status'));
+                    converse.emit('buddyStatusMessageChanged', item.attributes, item.get('status'));
                 }
                 if (_.has(item.changed, 'image')) {
                     this.renderAvatar();
@@ -1321,7 +1321,7 @@
                 } else {
                     this.model.trigger('hide');
                 }
-                converse.emit('onChatBoxClosed', this);
+                converse.emit('chatBoxClosed', this);
                 return this;
             },
 
@@ -1330,7 +1330,7 @@
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
                     converse.refreshWebkit();
                     this.focus();
-                    converse.emit('onChatBoxMaximized', this);
+                    converse.emit('chatBoxMaximized', this);
                 }, this));
             },
 
@@ -1341,7 +1341,7 @@
                 // Minimizes a chat box
                 this.model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);
-                converse.emit('onChatBoxMinimized', this);
+                converse.emit('chatBoxMinimized', this);
             },
 
             updateVCard: function () {
@@ -1441,7 +1441,7 @@
 
             focus: function () {
                 this.$el.find('.chat-textarea').focus();
-                converse.emit('onChatBoxFocused', this);
+                converse.emit('chatBoxFocused', this);
                 return this;
             },
 
@@ -1841,7 +1841,7 @@
             hide: function (callback) {
                 this.$el.hide('fast', function () {
                     converse.refreshWebkit();
-                    converse.emit('onChatBoxClosed', this);
+                    converse.emit('chatBoxClosed', this);
                     converse.controlboxtoggle.show(function () {
                         if (typeof callback === "function") {
                             callback();
@@ -1855,7 +1855,7 @@
                     this.$el.show('fast', function () {
                         converse.refreshWebkit();
                     }.bind(this));
-                    converse.emit('onControlBoxOpened', this);
+                    converse.emit('controlBoxOpened', this);
                 }, this));
                 return this;
             },
@@ -2374,7 +2374,7 @@
                 });
                 if (display_sender === 'room') {
                     // We only emit an event if it's not our own message
-                    converse.emit('onMessage', message);
+                    converse.emit('message', message);
                 }
                 return true;
             },
@@ -2489,7 +2489,7 @@
                 }
                 chatbox.receiveMessage($message);
                 converse.roster.addResource(buddy_jid, resource);
-                converse.emit('onMessage', message);
+                converse.emit('message', message);
                 return true;
             }
         });
@@ -2663,7 +2663,7 @@
                 }
                 this.remove();
                 this.model.destroy();
-                converse.emit('onChatBoxClosed', this);
+                converse.emit('chatBoxClosed', this);
                 return this;
             },
 
@@ -3048,7 +3048,7 @@
             },
 
             rosterHandler: function (items) {
-                converse.emit('onRoster', items);
+                converse.emit('roster', items);
                 this.cleanCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
@@ -3352,7 +3352,7 @@
                 if (!$count.is(':visible')) {
                     $count.show();
                 }
-                converse.emit('onRosterViewUpdated');
+                converse.emit('rosterViewUpdated');
                 return this;
             },
 
@@ -3383,10 +3383,10 @@
                         );
                     }
                     if (_.has(item.changed, 'status')) {
-                        converse.emit('onStatusChanged', this.get('status'));
+                        converse.emit('statusChanged', this.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
-                        converse.emit('onStatusMessageChanged', this.get('status_message'));
+                        converse.emit('statusMessageChanged', this.get('status_message'));
                     }
                 }, this));
             },
@@ -3762,7 +3762,7 @@
         }
         if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
         this.registerGlobalEventHandlers();
-        converse.emit('onInitialized');
+        converse.emit('initialized');
     };
     return {
         'initialize': function (settings, callback) {

@@ -9,6 +9,7 @@ Changelog
     2. Configuration options for the chat toolbar have changed.
        Please refer to the `relevant documentation <http://devbox:8890/docs/html/index.html#visible-toolbar-buttons>`_.
 
+* Events have been renamed to remove "on" prefix (which is redundant when used with 'on' method). [jcbrand]
 * Simplified Chinese Translations [Lancelot]
 * No initial HTML markup is now needed in the document body for converse.js to work. [jcbrand]
 * All date handling is now done with moment.js. [jcbrand]

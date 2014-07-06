@@ -52,13 +52,6 @@ bottom of your page (after the closing *</body>* element).
         });
     });
 
-
-Finally, Converse.js requires a special snippet of HTML markup to be included in your page:
-
-::
-
-    <div id="conversejs"></div>
-
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
 Converse.js repository serves as a nice usable example of this.
 
@@ -734,7 +727,7 @@ Event Methods
 
     For example::
 
-        converse.on('onMessage', function (messageXML) { ... });
+        converse.on('message', function (messageXML) { ... });
 
 * **once(eventName, callback)**:
 
@@ -748,7 +741,7 @@ Event Methods
 
     For example::
 
-        converse.once('onMessage', function (messageXML) { ... });
+        converse.once('message', function (messageXML) { ... });
 
 * **off(eventName, callback)**
 
@@ -768,35 +761,37 @@ Here are the different events that are emitted:
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | Event Type                       | When is it triggered?                                                                             | Example                                                                                 |
 +==================================+===================================================================================================+=========================================================================================+
-| **onInitialized**                | Once converse.js has been initialized.                                                            | ``converse.on('onInitialized', function () { ... });``                                  |
+| **initialized**                  | Once converse.js has been initialized.                                                            | ``converse.on('initialized', function () { ... });``                                    |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onReady**                      | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.on('onReady', function () { ... });``                                        |
+| **ready**                        | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.on('ready', function () { ... });``                                          |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onReconnect**                  | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.on('onReconnect', function () { ... });``                                    |
+| **reconnect**                    | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.on('reconnect', function () { ... });``                                      |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onMessage**                    | When a message is received.                                                                       | ``converse.on('onMessage', function (messageXML) { ... });``                            |
+| **message**                      | When a message is received.                                                                       | ``converse.on('message', function (messageXML) { ... });``                              |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onMessageSend**                | When a message will be sent out.                                                                  | ``converse.on('onMessageSend', function (messageText) { ... });``                       |
+| **messageSend**                  | When a message will be sent out.                                                                  | ``converse.on('messageSend', function (messageText) { ... });``                         |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onRoster**                     | When the roster is updated.                                                                       | ``converse.on('onRoster', function (items) { ... });``                                  |
+| **roster**                       | When the roster is updated.                                                                       | ``converse.on('roster', function (items) { ... });``                                    |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onRosterViewUpdated**          | Whenever the roster view (i.e. the rendered HTML) has changed.                                    | ``converse.on('onRosterViewUpdated', function (items) { ... });``                       |
+| **rosterViewUpdated**            | Whenever the roster view (i.e. the rendered HTML) has changed.                                    | ``converse.on('rosterViewUpdated', function (items) { ... });``                         |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onChatBoxOpened**              | When a chat box has been opened.                                                                  | ``converse.on('onChatBoxOpened', function (chatbox) { ... });``                         |
+| **callButtonClicked**            | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.on('callButtonClicked', function (connection, model) { ... });``             |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onChatBoxClosed**              | When a chat box has been closed.                                                                  | ``converse.on('onChatBoxClosed', function (chatbox) { ... });``                         |
+| **chatBoxOpened**                | When a chat box has been opened.                                                                  | ``converse.on('chatBoxOpened', function (chatbox) { ... });``                           |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onChatBoxFocused**             | When the focus has been moved to a chat box.                                                      | ``converse.on('onChatBoxFocused', function (chatbox) { ... });``                        |
+| **chatBoxClosed**                | When a chat box has been closed.                                                                  | ``converse.on('chatBoxClosed', function (chatbox) { ... });``                           |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onChatBoxToggled**             | When a chat box has been minimized or maximized.                                                  | ``converse.on('onChatBoxToggled', function (chatbox) { ... });``                        |
+| **chatBoxFocused**               | When the focus has been moved to a chat box.                                                      | ``converse.on('chatBoxFocused', function (chatbox) { ... });``                          |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onStatusChanged**              | When own chat status has changed.                                                                 | ``converse.on('onStatusChanged', function (status) { ... });``                          |
+| **chatBoxToggled**               | When a chat box has been minimized or maximized.                                                  | ``converse.on('chatBoxToggled', function (chatbox) { ... });``                          |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onStatusMessageChanged**       | When own custom status message has changed.                                                       | ``converse.on('onStatusMessageChanged', function (message) { ... });``                  |
+| **statusChanged**                | When own chat status has changed.                                                                 | ``converse.on('statusChanged', function (status) { ... });``                            |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onBuddyStatusChanged**         | When a chat buddy's chat status has changed.                                                      | ``converse.on('onBuddyStatusChanged', function (buddy, status) { ... });``              |
+| **statusMessageChanged**         | When own custom status message has changed.                                                       | ``converse.on('statusMessageChanged', function (message) { ... });``                    |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **onBuddyStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('onBuddyStatusMessageChanged', function (buddy, messageText) { ... });``  |
+| **buddyStatusChanged**           | When a chat buddy's chat status has changed.                                                      | ``converse.on('buddyStatusChanged', function (buddy, status) { ... });``                |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **buddyStatusMessageChanged**    | When a chat buddy's custom status message has changed.                                            | ``converse.on('buddyStatusMessageChanged', function (buddy, messageText) { ... });``    |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 
 =============
@@ -1005,7 +1000,7 @@ The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
 
 By default this box is hidden and can be toggled by clicking on any element in
-the page with class *toggle-online-users*.
+the page with class *toggle-controlbox*.
 
 If this options is set to true, the controlbox will by default be shown upon
 page load.
@@ -1017,6 +1012,25 @@ Default:  ``false``
 
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
+
+storage
+-------
+
+Default: ``session``
+
+Valid options: ``session``, ``local``.
+
+This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_ 
+(``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
+
+Originally converse.js used only localStorage, however sessionStorage is from a
+privacy perspective a better choice.
+
+The main difference between the two is that sessionStorage only persists while
+the current tab or window containing a converse.js instance is open. As soon as
+it's closed, the data is cleared.
+
+Data in localStorage on the other hand is kept indefinitely.
 
 use_otr_by_default
 ------------------
@@ -1058,7 +1072,7 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
 
     ::
 
-        converse.on('onCallButtonClicked', function(event, data) {
+        converse.on('callButtonClicked', function(event, data) {
             console.log('Strophe connection is', data.connection);
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...

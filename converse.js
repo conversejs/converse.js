@@ -22,14 +22,7 @@
             }
         );
     } else {
-        // Browser globals
-        // FIXME
-        _.templateSettings = {
-            evaluate : /\{\[([\s\S]+?)\]\}/g,
-            interpolate : /\{\{([\s\S]+?)\}\}/g
-        };
-        // TODO Templates not defined
-        root.converse = factory(jQuery, _, OTR, DSA, templates);
+        root.converse = factory(jQuery, _, OTR, DSA, JST, moment);
     }
 }(this, function ($, _, OTR, DSA, templates, moment) {
     "use strict";

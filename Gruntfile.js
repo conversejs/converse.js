@@ -1,6 +1,25 @@
 module.exports = function(grunt) {
     var cfg = require('./package.json');
     grunt.initConfig({
+        jst: {
+            compile: {
+                options: {
+                    templateSettings: {
+                        evaluate : /\{\[([\s\S]+?)\]\}/g,
+                        interpolate : /\{\{([\s\S]+?)\}\}/g
+                    },
+                    processName: function (filepath) {
+                        // E.g. src/templates/trimmed_chat.html
+                        return filepath.match(/src\/templates\/([a-z_]+)\.html/)[1];
+
+                    }
+                },
+                files: {
+                    "builds/templates.js": ["src/templates/*.html"]
+                },
+            }
+        },
+
         jshint: {
             options: {
                 trailing: true
@@ -32,6 +51,7 @@ module.exports = function(grunt) {
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-jst');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
     grunt.registerTask('test', 'Run Tests', function () {
@@ -80,7 +100,8 @@ module.exports = function(grunt) {
         };
         exec('./node_modules/requirejs/bin/r.js -o src/build.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-otr.js', callback);
+             './node_modules/requirejs/bin/r.js -o src/build-no-otr.js &&' +
+             './node_modules/requirejs/bin/r.js -o src/build-website.js', callback);
     });
 
     grunt.registerTask('minify', 'Create a new release', ['cssmin', 'jsmin']);

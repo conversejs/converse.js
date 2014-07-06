@@ -35,7 +35,8 @@
     "grunt-contrib-requirejs": "~0.4.3",
     "less": "~1.7.0",
     "phantom-jasmine": "0.1.8",
-    "phantomjs": "~1.9.7-1"
+    "phantomjs": "~1.9.7-1",
+    "grunt-contrib-jst": "~0.6.0"
   },
   "dependencies": {
     "requirejs": "~2.1.11"

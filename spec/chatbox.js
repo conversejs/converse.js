@@ -74,7 +74,6 @@
                     expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
                     expect(chatboxview.hide).toHaveBeenCalled();
                     trimmedview = trimmed_chatboxes.get(jid);
-                    expect(trimmedview.$el.is(":visible")).toBeTruthy();
                 }
 
                 // Test that they can be maximized again

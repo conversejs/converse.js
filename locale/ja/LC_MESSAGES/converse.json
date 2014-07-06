@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2014-01-07 11:12+0900",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2014-01-07 11:32+0900",
          "Last-Translator": "Mako N <mako@pasero.net>",
          "Language-Team": "Language JA",
@@ -53,6 +53,10 @@
          null,
          "この相手先は離席中です"
       ],
+      "Reconnecting": [
+         null,
+         "接続中です"
+      ],
       "Disconnected": [
          null,
          "切断中"
@@ -89,13 +93,13 @@
          null,
          "暗号化セッションの再接続"
       ],
-      "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+      "Generating private key.": [
          null,
-         "暗号化チャットで使用する秘密鍵を生成する必要があります。これには30秒ほどかかり、そのあいだブラウザがフリーズして反応しないかもしれません。"
+         ""
       ],
-      "Private key generated.": [
+      "Your browser might become unresponsive.": [
          null,
-         "秘密鍵を生成しました。"
+         ""
       ],
       "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
          null,
@@ -105,33 +109,17 @@
          null,
          "このユーザーの本人性を検証できませんでした。"
       ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
+      ],
       "Personal message": [
          null,
          "私信"
       ],
-      "Start encrypted conversation": [
+      "Are you sure you want to clear the messages from this room?": [
          null,
-         "暗号化された会話を開始"
-      ],
-      "Refresh encrypted conversation": [
-         null,
-         "暗号化された会話をリフレッシュ"
-      ],
-      "End encrypted conversation": [
-         null,
-         "暗号化された会話を終了"
-      ],
-      "Verify with SMP": [
-         null,
-         "SMP で検証"
-      ],
-      "Verify with fingerprints": [
-         null,
-         "鍵指紋で検証"
-      ],
-      "What's this?": [
-         null,
-         "これは何ですか?"
+         "この談話室のメンバー一覧にいません"
       ],
       "me": [
          null,
@@ -148,6 +136,10 @@
       "Remove messages": [
          null,
          "メッセージを削除"
+      ],
+      "Are you sure you want to clear the messages from this chat box?": [
+         null,
+         ""
       ],
       "Your message could not be sent": [
          null,
@@ -169,7 +161,7 @@
          null,
          "これは鍵指紋です。チャット以外の方法でこれらを %1$s と確認してください。\n\nあなた %2$s の鍵指紋: %3$s\n\n%1$s の鍵指紋: %4$s\n\n確認して、鍵指紋が正しければ「OK」を、正しくなければ「キャンセル」をクリックしてください。"
       ],
-      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
          null,
          "秘密の質問を入力し、それに対して答えるように促されます。\n\n相手にも、同じ質問が表示され、正しく同じ答(大文字・小文字は区別されます)を入力することで、本人性を検証します。"
       ],
@@ -217,9 +209,29 @@
          null,
          "相手は私信を終了しました。あなたも同じようにしてください"
       ],
-      "Contacts": [
+      "End encrypted conversation": [
          null,
-         "相手先"
+         "暗号化された会話を終了"
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         "暗号化された会話をリフレッシュ"
+      ],
+      "Start encrypted conversation": [
+         null,
+         "暗号化された会話を開始"
+      ],
+      "Verify with fingerprints": [
+         null,
+         "鍵指紋で検証"
+      ],
+      "Verify with SMP": [
+         null,
+         "SMP で検証"
+      ],
+      "What's this?": [
+         null,
+         "これは何ですか?"
       ],
       "Online": [
          null,
@@ -237,21 +249,9 @@
          null,
          "オフライン"
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "クリックして新しいチャットの相手先を追加"
-      ],
-      "Add a contact": [
-         null,
-         "相手先を追加"
-      ],
-      "Contact username": [
-         null,
-         "相手先の名前"
-      ],
-      "Add": [
-         null,
-         "追加"
+         "相手先"
       ],
       "Contact name": [
          null,
@@ -261,6 +261,22 @@
          null,
          "検索"
       ],
+      "Contact username": [
+         null,
+         "相手先の名前"
+      ],
+      "Add": [
+         null,
+         "追加"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "クリックして新しいチャットの相手先を追加"
+      ],
+      "Add a contact": [
+         null,
+         "相手先を追加"
+      ],
       "No users found": [
          null,
          "ユーザーが見つかりません"
@@ -268,6 +284,38 @@
       "Click to add as a chat contact": [
          null,
          "クリックしてチャットの相手先として追加"
+      ],
+      "Room name": [
+         null,
+         "談話室の名前"
+      ],
+      "Nickname": [
+         null,
+         "ニックネーム"
+      ],
+      "Server": [
+         null,
+         "サーバー"
+      ],
+      "Join": [
+         null,
+         "入室"
+      ],
+      "Show rooms": [
+         null,
+         "談話室一覧を見る"
+      ],
+      "Rooms": [
+         null,
+         "談話室"
+      ],
+      "No rooms on %1$s": [
+         null,
+         "%1$s に談話室はありません"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "%1$s の談話室一覧"
       ],
       "Click to open this room": [
          null,
@@ -332,38 +380,6 @@
       "Unmoderated": [
          null,
          "発言制限なし"
-      ],
-      "Rooms": [
-         null,
-         "談話室"
-      ],
-      "Room name": [
-         null,
-         "談話室の名前"
-      ],
-      "Nickname": [
-         null,
-         "ニックネーム"
-      ],
-      "Server": [
-         null,
-         "サーバー"
-      ],
-      "Join": [
-         null,
-         "入室"
-      ],
-      "Show rooms": [
-         null,
-         "談話室一覧を見る"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "%1$s に談話室はありません"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "%1$s の談話室一覧"
       ],
       "Set chatroom topic": [
          null,
@@ -529,21 +545,41 @@
          null,
          "このユーザーはこの談話室で発言できません"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "クリックしてこの相手先とチャット"
+         "クリックしてこの相手先を削除"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "クリックしてこの相手先を削除"
       ],
       "Click to remove this contact": [
          null,
          "クリックしてこの相手先を削除"
       ],
-      "Contact requests": [
+      "Accept": [
          null,
-         "会話に呼び出し"
+         ""
+      ],
+      "Decline": [
+         null,
+         "オンライン"
+      ],
+      "Click to chat with this contact": [
+         null,
+         "クリックしてこの相手先とチャット"
       ],
       "My contacts": [
          null,
          "相手先一覧"
+      ],
+      "Contact requests": [
+         null,
+         "会話に呼び出し"
       ],
       "Pending contacts": [
          null,
@@ -552,14 +588,6 @@
       "Custom status": [
          null,
          "独自の在席状況"
-      ],
-      "Click to change your chat status": [
-         null,
-         "クリックして、在席状況を変更"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "状況メッセージを入力するには、ここをクリック"
       ],
       "online": [
          null,
@@ -581,9 +609,13 @@
          null,
          "私はいま %1$s"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "サインイン"
+         "状況メッセージを入力するには、ここをクリック"
+      ],
+      "Click to change your chat status": [
+         null,
+         "クリックして、在席状況を変更"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -596,6 +628,22 @@
       "Log In": [
          null,
          "ログイン"
+      ],
+      "Sign in": [
+         null,
+         "サインイン"
+      ],
+      "Toggle chat": [
+         null,
+         ""
+      ],
+      "#~ \"Your browser needs to generate a private key, which will be used in your \"#~ \"encrypted chat session. This can take up to 30 seconds during which your \"#~ \"browser might freeze and become unresponsive.\"": [
+         null,
+         "#~ \"暗号化チャットで使用する秘密鍵を生成する必要があります。これには30秒ほどか\"#~ \"かり、そのあいだブラウザがフリーズして反応しないかもしれません。\""
+      ],
+      "Private key generated.": [
+         null,
+         "秘密鍵を生成しました。"
       ],
       "BOSH Service URL:": [
          null,

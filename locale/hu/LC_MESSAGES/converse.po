@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-24 23:22+0200\n"
+"POT-Creation-Date: 2014-07-06 17:58+0200\n"
 "PO-Revision-Date: 2013-09-25 22:42+0200\n"
 "Last-Translator: Krisztian Kompar <w3host@w3host.hu>\n"
 "Language-Team: Hungarian\n"
@@ -20,479 +20,675 @@ msgstr ""
 "lang: hu\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
-#: converse.js:135
+#: converse.js:260
+msgid "unencrypted"
+msgstr ""
+
+#: converse.js:261
+msgid "unverified"
+msgstr ""
+
+#: converse.js:262
+msgid "verified"
+msgstr ""
+
+#: converse.js:263
+msgid "finished"
+msgstr ""
+
+#: converse.js:266
+msgid "This contact is busy"
+msgstr "Elfoglalt"
+
+#: converse.js:267
+msgid "This contact is online"
+msgstr "Online"
+
+#: converse.js:268
+msgid "This contact is offline"
+msgstr "Nincs bejelentkezve"
+
+#: converse.js:269
+msgid "This contact is unavailable"
+msgstr "Elérhetetlen"
+
+#: converse.js:270
+msgid "This contact is away for an extended period"
+msgstr "Hosszabb ideje távol"
+
+#: converse.js:271
+msgid "This contact is away"
+msgstr "Távol"
+
+#: converse.js:349
+#, fuzzy
+msgid "Reconnecting"
+msgstr "Kapcsolódás"
+
+#: converse.js:385
 msgid "Disconnected"
 msgstr "Szétkapcsolva"
 
-#: converse.js:139
+#: converse.js:393
 msgid "Error"
 msgstr "Hiba"
 
-#: converse.js:141
+#: converse.js:395
 msgid "Connecting"
 msgstr "Kapcsolódás"
 
-#: converse.js:144
+#: converse.js:398
 msgid "Connection Failed"
 msgstr "Kapcsolódási hiba"
 
-#: converse.js:146
+#: converse.js:400
 msgid "Authenticating"
 msgstr "Azonosítás"
 
-#: converse.js:149
+#: converse.js:403
 msgid "Authentication Failed"
 msgstr "Azonosítási hiba"
 
-#: converse.js:151
+#: converse.js:405
 msgid "Disconnecting"
 msgstr "Szétkapcsolás"
 
-#: converse.js:373
-msgid "me"
-msgstr "én"
+#: converse.js:539 converse.js:580
+msgid "Online Contacts"
+msgstr "Online kapcsolatok"
 
-#: converse.js:417
-msgid "%1$s is typing"
-msgstr "%1$s gépel"
-
-#: converse.js:461 converse.js:1180
-msgid "Show this menu"
-msgstr "Mutasd ezt a menüt"
-
-#: converse.js:462 converse.js:1181
-msgid "Write in the third person"
+#: converse.js:699
+msgid "Re-establishing encrypted session"
 msgstr ""
 
-#: converse.js:463 converse.js:1185
-msgid "Remove messages"
-msgstr "Üzenet törlése"
+#: converse.js:711
+msgid "Generating private key."
+msgstr ""
 
-#: converse.js:603
+#: converse.js:712
+msgid "Your browser might become unresponsive."
+msgstr ""
+
+#: converse.js:747
+msgid ""
+"Authentication request from %1$s\n"
+"\n"
+"Your buddy is attempting to verify your identity, by asking you the question "
+"below.\n"
+"\n"
+"%2$s"
+msgstr ""
+
+#: converse.js:756
+msgid "Could not verify this user's identify."
+msgstr ""
+
+#: converse.js:795
+msgid "Exchanging private key with buddy."
+msgstr ""
+
+#: converse.js:935
 msgid "Personal message"
 msgstr "Saját üzenet"
 
-#: converse.js:677
-msgid "Contacts"
-msgstr "Kapcsolatok"
+#: converse.js:965
+#, fuzzy
+msgid "Are you sure you want to clear the messages from this room?"
+msgstr "Nem szerepelsz a csevegő szoba taglistáján"
 
-#: converse.js:682
+#: converse.js:986
+msgid "me"
+msgstr "én"
+
+#: converse.js:1076 converse.js:1971
+msgid "Show this menu"
+msgstr "Mutasd ezt a menüt"
+
+#: converse.js:1077 converse.js:1972
+msgid "Write in the third person"
+msgstr ""
+
+#: converse.js:1078 converse.js:1976
+msgid "Remove messages"
+msgstr "Üzenet törlése"
+
+#: converse.js:1164
+msgid "Are you sure you want to clear the messages from this chat box?"
+msgstr ""
+
+#: converse.js:1199
+msgid "Your message could not be sent"
+msgstr ""
+
+#: converse.js:1202
+msgid "We received an unencrypted message"
+msgstr ""
+
+#: converse.js:1205
+msgid "We received an unreadable encrypted message"
+msgstr ""
+
+#: converse.js:1214
+msgid "This user has requested an encrypted session."
+msgstr ""
+
+#: converse.js:1236
+msgid ""
+"Here are the fingerprints, please confirm them with %1$s, outside of this "
+"chat.\n"
+"\n"
+"Fingerprint for you, %2$s: %3$s\n"
+"\n"
+"Fingerprint for %1$s: %4$s\n"
+"\n"
+"If you have confirmed that the fingerprints match, click OK, otherwise click "
+"Cancel."
+msgstr ""
+
+#: converse.js:1249
+msgid ""
+"You will be prompted to provide a security question and then an answer to "
+"that question.\n"
+"\n"
+"Your buddy will then be prompted the same question and if they type the "
+"exact same answer (case sensitive), their identity will be verified."
+msgstr ""
+
+#: converse.js:1250
+msgid "What is your security question?"
+msgstr ""
+
+#: converse.js:1252
+msgid "What is the answer to the security question?"
+msgstr ""
+
+#: converse.js:1256
+msgid "Invalid authentication scheme provided"
+msgstr ""
+
+#: converse.js:1372
+msgid "Your messages are not encrypted anymore"
+msgstr ""
+
+#: converse.js:1374
+msgid ""
+"Your messages are now encrypted but your buddy's identity has not been "
+"verified."
+msgstr ""
+
+#: converse.js:1376
+msgid "Your buddy's identify has been verified."
+msgstr ""
+
+#: converse.js:1378
+msgid "Your buddy has ended encryption on their end, you should do the same."
+msgstr ""
+
+#: converse.js:1387
+msgid "Your messages are not encrypted. Click here to enable OTR encryption."
+msgstr ""
+
+#: converse.js:1389
+msgid "Your messages are encrypted, but your buddy has not been verified."
+msgstr ""
+
+#: converse.js:1391
+msgid "Your messages are encrypted and your buddy verified."
+msgstr ""
+
+#: converse.js:1393
+msgid ""
+"Your buddy has closed their end of the private session, you should do the "
+"same"
+msgstr ""
+
+#: converse.js:1403
+msgid "End encrypted conversation"
+msgstr ""
+
+#: converse.js:1404
+msgid "Refresh encrypted conversation"
+msgstr ""
+
+#: converse.js:1405
+msgid "Start encrypted conversation"
+msgstr ""
+
+#: converse.js:1406
+msgid "Verify with fingerprints"
+msgstr ""
+
+#: converse.js:1407
+msgid "Verify with SMP"
+msgstr ""
+
+#: converse.js:1408
+msgid "What's this?"
+msgstr ""
+
+#: converse.js:1498
 msgid "Online"
 msgstr "Elérhető"
 
-#: converse.js:683
+#: converse.js:1499
 msgid "Busy"
 msgstr "Foglalt"
 
-#: converse.js:684
+#: converse.js:1500
 msgid "Away"
 msgstr "Távol"
 
-#: converse.js:685
+#: converse.js:1501
 msgid "Offline"
 msgstr "Nem elérhető"
 
-#: converse.js:692
-msgid "Click to add new chat contacts"
-msgstr "Új kapcsolatok hozzáadása"
+#: converse.js:1503
+msgid "Contacts"
+msgstr "Kapcsolatok"
 
-#: converse.js:693
-msgid "Add a contact"
-msgstr "Új kapcsolat"
-
-#: converse.js:702
-msgid "Contact username"
-msgstr "Felhasználónév"
-
-#: converse.js:703
-msgid "Add"
-msgstr "Hozzáadás"
-
-#: converse.js:711
+#: converse.js:1506
 msgid "Contact name"
 msgstr "Kapcsolat neve"
 
-#: converse.js:712
+#: converse.js:1507
 msgid "Search"
 msgstr "Keresés"
 
-#: converse.js:752
+#: converse.js:1511
+msgid "Contact username"
+msgstr "Felhasználónév"
+
+#: converse.js:1512
+msgid "Add"
+msgstr "Hozzáadás"
+
+#: converse.js:1518
+msgid "Click to add new chat contacts"
+msgstr "Új kapcsolatok hozzáadása"
+
+#: converse.js:1519
+msgid "Add a contact"
+msgstr "Új kapcsolat"
+
+#: converse.js:1545
 msgid "No users found"
 msgstr "Nincs találat"
 
-#: converse.js:759
+#: converse.js:1551
 msgid "Click to add as a chat contact"
 msgstr "Csevegő kapcsolatként hozzáad"
 
-#: converse.js:819
-msgid "Click to open this room"
-msgstr "Belépés a csevegő szobába"
-
-#: converse.js:821
-msgid "Show more information on this room"
-msgstr "További információk a csevegő szobáról"
-
-#: converse.js:827
-msgid "Description:"
-msgstr "Leírás:"
-
-#: converse.js:828
-msgid "Occupants:"
-msgstr "Jelenlevők:"
-
-#: converse.js:829
-msgid "Features:"
-msgstr "Tulajdonságok"
-
-#: converse.js:831
-msgid "Requires authentication"
-msgstr "Azonosítás szükséges"
-
-#: converse.js:834
-msgid "Hidden"
-msgstr "Rejtett"
-
-#: converse.js:837
-msgid "Requires an invitation"
-msgstr "Meghívás szükséges"
-
-#: converse.js:840
-msgid "Moderated"
-msgstr "Moderált"
-
-#: converse.js:843
-msgid "Non-anonymous"
-msgstr "NEM névtelen"
-
-#: converse.js:846
-msgid "Open room"
-msgstr "Nyitott szoba"
-
-#: converse.js:849
-msgid "Permanent room"
-msgstr "Állandó szoba"
-
-#: converse.js:852
-msgid "Public"
-msgstr "Nyílvános"
-
-#: converse.js:855
-msgid "Semi-anonymous"
-msgstr "Félig névtelen"
-
-#: converse.js:858
-msgid "Temporary room"
-msgstr "Ideiglenes szoba"
-
-#: converse.js:861
-msgid "Unmoderated"
-msgstr "Moderálatlan"
-
-#: converse.js:867
-msgid "Rooms"
-msgstr "Szobák"
-
-#: converse.js:871
+#: converse.js:1606
 msgid "Room name"
 msgstr "A szoba neve"
 
-#: converse.js:872
+#: converse.js:1607
 msgid "Nickname"
 msgstr "Becenév"
 
-#: converse.js:873
+#: converse.js:1608
 msgid "Server"
 msgstr "Szerver"
 
-#: converse.js:874
+#: converse.js:1609
 msgid "Join"
 msgstr "Csatlakozás"
 
-#: converse.js:875
+#: converse.js:1610
 msgid "Show rooms"
 msgstr "Létező szobák"
 
+#: converse.js:1630
+msgid "Rooms"
+msgstr "Szobák"
+
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: converse.js:910
+#: converse.js:1637
 msgid "No rooms on %1$s"
 msgstr "Nincs csevegő szoba a(z) %1$s szerveren"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: converse.js:925
+#: converse.js:1652
 msgid "Rooms on %1$s"
 msgstr "Csevegő szobák a(z) %1$s szerveren"
 
-#: converse.js:1182
+#: converse.js:1661
+msgid "Click to open this room"
+msgstr "Belépés a csevegő szobába"
+
+#: converse.js:1662
+msgid "Show more information on this room"
+msgstr "További információk a csevegő szobáról"
+
+#: converse.js:1724
+msgid "Description:"
+msgstr "Leírás:"
+
+#: converse.js:1725
+msgid "Occupants:"
+msgstr "Jelenlevők:"
+
+#: converse.js:1726
+msgid "Features:"
+msgstr "Tulajdonságok"
+
+#: converse.js:1727
+msgid "Requires authentication"
+msgstr "Azonosítás szükséges"
+
+#: converse.js:1728
+msgid "Hidden"
+msgstr "Rejtett"
+
+#: converse.js:1729
+msgid "Requires an invitation"
+msgstr "Meghívás szükséges"
+
+#: converse.js:1730
+msgid "Moderated"
+msgstr "Moderált"
+
+#: converse.js:1731
+msgid "Non-anonymous"
+msgstr "NEM névtelen"
+
+#: converse.js:1732
+msgid "Open room"
+msgstr "Nyitott szoba"
+
+#: converse.js:1733
+msgid "Permanent room"
+msgstr "Állandó szoba"
+
+#: converse.js:1734
+msgid "Public"
+msgstr "Nyílvános"
+
+#: converse.js:1735
+msgid "Semi-anonymous"
+msgstr "Félig névtelen"
+
+#: converse.js:1736
+msgid "Temporary room"
+msgstr "Ideiglenes szoba"
+
+#: converse.js:1737
+msgid "Unmoderated"
+msgstr "Moderálatlan"
+
+#: converse.js:1973
 msgid "Set chatroom topic"
 msgstr "Csevegőszoba téma beállítás"
 
-#: converse.js:1183
+#: converse.js:1974
 msgid "Kick user from chatroom"
 msgstr "Felhasználó kiléptetése a csevegő szobából"
 
-#: converse.js:1184
+#: converse.js:1975
 msgid "Ban user from chatroom"
 msgstr "Felhasználó kitíltása a csevegő szobából"
 
-#: converse.js:1211
+#: converse.js:1991
 msgid "Message"
 msgstr "Üzenet"
 
-#: converse.js:1325 converse.js:2406
+#: converse.js:2071 converse.js:3462
 msgid "Save"
 msgstr "Mentés"
 
-#: converse.js:1326
+#: converse.js:2072
 msgid "Cancel"
 msgstr "Mégsem"
 
-#: converse.js:1373
+#: converse.js:2117
 msgid "An error occurred while trying to save the form."
 msgstr "Hiba történt az adatok mentése közben."
 
-#: converse.js:1419
+#: converse.js:2163
 msgid "This chatroom requires a password"
 msgstr "A csevegő szoba belépéshez jelszó szükséges"
 
-#: converse.js:1420
+#: converse.js:2164
 msgid "Password: "
 msgstr "Jelszó:"
 
-#: converse.js:1421
+#: converse.js:2165
 msgid "Submit"
 msgstr "Küldés"
 
-#: converse.js:1435
+#: converse.js:2179
 msgid "This room is not anonymous"
 msgstr "Ez a szoba NEM névtelen"
 
-#: converse.js:1436
+#: converse.js:2180
 msgid "This room now shows unavailable members"
 msgstr "Ez a szoba mutatja az elérhetetlen tagokat"
 
-#: converse.js:1437
+#: converse.js:2181
 msgid "This room does not show unavailable members"
 msgstr "Ez a szoba nem mutatja az elérhetetlen tagokat"
 
-#: converse.js:1438
+#: converse.js:2182
 msgid "Non-privacy-related room configuration has changed"
 msgstr "A szoba általános konfigurációja módosult"
 
-#: converse.js:1439
+#: converse.js:2183
 msgid "Room logging is now enabled"
 msgstr "A szobába a belépés lehetséges"
 
-#: converse.js:1440
+#: converse.js:2184
 msgid "Room logging is now disabled"
 msgstr "A szobába a belépés szünetel"
 
-#: converse.js:1441
+#: converse.js:2185
 msgid "This room is now non-anonymous"
 msgstr "Ez a szoba most NEM névtelen"
 
-#: converse.js:1442
+#: converse.js:2186
 msgid "This room is now semi-anonymous"
 msgstr "Ez a szoba most félig névtelen"
 
-#: converse.js:1443
+#: converse.js:2187
 msgid "This room is now fully-anonymous"
 msgstr "Ez a szoba most teljesen névtelen"
 
-#: converse.js:1444
+#: converse.js:2188
 msgid "A new room has been created"
 msgstr "Létrejött egy új csevegő szoba"
 
-#: converse.js:1445
+#: converse.js:2189
 msgid "Your nickname has been changed"
 msgstr "A beceneved módosításra került"
 
-#: converse.js:1459
+#: converse.js:2203
 msgid "<strong>%1$s</strong> has been banned"
 msgstr "A szobából kitíltva: <strong>%1$s</strong>"
 
-#: converse.js:1460
+#: converse.js:2204
 msgid "<strong>%1$s</strong> has been kicked out"
 msgstr "A szobából kidobva: <strong>%1$s</strong>"
 
-#: converse.js:1461
+#: converse.js:2205
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
 msgstr "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
 
-#: converse.js:1462
+#: converse.js:2206
 msgid "<strong>%1$s</strong> has been removed for not being a member"
-msgstr "A taglistán nem szerepel így a szobából kiléptetve: <strong>%1$s</strong>"
+msgstr ""
+"A taglistán nem szerepel így a szobából kiléptetve: <strong>%1$s</strong>"
 
-#: converse.js:1466 converse.js:1526
+#: converse.js:2210 converse.js:2270
 msgid "You have been banned from this room"
 msgstr "Ki lettél tíltva ebből a szobából"
 
-#: converse.js:1467
+#: converse.js:2211
 msgid "You have been kicked from this room"
 msgstr "Ki lettél dobva ebből a szobából"
 
-#: converse.js:1468
+#: converse.js:2212
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "Taglista módosítás miatt kiléptettünk a csevegő szobából"
 
-#: converse.js:1469
+#: converse.js:2213
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
-msgstr "Kiléptettünk a csevegő szobából, mert mostantól csak a taglistán "
-"szereplők lehetnek jelen."
+msgstr ""
+"Kiléptettünk a csevegő szobából, mert mostantól csak a taglistán szereplők "
+"lehetnek jelen."
 
-#: converse.js:1470
+#: converse.js:2214
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
-msgstr "Kiléptettünk a csevegő szobából, mert a MUC (Multi-User Chat) "
-"szolgáltatás leállításra került."
+msgstr ""
+"Kiléptettünk a csevegő szobából, mert a MUC (Multi-User Chat) szolgáltatás "
+"leállításra került."
 
-#: converse.js:1524
+#: converse.js:2268
 msgid "You are not on the member list of this room"
 msgstr "Nem szerepelsz a csevegő szoba taglistáján"
 
-#: converse.js:1530
+#: converse.js:2274
 msgid "No nickname was specified"
 msgstr "Nem lett megadva becenév"
 
-#: converse.js:1534
+#: converse.js:2278
 msgid "You are not allowed to create new rooms"
 msgstr "Nem lehet új csevegő szobát létrehozni"
 
-#: converse.js:1536
+#: converse.js:2280
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "A beceneved ütközik a csevegő szoba szabályzataival"
 
-#: converse.js:1538
+#: converse.js:2282
 msgid "Your nickname is already taken"
 msgstr "A becenevedet már valaki használja"
 
-#: converse.js:1540
+#: converse.js:2284
 msgid "This room does not (yet) exist"
 msgstr "Ez a szoba (még) nem létezik"
 
-#: converse.js:1542
+#: converse.js:2286
 msgid "This room has reached it's maximum number of occupants"
 msgstr "Ez a csevegő szoba elérte a maximális jelenlevők számát"
 
-#. For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
-#. Example: Topic set by JC Brand to: Hello World!
-#: converse.js:1619
+#: converse.js:2364
 msgid "Topic set by %1$s to: %2$s"
 msgstr "A következő témát állította be %1$s: %2$s"
 
-#: converse.js:1635
+#: converse.js:2394
 msgid "This user is a moderator"
 msgstr "Ez a felhasználó egy moderátor"
 
-#: converse.js:1638
+#: converse.js:2395
 msgid "This user can send messages in this room"
 msgstr "Ez a felhasználó küldhet üzenetet ebbe a szobába"
 
-#: converse.js:1641
+#: converse.js:2396
 msgid "This user can NOT send messages in this room"
 msgstr "Ez a felhasználó NEM küldhet üzenetet ebbe a szobába"
 
-#: converse.js:1848
-msgid "Click to chat with this contact"
-msgstr "Csevegés indítása ezzel a kapcsolatunkkal"
+#: converse.js:2638
+#, fuzzy
+msgid "Click to restore this chat"
+msgstr "A kapcsolat törlése"
 
-#: converse.js:1851 converse.js:1855
+#: converse.js:2777
+msgid "Minimized"
+msgstr ""
+
+#: converse.js:2832
+#, fuzzy
+msgid "Are you sure you want to remove this contact?"
+msgstr "A kapcsolat törlése"
+
+#: converse.js:2882 converse.js:2900
 msgid "Click to remove this contact"
 msgstr "A kapcsolat törlése"
 
-#: converse.js:1886
-msgid "This contact is busy"
-msgstr "Elfoglalt"
+#: converse.js:2889
+msgid "Accept"
+msgstr ""
 
-#: converse.js:1887
-msgid "This contact is online"
-msgstr "Online"
+#: converse.js:2890
+#, fuzzy
+msgid "Decline"
+msgstr "Elérhető"
 
-#: converse.js:1888
-msgid "This contact is offline"
-msgstr "Nincs bejelentkezve"
+#: converse.js:2899
+msgid "Click to chat with this contact"
+msgstr "Csevegés indítása ezzel a kapcsolatunkkal"
 
-#: converse.js:1889
-msgid "This contact is unavailable"
-msgstr "Elérhetetlen"
-
-#: converse.js:1890
-msgid "This contact is away for an extended period"
-msgstr "Hosszabb ideje távol"
-
-#: converse.js:1891
-msgid "This contact is away"
-msgstr "Távol"
-
-#: converse.js:2245
-msgid "Contact requests"
-msgstr "Kapcsolat felvételi kérés"
-
-#: converse.js:2246
+#: converse.js:3228
 msgid "My contacts"
 msgstr "Kapcsolatok:"
 
-#: converse.js:2247
+#: converse.js:3233
+msgid "Contact requests"
+msgstr "Kapcsolat felvételi kérés"
+
+#: converse.js:3237
 msgid "Pending contacts"
 msgstr "Függőben levő kapcsolatok"
 
-#: converse.js:2405
+#: converse.js:3461
 msgid "Custom status"
 msgstr "Egyedi státusz"
 
-#: converse.js:2411
-msgid "Click to change your chat status"
-msgstr "Saját státusz beállítása"
-
-#: converse.js:2415
-msgid "Click here to write a custom status message"
-msgstr "Egyedi státusz üzenet írása"
-
-#: converse.js:2444 converse.js:2452
+#: converse.js:3487 converse.js:3495
 msgid "online"
 msgstr "online"
 
-#: converse.js:2446
+#: converse.js:3489
 msgid "busy"
 msgstr "elfoglalt"
 
-#: converse.js:2448
+#: converse.js:3491
 msgid "away for long"
 msgstr "hosszú ideje távol"
 
-#: converse.js:2450
+#: converse.js:3493
 msgid "away"
 msgstr "távol"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: converse.js:2464 converse.js:2501
+#: converse.js:3507 converse.js:3532
 msgid "I am %1$s"
 msgstr "%1$s vagyok"
 
-#: converse.js:2572
-msgid "Sign in"
-msgstr "Belépés"
+#: converse.js:3512 converse.js:3534
+msgid "Click here to write a custom status message"
+msgstr "Egyedi státusz üzenet írása"
 
-#: converse.js:2575
+#: converse.js:3513 converse.js:3535
+msgid "Click to change your chat status"
+msgstr "Saját státusz beállítása"
+
+#: converse.js:3625
 msgid "XMPP/Jabber Username:"
 msgstr "XMPP/Jabber azonosító:"
 
-#: converse.js:2577
+#: converse.js:3626
 msgid "Password:"
 msgstr "Jelszó:"
 
-#: converse.js:2579
+#: converse.js:3627
 msgid "Log In"
 msgstr "Belépés"
 
-#: converse.js:2583
-msgid "BOSH Service URL:"
-msgstr "BOSH szerver URL"
+#: converse.js:3634
+msgid "Sign in"
+msgstr "Belépés"
 
-#: converse.js:2736
-msgid "Online Contacts"
-msgstr "Online kapcsolatok"
+#: converse.js:3693
+msgid "Toggle chat"
+msgstr ""
+
+#~ msgid "%1$s is typing"
+#~ msgstr "%1$s gépel"
+
+#~ msgid "BOSH Service URL:"
+#~ msgstr "BOSH szerver URL"

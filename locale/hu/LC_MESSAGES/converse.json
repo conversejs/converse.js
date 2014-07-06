@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-24 23:22+0200",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2013-09-25 22:42+0200",
          "Last-Translator": "Krisztian Kompar <w3host@w3host.hu>",
          "Language-Team": "Hungarian",
@@ -15,6 +15,50 @@
          "lang": "hu",
          "plural_forms": "nplurals=2; plural=(n != 1);"
       },
+      "unencrypted": [
+         null,
+         ""
+      ],
+      "unverified": [
+         null,
+         ""
+      ],
+      "verified": [
+         null,
+         ""
+      ],
+      "finished": [
+         null,
+         ""
+      ],
+      "This contact is busy": [
+         null,
+         "Elfoglalt"
+      ],
+      "This contact is online": [
+         null,
+         "Online"
+      ],
+      "This contact is offline": [
+         null,
+         "Nincs bejelentkezve"
+      ],
+      "This contact is unavailable": [
+         null,
+         "Elérhetetlen"
+      ],
+      "This contact is away for an extended period": [
+         null,
+         "Hosszabb ideje távol"
+      ],
+      "This contact is away": [
+         null,
+         "Távol"
+      ],
+      "Reconnecting": [
+         null,
+         "Kapcsolódás"
+      ],
       "Disconnected": [
          null,
          "Szétkapcsolva"
@@ -43,13 +87,45 @@
          null,
          "Szétkapcsolás"
       ],
+      "Online Contacts": [
+         null,
+         "Online kapcsolatok"
+      ],
+      "Re-establishing encrypted session": [
+         null,
+         ""
+      ],
+      "Generating private key.": [
+         null,
+         ""
+      ],
+      "Your browser might become unresponsive.": [
+         null,
+         ""
+      ],
+      "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+         null,
+         ""
+      ],
+      "Could not verify this user's identify.": [
+         null,
+         ""
+      ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
+      ],
+      "Personal message": [
+         null,
+         "Saját üzenet"
+      ],
+      "Are you sure you want to clear the messages from this room?": [
+         null,
+         "Nem szerepelsz a csevegő szoba taglistáján"
+      ],
       "me": [
          null,
          "én"
-      ],
-      "%1$s is typing": [
-         null,
-         "%1$s gépel"
       ],
       "Show this menu": [
          null,
@@ -63,13 +139,101 @@
          null,
          "Üzenet törlése"
       ],
-      "Personal message": [
+      "Are you sure you want to clear the messages from this chat box?": [
          null,
-         "Saját üzenet"
+         ""
       ],
-      "Contacts": [
+      "Your message could not be sent": [
          null,
-         "Kapcsolatok"
+         ""
+      ],
+      "We received an unencrypted message": [
+         null,
+         ""
+      ],
+      "We received an unreadable encrypted message": [
+         null,
+         ""
+      ],
+      "This user has requested an encrypted session.": [
+         null,
+         ""
+      ],
+      "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+         null,
+         ""
+      ],
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+         null,
+         ""
+      ],
+      "What is your security question?": [
+         null,
+         ""
+      ],
+      "What is the answer to the security question?": [
+         null,
+         ""
+      ],
+      "Invalid authentication scheme provided": [
+         null,
+         ""
+      ],
+      "Your messages are not encrypted anymore": [
+         null,
+         ""
+      ],
+      "Your messages are now encrypted but your buddy's identity has not been verified.": [
+         null,
+         ""
+      ],
+      "Your buddy's identify has been verified.": [
+         null,
+         ""
+      ],
+      "Your buddy has ended encryption on their end, you should do the same.": [
+         null,
+         ""
+      ],
+      "Your messages are not encrypted. Click here to enable OTR encryption.": [
+         null,
+         ""
+      ],
+      "Your messages are encrypted, but your buddy has not been verified.": [
+         null,
+         ""
+      ],
+      "Your messages are encrypted and your buddy verified.": [
+         null,
+         ""
+      ],
+      "Your buddy has closed their end of the private session, you should do the same": [
+         null,
+         ""
+      ],
+      "End encrypted conversation": [
+         null,
+         ""
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         ""
+      ],
+      "Start encrypted conversation": [
+         null,
+         ""
+      ],
+      "Verify with fingerprints": [
+         null,
+         ""
+      ],
+      "Verify with SMP": [
+         null,
+         ""
+      ],
+      "What's this?": [
+         null,
+         ""
       ],
       "Online": [
          null,
@@ -87,21 +251,9 @@
          null,
          "Nem elérhető"
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "Új kapcsolatok hozzáadása"
-      ],
-      "Add a contact": [
-         null,
-         "Új kapcsolat"
-      ],
-      "Contact username": [
-         null,
-         "Felhasználónév"
-      ],
-      "Add": [
-         null,
-         "Hozzáadás"
+         "Kapcsolatok"
       ],
       "Contact name": [
          null,
@@ -111,6 +263,22 @@
          null,
          "Keresés"
       ],
+      "Contact username": [
+         null,
+         "Felhasználónév"
+      ],
+      "Add": [
+         null,
+         "Hozzáadás"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "Új kapcsolatok hozzáadása"
+      ],
+      "Add a contact": [
+         null,
+         "Új kapcsolat"
+      ],
       "No users found": [
          null,
          "Nincs találat"
@@ -118,6 +286,38 @@
       "Click to add as a chat contact": [
          null,
          "Csevegő kapcsolatként hozzáad"
+      ],
+      "Room name": [
+         null,
+         "A szoba neve"
+      ],
+      "Nickname": [
+         null,
+         "Becenév"
+      ],
+      "Server": [
+         null,
+         "Szerver"
+      ],
+      "Join": [
+         null,
+         "Csatlakozás"
+      ],
+      "Show rooms": [
+         null,
+         "Létező szobák"
+      ],
+      "Rooms": [
+         null,
+         "Szobák"
+      ],
+      "No rooms on %1$s": [
+         null,
+         "Nincs csevegő szoba a(z) %1$s szerveren"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "Csevegő szobák a(z) %1$s szerveren"
       ],
       "Click to open this room": [
          null,
@@ -182,38 +382,6 @@
       "Unmoderated": [
          null,
          "Moderálatlan"
-      ],
-      "Rooms": [
-         null,
-         "Szobák"
-      ],
-      "Room name": [
-         null,
-         "A szoba neve"
-      ],
-      "Nickname": [
-         null,
-         "Becenév"
-      ],
-      "Server": [
-         null,
-         "Szerver"
-      ],
-      "Join": [
-         null,
-         "Csatlakozás"
-      ],
-      "Show rooms": [
-         null,
-         "Létező szobák"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "Nincs csevegő szoba a(z) %1$s szerveren"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "Csevegő szobák a(z) %1$s szerveren"
       ],
       "Set chatroom topic": [
          null,
@@ -379,45 +547,41 @@
          null,
          "Ez a felhasználó NEM küldhet üzenetet ebbe a szobába"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "Csevegés indítása ezzel a kapcsolatunkkal"
+         "A kapcsolat törlése"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "A kapcsolat törlése"
       ],
       "Click to remove this contact": [
          null,
          "A kapcsolat törlése"
       ],
-      "This contact is busy": [
+      "Accept": [
          null,
-         "Elfoglalt"
+         ""
       ],
-      "This contact is online": [
+      "Decline": [
          null,
-         "Online"
+         "Elérhető"
       ],
-      "This contact is offline": [
+      "Click to chat with this contact": [
          null,
-         "Nincs bejelentkezve"
-      ],
-      "This contact is unavailable": [
-         null,
-         "Elérhetetlen"
-      ],
-      "This contact is away for an extended period": [
-         null,
-         "Hosszabb ideje távol"
-      ],
-      "This contact is away": [
-         null,
-         "Távol"
-      ],
-      "Contact requests": [
-         null,
-         "Kapcsolat felvételi kérés"
+         "Csevegés indítása ezzel a kapcsolatunkkal"
       ],
       "My contacts": [
          null,
          "Kapcsolatok:"
+      ],
+      "Contact requests": [
+         null,
+         "Kapcsolat felvételi kérés"
       ],
       "Pending contacts": [
          null,
@@ -426,14 +590,6 @@
       "Custom status": [
          null,
          "Egyedi státusz"
-      ],
-      "Click to change your chat status": [
-         null,
-         "Saját státusz beállítása"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "Egyedi státusz üzenet írása"
       ],
       "online": [
          null,
@@ -455,9 +611,13 @@
          null,
          "%1$s vagyok"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "Belépés"
+         "Egyedi státusz üzenet írása"
+      ],
+      "Click to change your chat status": [
+         null,
+         "Saját státusz beállítása"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -471,13 +631,21 @@
          null,
          "Belépés"
       ],
+      "Sign in": [
+         null,
+         "Belépés"
+      ],
+      "Toggle chat": [
+         null,
+         ""
+      ],
+      "%1$s is typing": [
+         null,
+         "%1$s gépel"
+      ],
       "BOSH Service URL:": [
          null,
          "BOSH szerver URL"
-      ],
-      "Online Contacts": [
-         null,
-         "Online kapcsolatok"
       ]
    }
 }

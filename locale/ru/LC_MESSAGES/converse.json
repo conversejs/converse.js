@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-15 22:06+0200",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2013-09-29 17:24+0300",
          "Last-Translator": "Boris Kocherov <bk@raskon.org>",
          "Language-Team": "<bk@raskon.ru>",
@@ -28,6 +28,34 @@
       "finished": [
          null,
          "закончено"
+      ],
+      "This contact is busy": [
+         null,
+         "Занят"
+      ],
+      "This contact is online": [
+         null,
+         "В сети"
+      ],
+      "This contact is offline": [
+         null,
+         "Не в сети"
+      ],
+      "This contact is unavailable": [
+         null,
+         "Не доступен"
+      ],
+      "This contact is away for an extended period": [
+         null,
+         "На долго отошёл"
+      ],
+      "This contact is away": [
+         null,
+         "Отошёл"
+      ],
+      "Reconnecting": [
+         null,
+         "Соединение"
       ],
       "Disconnected": [
          null,
@@ -57,17 +85,41 @@
          null,
          "Отключаемся"
       ],
-      "Private key generated.": [
+      "Online Contacts": [
          null,
-         "Приватный ключ сгенерирован."
+         "Cписок собеседников"
+      ],
+      "Re-establishing encrypted session": [
+         null,
+         ""
+      ],
+      "Generating private key.": [
+         null,
+         ""
+      ],
+      "Your browser might become unresponsive.": [
+         null,
+         ""
+      ],
+      "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+         null,
+         ""
+      ],
+      "Could not verify this user's identify.": [
+         null,
+         ""
+      ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
       ],
       "Personal message": [
          null,
          "Введите сообщение"
       ],
-      "What's this?": [
+      "Are you sure you want to clear the messages from this room?": [
          null,
-         "Что это?"
+         "Вас нет в списке этой конференции"
       ],
       "me": [
          null,
@@ -77,13 +129,53 @@
          null,
          "Показать это меню"
       ],
+      "Write in the third person": [
+         null,
+         ""
+      ],
       "Remove messages": [
          null,
          "Удалить сообщения"
       ],
+      "Are you sure you want to clear the messages from this chat box?": [
+         null,
+         ""
+      ],
       "Your message could not be sent": [
          null,
          "Ваше сообщение не послано"
+      ],
+      "We received an unencrypted message": [
+         null,
+         ""
+      ],
+      "We received an unreadable encrypted message": [
+         null,
+         ""
+      ],
+      "This user has requested an encrypted session.": [
+         null,
+         ""
+      ],
+      "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+         null,
+         ""
+      ],
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+         null,
+         ""
+      ],
+      "What is your security question?": [
+         null,
+         ""
+      ],
+      "What is the answer to the security question?": [
+         null,
+         ""
+      ],
+      "Invalid authentication scheme provided": [
+         null,
+         ""
       ],
       "Your messages are not encrypted anymore": [
          null,
@@ -97,6 +189,10 @@
          null,
          "Ваша учётная запись проверена вашим собеседником."
       ],
+      "Your buddy has ended encryption on their end, you should do the same.": [
+         null,
+         ""
+      ],
       "Your messages are not encrypted. Click here to enable OTR encryption.": [
          null,
          "Ваши сообщения не шифруются. Нажмите здесь чтобы настроить шифрование."
@@ -109,9 +205,33 @@
          null,
          "Ваши сообщения шифруются и ваш контакт проверен"
       ],
-      "Contacts": [
+      "Your buddy has closed their end of the private session, you should do the same": [
          null,
-         "Контакты"
+         ""
+      ],
+      "End encrypted conversation": [
+         null,
+         ""
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         ""
+      ],
+      "Start encrypted conversation": [
+         null,
+         ""
+      ],
+      "Verify with fingerprints": [
+         null,
+         ""
+      ],
+      "Verify with SMP": [
+         null,
+         ""
+      ],
+      "What's this?": [
+         null,
+         "Что это?"
       ],
       "Online": [
          null,
@@ -129,21 +249,9 @@
          null,
          "Не в сети"
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "Добавить новую конференцию"
-      ],
-      "Add a contact": [
-         null,
-         "Добавть контакт"
-      ],
-      "Contact username": [
-         null,
-         "Имя пользователя"
-      ],
-      "Add": [
-         null,
-         "Добавить"
+         "Контакты"
       ],
       "Contact name": [
          null,
@@ -153,6 +261,22 @@
          null,
          "Поиск"
       ],
+      "Contact username": [
+         null,
+         "Имя пользователя"
+      ],
+      "Add": [
+         null,
+         "Добавить"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "Добавить новую конференцию"
+      ],
+      "Add a contact": [
+         null,
+         "Добавть контакт"
+      ],
       "No users found": [
          null,
          "Пользователи не найдены"
@@ -160,6 +284,38 @@
       "Click to add as a chat contact": [
          null,
          "Добавить контакт"
+      ],
+      "Room name": [
+         null,
+         "Имя конференции"
+      ],
+      "Nickname": [
+         null,
+         "Псевдоним"
+      ],
+      "Server": [
+         null,
+         "Сервер"
+      ],
+      "Join": [
+         null,
+         "Подключиться"
+      ],
+      "Show rooms": [
+         null,
+         "Обновить"
+      ],
+      "Rooms": [
+         null,
+         "Конфер."
+      ],
+      "No rooms on %1$s": [
+         null,
+         "Нет доступных конференций %1$s"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "Конференции %1$s:"
       ],
       "Click to open this room": [
          null,
@@ -225,38 +381,6 @@
          null,
          "Немодерируемая"
       ],
-      "Rooms": [
-         null,
-         "Конфер."
-      ],
-      "Room name": [
-         null,
-         "Имя конференции"
-      ],
-      "Nickname": [
-         null,
-         "Псевдоним"
-      ],
-      "Server": [
-         null,
-         "Сервер"
-      ],
-      "Join": [
-         null,
-         "Подключиться"
-      ],
-      "Show rooms": [
-         null,
-         "Обновить"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "Нет доступных конференций %1$s"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "Конференции %1$s:"
-      ],
       "Set chatroom topic": [
          null,
          "Установить тему"
@@ -308,6 +432,18 @@
       "This room does not show unavailable members": [
          null,
          "Эта комната не показывает недоступных собеседников"
+      ],
+      "Non-privacy-related room configuration has changed": [
+         null,
+         ""
+      ],
+      "Room logging is now enabled": [
+         null,
+         ""
+      ],
+      "Room logging is now disabled": [
+         null,
+         ""
       ],
       "This room is now non-anonymous": [
          null,
@@ -409,45 +545,41 @@
          null,
          "Пользователь не может посылать сообщения в эту комнату"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "Начать общение"
+         "Удалить контакт"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "Удалить контакт"
       ],
       "Click to remove this contact": [
          null,
          "Удалить контакт"
       ],
-      "This contact is busy": [
+      "Accept": [
          null,
-         "Занят"
+         ""
       ],
-      "This contact is online": [
+      "Decline": [
          null,
          "В сети"
       ],
-      "This contact is offline": [
+      "Click to chat with this contact": [
          null,
-         "Не в сети"
-      ],
-      "This contact is unavailable": [
-         null,
-         "Не доступен"
-      ],
-      "This contact is away for an extended period": [
-         null,
-         "На долго отошёл"
-      ],
-      "This contact is away": [
-         null,
-         "Отошёл"
-      ],
-      "Contact requests": [
-         null,
-         "Запросы на авторизацию"
+         "Начать общение"
       ],
       "My contacts": [
          null,
          "Контакты"
+      ],
+      "Contact requests": [
+         null,
+         "Запросы на авторизацию"
       ],
       "Pending contacts": [
          null,
@@ -456,14 +588,6 @@
       "Custom status": [
          null,
          "Произвольный статус"
-      ],
-      "Click to change your chat status": [
-         null,
-         "Изменить ваш статус"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "Редактировать произвольный статус"
       ],
       "online": [
          null,
@@ -485,9 +609,13 @@
          null,
          "%1$s"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "Подписать"
+         "Редактировать произвольный статус"
+      ],
+      "Click to change your chat status": [
+         null,
+         "Изменить ваш статус"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -501,9 +629,17 @@
          null,
          "Войти"
       ],
-      "Online Contacts": [
+      "Sign in": [
          null,
-         "Cписок собеседников"
+         "Подписать"
+      ],
+      "Toggle chat": [
+         null,
+         ""
+      ],
+      "Private key generated.": [
+         null,
+         "Приватный ключ сгенерирован."
       ]
    }
 }

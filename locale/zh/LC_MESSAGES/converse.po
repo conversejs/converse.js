@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-07 18:04+0800\n"
+"POT-Creation-Date: 2014-07-06 17:58+0200\n"
 "PO-Revision-Date: 2014-01-07 11:32+0900\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Language zh\n"
@@ -19,96 +19,96 @@ msgstr ""
 "lang: zh\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
-#: converse.js:263
+#: converse.js:260
 msgid "unencrypted"
 msgstr "未加密"
 
-#: converse.js:264
+#: converse.js:261
 msgid "unverified"
 msgstr "未验证"
 
-#: converse.js:265
+#: converse.js:262
 msgid "verified"
 msgstr "已验证"
 
-#: converse.js:266
+#: converse.js:263
 msgid "finished"
 msgstr "结束了"
 
-#: converse.js:269
+#: converse.js:266
 msgid "This contact is busy"
 msgstr "对方忙碌中"
 
-#: converse.js:270
+#: converse.js:267
 msgid "This contact is online"
 msgstr "对方在线中"
 
-#: converse.js:271
+#: converse.js:268
 msgid "This contact is offline"
 msgstr "对方已下线"
 
-#: converse.js:272
+#: converse.js:269
 msgid "This contact is unavailable"
 msgstr "对方免打扰"
 
-#: converse.js:273
+#: converse.js:270
 msgid "This contact is away for an extended period"
 msgstr "对方暂时离开"
 
-#: converse.js:274
+#: converse.js:271
 msgid "This contact is away"
 msgstr "对方离开"
 
-#: converse.js:352
+#: converse.js:349
 #, fuzzy
 msgid "Reconnecting"
 msgstr "连接中"
 
-#: converse.js:388
+#: converse.js:385
 msgid "Disconnected"
 msgstr "切断中"
 
-#: converse.js:396
+#: converse.js:393
 msgid "Error"
 msgstr "错误"
 
-#: converse.js:398
+#: converse.js:395
 msgid "Connecting"
 msgstr "连接中"
 
-#: converse.js:401
+#: converse.js:398
 msgid "Connection Failed"
 msgstr "连接失败"
 
-#: converse.js:403
+#: converse.js:400
 msgid "Authenticating"
 msgstr "验证中"
 
-#: converse.js:406
+#: converse.js:403
 msgid "Authentication Failed"
 msgstr "验证失败"
 
-#: converse.js:408
+#: converse.js:405
 msgid "Disconnecting"
 msgstr "断开连接中"
 
-#: converse.js:580 converse.js:618
+#: converse.js:539 converse.js:580
 msgid "Online Contacts"
 msgstr "在线联系人"
 
-#: converse.js:716
+#: converse.js:699
 msgid "Re-establishing encrypted session"
 msgstr "重新建立加密会话"
 
-#: converse.js:728
+#: converse.js:711
 msgid "Generating private key."
 msgstr ""
 
-#: converse.js:729
+#: converse.js:712
 msgid "Your browser might become unresponsive."
 msgstr ""
 
-#: converse.js:764
+#: converse.js:747
 msgid ""
 "Authentication request from %1$s\n"
 "\n"
@@ -123,60 +123,60 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: converse.js:773
+#: converse.js:756
 msgid "Could not verify this user's identify."
 msgstr "复发验证对方信息。"
 
-#: converse.js:812
+#: converse.js:795
 msgid "Exchanging private key with buddy."
 msgstr ""
 
-#: converse.js:949
+#: converse.js:935
 msgid "Personal message"
 msgstr "私信"
 
-#: converse.js:990
+#: converse.js:965
 #, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "您并非此房间成员"
 
-#: converse.js:1012
+#: converse.js:986
 msgid "me"
 msgstr "我"
 
-#: converse.js:1105 converse.js:1991
+#: converse.js:1076 converse.js:1971
 msgid "Show this menu"
 msgstr "显示此项菜单"
 
-#: converse.js:1106 converse.js:1992
+#: converse.js:1077 converse.js:1972
 msgid "Write in the third person"
 msgstr "已第三者身份写"
 
-#: converse.js:1107 converse.js:1996
+#: converse.js:1078 converse.js:1976
 msgid "Remove messages"
 msgstr "移除消息"
 
-#: converse.js:1193
+#: converse.js:1164
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr ""
 
-#: converse.js:1228
+#: converse.js:1199
 msgid "Your message could not be sent"
 msgstr "您的消息无法送出"
 
-#: converse.js:1231
+#: converse.js:1202
 msgid "We received an unencrypted message"
 msgstr "我们收到了一条未加密的信息"
 
-#: converse.js:1234
+#: converse.js:1205
 msgid "We received an unreadable encrypted message"
 msgstr "我们收到一条无法读取的信息"
 
-#: converse.js:1243
+#: converse.js:1214
 msgid "This user has requested an encrypted session."
 msgstr "此用户请求了一个加密会话。"
 
-#: converse.js:1265
+#: converse.js:1236
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"
@@ -196,7 +196,7 @@ msgstr ""
 "\n"
 "如果确认符合，请点击OK，否则取消"
 
-#: converse.js:1278
+#: converse.js:1249
 #, fuzzy
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
@@ -209,482 +209,491 @@ msgstr ""
 "\n"
 "对方需要回答相同的问题（区分大小写）,如果答案一致，身份将被验证。"
 
-#: converse.js:1279
+#: converse.js:1250
 msgid "What is your security question?"
 msgstr "您的安全性问题是?"
 
-#: converse.js:1281
+#: converse.js:1252
 msgid "What is the answer to the security question?"
 msgstr "此安全问题的答案是?"
 
-#: converse.js:1285
+#: converse.js:1256
 msgid "Invalid authentication scheme provided"
 msgstr "非法的认证方式"
 
-#: converse.js:1401
+#: converse.js:1372
 msgid "Your messages are not encrypted anymore"
 msgstr "您的消息将不再被加密"
 
-#: converse.js:1403
+#: converse.js:1374
 msgid ""
 "Your messages are now encrypted but your buddy's identity has not been "
 "verified."
 msgstr "您的消息现已加密，但是对方身份尚未验证"
 
-#: converse.js:1405
+#: converse.js:1376
 msgid "Your buddy's identify has been verified."
 msgstr "对方的身份已通过验证。"
 
-#: converse.js:1407
+#: converse.js:1378
 msgid "Your buddy has ended encryption on their end, you should do the same."
 msgstr "对方已结束加密，您也需要做同样的操作。"
 
-#: converse.js:1416
+#: converse.js:1387
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr "您的消息未加密。点击这里来启用OTR加密"
 
-#: converse.js:1418
+#: converse.js:1389
 msgid "Your messages are encrypted, but your buddy has not been verified."
 msgstr "您的消息已加密，但对方未通过验证"
 
-#: converse.js:1420
+#: converse.js:1391
 msgid "Your messages are encrypted and your buddy verified."
 msgstr "您的消息已加密，对方已验证。"
 
-#: converse.js:1422
+#: converse.js:1393
 msgid ""
 "Your buddy has closed their end of the private session, you should do the "
 "same"
 msgstr "对方已关闭私有会话，您需要做相同操作"
 
-#: converse.js:1432
+#: converse.js:1403
 msgid "End encrypted conversation"
 msgstr "结束加密的会话"
 
-#: converse.js:1433
+#: converse.js:1404
 msgid "Refresh encrypted conversation"
 msgstr "刷新加密的会话"
 
-#: converse.js:1434
+#: converse.js:1405
 msgid "Start encrypted conversation"
 msgstr "开始加密的会话"
 
-#: converse.js:1435
+#: converse.js:1406
 msgid "Verify with fingerprints"
 msgstr "验证指纹"
 
-#: converse.js:1436
+#: converse.js:1407
 msgid "Verify with SMP"
 msgstr "验证SMP"
 
-#: converse.js:1437
+#: converse.js:1408
 msgid "What's this?"
 msgstr "这是什么?"
 
-#: converse.js:1525
+#: converse.js:1498
 msgid "Online"
 msgstr "在线"
 
-#: converse.js:1526
+#: converse.js:1499
 msgid "Busy"
 msgstr "忙碌中"
 
-#: converse.js:1527
+#: converse.js:1500
 msgid "Away"
 msgstr "离开"
 
-#: converse.js:1528
+#: converse.js:1501
 msgid "Offline"
 msgstr "离线"
 
-#: converse.js:1530
+#: converse.js:1503
 msgid "Contacts"
 msgstr "联系人"
 
-#: converse.js:1533
+#: converse.js:1506
 msgid "Contact name"
 msgstr "姓名"
 
-#: converse.js:1534
+#: converse.js:1507
 msgid "Search"
 msgstr "搜索"
 
-#: converse.js:1538
+#: converse.js:1511
 msgid "Contact username"
 msgstr "联系人姓名"
 
-#: converse.js:1539
+#: converse.js:1512
 msgid "Add"
 msgstr "添加"
 
-#: converse.js:1545
+#: converse.js:1518
 msgid "Click to add new chat contacts"
 msgstr "点击添加新联系人"
 
-#: converse.js:1546
+#: converse.js:1519
 msgid "Add a contact"
 msgstr "添加联系人"
 
-#: converse.js:1572
+#: converse.js:1545
 msgid "No users found"
 msgstr "未找到用户"
 
-#: converse.js:1578
+#: converse.js:1551
 msgid "Click to add as a chat contact"
 msgstr "点击添加为好友"
 
-#: converse.js:1633
+#: converse.js:1606
 msgid "Room name"
 msgstr "聊天室名称"
 
-#: converse.js:1634
+#: converse.js:1607
 msgid "Nickname"
 msgstr "昵称"
 
-#: converse.js:1635
+#: converse.js:1608
 msgid "Server"
 msgstr "服务器"
 
-#: converse.js:1636
+#: converse.js:1609
 msgid "Join"
 msgstr "加入"
 
-#: converse.js:1637
+#: converse.js:1610
 msgid "Show rooms"
 msgstr "显示所有聊天室"
 
-#: converse.js:1657
+#: converse.js:1630
 msgid "Rooms"
 msgstr "聊天室"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: converse.js:1664
+#: converse.js:1637
 msgid "No rooms on %1$s"
 msgstr "%1$s 上没有聊天室"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: converse.js:1679
+#: converse.js:1652
 msgid "Rooms on %1$s"
 msgstr "%1$s 上的聊天室"
 
-#: converse.js:1688
+#: converse.js:1661
 msgid "Click to open this room"
 msgstr "打开聊天室"
 
-#: converse.js:1689
+#: converse.js:1662
 msgid "Show more information on this room"
 msgstr "显示次聊天室的更多信息"
 
-#: converse.js:1751
+#: converse.js:1724
 msgid "Description:"
 msgstr "说明: "
 
-#: converse.js:1752
+#: converse.js:1725
 msgid "Occupants:"
 msgstr "成员:"
 
-#: converse.js:1753
+#: converse.js:1726
 msgid "Features:"
 msgstr "特性:"
 
-#: converse.js:1754
+#: converse.js:1727
 msgid "Requires authentication"
 msgstr "需要验证"
 
-#: converse.js:1755
+#: converse.js:1728
 msgid "Hidden"
 msgstr "隐藏"
 
-#: converse.js:1756
+#: converse.js:1729
 msgid "Requires an invitation"
 msgstr "需要被邀请"
 
-#: converse.js:1757
+#: converse.js:1730
 msgid "Moderated"
 msgstr "发言受限"
 
-#: converse.js:1758
+#: converse.js:1731
 msgid "Non-anonymous"
 msgstr "非匿名"
 
-#: converse.js:1759
+#: converse.js:1732
 msgid "Open room"
 msgstr "打开聊天室"
 
-#: converse.js:1760
+#: converse.js:1733
 msgid "Permanent room"
 msgstr "永久聊天室"
 
-#: converse.js:1761
+#: converse.js:1734
 msgid "Public"
 msgstr "公开的"
 
-#: converse.js:1762
+#: converse.js:1735
 msgid "Semi-anonymous"
 msgstr "半匿名"
 
-#: converse.js:1763
+#: converse.js:1736
 msgid "Temporary room"
 msgstr "临时聊天室"
 
-#: converse.js:1764
+#: converse.js:1737
 msgid "Unmoderated"
 msgstr "无发言限制"
 
-#: converse.js:1993
+#: converse.js:1973
 msgid "Set chatroom topic"
 msgstr "设置房间主题"
 
-#: converse.js:1994
+#: converse.js:1974
 msgid "Kick user from chatroom"
 msgstr "把用户踢出房间"
 
-#: converse.js:1995
+#: converse.js:1975
 msgid "Ban user from chatroom"
 msgstr "阻止此用户进入房间"
 
-#: converse.js:2011
+#: converse.js:1991
 msgid "Message"
 msgstr "信息"
 
-#: converse.js:2091 converse.js:3234
+#: converse.js:2071 converse.js:3462
 msgid "Save"
 msgstr "保存"
 
-#: converse.js:2092
+#: converse.js:2072
 msgid "Cancel"
 msgstr "取消"
 
-#: converse.js:2137
+#: converse.js:2117
 msgid "An error occurred while trying to save the form."
 msgstr "保存表单是出错。"
 
-#: converse.js:2183
+#: converse.js:2163
 msgid "This chatroom requires a password"
 msgstr "此聊天室需要密码"
 
-#: converse.js:2184
+#: converse.js:2164
 msgid "Password: "
 msgstr "密码:"
 
-#: converse.js:2185
+#: converse.js:2165
 msgid "Submit"
 msgstr "发送"
 
-#: converse.js:2199
+#: converse.js:2179
 msgid "This room is not anonymous"
 msgstr "此为非匿名聊天室"
 
-#: converse.js:2200
+#: converse.js:2180
 msgid "This room now shows unavailable members"
 msgstr "此聊天室显示不可用用户"
 
-#: converse.js:2201
+#: converse.js:2181
 msgid "This room does not show unavailable members"
 msgstr "此聊天室不显示不可用用户"
 
-#: converse.js:2202
+#: converse.js:2182
 msgid "Non-privacy-related room configuration has changed"
 msgstr "此聊天室设置(非私密性)已改变"
 
-#: converse.js:2203
+#: converse.js:2183
 msgid "Room logging is now enabled"
 msgstr "聊天室聊天记录已启用"
 
-#: converse.js:2204
+#: converse.js:2184
 msgid "Room logging is now disabled"
 msgstr "聊天室聊天记录已禁用"
 
-#: converse.js:2205
+#: converse.js:2185
 msgid "This room is now non-anonymous"
 msgstr "此聊天室非匿名"
 
-#: converse.js:2206
+#: converse.js:2186
 msgid "This room is now semi-anonymous"
 msgstr "此聊天室半匿名"
 
-#: converse.js:2207
+#: converse.js:2187
 msgid "This room is now fully-anonymous"
 msgstr "此聊天室完全匿名"
 
-#: converse.js:2208
+#: converse.js:2188
 msgid "A new room has been created"
 msgstr "新聊天室已创建"
 
-#: converse.js:2209
+#: converse.js:2189
 msgid "Your nickname has been changed"
 msgstr "您的昵称被更改了"
 
-#: converse.js:2223
+#: converse.js:2203
 msgid "<strong>%1$s</strong> has been banned"
 msgstr "<strong>%1$s</strong> 已被禁止"
 
-#: converse.js:2224
+#: converse.js:2204
 msgid "<strong>%1$s</strong> has been kicked out"
 msgstr "<strong>%1$s</strong> 已被踢出"
 
-#: converse.js:2225
+#: converse.js:2205
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
 msgstr "由于关系解除、<strong>%1$s</strong> 已被移除"
 
-#: converse.js:2226
+#: converse.js:2206
 msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "由于不是成员、<strong>%1$s</strong> 已被移除"
 
-#: converse.js:2230 converse.js:2290
+#: converse.js:2210 converse.js:2270
 msgid "You have been banned from this room"
 msgstr "您已被此聊天室禁止入内"
 
-#: converse.js:2231
+#: converse.js:2211
 msgid "You have been kicked from this room"
 msgstr "您已被踢出次房间"
 
-#: converse.js:2232
+#: converse.js:2212
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "由于关系变化，您已被移除次房间"
 
-#: converse.js:2233
+#: converse.js:2213
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
 msgstr "您已被移除此房间因为次房间更改为只允许成员加入，而您非成员"
 
-#: converse.js:2234
+#: converse.js:2214
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
 msgstr "由于服务不可用，您已被移除次房间。"
 
-#: converse.js:2288
+#: converse.js:2268
 msgid "You are not on the member list of this room"
 msgstr "您并非此房间成员"
 
-#: converse.js:2294
+#: converse.js:2274
 msgid "No nickname was specified"
 msgstr "未指定昵称"
 
-#: converse.js:2298
+#: converse.js:2278
 msgid "You are not allowed to create new rooms"
 msgstr "您可已创建新房间了"
 
-#: converse.js:2300
+#: converse.js:2280
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "您的昵称不符合此房间标准"
 
-#: converse.js:2302
+#: converse.js:2282
 msgid "Your nickname is already taken"
 msgstr "您的昵称已被占用"
 
-#: converse.js:2304
+#: converse.js:2284
 msgid "This room does not (yet) exist"
 msgstr "此房间不存在"
 
-#: converse.js:2306
+#: converse.js:2286
 msgid "This room has reached it's maximum number of occupants"
 msgstr "此房间人数已达上线"
 
-#: converse.js:2385
+#: converse.js:2364
 msgid "Topic set by %1$s to: %2$s"
 msgstr "%1$s 设置话题为: %2$s"
 
-#: converse.js:2415
+#: converse.js:2394
 msgid "This user is a moderator"
 msgstr "此用户是主持人"
 
-#: converse.js:2416
+#: converse.js:2395
 msgid "This user can send messages in this room"
 msgstr "此用户在这房间里可发消息"
 
-#: converse.js:2417
+#: converse.js:2396
 msgid "This user can NOT send messages in this room"
 msgstr "此用户不可在此房间发消息"
 
-#: converse.js:2604
+#: converse.js:2638
+#, fuzzy
+msgid "Click to restore this chat"
+msgstr "移除联系人"
+
+#: converse.js:2777
+msgid "Minimized"
+msgstr ""
+
+#: converse.js:2832
 #, fuzzy
 msgid "Are you sure you want to remove this contact?"
 msgstr "移除联系人"
 
-#: converse.js:2654 converse.js:2672
+#: converse.js:2882 converse.js:2900
 msgid "Click to remove this contact"
 msgstr "移除联系人"
 
-#: converse.js:2661
+#: converse.js:2889
 msgid "Accept"
 msgstr ""
 
-#: converse.js:2662
+#: converse.js:2890
 #, fuzzy
 msgid "Decline"
 msgstr "在线"
 
-#: converse.js:2671
+#: converse.js:2899
 msgid "Click to chat with this contact"
 msgstr "点击与对方交谈"
 
-#: converse.js:3005
+#: converse.js:3228
 msgid "My contacts"
 msgstr "我的好友列表"
 
-#: converse.js:3010
+#: converse.js:3233
 msgid "Contact requests"
 msgstr "来自好友请求"
 
-#: converse.js:3014
+#: converse.js:3237
 msgid "Pending contacts"
 msgstr "保留中的联系人"
 
-#: converse.js:3233
+#: converse.js:3461
 msgid "Custom status"
 msgstr "DIY状态"
 
-#: converse.js:3259 converse.js:3267
+#: converse.js:3487 converse.js:3495
 msgid "online"
 msgstr "在线"
 
-#: converse.js:3261
+#: converse.js:3489
 msgid "busy"
 msgstr "忙碌"
 
-#: converse.js:3263
+#: converse.js:3491
 msgid "away for long"
 msgstr "长时间离开"
 
-#: converse.js:3265
+#: converse.js:3493
 msgid "away"
 msgstr "离开"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: converse.js:3279 converse.js:3304
+#: converse.js:3507 converse.js:3532
 msgid "I am %1$s"
 msgstr "我现在%1$s"
 
-#: converse.js:3284 converse.js:3306
+#: converse.js:3512 converse.js:3534
 msgid "Click here to write a custom status message"
 msgstr "点击这里，填写状态信息"
 
-#: converse.js:3285 converse.js:3307
+#: converse.js:3513 converse.js:3535
 msgid "Click to change your chat status"
 msgstr "点击这里改变聊天状态"
 
-#: converse.js:3397
+#: converse.js:3625
 msgid "XMPP/Jabber Username:"
 msgstr "用户名:"
 
-#: converse.js:3398
+#: converse.js:3626
 msgid "Password:"
 msgstr "密码:"
 
-#: converse.js:3399
+#: converse.js:3627
 msgid "Log In"
 msgstr "登录"
 
-#: converse.js:3406
+#: converse.js:3634
 msgid "Sign in"
 msgstr "登录"
 
-#: converse.js:3465
+#: converse.js:3693
 msgid "Toggle chat"
 msgstr ""
 

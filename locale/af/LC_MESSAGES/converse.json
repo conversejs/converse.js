@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-15 21:55+0200",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2013-09-15 21:56+0200",
          "Last-Translator": "JC Brand <jc@opkode.com>",
          "Language-Team": "Afrikaans",
@@ -30,6 +30,34 @@
       "finished": [
          null,
          "afgesluit"
+      ],
+      "This contact is busy": [
+         null,
+         "Hierdie persoon is besig"
+      ],
+      "This contact is online": [
+         null,
+         "Hierdie persoon is aanlyn"
+      ],
+      "This contact is offline": [
+         null,
+         "Hierdie persoon is aflyn"
+      ],
+      "This contact is unavailable": [
+         null,
+         "Hierdie persoon is onbeskikbaar"
+      ],
+      "This contact is away for an extended period": [
+         null,
+         "Hierdie persoon is vir lank afwesig"
+      ],
+      "This contact is away": [
+         null,
+         "Hierdie persoon is afwesig"
+      ],
+      "Reconnecting": [
+         null,
+         "Verbind tans"
       ],
       "Disconnected": [
          null,
@@ -59,17 +87,21 @@
          null,
          "Onderbreek verbinding"
       ],
+      "Online Contacts": [
+         null,
+         "Kontakte aangemeld"
+      ],
       "Re-establishing encrypted session": [
          null,
          "Herstel versleutelde sessie"
       ],
-      "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+      "Generating private key.": [
          null,
-         "Die webblaaier moet 'n private sleutel vir die versleutelde klets-sessie genereer. Dit kan tot 30 sekondes duur, waartydenѕ die webblaaier mag vries en nie reageer nie."
+         ""
       ],
-      "Private key generated.": [
+      "Your browser might become unresponsive.": [
          null,
-         "Private sleutel"
+         ""
       ],
       "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
          null,
@@ -79,33 +111,17 @@
          null,
          "Kon nie hierdie gebruiker se identitied verifieer nie."
       ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
+      ],
       "Personal message": [
          null,
          "Persoonlike boodskap"
       ],
-      "Start encrypted conversation": [
+      "Are you sure you want to clear the messages from this room?": [
          null,
-         "Begin versleutelde gesprek"
-      ],
-      "Refresh encrypted conversation": [
-         null,
-         "Verfris versleutelde gesprek"
-      ],
-      "End encrypted conversation": [
-         null,
-         "Beëindig versleutelde gesprek"
-      ],
-      "Verify with SMP": [
-         null,
-         "Verifieer met SMP"
-      ],
-      "Verify with fingerprints": [
-         null,
-         "Verifieer met vingerafdrukke"
-      ],
-      "What's this?": [
-         null,
-         "Wat is hierdie?"
+         "Jy is nie op die ledelys van hierdie kamer nie"
       ],
       "me": [
          null,
@@ -122,6 +138,10 @@
       "Remove messages": [
          null,
          "Verwyder boodskappe"
+      ],
+      "Are you sure you want to clear the messages from this chat box?": [
+         null,
+         ""
       ],
       "Your message could not be sent": [
          null,
@@ -143,7 +163,7 @@
          null,
          "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \n\nU vingerafdruk, %2$s: %3$s\n\nVingerafdruk vir %1$s: %4$s\n\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
       ],
-      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
          null,
          "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\n\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (hoofletters tel) verskaf, sal hul identiteit geverifieer wees."
       ],
@@ -191,9 +211,29 @@
          null,
          "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
       ],
-      "Contacts": [
+      "End encrypted conversation": [
          null,
-         "Kontakte"
+         "Beëindig versleutelde gesprek"
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         "Verfris versleutelde gesprek"
+      ],
+      "Start encrypted conversation": [
+         null,
+         "Begin versleutelde gesprek"
+      ],
+      "Verify with fingerprints": [
+         null,
+         "Verifieer met vingerafdrukke"
+      ],
+      "Verify with SMP": [
+         null,
+         "Verifieer met SMP"
+      ],
+      "What's this?": [
+         null,
+         "Wat is hierdie?"
       ],
       "Online": [
          null,
@@ -211,21 +251,9 @@
          null,
          "Afgemeld"
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "Kliek om nuwe kletskontakte by te voeg"
-      ],
-      "Add a contact": [
-         null,
-         "Voeg 'n kontak by"
-      ],
-      "Contact username": [
-         null,
-         "Konak gebruikersnaam"
-      ],
-      "Add": [
-         null,
-         "Voeg by"
+         "Kontakte"
       ],
       "Contact name": [
          null,
@@ -235,6 +263,22 @@
          null,
          "Soek"
       ],
+      "Contact username": [
+         null,
+         "Konak gebruikersnaam"
+      ],
+      "Add": [
+         null,
+         "Voeg by"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "Kliek om nuwe kletskontakte by te voeg"
+      ],
+      "Add a contact": [
+         null,
+         "Voeg 'n kontak by"
+      ],
       "No users found": [
          null,
          "Geen gebruikers gevind"
@@ -242,6 +286,38 @@
       "Click to add as a chat contact": [
          null,
          "Kliek om as kletskontak by te voeg"
+      ],
+      "Room name": [
+         null,
+         "Kamer naam"
+      ],
+      "Nickname": [
+         null,
+         "Bynaam"
+      ],
+      "Server": [
+         null,
+         "Bediener"
+      ],
+      "Join": [
+         null,
+         "Sluit aan"
+      ],
+      "Show rooms": [
+         null,
+         "Wys kamers"
+      ],
+      "Rooms": [
+         null,
+         "Kamers"
+      ],
+      "No rooms on %1$s": [
+         null,
+         "Geen kamers op %1$s"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "Kamers op %1$s"
       ],
       "Click to open this room": [
          null,
@@ -306,38 +382,6 @@
       "Unmoderated": [
          null,
          "Ongemodereer"
-      ],
-      "Rooms": [
-         null,
-         "Kamers"
-      ],
-      "Room name": [
-         null,
-         "Kamer naam"
-      ],
-      "Nickname": [
-         null,
-         "Bynaam"
-      ],
-      "Server": [
-         null,
-         "Bediener"
-      ],
-      "Join": [
-         null,
-         "Sluit aan"
-      ],
-      "Show rooms": [
-         null,
-         "Wys kamers"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "Geen kamers op %1$s"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "Kamers op %1$s"
       ],
       "Set chatroom topic": [
          null,
@@ -503,45 +547,41 @@
          null,
          "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "Kliek om met hierdie kontak te klets"
+         "Kliek om hierdie kontak te verwyder"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "Kliek om hierdie kontak te verwyder"
       ],
       "Click to remove this contact": [
          null,
          "Kliek om hierdie kontak te verwyder"
       ],
-      "This contact is busy": [
+      "Accept": [
          null,
-         "Hierdie persoon is besig"
+         ""
       ],
-      "This contact is online": [
+      "Decline": [
          null,
-         "Hierdie persoon is aanlyn"
+         "Aangemeld"
       ],
-      "This contact is offline": [
+      "Click to chat with this contact": [
          null,
-         "Hierdie persoon is aflyn"
-      ],
-      "This contact is unavailable": [
-         null,
-         "Hierdie persoon is onbeskikbaar"
-      ],
-      "This contact is away for an extended period": [
-         null,
-         "Hierdie persoon is vir lank afwesig"
-      ],
-      "This contact is away": [
-         null,
-         "Hierdie persoon is afwesig"
-      ],
-      "Contact requests": [
-         null,
-         "Kontak versoeke"
+         "Kliek om met hierdie kontak te klets"
       ],
       "My contacts": [
          null,
          "My kontakte"
+      ],
+      "Contact requests": [
+         null,
+         "Kontak versoeke"
       ],
       "Pending contacts": [
          null,
@@ -550,14 +590,6 @@
       "Custom status": [
          null,
          "Doelgemaakte status"
-      ],
-      "Click to change your chat status": [
-         null,
-         "Kliek om jou klets-status te verander"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "Kliek hier om jou eie statusboodskap te skryf"
       ],
       "online": [
          null,
@@ -579,9 +611,13 @@
          null,
          "Ek is %1$s"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "Teken in"
+         "Kliek hier om jou eie statusboodskap te skryf"
+      ],
+      "Click to change your chat status": [
+         null,
+         "Kliek om jou klets-status te verander"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -595,13 +631,25 @@
          null,
          "Meld aan"
       ],
+      "Sign in": [
+         null,
+         "Teken in"
+      ],
+      "Toggle chat": [
+         null,
+         ""
+      ],
+      "#~ \"Your browser needs to generate a private key, which will be used in your \"#~ \"encrypted chat session. This can take up to 30 seconds during which your \"#~ \"browser might freeze and become unresponsive.\"": [
+         null,
+         "#~ \"Die webblaaier moet 'n private sleutel vir die versleutelde klets-sessie \"#~ \"genereer. Dit kan tot 30 sekondes duur, waartydenѕ die webblaaier mag \"#~ \"vries en nie reageer nie.\""
+      ],
+      "Private key generated.": [
+         null,
+         "Private sleutel"
+      ],
       "BOSH Service URL:": [
          null,
          "BOSH bediener URL"
-      ],
-      "Online Contacts": [
-         null,
-         "Kontakte aangemeld"
       ],
       "Connected": [
          null,

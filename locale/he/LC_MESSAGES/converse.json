@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.7.0",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2014-01-28 03:50+0200",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2014-02-21 06:07+0200",
          "Last-Translator": "GreenLunar <GreenLunar@github.com>",
          "Language-Team": "Rahut <http://sourceforge.net/projects/rahut/>",
@@ -53,6 +53,10 @@
          null,
          "איש קשר זה הינו נעדר"
       ],
+      "Reconnecting": [
+         null,
+         "כעת מתחבר"
+      ],
       "Disconnected": [
          null,
          "מנותק"
@@ -89,13 +93,13 @@
          null,
          "בסס מחדש ישיבה מוצפנת"
       ],
-      "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+      "Generating private key.": [
          null,
-         "על הדפדפן שלך להפיק מפתח פרטי, אשר ישמש אותך בישיבות שיחה מוצפנות. פעולה זו יכולה לקחת למעלה מן 30 שניות אשר במהלכה הדפדפן שלך עשוי לקפוא ולהפוך לחסר תגובה."
+         ""
       ],
-      "Private key generated.": [
+      "Your browser might become unresponsive.": [
          null,
-         "מפתח פרטי הופק."
+         ""
       ],
       "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
          null,
@@ -105,33 +109,17 @@
          null,
          "לא היתה אפשרות לאמת את זהות משתמש זה."
       ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
+      ],
       "Personal message": [
          null,
          "הודעה אישית"
       ],
-      "Start encrypted conversation": [
+      "Are you sure you want to clear the messages from this room?": [
          null,
-         "התחל ישיבה מוצפנת"
-      ],
-      "Refresh encrypted conversation": [
-         null,
-         "רענן ישיבה מוצפנת"
-      ],
-      "End encrypted conversation": [
-         null,
-         "סיים ישיבה מוצפנת"
-      ],
-      "Verify with SMP": [
-         null,
-         "אמת בעזרת SMP"
-      ],
-      "Verify with fingerprints": [
-         null,
-         "אמת בעזרת טביעות אצבע"
-      ],
-      "What's this?": [
-         null,
-         "מה זה?"
+         "אינך ברשימת החברים של חדר זה"
       ],
       "me": [
          null,
@@ -148,6 +136,10 @@
       "Remove messages": [
          null,
          "הסר הודעות"
+      ],
+      "Are you sure you want to clear the messages from this chat box?": [
+         null,
+         ""
       ],
       "Your message could not be sent": [
          null,
@@ -217,9 +209,29 @@
          null,
          "האישיות שכנגד סגרה את קצה הישיבה הפרטית שלה, עליך לעשות את אותו הדבר."
       ],
-      "Contacts": [
+      "End encrypted conversation": [
          null,
-         "אנשי קשר"
+         "סיים ישיבה מוצפנת"
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         "רענן ישיבה מוצפנת"
+      ],
+      "Start encrypted conversation": [
+         null,
+         "התחל ישיבה מוצפנת"
+      ],
+      "Verify with fingerprints": [
+         null,
+         "אמת בעזרת טביעות אצבע"
+      ],
+      "Verify with SMP": [
+         null,
+         "אמת בעזרת SMP"
+      ],
+      "What's this?": [
+         null,
+         "מה זה?"
       ],
       "Online": [
          null,
@@ -237,21 +249,9 @@
          null,
          "בלתי מקוון"
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "לחץ כדי להוסיף אנשי קשר שיחה חדשים"
-      ],
-      "Add a contact": [
-         null,
-         "הוסף איש קשר"
-      ],
-      "Contact username": [
-         null,
-         "שם משתמש איש קשר"
-      ],
-      "Add": [
-         null,
-         "הוסף"
+         "אנשי קשר"
       ],
       "Contact name": [
          null,
@@ -261,6 +261,22 @@
          null,
          "חיפוש"
       ],
+      "Contact username": [
+         null,
+         "שם משתמש איש קשר"
+      ],
+      "Add": [
+         null,
+         "הוסף"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "לחץ כדי להוסיף אנשי קשר שיחה חדשים"
+      ],
+      "Add a contact": [
+         null,
+         "הוסף איש קשר"
+      ],
       "No users found": [
          null,
          "לא נמצאו משתמשים"
@@ -268,6 +284,38 @@
       "Click to add as a chat contact": [
          null,
          "לחץ כדי להוסיף בתור איש קשר שיחה"
+      ],
+      "Room name": [
+         null,
+         "שם חדר"
+      ],
+      "Nickname": [
+         null,
+         "שם כינוי"
+      ],
+      "Server": [
+         null,
+         "שרת"
+      ],
+      "Join": [
+         null,
+         "הצטרף"
+      ],
+      "Show rooms": [
+         null,
+         "הצג חדרים"
+      ],
+      "Rooms": [
+         null,
+         "חדרים"
+      ],
+      "No rooms on %1$s": [
+         null,
+         "אין חדרים על %1$s"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "חדרים על %1$s"
       ],
       "Click to open this room": [
          null,
@@ -332,38 +380,6 @@
       "Unmoderated": [
          null,
          "לא מבוקר"
-      ],
-      "Rooms": [
-         null,
-         "חדרים"
-      ],
-      "Room name": [
-         null,
-         "שם חדר"
-      ],
-      "Nickname": [
-         null,
-         "שם כינוי"
-      ],
-      "Server": [
-         null,
-         "שרת"
-      ],
-      "Join": [
-         null,
-         "הצטרף"
-      ],
-      "Show rooms": [
-         null,
-         "הצג חדרים"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "אין חדרים על %1$s"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "חדרים על %1$s"
       ],
       "Set chatroom topic": [
          null,
@@ -529,21 +545,41 @@
          null,
          "משתמש זה ﬥﬡ מסוגל לשלוח הודעות בתוך חדר זה"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "לחץ כדי לשוחח עם איש קשר זה"
+         "לחץ כדי להסיר את איש קשר זה"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "לחץ כדי להסיר את איש קשר זה"
       ],
       "Click to remove this contact": [
          null,
          "לחץ כדי להסיר את איש קשר זה"
       ],
-      "Contact requests": [
+      "Accept": [
          null,
-         "בקשות איש קשר"
+         ""
+      ],
+      "Decline": [
+         null,
+         "מקוון"
+      ],
+      "Click to chat with this contact": [
+         null,
+         "לחץ כדי לשוחח עם איש קשר זה"
       ],
       "My contacts": [
          null,
          "אנשי הקשר שלי"
+      ],
+      "Contact requests": [
+         null,
+         "בקשות איש קשר"
       ],
       "Pending contacts": [
          null,
@@ -552,14 +588,6 @@
       "Custom status": [
          null,
          "מצב מותאם"
-      ],
-      "Click to change your chat status": [
-         null,
-         "לחץ כדי לשנות את הודעת השיחה שלך"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
       ],
       "online": [
          null,
@@ -581,9 +609,13 @@
          null,
          "מצבי כעת הינו %1$s"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "התחברות"
+         "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
+      ],
+      "Click to change your chat status": [
+         null,
+         "לחץ כדי לשנות את הודעת השיחה שלך"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -596,6 +628,22 @@
       "Log In": [
          null,
          "כניסה"
+      ],
+      "Sign in": [
+         null,
+         "התחברות"
+      ],
+      "Toggle chat": [
+         null,
+         ""
+      ],
+      "#~ \"Your browser needs to generate a private key, which will be used in your \"#~ \"encrypted chat session. This can take up to 30 seconds during which your \"#~ \"browser might freeze and become unresponsive.\"": [
+         null,
+         "#~ \"על הדפדפן שלך להפיק מפתח פרטי, אשר ישמש אותך בישיבות שיחה מוצפנות. פעולה \"#~ \"זו יכולה לקחת למעלה מן 30 שניות אשר במהלכה הדפדפן שלך עשוי לקפוא ולהפוך \"#~ \"לחסר תגובה.\""
+      ],
+      "Private key generated.": [
+         null,
+         "מפתח פרטי הופק."
       ],
       "BOSH Service URL:": [
          null,

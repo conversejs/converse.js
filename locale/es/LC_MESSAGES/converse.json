@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-15 21:55+0200",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2013-09-15 21:59+0200",
          "Last-Translator": "Leonardo J. Caballero G. <leonardocaballero@gmail.com>",
          "Language-Team": "ES <LL@li.org>",
@@ -37,6 +37,34 @@
          null,
          ""
       ],
+      "This contact is busy": [
+         null,
+         ""
+      ],
+      "This contact is online": [
+         null,
+         ""
+      ],
+      "This contact is offline": [
+         null,
+         ""
+      ],
+      "This contact is unavailable": [
+         null,
+         "Esta sala ahora muestra los miembros no disponibles"
+      ],
+      "This contact is away for an extended period": [
+         null,
+         ""
+      ],
+      "This contact is away": [
+         null,
+         ""
+      ],
+      "Reconnecting": [
+         null,
+         "Conectando"
+      ],
       "Disconnected": [
          null,
          "Desconectado"
@@ -65,15 +93,19 @@
          null,
          "Desconectando"
       ],
+      "Online Contacts": [
+         null,
+         "Contactos en linea"
+      ],
       "Re-establishing encrypted session": [
          null,
          ""
       ],
-      "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+      "Generating private key.": [
          null,
          ""
       ],
-      "Private key generated.": [
+      "Your browser might become unresponsive.": [
          null,
          ""
       ],
@@ -85,33 +117,17 @@
          null,
          ""
       ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
+      ],
       "Personal message": [
          null,
          "Mensaje personal"
       ],
-      "Start encrypted conversation": [
+      "Are you sure you want to clear the messages from this room?": [
          null,
-         ""
-      ],
-      "Refresh encrypted conversation": [
-         null,
-         ""
-      ],
-      "End encrypted conversation": [
-         null,
-         ""
-      ],
-      "Verify with SMP": [
-         null,
-         ""
-      ],
-      "Verify with fingerprints": [
-         null,
-         ""
-      ],
-      "What's this?": [
-         null,
-         ""
+         "Usted no está en la lista de miembros de esta sala"
       ],
       "me": [
          null,
@@ -128,6 +144,10 @@
       "Remove messages": [
          null,
          "Eliminar mensajes"
+      ],
+      "Are you sure you want to clear the messages from this chat box?": [
+         null,
+         ""
       ],
       "Your message could not be sent": [
          null,
@@ -149,7 +169,7 @@
          null,
          ""
       ],
-      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
          null,
          ""
       ],
@@ -197,9 +217,29 @@
          null,
          ""
       ],
-      "Contacts": [
+      "End encrypted conversation": [
          null,
-         "Contactos"
+         ""
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         ""
+      ],
+      "Start encrypted conversation": [
+         null,
+         ""
+      ],
+      "Verify with fingerprints": [
+         null,
+         ""
+      ],
+      "Verify with SMP": [
+         null,
+         ""
+      ],
+      "What's this?": [
+         null,
+         ""
       ],
       "Online": [
          null,
@@ -217,21 +257,9 @@
          null,
          "Desconectado"
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "Haga clic para agregar nuevos contactos al chat"
-      ],
-      "Add a contact": [
-         null,
-         "Agregar un contacto"
-      ],
-      "Contact username": [
-         null,
-         "Nombre de usuario de contacto"
-      ],
-      "Add": [
-         null,
-         "Agregar"
+         "Contactos"
       ],
       "Contact name": [
          null,
@@ -241,6 +269,22 @@
          null,
          "Búsqueda"
       ],
+      "Contact username": [
+         null,
+         "Nombre de usuario de contacto"
+      ],
+      "Add": [
+         null,
+         "Agregar"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "Haga clic para agregar nuevos contactos al chat"
+      ],
+      "Add a contact": [
+         null,
+         "Agregar un contacto"
+      ],
       "No users found": [
          null,
          "Sin usuarios encontrados"
@@ -248,6 +292,38 @@
       "Click to add as a chat contact": [
          null,
          "Haga clic para agregar como un contacto de chat"
+      ],
+      "Room name": [
+         null,
+         "Nombre de sala"
+      ],
+      "Nickname": [
+         null,
+         "Apodo"
+      ],
+      "Server": [
+         null,
+         "Servidor"
+      ],
+      "Join": [
+         null,
+         "Unirse"
+      ],
+      "Show rooms": [
+         null,
+         "Mostrar salas"
+      ],
+      "Rooms": [
+         null,
+         "Salas"
+      ],
+      "No rooms on %1$s": [
+         null,
+         "Sin salas en %1$s"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "Salas en %1$s"
       ],
       "Click to open this room": [
          null,
@@ -312,38 +388,6 @@
       "Unmoderated": [
          null,
          "Sin moderar"
-      ],
-      "Rooms": [
-         null,
-         "Salas"
-      ],
-      "Room name": [
-         null,
-         "Nombre de sala"
-      ],
-      "Nickname": [
-         null,
-         "Apodo"
-      ],
-      "Server": [
-         null,
-         "Servidor"
-      ],
-      "Join": [
-         null,
-         "Unirse"
-      ],
-      "Show rooms": [
-         null,
-         "Mostrar salas"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "Sin salas en %1$s"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "Salas en %1$s"
       ],
       "Set chatroom topic": [
          null,
@@ -509,45 +553,41 @@
          null,
          "Este usuario NO puede enviar mensajes en esta"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "Haga clic para conversar con este contacto"
+         "Haga clic para eliminar este contacto"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "Haga clic para eliminar este contacto"
       ],
       "Click to remove this contact": [
          null,
          "Haga clic para eliminar este contacto"
       ],
-      "This contact is busy": [
+      "Accept": [
          null,
          ""
       ],
-      "This contact is online": [
+      "Decline": [
          null,
-         ""
+         "En linea"
       ],
-      "This contact is offline": [
+      "Click to chat with this contact": [
          null,
-         ""
-      ],
-      "This contact is unavailable": [
-         null,
-         "Esta sala ahora muestra los miembros no disponibles"
-      ],
-      "This contact is away for an extended period": [
-         null,
-         ""
-      ],
-      "This contact is away": [
-         null,
-         ""
-      ],
-      "Contact requests": [
-         null,
-         "Solicitudes de contacto"
+         "Haga clic para conversar con este contacto"
       ],
       "My contacts": [
          null,
          "Mi contactos"
+      ],
+      "Contact requests": [
+         null,
+         "Solicitudes de contacto"
       ],
       "Pending contacts": [
          null,
@@ -556,14 +596,6 @@
       "Custom status": [
          null,
          "Personalice estatus"
-      ],
-      "Click to change your chat status": [
-         null,
-         "Haga clic para cambiar su estatus de chat"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "Haga clic para escribir un mensaje de estatus personalizado"
       ],
       "online": [
          null,
@@ -585,9 +617,13 @@
          null,
          "Yo soy %1$s"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "Registro"
+         "Haga clic para escribir un mensaje de estatus personalizado"
+      ],
+      "Click to change your chat status": [
+         null,
+         "Haga clic para cambiar su estatus de chat"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -601,13 +637,17 @@
          null,
          "Iniciar sesión"
       ],
+      "Sign in": [
+         null,
+         "Registro"
+      ],
+      "Toggle chat": [
+         null,
+         ""
+      ],
       "BOSH Service URL:": [
          null,
          "URL del servicio BOSH:"
-      ],
-      "Online Contacts": [
-         null,
-         "Contactos en linea"
       ],
       "Connected": [
          null,

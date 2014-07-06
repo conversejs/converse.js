@@ -3,7 +3,7 @@
       "": {
          "Project-Id-Version": "Converse.js 0.4",
          "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2013-09-15 21:55+0200",
+         "POT-Creation-Date": "2014-07-06 17:58+0200",
          "PO-Revision-Date": "2013-09-15 22:03+0200",
          "Last-Translator": "Maarten Kling <maarten@fourdigits.nl>",
          "Language-Team": "Dutch",
@@ -31,6 +31,34 @@
       "finished": [
          null,
          "klaar"
+      ],
+      "This contact is busy": [
+         null,
+         "Contact is bezet"
+      ],
+      "This contact is online": [
+         null,
+         "Contact is online"
+      ],
+      "This contact is offline": [
+         null,
+         "Contact is offline"
+      ],
+      "This contact is unavailable": [
+         null,
+         "Contact is niet beschikbaar"
+      ],
+      "This contact is away for an extended period": [
+         null,
+         "Contact is afwezig voor lange periode"
+      ],
+      "This contact is away": [
+         null,
+         "Conact is afwezig"
+      ],
+      "Reconnecting": [
+         null,
+         "Verbinden"
       ],
       "Disconnected": [
          null,
@@ -60,17 +88,21 @@
          null,
          ""
       ],
+      "Online Contacts": [
+         null,
+         "Online Contacten"
+      ],
       "Re-establishing encrypted session": [
          null,
          "Bezig versleutelde sessie te herstellen"
       ],
-      "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
+      "Generating private key.": [
          null,
          ""
       ],
-      "Private key generated.": [
+      "Your browser might become unresponsive.": [
          null,
-         "Private key gegenereerd."
+         ""
       ],
       "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
          null,
@@ -80,33 +112,17 @@
          null,
          "Niet kon de identiteit van deze gebruiker niet identificeren."
       ],
+      "Exchanging private key with buddy.": [
+         null,
+         ""
+      ],
       "Personal message": [
          null,
          "Persoonlijk bericht"
       ],
-      "Start encrypted conversation": [
+      "Are you sure you want to clear the messages from this room?": [
          null,
-         "Start encrypted gesprek"
-      ],
-      "Refresh encrypted conversation": [
-         null,
-         "Ververs encrypted gesprek"
-      ],
-      "End encrypted conversation": [
-         null,
-         "Beeindig encrypted gesprek"
-      ],
-      "Verify with SMP": [
-         null,
-         ""
-      ],
-      "Verify with fingerprints": [
-         null,
-         ""
-      ],
-      "What's this?": [
-         null,
-         "Wat is dit?"
+         "Je bent niet een gebruiker van deze room"
       ],
       "me": [
          null,
@@ -123,6 +139,10 @@
       "Remove messages": [
          null,
          "Verwijder bericht"
+      ],
+      "Are you sure you want to clear the messages from this chat box?": [
+         null,
+         ""
       ],
       "Your message could not be sent": [
          null,
@@ -144,7 +164,7 @@
          null,
          ""
       ],
-      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
+      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
          null,
          ""
       ],
@@ -192,9 +212,29 @@
          null,
          ""
       ],
-      "Contacts": [
+      "End encrypted conversation": [
          null,
-         "Contacten"
+         "Beeindig encrypted gesprek"
+      ],
+      "Refresh encrypted conversation": [
+         null,
+         "Ververs encrypted gesprek"
+      ],
+      "Start encrypted conversation": [
+         null,
+         "Start encrypted gesprek"
+      ],
+      "Verify with fingerprints": [
+         null,
+         ""
+      ],
+      "Verify with SMP": [
+         null,
+         ""
+      ],
+      "What's this?": [
+         null,
+         "Wat is dit?"
       ],
       "Online": [
          null,
@@ -212,21 +252,9 @@
          null,
          ""
       ],
-      "Click to add new chat contacts": [
+      "Contacts": [
          null,
-         "Klik om nieuwe contacten toe te voegen"
-      ],
-      "Add a contact": [
-         null,
-         "Voeg contact toe"
-      ],
-      "Contact username": [
-         null,
-         "Contact gebruikernaam"
-      ],
-      "Add": [
-         null,
-         "Toevoegen"
+         "Contacten"
       ],
       "Contact name": [
          null,
@@ -236,6 +264,22 @@
          null,
          "Zoeken"
       ],
+      "Contact username": [
+         null,
+         "Contact gebruikernaam"
+      ],
+      "Add": [
+         null,
+         "Toevoegen"
+      ],
+      "Click to add new chat contacts": [
+         null,
+         "Klik om nieuwe contacten toe te voegen"
+      ],
+      "Add a contact": [
+         null,
+         "Voeg contact toe"
+      ],
       "No users found": [
          null,
          "Geen gebruikers gevonden"
@@ -243,6 +287,38 @@
       "Click to add as a chat contact": [
          null,
          "Klik om contact toe te voegen"
+      ],
+      "Room name": [
+         null,
+         "Room naam"
+      ],
+      "Nickname": [
+         null,
+         "Nickname"
+      ],
+      "Server": [
+         null,
+         "Server"
+      ],
+      "Join": [
+         null,
+         "Deelnemen"
+      ],
+      "Show rooms": [
+         null,
+         "Toon rooms"
+      ],
+      "Rooms": [
+         null,
+         "Rooms"
+      ],
+      "No rooms on %1$s": [
+         null,
+         "Geen room op %1$s"
+      ],
+      "Rooms on %1$s": [
+         null,
+         "Room op %1$s"
       ],
       "Click to open this room": [
          null,
@@ -307,38 +383,6 @@
       "Unmoderated": [
          null,
          "Niet gemodereerd"
-      ],
-      "Rooms": [
-         null,
-         "Rooms"
-      ],
-      "Room name": [
-         null,
-         "Room naam"
-      ],
-      "Nickname": [
-         null,
-         "Nickname"
-      ],
-      "Server": [
-         null,
-         "Server"
-      ],
-      "Join": [
-         null,
-         "Deelnemen"
-      ],
-      "Show rooms": [
-         null,
-         "Toon rooms"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "Geen room op %1$s"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "Room op %1$s"
       ],
       "Set chatroom topic": [
          null,
@@ -504,45 +548,41 @@
          null,
          "Deze gebruiker kan NIET een bericht sturen in deze room"
       ],
-      "Click to chat with this contact": [
+      "Click to restore this chat": [
          null,
-         "Klik om te chatten met contact"
+         "Klik om contact te verwijderen"
+      ],
+      "Minimized": [
+         null,
+         ""
+      ],
+      "Are you sure you want to remove this contact?": [
+         null,
+         "Klik om contact te verwijderen"
       ],
       "Click to remove this contact": [
          null,
          "Klik om contact te verwijderen"
       ],
-      "This contact is busy": [
+      "Accept": [
          null,
-         "Contact is bezet"
+         ""
       ],
-      "This contact is online": [
+      "Decline": [
          null,
-         "Contact is online"
+         "Online"
       ],
-      "This contact is offline": [
+      "Click to chat with this contact": [
          null,
-         "Contact is offline"
-      ],
-      "This contact is unavailable": [
-         null,
-         "Contact is niet beschikbaar"
-      ],
-      "This contact is away for an extended period": [
-         null,
-         "Contact is afwezig voor lange periode"
-      ],
-      "This contact is away": [
-         null,
-         "Conact is afwezig"
-      ],
-      "Contact requests": [
-         null,
-         "Contact uitnodiging"
+         "Klik om te chatten met contact"
       ],
       "My contacts": [
          null,
          "Mijn contacts"
+      ],
+      "Contact requests": [
+         null,
+         "Contact uitnodiging"
       ],
       "Pending contacts": [
          null,
@@ -551,14 +591,6 @@
       "Custom status": [
          null,
          ""
-      ],
-      "Click to change your chat status": [
-         null,
-         "Klik hier om status te wijzigen"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "Klik hier om custom status bericht te maken"
       ],
       "online": [
          null,
@@ -580,9 +612,13 @@
          null,
          "Ik ben %1$s"
       ],
-      "Sign in": [
+      "Click here to write a custom status message": [
          null,
-         "Aanmelden"
+         "Klik hier om custom status bericht te maken"
+      ],
+      "Click to change your chat status": [
+         null,
+         "Klik hier om status te wijzigen"
       ],
       "XMPP/Jabber Username:": [
          null,
@@ -596,13 +632,17 @@
          null,
          "Aanmelden"
       ],
-      "BOSH Service URL:": [
+      "Sign in": [
+         null,
+         "Aanmelden"
+      ],
+      "Toggle chat": [
          null,
          ""
       ],
-      "Online Contacts": [
+      "Private key generated.": [
          null,
-         "Online Contacten"
+         "Private key gegenereerd."
       ],
       "%1$s is typing": [
          null,

@@ -1,15 +1,15 @@
-# Language JA translations for Converse.js package.
+# Language ZH translations for Converse.js package.
 # Copyright (C) 2013 Jan-Carel Brand
 # This file is distributed under the same license as the Converse.js package.
-# Mako N <mako@pasero.net>, 2014.
+# Huxisuz Hu <huxisuz@gmail.com>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-06 17:58+0200\n"
-"PO-Revision-Date: 2014-01-07 11:32+0900\n"
-"Last-Translator: Mako N <mako@pasero.net>\n"
+"PO-Revision-Date: 2014-07-06 18:05+0200\n"
+"Last-Translator: Huxisuz Hu <huxisuz@gmail.com>\n"
 "Language-Team: Language zh\n"
 "Language: zh\n"
 "MIME-Version: 1.0\n"

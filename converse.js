@@ -1319,7 +1319,10 @@
                 return this;
             },
 
-            close: function () {
+            close: function (ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
                 if (converse.connection) {
                     this.model.destroy();
                 } else {
@@ -1339,6 +1342,9 @@
             },
 
             minimize: function (ev) {
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                }
                 // Minimizes a chat box
                 this.model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);

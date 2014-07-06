@@ -2,8 +2,6 @@
 <a class="chat-head-message-count" 
     {[ if (!num_unread) { ]} style="display: none" {[ } ]}
     href="#">{{num_unread}}</a>
-<div class="chat-title">
-    <a href="#" class="restore-chat" title="{{tooltip}}">
-        {{ title }}
-    </a>
-</div>
+<a href="#" class="restore-chat" title="{{tooltip}}">
+    {{ title }}
+</a>

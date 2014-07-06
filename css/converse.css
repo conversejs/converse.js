@@ -755,6 +755,7 @@ input.error {
   float: left;
   margin-right: 6px;
 }
+#conversejs .restore-chat,
 #conversejs .chat-title {
   padding: 1px 0;
   color: white;

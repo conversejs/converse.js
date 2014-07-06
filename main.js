@@ -4,6 +4,8 @@ config = {
         "jquery": "components/jquery/dist/jquery",
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
+        "bootstrap": "components/bootstrap/dist/js/bootstrap",                  // XXX: Only required for https://conversejs.org website
         "locales": "locale/locales",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
@@ -59,6 +61,7 @@ config = {
             exports: 'Backbone'
         },
         'underscore':           { exports: '_' },
+        'bootstrap':            { deps: ['jquery'] },
         'crypto.aes':           { deps: ['crypto.cipher-core'] },
         'crypto.cipher-core':   { deps: ['crypto.enc-base64', 'crypto.evpkdf'] },
         'crypto.enc-base64':    { deps: ['crypto.core'] },
@@ -71,6 +74,7 @@ config = {
         'crypto.sha256':        { deps: ['crypto.core'] },
         'jquery.tinysort':      { deps: ['jquery'] },
         'jquery.browser':       { deps: ['jquery'] },
+        'jquery.easing':        { deps: ['jquery'] },
         'strophe':              { deps: ['jquery'] },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe', 'jquery'] },
@@ -79,9 +83,32 @@ config = {
     }
 };
 
+var initializeEasing = function () {
+    /* XXX: This function initializes jquery.easing for the https://conversejs.org
+     * website. This code is only useful in the context of the converse.js
+     * website and converse.js itself is not dependent on it.
+     */
+    $(window).scroll(function() {
+        if ($(".navbar").offset().top > 50) {
+            $(".navbar-fixed-top").addClass("top-nav-collapse");
+        } else {
+            $(".navbar-fixed-top").removeClass("top-nav-collapse");
+        }
+    });
+    //jQuery for page scrolling feature - requires jQuery Easing plugin
+    $('.page-scroll a').bind('click', function(event) {
+        var $anchor = $(this);
+        $('html, body').stop().animate({
+            scrollTop: $($anchor.attr('href')).offset().top
+        }, 700, 'easeInOutExpo');
+        event.preventDefault();
+    });
+};
+
 if (typeof(require) !== 'undefined') {
     require.config(config);
-    require(["jquery", "converse"], function(require, $, converse) {
+    require(["jquery", "converse"], function($, converse) {
         window.converse = converse;
+        initializeEasing(); // Only for https://conversejs.org website
     });
 }

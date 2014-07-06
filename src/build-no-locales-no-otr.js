@@ -17,7 +17,7 @@
         "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
-        "backbone.localStorage": "components/backbone.localStorage/backbone.localStorage",
+        "backbone.browserStorage": "components/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview": "components/backbone.overview/backbone.overview",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",

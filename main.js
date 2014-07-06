@@ -36,7 +36,7 @@ config = {
         "eventemitter": "components/otr/build/dep/eventemitter",
         "moment": "components/momentjs/moment",
         "otr": "components/otr/build/otr",
-        "converse-dependencies": "src/deps-full"
+        "converse-dependencies": "src/deps-website"
     },
 
     tpl: {

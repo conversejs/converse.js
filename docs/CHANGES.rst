@@ -9,6 +9,7 @@ Changelog
     2. Configuration options for the chat toolbar have changed.
        Please refer to the `relevant documentation <http://devbox:8890/docs/html/index.html#visible-toolbar-buttons>`_.
 
+* Simplified Chinese Translations [Lancelot]
 * No initial HTML markup is now needed in the document body for converse.js to work. [jcbrand]
 * All date handling is now done with moment.js. [jcbrand]
 * Add a new toolbar button for clearing chat messages. [jcbrand]

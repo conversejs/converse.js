@@ -21,7 +21,8 @@
             "ja": "locale/ja/LC_MESSAGES/ja",
             "nl": "locale/nl/LC_MESSAGES/nl",
             "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR",
-            "ru": "locale/ru/LC_MESSAGES/ru"
+            "ru": "locale/ru/LC_MESSAGES/ru",
+            "zh": "locale/zh/LC_MESSAGES/zh"
         }
     });
 
@@ -39,8 +40,9 @@
         'ja',
         'nl',
         'pt_BR',
-        'ru'
-        ], function (jed, af, de, en, es, fr, he, hu, id, it, ja, nl, pt_BR, ru) {
+        'ru',
+        'zh'
+        ], function (jed, af, de, en, es, fr, he, hu, id, it, ja, nl, pt_BR, ru, zh) {
             root.locales = {
                 'af': af,
                 'de': de,
@@ -54,7 +56,8 @@
                 'ja': ja,
                 'nl': nl,
                 'pt-br': pt_BR,
-                'ru': ru
+                'ru': ru,
+                'zh':zh
             };
         });
 })(this);

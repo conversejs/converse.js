@@ -2432,8 +2432,9 @@
                     add: true,
                     success: $.proxy(function (collection, resp) {
                         if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
-                            // If the controlbox was saved in localstorage, it must be visible
-                            this.get('controlbox').trigger('show');
+                            if (converse.show_controlbox_by_default) {
+                                this.get('controlbox').trigger('show');
+                            }
                         }
                     }, this)
                 });

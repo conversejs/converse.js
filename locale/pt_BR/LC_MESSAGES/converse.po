@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-06 17:58+0200\n"
-"PO-Revision-Date: 2013-09-15 22:02+0200\n"
-"Last-Translator: Sergio Oliveira <sergio@tracy.com.br>\n"
+"PO-Revision-Date: 2014-07-07 11:02+0200\n"
+"Last-Translator: Alan Meira <alan@engarte.com>\n"
 "Language-Team: Brazilian Portuguese\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -22,19 +22,19 @@ msgstr ""
 
 #: converse.js:260
 msgid "unencrypted"
-msgstr ""
+msgstr "não-criptografado"
 
 #: converse.js:261
 msgid "unverified"
-msgstr ""
+msgstr "não-verificado"
 
 #: converse.js:262
 msgid "verified"
-msgstr ""
+msgstr "verificado"
 
 #: converse.js:263
 msgid "finished"
-msgstr ""
+msgstr "finalizado"
 
 #: converse.js:266
 msgid "This contact is busy"
@@ -99,15 +99,15 @@ msgstr "Contatos online"
 
 #: converse.js:699
 msgid "Re-establishing encrypted session"
-msgstr ""
+msgstr "Reestabelecendo sessão criptografada"
 
 #: converse.js:711
 msgid "Generating private key."
-msgstr ""
+msgstr "Gerando chave-privada."
 
 #: converse.js:712
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "Seu navegador pode parar de responder."
 
 #: converse.js:747
 msgid ""
@@ -118,14 +118,20 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
+"Pedido de autenticação de %1$s\n"
+"\n"
+"Seu contato está tentando verificar sua identidade, perguntando a questã "
+"abaixo.\n"
+"\n"
+"%2$s"
 
 #: converse.js:756
 msgid "Could not verify this user's identify."
-msgstr ""
+msgstr "Não foi possível verificar a identidade deste usuário."
 
 #: converse.js:795
 msgid "Exchanging private key with buddy."
-msgstr ""
+msgstr "Trocando chave-privada com o contato."
 
 #: converse.js:935
 msgid "Personal message"
@@ -154,23 +160,23 @@ msgstr "Remover mensagens"
 
 #: converse.js:1164
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "Tem certeza que deseja limpar as mensagens dessa caixa?"
 
 #: converse.js:1199
 msgid "Your message could not be sent"
-msgstr ""
+msgstr "Sua mensagem não pode ser enviada"
 
 #: converse.js:1202
 msgid "We received an unencrypted message"
-msgstr ""
+msgstr "Recebemos uma mensagem não-criptografada"
 
 #: converse.js:1205
 msgid "We received an unreadable encrypted message"
-msgstr ""
+msgstr "Recebemos uma mensagem não-criptografada ilegível"
 
 #: converse.js:1214
 msgid "This user has requested an encrypted session."
-msgstr ""
+msgstr "Usuário pediu uma sessão criptografada."
 
 #: converse.js:1236
 msgid ""
@@ -184,6 +190,15 @@ msgid ""
 "If you have confirmed that the fingerprints match, click OK, otherwise click "
 "Cancel."
 msgstr ""
+"Aqui estão as assinaturas digitais, por favor confirme elas com %1$s, "
+"fora deste chat.\n"
+"\n"
+"Assinatura para você, %2$s: %3$s\n"
+"\n"
+"Assinatura para %1$s: %4$s\n"
+"\n"
+"Se você tiver confirmado que as assinaturas conferem, clique OK, "
+"caso contrário, clique Cancelar."
 
 #: converse.js:1249
 msgid ""
@@ -193,78 +208,86 @@ msgid ""
 "Your buddy will then be prompted the same question and if they type the "
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
+"Será solicitado que você informe uma pergunta de segurança e "
+"também uma resposta.\n"
+"\n"
+"Nós iremos, então, transfeir a pergunta para seu contato "
+"e caso ele envie corretamente a mesma resposta (caso sensitivo), "
+"a identidade dele será verificada."
 
 #: converse.js:1250
 msgid "What is your security question?"
-msgstr ""
+msgstr "Qual é a sua pergunta de segurança?"
 
 #: converse.js:1252
 msgid "What is the answer to the security question?"
-msgstr ""
+msgstr "Qual é a resposta para a pergunta de segurança?"
 
 #: converse.js:1256
 msgid "Invalid authentication scheme provided"
-msgstr ""
+msgstr "Schema de autenticação fornecido é inválido"
 
 #: converse.js:1372
 msgid "Your messages are not encrypted anymore"
-msgstr ""
+msgstr "Suas mensagens não estão mais criptografadas"
 
 #: converse.js:1374
 msgid ""
 "Your messages are now encrypted but your buddy's identity has not been "
 "verified."
 msgstr ""
+"Suas mensagens estão agora criptografadas mas a identidade do contato"
+"não foi confirmada."
 
 #: converse.js:1376
 msgid "Your buddy's identify has been verified."
-msgstr ""
+msgstr "A identidade do contato foi verificada."
 
 #: converse.js:1378
 msgid "Your buddy has ended encryption on their end, you should do the same."
-msgstr ""
+msgstr "Seu contato parou de usar criptografia, você deveria fazer o mesmo."
 
 #: converse.js:1387
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
-msgstr ""
+msgstr "Suas mensagens não estão criptografadas. Clique aqui para habilitar criptografia OTR."
 
 #: converse.js:1389
 msgid "Your messages are encrypted, but your buddy has not been verified."
-msgstr ""
+msgstr "Suas mensagens estão criptografadas, mas seu contato não foi verificado."
 
 #: converse.js:1391
 msgid "Your messages are encrypted and your buddy verified."
-msgstr ""
+msgstr "Suas mensagens estão criptografadas e seu contato verificado."
 
 #: converse.js:1393
 msgid ""
 "Your buddy has closed their end of the private session, you should do the "
 "same"
-msgstr ""
+msgstr "Seu contato fechou a sessão privada, você deveria fazer o mesmo"
 
 #: converse.js:1403
 msgid "End encrypted conversation"
-msgstr ""
+msgstr "Finalizar conversa criptografada"
 
 #: converse.js:1404
 msgid "Refresh encrypted conversation"
-msgstr ""
+msgstr "Atualizar conversa criptografada"
 
 #: converse.js:1405
 msgid "Start encrypted conversation"
-msgstr ""
+msgstr "Iniciar conversa criptografada"
 
 #: converse.js:1406
 msgid "Verify with fingerprints"
-msgstr ""
+msgstr "Verificar com assinatura digital"
 
 #: converse.js:1407
 msgid "Verify with SMP"
-msgstr ""
+msgstr "Verificar com SMP"
 
 #: converse.js:1408
 msgid "What's this?"
-msgstr ""
+msgstr "O que é isso?"
 
 #: converse.js:1498
 msgid "Online"
@@ -596,7 +619,7 @@ msgstr "Clique para remover o contato"
 
 #: converse.js:2777
 msgid "Minimized"
-msgstr ""
+msgstr "Minimizado"
 
 #: converse.js:2832
 #, fuzzy
@@ -609,12 +632,12 @@ msgstr "Clique para remover o contato"
 
 #: converse.js:2889
 msgid "Accept"
-msgstr ""
+msgstr "Aceitar"
 
 #: converse.js:2890
 #, fuzzy
 msgid "Decline"
-msgstr "Online"
+msgstr "Rejeitar"
 
 #: converse.js:2899
 msgid "Click to chat with this contact"
@@ -684,7 +707,7 @@ msgstr "Conectar-se"
 
 #: converse.js:3693
 msgid "Toggle chat"
-msgstr ""
+msgstr "Alternar bate-papo"
 
 #~ msgid "BOSH Service URL:"
 #~ msgstr "URL de serviço BOSH:"

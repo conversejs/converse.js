@@ -7,8 +7,8 @@
                     "Project-Id-Version": "Converse.js 0.6.3",
                     "Report-Msgid-Bugs-To": "",
                     "POT-Creation-Date": "2013-09-15 21:55+0200",
-                    "PO-Revision-Date": "2013-09-15 22:02+0200",
-                    "Last-Translator": "Sergio Oliveira <sergio@tracy.com.br>",
+                    "PO-Revision-Date": "2014-07-07 11:02+0200",
+                    "Last-Translator": "Alan Meira <alan@engarte.com>",
                     "Language-Team": "Brazilian Portuguese",
                     "Language": "pt_BR",
                     "MIME-Version": "1.0",
@@ -21,19 +21,19 @@
                 },
                 "unencrypted": [
                     null,
-                    ""
+                    "não-criptografado"
                 ],
                 "unverified": [
                     null,
-                    ""
+                    "não-verificado"
                 ],
                 "verified": [
                     null,
-                    ""
+                    "não-verificado"
                 ],
                 "finished": [
                     null,
-                    ""
+                    "finalizado"
                 ],
                 "Disconnected": [
                     null,
@@ -65,23 +65,23 @@
                 ],
                 "Re-establishing encrypted session": [
                     null,
-                    ""
+                    "Reestabelecendo sessão criptografada"
                 ],
                 "Your browser needs to generate a private key, which will be used in your encrypted chat session. This can take up to 30 seconds during which your browser might freeze and become unresponsive.": [
                     null,
-                    ""
+                    "Seu navegador precisa gerar uma chave-privada, que será usada em sua sessão criptografada de bate-papo. Isso pode levar até 30 segundos durante os quais seu navegador poderá se travar ou não responder."
                 ],
                 "Private key generated.": [
                     null,
-                    ""
+                    "Chave-privada gerada:"
                 ],
                 "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
                     null,
-                    ""
+                    "Pedido de autenticação de %$s\n\nSeu contato está tentando verificar sua identidade, perguntando a questão abaixo.\n\n%2$s"
                 ],
                 "Could not verify this user's identify.": [
                     null,
-                    ""
+                    "Não foi possível verificar a identidade deste usuário."
                 ],
                 "Personal message": [
                     null,
@@ -89,27 +89,27 @@
                 ],
                 "Start encrypted conversation": [
                     null,
-                    ""
+                    "Iniciar conversa criptografada"
                 ],
                 "Refresh encrypted conversation": [
                     null,
-                    ""
+                    "Atualizar conversa criptografada"
                 ],
                 "End encrypted conversation": [
                     null,
-                    ""
+                    "Finalizar conversa criptografada"
                 ],
                 "Verify with SMP": [
                     null,
-                    ""
+                    "Verificar com SMP"
                 ],
                 "Verify with fingerprints": [
                     null,
-                    ""
+                    "Verificar com assinatura digital"
                 ],
                 "What's this?": [
                     null,
-                    ""
+                    "O que é isso?"
                 ],
                 "me": [
                     null,
@@ -129,71 +129,71 @@
                 ],
                 "Your message could not be sent": [
                     null,
-                    ""
+                    "Sua mensagem não pôde ser enviada"
                 ],
                 "We received an unencrypted message": [
                     null,
-                    ""
+                    "Recebemos uma mensagem não-criptografada"
                 ],
                 "We received an unreadable encrypted message": [
                     null,
-                    ""
+                    "Recebemos uma mensagem não-criptografada ilegível"
                 ],
                 "This user has requested an encrypted session.": [
                     null,
-                    ""
+                    "Usuário pediu uma sessão criptografada."
                 ],
                 "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
                     null,
-                    ""
+                    "Aqui estão as assinaturas digitais, por favor confirme elas com %1$s, fora deste chat.\n\nAssinaturas para você, %2$s: %3$s\n\nAssinaturas para %1$s: %4$s\n\nSe você tiver confirmado que as assinaturas conferem, clique OK, caso contrário, clique Cancel."
                 ],
                 "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will have been verified.": [
                     null,
-                    ""
+                    "Será solicitado que você informe uma pergunta de segurança e também uma resposta.\n\nNós iremos, então, transfeir a pergunta para seu contato e caso ele envie corretamente a mesma resposta (caso sensitivo), a identidade dele será verificada."
                 ],
                 "What is your security question?": [
                     null,
-                    ""
+                    "Qual é a sua pergunta de segurança?"
                 ],
                 "What is the answer to the security question?": [
                     null,
-                    ""
+                    "Qual é a resposta para a pergunta de segurança?"
                 ],
                 "Invalid authentication scheme provided": [
                     null,
-                    ""
+                    "Schema de autenticação fornecido é inválido"
                 ],
                 "Your messages are not encrypted anymore": [
                     null,
-                    ""
+                    "Suas mensagens não estão mais criptografadas"
                 ],
                 "Your messages are now encrypted but your buddy's identity has not been verified.": [
                     null,
-                    ""
+                    "Suas mensagens estão agora criptografadas mas a identidade do contato não foi confirmada."
                 ],
                 "Your buddy's identify has been verified.": [
                     null,
-                    ""
+                    "A identidade do contato foi verificada."
                 ],
                 "Your buddy has ended encryption on their end, you should do the same.": [
                     null,
-                    ""
+                    "Seu contato parou de usar criptografia, você deveria fazer o mesmo."
                 ],
                 "Your messages are not encrypted. Click here to enable OTR encryption.": [
                     null,
-                    ""
+                    "Suas mensagens não estão criptografadas. Clique aqui para habilitar criptografia OTR."
                 ],
                 "Your messages are encrypted, but your buddy has not been verified.": [
                     null,
-                    ""
+                    "Suas mensagens estão criptografadas, mas seu contato não foi verificado."
                 ],
                 "Your messages are encrypted and your buddy verified.": [
                     null,
-                    ""
+                    "Suas mensagens estão criptografadas e seu contato verificado."
                 ],
                 "Your buddy has closed their end of the private session, you should do the same": [
                     null,
-                    ""
+                    "Seu contato fechou a sessão privada, você deveria fazer o mesmo"
                 ],
                 "Contacts": [
                     null,
@@ -636,4 +636,3 @@
       return i18n;
   })
 );
-      

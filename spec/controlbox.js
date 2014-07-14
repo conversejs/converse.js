@@ -34,7 +34,7 @@
             runs(function () {
                 expect(this.controlboxtoggle.onClick).toHaveBeenCalled();
                 expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
-                expect(this.emit).toHaveBeenCalledWith('onControlBoxOpened', jasmine.any(Object));
+                expect(this.emit).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
                 expect($("div#controlbox").is(':visible')).toBe(true);
             }.bind(converse));
         }, converse));
@@ -67,7 +67,7 @@
                     view.initialize(); // Rebind events for spy
                     $(view.$el.find('.dropdown dd ul li a')[1]).click(); // Change status to "dnd"
                     expect(view.setStatus).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onStatusChanged', 'dnd');
+                    expect(converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
                 });
                 waits(250);
                 runs($.proxy(function () {
@@ -97,7 +97,7 @@
                 runs (function () {
                     view.$el.find('form#set-custom-xmpp-status').submit();
                     expect(view.setStatusMessage).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onStatusMessageChanged', msg);
+                    expect(converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
                     expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
                     expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
                 });
@@ -143,7 +143,7 @@
                 }, converse));
                 waits(300);
                 runs($.proxy(function () {
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     expect(this.rosterview.$el.is(':visible')).toEqual(true);
                     expect(this.rosterview.render).toHaveBeenCalled();
                 }, converse));
@@ -165,7 +165,7 @@
                 expect(this.rosterview.model.remove).toHaveBeenCalled();
                 // The element must now be detached from the DOM.
                 expect(view.$el.closest('html').length).toBeFalsy();
-                expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
             }, converse));
 
             it("will lose their own heading once the last one has been removed", $.proxy(function () {
@@ -193,7 +193,7 @@
                         is_last: is_last
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').find('span').text();
                     expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
@@ -233,7 +233,7 @@
                         is_last: i===(mock.cur_names.length-1)
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -256,7 +256,7 @@
                     item.set('chat_status', 'online');
                     expect(view.render).toHaveBeenCalled();
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -275,7 +275,7 @@
                     item.set('chat_status', 'dnd');
                     expect(view.render).toHaveBeenCalled();
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -294,7 +294,7 @@
                     item.set('chat_status', 'away');
                     expect(view.render).toHaveBeenCalled();
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -313,7 +313,7 @@
                     item.set('chat_status', 'xa');
                     expect(view.render).toHaveBeenCalled();
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -332,7 +332,7 @@
                     item.set('chat_status', 'unavailable');
                     expect(view.render).toHaveBeenCalled();
                     expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0, i+1).sort().join(''));
@@ -430,7 +430,7 @@
                     // When a requesting contact is added, the controlbox must
                     // be opened.
                     expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                 }
             }, converse));
 
@@ -466,7 +466,7 @@
                 expect(view.declineRequest).toHaveBeenCalled();
                 expect(this.rosterview.removeRosterItemView).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                expect(converse.emit).toHaveBeenCalledWith('onRosterViewUpdated');
+                expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                 // There should now be one less contact
                 expect(this.roster.length).toEqual(mock.req_names.length-1);
             }, converse));

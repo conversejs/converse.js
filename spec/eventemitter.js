@@ -14,24 +14,24 @@
         it("allows you to subscribe to emitted events", function () {
             this.callback = function () {};
             spyOn(this, 'callback');
-            converse.on('onInitialized', this.callback);
-            converse.emit('onInitialized');
+            converse.on('initialized', this.callback);
+            converse.emit('initialized');
             expect(this.callback).toHaveBeenCalled();
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback.callCount, 2);
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback.callCount, 3);
         });
 
         it("allows you to listen once for an emitted event", function () {
             this.callback = function () {};
             spyOn(this, 'callback');
-            converse.once('onInitialized', this.callback);
-            converse.emit('onInitialized');
+            converse.once('initialized', this.callback);
+            converse.emit('initialized');
             expect(this.callback).toHaveBeenCalled();
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback.callCount, 1);
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback.callCount, 1);
         });
 
@@ -43,23 +43,23 @@
             spyOn(this, 'callback');
             spyOn(this, 'anotherCallback');
             spyOn(this, 'neverCalled');
-            converse.on('onInitialized', this.callback);
-            converse.on('onInitialized', this.anotherCallback);
+            converse.on('initialized', this.callback);
+            converse.on('initialized', this.anotherCallback);
 
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback).toHaveBeenCalled();
             expect(this.anotherCallback).toHaveBeenCalled();
 
-            converse.off('onInitialized', this.callback);
+            converse.off('initialized', this.callback);
 
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback.callCount, 1);
             expect(this.anotherCallback.callCount, 2);
 
-            converse.once('onInitialized', this.neverCalled);
-            converse.off('onInitialized', this.neverCalled);
+            converse.once('initialized', this.neverCalled);
+            converse.off('initialized', this.neverCalled);
 
-            converse.emit('onInitialized');
+            converse.emit('initialized');
             expect(this.callback.callCount, 1);
             expect(this.anotherCallback.callCount, 3);
             expect(this.neverCalled).not.toHaveBeenCalled();

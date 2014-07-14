@@ -85,7 +85,7 @@
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-message-content').text()).toBe(text);
-                expect(converse.emit).toHaveBeenCalledWith('onMessage', message.nodeTree);
+                expect(converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
             }, converse));
 
             it("shows sent groupchat messages", $.proxy(function () {
@@ -96,7 +96,7 @@
                 var text = 'This is a sent message';
                 view.$el.find('.chat-textarea').text(text);
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(converse.emit).toHaveBeenCalledWith('onMessageSend', text);
+                expect(converse.emit).toHaveBeenCalledWith('messageSend', text);
 
                 var message = $msg({
                     from: 'lounge@muc.localhost/dummy',
@@ -152,7 +152,7 @@
                 waits(50);
                 runs(function () {
                     expect(view.minimize).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxMinimized', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
                     expect(view.$el.is(':visible')).toBeFalsy();
                     expect(view.model.get('minimized')).toBeTruthy();
@@ -163,7 +163,7 @@
                 waits(250);
                 runs(function () {
                     expect(view.maximize).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxMaximized', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                     expect(view.$el.is(':visible')).toBeTruthy();
                     expect(view.model.get('minimized')).toBeFalsy();
                     expect(converse.emit.callCount, 3);
@@ -184,7 +184,7 @@
                 runs(function () {
                     expect(view.close).toHaveBeenCalled();
                     expect(this.connection.muc.leave).toHaveBeenCalled();
-                    expect(this.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(this.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 }.bind(converse));
             }, converse));
         }, converse));

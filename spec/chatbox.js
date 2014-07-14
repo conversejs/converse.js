@@ -162,14 +162,14 @@
                 waits(250);
                 runs(function () {
                     expect(controlview.close).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                     expect(converse.emit.callCount, 1);
                     chatview.$el.find('.close-chatbox-button').click();
                 });
                 waits(250);
                 runs(function () {
                     expect(chatview.close).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
                 });
             }, converse));
@@ -190,7 +190,7 @@
                 waits(250);
                 runs(function () {
                     expect(chatview.minimize).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxMinimized', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
                     expect(converse.emit.callCount, 2);
                     expect(chatview.$el.is(':visible')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeTruthy();
@@ -203,7 +203,7 @@
                 waits(250);
                 runs(function () {
                     expect(trimmedview.restore).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxMaximized', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                     expect(chatview.$el.find('.chat-body').is(':visible')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
@@ -220,18 +220,18 @@
                 });
                 waits(250);
                 runs(function () {
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                     expect(converse.chatboxes.length).toEqual(0);
                     utils.openChatBoxes(6);
                     expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
                     expect(converse.chatboxes.length).toEqual(6);
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxOpened', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
                     utils.closeAllChatBoxes();
                 });
                 waits(250);
                 runs(function () {
                     expect(converse.chatboxes.length).toEqual(0);
-                    expect(converse.emit).toHaveBeenCalledWith('onChatBoxClosed', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                     var newchatboxes = new this.ChatBoxes();
                     expect(newchatboxes.length).toEqual(0);
                     // onConnected will fetch chatboxes in browserStorage, but
@@ -352,7 +352,7 @@
                     expect(callButton.length).toBe(0);
                     view.close();
                     // Now check that it's shown if enabled and that it emits
-                    // onCallButtonClicked
+                    // callButtonClicked
                     converse.visible_toolbar_buttons.call = true; // enable the button
                     utils.openChatBoxFor(contact_jid);
                     view = this.chatboxviews.get(contact_jid);
@@ -360,7 +360,7 @@
                     callButton = $toolbar.find('.toggle-call');
                     expect(callButton.length).toBe(1);
                     callButton.click();
-                    expect(converse.emit).toHaveBeenCalledWith('onCallButtonClicked', jasmine.any(Object));
+                    expect(converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
                 }, converse));
 
                 it("can contain a button for clearing messages", $.proxy(function () {
@@ -420,7 +420,7 @@
                     runs($.proxy(function () {
                         // onMessage is a handler for received XMPP messages
                         this.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
+                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
                     }, converse));
                     waits(250);
                     runs($.proxy(function () {
@@ -473,7 +473,7 @@
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         this.chatboxes.onMessage(msg);
-                        expect(this.emit).toHaveBeenCalledWith('onMessage', msg);
+                        expect(this.emit).toHaveBeenCalledWith('message', msg);
                     }, converse));
                     waits(50);
                     runs($.proxy(function () {
@@ -535,7 +535,7 @@
                       .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     this.chatboxes.onMessage(msg);
-                    expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
+                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
                     expect(chatbox.messages.length).toEqual(1);
                     msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(message);
@@ -556,7 +556,7 @@
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     this.chatboxes.onMessage(msg);
-                    expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
+                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
                     // Check that there is a <time> element, with the required
                     // props.
                     var $time = $chat_content.find('time');
@@ -587,14 +587,14 @@
                     });
                     waits(250);
                     runs(function () {
-                        expect(converse.emit).toHaveBeenCalledWith('onChatBoxFocused', jasmine.any(Object));
+                        expect(converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                         var view = this.chatboxviews.get(contact_jid);
                         var message = 'This message is sent from this chatbox';
                         spyOn(view, 'sendMessage').andCallThrough();
                         utils.sendMessage(view, message);
                         expect(view.sendMessage).toHaveBeenCalled();
                         expect(view.model.messages.length, 2);
-                        expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
+                        expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
                         expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text()).toEqual(message);
                     }.bind(converse));
                 }, converse));
@@ -709,7 +709,7 @@
                 utils.sendMessage(view, message);
                 expect(view.model.messages.length > 0).toBeTruthy();
                 expect(view.model.messages.browserStorage.records.length > 0).toBeTruthy();
-                expect(converse.emit).toHaveBeenCalledWith('onMessageSend', message);
+                expect(converse.emit).toHaveBeenCalledWith('messageSend', message);
 
                 message = '/clear';
                 var old_length = view.model.messages.length;
@@ -725,7 +725,7 @@
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
                 expect(view.model.messages.browserStorage.records.length, 0); // And also from browserStorage
                 expect(converse.emit.callCount, 1);
-                expect(converse.emit.mostRecentCall.args, ['onMessageSend', message]);
+                expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
             }, converse));
         }, converse));
 
@@ -751,7 +751,7 @@
                 this.chatboxes.onMessage(msg);
                 expect(converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(this.msg_counter).toBe(1);
-                expect(converse.emit).toHaveBeenCalledWith('onMessage', msg);
+                expect(converse.emit).toHaveBeenCalledWith('message', msg);
             }, converse));
 
             it("is cleared when the window is focused", $.proxy(function () {

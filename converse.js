@@ -1485,7 +1485,7 @@
 
             searchContacts: function (ev) {
                 ev.preventDefault();
-                $.getJSON(xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                $.getJSON(converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
                     var $ul= $('.search-xmpp ul');
                     $ul.find('li.found-user').remove();
                     $ul.find('li.chat-info').remove();

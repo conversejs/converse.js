@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.7.5 (Unreleased)
+------------------
+
+* #192: Error: xhr_user_search_url is not defined. [jcbrand]
+
 0.7.4 (2014-03-05)
 ------------------
 

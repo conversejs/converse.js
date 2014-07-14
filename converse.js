@@ -564,7 +564,7 @@
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
                 Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-                Strophe.error = function (msg) { 
+                Strophe.error = function (msg) {
                     console.log('ERROR: '+msg);
                 };
             }
@@ -3060,21 +3060,28 @@
                             return;
                         }
                         this.create({
-                            jid: item.jid,
-                            subscription: item.subscription,
                             ask: item.ask,
                             fullname: item.name || item.jid,
-                            is_last: is_last
+                            groups: item.groups,
+                            is_last: is_last,
+                            jid: item.jid,
+                            subscription: item.subscription
                         });
                     } else {
                         if ((item.subscription === 'none') && (item.ask === null)) {
                             // This user is no longer in our roster
                             model.destroy();
-                        } else if (model.get('subscription') !== item.subscription || model.get('ask') !== item.ask) {
-                            // only modify model attributes if they are different from the
-                            // ones that were already set when the rosterItem was added
-                            model.set({'subscription': item.subscription, 'ask': item.ask, 'requesting': null});
-                            model.save();
+                        } else {
+                            // We only find out about requesting contacts via the
+                            // presence handler, so if we receive a contact
+                            // here, we know they aren't requesting anymore.
+                            // see docs/DEVELOPER.rst
+                            model.save({
+                                subscription: item.subscription,
+                                ask: item.ask,
+                                requesting: null,
+                                groups: item.groups
+                            });
                         }
                     }
                 }, this);

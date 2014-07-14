@@ -3612,6 +3612,10 @@
                 if ($form) {
                     $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                 }
+                var resource = Strophe.getResourceFromJid(jid);
+                if (!resource) {
+                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                }
                 converse.connection = new Strophe.Connection(converse.bosh_service_url);
                 converse.connection.connect(jid, password, converse.onConnect);
             },

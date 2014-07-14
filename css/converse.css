@@ -746,6 +746,11 @@ input.error {
 #conversejs .conn-feedback.error {
   color: red;
 }
+#converse-login .conn-feedback {
+  width: 100%;
+  text-align: center;
+  display: block;
+}
 #conversejs .chat-message-error {
   color: #76797C;
   font-size: 90%;
@@ -1088,15 +1093,16 @@ dl.add-converse-contact {
 }
 #conversejs form#converse-login {
   background: white;
-  padding: 2em 0 0.3em 0.5em;
+  padding: 2em 0.5em;
 }
 #conversejs form#converse-login input {
-  display: block;
-  width: 90%;
+  width: 100%;
+}
+#conversejs form#converse-login label {
+  margin-top: 0.5em;
 }
 #conversejs form#converse-login .login-submit {
   margin-top: 1em;
-  width: auto;
 }
 #conversejs form.set-xmpp-status {
   background: none;

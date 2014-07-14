@@ -1158,9 +1158,7 @@
             },
 
             clearMessages: function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                 if (result === true) {
                     this.$el.find('.chat-content').empty();
@@ -3615,7 +3613,7 @@
                 var $form = this.$el.find('#converse-login');
                 var $button = $form.find('input[type=submit]');
                 if ($button.length) {
-                    $button.show().siblings('span').remove();
+                    $button.show().siblings('span.spinner.login-submit').remove();
                 }
             },
 
@@ -3637,6 +3635,7 @@
             },
 
             authenticate: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $form = $(ev.target),
                     $jid_input = $form.find('input[name=jid]'),
                     jid = $jid_input.val(),

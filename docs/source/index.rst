@@ -384,6 +384,10 @@ notice that there are references to a missing *components* folder. Please
 follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
+.. Note:
+    Users have reported that converse.js cannot be built on Windows. Patches to
+    fix this are welcome.
+
 
 Install the development and front-end dependencies
 ==================================================

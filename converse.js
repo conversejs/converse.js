@@ -1934,6 +1934,10 @@
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
                         .html(converse.templates.chatroom(this.model.toJSON()));
+                converse.emit('chatRoomOpened', this);
+                setTimeout(function () {
+                    converse.refreshWebkit();
+                }, 50);
                 return this;
             },
 

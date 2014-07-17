@@ -635,6 +635,7 @@ span.spinner.hor_centered {
   border-bottom-right-radius: 4px;
   border-bottom-left-radius: 4px;
   height: 289px;
+  height: calc(100% - 35px);
   border-top: 0;
 }
 #conversejs .chatroom .chat-area {
@@ -649,7 +650,7 @@ span.spinner.hor_centered {
   border-left: 1px solid #AAA;
   width: 100px;
   border-bottom-right-radius: 4px;
-  height: 289px;
+  height: 100%;
 }
 #conversejs .participants ul.participant-list li {
   overflow: hidden;
@@ -683,9 +684,8 @@ span.spinner.hor_centered {
   line-height: 1.3em;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
-}
-#conversejs .chat-content {
   height: 206px;
+  height: calc(100% - 84px);
 }
 #conversejs .chat-info {
   color: #666666;
@@ -1181,6 +1181,7 @@ select#select-xmpp-status {
   border-bottom-left-radius: 4px;
   width: 100%;
   height: 289px;
+  height: calc(100% - 35px);
   overflow-y: hidden;
   position: absolute;
 }
@@ -1203,7 +1204,6 @@ select#select-xmpp-status {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   width: 200px;
-  height: 75px;
 }
 #conversejs .chatroom form.sendXMPPMessage {
   -webkit-border-bottom-right-radius: 0;
@@ -1215,7 +1215,8 @@ select#select-xmpp-status {
   border: 0;
   width: 100%;
   padding: 3px;
-  border-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
   resize: none;
   height: 62px;
 }

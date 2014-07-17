@@ -8,6 +8,7 @@ Changelog
     1. Converse.js is now relicensed under the `Mozilla Public License <http://www.mozilla.org/MPL/2.0/>`_.
     2. Configuration options for the chat toolbar have changed.
        Please refer to the `relevant documentation <http://devbox:8890/docs/html/index.html#visible-toolbar-buttons>`_.
+    3. This release drops support for IE8.
 
 * Events have been renamed to remove "on" prefix (which is redundant when used with 'on' method). [jcbrand]
 * Simplified Chinese Translations [Lancelot]

@@ -915,8 +915,7 @@
 
                 this.updateVCard();
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                this.model.messages.fetch({add: true});
-                this.render();
+                this.render().model.messages.fetch({add: true});
                 if (this.model.get('minimized')) {
                     this.hide();
                 } else {

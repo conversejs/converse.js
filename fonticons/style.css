@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('fonts/icomoon.eot?7poj4t');
-	src:url('fonts/icomoon.eot?#iefix7poj4t') format('embedded-opentype'),
-		url('fonts/icomoon.woff?7poj4t') format('woff'),
-		url('fonts/icomoon.ttf?7poj4t') format('truetype'),
-		url('fonts/icomoon.svg?7poj4t#icomoon') format('svg');
+	src:url('fonts/icomoon.eot?-m2p76k');
+	src:url('fonts/icomoon.eot?#iefix-m2p76k') format('embedded-opentype'),
+		url('fonts/icomoon.woff?-m2p76k') format('woff'),
+		url('fonts/icomoon.ttf?-m2p76k') format('truetype'),
+		url('fonts/icomoon.svg?-m2p76k#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -23,8 +23,14 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.icon-closed:before {
+	content: "\25ba";
+}
+.icon-opened:before {
+	content: "\25bc";
+}
 .icon-checkmark:before {
-	content: "\e600";
+	content: "\2713";
 }
 .icon-home:before {
 	content: "\e000";
@@ -38,7 +44,7 @@
 .icon-camera2:before {
 	content: "\2616";
 }
-.icon-play:before {
+.icon-play22:before {
 	content: "\25d9";
 }
 .icon-music:before {

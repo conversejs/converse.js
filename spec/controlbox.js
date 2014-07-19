@@ -216,7 +216,7 @@
 
             it("do not have a heading if there aren't any", $.proxy(function () {
                 converse.rosterview.model.reset();
-                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
+                expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
@@ -234,14 +234,14 @@
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
-                    // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
-                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
+                // Check that they are sorted alphabetically
+                t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
+                expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
             }, converse));
 
             it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
+                expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
             }, converse));
 
             it("can change their status to online and be sorted alphabetically", $.proxy(function () {
@@ -258,7 +258,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
@@ -277,7 +277,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
@@ -296,7 +296,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
@@ -315,7 +315,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
@@ -334,7 +334,7 @@
                     expect(this.rosterview.render).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0, i+1).sort().join(''));
                 }
             }, converse));

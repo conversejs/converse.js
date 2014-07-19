@@ -115,8 +115,8 @@
                     </dd>
                 </dl>
                 <dl id="converse-roster" style="display: block;">
-                    <dt id="xmpp-contacts" style="display: block;">
-                        <a href="#" class="roster-group icon-opened" title="Click to hide these contacts">Colleagues</a>
+                    <dt class="roster-group" style="display: block;">
+                        <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Colleagues</a>
                     </dt>
                     <dd class="online current-xmpp-contact">
                         <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -140,8 +140,8 @@
                         <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                     </dd>
 
-                    <dt id="xmpp-contacts" style="display: block;">
-                        <a href="#" class="roster-group icon-opened" title="Click to hide these contacts">Family</a>
+                    <dt class="roster-group" style="display: block;">
+                        <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Family</a>
                     </dt>
                     <dd class="away current-xmpp-contact">
                         <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -158,8 +158,8 @@
                         <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                     </dd>
 
-                    <dt id="xmpp-contacts" style="display: block;">
-                        <a href="#" class="roster-group icon-opened" title="Click to hide these contacts">Friends</a>
+                    <dt class="roster-group" style="display: block;">
+                        <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Friends</a>
                     </dt>
                     <dd class="online current-xmpp-contact">
                         <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -176,8 +176,8 @@
                         <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                     </dd>
 
-                    <dt id="xmpp-contacts" style="display: block;">
-                        <a href="#" class="roster-group icon-opened" title="Click to hide these contacts">Ungrouped</a>
+                    <dt class="roster-group" style="display: block;">
+                        <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Ungrouped</a>
                     </dt>
                     <dd class="online current-xmpp-contact">
                         <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -188,7 +188,7 @@
                     </dd>
 
                     <dt id="xmpp-contact-requests" style="display: block;">
-                        <a href="#" class="roster-group icon-opened" title="Click to hide these contacts">Contact Requests</a>
+                        <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Contact Requests</a>
                     </dt>
                     <dd class="offline requesting-xmpp-contact">
                         <span>Bob Skinstad</span>
@@ -206,7 +206,7 @@
                     </dd>
 
                     <dt id="pending-xmpp-contacts" style="display: block;">
-                        <a href="#" class="roster-group icon-opened" title="Click to hide these contacts">Pending Contacts</a>
+                        <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Pending Contacts</a>
                     </dt>
                     <dd class="offline pending-xmpp-contact"><span>Rassie Erasmus</span>
                         <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
@@ -302,7 +302,7 @@ $(document).ready(function () {
     }
 
     $(function() {
-        $('.roster-group').click(function(ev) {
+        $('.group-toggle').click(function(ev) {
             ev.preventDefault();
             var $el = $(ev.target);
             $el.parent().nextUntil('dt').slideToggle();

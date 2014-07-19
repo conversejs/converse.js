@@ -29,7 +29,7 @@
                 spyOn(this.chatboxviews, 'trimChats');
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                var online_contacts = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -60,7 +60,7 @@
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
                 // Test that they can be trimmed
-                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                var online_contacts = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';

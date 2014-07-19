@@ -146,13 +146,14 @@
         this.cache_otr_key = false;
         this.debug = false;
         this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
-        this.message_carbons = false;
         this.expose_rid_and_sid = false;
         this.forward_messages = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
+        this.message_carbons = false;
         this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
         this.prebind = false;
+        this.roster_groups = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
         this.show_toolbar = true;
@@ -190,10 +191,11 @@
             'fullname',
             'hide_muc_server',
             'i18n',
-            'no_trimming',
             'jid',
+            'no_trimming',
             'prebind',
             'rid',
+            'roster_groups',
             'show_controlbox_by_default',
             'show_only_online_users',
             'show_toolbar',
@@ -2862,6 +2864,7 @@
             render: function () {
                 var item = this.model,
                     ask = item.get('ask'),
+                    chat_status = item.get('chat_status'),
                     requesting  = item.get('requesting'),
                     subscription = item.get('subscription');
 
@@ -2878,7 +2881,7 @@
                         }
                     }, this);
 
-                this.$el.addClass(item.get('chat_status'));
+                this.$el.addClass(chat_status).data('status', chat_status);
 
                 if (ask === 'subscribe') {
                     this.$el.addClass('pending-xmpp-contact');
@@ -2900,7 +2903,7 @@
                     this.$el.addClass('current-xmpp-contact');
                     this.$el.html(converse.templates.roster_item(
                         _.extend(item.toJSON(), {
-                            'desc_status': STATUSES[item.get('chat_status')||'offline'],
+                            'desc_status': STATUSES[chat_status||'offline'],
                             'desc_chat': __('Click to chat with this contact'),
                             'desc_remove': __('Click to remove this contact')
                         })
@@ -3218,39 +3221,45 @@
             initialize: function () {
                 this.model.on("add", function (item) {
                     this.addRosterItemView(item).render(item);
+                    if (item.get('is_last')) {
+                        this.sortRoster().showRoster();
+                    }
                     if (!item.get('vcard_updated')) {
                         // This will update the vcard, which triggers a change
                         // request which will rerender the roster item.
                         converse.getVCard(item.get('jid'));
                     }
                 }, this);
-
                 this.model.on('change', function (item) {
                     if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                         return;
                     }
                     this.updateChatBox(item).render(item);
+                    if (item.changed.chat_status) { // A changed chat status implies a new sort order
+                        this.sortRoster();
+                    }
                 }, this);
-
                 this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
                 this.model.on("reset", function () { this.removeAllRosterItemViewss(); }, this);
+                this.initRender();
+                this.model.fetch({add: true}); // Get the cached roster items from localstorage
+            },
 
+
+            initRender: function () {
                 var roster_markup = converse.templates.contacts({
-                    'label_contacts': __('My contacts')
+                    'label_contacts': this.roster_groups ? __('Ungrouped') : __('My contacts')
                 });
                 if (converse.allow_contact_requests) {
-                    roster_markup =
-                        converse.templates.requesting_contacts({
+                    roster_markup += converse.templates.requesting_contacts({
                             'label_contact_requests': __('Contact requests')
                         }) +
-                        roster_markup +
                         converse.templates.pending_contacts({
                             'label_pending_contacts': __('Pending contacts')
                         });
                 }
                 this.$el.hide().html(roster_markup);
-                this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 
             updateChatBox: function (item, changed) {
@@ -3298,16 +3307,14 @@
                 if ($.contains(document.documentElement, view.el)) {
                     view.render();
                 } else {
-                    this.$el.find('#xmpp-contacts').after(view.render().el);
+                    // FIXME need to choose proper group
+                    this.$el.find('.roster-group').after(view.render().el);
                 }
             },
 
             render: function (item) {
-                var $my_contacts = this.$el.find('#xmpp-contacts'),
-                    $contact_requests = this.$el.find('#xmpp-contact-requests'),
-                    $pending_contacts = this.$el.find('#pending-xmpp-contacts'),
-                    sorted = false,
-                    $count, changed_presence;
+                var $contact_requests = this.$el.find('#xmpp-contact-requests'),
+                    $pending_contacts = this.$el.find('#pending-xmpp-contacts');
                 if (item) {
                     var jid = item.id,
                         view = this.get(item.id),
@@ -3332,51 +3339,81 @@
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.renderRosterItem(item, view);
                     }
-                    changed_presence = item.changed.chat_status;
-                    if (changed_presence) {
-                        this.sortRoster(changed_presence);
-                        sorted = true;
-                    }
-                    if (item.get('is_last')) {
-                        if (!sorted) {
-                            this.sortRoster(item.get('chat_status'));
-                        }
-                        if (!this.$el.is(':visible')) {
-                            // Once all initial roster items have been added, we
-                            // can show the roster.
-                            this.$el.show();
-                        }
-                    }
                 }
-                // Hide the headings if there are no contacts under them
-                _.each([$my_contacts, $contact_requests, $pending_contacts], function (h) {
-                    if (h.nextUntil('dt').length) {
-                        if (!h.is(':visible')) {
-                            h.show();
-                        }
-                    }
-                    else if (h.is(':visible')) {
-                        h.hide();
-                    }
-                });
-                $count = $('#online-count');
-                $count.text('('+this.model.getNumOnlineContacts()+')');
-                if (!$count.is(':visible')) {
-                    $count.show();
-                }
+                this.updateCount().toggleHeadings($contact_requests, $pending_contacts);
                 converse.emit('rosterViewUpdated');
                 return this;
             },
 
+            updateCount: function () {
+                var $count = $('#online-count');
+                $count.text('('+this.model.getNumOnlineContacts()+')');
+                if (!$count.is(':visible')) {
+                    $count.show();
+                }
+                return this;
+            },
+
+            toggleHeadings: function ($contact_requests, $pending_contacts) {
+                var $groups = this.$el.find('.roster-group');
+                // Hide the headings if there are no contacts under them
+                _.each([$groups, $contact_requests, $pending_contacts], function (h) {
+                    var show_or_hide = function (h) {
+                        if (h.nextUntil('dt').length) {
+                            if (!h.is(':visible')) {
+                                h.show();
+                            }
+                        }
+                        else if (h.is(':visible')) { h.hide(); }
+                    };
+                    if (h.length > 1) {
+                        $groups.each(function (idx, group) {
+                            show_or_hide($(group));
+                        });
+                    } else {
+                        show_or_hide(h);
+                    }
+                });
+                return this;
+            },
+
             sortRoster: function (chat_status) {
-                var $my_contacts = this.$el.find('#xmpp-contacts');
-                $my_contacts.siblings('dd.current-xmpp-contact.'+chat_status).tsort('a', {order:'asc'});
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.offline'));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.unavailable'));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.xa'));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.away'));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.dnd'));
-                $my_contacts.after($my_contacts.siblings('dd.current-xmpp-contact.online'));
+                var sortFunction = function (a, b) {
+                    var a_status = a.s[0],
+                        a_name =a.s[1],
+                        b_status = b.s[0],
+                        b_name =b.s[1],
+                        comp = {
+                        'offline':      6,
+                        'unavailable':  5,
+                        'xa':           4,
+                        'away':         3,
+                        'dnd':          2,
+                        'online':       1
+                    };
+                    if (comp[a_status] === comp[b_status]) {
+                        return a_name < b_name ? -1 : (a_name > b_name ? 1 : 0);
+                    } else  {
+                        return comp[a_status] < comp[b_status] ? -1 : 1;
+                    }
+                };
+                this.$el.find('.roster-group').each(function (idx, group) {
+                    var $group = $(group);
+                    var $contacts = $group.nextUntil('dt', 'dd.current-xmpp-contact');
+                    $group.after($contacts.tsort({sortFunction: sortFunction, data: 'status'}, 'a'));
+                });
+                return this;
+            },
+
+            showRoster: function () {
+                if (!this.$el.is(':visible')) {
+                    // Once all initial roster items have been added, we
+                    // can show the roster.
+                    // TODO: It would be more efficient to use a
+                    // documentFragment and then put that in the DOM
+                    this.$el.show();
+                }
+                return this;
             }
         });
 

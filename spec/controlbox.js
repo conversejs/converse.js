@@ -410,7 +410,8 @@
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                 converse.rosterview.model.reset(); // We want to manually create users so that we can spy
-                var i, t;
+                var i, children;
+                var names = [];
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
                 spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
@@ -425,8 +426,14 @@
                     });
                     expect(this.rosterview.render).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('div').text().replace(/AcceptDecline/g, '');
-                    expect(t).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
+                    children = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('span');
+                    names = [];
+                    children.each(function (idx, item) {
+                        if (!$(item).hasClass('request-actions')) {
+                            names.push($(item).text().replace(/^\s+|\s+$/g, ''));
+                        }
+                    });
+                    expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
                     // When a requesting contact is added, the controlbox must
                     // be opened.
                     expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
@@ -459,11 +466,13 @@
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
+                spyOn(window, 'confirm').andReturn(true);
                 spyOn(view, 'declineRequest').andCallThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 var accept_button = view.$el.find('.decline-xmpp-request');
                 accept_button.click();
                 expect(view.declineRequest).toHaveBeenCalled();
+                expect(window.confirm).toHaveBeenCalled();
                 expect(this.rosterview.removeRosterItemView).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');

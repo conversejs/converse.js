@@ -2841,18 +2841,22 @@
             },
 
             acceptRequest: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var jid = this.model.get('jid');
                 converse.connection.roster.authorize(jid);
                 converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
-                ev.preventDefault();
             },
 
             declineRequest: function (ev) {
-                ev.preventDefault();
-                converse.connection.roster.unauthorize(this.model.get('jid'));
-                this.model.destroy();
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var result = confirm(__("Are you sure you want to decline this contact request?"));
+                if (result === true) {
+                    converse.connection.roster.unauthorize(this.model.get('jid'));
+                    this.model.destroy();
+                }
+                return this;
             },
 
             render: function () {
@@ -2887,8 +2891,8 @@
                     this.$el.addClass('requesting-xmpp-contact');
                     this.$el.html(converse.templates.requesting_contact(
                         _.extend(item.toJSON(), {
-                            'label_accept': __('Accept'),
-                            'label_decline': __('Decline')
+                            'desc_accept': __("Click to accept this contact request"),
+                            'desc_decline': __("Click to decline this contact request"),
                         })
                     ));
                     converse.controlboxtoggle.showControlBox();

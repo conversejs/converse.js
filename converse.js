@@ -3178,8 +3178,6 @@
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
                         // Another resource has changed it's status, we'll update ours as well.
-                        // FIXME: We should ideally differentiate between converse.js using
-                        // resources and other resources (i.e Pidgin etc.)
                         converse.xmppstatus.save({'status': chat_status});
                     }
                     return true;
@@ -3199,13 +3197,13 @@
                 } else if (presence_type === 'unavailable') {
                     if (this.removeResource(bare_jid, resource) === 0) {
                         if (item) {
-                            item.set({'chat_status': 'offline'});
+                            item.save({'chat_status': 'offline'});
                         }
                     }
                 } else if (item) {
                     // presence_type is undefined
                     this.addResource(bare_jid, resource);
-                    item.set({'chat_status': chat_status});
+                    item.save({'chat_status': chat_status});
                 }
                 return true;
             }

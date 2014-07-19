@@ -2024,7 +2024,7 @@
                     $fields = $stanza.find('field'),
                     title = $stanza.find('title').text(),
                     instructions = $stanza.find('instructions').text(),
-                    i, j, options=[];
+                    i, j, options=[], $field, $options;
                 var input_types = {
                     'text-private': 'password',
                     'text-single': 'textline',

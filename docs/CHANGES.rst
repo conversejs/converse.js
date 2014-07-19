@@ -24,7 +24,7 @@ Changelog
 * #123 Show converse.js in the resource assigned to a user. [jcbrand]
 * #130 Fixed bootstrap conflicts. [jcbrand]
 * #132 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html'>`_.
-  Configured via `enable_message_carbons <https://conversejs.org/docs/html/index.html#enable_message_carbons>`_ [hejazee]
+  Configured via `message_carbons <https://conversejs.org/docs/html/index.html#message_carbons>`_ [hejazee]
 * #176 Add support for caching in sessionStorage as opposed to localStorage. [jcbrand]
 * #180 RID and SID undefined [g8g3]
 * #191 No messages history [heban]

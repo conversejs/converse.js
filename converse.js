@@ -146,7 +146,7 @@
         this.cache_otr_key = false;
         this.debug = false;
         this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
-        this.enable_message_carbons = false;
+        this.message_carbons = false;
         this.expose_rid_and_sid = false;
         this.forward_messages = false;
         this.hide_muc_server = false;
@@ -184,7 +184,7 @@
             'connection',
             'debug',
             'default_box_height',
-            'enable_message_carbons',
+            'message_carbons',
             'expose_rid_and_sid',
             'forward_messages',
             'fullname',
@@ -544,7 +544,7 @@
             /* Ask the XMPP server to enable Message Carbons
              * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
              */
-            if (!this.enable_message_carbons) {
+            if (!this.message_carbons) {
                 return;
             }
             var carbons_iq = new Strophe.Builder('iq', {

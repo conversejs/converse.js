@@ -918,7 +918,7 @@ Default:  ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
-enable_message_carbons
+message_carbons
 ----------------------
 
 Default:  ``false``

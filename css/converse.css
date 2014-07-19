@@ -967,6 +967,7 @@ dl.add-converse-contact {
   position: relative;
   margin: 0.5em 0 0 0;
   height: 254px;
+  height: calc(100% - 70px);
 }
 #conversejs dd.available-chatroom {
   overflow-x: hidden;

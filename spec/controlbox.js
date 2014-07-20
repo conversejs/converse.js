@@ -7,6 +7,27 @@
         }
     );
 } (this, function (mock, utils) {
+
+    var checkHeaderToggling = function ($header) {
+        var $toggle = $header.find('a.group-toggle');
+        expect($header.css('display')).toEqual('block');
+        spyOn(this.rosterview, 'toggleGroup').andCallThrough();
+        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
+        this.rosterview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+        expect($toggle.hasClass('icon-closed')).toBeFalsy();
+        expect($toggle.hasClass('icon-opened')).toBeTruthy();
+        $toggle.click();
+        expect(this.rosterview.toggleGroup).toHaveBeenCalled();
+        expect($toggle.hasClass('icon-closed')).toBeTruthy();
+        expect($toggle.hasClass('icon-opened')).toBeFalsy();
+        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:hidden').length).toBeTruthy();
+        $toggle.click();
+        expect(this.rosterview.toggleGroup).toHaveBeenCalled();
+        expect($toggle.hasClass('icon-closed')).toBeFalsy();
+        expect($toggle.hasClass('icon-opened')).toBeTruthy();
+        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
+    };
+
     describe("The Control Box", $.proxy(function (mock, utils) {
         beforeEach(function () {
             runs(function () {
@@ -119,13 +140,13 @@
                 });
             }, converse));
 
-            it("do not have a heading if there aren't any", $.proxy(function () {
+            it("do not have a header if there aren't any", $.proxy(function () {
                 converse.rosterview.model.reset();
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
+            it("can be collapsed under their own header", $.proxy(function () {
+                checkHeaderToggling.apply(this, [this.rosterview.$el.find('dt#pending-xmpp-contacts')]);
             }, converse));
 
             it("can be added to the roster", $.proxy(function () {
@@ -168,7 +189,7 @@
                 expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
             }, converse));
 
-            it("will lose their own heading once the last one has been removed", $.proxy(function () {
+            it("will lose their own header once the last one has been removed", $.proxy(function () {
                 var view;
                 spyOn(window, 'confirm').andReturn(true);
                 for (i=0; i<mock.pend_names.length; i++) {
@@ -214,7 +235,7 @@
                 });
             }, converse));
 
-            it("do not have a heading if there aren't any", $.proxy(function () {
+            it("do not have a header if there aren't any", $.proxy(function () {
                 converse.rosterview.model.reset();
                 expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
             }, converse));
@@ -240,8 +261,8 @@
                 expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
+            it("can be collapsed under their own header", $.proxy(function () {
+                checkHeaderToggling.apply(this, [this.rosterview.$el.find('dt.roster-group')]);
             }, converse));
 
             it("can change their status to online and be sorted alphabetically", $.proxy(function () {
@@ -401,7 +422,7 @@
                 });
             }, converse));
 
-            it("do not have a heading if there aren't any", $.proxy(function () {
+            it("do not have a header if there aren't any", $.proxy(function () {
                 // by default the dts are hidden from css class and only later they will be hidden
                 // by jQuery therefore for the first check we will see if visible instead of none
                 converse.rosterview.model.reset();
@@ -442,8 +463,8 @@
                 }
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
+            it("can be collapsed under their own header", $.proxy(function () {
+                checkHeaderToggling.apply(this, [this.rosterview.$el.find('dt#xmpp-contact-requests')]);
             }, converse));
 
             it("can have their requests accepted by the user", $.proxy(function () {

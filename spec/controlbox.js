@@ -415,6 +415,11 @@
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'render').andCallThrough();
                 spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
+                var addName = function (idx, item) {
+                    if (!$(item).hasClass('request-actions')) {
+                        names.push($(item).text().replace(/^\s+|\s+$/g, ''));
+                    }
+                };
                 for (i=0; i<mock.req_names.length; i++) {
                     this.roster.create({
                         jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
@@ -428,11 +433,7 @@
                     // Check that they are sorted alphabetically
                     children = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('span');
                     names = [];
-                    children.each(function (idx, item) {
-                        if (!$(item).hasClass('request-actions')) {
-                            names.push($(item).text().replace(/^\s+|\s+$/g, ''));
-                        }
-                    });
+                    children.each(addName);
                     expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
                     // When a requesting contact is added, the controlbox must
                     // be opened.

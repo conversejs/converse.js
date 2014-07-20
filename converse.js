@@ -3221,7 +3221,7 @@
 
             initialize: function () {
                 this.model.on("add", function (item) {
-                    this.addRosterItemView(item).render(item);
+                    this.addRosterItemView(item).updateRoster(item);
                     if (item.get('is_last')) {
                         this.sortRoster().showRoster();
                     }
@@ -3235,19 +3235,19 @@
                     if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                         return;
                     }
-                    this.updateChatBox(item).render(item);
+                    this.updateChatBox(item).updateRoster(item);
                     if (item.changed.chat_status) { // A changed chat status implies a new sort order
                         this.sortRoster();
                     }
                 }, this);
                 this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
                 this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
-                this.model.on("reset", function () { this.removeAllRosterItemViewss(); }, this);
-                this.initRender();
+                this.model.on("reset", function () { this.removeAllRosterItemViews(); }, this);
+                this.render();
                 this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 
-            initRender: function () {
+            render: function () {
                 var desc_group_toggle = __('Click to hide these contacts'),
                     toggle_state = 'opened',
                     roster_markup = converse.templates.group_header({
@@ -3292,16 +3292,16 @@
                 return this;
             },
 
-            removeAllRosterItemViewss: function () {
+            removeAllRosterItemViews: function () {
                 var views = this.removeAll();
-                this.render();
+                this.updateRoster();
                 return this;
             },
 
             removeRosterItemView: function (item) {
                 if (this.get(item.id)) {
                     this.get(item.id).remove();
-                    this.render();
+                    this.updateRoster();
                 }
                 return this;
             },
@@ -3320,7 +3320,7 @@
                 }
             },
 
-            render: function (item) {
+            updateRoster: function (item) {
                 var $contact_requests = this.$el.find('#xmpp-contact-requests'),
                     $pending_contacts = this.$el.find('#pending-xmpp-contacts');
                 if (item) {

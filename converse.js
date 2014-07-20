@@ -3215,6 +3215,9 @@
         this.RosterView = Backbone.Overview.extend({
             tagName: 'dl',
             id: 'converse-roster',
+            events: {
+                "click a.group-toggle": "toggleGroup"
+            },
 
             initialize: function () {
                 this.model.on("add", function (item) {
@@ -3244,18 +3247,25 @@
                 this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
 
-
             initRender: function () {
-                var roster_markup = converse.templates.contacts({
-                    'label_contacts': this.roster_groups ? __('Ungrouped') : __('My contacts')
-                });
+                var desc_group_toggle = __('Click to hide these contacts'),
+                    toggle_state = 'opened',
+                    roster_markup = converse.templates.group_header({
+                        label_group: this.roster_groups ? __('Ungrouped') : __('My contacts'),
+                        desc_group_toggle: desc_group_toggle,
+                        toggle_state: toggle_state
+                    });
                 if (converse.allow_contact_requests) {
                     roster_markup += converse.templates.requesting_contacts({
-                            'label_contact_requests': __('Contact requests')
-                        }) +
-                        converse.templates.pending_contacts({
-                            'label_pending_contacts': __('Pending contacts')
-                        });
+                        label_contact_requests: __('Contact requests'),
+                        desc_group_toggle: desc_group_toggle,
+                        toggle_state: toggle_state
+                    }) +
+                    converse.templates.pending_contacts({
+                        label_pending_contacts: __('Pending contacts'),
+                        desc_group_toggle: desc_group_toggle,
+                        toggle_state: toggle_state
+                    });
                 }
                 this.$el.hide().html(roster_markup);
             },
@@ -3338,7 +3348,7 @@
                         this.renderRosterItem(item, view);
                     }
                 }
-                this.updateCount().toggleHeadings($contact_requests, $pending_contacts);
+                this.updateCount().toggleHeaders($contact_requests, $pending_contacts);
                 converse.emit('rosterViewUpdated');
                 return this;
             },
@@ -3352,9 +3362,9 @@
                 return this;
             },
 
-            toggleHeadings: function ($contact_requests, $pending_contacts) {
+            toggleHeaders: function ($contact_requests, $pending_contacts) {
                 var $groups = this.$el.find('.roster-group');
-                // Hide the headings if there are no contacts under them
+                // Hide the headers if there are no contacts under them
                 _.each([$groups, $contact_requests, $pending_contacts], function (h) {
                     var show_or_hide = function (h) {
                         if (h.nextUntil('dt').length) {
@@ -3373,6 +3383,17 @@
                     }
                 });
                 return this;
+            },
+
+            toggleGroup: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $el = $(ev.target);
+                $el.parent().nextUntil('dt').slideToggle();
+                if ($el.hasClass("icon-opened")) {
+                    $el.removeClass("icon-opened").addClass("icon-closed");
+                } else {
+                    $el.removeClass("icon-closed").addClass("icon-opened");
+                }
             },
 
             sortRoster: function (chat_status) {

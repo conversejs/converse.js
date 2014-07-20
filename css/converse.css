@@ -818,8 +818,7 @@ dl.add-converse-contact {
   top: 1px;
 }
 #conversejs .controlbox-pane dt {
-  margin: 0;
-  padding-top: 0.5em;
+  padding: 3px;
 }
 #conversejs .chatroom-form-container {
   height: 100%;
@@ -886,7 +885,7 @@ dl.add-converse-contact {
   height: 254px;
   height: calc(100% - 70px);
 }
-#converse-roster .roster-group {
+#converse-roster .group-toggle {
   color: #666;
 }
 #conversejs dd.available-chatroom {
@@ -959,7 +958,7 @@ dl.add-converse-contact {
 #conversejs #converse-roster dd {
   line-height: 16px;
 }
-#conversejs .roster-group {
+#conversejs .group-toggle {
   display: block;
   width: 100%;
 }

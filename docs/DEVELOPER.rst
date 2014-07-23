@@ -30,7 +30,7 @@ subscription and subscribes back.
     <presence type="subscribed" to="contact1@localhost"/>
     <presence type="subscribe" to="contact1@localhost"/>
 
-Contact2 receives a roster update
+IF Contact1 is still online and likewise subscribes back, Contact2 will receive a roster update
 
 ::
     <iq type="set" to="contact2@localhost">
@@ -38,6 +38,13 @@ Contact2 receives a roster update
             <item jid="contact1@localhost" ask="subscribe" subscription="from"></item>
         </query>
     </iq>
+
+ELSE, Contact 2 will receive a roster update (but not an IQ stanza)
+
+::
+    ask = null
+    subscription = "from"
+
 
 Contact1's converse.js client will automatically
 approve.

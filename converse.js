@@ -2883,7 +2883,12 @@
 
                 this.$el.addClass(chat_status).data('status', chat_status);
 
-                if (ask === 'subscribe') {
+                if ((ask === 'subscribe') || (subscription === 'from')) {
+                    // if subscription === 'from', then they are subscribed to
+                    // us, but not vice versa. We assume that there is a
+                    // pending subscription from us to them (otherwise we're in
+                    // a state not supported by converse.js), so the user is a
+                    // "pending" contact.
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(converse.templates.pending_contact(
                         _.extend(item.toJSON(), {
@@ -3293,7 +3298,7 @@
             },
 
             removeAllRosterItemViews: function () {
-                var views = this.removeAll();
+                this.removeAll();
                 this.updateRoster();
                 return this;
             },
@@ -3334,11 +3339,18 @@
                     if ((ask === 'subscribe') && (subscription == 'none')) {
                         $pending_contacts.after(view.render().el);
                         $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if ((ask === 'subscribe') && (subscription == 'from')) {
-                        // TODO: We have accepted an incoming subscription
+                    } else if ((ask === 'subscribe' || ask === null) && (subscription === 'from')) {
+                        // We have accepted an incoming subscription
                         // request and (automatically) made our own subscription request back.
-                        // It would be useful to update the roster here to show
-                        // things are happening... (see docs/DEVELOPER.rst)
+                        //
+                        // From what I can tell: (see docs/DEVELOPER.rst)
+                        //  if ask == 'subscribe', then the other user is online.
+                        //  if ask == null, then the other user is not online currently.
+                        //
+                        // In either case, the other user is now subscribed to
+                        // us (i.e. "from" them to us), and we have a pending
+                        // subscription to them, so we show the user as a
+                        // pending contact.
                         $pending_contacts.after(view.render().el);
                         $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
                     } else if (requesting === true) {

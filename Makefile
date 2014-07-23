@@ -75,7 +75,6 @@ stamp-bower: stamp-npm bower.json
 clean::
 	rm -f stamp-npm stamp-bower
 	rm -rf node_modules components
-	-rm -rf $(BUILDDIR)/*
 
 dev: clean
 	npm install

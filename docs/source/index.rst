@@ -407,11 +407,18 @@ directory:
 
     make dev
 
+Or alternatively, if you don't have GNU Make:
+
+::
+
+    npm install
+    bower update
+
 This will first install the Node.js development tools (like Grunt and Bower)
 and then use Bower to install all of Converse.js's front-end dependencies.
 
 The front-end dependencies are those javascript files on which
-Converse.js directly depends and which will therefore be loaded in the browser.
+Converse.js directly depends and which will be loaded in the browser.
 
 If you are curious to know what the different dependencies are:
 
@@ -428,7 +435,7 @@ If you are curious to know what the different dependencies are:
     which contains all the front-end dependencies of Converse.js.
     If this directory does NOT exist, something must have gone wrong.
     Double-check the output of ```make dev``` to see if there are any errors
-    listed.
+    listed. For support, you can write to the mailing list: conversejs@librelist.com
 
 
 With AMD and require.js (recommended)

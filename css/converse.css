@@ -873,6 +873,13 @@ dl.add-converse-contact {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+#conversejs #converse-roster span.req-contact-name {
+  width: 70%;
+}
+#conversejs #converse-roster span.pending-contact-name,
+#conversejs #converse-roster a.open-chat {
+  width: 80%;
+}
 #converse-roster dd span {
   padding: 0 5px 0 0;
 }
@@ -979,9 +986,6 @@ dl.add-converse-contact {
 }
 #conversejs #converse-roster dd:hover a.remove-xmpp-contact {
   display: inline-block;
-}
-#conversejs #converse-roster a.open-chat {
-  width: 80%;
 }
 #conversejs .chatbox,
 #conversejs .chatroom {
@@ -1298,6 +1302,9 @@ input.custom-xmpp-status {
   line-height: 24px;
 }
 #conversejs .chatbox .dropdown dd ul li:hover {
+  background-color: #bed6e5;
+}
+#conversejs .chatbox .dropdown dd.search-xmpp ul li:hover {
   background-color: #bed6e5;
 }
 #conversejs .xmpp-status-menu li a {

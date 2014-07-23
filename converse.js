@@ -2880,15 +2880,20 @@
                             this.$el.removeClass(cls);
                         }
                     }, this);
-
                 this.$el.addClass(chat_status).data('status', chat_status);
 
                 if ((ask === 'subscribe') || (subscription === 'from')) {
-                    // if subscription === 'from', then they are subscribed to
-                    // us, but not vice versa. We assume that there is a
-                    // pending subscription from us to them (otherwise we're in
-                    // a state not supported by converse.js), so the user is a
-                    // "pending" contact.
+                    /* ask === 'subscribe'
+                     *      Means we have asked to subscribe to them.
+                     *
+                     * subscription === 'from'
+                     *      They are subscribed to use, but not vice versa.
+                     *      We assume that there is a pending subscription
+                     *      from us to them (otherwise we're in a state not
+                     *      supported by converse.js).
+                     *
+                     *  So in both cases the user is a "pending" contact.
+                     */
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(converse.templates.pending_contact(
                         _.extend(item.toJSON(), {
@@ -3226,7 +3231,7 @@
 
             initialize: function () {
                 this.model.on("add", function (item) {
-                    this.addRosterItemView(item).updateRoster(item);
+                    this.addRosterItemView(item).renderRosterItem(item).updateRoster();
                     if (item.get('is_last')) {
                         this.sortRoster().showRoster();
                     }
@@ -3240,7 +3245,7 @@
                     if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                         return;
                     }
-                    this.updateChatBox(item).updateRoster(item);
+                    this.updateChatBox(item).renderRosterItem(item).updateRoster();
                     if (item.changed.chat_status) { // A changed chat status implies a new sort order
                         this.sortRoster();
                     }
@@ -3311,52 +3316,40 @@
                 return this;
             },
 
-            renderRosterItem: function (item, view) {
+            renderRosterItem: function (item) {
+                var $contact_requests = this.$('#xmpp-contact-requests'),
+                    $pending_contacts = this.$('#pending-xmpp-contacts'),
+                    $current_contacts = this.$el.find('.roster-group'),
+                    crit = {order:'asc'};
+                var view = this.get(item.id);
+                if (!view) {
+                    // This method should only be called for items with views.
+                    return;
+                }
                 if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
                     view.$el.remove();
                     view.delegateEvents();
                     return this;
                 }
-                // FIXME need to choose proper group
-                this.$el.find('.roster-group').after(view.render().el);
+                // TODO: need to choose proper group
+                // FIXME: DON'T SORT CONTINUOUSLY, SUPER SLOW
+                // TODO: Insert the item in the correct order
+                view.render()
+                if (view.$el.hasClass('current-xmpp-contact')) {
+                    $current_contacts.after(view.el);
+                    $current_contacts.after($current_contacts.siblings('dd.current-xmpp-contact').tsort(crit));
+                } else if (view.$el.hasClass('pending-xmpp-contact')) {
+                    $pending_contacts.after(view.el);
+                    $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
+                } else if (view.$el.hasClass('requesting-xmpp-contact')) {
+                    $contact_requests.after(view.render().el);
+                    $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
+                }
+                return this;
             },
 
             updateRoster: function (item) {
-                var $contact_requests = this.$el.find('#xmpp-contact-requests'),
-                    $pending_contacts = this.$el.find('#pending-xmpp-contacts');
-                if (item) {
-                    var jid = item.id,
-                        view = this.get(item.id),
-                        ask = item.get('ask'),
-                        subscription = item.get('subscription'),
-                        requesting  = item.get('requesting'),
-                        crit = {order:'asc'};
-
-                    if ((ask === 'subscribe') && (subscription == 'none')) {
-                        $pending_contacts.after(view.render().el);
-                        $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if ((ask === 'subscribe' || ask === null) && (subscription === 'from')) {
-                        // We have accepted an incoming subscription
-                        // request and (automatically) made our own subscription request back.
-                        //
-                        // From what I can tell: (see docs/DEVELOPER.rst)
-                        //  if ask == 'subscribe', then the other user is online.
-                        //  if ask == null, then the other user is not online currently.
-                        //
-                        // In either case, the other user is now subscribed to
-                        // us (i.e. "from" them to us), and we have a pending
-                        // subscription to them, so we show the user as a
-                        // pending contact.
-                        $pending_contacts.after(view.render().el);
-                        $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                    } else if (requesting === true) {
-                        $contact_requests.after(view.render().el);
-                        $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
-                    } else if (subscription === 'both' || subscription === 'to') {
-                        this.renderRosterItem(item, view);
-                    }
-                }
-                this.updateCount().toggleHeaders($contact_requests, $pending_contacts);
+                this.updateCount().toggleHeaders();
                 converse.emit('rosterViewUpdated');
                 return this;
             },
@@ -3370,7 +3363,9 @@
                 return this;
             },
 
-            toggleHeaders: function ($contact_requests, $pending_contacts) {
+            toggleHeaders: function () {
+                var $contact_requests = this.$('#xmpp-contact-requests'),
+                    $pending_contacts = this.$('#pending-xmpp-contacts');
                 var $groups = this.$el.find('.roster-group');
                 // Hide the headers if there are no contacts under them
                 _.each([$groups, $contact_requests, $pending_contacts], function (h) {

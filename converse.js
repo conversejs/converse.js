@@ -3317,12 +3317,8 @@
                     view.delegateEvents();
                     return this;
                 }
-                if ($.contains(document.documentElement, view.el)) {
-                    view.render();
-                } else {
-                    // FIXME need to choose proper group
-                    this.$el.find('.roster-group').after(view.render().el);
-                }
+                // FIXME need to choose proper group
+                this.$el.find('.roster-group').after(view.render().el);
             },
 
             updateRoster: function (item) {

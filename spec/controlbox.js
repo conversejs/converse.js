@@ -215,10 +215,10 @@
                     });
                     expect(this.rosterview.updateRoster).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
-                    // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').find('span').text();
-                    expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
                 }
+                // Check that they are sorted alphabetically
+                t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').find('span').text();
+                expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
             }, converse));
 
         }, converse));
@@ -478,16 +478,16 @@
                         is_last: i===(mock.req_names.length-1)
                     });
                     expect(this.rosterview.updateRoster).toHaveBeenCalled();
-                    // Check that they are sorted alphabetically
-                    children = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('span');
-                    names = [];
-                    children.each(addName);
-                    expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
                     // When a requesting contact is added, the controlbox must
                     // be opened.
                     expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                 }
+                // Check that they are sorted alphabetically
+                children = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('span');
+                names = [];
+                children.each(addName);
+                expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
             }, converse));
 
             it("can be collapsed under their own header", $.proxy(function () {

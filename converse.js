@@ -122,6 +122,14 @@
         var KEY = {
             ENTER: 13
         };
+        var STATUS_WEIGHTS = {
+            'offline':      6,
+            'unavailable':  5,
+            'xa':           4,
+            'away':         3,
+            'dnd':          2,
+            'online':       1
+        };
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -3231,7 +3239,7 @@
 
             initialize: function () {
                 this.model.on("add", function (item) {
-                    this.addRosterItemView(item).renderRosterItem(item).updateRoster();
+                    this.addRosterItemView(item).addRosterItem(item).updateRoster();
                     if (item.get('is_last')) {
                         this.sortRoster().showRoster();
                     }
@@ -3317,33 +3325,40 @@
             },
 
             renderRosterItem: function (item) {
-                var $contact_requests = this.$('#xmpp-contact-requests'),
-                    $pending_contacts = this.$('#pending-xmpp-contacts'),
-                    $current_contacts = this.$el.find('.roster-group'),
-                    crit = {order:'asc'};
                 var view = this.get(item.id);
                 if (!view) {
-                    // This method should only be called for items with views.
-                    return;
+                    converse.log("renderRosterItem called with item that doesn't have a view", "error");
+                    return this;
                 }
                 if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
                     view.$el.remove();
                     view.delegateEvents();
+                } else {
+                    view.render()
+                }
+                return this;
+            },
+
+            addRosterItem: function (item) {
+                if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
                     return this;
                 }
-                // TODO: need to choose proper group
-                // FIXME: DON'T SORT CONTINUOUSLY, SUPER SLOW
-                // TODO: Insert the item in the correct order
+                var view = this.get(item.id);
+                if (!view) {
+                    converse.log("renderRosterItem called with item that doesn't have a view", "error");
+                    return this;
+                }
+                var $contact_requests = this.$('#xmpp-contact-requests'),
+                    $pending_contacts = this.$('#pending-xmpp-contacts'),
+                    $current_contacts = this.$el.find('.roster-group');
                 view.render()
+                // TODO: need to add group support
                 if (view.$el.hasClass('current-xmpp-contact')) {
                     $current_contacts.after(view.el);
-                    $current_contacts.after($current_contacts.siblings('dd.current-xmpp-contact').tsort(crit));
                 } else if (view.$el.hasClass('pending-xmpp-contact')) {
                     $pending_contacts.after(view.el);
-                    $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
                 } else if (view.$el.hasClass('requesting-xmpp-contact')) {
                     $contact_requests.after(view.render().el);
-                    $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                 }
                 return this;
             },
@@ -3399,31 +3414,34 @@
                 }
             },
 
+            sortFunction: function (a, b) {
+                var a_status = a.s[0],
+                    a_name =a.s[1],
+                    b_status = b.s[0],
+                    b_name =b.s[1];
+                if (STATUS_WEIGHTS[a_status] === STATUS_WEIGHTS[b_status]) {
+                    return a_name < b_name ? -1 : (a_name > b_name ? 1 : 0);
+                } else  {
+                    return STATUS_WEIGHTS[a_status] < STATUS_WEIGHTS[b_status] ? -1 : 1;
+                }
+            },
+
             sortRoster: function (chat_status) {
-                var sortFunction = function (a, b) {
-                    var a_status = a.s[0],
-                        a_name =a.s[1],
-                        b_status = b.s[0],
-                        b_name =b.s[1],
-                        comp = {
-                        'offline':      6,
-                        'unavailable':  5,
-                        'xa':           4,
-                        'away':         3,
-                        'dnd':          2,
-                        'online':       1
-                    };
-                    if (comp[a_status] === comp[b_status]) {
-                        return a_name < b_name ? -1 : (a_name > b_name ? 1 : 0);
-                    } else  {
-                        return comp[a_status] < comp[b_status] ? -1 : 1;
-                    }
-                };
-                this.$el.find('.roster-group').each(function (idx, group) {
+                /* XXX
+                 * 1). See if the jquery detach method can be somehow used to avoid DOM reflows.
+                 * 2). Likewise see if documentFragment can be used.
+                 */
+                this.$el.find('.roster-group').each($.proxy(function (idx, group) {
                     var $group = $(group);
                     var $contacts = $group.nextUntil('dt', 'dd.current-xmpp-contact');
-                    $group.after($contacts.tsort({sortFunction: sortFunction, data: 'status'}, 'a'));
-                });
+                    $group.after($contacts.tsort({sortFunction: this.sortFunction, data: 'status'}, 'a'));
+                },this));
+                // Also sort pending and requesting contacts
+                var crit = {order:'asc'},
+                    $contact_requests = this.$('#xmpp-contact-requests'),
+                    $pending_contacts = this.$('#pending-xmpp-contacts');
+                $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
+                $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                 return this;
             },
 

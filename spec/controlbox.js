@@ -132,7 +132,7 @@
             function _clearContacts () {
                 utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-                converse.rosterview.initialize();
+                converse.rosterview.initialize(); // Register new listeners and document fragment
             };
 
             function _addContacts () {

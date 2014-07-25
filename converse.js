@@ -3237,6 +3237,11 @@
             },
 
             initialize: function () {
+                /* If initialize ever gets called again, event listeners will
+                 * be registered twice. So we turn them off first.
+                 * Currently only an issue in tests.
+                 */
+                this.model.off(); 
                 this.model.on("add", this.onAdd, this);
                 this.model.on('change', this.onChange, this); 
                 this.model.on("remove", this.removeRosterItemView, this);
@@ -3271,7 +3276,7 @@
             },
 
             onAdd: function (item) {
-                this.addRosterItemView(item).addRosterItem(item).updateRoster();
+                this.addRosterItem(item).updateRoster();
                 if (item.get('is_last')) {
                     this.sortRoster().showRoster();
                 }
@@ -3316,12 +3321,6 @@
                 return this;
             },
 
-            addRosterItemView: function (item) {
-                var view = new converse.RosterItemView({model: item});
-                this.add(item.id, view);
-                return this;
-            },
-
             removeAllRosterItemViews: function () {
                 this.removeAll();
                 this.updateRoster();
@@ -3363,12 +3362,9 @@
             },
 
             addRosterItem: function (item) {
+                var view = new converse.RosterItemView({model: item});
+                this.add(item.id, view);
                 if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
-                    return this;
-                }
-                var view = this.get(item.id);
-                if (!view) {
-                    converse.log("renderRosterItem called with item that doesn't have a view", "error");
                     return this;
                 }
                 view.render()

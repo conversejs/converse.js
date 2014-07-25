@@ -29,6 +29,8 @@ Changelog
 * #191 No messages history [heban]
 * #192 Error: xhr_user_search_url is not defined. [jcbrand]
 * #196 [Safari v7.0.5] TypeError: Attempted to assign to readonly property. [g8g3]
+* #199 Improved Spanish translations [chilicuil]
+* #201 Add zh-locale to fix build task [schoetty]
 
 
 0.7.4 (2014-03-05)

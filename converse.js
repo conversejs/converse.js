@@ -3351,17 +3351,14 @@
                     converse.log("renderRosterItem called with item that doesn't have a view", "error");
                     return this;
                 }
-                var $contact_requests = this.$('#xmpp-contact-requests'),
-                    $pending_contacts = this.$('#pending-xmpp-contacts'),
-                    $current_contacts = this.$el.find('.roster-group');
                 view.render()
-                // TODO: need to add group support
                 if (view.$el.hasClass('current-xmpp-contact')) {
-                    $current_contacts.after(view.el);
+                    // TODO: need to add group support
+                    this.$('.roster-group').after(view.el);
                 } else if (view.$el.hasClass('pending-xmpp-contact')) {
-                    $pending_contacts.after(view.el);
+                    this.$('#pending-xmpp-contacts').after(view.el);
                 } else if (view.$el.hasClass('requesting-xmpp-contact')) {
-                    $contact_requests.after(view.render().el);
+                    this.$('#xmpp-contact-requests').after(view.render().el);
                 }
                 return this;
             },

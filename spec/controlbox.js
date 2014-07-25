@@ -440,6 +440,7 @@
         describe("Requesting Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
+                    utils.clearBrowserStorage();
                     converse.rosterview.model.reset();
                     utils.createContacts('requesting').openControlBox();
                 });
@@ -510,14 +511,19 @@
             }, converse));
 
             it("can have their requests denied by the user", $.proxy(function () {
-                var jid = mock.req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.rosterview.get(jid);
+                this.rosterview.model.reset();
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
                 spyOn(window, 'confirm').andReturn(true);
+                this.rosterview.initialize(); // Must be initialized only after the spy has been called
+                utils.createContacts('requesting').openControlBox();
+
+                var jid = mock.req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var view = this.rosterview.get(jid);
                 spyOn(view, 'declineRequest').andCallThrough();
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
                 var accept_button = view.$el.find('.decline-xmpp-request');
                 accept_button.click();
                 expect(view.declineRequest).toHaveBeenCalled();

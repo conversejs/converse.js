@@ -645,8 +645,7 @@
             }
         });
 
-        this.Message = Backbone.Model.extend();
-
+        this.Message = Backbone.Model;
         this.Messages = Backbone.Collection.extend({
             model: converse.Message
         });
@@ -3238,29 +3237,11 @@
             },
 
             initialize: function () {
-                this.model.on("add", function (item) {
-                    this.addRosterItemView(item).addRosterItem(item).updateRoster();
-                    if (item.get('is_last')) {
-                        this.sortRoster().showRoster();
-                    }
-                    if (!item.get('vcard_updated')) {
-                        // This will update the vcard, which triggers a change
-                        // request which will rerender the roster item.
-                        converse.getVCard(item.get('jid'));
-                    }
-                }, this);
-                this.model.on('change', function (item) {
-                    if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
-                        return;
-                    }
-                    this.updateChatBox(item).renderRosterItem(item).updateRoster();
-                    if (item.changed.chat_status) { // A changed chat status implies a new sort order
-                        this.sortRoster();
-                    }
-                }, this);
-                this.model.on("remove", function (item) { this.removeRosterItemView(item); }, this);
-                this.model.on("destroy", function (item) { this.removeRosterItemView(item); }, this);
-                this.model.on("reset", function () { this.removeAllRosterItemViews(); }, this);
+                this.model.on("add", this.onAdd, this);
+                this.model.on('change', this.onChange, this); 
+                this.model.on("remove", this.removeRosterItemView, this);
+                this.model.on("destroy", this.removeRosterItemView, this);
+                this.model.on("reset", this.removeAllRosterItemViews, this);
                 this.render();
                 this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
@@ -3286,6 +3267,28 @@
                     });
                 }
                 this.$el.hide().html(roster_markup);
+            },
+
+            onAdd: function (item) {
+                this.addRosterItemView(item).addRosterItem(item).updateRoster();
+                if (item.get('is_last')) {
+                    this.sortRoster().showRoster();
+                }
+                if (!item.get('vcard_updated')) {
+                    // This will update the vcard, which triggers a change
+                    // request which will rerender the roster item.
+                    converse.getVCard(item.get('jid'));
+                }
+            },
+
+            onChange: function (item) {
+                if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
+                    return;
+                }
+                this.updateChatBox(item).renderRosterItem(item).updateRoster();
+                if (item.changed.chat_status) { // A changed chat status implies a new sort order
+                    this.sortRoster();
+                }
             },
 
             updateChatBox: function (item, changed) {

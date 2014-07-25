@@ -129,28 +129,32 @@
     describe("The Contacts Roster", $.proxy(function (mock, utils) {
 
         describe("Pending Contacts", $.proxy(function () {
-            beforeEach($.proxy(function () {
-                runs(function () {
-                    converse.rosterview.model.reset();
-                    utils.createContacts('pending').openControlBox();
-                });
-                waits(50);
-                runs(function () {
-                    utils.openContactsPanel();
-                });
-            }, converse));
+            function _clearContacts () {
+                utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+                converse.rosterview.initialize();
+            };
+
+            function _addContacts () {
+                _clearContacts();
+                // Must be initialized, so that render is called and documentFragment set up.
+                utils.createContacts('pending').openControlBox();
+                utils.openContactsPanel();
+            };
 
             it("do not have a header if there aren't any", $.proxy(function () {
-                converse.rosterview.model.reset();
+                _addContacts();
+                this.rosterview.model.reset();
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
             }, converse));
 
             it("can be collapsed under their own header", $.proxy(function () {
+                _addContacts();
                 checkHeaderToggling.apply(this, [this.rosterview.$el.find('dt#pending-xmpp-contacts')]);
             }, converse));
 
             it("can be added to the roster", $.proxy(function () {
-                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
+                _clearContacts();
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'updateRoster').andCallThrough();
                 runs($.proxy(function () {
@@ -171,6 +175,7 @@
             }, converse));
 
             it("can be removed by the user", $.proxy(function () {
+                _addContacts();
                 var jid = mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var view = this.rosterview.get(jid);
                 spyOn(window, 'confirm').andReturn(true);
@@ -190,6 +195,7 @@
             }, converse));
 
             it("will lose their own header once the last one has been removed", $.proxy(function () {
+                _addContacts();
                 var view;
                 spyOn(window, 'confirm').andReturn(true);
                 for (i=0; i<mock.pend_names.length; i++) {
@@ -200,7 +206,7 @@
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
-                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
+                _clearContacts();
                 var i, t, is_last;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'updateRoster').andCallThrough();

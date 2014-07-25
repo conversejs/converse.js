@@ -3266,7 +3266,8 @@
                         toggle_state: toggle_state
                     });
                 }
-                this.$el.hide().html(roster_markup);
+                this.$fragment = $('<span>');
+                this.$fragment.append($(roster_markup));
             },
 
             onAdd: function (item) {
@@ -3279,6 +3280,14 @@
                     // request which will rerender the roster item.
                     converse.getVCard(item.get('jid'));
                 }
+            },
+
+            showRoster: function () {
+                if (this.$fragment) {
+                    this.$el.html(this.$fragment)
+                    delete this.$fragment;
+                }
+                return this;
             },
 
             onChange: function (item) {
@@ -3342,6 +3351,17 @@
                 return this;
             },
 
+            getRosterElement: function () {
+                // TODO: see is _ensureElement can be used.
+                // Return the document fragment if it exists.
+                var $el;
+                if (this.$fragment) {
+                    return this.$fragment;
+                } else {
+                    return this.$el;
+                }
+            },
+
             addRosterItem: function (item) {
                 if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
                     return this;
@@ -3352,13 +3372,14 @@
                     return this;
                 }
                 view.render()
+                var $el = this.getRosterElement();
                 if (view.$el.hasClass('current-xmpp-contact')) {
                     // TODO: need to add group support
-                    this.$('.roster-group').after(view.el);
+                    $el.find('.roster-group').after(view.el);
                 } else if (view.$el.hasClass('pending-xmpp-contact')) {
-                    this.$('#pending-xmpp-contacts').after(view.el);
+                    $el.find('#pending-xmpp-contacts').after(view.el);
                 } else if (view.$el.hasClass('requesting-xmpp-contact')) {
-                    this.$('#xmpp-contact-requests').after(view.render().el);
+                    $el.find('#xmpp-contact-requests').after(view.render().el);
                 }
                 return this;
             },
@@ -3379,9 +3400,10 @@
             },
 
             toggleHeaders: function () {
-                var $contact_requests = this.$('#xmpp-contact-requests'),
-                    $pending_contacts = this.$('#pending-xmpp-contacts');
-                var $groups = this.$el.find('.roster-group');
+                var $el = this.getRosterElement();
+                var $contact_requests = $el.find('#xmpp-contact-requests'),
+                    $pending_contacts = $el.find('#pending-xmpp-contacts');
+                var $groups = $el.find('.roster-group');
                 // Hide the headers if there are no contacts under them
                 _.each([$groups, $contact_requests, $pending_contacts], function (h) {
                     var show_or_hide = function (h) {
@@ -3431,28 +3453,18 @@
                  * 1). See if the jquery detach method can be somehow used to avoid DOM reflows.
                  * 2). Likewise see if documentFragment can be used.
                  */
-                this.$el.find('.roster-group').each($.proxy(function (idx, group) {
+                var $el = this.getRosterElement();
+                $el.find('.roster-group').each($.proxy(function (idx, group) {
                     var $group = $(group);
                     var $contacts = $group.nextUntil('dt', 'dd.current-xmpp-contact');
                     $group.after($contacts.tsort({sortFunction: this.sortFunction, data: 'status'}, 'a'));
                 },this));
                 // Also sort pending and requesting contacts
                 var crit = {order:'asc'},
-                    $contact_requests = this.$('#xmpp-contact-requests'),
-                    $pending_contacts = this.$('#pending-xmpp-contacts');
+                    $contact_requests = $el.find('#xmpp-contact-requests'),
+                    $pending_contacts = $el.find('#pending-xmpp-contacts');
                 $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
                 $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
-                return this;
-            },
-
-            showRoster: function () {
-                if (!this.$el.is(':visible')) {
-                    // Once all initial roster items have been added, we
-                    // can show the roster.
-                    // TODO: It would be more efficient to use a
-                    // documentFragment and then put that in the DOM
-                    this.$el.show();
-                }
                 return this;
             }
         });

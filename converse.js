@@ -280,6 +280,9 @@
             'xa': __('This contact is away for an extended period'),
             'away': __('This contact is away')
         };
+        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
+        var HEADER_CURRENT_CONTACTS =  __('My contacts');
+        var HEADER_UNGROUPED = __('Ungrouped');
 
         // Module-level variables
         // ----------------------
@@ -2806,6 +2809,7 @@
                     'id': jid,
                     'user_id': Strophe.getNodeFromJid(jid),
                     'resources': [],
+                    'groups': [],
                     'status': ''
                 }, attributes);
                 attrs.sorted = false;
@@ -3252,22 +3256,22 @@
             },
 
             render: function () {
-                var desc_group_toggle = __('Click to hide these contacts'),
-                    toggle_state = 'opened',
+                var toggle_state = 'opened', // TODO: remember state...
                     roster_markup = converse.templates.group_header({
-                        label_group: this.roster_groups ? __('Ungrouped') : __('My contacts'),
-                        desc_group_toggle: desc_group_toggle,
+                        label_group: converse.roster_groups ? HEADER_UNGROUPED : HEADER_CURRENT_CONTACTS,
+                        desc_group_toggle: DESC_GROUP_TOGGLE,
                         toggle_state: toggle_state
                     });
+
                 if (converse.allow_contact_requests) {
                     roster_markup += converse.templates.requesting_contacts({
                         label_contact_requests: __('Contact requests'),
-                        desc_group_toggle: desc_group_toggle,
+                        desc_group_toggle: DESC_GROUP_TOGGLE,
                         toggle_state: toggle_state
                     }) +
                     converse.templates.pending_contacts({
                         label_pending_contacts: __('Pending contacts'),
-                        desc_group_toggle: desc_group_toggle,
+                        desc_group_toggle: DESC_GROUP_TOGGLE,
                         toggle_state: toggle_state
                     });
                 }
@@ -3275,10 +3279,18 @@
                 this.$fragment.append($(roster_markup));
             },
 
+            insertRosterFragment: function () {
+                if (this.$fragment) {
+                    this.$el.html(this.$fragment)
+                    delete this.$fragment;
+                }
+                return this;
+            },
+
             onAdd: function (item) {
-                this.addRosterItem(item).updateRoster();
+                this.addRosterItem(item);
                 if (item.get('is_last')) {
-                    this.sortRoster().showRoster();
+                    this.toggleHeaders().sortRoster().insertRosterFragment().updateCount();
                 }
                 if (!item.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
@@ -3287,19 +3299,11 @@
                 }
             },
 
-            showRoster: function () {
-                if (this.$fragment) {
-                    this.$el.html(this.$fragment)
-                    delete this.$fragment;
-                }
-                return this;
-            },
-
             onChange: function (item) {
                 if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                     return;
                 }
-                this.updateChatBox(item).renderRosterItem(item).updateRoster();
+                this.updateChatBox(item).renderRosterItem(item).toggleHeaders().updateCount();
                 if (item.changed.chat_status) { // A changed chat status implies a new sort order
                     this.sortRoster();
                 }
@@ -3323,14 +3327,14 @@
 
             removeAllRosterItemViews: function () {
                 this.removeAll();
-                this.updateRoster();
+                this.updateCount().toggleHeaders();
                 return this;
             },
 
             removeRosterItemView: function (item) {
                 if (this.get(item.id)) {
                     this.get(item.id).remove();
-                    this.updateRoster();
+                    this.updateCount().toggleHeaders();
                 }
                 return this;
             },
@@ -3361,6 +3365,32 @@
                 }
             },
 
+            addCurrentContact: function (view) {
+                var $el = this.getRosterElement(),
+                    item = view.model;
+                if (converse.roster_groups) {
+                    if (item.get('groups').length === 0) {
+                        $el.find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]').after(view.el);
+                    } else {
+                        _.each(item.get('groups'), $.proxy(function (group) {
+                            var $group = $el.find('.roster-group[data-group="'+group+'"]');
+                            if ($group.length > 0) {
+                                $group.after(view.el);
+                            } else {
+                                $group = $(converse.templates.group_header({
+                                    label_group: group,
+                                    desc_group_toggle: DESC_GROUP_TOGGLE,
+                                    toggle_state: 'opened' // TODO: remember state...
+                                })).after(view.el);
+                                this.getRosterElement().append($group);
+                            }
+                        },this));
+                    }
+                } else {
+                    $el.find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]').after(view.el);
+                }
+            },
+
             addRosterItem: function (item) {
                 var view = new converse.RosterItemView({model: item});
                 this.add(item.id, view);
@@ -3368,21 +3398,13 @@
                     return this;
                 }
                 view.render()
-                var $el = this.getRosterElement();
                 if (view.$el.hasClass('current-xmpp-contact')) {
-                    // TODO: need to add group support
-                    $el.find('.roster-group').after(view.el);
+                    this.addCurrentContact(view);
                 } else if (view.$el.hasClass('pending-xmpp-contact')) {
-                    $el.find('#pending-xmpp-contacts').after(view.el);
+                    this.getRosterElement().find('#pending-xmpp-contacts').after(view.el);
                 } else if (view.$el.hasClass('requesting-xmpp-contact')) {
-                    $el.find('#xmpp-contact-requests').after(view.render().el);
+                    this.getRosterElement().find('#xmpp-contact-requests').after(view.render().el);
                 }
-                return this;
-            },
-
-            updateRoster: function (item) {
-                this.updateCount().toggleHeaders();
-                converse.emit('rosterViewUpdated');
                 return this;
             },
 

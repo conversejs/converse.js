@@ -277,9 +277,10 @@
                 converse.roster_groups = true;
                 converse.rosterview.render();
                 var groups = {
-                    colleagues: 3,
-                    friends: 8,
-                    family: 4
+                    'colleagues': 3,
+                    'friends & acquaintences': 5,
+                    'family': 4,
+                    'ænemies': 3
                 };
                 _.each(_.keys(groups), $.proxy(function (name) {
                     j = i;

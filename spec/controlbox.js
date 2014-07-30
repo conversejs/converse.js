@@ -278,9 +278,10 @@
                 converse.rosterview.render();
                 var groups = {
                     'colleagues': 3,
-                    'friends & acquaintences': 5,
-                    'family': 4,
-                    'ænemies': 3
+                    'friends & acquaintences': 3,
+                    'Family': 4,
+                    'ænemies': 3,
+                    'Ungrouped': 2
                 };
                 _.each(_.keys(groups), $.proxy(function (name) {
                     j = i;
@@ -289,12 +290,15 @@
                             jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'both',
                             ask: null,
-                            groups: [name],
+                            groups: name === 'ungrouped'? [] : [name],
                             fullname: mock.cur_names[i],
                             is_last: i===(mock.cur_names.length-1)
                         });
                     }
                 }, converse));
+                // Check that the groups appear alphabetically
+                t = this.rosterview.$el.find('dt.roster-group a.group-toggle').text();
+                expect(t).toEqual('colleaguesFamilyfriends & acquaintencesUngrouped');
             }, converse));
 
             it("can change their status to online and be sorted alphabetically", $.proxy(function () {

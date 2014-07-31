@@ -2828,6 +2828,22 @@
                 "click .remove-xmpp-contact": "removeContact"
             },
 
+            initialize: function () {
+                this.model.on("change", this.onChange, this);
+            },
+
+            onChange: function () {
+                if (converse.show_only_online_users) {
+                    if (this.model.get('chat_status') !== 'online') {
+                        this.$el.hide();
+                    } else {
+                        this.$el.show();
+                    }
+                } else {
+                    this.render();
+                }
+            },
+
             openChat: function (ev) {
                 ev.preventDefault();
                 return converse.chatboxviews.showChat({
@@ -2846,10 +2862,11 @@
                 var result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
                     var bare_jid = this.model.get('jid');
-                    converse.connection.roster.remove(bare_jid, function (iq) {
+                    converse.connection.roster.remove(bare_jid, $.proxy(function (iq) {
                         converse.connection.roster.unauthorize(bare_jid);
                         converse.rosterview.model.remove(bare_jid);
-                    });
+                        this.remove();
+                    }, this));
                 }
             },
 
@@ -3248,9 +3265,9 @@
                 this.model.off(); 
                 this.model.on("add", this.onAdd, this);
                 this.model.on('change', this.onChange, this); 
-                this.model.on("remove", this.removeRosterItemView, this);
-                this.model.on("destroy", this.removeRosterItemView, this);
-                this.model.on("reset", this.removeAllRosterItemViews, this);
+                this.model.on("remove", this.update, this);
+                this.model.on("destroy", this.update, this);
+                this.model.on("reset", this.reset, this);
                 this.render();
                 this.model.fetch({add: true}); // Get the cached roster items from localstorage
             },
@@ -3279,6 +3296,16 @@
                 this.$fragment.append($(roster_markup));
             },
 
+            update: function (item) {
+                this.updateCount().toggleHeaders();
+            },
+
+            reset: function () {
+                this.removeAll();
+                this.update();
+                return this;
+            },
+
             insertRosterFragment: function () {
                 if (this.$fragment) {
                     this.$el.html(this.$fragment)
@@ -3303,7 +3330,7 @@
                 if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                     return;
                 }
-                this.updateChatBox(item).renderRosterItem(item).toggleHeaders().updateCount();
+                this.updateChatBox(item).toggleHeaders().updateCount();
                 if (item.changed.chat_status) { // A changed chat status implies a new sort order
                     this.sortRoster();
                 }
@@ -3322,35 +3349,6 @@
                     changes.status = item.get('status');
                 }
                 chatbox.save(changes);
-                return this;
-            },
-
-            removeAllRosterItemViews: function () {
-                this.removeAll();
-                this.updateCount().toggleHeaders();
-                return this;
-            },
-
-            removeRosterItemView: function (item) {
-                if (this.get(item.id)) {
-                    this.get(item.id).remove();
-                    this.updateCount().toggleHeaders();
-                }
-                return this;
-            },
-
-            renderRosterItem: function (item) {
-                var view = this.get(item.id);
-                if (!view) {
-                    converse.log("renderRosterItem called with item that doesn't have a view", "error");
-                    return this;
-                }
-                if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
-                    view.$el.remove();
-                    view.delegateEvents();
-                } else {
-                    view.render()
-                }
                 return this;
             },
 
@@ -3431,6 +3429,7 @@
             },
 
             updateCount: function () {
+                // XXX: Is this still being used/valid?
                 var $count = $('#online-count');
                 $count.text('('+this.model.getNumOnlineContacts()+')');
                 if (!$count.is(':visible')) {
@@ -3441,27 +3440,35 @@
 
             toggleHeaders: function () {
                 var $el = this.getRoster();
-                var $contact_requests = $el.find('#xmpp-contact-requests'),
-                    $pending_contacts = $el.find('#pending-xmpp-contacts');
                 var $groups = $el.find('.roster-group');
-                // Hide the headers if there are no contacts under them
-                _.each([$groups, $contact_requests, $pending_contacts], function (h) {
-                    var show_or_hide = function (h) {
-                        if (h.nextUntil('dt').length) {
-                            if (!h.is(':visible')) {
-                                h.show();
-                            }
+                if (_.contains(this.model.pluck('ask'), 'subscribe')) {
+                    $el.find('#pending-xmpp-contacts').show();
+                } else {
+                    $el.find('#pending-xmpp-contacts').hide();
+                }
+
+                if (_.contains(this.model.pluck('requesting'), true)) {
+                    $el.find('#xmpp-contact-requests').show();
+                } else {
+                    $el.find('#xmpp-contact-requests').hide();
+                }
+
+                // Hide the group headers if there are no contacts under them
+                var show_or_hide = function ($groups) {
+                    if ($groups.nextUntil('dt').length) {
+                        if (!$groups.is(':visible')) {
+                            $groups.show();
                         }
-                        else if (h.is(':visible')) { h.hide(); }
-                    };
-                    if (h.length > 1) {
-                        $groups.each(function (idx, group) {
-                            show_or_hide($(group));
-                        });
-                    } else {
-                        show_or_hide(h);
                     }
-                });
+                    else if ($groups.is(':visible')) { $groups.hide(); }
+                };
+                if ($groups.length > 1) {
+                    $groups.each(function (idx, group) {
+                        show_or_hide($(group));
+                    });
+                } else {
+                    show_or_hide($groups);
+                }
                 return this;
             },
 

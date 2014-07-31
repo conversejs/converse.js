@@ -182,9 +182,27 @@
                     var names = $.map($contacts, function (o) { return $(o).text().trim(); });
                     expect(names).toEqual(_.clone(names).sort());
                 }, converse));
- 
-                // Check that pending and requesting contacts appear after
-                // current contacts.
+            }, converse));
+
+            it("can share contacts among them (values aren't distinct)", $.proxy(function () {
+                // TODO: this test is not finished yet and the thing that it's
+                // testing not yet implemented.
+                _clearContacts();
+                var i=0, j=0, t;
+                spyOn(converse, 'emit');
+                spyOn(this.rosterview, 'updateCount').andCallThrough();
+                converse.roster_groups = true;
+                converse.rosterview.render();
+                for (i=0; i<mock.cur_names.length; i++) {
+                    this.roster.create({
+                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        subscription: 'both',
+                        ask: null,
+                        groups: ['colleagues', 'friends'],
+                        fullname: mock.cur_names[i],
+                        is_last: i===(mock.cur_names.length-1)
+                    });
+                }
             }, converse));
         }, converse));
 
@@ -242,12 +260,17 @@
                 spyOn(this.connection.roster, 'remove').andCallThrough();
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview.model, 'remove').andCallThrough();
+                spyOn(view, 'removeContact').andCallThrough();
+                spyOn(view, 'remove').andCallThrough();
+                view.delegateEvents();
 
                 view.$el.find('.remove-xmpp-contact').click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(this.connection.roster.remove).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 expect(this.rosterview.model.remove).toHaveBeenCalled();
+                expect(view.removeContact).toHaveBeenCalled();
+                expect(view.remove).toHaveBeenCalled();
                 // The element must now be detached from the DOM.
                 expect(view.$el.closest('html').length).toBeFalsy();
             }, converse));
@@ -552,7 +575,7 @@
                 this.rosterview.model.reset();
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
-                spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 spyOn(window, 'confirm').andReturn(true);
                 this.rosterview.initialize(); // Must be initialized only after the spy has been called
                 utils.createContacts('requesting').openControlBox();
@@ -566,7 +589,7 @@
                 accept_button.click();
                 expect(view.declineRequest).toHaveBeenCalled();
                 expect(window.confirm).toHaveBeenCalled();
-                expect(this.rosterview.removeRosterItemView).toHaveBeenCalled();
+                expect(this.rosterview.update).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 // There should now be one less contact
                 expect(this.roster.length).toEqual(mock.req_names.length-1);

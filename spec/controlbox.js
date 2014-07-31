@@ -142,6 +142,9 @@
                 spyOn(this.rosterview, 'updateCount').andCallThrough();
                 converse.roster_groups = true;
                 converse.rosterview.render();
+
+                utils.createContacts('pending');
+                utils.createContacts('requesting');
                 var groups = {
                     'colleagues': 3,
                     'friends & acquaintences': 3,
@@ -162,9 +165,26 @@
                         });
                     }
                 }, converse));
-                // Check that the groups appear alphabetically
-                t = this.rosterview.$el.find('dt.roster-group a.group-toggle').text();
-                expect(t).toEqual('colleaguesFamilyfriends & acquaintencesUngrouped');
+                // Check that the groups appear alphabetically and that
+                // requesting and pending contacts are last.
+                var group_titles = $.map(this.rosterview.$el.find('dt'), function (o) { return $(o).text().trim(); });
+                expect(group_titles).toEqual([
+                    "colleagues",
+                    "Family",
+                    "friends & acquaintences",
+                    "Ungrouped",
+                    "Contact requests",
+                    "Pending contacts"
+                ]);
+                // Check that usernames appear alphabetically per group
+                _.each(_.keys(groups), $.proxy(function (name) {
+                    var $contacts = this.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
+                    var names = $.map($contacts, function (o) { return $(o).text().trim(); });
+                    expect(names).toEqual(_.clone(names).sort());
+                }, converse));
+ 
+                // Check that pending and requesting contacts appear after
+                // current contacts.
             }, converse));
         }, converse));
 

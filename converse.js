@@ -3354,7 +3354,7 @@
                 return this;
             },
 
-            getRosterElement: function () {
+            getRoster: function () {
                 // TODO: see is _ensureElement can be used.
                 // Return the document fragment if it exists.
                 var $el;
@@ -3366,7 +3366,8 @@
             },
 
             getGroup: function (name) {
-                var groups, $groups, group_lower, index;
+                var groups, $groups, group_lower, index,
+                    $el = this.getRoster();
                 var $group = $el.find('.roster-group[data-group="'+name+'"]');
                 if ($group.length > 0) {
                     return $group;
@@ -3379,7 +3380,7 @@
                     }));
                 if ($groups.length) {
                     group_lower = name.toLowerCase();
-                    groups = $.map($groups, function(o) { return o.dataset.name.toLowerCase(); })
+                    groups = $.map($groups, function(o) { return o.dataset.group.toLowerCase(); })
                     groups.push(group_lower);
                     index = groups.sort().indexOf(group_lower);
                     if (index == 0) {
@@ -3392,24 +3393,23 @@
                 } else {
                     // This shouldn't actually happen, since
                     // there's always the Ungrouped.
-                    this.getRosterElement().append($group);
+                    this.getRoster().append($group);
                 }
                 return $group;
             },
 
             addCurrentContact: function (view) {
-                var $el = this.getRosterElement(),
-                    item = view.model;
+                var item = view.model;
                 if (converse.roster_groups) {
                     if (item.get('groups').length === 0) {
-                        $el.find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]').after(view.el);
+                        this.getRoster().find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]').after(view.el);
                     } else {
                         _.each(item.get('groups'), $.proxy(function (group) {
                             this.getGroup(group).after(view.el);
                         },this));
                     }
                 } else {
-                    $el.find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]').after(view.el);
+                    this.getRoster().find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]').after(view.el);
                 }
             },
 
@@ -3423,9 +3423,9 @@
                 if (view.$el.hasClass('current-xmpp-contact')) {
                     this.addCurrentContact(view);
                 } else if (view.$el.hasClass('pending-xmpp-contact')) {
-                    this.getRosterElement().find('#pending-xmpp-contacts').after(view.el);
+                    this.getRoster().find('#pending-xmpp-contacts').after(view.el);
                 } else if (view.$el.hasClass('requesting-xmpp-contact')) {
-                    this.getRosterElement().find('#xmpp-contact-requests').after(view.render().el);
+                    this.getRoster().find('#xmpp-contact-requests').after(view.render().el);
                 }
                 return this;
             },
@@ -3440,7 +3440,7 @@
             },
 
             toggleHeaders: function () {
-                var $el = this.getRosterElement();
+                var $el = this.getRoster();
                 var $contact_requests = $el.find('#xmpp-contact-requests'),
                     $pending_contacts = $el.find('#pending-xmpp-contacts');
                 var $groups = $el.find('.roster-group');
@@ -3493,7 +3493,7 @@
                  * 1). See if the jquery detach method can be somehow used to avoid DOM reflows.
                  * 2). Likewise see if documentFragment can be used.
                  */
-                var $el = this.getRosterElement();
+                var $el = this.getRoster();
                 $el.find('.roster-group').each($.proxy(function (idx, group) {
                     var $group = $(group);
                     var $contacts = $group.nextUntil('dt', 'dd.current-xmpp-contact');

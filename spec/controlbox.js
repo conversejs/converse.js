@@ -128,6 +128,47 @@
 
     describe("The Contacts Roster", $.proxy(function (mock, utils) {
 
+        describe("Roster Groups", $.proxy(function () {
+            function _clearContacts () {
+                utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+                converse.rosterview.initialize(); // Register new listeners and document fragment
+            };
+
+            it("can be used to organize existing contacts", $.proxy(function () {
+                _clearContacts();
+                var i=0, j=0, t;
+                spyOn(converse, 'emit');
+                spyOn(this.rosterview, 'updateCount').andCallThrough();
+                converse.roster_groups = true;
+                converse.rosterview.render();
+                var groups = {
+                    'colleagues': 3,
+                    'friends & acquaintences': 3,
+                    'Family': 4,
+                    'ænemies': 3,
+                    'Ungrouped': 2
+                };
+                _.each(_.keys(groups), $.proxy(function (name) {
+                    j = i;
+                    for (i=j; i<j+groups[name]; i++) {
+                        this.roster.create({
+                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            subscription: 'both',
+                            ask: null,
+                            groups: name === 'ungrouped'? [] : [name],
+                            fullname: mock.cur_names[i],
+                            is_last: i===(mock.cur_names.length-1)
+                        });
+                    }
+                }, converse));
+                // Check that the groups appear alphabetically
+                t = this.rosterview.$el.find('dt.roster-group a.group-toggle').text();
+                expect(t).toEqual('colleaguesFamilyfriends & acquaintencesUngrouped');
+            }, converse));
+        }, converse));
+
+
         describe("Pending Contacts", $.proxy(function () {
             function _clearContacts () {
                 utils.clearBrowserStorage();
@@ -267,38 +308,6 @@
                 // Check that they are sorted alphabetically
                 t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
                 expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-            }, converse));
-
-            it("can be assigned to groups inside the roster", $.proxy(function () {
-                _clearContacts();
-                var i=0, j=0, t;
-                spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'updateCount').andCallThrough();
-                converse.roster_groups = true;
-                converse.rosterview.render();
-                var groups = {
-                    'colleagues': 3,
-                    'friends & acquaintences': 3,
-                    'Family': 4,
-                    'ænemies': 3,
-                    'Ungrouped': 2
-                };
-                _.each(_.keys(groups), $.proxy(function (name) {
-                    j = i;
-                    for (i=j; i<j+groups[name]; i++) {
-                        this.roster.create({
-                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                            subscription: 'both',
-                            ask: null,
-                            groups: name === 'ungrouped'? [] : [name],
-                            fullname: mock.cur_names[i],
-                            is_last: i===(mock.cur_names.length-1)
-                        });
-                    }
-                }, converse));
-                // Check that the groups appear alphabetically
-                t = this.rosterview.$el.find('dt.roster-group a.group-toggle').text();
-                expect(t).toEqual('colleaguesFamilyfriends & acquaintencesUngrouped');
             }, converse));
 
             it("can change their status to online and be sorted alphabetically", $.proxy(function () {

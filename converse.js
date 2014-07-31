@@ -3365,6 +3365,38 @@
                 }
             },
 
+            getGroup: function (name) {
+                var groups, $groups, group_lower, index;
+                var $group = $el.find('.roster-group[data-group="'+name+'"]');
+                if ($group.length > 0) {
+                    return $group;
+                }
+                $groups = $el.find('.roster-group');
+                $group = $(converse.templates.group_header({
+                        label_group: name,
+                        desc_group_toggle: DESC_GROUP_TOGGLE,
+                        toggle_state: 'opened' // TODO: remember state...
+                    }));
+                if ($groups.length) {
+                    group_lower = name.toLowerCase();
+                    groups = $.map($groups, function(o) { return o.dataset.name.toLowerCase(); })
+                    groups.push(group_lower);
+                    index = groups.sort().indexOf(group_lower);
+                    if (index == 0) {
+                        $($groups.first()).before($group);
+                    } else if (index == groups.length) {
+                        $($groups.last()).after($group);
+                    } else {
+                        $($groups.eq(index)).before($group);
+                    }
+                } else {
+                    // This shouldn't actually happen, since
+                    // there's always the Ungrouped.
+                    this.getRosterElement().append($group);
+                }
+                return $group;
+            },
+
             addCurrentContact: function (view) {
                 var $el = this.getRosterElement(),
                     item = view.model;
@@ -3373,37 +3405,7 @@
                         $el.find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]').after(view.el);
                     } else {
                         _.each(item.get('groups'), $.proxy(function (group) {
-                            var groups, $groups, group_lower, index, header;
-                            var $group = $el.find('.roster-group[data-group="'+group+'"]');
-                            if ($group.length > 0) {
-                                $group.after(view.el);
-                            } else {
-                                $groups = $el.find('.roster-group');
-
-                                header = $(converse.templates.group_header({
-                                        label_group: group,
-                                        desc_group_toggle: DESC_GROUP_TOGGLE,
-                                        toggle_state: 'opened' // TODO: remember state...
-                                    })).after(view.el)
-
-                                if ($groups.length) {
-                                    group_lower = group.toLowerCase();
-                                    groups = $.map($groups, function(o) { return o.dataset.group.toLowerCase(); })
-                                    groups.push(group_lower);
-                                    index = groups.sort().indexOf(group_lower);
-                                    if (index == 0) {
-                                        $($groups.first()).before(header);
-                                    } else if (index == groups.length) {
-                                        $($groups.last()).after(header);
-                                    } else {
-                                        $($groups.eq(index)).before(header);
-                                    }
-                                } else {
-                                    // This shouldn't actually happen, since
-                                    // there's always the Ungrouped.
-                                    this.getRosterElement().append(header);
-                                }
-                            }
+                            this.getGroup(group).after(view.el);
                         },this));
                     }
                 } else {

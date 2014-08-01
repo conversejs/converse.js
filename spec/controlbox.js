@@ -193,16 +193,24 @@
                 spyOn(this.rosterview, 'updateCount').andCallThrough();
                 converse.roster_groups = true;
                 converse.rosterview.render();
+                var groups = ['colleagues', 'friends'];
                 for (i=0; i<mock.cur_names.length; i++) {
                     this.roster.create({
                         jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
-                        groups: ['colleagues', 'friends'],
+                        groups: groups,
                         fullname: mock.cur_names[i],
                         is_last: i===(mock.cur_names.length-1)
                     });
                 }
+                // Check that usernames appear alphabetically per group
+                _.each(groups, $.proxy(function (name) {
+                    var $contacts = this.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
+                    var names = $.map($contacts, function (o) { return $(o).text().trim(); });
+                    expect(names).toEqual(_.clone(names).sort());
+                    expect(names.length).toEqual(mock.cur_names.length);
+                }, converse));
             }, converse));
         }, converse));
 

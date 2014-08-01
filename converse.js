@@ -2724,9 +2724,7 @@
             },
 
             toggle: function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')});
                 this.$('.minimized-chats-flyout').toggle();
             },
@@ -2830,6 +2828,9 @@
 
             initialize: function () {
                 this.model.on("change", this.onChange, this);
+                this.model.on("remove", this.remove, this);
+                this.model.on("destroy", this.remove, this);
+                this.model.on("open", this.openChat, this);
             },
 
             onChange: function () {
@@ -2845,7 +2846,7 @@
             },
 
             openChat: function (ev) {
-                ev.preventDefault();
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 return converse.chatboxviews.showChat({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
@@ -2858,7 +2859,7 @@
             },
 
             removeContact: function (ev) {
-                ev.preventDefault();
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
                     var bare_jid = this.model.get('jid');
@@ -3250,7 +3251,7 @@
             }
         });
 
-        this.RosterView = Backbone.Overview.extend({
+        this.RosterView = Backbone.View.extend({
             tagName: 'dl',
             id: 'converse-roster',
             events: {
@@ -3294,6 +3295,7 @@
                 }
                 this.$fragment = $('<span>');
                 this.$fragment.append($(roster_markup));
+                return this;
             },
 
             update: function (item) {
@@ -3301,8 +3303,8 @@
             },
 
             reset: function () {
-                this.removeAll();
-                this.update();
+                this.$el.find('span').empty();
+                this.render().update();
                 return this;
             },
 
@@ -3396,34 +3398,34 @@
                 return $group;
             },
 
-            addCurrentContact: function (view) {
-                var item = view.model;
+            addCurrentContact: function (item) {
                 if (converse.roster_groups) {
                     if (item.get('groups').length === 0) {
-                        this.getRoster().find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]').after(view.el);
+                        this.getRoster().find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]')
+                            .after((new converse.RosterItemView({model: item})).render().el);
                     } else {
                         _.each(item.get('groups'), $.proxy(function (group) {
-                            this.getGroup(group).after(view.el);
+                            // We need a separate view per group
+                            this.getGroup(group).after((new converse.RosterItemView({model: item})).render().el);
                         },this));
                     }
                 } else {
-                    this.getRoster().find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]').after(view.el);
+                    this.getRoster().find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]')
+                        .after((new converse.RosterItemView({model: item})).render().el);
                 }
             },
 
             addRosterItem: function (item) {
-                var view = new converse.RosterItemView({model: item});
-                this.add(item.id, view);
-                if ((converse.show_only_online_users) && (item.get('chat_status') !== 'online')) {
-                    return this;
-                }
-                view.render()
-                if (view.$el.hasClass('current-xmpp-contact')) {
-                    this.addCurrentContact(view);
-                } else if (view.$el.hasClass('pending-xmpp-contact')) {
-                    this.getRoster().find('#pending-xmpp-contacts').after(view.el);
-                } else if (view.$el.hasClass('requesting-xmpp-contact')) {
-                    this.getRoster().find('#xmpp-contact-requests').after(view.render().el);
+                var view;
+                if (item.get('subscription') === 'both' || item.get('subscription') === 'to') {
+                    this.addCurrentContact(item);
+                } else {
+                    view = (new converse.RosterItemView({model: item})).render();
+                    if ((item.get('ask') === 'subscribe') || (item.get('subscription') === 'from')) {
+                        this.getRoster().find('#pending-xmpp-contacts').after(view.el);
+                    } else if (item.get('requesting') === true) {
+                        this.getRoster().find('#xmpp-contact-requests').after(view.el);
+                    }
                 }
                 return this;
             },
@@ -3496,9 +3498,7 @@
             },
 
             sortRoster: function (chat_status) {
-                /* XXX
-                 * 1). See if the jquery detach method can be somehow used to avoid DOM reflows.
-                 * 2). Likewise see if documentFragment can be used.
+                /* XXX See if the jquery detach method can be somehow used to avoid DOM reflows.
                  */
                 var $el = this.getRoster();
                 $el.find('.roster-group').each($.proxy(function (idx, group) {

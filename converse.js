@@ -140,6 +140,9 @@
             (typeof DSA !== "undefined")
         );
 
+        var OPENED = 'opened';
+        var CLOSED = 'closed';
+
         // Default configuration values
         // ----------------------------
         this.allow_contact_requests = true;
@@ -281,8 +284,17 @@
             'away': __('This contact is away')
         };
         var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
+
         var HEADER_CURRENT_CONTACTS =  __('My contacts');
+        var HEADER_PENDING_CONTACTS = __('Pending contacts');
+        var HEADER_REQUESTING_CONTACTS = __('Contact requests');
         var HEADER_UNGROUPED = __('Ungrouped');
+
+        var HEADER_WEIGHTS = {};
+        HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
+        HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
+        HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
+        HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
         // Module-level variables
         // ----------------------
@@ -3251,12 +3263,99 @@
             }
         });
 
-        this.RosterView = Backbone.View.extend({
-            tagName: 'dl',
-            id: 'converse-roster',
+        this.RosterGroup = Backbone.Model.extend({
+            initialize: function (attributes, options) {
+                this.set(_.extend({
+                    description: DESC_GROUP_TOGGLE,
+                    toggle_state: OPENED
+                }, attributes))
+            }
+        });
+
+        this.RosterGroupView = Backbone.View.extend({
             events: {
                 "click a.group-toggle": "toggleGroup"
             },
+
+            render: function () {
+                this.$el.replace(
+                    $(converse.templates.group_header({
+                        label_group: this.model.get('name'),
+                        desc_group_toggle: this.model.get('description'),
+                        toggle_state: this.model.get('state') 
+                    }))
+                );
+                return this;
+            },
+
+            _ensureElement: function() {
+                if (!this.el) {
+                    var $el = $(converse.templates.group_header({
+                        label_group: this.model.get('name'),
+                        desc_group_toggle: this.model.get('description'),
+                        toggle_state: this.model.get('state') 
+                    }));
+                    this.setElement($el, false);
+                } else {
+                    this.setElement(_.result(this, 'el'), false);
+                }
+            },
+
+            toggleGroup: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $el = $(ev.target);
+                $el.parent().nextUntil('dt').slideToggle();
+                if ($el.hasClass("icon-opened")) {
+                    $el.removeClass("icon-opened").addClass("icon-closed");
+                } else {
+                    $el.removeClass("icon-closed").addClass("icon-opened");
+                }
+            }
+        });
+
+        this.RosterGroups = Backbone.Collection.extend({
+            model: converse.RosterGroup,
+            comparator: function (a, b) {
+                /* Groups are sorted alphabetically, ignoring case.
+                 * However, Ungrouped, Requesting Contacts and Pending Contacts
+                 * appear last and in that order. */
+                a = a.get('name');
+                b = b.get('name');
+                var special_groups = _.keys(HEADER_WEIGHTS);
+                var a_is_special = _.contains(special_groups, a);
+                var b_is_special = _.contains(special_groups, b);
+                if (!a_is_special && !b_is_special ) {
+                    return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+                } else if (a_is_special && b_is_special) {
+                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                } else if (!a_is_special && b_is_special) {
+                    return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
+                } else if (a_is_special && !b_is_special) {
+                    return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
+                }
+            },
+
+            initialize: function () {
+                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.roster.groups'+converse.bare_jid));
+            }
+        });
+
+        this.GroupViews = Backbone.Overview.extend({
+
+            initialize: function () {
+                this.model.on("add", this.onAdd, this);
+            },
+
+            onGroupAdd: function (group) {
+                this.add(group.get('name'), group);
+            }
+
+        });
+
+        this.RosterView = Backbone.View.extend({
+            tagName: 'dl',
+            id: 'converse-roster',
 
             initialize: function () {
                 /* If initialize ever gets called again, event listeners will
@@ -3270,31 +3369,16 @@
                 this.model.on("destroy", this.update, this);
                 this.model.on("reset", this.reset, this);
                 this.render();
-                this.model.fetch({add: true}); // Get the cached roster items from localstorage
+
+                this.groupviews = new converse.GroupViews({
+                    model: new converse.RosterGroups()
+                });
+                this.groupviews.model.fetch({add: true});
+                this.model.fetch({add: true});
             },
 
             render: function () {
-                var toggle_state = 'opened', // TODO: remember state...
-                    roster_markup = converse.templates.group_header({
-                        label_group: converse.roster_groups ? HEADER_UNGROUPED : HEADER_CURRENT_CONTACTS,
-                        desc_group_toggle: DESC_GROUP_TOGGLE,
-                        toggle_state: toggle_state
-                    });
-
-                if (converse.allow_contact_requests) {
-                    roster_markup += converse.templates.requesting_contacts({
-                        label_contact_requests: __('Contact requests'),
-                        desc_group_toggle: DESC_GROUP_TOGGLE,
-                        toggle_state: toggle_state
-                    }) +
-                    converse.templates.pending_contacts({
-                        label_pending_contacts: __('Pending contacts'),
-                        desc_group_toggle: DESC_GROUP_TOGGLE,
-                        toggle_state: toggle_state
-                    });
-                }
                 this.$fragment = $('<span>');
-                this.$fragment.append($(roster_markup));
                 return this;
             },
 
@@ -3310,7 +3394,7 @@
 
             insertRosterFragment: function () {
                 if (this.$fragment) {
-                    this.$el.html(this.$fragment)
+                    this.$el.html(this.$fragment.contents())
                     delete this.$fragment;
                 }
                 return this;
@@ -3365,54 +3449,49 @@
                 }
             },
 
-            getGroup: function (name) {
-                var groups, $groups, group_lower, index,
-                    $el = this.getRoster();
-                var $group = $el.find('.roster-group[data-group="'+name+'"]');
-                if ($group.length > 0) {
-                    return $group;
-                }
-                $groups = $el.find('.roster-group');
-                $group = $(converse.templates.group_header({
-                        label_group: name,
-                        desc_group_toggle: DESC_GROUP_TOGGLE,
-                        toggle_state: 'opened' // TODO: remember state...
-                    }));
-                if ($groups.length) {
-                    group_lower = name.toLowerCase();
-                    groups = $.map($groups, function(o) { return o.dataset.group.toLowerCase(); })
-                    groups.push(group_lower);
-                    index = groups.sort().indexOf(group_lower);
-                    if (index == 0) {
-                        $($groups.first()).before($group);
-                    } else if (index == groups.length) {
-                        $($groups.last()).after($group);
-                    } else {
-                        $($groups.eq(index)).before($group);
-                    }
+            positionGroup: function (view) {
+                /* Place the group's DOM element in the correct alphabetical
+                 * position amongst the other groups in the roster.
+                 */
+                var groups = this.groupviews.model;
+                var index = groups.indexOf(view.model);
+                if (index == 0) {
+                    this.getRoster().prepend(view.$el);
+                } else if (index == (groups.length-1)) {
+                    this.getRoster().find('.roster-group').last().siblings('dd').last().after(view.$el);
                 } else {
-                    // This shouldn't actually happen, since
-                    // there's always the Ungrouped.
-                    this.getRoster().append($group);
+                    $(this.getRoster().find('.roster-group').eq(index)).before(view.$el);
                 }
-                return $group;
+                return view;
+            },
+
+            getGroup: function (name) {
+                /* Returns the group view for a group specified by name.
+                 * Creates the view if it doesn't exist.
+                 */
+                var view =  this.groupviews.get(name);
+                if (view) {
+                    return view;
+                }
+                view = new converse.RosterGroupView({
+                    model: this.groupviews.model.create({name: name})
+                });
+                this.groupviews.add(name, view);
+                return this.positionGroup(view)
             },
 
             addCurrentContact: function (item) {
+                var groups;
                 if (converse.roster_groups) {
-                    if (item.get('groups').length === 0) {
-                        this.getRoster().find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]')
-                            .after((new converse.RosterContactView({model: item})).render().el);
-                    } else {
-                        _.each(item.get('groups'), $.proxy(function (group) {
-                            // We need a separate view per group
-                            this.getGroup(group).after((new converse.RosterContactView({model: item})).render().el);
-                        },this));
-                    }
+                    groups = item.get('groups') || [HEADER_UNGROUPED];
                 } else {
-                    this.getRoster().find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]')
-                        .after((new converse.RosterContactView({model: item})).render().el);
+                    groups = [HEADER_CURRENT_CONTACTS];
                 }
+                _.each(groups, $.proxy(function (group) {
+                    // We need a separate view per group
+                    this.getGroup(group).$el
+                        .after((new converse.RosterContactView({model: item})).render().el);
+                },this));
             },
 
             addRosterContact: function (item) {
@@ -3422,9 +3501,9 @@
                 } else {
                     view = (new converse.RosterContactView({model: item})).render();
                     if ((item.get('ask') === 'subscribe') || (item.get('subscription') === 'from')) {
-                        this.getRoster().find('#pending-xmpp-contacts').after(view.el);
+                        this.getGroup(HEADER_PENDING_CONTACTS).$el.after(view.el);
                     } else if (item.get('requesting') === true) {
-                        this.getRoster().find('#xmpp-contact-requests').after(view.el);
+                        this.getGroup(HEADER_REQUESTING_CONTACTS).$el.after(view.el);
                     }
                 }
                 return this;
@@ -3472,17 +3551,6 @@
                     show_or_hide($groups);
                 }
                 return this;
-            },
-
-            toggleGroup: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $el = $(ev.target);
-                $el.parent().nextUntil('dt').slideToggle();
-                if ($el.hasClass("icon-opened")) {
-                    $el.removeClass("icon-opened").addClass("icon-closed");
-                } else {
-                    $el.removeClass("icon-closed").addClass("icon-opened");
-                }
             },
 
             sortFunction: function (a, b) {

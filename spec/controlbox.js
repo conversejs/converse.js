@@ -11,18 +11,15 @@
     var checkHeaderToggling = function ($header) {
         var $toggle = $header.find('a.group-toggle');
         expect($header.css('display')).toEqual('block');
-        spyOn(this.rosterview, 'toggleGroup').andCallThrough();
         expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
         this.rosterview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
         expect($toggle.hasClass('icon-closed')).toBeFalsy();
         expect($toggle.hasClass('icon-opened')).toBeTruthy();
         $toggle.click();
-        expect(this.rosterview.toggleGroup).toHaveBeenCalled();
         expect($toggle.hasClass('icon-closed')).toBeTruthy();
         expect($toggle.hasClass('icon-opened')).toBeFalsy();
         expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:hidden').length).toBeTruthy();
         $toggle.click();
-        expect(this.rosterview.toggleGroup).toHaveBeenCalled();
         expect($toggle.hasClass('icon-closed')).toBeFalsy();
         expect($toggle.hasClass('icon-opened')).toBeTruthy();
         expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
@@ -172,6 +169,7 @@
                     "colleagues",
                     "Family",
                     "friends & acquaintences",
+                    "ænemies",
                     "Ungrouped",
                     "Contact requests",
                     "Pending contacts"

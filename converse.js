@@ -326,10 +326,10 @@
                         img_type = $vcard.find('TYPE').text(),
                         url = $vcard.find('URL').text();
                     if (jid) {
-                        var rosteritem = converse.roster.get(jid);
-                        if (rosteritem) {
-                            fullname = _.isEmpty(fullname)? rosteritem.get('fullname') || jid: fullname;
-                            rosteritem.save({
+                        var contact = converse.roster.get(jid);
+                        if (contact) {
+                            fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
+                            contact.save({
                                 'fullname': fullname,
                                 'image_type': img_type,
                                 'image': img,
@@ -345,9 +345,9 @@
                 jid,
                 function (iq) {
                     // Error callback
-                    var rosteritem = converse.roster.get(jid);
-                    if (rosteritem) {
-                        rosteritem.save({
+                    var contact = converse.roster.get(jid);
+                    if (contact) {
+                        contact.save({
                             'vcard_updated': moment().format()
                         });
                     }
@@ -490,9 +490,9 @@
 
         this.initRoster = function () {
             // Set up the roster
-            this.roster = new this.RosterItems();
+            this.roster = new this.RosterContacts();
             this.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                b64_sha1('converse.rosteritems-'+converse.bare_jid));
+                b64_sha1('converse.contacts-'+converse.bare_jid));
             this.registerRosterHandler();
             this.registerRosterXHandler();
             this.registerPresenceHandler();
@@ -1355,8 +1355,8 @@
 
             updateVCard: function () {
                 var jid = this.model.get('jid'),
-                    rosteritem = converse.roster.get(jid);
-                if ((rosteritem) && (!rosteritem.get('vcard_updated'))) {
+                    contact = converse.roster.get(jid);
+                if ((contact) && (!contact.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
                         $.proxy(function (jid, fullname, image, image_type, url) {
@@ -2797,7 +2797,7 @@
             },
         });
 
-        this.RosterItem = Backbone.Model.extend({
+        this.RosterContact = Backbone.Model.extend({
             initialize: function (attributes, options) {
                 var jid = attributes.jid;
                 if (!attributes.fullname) {
@@ -2816,7 +2816,7 @@
             }
         });
 
-        this.RosterItemView = Backbone.View.extend({
+        this.RosterContactView = Backbone.View.extend({
             tagName: 'dd',
 
             events: {
@@ -2952,10 +2952,10 @@
             }
         });
 
-        this.RosterItems = Backbone.Collection.extend({
-            model: converse.RosterItem,
-            comparator : function (rosteritem) {
-                var chat_status = rosteritem.get('chat_status'),
+        this.RosterContacts = Backbone.Collection.extend({
+            model: converse.RosterContact,
+            comparator : function (contact) {
+                var chat_status = contact.get('chat_status'),
                     rank = 4;
                 switch(chat_status) {
                     case 'offline':
@@ -3317,7 +3317,7 @@
             },
 
             onAdd: function (item) {
-                this.addRosterItem(item);
+                this.addRosterContact(item);
                 if (item.get('is_last')) {
                     this.toggleHeaders().sortRoster().insertRosterFragment().updateCount();
                 }
@@ -3402,25 +3402,25 @@
                 if (converse.roster_groups) {
                     if (item.get('groups').length === 0) {
                         this.getRoster().find('.roster-group[data-group="'+HEADER_UNGROUPED+'"]')
-                            .after((new converse.RosterItemView({model: item})).render().el);
+                            .after((new converse.RosterContactView({model: item})).render().el);
                     } else {
                         _.each(item.get('groups'), $.proxy(function (group) {
                             // We need a separate view per group
-                            this.getGroup(group).after((new converse.RosterItemView({model: item})).render().el);
+                            this.getGroup(group).after((new converse.RosterContactView({model: item})).render().el);
                         },this));
                     }
                 } else {
                     this.getRoster().find('.roster-group[data-group="'+HEADER_CURRENT_CONTACTS+'"]')
-                        .after((new converse.RosterItemView({model: item})).render().el);
+                        .after((new converse.RosterContactView({model: item})).render().el);
                 }
             },
 
-            addRosterItem: function (item) {
+            addRosterContact: function (item) {
                 var view;
                 if (item.get('subscription') === 'both' || item.get('subscription') === 'to') {
                     this.addCurrentContact(item);
                 } else {
-                    view = (new converse.RosterItemView({model: item})).render();
+                    view = (new converse.RosterContactView({model: item})).render();
                     if ((item.get('ask') === 'subscribe') || (item.get('subscription') === 'from')) {
                         this.getRoster().find('#pending-xmpp-contacts').after(view.el);
                     } else if (item.get('requesting') === true) {

@@ -649,12 +649,12 @@
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
                 var new_attrs, old_attrs, attrs, old_roster;
                 var num_contacts = this.roster.length;
-                new_roster = new this.RosterItems();
+                new_roster = new this.RosterContacts();
                 // Roster items are yet to be fetched from browserStorage
                 expect(new_roster.length).toEqual(0);
 
                 new_roster.browserStorage = new Backbone.BrowserStorage.session(
-                    b64_sha1('converse.rosteritems-dummy@localhost'));
+                    b64_sha1('converse.contacts-dummy@localhost'));
 
                 new_roster.fetch();
                 expect(new_roster.length).toEqual(num_contacts);

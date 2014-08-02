@@ -338,7 +338,7 @@
                         img_type = $vcard.find('TYPE').text(),
                         url = $vcard.find('URL').text();
                     if (jid) {
-                        var contact = converse.roster.get(jid);
+                        var contact = converse.rosterview.roster.get(jid);
                         if (contact) {
                             fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
                             contact.save({
@@ -357,7 +357,7 @@
                 jid,
                 function (iq) {
                     // Error callback
-                    var contact = converse.roster.get(jid);
+                    var contact = converse.rosterview.roster.get(jid);
                     if (contact) {
                         contact.save({
                             'vcard_updated': moment().format()
@@ -479,40 +479,6 @@
             this.xmppstatus.fetch({success: callback, error: callback});
         };
 
-        this.registerRosterHandler = function () {
-            // Register handlers that depend on the roster
-            this.connection.roster.registerCallback(
-                $.proxy(this.roster.rosterHandler, this.roster),
-                null, 'presence', null);
-        };
-
-        this.registerRosterXHandler = function () {
-            this.connection.addHandler(
-                $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
-                'http://jabber.org/protocol/rosterx', 'message', null);
-        };
-
-        this.registerPresenceHandler = function () {
-            this.connection.addHandler(
-                $.proxy(function (presence) {
-                    this.presenceHandler(presence);
-                    return true;
-                }, this.roster), null, 'presence', null);
-        };
-
-        this.initRoster = function () {
-            // Set up the roster
-            this.roster = new this.RosterContacts();
-            this.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                b64_sha1('converse.contacts-'+converse.bare_jid));
-            this.registerRosterHandler();
-            this.registerRosterXHandler();
-            this.registerPresenceHandler();
-            // Now create the view which will fetch roster items from
-            // browserStorage
-            this.rosterview = new this.RosterView({'model':this.roster});
-        };
-
         this.registerGlobalEventHandlers = function () {
             $(document).click(function() {
                 if ($('.toggle-otr ul').is(':visible')) {
@@ -599,7 +565,7 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-                this.initRoster();
+                this.rosterview = new this.RosterView({model: new this.RosterGroups()});
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
                 this.giveFeedback(__('Online Contacts'));
@@ -1367,7 +1333,7 @@
 
             updateVCard: function () {
                 var jid = this.model.get('jid'),
-                    contact = converse.roster.get(jid);
+                    contact = converse.rosterview.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
@@ -2492,7 +2458,7 @@
                     resource = Strophe.getResourceFromJid(message_from);
                 }
                 chatbox = this.get(buddy_jid);
-                roster_item = converse.roster.get(buddy_jid);
+                roster_item = converse.rosterview.roster.get(buddy_jid);
 
                 if (roster_item === undefined) {
                     // The buddy was likely removed
@@ -2513,7 +2479,7 @@
                     });
                 }
                 chatbox.receiveMessage($message);
-                converse.roster.addResource(buddy_jid, resource);
+                converse.rosterview.roster.addResource(buddy_jid, resource);
                 converse.emit('message', message);
                 return true;
             }
@@ -2878,6 +2844,7 @@
                     converse.connection.roster.remove(bare_jid, $.proxy(function (iq) {
                         converse.connection.roster.unauthorize(bare_jid);
                         converse.rosterview.model.remove(bare_jid);
+                        this.model.destroy();
                         this.remove();
                     }, this));
                 }
@@ -2966,30 +2933,16 @@
 
         this.RosterContacts = Backbone.Collection.extend({
             model: converse.RosterContact,
-            comparator : function (contact) {
-                var chat_status = contact.get('chat_status'),
-                    rank = 4;
-                switch(chat_status) {
-                    case 'offline':
-                        rank = 0;
-                        break;
-                    case 'unavailable':
-                        rank = 1;
-                        break;
-                    case 'xa':
-                        rank = 2;
-                        break;
-                    case 'away':
-                        rank = 3;
-                        break;
-                    case 'dnd':
-                        rank = 4;
-                        break;
-                    case 'online':
-                        rank = 5;
-                        break;
-                }
-                return rank;
+            comparator: function (contact1, contact2) {
+                var name1 = contact1.get('fullname').toLowerCase();
+                var status1 = contact1.get('chat_status') || 'offline';
+                var name2 = contact2.get('fullname').toLowerCase();
+                var status2 = contact2.get('chat_status') || 'offline';
+                if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
+                    return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
+                } else  {
+                    return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
+                };
             },
 
             subscribeToSuggestedItems: function (msg) {
@@ -3267,14 +3220,29 @@
             initialize: function (attributes, options) {
                 this.set(_.extend({
                     description: DESC_GROUP_TOGGLE,
-                    toggle_state: OPENED
+                    state: OPENED
                 }, attributes))
+
+                // Collection of contacts belonging to this group.
+                this.contacts = new converse.RosterContacts();
             }
         });
 
-        this.RosterGroupView = Backbone.View.extend({
+        this.RosterGroupView = Backbone.Overview.extend({
             events: {
-                "click a.group-toggle": "toggleGroup"
+                "click a.group-toggle": "toggle"
+            },
+
+            initialize: function () {
+                this.model.contacts.on("add", this.addContact, this);
+                this.model.contacts.on("change:chat_status", function (contact) {
+                    // This might be optimized by instead of first sorting, finding the correct position in positionContact
+                    this.model.contacts.sort();
+                    this.positionContact(contact);
+                }, this);
+                this.model.contacts.on("destroy", this.onRemove, this);
+                this.model.contacts.on("remove", this.onRemove, this);
+                converse.rosterview.roster.on('change:groups', this.onContactGroupChange, this);
             },
 
             render: function () {
@@ -3282,7 +3250,7 @@
                     $(converse.templates.group_header({
                         label_group: this.model.get('name'),
                         desc_group_toggle: this.model.get('description'),
-                        toggle_state: this.model.get('state') 
+                        toggle_state: this.model.get('state')
                     }))
                 );
                 return this;
@@ -3293,7 +3261,7 @@
                     var $el = $(converse.templates.group_header({
                         label_group: this.model.get('name'),
                         desc_group_toggle: this.model.get('description'),
-                        toggle_state: this.model.get('state') 
+                        toggle_state: this.model.get('state')
                     }));
                     this.setElement($el, false);
                 } else {
@@ -3301,14 +3269,53 @@
                 }
             },
 
-            toggleGroup: function (ev) {
+            positionContact: function (contact) {
+                /* Place the contact's DOM element in the correct alphabetical
+                 * position amongst the other contacts in this group.
+                 */
+                var view = this.get(contact.get('id'));
+                var index = this.model.contacts.indexOf(contact);
+                if (index == 0) {
+                    this.$el.after(view.render().el);
+                } else if (index == (this.model.contacts.length-1)) {
+                    this.$el.nextUntil('dt').last().after(view.$el);
+                } else {
+                    this.$el.nextUntil('dt').eq(index).before(view.$el);
+                }
+                return view;
+            },
+
+            toggle: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $el = $(ev.target);
-                $el.parent().nextUntil('dt').slideToggle();
+                this.$el.nextUntil('dt').slideToggle();
                 if ($el.hasClass("icon-opened")) {
                     $el.removeClass("icon-opened").addClass("icon-closed");
                 } else {
                     $el.removeClass("icon-closed").addClass("icon-opened");
+                }
+            },
+
+            addContact: function (contact) {
+                this.add(contact.get('id'), new converse.RosterContactView({model: contact}));
+                this.positionContact(contact);
+                this.$el.show();
+            },
+
+            onContactGroupChange: function (contact) {
+                var in_this_group = _.contains(contact.get('groups'), this.model.get('name'));
+                var cid = contact.get('id');
+                var in_this_overview = !this.get(cid);
+                if (in_this_group && !in_this_overview) {
+                    this.remove(cid); // Contact has been added to this group
+                } else if (!in_this_group && in_this_overview) {
+                    this.addContact(contact); // Contact has been removed from this group
+                }
+            },
+
+            onRemove: function (contact) {
+                if (this.model.contacts.length === 0) {
+                    this.$el.hide();
                 }
             }
         });
@@ -3344,52 +3351,78 @@
         this.GroupViews = Backbone.Overview.extend({
 
             initialize: function () {
-                this.model.on("add", this.onAdd, this);
+                this.model.on("add", this.onGroupAdd, this);
             },
 
             onGroupAdd: function (group) {
                 this.add(group.get('name'), group);
-            }
+            },
 
         });
 
-        this.RosterView = Backbone.View.extend({
+        this.RosterView = Backbone.Overview.extend({
             tagName: 'dl',
             id: 'converse-roster',
 
             initialize: function () {
-                /* If initialize ever gets called again, event listeners will
-                 * be registered twice. So we turn them off first.
-                 * Currently only an issue in tests.
-                 */
-                this.model.off(); 
-                this.model.on("add", this.onAdd, this);
-                this.model.on('change', this.onChange, this); 
-                this.model.on("remove", this.update, this);
-                this.model.on("destroy", this.update, this);
+                this.roster = new converse.RosterContacts();
+                this.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.contacts-'+converse.bare_jid));
+                this.registerRosterHandler();
+                this.registerRosterXHandler();
+                this.registerPresenceHandler();
+
+                this.roster.on("add", this.onAdd, this);
+                this.roster.on('change', this.onChange, this);
+                this.roster.on("remove", this.update, this);
+                this.roster.on("destroy", this.update, this);
                 this.model.on("reset", this.reset, this);
                 this.render();
-
-                this.groupviews = new converse.GroupViews({
-                    model: new converse.RosterGroups()
-                });
-                this.groupviews.model.fetch({add: true});
                 this.model.fetch({add: true});
+                this.roster.fetch({add: true});
             },
 
             render: function () {
-                this.$fragment = $('<span>');
+                this.$el.empty();
                 return this;
             },
 
             update: function (item) {
-                this.updateCount().toggleHeaders();
+                // XXX: Is this still being used/valid?
+                var $count = $('#online-count');
+                $count.text('('+this.roster.getNumOnlineContacts()+')');
+                if (!$count.is(':visible')) {
+                    $count.show();
+                }
+                return this;
             },
 
             reset: function () {
-                this.$el.find('span').empty();
+                this.roster.reset();
+                this.removeAll();
                 this.render().update();
                 return this;
+            },
+
+            registerRosterHandler: function () {
+                // Register handlers that depend on the roster
+                converse.connection.roster.registerCallback(
+                    $.proxy(this.roster.rosterHandler, this.roster),
+                    null, 'presence', null);
+            },
+
+            registerRosterXHandler: function () {
+                converse.connection.addHandler(
+                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                    'http://jabber.org/protocol/rosterx', 'message', null);
+            },
+
+            registerPresenceHandler: function () {
+                converse.connection.addHandler(
+                    $.proxy(function (presence) {
+                        this.roster.presenceHandler(presence);
+                        return true;
+                    }, this), null, 'presence', null);
             },
 
             insertRosterFragment: function () {
@@ -3403,7 +3436,7 @@
             onAdd: function (item) {
                 this.addRosterContact(item);
                 if (item.get('is_last')) {
-                    this.toggleHeaders().sortRoster().insertRosterFragment().updateCount();
+                    this.update();
                 }
                 if (!item.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
@@ -3416,10 +3449,7 @@
                 if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
                     return;
                 }
-                this.updateChatBox(item).toggleHeaders().updateCount();
-                if (item.changed.chat_status) { // A changed chat status implies a new sort order
-                    this.sortRoster();
-                }
+                this.updateChatBox(item).update();
             },
 
             updateChatBox: function (item, changed) {
@@ -3439,7 +3469,7 @@
             },
 
             getRoster: function () {
-                // TODO: see is _ensureElement can be used.
+                // TODO: see if _ensureElement can be used.
                 // Return the document fragment if it exists.
                 var $el;
                 if (this.$fragment) {
@@ -3453,11 +3483,10 @@
                 /* Place the group's DOM element in the correct alphabetical
                  * position amongst the other groups in the roster.
                  */
-                var groups = this.groupviews.model;
-                var index = groups.indexOf(view.model);
+                var index = this.model.indexOf(view.model);
                 if (index == 0) {
                     this.getRoster().prepend(view.$el);
-                } else if (index == (groups.length-1)) {
+                } else if (index == (this.model.length-1)) {
                     this.getRoster().find('.roster-group').last().siblings('dd').last().after(view.$el);
                 } else {
                     $(this.getRoster().find('.roster-group').eq(index)).before(view.$el);
@@ -3466,32 +3495,38 @@
             },
 
             getGroup: function (name) {
-                /* Returns the group view for a group specified by name.
+                /* Returns the group view as specified by name.
                  * Creates the view if it doesn't exist.
                  */
-                var view =  this.groupviews.get(name);
+                var view =  this.get(name);
                 if (view) {
                     return view;
                 }
                 view = new converse.RosterGroupView({
-                    model: this.groupviews.model.create({name: name})
+                    model: this.model.create({name: name, id: b64_sha1(name)})
                 });
-                this.groupviews.add(name, view);
+                this.add(name, view);
                 return this.positionGroup(view)
+            },
+
+            addContactToGroup: function (contact, name) {
+                var group = this.getGroup(name);
+                group.model.contacts.add(contact);
             },
 
             addCurrentContact: function (item) {
                 var groups;
                 if (converse.roster_groups) {
-                    groups = item.get('groups') || [HEADER_UNGROUPED];
+                    groups = item.get('groups');
+                    if (groups.length === 0) {
+                        groups = [HEADER_UNGROUPED];
+                    }
                 } else {
                     groups = [HEADER_CURRENT_CONTACTS];
                 }
-                _.each(groups, $.proxy(function (group) {
-                    // We need a separate view per group
-                    this.getGroup(group).$el
-                        .after((new converse.RosterContactView({model: item})).render().el);
-                },this));
+                _.each(groups, $.proxy(function (name) {
+                    this.addContactToGroup(item, name);
+                }, this));
             },
 
             addRosterContact: function (item) {
@@ -3501,85 +3536,11 @@
                 } else {
                     view = (new converse.RosterContactView({model: item})).render();
                     if ((item.get('ask') === 'subscribe') || (item.get('subscription') === 'from')) {
-                        this.getGroup(HEADER_PENDING_CONTACTS).$el.after(view.el);
+                        this.addContactToGroup(item, HEADER_PENDING_CONTACTS)
                     } else if (item.get('requesting') === true) {
-                        this.getGroup(HEADER_REQUESTING_CONTACTS).$el.after(view.el);
+                        this.addContactToGroup(item, HEADER_REQUESTING_CONTACTS)
                     }
                 }
-                return this;
-            },
-
-            updateCount: function () {
-                // XXX: Is this still being used/valid?
-                var $count = $('#online-count');
-                $count.text('('+this.model.getNumOnlineContacts()+')');
-                if (!$count.is(':visible')) {
-                    $count.show();
-                }
-                return this;
-            },
-
-            toggleHeaders: function () {
-                var $el = this.getRoster();
-                var $groups = $el.find('.roster-group');
-                if (_.contains(this.model.pluck('ask'), 'subscribe')) {
-                    $el.find('#pending-xmpp-contacts').show();
-                } else {
-                    $el.find('#pending-xmpp-contacts').hide();
-                }
-
-                if (_.contains(this.model.pluck('requesting'), true)) {
-                    $el.find('#xmpp-contact-requests').show();
-                } else {
-                    $el.find('#xmpp-contact-requests').hide();
-                }
-
-                // Hide the group headers if there are no contacts under them
-                var show_or_hide = function ($groups) {
-                    if ($groups.nextUntil('dt').length) {
-                        if (!$groups.is(':visible')) {
-                            $groups.show();
-                        }
-                    }
-                    else if ($groups.is(':visible')) { $groups.hide(); }
-                };
-                if ($groups.length > 1) {
-                    $groups.each(function (idx, group) {
-                        show_or_hide($(group));
-                    });
-                } else {
-                    show_or_hide($groups);
-                }
-                return this;
-            },
-
-            sortFunction: function (a, b) {
-                var a_status = a.s[0],
-                    a_name =a.s[1],
-                    b_status = b.s[0],
-                    b_name =b.s[1];
-                if (STATUS_WEIGHTS[a_status] === STATUS_WEIGHTS[b_status]) {
-                    return a_name < b_name ? -1 : (a_name > b_name ? 1 : 0);
-                } else  {
-                    return STATUS_WEIGHTS[a_status] < STATUS_WEIGHTS[b_status] ? -1 : 1;
-                }
-            },
-
-            sortRoster: function (chat_status) {
-                /* XXX See if the jquery detach method can be somehow used to avoid DOM reflows.
-                 */
-                var $el = this.getRoster();
-                $el.find('.roster-group').each($.proxy(function (idx, group) {
-                    var $group = $(group);
-                    var $contacts = $group.nextUntil('dt', 'dd.current-xmpp-contact');
-                    $group.after($contacts.tsort({sortFunction: this.sortFunction, data: 'status'}, 'a'));
-                },this));
-                // Also sort pending and requesting contacts
-                var crit = {order:'asc'},
-                    $contact_requests = $el.find('#xmpp-contact-requests'),
-                    $pending_contacts = $el.find('#pending-xmpp-contacts');
-                $pending_contacts.after($pending_contacts.siblings('dd.pending-xmpp-contact').tsort(crit));
-                $contact_requests.after($contact_requests.siblings('dd.requesting-xmpp-contact').tsort(crit));
                 return this;
             }
         });

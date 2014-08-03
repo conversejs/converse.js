@@ -3229,6 +3229,8 @@
         });
 
         this.RosterGroupView = Backbone.Overview.extend({
+            tagName: 'dt',
+            className: 'roster-group',
             events: {
                 "click a.group-toggle": "toggle"
             },
@@ -3238,7 +3240,7 @@
                 this.model.contacts.on("change:chat_status", function (contact) {
                     // This might be optimized by instead of first sorting, finding the correct position in positionContact
                     this.model.contacts.sort();
-                    this.positionContact(contact);
+                    this.positionContact(contact).render();
                 }, this);
                 this.model.contacts.on("destroy", this.onRemove, this);
                 this.model.contacts.on("remove", this.onRemove, this);
@@ -3246,7 +3248,8 @@
             },
 
             render: function () {
-                this.$el.replace(
+                this.$el.data('group', this.model.get('name'));
+                this.$el.html(
                     $(converse.templates.group_header({
                         label_group: this.model.get('name'),
                         desc_group_toggle: this.model.get('description'),
@@ -3256,19 +3259,6 @@
                 return this;
             },
 
-            _ensureElement: function() {
-                if (!this.el) {
-                    var $el = $(converse.templates.group_header({
-                        label_group: this.model.get('name'),
-                        desc_group_toggle: this.model.get('description'),
-                        toggle_state: this.model.get('state')
-                    }));
-                    this.setElement($el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
-            },
-
             positionContact: function (contact) {
                 /* Place the contact's DOM element in the correct alphabetical
                  * position amongst the other contacts in this group.
@@ -3276,7 +3266,7 @@
                 var view = this.get(contact.get('id'));
                 var index = this.model.contacts.indexOf(contact);
                 if (index === 0) {
-                    this.$el.after(view.render().el);
+                    this.$el.after(view.$el);
                 } else if (index == (this.model.contacts.length-1)) {
                     this.$el.nextUntil('dt').last().after(view.$el);
                 } else {
@@ -3299,8 +3289,9 @@
             },
 
             addContact: function (contact) {
-                this.add(contact.get('id'), new converse.RosterContactView({model: contact}));
-                this.positionContact(contact);
+                var view = new converse.RosterContactView({model: contact});
+                this.add(contact.get('id'), view);
+                this.positionContact(contact).render();
                 this.$el.show();
             },
 
@@ -3425,7 +3416,7 @@
 
             onGroupAdd: function (group) {
                 var view = new converse.RosterGroupView({model: group});
-                this.add(group.get('name'), view);
+                this.add(group.get('name'), view.render());
                 this.positionGroup(view);
             },
 

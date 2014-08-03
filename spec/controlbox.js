@@ -158,7 +158,7 @@
                 _.each(_.keys(groups), $.proxy(function (name) {
                     j = i;
                     for (i=j; i<j+groups[name]; i++) {
-                        this.rosterview.roster.create({
+                        this.roster.create({
                             jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'both',
                             ask: null,
@@ -196,7 +196,7 @@
                 converse.rosterview.render();
                 var groups = ['colleagues', 'friends'];
                 for (i=0; i<mock.cur_names.length; i++) {
-                    this.rosterview.roster.create({
+                    this.roster.create({
                         jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
@@ -224,7 +224,7 @@
                 _.each(_.keys(groups), $.proxy(function (name) {
                     j = i;
                     for (i=j; i<j+groups[name]; i++) {
-                        this.rosterview.roster.create({
+                        this.roster.create({
                             jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                             subscription: 'both',
                             ask: null,
@@ -266,7 +266,7 @@
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'update').andCallThrough();
                 runs($.proxy(function () {
-                    this.rosterview.roster.create({
+                    this.roster.create({
                         jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
@@ -305,7 +305,7 @@
                 var name = mock.pend_names[0];
                 _clearContacts();
                 spyOn(window, 'confirm').andReturn(true);
-                this.rosterview.roster.create({
+                this.roster.create({
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'none',
                     ask: 'subscribe',
@@ -339,7 +339,7 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
                     is_last = i===(mock.pend_names.length-1);
-                    this.rosterview.roster.create({
+                    this.roster.create({
                         jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
@@ -377,7 +377,7 @@
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
-                    this.rosterview.roster.create({
+                    this.roster.create({
                         jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
@@ -416,7 +416,7 @@
                 var name = mock.cur_names[0];
                 _clearContacts();
                 spyOn(window, 'confirm').andReturn(true);
-                this.rosterview.roster.create({
+                this.roster.create({
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'both',
                     ask: null,
@@ -437,7 +437,7 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'online');
+                    this.roster.get(jid).set('chat_status', 'online');
                     expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
@@ -452,7 +452,7 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'dnd');
+                    this.roster.get(jid).set('chat_status', 'dnd');
                     expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
@@ -467,7 +467,7 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'away');
+                    this.roster.get(jid).set('chat_status', 'away');
                     expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
@@ -482,7 +482,7 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'xa');
+                    this.roster.get(jid).set('chat_status', 'xa');
                     expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
@@ -497,7 +497,7 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'unavailable');
+                    this.roster.get(jid).set('chat_status', 'unavailable');
                     expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
                     t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
@@ -510,23 +510,23 @@
                 var i;
                 for (i=0; i<3; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'online');
+                    this.roster.get(jid).set('chat_status', 'online');
                 }
                 for (i=3; i<6; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'dnd');
+                    this.roster.get(jid).set('chat_status', 'dnd');
                 }
                 for (i=6; i<9; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'away');
+                    this.roster.get(jid).set('chat_status', 'away');
                 }
                 for (i=9; i<12; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'xa');
+                    this.roster.get(jid).set('chat_status', 'xa');
                 }
                 for (i=12; i<15; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'unavailable');
+                    this.roster.get(jid).set('chat_status', 'unavailable');
                 }
 
                 var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
@@ -577,7 +577,7 @@
                     }
                 };
                 for (i=0; i<mock.req_names.length; i++) {
-                    this.rosterview.roster.create({
+                    this.roster.create({
                         jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: null,
@@ -601,7 +601,7 @@
                 converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 var name = mock.req_names[0];
                 spyOn(window, 'confirm').andReturn(true);
-                this.rosterview.roster.create({
+                this.roster.create({
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'none',
                     ask: null,
@@ -650,7 +650,7 @@
                 expect(window.confirm).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 // There should now be one less contact
-                expect(this.rosterview.roster.length).toEqual(mock.req_names.length-1);
+                expect(this.roster.length).toEqual(mock.req_names.length-1);
             }, converse));
         }, converse));
 
@@ -664,11 +664,11 @@
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
                 var new_attrs, old_attrs, attrs, old_roster;
-                var num_contacts = this.rosterview.roster.length;
+                var num_contacts = this.roster.length;
                 new_roster = new this.RosterContacts();
                 // Roster items are yet to be fetched from browserStorage
                 expect(new_roster.length).toEqual(0);
-                new_roster.browserStorage = this.rosterview.roster.browserStorage;
+                new_roster.browserStorage = this.roster.browserStorage;
                 new_roster.fetch();
                 expect(new_roster.length).toEqual(num_contacts);
                 // Check that the roster items retrieved from browserStorage
@@ -676,7 +676,7 @@
                 attrs = ['jid', 'fullname', 'subscription', 'ask'];
                 for (i=0; i<attrs.length; i++) {
                     new_attrs = _.pluck(_.pluck(new_roster.models, 'attributes'), attrs[i]);
-                    old_attrs = _.pluck(_.pluck(this.rosterview.roster.models, 'attributes'), attrs[i]);
+                    old_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
                     // Roster items in storage are not necessarily sorted,
                     // so we have to sort them here to do a proper
                     // comparison
@@ -691,7 +691,7 @@
                 // we make some online now
                 for (i=0; i<5; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.rosterview.roster.get(jid).set('chat_status', 'online');
+                    this.roster.get(jid).set('chat_status', 'online');
                 }
             }, converse));
         }, converse));

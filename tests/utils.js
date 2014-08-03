@@ -36,7 +36,7 @@
     };
 
     utils.initRoster = function () {
-        converse.rosterview.roster.browserStorage._clear();
+        converse.roster.browserStorage._clear();
         converse.initRoster();
     };
 
@@ -80,13 +80,13 @@
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
             jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-            views[i] = converse.rosterview.roster.get(jid).trigger("open");
+            views[i] = converse.roster.get(jid).trigger("open");
         }
         return views;
     };
 
     utils.openChatBoxFor = function (jid) {
-        return converse.rosterview.roster.get(jid).trigger("open");
+        return converse.roster.get(jid).trigger("open");
     };
 
     utils.removeRosterContacts = function () {
@@ -134,7 +134,7 @@
             ask = null;
         }
         for (i=0; i<names.length; i++) {
-            converse.rosterview.roster.create({
+            converse.roster.create({
                 ask: ask,
                 fullname: names[i],
                 is_last: i===(names.length-1),

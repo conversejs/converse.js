@@ -338,7 +338,7 @@
                         img_type = $vcard.find('TYPE').text(),
                         url = $vcard.find('URL').text();
                     if (jid) {
-                        var contact = converse.rosterview.roster.get(jid);
+                        var contact = converse.roster.get(jid);
                         if (contact) {
                             fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
                             contact.save({
@@ -357,7 +357,7 @@
                 jid,
                 function (iq) {
                     // Error callback
-                    var contact = converse.rosterview.roster.get(jid);
+                    var contact = converse.roster.get(jid);
                     if (contact) {
                         contact.save({
                             'vcard_updated': moment().format()
@@ -565,6 +565,7 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
+                this.roster = new converse.RosterContacts();
                 this.rosterview = new this.RosterView({model: new this.RosterGroups()});
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
@@ -1333,7 +1334,7 @@
 
             updateVCard: function () {
                 var jid = this.model.get('jid'),
-                    contact = converse.rosterview.roster.get(jid);
+                    contact = converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
@@ -2458,7 +2459,7 @@
                     resource = Strophe.getResourceFromJid(message_from);
                 }
                 chatbox = this.get(buddy_jid);
-                roster_item = converse.rosterview.roster.get(buddy_jid);
+                roster_item = converse.roster.get(buddy_jid);
 
                 if (roster_item === undefined) {
                     // The buddy was likely removed
@@ -2479,7 +2480,7 @@
                     });
                 }
                 chatbox.receiveMessage($message);
-                converse.rosterview.roster.addResource(buddy_jid, resource);
+                converse.roster.addResource(buddy_jid, resource);
                 converse.emit('message', message);
                 return true;
             }
@@ -2734,7 +2735,8 @@
             },
 
             updateUnreadMessagesCounter: function () {
-                var ls = this.model.pluck('num_unread'), count = 0;
+                var ls = this.model.pluck('num_unread'),
+                    count = 0, i;
                 for (i=0; i<ls.length; i++) { count += ls[i]; }
                 this.toggleview.model.set({'num_unread': count});
                 this.render();
@@ -2932,6 +2934,9 @@
 
         this.RosterContacts = Backbone.Collection.extend({
             model: converse.RosterContact,
+            browserStorage: new Backbone.BrowserStorage[converse.storage](
+                b64_sha1('converse.contacts-'+converse.bare_jid)),
+
             comparator: function (contact1, contact2) {
                 var name1 = contact1.get('fullname').toLowerCase();
                 var status1 = contact1.get('chat_status') || 'offline';
@@ -3218,7 +3223,6 @@
                     description: DESC_GROUP_TOGGLE,
                     state: OPENED
                 }, attributes))
-
                 // Collection of contacts belonging to this group.
                 this.contacts = new converse.RosterContacts();
             }
@@ -3238,7 +3242,7 @@
                 }, this);
                 this.model.contacts.on("destroy", this.onRemove, this);
                 this.model.contacts.on("remove", this.onRemove, this);
-                converse.rosterview.roster.on('change:groups', this.onContactGroupChange, this);
+                converse.roster.on('change:groups', this.onContactGroupChange, this);
             },
 
             render: function () {
@@ -3362,21 +3366,18 @@
             id: 'converse-roster',
 
             initialize: function () {
-                this.roster = new converse.RosterContacts();
-                this.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.contacts-'+converse.bare_jid));
                 this.registerRosterHandler();
                 this.registerRosterXHandler();
                 this.registerPresenceHandler();
 
-                this.roster.on("add", this.onAdd, this);
-                this.roster.on('change', this.onChange, this);
-                this.roster.on("remove", this.update, this);
-                this.roster.on("destroy", this.update, this);
+                converse.roster.on("add", this.onAdd, this);
+                converse.roster.on('change', this.onChange, this);
+                converse.roster.on("remove", this.update, this);
+                converse.roster.on("destroy", this.update, this);
                 this.model.on("reset", this.reset, this);
                 this.render();
                 this.model.fetch({add: true});
-                this.roster.fetch({add: true});
+                converse.roster.fetch({add: true});
             },
 
             render: function () {
@@ -3387,7 +3388,7 @@
             update: function () {
                 // XXX: Is this still being used/valid?
                 var $count = $('#online-count');
-                $count.text('('+this.roster.getNumOnlineContacts()+')');
+                $count.text('('+converse.roster.getNumOnlineContacts()+')');
                 if (!$count.is(':visible')) {
                     $count.show();
                 }
@@ -3395,7 +3396,7 @@
             },
 
             reset: function () {
-                this.roster.reset();
+                converse.roster.reset();
                 this.removeAll();
                 this.render().update();
                 return this;
@@ -3404,20 +3405,20 @@
             registerRosterHandler: function () {
                 // Register handlers that depend on the roster
                 converse.connection.roster.registerCallback(
-                    $.proxy(this.roster.rosterHandler, this.roster),
+                    $.proxy(converse.roster.rosterHandler, converse.roster),
                     null, 'presence', null);
             },
 
             registerRosterXHandler: function () {
                 converse.connection.addHandler(
-                    $.proxy(this.roster.subscribeToSuggestedItems, this.roster),
+                    $.proxy(converse.roster.subscribeToSuggestedItems, converse.roster),
                     'http://jabber.org/protocol/rosterx', 'message', null);
             },
 
             registerPresenceHandler: function () {
                 converse.connection.addHandler(
                     $.proxy(function (presence) {
-                        this.roster.presenceHandler(presence);
+                        converse.roster.presenceHandler(presence);
                         return true;
                     }, this), null, 'presence', null);
             },
@@ -3475,7 +3476,7 @@
                     return view;
                 }
                 view = new converse.RosterGroupView({
-                    model: this.model.create({name: name, id: b64_sha1(name)})
+                    model: this.model.create({name: name, id: b64_sha1(name)}),
                 });
                 this.add(name, view);
                 return this.positionGroup(view)

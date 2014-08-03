@@ -13,7 +13,7 @@
             runs(function () {
                 utils.closeAllChatBoxes();
                 utils.removeControlBox();
-                converse.rosterview.roster.browserStorage._clear();
+                converse.roster.browserStorage._clear();
                 utils.initConverse();
                 utils.createContacts();
                 utils.openControlBox();

@@ -3369,11 +3369,11 @@
                 this.registerRosterHandler();
                 this.registerRosterXHandler();
                 this.registerPresenceHandler();
-
-                converse.roster.on("add", this.onAdd, this);
-                converse.roster.on('change', this.onChange, this);
-                converse.roster.on("remove", this.update, this);
+                converse.roster.on("add", this.onContactAdd, this);
+                converse.roster.on('change', this.onContactChange, this);
                 converse.roster.on("destroy", this.update, this);
+                converse.roster.on("remove", this.update, this);
+                this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
                 this.render();
                 this.model.fetch({add: true});
@@ -3423,7 +3423,13 @@
                     }, this), null, 'presence', null);
             },
 
-            onAdd: function (contact) {
+            onGroupAdd: function (group) {
+                var view = new converse.RosterGroupView({model: group});
+                this.add(group.get('name'), view);
+                this.positionGroup(view);
+            },
+
+            onContactAdd: function (contact) {
                 this.addRosterContact(contact).update();
                 if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
@@ -3432,7 +3438,7 @@
                 }
             },
 
-            onChange: function (contact) {
+            onContactChange: function (contact) {
                 this.updateChatBox(contact).update();
             },
 
@@ -3464,27 +3470,21 @@
                 } else {
                     $(this.$('.roster-group').eq(index)).before(view.$el);
                 }
-                return view;
             },
 
             getGroup: function (name) {
-                /* Returns the group view as specified by name.
-                 * Creates the view if it doesn't exist.
+                /* Returns the group as specified by name.
+                 * Creates the group if it doesn't exist.
                  */
                 var view =  this.get(name);
                 if (view) {
-                    return view;
+                    return view.model;
                 }
-                view = new converse.RosterGroupView({
-                    model: this.model.create({name: name, id: b64_sha1(name)}),
-                });
-                this.add(name, view);
-                return this.positionGroup(view);
+                return this.model.create({name: name, id: b64_sha1(name)});
             },
 
             addContactToGroup: function (contact, name) {
-                var group = this.getGroup(name);
-                group.model.contacts.add(contact);
+                this.getGroup(name).contacts.add(contact);
             },
 
             addCurrentContact: function (contact) {

@@ -2946,7 +2946,7 @@
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
                     return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
-                };
+                }
             },
 
             subscribeToSuggestedItems: function (msg) {
@@ -3222,7 +3222,7 @@
                 this.set(_.extend({
                     description: DESC_GROUP_TOGGLE,
                     state: OPENED
-                }, attributes))
+                }, attributes));
                 // Collection of contacts belonging to this group.
                 this.contacts = new converse.RosterContacts();
             }
@@ -3275,7 +3275,7 @@
                  */
                 var view = this.get(contact.get('id'));
                 var index = this.model.contacts.indexOf(contact);
-                if (index == 0) {
+                if (index === 0) {
                     this.$el.after(view.render().el);
                 } else if (index == (this.model.contacts.length-1)) {
                     this.$el.nextUntil('dt').last().after(view.$el);
@@ -3457,7 +3457,7 @@
                  * position amongst the other groups in the roster.
                  */
                 var index = this.model.indexOf(view.model);
-                if (index == 0) {
+                if (index === 0) {
                     this.$el.prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
                     this.$('.roster-group').last().siblings('dd').last().after(view.$el);
@@ -3479,7 +3479,7 @@
                     model: this.model.create({name: name, id: b64_sha1(name)}),
                 });
                 this.add(name, view);
-                return this.positionGroup(view)
+                return this.positionGroup(view);
             },
 
             addContactToGroup: function (contact, name) {
@@ -3509,9 +3509,9 @@
                 } else {
                     view = (new converse.RosterContactView({model: contact})).render();
                     if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
-                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS)
+                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
                     } else if (contact.get('requesting') === true) {
-                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS)
+                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
                     }
                 }
                 return this;

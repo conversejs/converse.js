@@ -137,7 +137,7 @@
             function _clearContacts () {
                 utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-            };
+            }
 
             it("can be used to organize existing contacts", $.proxy(function () {
                 _clearContacts();
@@ -248,13 +248,13 @@
             function _clearContacts () {
                 utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-            };
+            }
 
             function _addContacts () {
                 _clearContacts();
                 // Must be initialized, so that render is called and documentFragment set up.
                 utils.createContacts('pending').openControlBox().openContactsPanel();
-            };
+            }
 
             it("can be collapsed under their own header", $.proxy(function () {
                 _addContacts();
@@ -359,7 +359,7 @@
             function _clearContacts () {
                 utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-            };
+            }
 
             var _addContacts = function () {
                 _clearContacts();

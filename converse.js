@@ -2788,7 +2788,6 @@
                     'groups': [],
                     'status': ''
                 }, attributes);
-                attrs.sorted = false;
                 attrs.chat_status = 'offline';
                 this.set(attrs);
             }
@@ -3077,7 +3076,6 @@
                             ask: item.ask,
                             fullname: item.name || item.jid,
                             groups: item.groups,
-                            is_last: is_last,
                             jid: item.jid,
                             subscription: item.subscription
                         });
@@ -3143,8 +3141,7 @@
                                         image: img,
                                         image_type: img_type,
                                         url: url,
-                                        vcard_updated: moment().format(),
-                                        is_last: true
+                                        vcard_updated: moment().format()
                                     });
                                 }, this),
                                 $.proxy(function (jid, fullname, img, img_type, url) {
@@ -3155,8 +3152,7 @@
                                         subscription: 'none',
                                         ask: null,
                                         requesting: true,
-                                        fullname: jid,
-                                        is_last: true
+                                        fullname: jid
                                     });
                                 }, this)
                             );
@@ -3180,7 +3176,7 @@
                     $show = $presence.find('show'),
                     chat_status = $show.text() || 'online',
                     status_message = $presence.find('status'),
-                    item;
+                    contact;
 
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
@@ -3191,9 +3187,9 @@
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                     return true; // Ignore MUC
                 }
-                item = this.get(bare_jid);
-                if (item && (status_message.text() != item.get('status'))) {
-                    item.save({'status': status_message.text()});
+                contact = this.get(bare_jid);
+                if (contact && (status_message.text() != contact.get('status'))) {
+                    contact.save({'status': status_message.text()});
                 }
                 if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
                     return true;
@@ -3203,14 +3199,14 @@
                     this.unsubscribe(bare_jid);
                 } else if (presence_type === 'unavailable') {
                     if (this.removeResource(bare_jid, resource) === 0) {
-                        if (item) {
-                            item.save({'chat_status': 'offline'});
+                        if (contact) {
+                            contact.save({'chat_status': 'offline'});
                         }
                     }
-                } else if (item) {
+                } else if (contact) {
                     // presence_type is undefined
                     this.addResource(bare_jid, resource);
-                    item.save({'chat_status': chat_status});
+                    contact.save({'chat_status': chat_status});
                 }
                 return true;
             }
@@ -3349,7 +3345,6 @@
         });
 
         this.GroupViews = Backbone.Overview.extend({
-
             initialize: function () {
                 this.model.on("add", this.onGroupAdd, this);
             },
@@ -3387,7 +3382,7 @@
                 return this;
             },
 
-            update: function (item) {
+            update: function () {
                 // XXX: Is this still being used/valid?
                 var $count = $('#online-count');
                 $count.text('('+this.roster.getNumOnlineContacts()+')');
@@ -3425,58 +3420,33 @@
                     }, this), null, 'presence', null);
             },
 
-            insertRosterFragment: function () {
-                if (this.$fragment) {
-                    this.$el.html(this.$fragment.contents())
-                    delete this.$fragment;
-                }
-                return this;
-            },
-
-            onAdd: function (item) {
-                this.addRosterContact(item);
-                if (item.get('is_last')) {
-                    this.update();
-                }
-                if (!item.get('vcard_updated')) {
+            onAdd: function (contact) {
+                this.addRosterContact(contact).update();
+                if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
-                    // request which will rerender the roster item.
-                    converse.getVCard(item.get('jid'));
+                    // request which will rerender the roster contact.
+                    converse.getVCard(contact.get('jid'));
                 }
             },
 
-            onChange: function (item) {
-                if ((_.size(item.changed) === 1) && _.contains(_.keys(item.changed), 'sorted')) {
-                    return;
-                }
-                this.updateChatBox(item).update();
+            onChange: function (contact) {
+                this.updateChatBox(contact).update();
             },
 
-            updateChatBox: function (item, changed) {
-                var chatbox = converse.chatboxes.get(item.get('jid')),
+            updateChatBox: function (contact, changed) {
+                var chatbox = converse.chatboxes.get(contact.get('jid')),
                     changes = {};
                 if (!chatbox) {
                     return this;
                 }
-                if (_.has(item.changed, 'chat_status')) {
-                    changes.chat_status = item.get('chat_status');
+                if (_.has(contact.changed, 'chat_status')) {
+                    changes.chat_status = contact.get('chat_status');
                 }
-                if (_.has(item.changed, 'status')) {
-                    changes.status = item.get('status');
+                if (_.has(contact.changed, 'status')) {
+                    changes.status = contact.get('status');
                 }
                 chatbox.save(changes);
                 return this;
-            },
-
-            getRoster: function () {
-                // TODO: see if _ensureElement can be used.
-                // Return the document fragment if it exists.
-                var $el;
-                if (this.$fragment) {
-                    return this.$fragment;
-                } else {
-                    return this.$el;
-                }
             },
 
             positionGroup: function (view) {
@@ -3485,11 +3455,11 @@
                  */
                 var index = this.model.indexOf(view.model);
                 if (index == 0) {
-                    this.getRoster().prepend(view.$el);
+                    this.$el.prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
-                    this.getRoster().find('.roster-group').last().siblings('dd').last().after(view.$el);
+                    this.$('.roster-group').last().siblings('dd').last().after(view.$el);
                 } else {
-                    $(this.getRoster().find('.roster-group').eq(index)).before(view.$el);
+                    $(this.$('.roster-group').eq(index)).before(view.$el);
                 }
                 return view;
             },
@@ -3514,10 +3484,10 @@
                 group.model.contacts.add(contact);
             },
 
-            addCurrentContact: function (item) {
+            addCurrentContact: function (contact) {
                 var groups;
                 if (converse.roster_groups) {
-                    groups = item.get('groups');
+                    groups = contact.get('groups');
                     if (groups.length === 0) {
                         groups = [HEADER_UNGROUPED];
                     }
@@ -3525,20 +3495,20 @@
                     groups = [HEADER_CURRENT_CONTACTS];
                 }
                 _.each(groups, $.proxy(function (name) {
-                    this.addContactToGroup(item, name);
+                    this.addContactToGroup(contact, name);
                 }, this));
             },
 
-            addRosterContact: function (item) {
+            addRosterContact: function (contact) {
                 var view;
-                if (item.get('subscription') === 'both' || item.get('subscription') === 'to') {
-                    this.addCurrentContact(item);
+                if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
+                    this.addCurrentContact(contact);
                 } else {
-                    view = (new converse.RosterContactView({model: item})).render();
-                    if ((item.get('ask') === 'subscribe') || (item.get('subscription') === 'from')) {
-                        this.addContactToGroup(item, HEADER_PENDING_CONTACTS)
-                    } else if (item.get('requesting') === true) {
-                        this.addContactToGroup(item, HEADER_REQUESTING_CONTACTS)
+                    view = (new converse.RosterContactView({model: contact})).render();
+                    if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
+                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS)
+                    } else if (contact.get('requesting') === true) {
+                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS)
                     }
                 }
                 return this;

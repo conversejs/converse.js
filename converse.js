@@ -3286,9 +3286,11 @@
                 var $el = $(ev.target);
                 this.$el.nextUntil('dt').slideToggle();
                 if ($el.hasClass("icon-opened")) {
+                    this.model.set({state: CLOSED});
                     $el.removeClass("icon-opened").addClass("icon-closed");
                 } else {
                     $el.removeClass("icon-closed").addClass("icon-opened");
+                    this.model.set({state: OPENED});
                 }
             },
 

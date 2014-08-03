@@ -124,7 +124,7 @@
 
     describe("The Contacts Roster", $.proxy(function (mock, utils) {
 
-        describe("Roster Groups", $.proxy(function () {
+        describe("A Roster Group", $.proxy(function () {
 
             beforeEach(function () {
                 converse.roster_groups = true;
@@ -188,7 +188,7 @@
                 }, converse));
             }, converse));
 
-            it("can share contacts among them (values aren't distinct)", $.proxy(function () {
+            it("can share contacts with other roster groups", $.proxy(function () {
                 _clearContacts();
                 var i=0, j=0, t;
                 spyOn(converse, 'emit');
@@ -213,8 +213,36 @@
                     expect(names.length).toEqual(mock.cur_names.length);
                 }, converse));
             }, converse));
-        }, converse));
 
+            it("remembers whether it is closed or opened", $.proxy(function () {
+                var i=0, j=0, t;
+                var groups = {
+                    'colleagues': 3,
+                    'friends & acquaintences': 3,
+                    'Ungrouped': 2
+                };
+                _.each(_.keys(groups), $.proxy(function (name) {
+                    j = i;
+                    for (i=j; i<j+groups[name]; i++) {
+                        this.rosterview.roster.create({
+                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            subscription: 'both',
+                            ask: null,
+                            groups: name === 'ungrouped'? [] : [name],
+                            fullname: mock.cur_names[i],
+                            is_last: i===(mock.cur_names.length-1)
+                        });
+                    }
+                }, converse));
+                var view = this.rosterview.get('colleagues');
+                var $toggle = view.$el.find('a.group-toggle');
+                expect(view.model.get('state')).toBe('opened');
+                $toggle.click();
+                expect(view.model.get('state')).toBe('closed');
+                $toggle.click();
+                expect(view.model.get('state')).toBe('opened');
+            }, converse));
+        }, converse));
 
         describe("Pending Contacts", $.proxy(function () {
             function _clearContacts () {

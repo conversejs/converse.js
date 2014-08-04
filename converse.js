@@ -641,7 +641,6 @@
                     this.messages = new converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
-
                     this.save({
                         'box_id' : b64_sha1(this.get('jid')),
                         'height': height,
@@ -650,7 +649,8 @@
                         'time_minimized': this.get('time_minimized') || moment(),
                         'time_opened': this.get('time_opened') || moment().valueOf(),
                         'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-                        'num_unread': this.get('num_unread') || 0
+                        'num_unread': this.get('num_unread') || 0,
+                        'url': ''
                     });
                 } else {
                     this.set({

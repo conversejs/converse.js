@@ -137,7 +137,6 @@
             converse.roster.create({
                 ask: ask,
                 fullname: names[i],
-                is_last: i===(names.length-1),
                 jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                 requesting: requesting,
                 subscription: subscription

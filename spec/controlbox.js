@@ -163,8 +163,7 @@
                             subscription: 'both',
                             ask: null,
                             groups: name === 'ungrouped'? [] : [name],
-                            fullname: mock.cur_names[i],
-                            is_last: i===(mock.cur_names.length-1)
+                            fullname: mock.cur_names[i]
                         });
                     }
                 }, converse));
@@ -201,8 +200,7 @@
                         subscription: 'both',
                         ask: null,
                         groups: groups,
-                        fullname: mock.cur_names[i],
-                        is_last: i===(mock.cur_names.length-1)
+                        fullname: mock.cur_names[i]
                     });
                 }
                 // Check that usernames appear alphabetically per group
@@ -229,8 +227,7 @@
                             subscription: 'both',
                             ask: null,
                             groups: name === 'ungrouped'? [] : [name],
-                            fullname: mock.cur_names[i],
-                            is_last: i===(mock.cur_names.length-1)
+                            fullname: mock.cur_names[i]
                         });
                     }
                 }, converse));
@@ -270,8 +267,7 @@
                         jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
-                        fullname: mock.pend_names[0],
-                        is_last: true
+                        fullname: mock.pend_names[0]
                     });
                 }, converse));
                 waits(300);
@@ -309,8 +305,7 @@
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'none',
                     ask: 'subscribe',
-                    fullname: name,
-                    is_last: true
+                    fullname: name
                 });
                 expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(true);
                 converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
@@ -334,17 +329,15 @@
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                 _clearContacts();
-                var i, t, is_last;
+                var i, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
-                    is_last = i===(mock.pend_names.length-1);
                     this.roster.create({
                         jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
-                        fullname: mock.pend_names[i],
-                        is_last: is_last
+                        fullname: mock.pend_names[i]
                     });
                     expect(this.rosterview.update).toHaveBeenCalled();
                 }
@@ -381,8 +374,7 @@
                         jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
-                        fullname: mock.cur_names[i],
-                        is_last: i===(mock.cur_names.length-1)
+                        fullname: mock.cur_names[i]
                     });
                     expect(this.rosterview.update).toHaveBeenCalled();
                 }
@@ -420,8 +412,7 @@
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'both',
                     ask: null,
-                    fullname: name,
-                    is_last: true
+                    fullname: name
                 });
                 expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
                 converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
@@ -582,8 +573,7 @@
                         subscription: 'none',
                         ask: null,
                         requesting: true,
-                        fullname: mock.req_names[i],
-                        is_last: i===(mock.req_names.length-1)
+                        fullname: mock.req_names[i]
                     });
                     expect(this.rosterview.update).toHaveBeenCalled();
                     // When a requesting contact is added, the controlbox must
@@ -606,8 +596,7 @@
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: name,
-                    is_last: true
+                    fullname: name
                 });
                 expect(this.rosterview.get('Contact requests').$el.is(':visible')).toEqual(true);
                 converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")

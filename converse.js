@@ -3361,7 +3361,10 @@
                 this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
                 this.render();
-                this.model.fetch({add: true});
+                this.model.fetch({
+                    silent: true,
+                    success: $.proxy(this.positionFetchedGroups, this)
+                });
                 converse.roster.fetch({add: true});
             },
 
@@ -3443,6 +3446,30 @@
                 return this;
             },
 
+            positionFetchedGroups: function (model, resp, options) {
+                /* Instead of throwing an add event for each group
+                    * fetched, we wait until they're all fetched and then
+                    * we position them.
+                    * Works around the problem of positionGroup not
+                    * working when all groups besides the one being
+                    * positioned aren't already in inserted into the
+                    * roster DOM element.
+                    */
+                model.sort();
+                model.each($.proxy(function (group, idx) {
+                    var view = this.get(group.get('name'))
+                    if (!view) {
+                        view = new converse.RosterGroupView({model: group});
+                        this.add(group.get('name'), view.render());
+                    }
+                    if (idx === 0) {
+                        this.$el.append(view.$el);
+                    } else {
+                        this.appendGroup(view);
+                    }
+                }, this));
+            },
+
             positionGroup: function (view) {
                 /* Place the group's DOM element in the correct alphabetical
                  * position amongst the other groups in the roster.
@@ -3451,10 +3478,24 @@
                 if (index === 0) {
                     this.$el.prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
-                    this.$('.roster-group').last().siblings('dd').last().after(view.$el);
+                    this.appendGroup(view);
                 } else {
                     $(this.$('.roster-group').eq(index)).before(view.$el);
                 }
+                return this;
+            },
+
+            appendGroup: function (view) {
+                /* Add the group at the bottom of the roster
+                 */
+                var $last = this.$('.roster-group').last();
+                var $siblings = $last.siblings('dd');
+                if ($siblings.length > 0) {
+                    $siblings.last().after(view.$el);
+                } else {
+                    $last.after(view.$el);
+                }
+                return this;
             },
 
             getGroup: function (name) {

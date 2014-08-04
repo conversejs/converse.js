@@ -2,7 +2,7 @@
 BOWER 		?= node_modules/.bin/bower
 BUILDDIR     = ./docs
 PAPER        =
-PHANTOMJS	?= phantomjs
+PHANTOMJS	?= node_modules/.bin/phantomjs
 SPHINXBUILD  = sphinx-build
 SPHINXOPTS   =
 
@@ -11,7 +11,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./d
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs
+.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs build
 
 all: dev
 
@@ -86,6 +86,9 @@ dev: clean
 css::
 	./node_modules/.bin/lessc less/styles.less > css/theme.css
 	./node_modules/.bin/lessc less/converse.less > css/converse.css
+
+build::
+	./node_modules/.bin/grunt minify
 
 ########################################################################
 ## Tests

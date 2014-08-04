@@ -14,7 +14,6 @@
         "jquery": "components/jquery/dist/jquery",
         "jed": "components/jed/jed",
         "locales": "locale/nolocales",
-        "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.browserStorage": "components/backbone.browserStorage/backbone.browserStorage",

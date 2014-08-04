@@ -2,7 +2,6 @@ config = {
     baseUrl: '.',
     paths: {
         "jquery": "components/jquery/dist/jquery",
-        "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
         "bootstrap": "components/bootstrap/dist/js/bootstrap",                  // XXX: Only required for https://conversejs.org website
@@ -72,7 +71,6 @@ config = {
         'crypto.pad-nopadding': { deps: ['crypto.cipher-core'] },
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
-        'jquery.tinysort':      { deps: ['jquery'] },
         'jquery.browser':       { deps: ['jquery'] },
         'jquery.easing':        { deps: ['jquery'] },
         'strophe':              { deps: ['jquery'] },

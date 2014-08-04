@@ -5,7 +5,6 @@ define("converse-dependencies", [
     "bootstrap", // XXX: Can be removed, only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",
-    "jquery.tinysort",
     "jquery.browser",
     "jquery.easing", // XXX: Can be removed, only for https://conversejs.org
     "strophe",

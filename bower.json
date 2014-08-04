@@ -11,7 +11,6 @@
     "requirejs": "2.1.11",
     "jquery": "1.11.0",
     "jed": "0.5.4",
-    "tinysort": "git://github.com/Sjeiti/TinySort.git",
     "underscore": "1.6.0",
     "backbone": "1.1.2",
     "backbone.browserStorage": "*",

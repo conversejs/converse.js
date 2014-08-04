@@ -28,7 +28,6 @@
         "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
         "ru": "locale/ru/LC_MESSAGES/ru",
         "zh": "locale/zh/LC_MESSAGES/zh",
-        "jquery.tinysort": "components/tinysort/src/jquery.tinysort",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",

@@ -25,7 +25,9 @@
         root.converse = factory(jQuery, _, OTR, DSA, JST, moment);
     }
 }(this, function ($, _, OTR, DSA, templates, moment) {
-    "use strict";
+    // "use strict";
+    // Cannot use this due to Safari bug.
+    // See https://github.com/jcbrand/converse.js/issues/196
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
@@ -104,7 +106,7 @@
             if ($.browser.webkit) {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';
-                conversejs.style.height = conversejs.offsetHeight;
+                conversejs.offsetHeight = conversejs.offsetHeight;
                 conversejs.style.display = 'block';
             }
         }

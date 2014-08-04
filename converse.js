@@ -3248,7 +3248,7 @@
             },
 
             render: function () {
-                this.$el.data('group', this.model.get('name'));
+                this.$el.attr('data-group', this.model.get('name'));
                 this.$el.html(
                     $(converse.templates.group_header({
                         label_group: this.model.get('name'),

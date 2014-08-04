@@ -71,6 +71,7 @@ config = {
         'crypto.pad-nopadding': { deps: ['crypto.cipher-core'] },
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
+        'bigint':               { deps: ['crypto'] },
         'jquery.browser':       { deps: ['jquery'] },
         'jquery.easing':        { deps: ['jquery'] },
         'strophe':              { deps: ['jquery'] },

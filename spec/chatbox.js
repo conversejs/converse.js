@@ -13,7 +13,7 @@
                 runs(function () {
                     utils.closeAllChatBoxes();
                     utils.removeControlBox();
-                    converse.roster.browserStorage._clear();
+                    utils.clearBrowserStorage();
                     utils.initConverse();
                     utils.createContacts();
                     utils.openControlBox();
@@ -22,23 +22,19 @@
             });
 
             it("is created when you click on a roster item", $.proxy(function () {
-                var i, $el, click, jid, view, chatboxview;
+                var i, $el, click, jid, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
                 spyOn(this.chatboxviews, 'trimChats');
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                var online_contacts = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    spyOn(view, 'openChat').andCallThrough();
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                     $el.click();
                     chatboxview = this.chatboxviews.get(jid);
-                    expect(view.openChat).toHaveBeenCalled();
                     expect(this.chatboxes.length).toEqual(i+2);
                     expect(this.chatboxviews.trimChats).toHaveBeenCalled();
                     // Check that new chat boxes are created to the left of the
@@ -49,7 +45,7 @@
             }, converse));
 
             it("can be trimmed to conserve space", $.proxy(function () {
-                var i, $el, click, jid, key, view, chatbox, chatboxview;
+                var i, $el, click, jid, key, chatbox, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 var trimmed_chatboxes = converse.minimized_chats;
@@ -60,11 +56,10 @@
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
                 // Test that they can be trimmed
-                var online_contacts = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                var online_contacts = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
                     $el.click();
                     expect(this.chatboxviews.trimChats).toHaveBeenCalled();
 
@@ -96,7 +91,7 @@
 
             it("is focused if its already open and you click on its corresponding roster item", $.proxy(function () {
                 var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var i, $el, click, jid, view, chatboxview, chatbox;
+                var i, $el, click, jid, chatboxview, chatbox;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
@@ -105,11 +100,7 @@
                 spyOn(chatboxview, 'focus');
                 $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
                 jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                view = this.rosterview.get(jid);
-                spyOn(view, 'openChat').andCallThrough();
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 $el.click();
-                expect(view.openChat).toHaveBeenCalled();
                 expect(this.chatboxes.length).toEqual(2);
                 expect(chatboxview.focus).toHaveBeenCalled();
             }, converse));

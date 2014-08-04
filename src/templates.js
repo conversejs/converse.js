@@ -10,7 +10,6 @@ define("converse-templates", [
     "tpl!src/templates/chatrooms_tab",
     "tpl!src/templates/chats_panel",
     "tpl!src/templates/choose_status",
-    "tpl!src/templates/contacts",
     "tpl!src/templates/contacts_panel",
     "tpl!src/templates/contacts_tab",
     "tpl!src/templates/controlbox",
@@ -19,6 +18,7 @@ define("converse-templates", [
     "tpl!src/templates/form_checkbox",
     "tpl!src/templates/form_input",
     "tpl!src/templates/form_select",
+    "tpl!src/templates/group_header",
     "tpl!src/templates/info",
     "tpl!src/templates/login_panel",
     "tpl!src/templates/login_tab",
@@ -35,9 +35,9 @@ define("converse-templates", [
     "tpl!src/templates/roster_item",
     "tpl!src/templates/select_option",
     "tpl!src/templates/status_option",
+    "tpl!src/templates/toggle_chats",
     "tpl!src/templates/toolbar",
-    "tpl!src/templates/trimmed_chat",
-    "tpl!src/templates/toggle_chats"
+    "tpl!src/templates/trimmed_chat"
 ], function () {
     return {
         action:                 arguments[0],
@@ -51,15 +51,15 @@ define("converse-templates", [
         chatrooms_tab:          arguments[8],
         chats_panel:            arguments[9],
         choose_status:          arguments[10],
-        contacts:               arguments[11],
-        contacts_panel:         arguments[12],
-        contacts_tab:           arguments[13],
-        controlbox:             arguments[14],
-        controlbox_toggle:      arguments[15],
-        field:                  arguments[16],
-        form_checkbox:          arguments[17],
-        form_input:             arguments[18],
-        form_select:            arguments[19],
+        contacts_panel:         arguments[11],
+        contacts_tab:           arguments[12],
+        controlbox:             arguments[13],
+        controlbox_toggle:      arguments[14],
+        field:                  arguments[15],
+        form_checkbox:          arguments[16],
+        form_input:             arguments[17],
+        form_select:            arguments[18],
+        group_header:           arguments[19],
         info:                   arguments[20],
         login_panel:            arguments[21],
         login_tab:              arguments[22],
@@ -76,8 +76,8 @@ define("converse-templates", [
         roster_item:            arguments[33],
         select_option:          arguments[34],
         status_option:          arguments[35],
-        toolbar:                arguments[36],
-        trimmed_chat:           arguments[37],
-        toggle_chats:           arguments[38]
+        toggle_chats:           arguments[36],
+        toolbar:                arguments[37],
+        trimmed_chat:           arguments[38]
     };
 });

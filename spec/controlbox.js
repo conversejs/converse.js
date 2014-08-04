@@ -7,6 +7,23 @@
         }
     );
 } (this, function (mock, utils) {
+
+    var checkHeaderToggling = function ($header) {
+        var $toggle = $header.find('a.group-toggle');
+        expect($header.css('display')).toEqual('block');
+        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
+        expect($toggle.hasClass('icon-closed')).toBeFalsy();
+        expect($toggle.hasClass('icon-opened')).toBeTruthy();
+        $toggle.click();
+        expect($toggle.hasClass('icon-closed')).toBeTruthy();
+        expect($toggle.hasClass('icon-opened')).toBeFalsy();
+        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:hidden').length).toBeTruthy();
+        $toggle.click();
+        expect($toggle.hasClass('icon-closed')).toBeFalsy();
+        expect($toggle.hasClass('icon-opened')).toBeTruthy();
+        expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
+    };
+
     describe("The Control Box", $.proxy(function (mock, utils) {
         beforeEach(function () {
             runs(function () {
@@ -107,264 +124,416 @@
 
     describe("The Contacts Roster", $.proxy(function (mock, utils) {
 
-        describe("Pending Contacts", $.proxy(function () {
-            beforeEach($.proxy(function () {
-                runs(function () {
-                    converse.rosterview.model.reset();
-                    utils.createContacts('pending').openControlBox();
-                });
-                waits(50);
-                runs(function () {
-                    utils.openContactsPanel();
-                });
-            }, converse));
+        describe("A Roster Group", $.proxy(function () {
 
-            it("do not have a heading if there aren't any", $.proxy(function () {
+            beforeEach(function () {
+                converse.roster_groups = true;
+            });
+
+            afterEach(function () {
+                converse.roster_groups = false;
+            });
+
+            function _clearContacts () {
+                utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('none');
+            }
+
+            it("can be used to organize existing contacts", $.proxy(function () {
+                _clearContacts();
+                var i=0, j=0, t;
+                spyOn(converse, 'emit');
+                spyOn(this.rosterview, 'update').andCallThrough();
+                converse.rosterview.render();
+
+                utils.createContacts('pending');
+                utils.createContacts('requesting');
+                var groups = {
+                    'colleagues': 3,
+                    'friends & acquaintences': 3,
+                    'Family': 4,
+                    'ænemies': 3,
+                    'Ungrouped': 2
+                };
+                _.each(_.keys(groups), $.proxy(function (name) {
+                    j = i;
+                    for (i=j; i<j+groups[name]; i++) {
+                        this.roster.create({
+                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            subscription: 'both',
+                            ask: null,
+                            groups: name === 'ungrouped'? [] : [name],
+                            fullname: mock.cur_names[i]
+                        });
+                    }
+                }, converse));
+                // Check that the groups appear alphabetically and that
+                // requesting and pending contacts are last.
+                var group_titles = $.map(this.rosterview.$el.find('dt'), function (o) { return $(o).text().trim(); });
+                expect(group_titles).toEqual([
+                    "colleagues",
+                    "Family",
+                    "friends & acquaintences",
+                    "ænemies",
+                    "Ungrouped",
+                    "Contact requests",
+                    "Pending contacts"
+                ]);
+                // Check that usernames appear alphabetically per group
+                _.each(_.keys(groups), $.proxy(function (name) {
+                    var $contacts = this.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
+                    var names = $.map($contacts, function (o) { return $(o).text().trim(); });
+                    expect(names).toEqual(_.clone(names).sort());
+                }, converse));
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').css('display')).toEqual('block');
+            it("can share contacts with other roster groups", $.proxy(function () {
+                _clearContacts();
+                var i=0, j=0, t;
+                spyOn(converse, 'emit');
+                spyOn(this.rosterview, 'update').andCallThrough();
+                converse.rosterview.render();
+                var groups = ['colleagues', 'friends'];
+                for (i=0; i<mock.cur_names.length; i++) {
+                    this.roster.create({
+                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        subscription: 'both',
+                        ask: null,
+                        groups: groups,
+                        fullname: mock.cur_names[i]
+                    });
+                }
+                // Check that usernames appear alphabetically per group
+                _.each(groups, $.proxy(function (name) {
+                    var $contacts = this.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
+                    var names = $.map($contacts, function (o) { return $(o).text().trim(); });
+                    expect(names).toEqual(_.clone(names).sort());
+                    expect(names.length).toEqual(mock.cur_names.length);
+                }, converse));
+            }, converse));
+
+            it("remembers whether it is closed or opened", $.proxy(function () {
+                var i=0, j=0, t;
+                var groups = {
+                    'colleagues': 3,
+                    'friends & acquaintences': 3,
+                    'Ungrouped': 2
+                };
+                _.each(_.keys(groups), $.proxy(function (name) {
+                    j = i;
+                    for (i=j; i<j+groups[name]; i++) {
+                        this.roster.create({
+                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            subscription: 'both',
+                            ask: null,
+                            groups: name === 'ungrouped'? [] : [name],
+                            fullname: mock.cur_names[i]
+                        });
+                    }
+                }, converse));
+                var view = this.rosterview.get('colleagues');
+                var $toggle = view.$el.find('a.group-toggle');
+                expect(view.model.get('state')).toBe('opened');
+                $toggle.click();
+                expect(view.model.get('state')).toBe('closed');
+                $toggle.click();
+                expect(view.model.get('state')).toBe('opened');
+            }, converse));
+        }, converse));
+
+        describe("Pending Contacts", $.proxy(function () {
+            function _clearContacts () {
+                utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+            }
+
+            function _addContacts () {
+                _clearContacts();
+                // Must be initialized, so that render is called and documentFragment set up.
+                utils.createContacts('pending').openControlBox().openContactsPanel();
+            }
+
+            it("can be collapsed under their own header", $.proxy(function () {
+                _addContacts();
+                checkHeaderToggling.apply(this, [this.rosterview.get('Pending contacts').$el]);
             }, converse));
 
             it("can be added to the roster", $.proxy(function () {
-                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
+                _clearContacts();
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 runs($.proxy(function () {
                     this.roster.create({
                         jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
-                        fullname: mock.pend_names[0],
-                        is_last: true
+                        fullname: mock.pend_names[0]
                     });
                 }, converse));
                 waits(300);
                 runs($.proxy(function () {
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                     expect(this.rosterview.$el.is(':visible')).toEqual(true);
-                    expect(this.rosterview.render).toHaveBeenCalled();
+                    expect(this.rosterview.update).toHaveBeenCalled();
                 }, converse));
             }, converse));
 
             it("can be removed by the user", $.proxy(function () {
-                var jid = mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.rosterview.get(jid);
+                _addContacts();
+                var name = mock.pend_names[0];
+                var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                 spyOn(window, 'confirm').andReturn(true);
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'remove').andCallThrough();
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(this.rosterview.model, 'remove').andCallThrough();
 
-                view.$el.find('.remove-xmpp-contact').click();
+                converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
+                    .siblings('.remove-xmpp-contact').click();
+
                 expect(window.confirm).toHaveBeenCalled();
                 expect(this.connection.roster.remove).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 expect(this.rosterview.model.remove).toHaveBeenCalled();
-                // The element must now be detached from the DOM.
-                expect(view.$el.closest('html').length).toBeFalsy();
-                expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
+                expect(converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length).toEqual(0);
             }, converse));
 
-            it("will lose their own heading once the last one has been removed", $.proxy(function () {
-                var view;
+            it("do not have a header if there aren't any", $.proxy(function () {
+                var name = mock.pend_names[0];
+                _clearContacts();
+                spyOn(window, 'confirm').andReturn(true);
+                this.roster.create({
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    subscription: 'none',
+                    ask: 'subscribe',
+                    fullname: name
+                });
+                expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(true);
+                converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
+                    .siblings('.remove-xmpp-contact').click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(false);
+            }, converse));
+
+
+            it("will lose their own header once the last one has been removed", $.proxy(function () {
+                _addContacts();
+                var name;
                 spyOn(window, 'confirm').andReturn(true);
                 for (i=0; i<mock.pend_names.length; i++) {
-                    view = this.rosterview.get(mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost');
-                    view.$el.find('.remove-xmpp-contact').click();
+                    name = mock.pend_names[i];
+                    converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
+                        .siblings('.remove-xmpp-contact').click();
                 }
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
-                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
-                var i, t, is_last;
+                _clearContacts();
+                var i, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
-                    is_last = i===(mock.pend_names.length-1);
                     this.roster.create({
                         jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
-                        fullname: mock.pend_names[i],
-                        is_last: is_last
+                        fullname: mock.pend_names[i]
                     });
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
-                    // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#pending-xmpp-contacts').siblings('dd.pending-xmpp-contact').find('span').text();
-                    expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
+                    expect(this.rosterview.update).toHaveBeenCalled();
                 }
+                // Check that they are sorted alphabetically
+                t = this.rosterview.get('Pending contacts').$el.siblings('dd.pending-xmpp-contact').find('span').text();
+                expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
             }, converse));
 
         }, converse));
 
         describe("Existing Contacts", $.proxy(function () {
-            beforeEach($.proxy(function () {
-                runs(function () {
-                    converse.rosterview.model.reset();
-                    utils.createContacts().openControlBox();
-                });
-                waits(50);
-                runs(function () {
-                    utils.openContactsPanel();
-                });
+            function _clearContacts () {
+                utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+            }
+
+            var _addContacts = function () {
+                _clearContacts();
+                utils.createContacts().openControlBox().openContactsPanel();
+            };
+
+            it("can be collapsed under their own header", $.proxy(function () {
+                _addContacts();
+                checkHeaderToggling.apply(this, [this.rosterview.$el.find('dt.roster-group')]);
             }, converse));
 
-            it("do not have a heading if there aren't any", $.proxy(function () {
-                converse.rosterview.model.reset();
-                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('none');
+            it("will be hidden when appearing under a collapsed group", $.proxy(function () {
+                _addContacts();
+                this.rosterview.$el.find('dt.roster-group').find('a.group-toggle').click();
+                var name = "Max Mustermann";
+                var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                converse.roster.create({
+                    ask: null,
+                    fullname: name,
+                    jid: jid,
+                    requesting: false,
+                    subscription: 'both'
+                });
+                var view = this.rosterview.get('My contacts').get(jid);
+                expect(view.$el.is(':visible')).toBe(false);
             }, converse));
 
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
+                _clearContacts();
                 var i, t;
-                converse.rosterview.model.reset();
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     this.roster.create({
                         jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
-                        fullname: mock.cur_names[i],
-                        is_last: i===(mock.cur_names.length-1)
+                        fullname: mock.cur_names[i]
                     });
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
-                    // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
-                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                    expect(this.rosterview.update).toHaveBeenCalled();
                 }
+                // Check that they are sorted alphabetically
+                t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.offline').find('a.open-chat').text();
+                expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contacts').css('display')).toEqual('block');
+            it("can be removed by the user", $.proxy(function () {
+                _addContacts();
+                var name = mock.cur_names[0];
+                var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                spyOn(window, 'confirm').andReturn(true);
+                spyOn(converse, 'emit');
+                spyOn(this.connection.roster, 'remove').andCallThrough();
+                spyOn(this.connection.roster, 'unauthorize');
+                spyOn(this.rosterview.model, 'remove').andCallThrough();
+
+                converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
+                    .siblings('.remove-xmpp-contact').click();
+
+                expect(window.confirm).toHaveBeenCalled();
+                expect(this.connection.roster.remove).toHaveBeenCalled();
+                expect(this.connection.roster.unauthorize).toHaveBeenCalled();
+                expect(this.rosterview.model.remove).toHaveBeenCalled();
+                expect(converse.rosterview.$el.find(".open-chat:contains('"+name+"')").length).toEqual(0);
+            }, converse));
+
+
+            it("do not have a header if there aren't any", $.proxy(function () {
+                var name = mock.cur_names[0];
+                _clearContacts();
+                spyOn(window, 'confirm').andReturn(true);
+                this.roster.create({
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    subscription: 'both',
+                    ask: null,
+                    fullname: name
+                });
+                expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
+                converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
+                    .siblings('.remove-xmpp-contact').click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
             }, converse));
 
             it("can change their status to online and be sorted alphabetically", $.proxy(function () {
-                var item, view, jid, t;
+                _addContacts();
+                var jid, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    spyOn(view, 'render').andCallThrough();
-                    item = view.model;
-                    item.set('chat_status', 'online');
-                    expect(view.render).toHaveBeenCalled();
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
+                    this.roster.get(jid).set('chat_status', 'online');
+                    expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
             it("can change their status to busy and be sorted alphabetically", $.proxy(function () {
-                var item, view, jid, t;
+                _addContacts();
+                var jid, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    spyOn(view, 'render').andCallThrough();
-                    item = view.model;
-                    item.set('chat_status', 'dnd');
-                    expect(view.render).toHaveBeenCalled();
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
+                    this.roster.get(jid).set('chat_status', 'dnd');
+                    expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.dnd').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
             it("can change their status to away and be sorted alphabetically", $.proxy(function () {
-                var item, view, jid, t;
+                _addContacts();
+                var jid, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    spyOn(view, 'render').andCallThrough();
-                    item = view.model;
-                    item.set('chat_status', 'away');
-                    expect(view.render).toHaveBeenCalled();
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
+                    this.roster.get(jid).set('chat_status', 'away');
+                    expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.away').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
             it("can change their status to xa and be sorted alphabetically", $.proxy(function () {
-                var item, view, jid, t;
+                _addContacts();
+                var jid, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    spyOn(view, 'render').andCallThrough();
-                    item = view.model;
-                    item.set('chat_status', 'xa');
-                    expect(view.render).toHaveBeenCalled();
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
+                    this.roster.get(jid).set('chat_status', 'xa');
+                    expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.xa').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                 }
             }, converse));
 
             it("can change their status to unavailable and be sorted alphabetically", $.proxy(function () {
-                var item, view, jid, t;
+                _addContacts();
+                var jid, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    spyOn(view, 'render').andCallThrough();
-                    item = view.model;
-                    item.set('chat_status', 'unavailable');
-                    expect(view.render).toHaveBeenCalled();
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
+                    this.roster.get(jid).set('chat_status', 'unavailable');
+                    expect(this.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    t = this.rosterview.$el.find('dt#xmpp-contacts').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
+                    t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.unavailable').find('a.open-chat').text();
                     expect(t).toEqual(mock.cur_names.slice(0, i+1).sort().join(''));
                 }
             }, converse));
 
             it("are ordered according to status: online, busy, away, xa, unavailable, offline", $.proxy(function () {
+                _addContacts();
                 var i;
                 for (i=0; i<3; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    view.model.set('chat_status', 'online');
+                    this.roster.get(jid).set('chat_status', 'online');
                 }
                 for (i=3; i<6; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    view.model.set('chat_status', 'dnd');
+                    this.roster.get(jid).set('chat_status', 'dnd');
                 }
                 for (i=6; i<9; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    view.model.set('chat_status', 'away');
+                    this.roster.get(jid).set('chat_status', 'away');
                 }
                 for (i=9; i<12; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    view.model.set('chat_status', 'xa');
+                    this.roster.get(jid).set('chat_status', 'xa');
                 }
                 for (i=12; i<15; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    view.model.set('chat_status', 'unavailable');
+                    this.roster.get(jid).set('chat_status', 'unavailable');
                 }
 
                 var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
@@ -392,6 +561,7 @@
         describe("Requesting Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
+                    utils.clearBrowserStorage();
                     converse.rosterview.model.reset();
                     utils.createContacts('requesting').openControlBox();
                 });
@@ -401,81 +571,89 @@
                 });
             }, converse));
 
-            it("do not have a heading if there aren't any", $.proxy(function () {
-                // by default the dts are hidden from css class and only later they will be hidden
-                // by jQuery therefore for the first check we will see if visible instead of none
-                converse.rosterview.model.reset();
-                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').is(':visible')).toEqual(false);
-            }, converse));
-
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                 converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 var i, children;
                 var names = [];
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'render').andCallThrough();
+                spyOn(this.rosterview, 'update').andCallThrough();
                 spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
+                var addName = function (idx, item) {
+                    if (!$(item).hasClass('request-actions')) {
+                        names.push($(item).text().replace(/^\s+|\s+$/g, ''));
+                    }
+                };
                 for (i=0; i<mock.req_names.length; i++) {
                     this.roster.create({
                         jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: null,
                         requesting: true,
-                        fullname: mock.req_names[i],
-                        is_last: i===(mock.req_names.length-1)
+                        fullname: mock.req_names[i]
                     });
-                    expect(this.rosterview.render).toHaveBeenCalled();
-                    // Check that they are sorted alphabetically
-                    children = this.rosterview.$el.find('dt#xmpp-contact-requests').siblings('dd.requesting-xmpp-contact').children('span');
-                    names = [];
-                    children.each(function (idx, item) {
-                        if (!$(item).hasClass('request-actions')) {
-                            names.push($(item).text().replace(/^\s+|\s+$/g, ''));
-                        }
-                    });
-                    expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
+                    expect(this.rosterview.update).toHaveBeenCalled();
                     // When a requesting contact is added, the controlbox must
                     // be opened.
                     expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                 }
+                // Check that they are sorted alphabetically
+                children = this.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');
+                names = [];
+                children.each(addName);
+                expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
             }, converse));
 
-            it("will have their own heading once they have been added", $.proxy(function () {
-                expect(this.rosterview.$el.find('dt#xmpp-contact-requests').css('display')).toEqual('block');
+            it("do not have a header if there aren't any", $.proxy(function () {
+                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
+                var name = mock.req_names[0];
+                spyOn(window, 'confirm').andReturn(true);
+                this.roster.create({
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    subscription: 'none',
+                    ask: null,
+                    requesting: true,
+                    fullname: name
+                });
+                expect(this.rosterview.get('Contact requests').$el.is(':visible')).toEqual(true);
+                converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
+                    .siblings('.request-actions')
+                    .find('.decline-xmpp-request').click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(this.rosterview.get('Contact requests').$el.is(':visible')).toEqual(false);
+            }, converse));
+
+            it("can be collapsed under their own header", $.proxy(function () {
+                checkHeaderToggling.apply(this, [this.rosterview.get('Contact requests').$el]);
             }, converse));
 
             it("can have their requests accepted by the user", $.proxy(function () {
                 // TODO: Testing can be more thorough here, the user is
                 // actually not accepted/authorized because of
                 // mock_connection.
-                var jid = mock.req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.rosterview.get(jid);
+                var name = mock.req_names.sort()[0];
+                var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
                 spyOn(this.connection.roster, 'authorize');
-                spyOn(view, 'acceptRequest').andCallThrough();
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                var accept_button = view.$el.find('.accept-xmpp-request');
-                accept_button.click();
-                expect(view.acceptRequest).toHaveBeenCalled();
+
+                converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
+                    .siblings('.request-actions')
+                    .find('.accept-xmpp-request').click();
+
                 expect(this.connection.roster.authorize).toHaveBeenCalled();
             }, converse));
 
             it("can have their requests denied by the user", $.proxy(function () {
-                var jid = mock.req_names.sort()[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var view = this.rosterview.get(jid);
+                this.rosterview.model.reset();
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
-                spyOn(this.rosterview, 'removeRosterItemView').andCallThrough();
                 spyOn(window, 'confirm').andReturn(true);
-                spyOn(view, 'declineRequest').andCallThrough();
-                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                var accept_button = view.$el.find('.decline-xmpp-request');
-                accept_button.click();
-                expect(view.declineRequest).toHaveBeenCalled();
+                utils.createContacts('requesting').openControlBox();
+                var name = mock.req_names.sort()[1];
+                var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
+                    .siblings('.request-actions')
+                    .find('.decline-xmpp-request').click();
                 expect(window.confirm).toHaveBeenCalled();
-                expect(this.rosterview.removeRosterItemView).toHaveBeenCalled();
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                expect(converse.emit).toHaveBeenCalledWith('rosterViewUpdated');
                 // There should now be one less contact
                 expect(this.roster.length).toEqual(mock.req_names.length-1);
             }, converse));
@@ -483,28 +661,19 @@
 
         describe("All Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                runs(function () {
-                    utils.clearBrowserStorage();
-                    converse.rosterview.model.reset();
-                    converse.rosterview.model.browserStorage._clear();
-                    utils.createContacts('all').openControlBox();
-                });
-                waits(50);
-                runs(function () {
-                    utils.openContactsPanel();
-                });
+                utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+                utils.createContacts('all').openControlBox();
+                utils.openContactsPanel();
             }, converse));
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
                 var new_attrs, old_attrs, attrs, old_roster;
                 var num_contacts = this.roster.length;
-                new_roster = new this.RosterItems();
+                new_roster = new this.RosterContacts();
                 // Roster items are yet to be fetched from browserStorage
                 expect(new_roster.length).toEqual(0);
-
-                new_roster.browserStorage = new Backbone.BrowserStorage.session(
-                    b64_sha1('converse.rosteritems-dummy@localhost'));
-
+                new_roster.browserStorage = this.roster.browserStorage;
                 new_roster.fetch();
                 expect(new_roster.length).toEqual(num_contacts);
                 // Check that the roster items retrieved from browserStorage
@@ -518,7 +687,6 @@
                     // comparison
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
                 }
-                this.rosterview.render();
             }, converse));
 
             afterEach($.proxy(function () {
@@ -528,8 +696,7 @@
                 // we make some online now
                 for (i=0; i<5; i++) {
                     jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    view = this.rosterview.get(jid);
-                    view.model.set('chat_status', 'online');
+                    this.roster.get(jid).set('chat_status', 'online');
                 }
             }, converse));
         }, converse));

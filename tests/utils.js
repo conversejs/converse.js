@@ -80,13 +80,21 @@
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
             jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-            views[i] = converse.rosterview.get(jid).openChat(mock.event);
+            views[i] = converse.roster.get(jid).trigger("open");
         }
         return views;
     };
 
     utils.openChatBoxFor = function (jid) {
-        return converse.rosterview.get(jid).openChat(mock.event);
+        return converse.roster.get(jid).trigger("open");
+    };
+
+    utils.removeRosterContacts = function () {
+        var model;
+        while (converse.rosterview.model.length) {
+            model = converse.rosterview.model.pop();
+            converse.rosterview.model.remove(model);
+        }
     };
 
     utils.clearBrowserStorage = function () {
@@ -129,7 +137,6 @@
             converse.roster.create({
                 ask: ask,
                 fullname: names[i],
-                is_last: i===(names.length-1),
                 jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                 requesting: requesting,
                 subscription: subscription

@@ -784,8 +784,6 @@ Here are the different events that are emitted:
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **roster**                       | When the roster is updated.                                                                       | ``converse.on('roster', function (items) { ... });``                                    |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **rosterViewUpdated**            | Whenever the roster view (i.e. the rendered HTML) has changed.                                    | ``converse.on('rosterViewUpdated', function (items) { ... });``                         |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **callButtonClicked**            | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.on('callButtonClicked', function (connection, model) { ... });``             |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **chatBoxOpened**                | When a chat box has been opened.                                                                  | ``converse.on('chatBoxOpened', function (chatbox) { ... });``                           |
@@ -1003,6 +1001,18 @@ values as ``jid``, ``sid``, ``rid``.
 
 Additionally, you have to specify ``bosh_service_url``.
 
+roster_groups
+-------------
+
+Default:  ``false``
+
+If set to ``true``, converse.js will show any roster groups you might have
+configured.
+
+.. Note ::
+    It's currently not possible to use converse.js to assign contacts to groups.
+    Converse.js can only show users and groups that were previously configured
+    elsewhere.
 
 show_controlbox_by_default
 --------------------------

@@ -20,10 +20,14 @@ Changelog
   Message forwarding was before a default behavior but is now optional (and disabled by default). [jcbrand]
 * Newly opened chat boxes always appear immediately left of the controlbox. [jcbrand]
 * #71 Chat boxes and rooms can be minimized. [jcbrand]
+* #83 Roster contacts can be shown according to their groups. [jcbrand]
+    Note: Converse.js can show users under groups if you have assigned them
+    already via another client or server configuration. There is not yet a way
+    to assign contacts to groups from within converse.js itself.
 * #123 Show converse.js in the resource assigned to a user. [jcbrand]
 * #130 Fixed bootstrap conflicts. [jcbrand]
 * #132 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html'>`_.
-  Configured via `message_carbons <https://conversejs.org/docs/html/index.html#message_carbons>`_ [hejazee]
+    Configured via `message_carbons <https://conversejs.org/docs/html/index.html#message_carbons>`_ [hejazee]
 * #176 Add support for caching in sessionStorage as opposed to localStorage. [jcbrand]
 * #180 RID and SID undefined [g8g3]
 * #191 No messages history [heban]

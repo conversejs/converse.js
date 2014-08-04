@@ -8,6 +8,7 @@
 .svn/
 .project
 .pydevproject
+Backbone.Overview
 node_modules
 components
 docs/doctrees/environment.pickle

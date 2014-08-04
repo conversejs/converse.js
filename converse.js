@@ -3291,7 +3291,10 @@
             addContact: function (contact) {
                 var view = new converse.RosterContactView({model: contact});
                 this.add(contact.get('id'), view);
-                this.positionContact(contact).render();
+                var view = this.positionContact(contact).render();
+                if (this.model.get('state') === CLOSED) {
+                    view.$el.hide();
+                }
                 this.$el.show();
             },
 

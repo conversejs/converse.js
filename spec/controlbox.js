@@ -364,6 +364,22 @@
                 checkHeaderToggling.apply(this, [this.rosterview.$el.find('dt.roster-group')]);
             }, converse));
 
+            it("will be hidden when appearing under a collapsed group", $.proxy(function () {
+                _addContacts();
+                this.rosterview.$el.find('dt.roster-group').find('a.group-toggle').click();
+                var name = "Max Mustermann";
+                var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                converse.roster.create({
+                    ask: null,
+                    fullname: name,
+                    jid: jid,
+                    requesting: false,
+                    subscription: 'both'
+                });
+                var view = this.rosterview.get('My contacts').get(jid);
+                expect(view.$el.is(':visible')).toBe(false);
+            }, converse));
+
             it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
                 _clearContacts();
                 var i, t;

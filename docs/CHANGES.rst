@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8 (Unreleased)
+0.8 (2014-08-04)
 ----------------
 
 .. note::
@@ -10,12 +10,11 @@ Changelog
     3. This release has reduced support for IE8 (some features won't work).
     4. Events have been renamed to remove "on" prefix (sorry for any inconvenience).
 
-* Simplified Chinese Translations [Lancelot]
 * No initial HTML markup is now needed in the document body for converse.js to work. [jcbrand]
 * All date handling is now done with moment.js. [jcbrand]
 * Add a new toolbar button for clearing chat messages. [jcbrand]
 * Chat boxes and rooms can now be resized vertically. [jcbrand]
-* Upgraded many dependencies to their latest versions. [jcbrand]
+* Upgraded dependencies to their latest versions. [jcbrand]
 * Add new configuration setting `forward_messages <https://conversejs.org/docs/html/index.html#forward_messages>`_
   Message forwarding was before a default behavior but is now optional (and disabled by default). [jcbrand]
 * Newly opened chat boxes always appear immediately left of the controlbox. [jcbrand]
@@ -32,10 +31,10 @@ Changelog
 * #180 RID and SID undefined [g8g3]
 * #191 No messages history [heban]
 * #192 Error: xhr_user_search_url is not defined. [jcbrand]
+* #195 Chinese translations. [lancelothuxi]
 * #196 [Safari v7.0.5] TypeError: Attempted to assign to readonly property. [g8g3]
 * #199 Improved Spanish translations [chilicuil]
 * #201 Add zh-locale to fix build task [schoetty]
-
 
 0.7.4 (2014-03-05)
 ------------------

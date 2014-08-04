@@ -66,7 +66,7 @@ msgstr "连接中"
 
 #: converse.js:385
 msgid "Disconnected"
-msgstr "切断中"
+msgstr "连接已断开"
 
 #: converse.js:393
 msgid "Error"
@@ -90,11 +90,11 @@ msgstr "验证失败"
 
 #: converse.js:405
 msgid "Disconnecting"
-msgstr "断开连接中"
+msgstr "断开链接中"
 
 #: converse.js:539 converse.js:580
 msgid "Online Contacts"
-msgstr "在线联系人"
+msgstr "在线好友"
 
 #: converse.js:699
 msgid "Re-establishing encrypted session"
@@ -102,11 +102,11 @@ msgstr "重新建立加密会话"
 
 #: converse.js:711
 msgid "Generating private key."
-msgstr ""
+msgstr "正在生成私钥"
 
 #: converse.js:712
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "您的浏览器可能会暂时无响应"
 
 #: converse.js:747
 msgid ""
@@ -125,11 +125,11 @@ msgstr ""
 
 #: converse.js:756
 msgid "Could not verify this user's identify."
-msgstr "复发验证对方信息。"
+msgstr "无法验证对方信息。"
 
 #: converse.js:795
 msgid "Exchanging private key with buddy."
-msgstr ""
+msgstr "正在与对方交换私钥"
 
 #: converse.js:935
 msgid "Personal message"
@@ -150,7 +150,7 @@ msgstr "显示此项菜单"
 
 #: converse.js:1077 converse.js:1972
 msgid "Write in the third person"
-msgstr "已第三者身份写"
+msgstr "以第三者身份写"
 
 #: converse.js:1078 converse.js:1976
 msgid "Remove messages"
@@ -158,7 +158,7 @@ msgstr "移除消息"
 
 #: converse.js:1164
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "你确定清除此次的聊天记录吗？"
 
 #: converse.js:1199
 msgid "Your message could not be sent"
@@ -192,9 +192,9 @@ msgstr ""
 "\n"
 "您的 %2$s 指纹: %3$s\n"
 "\n"
-"%1$s 指纹: %4$s\n"
+"%1$s 的指纹: %4$s\n"
 "\n"
-"如果确认符合，请点击OK，否则取消"
+"如果确认符合，请点击OK，否则点击取消"
 
 #: converse.js:1249
 #, fuzzy
@@ -205,13 +205,13 @@ msgid ""
 "Your buddy will then be prompted the same question and if they type the "
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
-"您会被要求回答一下安全性的问题。\n"
+"您会被要求回答一下安全问题。\n"
 "\n"
 "对方需要回答相同的问题（区分大小写）,如果答案一致，身份将被验证。"
 
 #: converse.js:1250
 msgid "What is your security question?"
-msgstr "您的安全性问题是?"
+msgstr "您的安全问题是?"
 
 #: converse.js:1252
 msgid "What is the answer to the security question?"
@@ -255,7 +255,7 @@ msgstr "您的消息已加密，对方已验证。"
 msgid ""
 "Your buddy has closed their end of the private session, you should do the "
 "same"
-msgstr "对方已关闭私有会话，您需要做相同操作"
+msgstr "对方已关闭私有会话，您也应该关闭"
 
 #: converse.js:1403
 msgid "End encrypted conversation"
@@ -303,7 +303,7 @@ msgstr "联系人"
 
 #: converse.js:1506
 msgid "Contact name"
-msgstr "姓名"
+msgstr "联系人名称"
 
 #: converse.js:1507
 msgid "Search"
@@ -378,7 +378,7 @@ msgstr "显示次聊天室的更多信息"
 
 #: converse.js:1724
 msgid "Description:"
-msgstr "说明: "
+msgstr "描述: "
 
 #: converse.js:1725
 msgid "Occupants:"
@@ -394,7 +394,7 @@ msgstr "需要验证"
 
 #: converse.js:1728
 msgid "Hidden"
-msgstr "隐藏"
+msgstr "隐藏的"
 
 #: converse.js:1729
 msgid "Requires an invitation"
@@ -542,19 +542,19 @@ msgstr "您已被踢出次房间"
 
 #: converse.js:2212
 msgid "You have been removed from this room because of an affiliation change"
-msgstr "由于关系变化，您已被移除次房间"
+msgstr "由于关系变化，您已被移除此房间"
 
 #: converse.js:2213
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
-msgstr "您已被移除此房间因为次房间更改为只允许成员加入，而您非成员"
+msgstr "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"
 
 #: converse.js:2214
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
-msgstr "由于服务不可用，您已被移除次房间。"
+msgstr "由于服务不可用，您已被移除此房间。"
 
 #: converse.js:2268
 msgid "You are not on the member list of this room"
@@ -566,7 +566,7 @@ msgstr "未指定昵称"
 
 #: converse.js:2278
 msgid "You are not allowed to create new rooms"
-msgstr "您可已创建新房间了"
+msgstr "您可此创建新房间了"
 
 #: converse.js:2280
 msgid "Your nickname doesn't conform to this room's policies"
@@ -603,29 +603,29 @@ msgstr "此用户不可在此房间发消息"
 #: converse.js:2638
 #, fuzzy
 msgid "Click to restore this chat"
-msgstr "移除联系人"
-
+msgstr "点击恢复聊天窗口"
+  
 #: converse.js:2777
 msgid "Minimized"
-msgstr ""
+msgstr "最小化的"
 
 #: converse.js:2832
 #, fuzzy
 msgid "Are you sure you want to remove this contact?"
-msgstr "移除联系人"
+msgstr "确定移除联系人吗？"
 
 #: converse.js:2882 converse.js:2900
 msgid "Click to remove this contact"
-msgstr "移除联系人"
+msgstr "点击移除联系人"
 
 #: converse.js:2889
 msgid "Accept"
-msgstr ""
+msgstr "接受"
 
 #: converse.js:2890
 #, fuzzy
 msgid "Decline"
-msgstr "在线"
+msgstr "拒绝"
 
 #: converse.js:2899
 msgid "Click to chat with this contact"
@@ -637,7 +637,7 @@ msgstr "我的好友列表"
 
 #: converse.js:3233
 msgid "Contact requests"
-msgstr "来自好友请求"
+msgstr "来自好友的请求"
 
 #: converse.js:3237
 msgid "Pending contacts"
@@ -679,7 +679,7 @@ msgstr "点击这里改变聊天状态"
 
 #: converse.js:3625
 msgid "XMPP/Jabber Username:"
-msgstr "用户名:"
+msgstr "XMPP/Jabber用户名:"
 
 #: converse.js:3626
 msgid "Password:"
@@ -695,15 +695,15 @@ msgstr "登录"
 
 #: converse.js:3693
 msgid "Toggle chat"
-msgstr ""
+msgstr "折叠聊天窗口"
 
 #~ msgid ""
 #~ "Your browser needs to generate a private key, which will be used in your "
 #~ "encrypted chat session. This can take up to 30 seconds during which your "
 #~ "browser might freeze and become unresponsive."
 #~ msgstr ""
-#~ "您的浏览器需要生成一个私钥，并会被用与会话加密这将持续30秒，浏览器会又肯可"
-#~ "能无反应，请耐心等待"
+#~ "您的浏览器需要生成一个私钥，并会被用于会话加密，这将持续30秒，浏览器会可"
+#~ "能无响应，请耐心等待"
 
 #~ msgid "Private key generated."
 #~ msgstr "私钥已生成。"

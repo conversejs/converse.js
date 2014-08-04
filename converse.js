@@ -3344,17 +3344,6 @@
             }
         });
 
-        this.GroupViews = Backbone.Overview.extend({
-            initialize: function () {
-                this.model.on("add", this.onGroupAdd, this);
-            },
-
-            onGroupAdd: function (group) {
-                this.add(group.get('name'), group);
-            },
-
-        });
-
         this.RosterView = Backbone.Overview.extend({
             tagName: 'dl',
             id: 'converse-roster',

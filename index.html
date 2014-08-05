@@ -12,14 +12,10 @@
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.min.css" />
-    <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
-    <![if IE]>
-        <!-- Disable Off-the-record encryption for IE, which doesn't have a CSPRNG -->
-        <script src="builds/converse.website-no-otr.min.js"></script>
-    <![endif]>
-    <![if !IE]>
-        <script src="builds/converse.website.min.js"></script>
-    <![endif]>
+    <!-- Only for development: 
+    <script src="builds/converse.website.min.js"></script>
+-->
+         <script data-main="main" src="components/requirejs/require.js"></script> 
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">

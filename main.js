@@ -34,7 +34,7 @@ config = {
         "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
         "moment": "components/momentjs/moment",
-        "otr": "components/otr/build/otr",
+        "otr": "src/otr",
         "converse-dependencies": "src/deps-website"
     },
 

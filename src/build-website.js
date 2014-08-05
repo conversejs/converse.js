@@ -55,7 +55,7 @@
         "crypto.mode-ctr": "components/otr/vendor/cryptojs/mode-ctr",
         "crypto": "src/crypto",
         "eventemitter": "components/otr/build/dep/eventemitter",
-        "otr": "components/otr/build/otr",
+        "otr": "src/otr",
         "converse-dependencies": "src/deps-website",
         "moment":"components/momentjs/moment",
         "converse-templates":"src/templates",

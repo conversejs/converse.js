@@ -1,7 +1,7 @@
 ({
     baseUrl: "../",
     name: "components/almond/almond.js",
-    out: "../builds/converse-no-otr.min.js",
+    out: "../builds/converse.website-no-otr.min.js",
     include: ['main'],
     tpl: {
         // Use Mustache style syntax for variable interpolation
@@ -33,12 +33,14 @@
         "backbone": "components/backbone/backbone",
         "backbone.browserStorage": "components/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview": "components/backbone.overview/backbone.overview",
+        "bootstrap": "components/bootstrap/dist/js/bootstrap",                  // XXX: Only required for https://conversejs.org website
+        "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",
         "strophe.vcard": "components/strophe.vcard/index",
         "strophe.disco": "components/strophe.disco/index",
-        "converse-dependencies": "src/deps-no-otr",
+        "converse-dependencies": "src/deps-website-no-otr",
         "moment":"components/momentjs/moment",
         "converse-templates":"src/templates",
         "tpl": "components/requirejs-tpl-jcbrand/tpl",

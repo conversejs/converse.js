@@ -101,7 +101,8 @@ module.exports = function(grunt) {
         exec('./node_modules/requirejs/bin/r.js -o src/build.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-otr.js &&' +
-             './node_modules/requirejs/bin/r.js -o src/build-website.js', callback);
+             './node_modules/requirejs/bin/r.js -o src/build-website.js &&' + 
+             './node_modules/requirejs/bin/r.js -o src/build-website-no-otr.js', callback);
     });
 
     grunt.registerTask('minify', 'Create a new release', ['cssmin', 'jsmin']);

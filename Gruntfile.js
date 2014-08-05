@@ -101,6 +101,7 @@ module.exports = function(grunt) {
         exec('./node_modules/requirejs/bin/r.js -o src/build.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-otr.js &&' +
+             './node_modules/requirejs/bin/r.js -o src/build-website-no-otr.js &&' +
              './node_modules/requirejs/bin/r.js -o src/build-website.js', callback);
     });
 

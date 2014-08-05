@@ -1,0 +1,49 @@
+({
+    baseUrl: "../",
+    name: "components/almond/almond.js",
+    out: "../builds/converse.website-no-otr.min.js",
+    include: ['main'],
+    tpl: {
+        // Use Mustache style syntax for variable interpolation
+        templateSettings: {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        }
+    },
+    paths: {
+        "jquery": "components/jquery/dist/jquery",
+        "jed": "components/jed/jed",
+        "locales": "locale/locales",
+        "af": "locale/af/LC_MESSAGES/af",
+        "de": "locale/de/LC_MESSAGES/de",
+        "en": "locale/en/LC_MESSAGES/en",
+        "es": "locale/es/LC_MESSAGES/es",
+        "fr": "locale/fr/LC_MESSAGES/fr",
+        "he": "locale/he/LC_MESSAGES/he",
+        "hu": "locale/hu/LC_MESSAGES/hu",
+        "id": "locale/id/LC_MESSAGES/id",
+        "it": "locale/it/LC_MESSAGES/it",
+        "ja": "locale/ja/LC_MESSAGES/ja",
+        "nl": "locale/nl/LC_MESSAGES/nl",
+        "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR", 
+        "ru": "locale/ru/LC_MESSAGES/ru",
+        "zh": "locale/zh/LC_MESSAGES/zh",
+        "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "underscore": "components/underscore/underscore",
+        "backbone": "components/backbone/backbone",
+        "backbone.browserStorage": "components/backbone.browserStorage/backbone.browserStorage",
+        "backbone.overview": "components/backbone.overview/backbone.overview",
+        "bootstrap": "components/bootstrap/dist/js/bootstrap",                  // XXX: Only required for https://conversejs.org website
+        "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
+        "strophe": "components/strophe/strophe",
+        "strophe.muc": "components/strophe.muc/index",
+        "strophe.roster": "components/strophe.roster/index",
+        "strophe.vcard": "components/strophe.vcard/index",
+        "strophe.disco": "components/strophe.disco/index",
+        "converse-dependencies": "src/deps-website-no-otr",
+        "moment":"components/momentjs/moment",
+        "converse-templates":"src/templates",
+        "tpl": "components/requirejs-tpl-jcbrand/tpl",
+        "text": "components/requirejs-text/text"
+    }
+})

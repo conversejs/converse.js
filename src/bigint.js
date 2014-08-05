@@ -1640,7 +1640,9 @@
 
     // err
     else {
-      throw new Error('Keys should not be generated without CSPRNG.')
+      console.log('Keys should not be generated without CSPRNG.');
+      return;
+      // throw new Error('Keys should not be generated without CSPRNG.')
     }
 
   }())

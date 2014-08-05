@@ -13,7 +13,12 @@
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.min.css" />
     <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
-    <script src="builds/converse.website.min.js"></script>
+    <![if gte IE 9]>
+        <script src="builds/converse.website.min.js"></script>
+    <![endif]>
+    <!--[if lt IE 9]>
+        <script src="builds/converse-no-otr.min.js"></script>
+    <![endif]-->
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">

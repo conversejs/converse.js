@@ -2,11 +2,12 @@ define("converse-dependencies", [
     "otr",
     "moment",
     "locales",
-    "bootstrap", // XXX: Can be removed, only for https://conversejs.org
+    "bootstrap", // XXX: Only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",
-    "jquery.easing", // XXX: Can be removed, only for https://conversejs.org
+    "jquery.easing", // XXX: Only for https://conversejs.org
+    "jquery.fastLiveFilter",
     "strophe",
     "strophe.muc",
     "strophe.roster",

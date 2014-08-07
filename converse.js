@@ -3240,7 +3240,8 @@
             initialize: function () {
                 this.model.contacts.on("add", this.addContact, this);
                 this.model.contacts.on("change:chat_status", function (contact) {
-                    // This might be optimized by instead of first sorting, finding the correct position in positionContact
+                    // This might be optimized by instead of first sorting,
+                    // finding the correct position in positionContact
                     this.model.contacts.sort();
                     this.positionContact(contact).render();
                 }, this);
@@ -3293,7 +3294,7 @@
             addContact: function (contact) {
                 var view = new converse.RosterContactView({model: contact});
                 this.add(contact.get('id'), view);
-                var view = this.positionContact(contact).render();
+                view = this.positionContact(contact).render();
                 if (this.model.get('state') === CLOSED) {
                     view.$el.hide();
                 }
@@ -3347,7 +3348,7 @@
         });
 
         this.RosterView = Backbone.Overview.extend({
-            tagName: 'dl',
+            tagName: 'div',
             id: 'converse-roster',
 
             initialize: function () {
@@ -3369,7 +3370,10 @@
             },
 
             render: function () {
-                this.$el.empty();
+                this.$el.html(converse.templates.roster({
+                    placeholder: __('Type to filter contacts')
+                }));
+                this.$('.roster-filter').liveFilter('.roster-contacts', {hide: 'dt'});
                 return this;
             },
 
@@ -3457,13 +3461,13 @@
                     */
                 model.sort();
                 model.each($.proxy(function (group, idx) {
-                    var view = this.get(group.get('name'))
+                    var view = this.get(group.get('name'));
                     if (!view) {
                         view = new converse.RosterGroupView({model: group});
                         this.add(group.get('name'), view.render());
                     }
                     if (idx === 0) {
-                        this.$el.append(view.$el);
+                        this.$('.roster-contacts').append(view.$el);
                     } else {
                         this.appendGroup(view);
                     }
@@ -3476,7 +3480,7 @@
                  */
                 var index = this.model.indexOf(view.model);
                 if (index === 0) {
-                    this.$el.prepend(view.$el);
+                    this.$('.roster-contacts').prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
                     this.appendGroup(view);
                 } else {

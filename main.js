@@ -4,6 +4,7 @@ config = {
         "jquery": "components/jquery/dist/jquery",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
+        "jquery.fastLiveFilter": "src/jquery.fastLiveFilter",
         "bootstrap": "components/bootstrap/dist/js/bootstrap",                  // XXX: Only required for https://conversejs.org website
         "locales": "locale/locales",
         "underscore": "components/underscore/underscore",
@@ -74,6 +75,7 @@ config = {
         'bigint':               { deps: ['crypto'] },
         'jquery.browser':       { deps: ['jquery'] },
         'jquery.easing':        { deps: ['jquery'] },
+        'jquery.fastLiveFilter':{ deps: ['jquery'] },
         'strophe':              { deps: ['jquery'] },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe', 'jquery'] },

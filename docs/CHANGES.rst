@@ -1,8 +1,14 @@
 Changelog
 =========
 
-0.8 (2014-08-04)
-----------------
+0.8.1 (Unreleased)
+------------------
+
+* #212 Provide a live filter of the roster contacts. [jcbrand]
+
+
+0.8.0 (2014-08-04)
+------------------
 
 .. note::
     1. Converse.js is now relicensed under the `Mozilla Public License <http://www.mozilla.org/MPL/2.0/>`_.

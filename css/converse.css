@@ -872,11 +872,11 @@ dl.add-converse-contact {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-#conversejs #converse-roster span.req-contact-name {
+#converse-roster span.req-contact-name {
   width: 65%;
 }
-#conversejs #converse-roster span.pending-contact-name,
-#conversejs #converse-roster a.open-chat {
+#converse-roster span.pending-contact-name,
+#converse-roster a.open-chat {
   width: 80%;
 }
 #converse-roster dd span {
@@ -952,7 +952,7 @@ dl.add-converse-contact {
   font-size: 15px;
 }
 #conversejs dd.available-chatroom,
-#conversejs #converse-roster dd {
+#converse-roster dd {
   font-weight: bold;
   border: none;
   display: block;
@@ -961,7 +961,7 @@ dl.add-converse-contact {
   text-shadow: 0 1px 0 #fafafa;
   clear: both;
 }
-#conversejs #converse-roster dd {
+#converse-roster dd {
   line-height: 16px;
 }
 #conversejs .group-toggle {
@@ -970,20 +970,20 @@ dl.add-converse-contact {
 }
 #conversejs .roster-group:hover,
 #conversejs dd.available-chatroom:hover,
-#conversejs #converse-roster dd:hover {
+#converse-roster dd:hover {
   background-color: #eee;
 }
-#conversejs #converse-roster dd a.decline-xmpp-request {
+#converse-roster dd a.decline-xmpp-request {
   margin-left: 5px;
 }
-#conversejs #converse-roster dd a.remove-xmpp-contact {
+#converse-roster dd a.remove-xmpp-contact {
   float: right;
   width: 22px;
   margin: 0;
   display: none;
   color: #4f4f4f;
 }
-#conversejs #converse-roster dd:hover a.remove-xmpp-contact {
+#converse-roster dd:hover a.remove-xmpp-contact {
   display: inline-block;
 }
 #conversejs .chatbox,

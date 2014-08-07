@@ -32,6 +32,7 @@ define("converse-templates", [
     "tpl!src/templates/room_description",
     "tpl!src/templates/room_item",
     "tpl!src/templates/room_panel",
+    "tpl!src/templates/roster",
     "tpl!src/templates/roster_item",
     "tpl!src/templates/select_option",
     "tpl!src/templates/status_option",
@@ -73,11 +74,12 @@ define("converse-templates", [
         room_description:       arguments[30],
         room_item:              arguments[31],
         room_panel:             arguments[32],
-        roster_item:            arguments[33],
-        select_option:          arguments[34],
-        status_option:          arguments[35],
-        toggle_chats:           arguments[36],
-        toolbar:                arguments[37],
-        trimmed_chat:           arguments[38]
+        roster:                 arguments[33],
+        roster_item:            arguments[34],
+        select_option:          arguments[35],
+        status_option:          arguments[36],
+        toggle_chats:           arguments[37],
+        toolbar:                arguments[38],
+        trimmed_chat:           arguments[39]
     };
 });

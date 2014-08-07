@@ -3377,6 +3377,16 @@
                 return this;
             },
 
+            showHideFilter: function () {
+                var $filter = this.$('.roster-filter');
+                if (this.$('.roster-contacts').hasScrollBar()) {
+                    $filter.show();
+                } else {
+                    $filter.hide();
+                }
+                return this;
+            },
+
             update: function () {
                 // XXX: Is this still being used/valid?
                 var $count = $('#online-count');
@@ -3384,7 +3394,7 @@
                 if (!$count.is(':visible')) {
                     $count.show();
                 }
-                return this;
+                return this.showHideFilter();
             },
 
             reset: function () {

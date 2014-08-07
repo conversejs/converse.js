@@ -1,12 +1,21 @@
-/**
- * fastLiveFilter jQuery plugin 1.0.3
- * 
- * Copyright (c) 2011, Anthony Bush
- * License: <http://www.opensource.org/licenses/bsd-license.php>
- * Project Website: http://anthonybush.com/projects/jquery_fast_live_filter/
- **/
+jQuery.fn.hasScrollBar = function() {
+    var el = this.get(0);
+    if(el.offsetHeight < el.scrollHeight) {
+        return true;
+    }
+    else{
+        return false;
+    }
+};
 
 jQuery.fn.liveFilter = function(list, options) {
+    /**
+    * fastLiveFilter jQuery plugin 1.0.3
+    * 
+    * Copyright (c) 2011, Anthony Bush
+    * License: <http://www.opensource.org/licenses/bsd-license.php>
+    * Project Website: http://anthonybush.com/projects/jquery_fast_live_filter/
+    **/
 	// Options: input, list, timeout, callback
 	options = options || {};
 	var input = this;

@@ -817,7 +817,7 @@ dl.add-converse-contact {
   top: 1px;
 }
 #conversejs .controlbox-pane dt {
-  padding: 3px;
+  padding-bottom: 3px;
 }
 #conversejs .chatroom-form-container {
   height: 100%;
@@ -883,13 +883,22 @@ dl.add-converse-contact {
   padding: 0 5px 0 0;
 }
 #converse-roster {
-  overflow-y: auto;
-  overflow-x: hidden;
   width: 100%;
   position: relative;
   margin: 0.5em 0 0 0;
-  height: 254px;
-  height: calc(100% - 70px);
+  max-height: 194px;
+  max-height: calc(100% - 25px);
+}
+#converse-roster .roster-filter {
+  margin: 0 0.5em;
+  width: 182px;
+}
+#converse-roster .roster-contacts {
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 195px;
+  height: calc(100% - 67px);
 }
 #converse-roster .group-toggle {
   color: #666;
@@ -952,7 +961,7 @@ dl.add-converse-contact {
   font-size: 15px;
 }
 #conversejs dd.available-chatroom,
-#converse-roster dd {
+#conversejs #converse-roster dd {
   font-weight: bold;
   border: none;
   display: block;

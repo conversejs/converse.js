@@ -568,7 +568,14 @@
             this.enableCarbons();
             this.initStatus($.proxy(function () {
                 this.roster = new converse.RosterContacts();
-                this.rosterview = new this.RosterView({model: new this.RosterGroups()});
+                this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
+                    b64_sha1('converse.contacts-'+this.bare_jid));
+
+                var rostergroups = new this.RosterGroups();
+                rostergroups.browserStorage = new Backbone.BrowserStorage[this.storage](
+                    b64_sha1('converse.roster.groups'+this.bare_jid));
+                this.rosterview = new this.RosterView({model: rostergroups});
+
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
                 this.giveFeedback(__('Online Contacts'));
@@ -2936,8 +2943,6 @@
 
         this.RosterContacts = Backbone.Collection.extend({
             model: converse.RosterContact,
-            browserStorage: new Backbone.BrowserStorage[converse.storage](
-                b64_sha1('converse.contacts-'+converse.bare_jid)),
 
             comparator: function (contact1, contact2) {
                 var name1 = contact1.get('fullname').toLowerCase();
@@ -3338,11 +3343,6 @@
                 } else if (a_is_special && !b_is_special) {
                     return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
                 }
-            },
-
-            initialize: function () {
-                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.roster.groups'+converse.bare_jid));
             }
         });
 

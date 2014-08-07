@@ -33,6 +33,7 @@ jQuery.fn.liveFilter = function(list, options) {
         if (filter.length > 0) {
             $list.find(options.hide).hide();
         } else {
+            // TODO: remember original state and set back to that
             $list.find(options.hide).show();
         }
 		var li, innerText;

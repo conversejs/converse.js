@@ -6,7 +6,7 @@ define("converse-dependencies", [
     "backbone.overview",
     "jquery.browser",
     "jquery.easing", // XXX: Can be removed, only for https://conversejs.org
-    "jquery.fastLiveFilter",
+    "utils",
     "strophe",
     "strophe.muc",
     "strophe.roster",

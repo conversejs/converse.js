@@ -230,6 +230,7 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
+            auto_reconnect: false,  // This feature still seems buggy
             allow_otr: true,
             auto_list_rooms: false,
             auto_subscribe: false,

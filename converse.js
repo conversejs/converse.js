@@ -3282,7 +3282,41 @@
                 return view;
             },
 
+            filter: function (q) {
+                var matches;
+                if (q.length === 0) {
+                    if (this.model.get('state') === OPENED) {
+                        this.model.contacts.each($.proxy(function (item) {
+                            if (!(converse.show_only_online_users && item.get('chat_status') === 'online')) {
+                                this.get(item.get('id')).$el.show();
+                            }
+                        }, this));
+                    }
+                    this.showIfInvisible();
+                } else {
+                    q = q.toLowerCase();
+                    matches = this.model.contacts.filter(function (item) {
+                        return item.get('fullname').toLowerCase().indexOf(q) === -1;
+                    });
+                    if (matches.length === this.model.contacts.length) { // hide the whole group
+                        this.$el.nextUntil('dt').addBack().hide();
+                    } else {
+                        _.each(matches, $.proxy(function (item) {
+                            this.get(item.get('id')).$el.hide();
+                        }, this));
+                        this.showIfInvisible();
+                    }
+                }
+            },
+
+            showIfInvisible: function () {
+                if (!this.$el.is(':visible')) {
+                    this.$el.show();
+                }
+            },
+
             toggle: function (ev) {
+                // TODO: Need to take filter query into consideration
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $el = $(ev.target);
                 this.$el.nextUntil('dt').slideToggle();
@@ -3349,6 +3383,9 @@
         this.RosterView = Backbone.Overview.extend({
             tagName: 'div',
             id: 'converse-roster',
+            events: {
+                "keydown .roster-filter": "liveFilter"
+            },
 
             initialize: function () {
                 this.registerRosterHandler();
@@ -3372,9 +3409,18 @@
                 this.$el.html(converse.templates.roster({
                     placeholder: __('Type to filter contacts')
                 }));
-                this.$('.roster-filter').liveFilter('.roster-contacts', {hide: 'dt'});
+                this.$filter = this.$('.roster-filter');
+                this.$roster = this.$('.roster-contacts');
                 return this;
             },
+
+            liveFilter: _.debounce(function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var q = ev.target.value;
+                _.each(this.getAll(), function (view) {
+                    view.filter(q);
+                });
+            }, 500),
 
             showHideFilter: function () {
                 var $filter = this.$('.roster-filter');

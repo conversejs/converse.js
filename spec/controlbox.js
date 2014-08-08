@@ -1,12 +1,12 @@
 (function (root, factory) {
     define([
         "mock",
-        "utils"
-        ], function (mock, utils) {
-            return factory(mock, utils);
+        "test_utils"
+        ], function (mock, test_utils) {
+            return factory(mock, test_utils);
         }
     );
-} (this, function (mock, utils) {
+} (this, function (mock, test_utils) {
 
     var checkHeaderToggling = function ($header) {
         var $toggle = $header.find('a.group-toggle');
@@ -24,16 +24,16 @@
         expect($header.nextUntil('dt', 'dd').length === $header.nextUntil('dt', 'dd:visible').length).toBeTruthy();
     };
 
-    describe("The Control Box", $.proxy(function (mock, utils) {
+    describe("The Control Box", $.proxy(function (mock, test_utils) {
         beforeEach(function () {
             runs(function () {
-                utils.openControlBox();
+                test_utils.openControlBox();
             });
         });
 
         it("can be opened by clicking a DOM element with class 'toggle-controlbox'", $.proxy(function () {
             runs(function () {
-                utils.closeControlBox();
+                test_utils.closeControlBox();
             });
             waits(50);
             runs(function () {
@@ -59,7 +59,7 @@
         describe("The Status Widget", $.proxy(function () {
 
             beforeEach(function () {
-                utils.openControlBox();
+                test_utils.openControlBox();
             });
 
             it("shows the user's chat status, which is online by default", $.proxy(function () {
@@ -120,9 +120,9 @@
                 });
             }, converse));
         }, converse));
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 
-    describe("The Contacts Roster", $.proxy(function (mock, utils) {
+    describe("The Contacts Roster", $.proxy(function (mock, test_utils) {
 
         describe("A Roster Group", $.proxy(function () {
 
@@ -135,7 +135,7 @@
             });
 
             function _clearContacts () {
-                utils.clearBrowserStorage();
+                test_utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
             }
 
@@ -146,8 +146,8 @@
                 spyOn(this.rosterview, 'update').andCallThrough();
                 converse.rosterview.render();
 
-                utils.createContacts('pending');
-                utils.createContacts('requesting');
+                test_utils.createContacts('pending');
+                test_utils.createContacts('requesting');
                 var groups = {
                     'colleagues': 3,
                     'friends & acquaintences': 3,
@@ -243,14 +243,14 @@
 
         describe("Pending Contacts", $.proxy(function () {
             function _clearContacts () {
-                utils.clearBrowserStorage();
+                test_utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
             }
 
             function _addContacts () {
                 _clearContacts();
                 // Must be initialized, so that render is called and documentFragment set up.
-                utils.createContacts('pending').openControlBox().openContactsPanel();
+                test_utils.createContacts('pending').openControlBox().openContactsPanel();
             }
 
             it("can be collapsed under their own header", $.proxy(function () {
@@ -350,13 +350,13 @@
 
         describe("Existing Contacts", $.proxy(function () {
             function _clearContacts () {
-                utils.clearBrowserStorage();
+                test_utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
             }
 
             var _addContacts = function () {
                 _clearContacts();
-                utils.createContacts().openControlBox().openContactsPanel();
+                test_utils.createContacts().openControlBox().openContactsPanel();
             };
 
             it("can be collapsed under their own header", $.proxy(function () {
@@ -561,13 +561,13 @@
         describe("Requesting Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
-                    utils.clearBrowserStorage();
+                    test_utils.clearBrowserStorage();
                     converse.rosterview.model.reset();
-                    utils.createContacts('requesting').openControlBox();
+                    test_utils.createContacts('requesting').openControlBox();
                 });
                 waits(50);
                 runs(function () {
-                    utils.openContactsPanel();
+                    test_utils.openContactsPanel();
                 });
             }, converse));
 
@@ -646,7 +646,7 @@
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(window, 'confirm').andReturn(true);
-                utils.createContacts('requesting').openControlBox();
+                test_utils.createContacts('requesting').openControlBox();
                 var name = mock.req_names.sort()[1];
                 var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                 converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
@@ -661,10 +661,10 @@
 
         describe("All Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.clearBrowserStorage();
+                test_utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-                utils.createContacts('all').openControlBox();
-                utils.openContactsPanel();
+                test_utils.createContacts('all').openControlBox();
+                test_utils.openContactsPanel();
             }, converse));
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
@@ -700,9 +700,9 @@
                 }
             }, converse));
         }, converse));
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 
-    describe("The 'Add Contact' widget", $.proxy(function (mock, utils) {
+    describe("The 'Add Contact' widget", $.proxy(function (mock, test_utils) {
         it("opens up an add form when you click on it", $.proxy(function () {
             var panel = this.chatboxviews.get('controlbox').contactspanel;
             spyOn(panel, 'toggleContactForm').andCallThrough();
@@ -713,16 +713,16 @@
             panel.$el.find('a.toggle-xmpp-contact-form').click();
         }, converse));
 
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 
     describe("The Controlbox Tabs", $.proxy(function () {
         beforeEach($.proxy(function () {
             runs(function () {
-                utils.closeAllChatBoxes();
+                test_utils.closeAllChatBoxes();
             });
             waits(50);
             runs(function () {
-                utils.openControlBox();
+                test_utils.openControlBox();
             });
         }, converse));
 
@@ -739,11 +739,11 @@
         describe("chatrooms panel", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
-                    utils.closeAllChatBoxes();
+                    test_utils.closeAllChatBoxes();
                 });
                 waits(50);
                 runs(function () {
-                    utils.openControlBox();
+                    test_utils.openControlBox();
                 });
             }, converse));
 
@@ -792,5 +792,5 @@
                 }, converse));
             }, converse));
         }, converse));
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 }));

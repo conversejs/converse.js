@@ -1,13 +1,13 @@
 (function (root, factory) {
     define([
         "mock",
-        "utils"
-        ], function (mock, utils) {
-            return factory(mock, utils);
+        "test_utils"
+        ], function (mock, test_utils) {
+            return factory(mock, test_utils);
         }
     );
-} (this, function (mock, utils) {
-    return describe("Converse", $.proxy(function(mock, utils) {
+} (this, function (mock, test_utils) {
+    return describe("Converse", $.proxy(function(mock, test_utils) {
 
         beforeEach($.proxy(function () {
             window.localStorage.clear();
@@ -43,5 +43,5 @@
             // Restore the connection
             converse.connection = old_connection;
         }, converse));
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 }));

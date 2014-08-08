@@ -1,6 +1,6 @@
 // Extra test dependencies
 config.paths.mock = "tests/mock";
-config.paths.utils = "tests/utils";
+config.paths.test_utils = "tests/utils";
 config.paths.jasmine = "components/jasmine/lib/jasmine-core/jasmine";
 config.paths["jasmine-html"] = "components/jasmine/lib/jasmine-core/jasmine-html";
 config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";

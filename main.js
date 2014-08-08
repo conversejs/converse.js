@@ -75,7 +75,7 @@ config = {
         'bigint':               { deps: ['crypto'] },
         'jquery.browser':       { deps: ['jquery'] },
         'jquery.easing':        { deps: ['jquery'] },
-        'utils':{ deps: ['jquery'] },
+        'utils':                { deps: ['jquery'] },
         'strophe':              { deps: ['jquery'] },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe', 'jquery'] },

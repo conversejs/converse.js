@@ -1,23 +1,23 @@
 (function (root, factory) {
     define([
         "mock",
-        "utils"
-        ], function (mock, utils) {
-            return factory(mock, utils);
+        "test_utils"
+        ], function (mock, test_utils) {
+            return factory(mock, test_utils);
         }
     );
-} (this, function (mock, utils) {
-    return describe("The Minimized Chats Widget", $.proxy(function(mock, utils) {
+} (this, function (mock, test_utils) {
+    return describe("The Minimized Chats Widget", $.proxy(function(mock, test_utils) {
 
         beforeEach(function () {
             runs(function () {
-                utils.closeAllChatBoxes();
-                utils.removeControlBox();
+                test_utils.closeAllChatBoxes();
+                test_utils.removeControlBox();
                 converse.roster.browserStorage._clear();
-                utils.initConverse();
-                utils.createContacts();
-                utils.openControlBox();
-                utils.openContactsPanel();
+                test_utils.initConverse();
+                test_utils.createContacts();
+                test_utils.openControlBox();
+                test_utils.openContactsPanel();
                 converse.minimized_chats.toggleview.model.browserStorage._clear();
                 converse.minimized_chats.initToggle();
             });
@@ -26,7 +26,7 @@
         it("shows chats that have been minimized",  $.proxy(function () {
             var contact_jid, chatview;
             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            utils.openChatBoxFor(contact_jid);
+            test_utils.openChatBoxFor(contact_jid);
             chatview = converse.chatboxviews.get(contact_jid);
             expect(chatview.model.get('minimized')).toBeFalsy();
             expect(this.minimized_chats.$el.is(':visible')).toBeFalsy();
@@ -37,7 +37,7 @@
             expect(this.minimized_chats.keys()[0]).toBe(contact_jid);
 
             contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-            utils.openChatBoxFor(contact_jid);
+            test_utils.openChatBoxFor(contact_jid);
             chatview = converse.chatboxviews.get(contact_jid);
             expect(chatview.model.get('minimized')).toBeFalsy();
             chatview.$el.find('.toggle-chatbox-button').click();
@@ -49,7 +49,7 @@
 
         it("can be toggled to hide or show minimized chats",  $.proxy(function () {
             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            utils.openChatBoxFor(contact_jid);
+            test_utils.openChatBoxFor(contact_jid);
             var chatview = converse.chatboxviews.get(contact_jid);
             expect(this.minimized_chats.$el.is(':visible')).toBeFalsy();
             chatview.model.set({'minimized': true});
@@ -70,7 +70,7 @@
             expect(this.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeFalsy();
             for (i=0; i<3; i++) {
                 contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                utils.openChatBoxFor(contact_jid);
+                test_utils.openChatBoxFor(contact_jid);
                 chatview = converse.chatboxviews.get(contact_jid);
                 chatview.model.set({'minimized': true});
                 msg = $msg({
@@ -86,5 +86,5 @@
             }
         }, converse));
 
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 }));

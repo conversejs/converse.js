@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define("utils", [
+    define("test_utils", [
         'jquery',
         'mock'
     ],

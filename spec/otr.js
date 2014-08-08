@@ -1,13 +1,13 @@
 (function (root, factory) {
     define([
         "mock",
-        "utils"
-        ], function (mock, utils) {
-            return factory(mock, utils);
+        "test_utils"
+        ], function (mock, test_utils) {
+            return factory(mock, test_utils);
         }
     );
-} (this, function (mock, utils) {
-    return describe("The OTR module", $.proxy(function(mock, utils) {
+} (this, function (mock, test_utils) {
+    return describe("The OTR module", $.proxy(function(mock, test_utils) {
 
         beforeEach($.proxy(function () {
             window.localStorage.clear();
@@ -36,5 +36,5 @@
             // Clean up
             this.prebind = false;
         }, converse));
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 }));

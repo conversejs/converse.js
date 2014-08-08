@@ -1,13 +1,13 @@
 (function (root, factory) {
     define([
         "mock",
-        "utils"
-        ], function (mock, utils) {
-            return factory(mock, utils);
+        "test_utils"
+        ], function (mock, test_utils) {
+            return factory(mock, test_utils);
         }
     );
-} (this, function (mock, utils) {
-    return describe("The Converse Event Emitter", $.proxy(function(mock, utils) {
+} (this, function (mock, test_utils) {
+    return describe("The Converse Event Emitter", $.proxy(function(mock, test_utils) {
         window.localStorage.clear();
         window.sessionStorage.clear();
 
@@ -64,5 +64,5 @@
             expect(this.anotherCallback.callCount, 3);
             expect(this.neverCalled).not.toHaveBeenCalled();
         });
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 }));

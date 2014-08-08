@@ -307,8 +307,7 @@
         // Module-level functions
         // ----------------------
         this.giveFeedback = function (message, klass) {
-            $('.conn-feedback').text(message);
-            $('.conn-feedback').attr('class', 'conn-feedback');
+            $('.conn-feedback').attr('class', 'conn-feedback').text(message);
             if (klass) {
                 $('.conn-feedback').addClass(klass);
             }
@@ -1517,9 +1516,9 @@
                     });
                 }
                 this.$el.html(widgets);
-
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
+                converse.rosterview.update(); // Will render live filter if needed.
                 return this;
             },
 

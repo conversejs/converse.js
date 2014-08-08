@@ -1,11 +1,11 @@
 jQuery.fn.hasScrollBar = function() {
-    var el = this.get(0);
-    if(el.offsetHeight < el.scrollHeight) {
-        return true;
-    }
-    else{
+    if (!$.contains(document, this.get(0))) {
         return false;
     }
+    if(this.parent().height() < this.get(0).scrollHeight) {
+        return true;
+    }
+    return false;
 };
 
 jQuery.fn.liveFilter = function(list, options) {

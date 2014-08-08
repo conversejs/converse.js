@@ -986,11 +986,24 @@ dl.add-converse-contact {
     margin: 0.5em 0 0 0;
     height: 194px;
     height: ~"calc(100% - 25px)";
+    overflow-x: hidden;
 }
 
 #converse-roster .roster-filter {
-    margin: 0 0.5em;
+    margin: 0 0.5em 5px 0.5em;
     width: 185px;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
+    border: 1px solid #999;
+}
+
+/* (jQ addClass:) if input has value: */
+#converse-roster .roster-filter.x {
+    background-position: right 3px center;
+}
+
+/* (jQ addClass:) if mouse is over the 'x' input area*/
+#converse-roster .roster-filter.onX{
+    cursor:pointer;
 }
 
 #converse-roster .roster-contacts {

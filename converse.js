@@ -3283,7 +3283,15 @@
             },
 
             filter: function (q) {
-                var matches;
+                /* Filter the group's contacts based on the query "q".
+                 * The query is matched against the contact's full name.
+                 * If all contacts are filtered out (i.e. hidden), then the
+                 * group must be filtered out as well.
+                 */
+                var matches, rejects;
+                var predicate = function (item) {
+                    return item.get('fullname').toLowerCase().indexOf(q) === -1;
+                };
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
                         this.model.contacts.each($.proxy(function (item) {
@@ -3295,14 +3303,15 @@
                     this.showIfInvisible();
                 } else {
                     q = q.toLowerCase();
-                    matches = this.model.contacts.filter(function (item) {
-                        return item.get('fullname').toLowerCase().indexOf(q) === -1;
-                    });
+                    matches = this.model.contacts.filter(predicate);
                     if (matches.length === this.model.contacts.length) { // hide the whole group
                         this.$el.nextUntil('dt').addBack().hide();
                     } else {
                         _.each(matches, $.proxy(function (item) {
                             this.get(item.get('id')).$el.hide();
+                        }, this));
+                        _.each(this.model.contacts.reject(predicate), $.proxy(function (item) {
+                            this.get(item.get('id')).$el.show();
                         }, this));
                         this.showIfInvisible();
                     }
@@ -3316,16 +3325,16 @@
             },
 
             toggle: function (ev) {
-                // TODO: Need to take filter query into consideration
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $el = $(ev.target);
-                this.$el.nextUntil('dt').slideToggle();
                 if ($el.hasClass("icon-opened")) {
+                    this.$el.nextUntil('dt').slideUp();
                     this.model.save({state: CLOSED});
                     $el.removeClass("icon-opened").addClass("icon-closed");
                 } else {
                     $el.removeClass("icon-closed").addClass("icon-opened");
                     this.model.save({state: OPENED});
+                    this.filter(converse.rosterview.$('.roster-filter').val());
                 }
             },
 
@@ -3384,7 +3393,9 @@
             tagName: 'div',
             id: 'converse-roster',
             events: {
-                "keydown .roster-filter": "liveFilter"
+                "keydown .roster-filter": "liveFilter",
+                "click .onX": "clearFilter",
+                "mousemove .x": "togglePointer"
             },
 
             initialize: function () {
@@ -3414,18 +3425,46 @@
                 return this;
             },
 
-            liveFilter: _.debounce(function (ev) {
+            tog: function (v) {
+                return v?'addClass':'removeClass';
+            },
+
+            togglePointer: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var q = ev.target.value;
+                var el = ev.target;
+                $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
+            },
+
+            filter: function (q) {
                 _.each(this.getAll(), function (view) {
                     view.filter(q);
                 });
+            },
+
+            liveFilter: _.debounce(function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var q = ev.target.value;
+                $(ev.target)[this.tog(q)]('x');
+                this.filter(q);
             }, 500),
 
+            clearFilter: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                $(ev.target).removeClass('x onX').val('');
+                this.filter('');
+            },
+
             showHideFilter: function () {
+                var visible = this.$filter.is(':visible');
+                if (visible && this.$filter.val().length > 0) {
+                    // Don't hide if user is currently filtering.
+                    return;
+                }
                 var $filter = this.$('.roster-filter');
                 if (this.$('.roster-contacts').hasScrollBar()) {
-                    $filter.show();
+                    if (!visible) {
+                        $filter.show();
+                    }
                 } else {
                     $filter.hide();
                 }

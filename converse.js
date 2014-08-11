@@ -3275,6 +3275,7 @@
                  */
                 var view = this.get(contact.get('id'));
                 var index = this.model.contacts.indexOf(contact);
+                view.$el.detach();
                 if (index === 0) {
                     this.$el.after(view.$el);
                 } else if (index == (this.model.contacts.length-1)) {

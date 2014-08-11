@@ -3491,6 +3491,7 @@
 
             showHideFilter: function () {
                 var $filter = this.$('.roster-filter');
+                var $type  = this.$('.filter-type');
                 var visible = $filter.is(':visible');
                 if (visible && $filter.val().length > 0) {
                     // Don't hide if user is currently filtering.
@@ -3499,9 +3500,11 @@
                 if (this.$('.roster-contacts').hasScrollBar()) {
                     if (!visible) {
                         $filter.show();
+                        $type.show();
                     }
                 } else {
                     $filter.hide();
+                    $type.hide();
                 }
                 return this;
             },

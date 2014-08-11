@@ -292,6 +292,9 @@
         var HEADER_REQUESTING_CONTACTS = __('Contact requests');
         var HEADER_UNGROUPED = __('Ungrouped');
 
+        var LABEL_CONTACTS = __('Contacts');
+        var LABEL_GROUPS = __('Groups');
+
         var HEADER_WEIGHTS = {};
         HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
         HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
@@ -1496,7 +1499,7 @@
                     label_away: __('Away'),
                     label_offline: __('Offline')
                 });
-                this.$tabs.append(converse.templates.contacts_tab({label_contacts: __('Contacts')}));
+                this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
                 if (converse.xhr_user_search) {
                     markup = converse.templates.search_contact({
                         label_contact_name: __('Contact name'),
@@ -3282,6 +3285,10 @@
                 return view;
             },
 
+            hide: function () {
+                this.$el.nextUntil('dt').addBack().hide();
+            },
+
             filter: function (q) {
                 /* Filter the group's contacts based on the query "q".
                  * The query is matched against the contact's full name.
@@ -3305,7 +3312,7 @@
                     q = q.toLowerCase();
                     matches = this.model.contacts.filter(predicate);
                     if (matches.length === this.model.contacts.length) { // hide the whole group
-                        this.$el.nextUntil('dt').addBack().hide();
+                        this.hide();
                     } else {
                         _.each(matches, $.proxy(function (item) {
                             this.get(item.get('id')).$el.hide();
@@ -3334,7 +3341,10 @@
                 } else {
                     $el.removeClass("icon-closed").addClass("icon-opened");
                     this.model.save({state: OPENED});
-                    this.filter(converse.rosterview.$('.roster-filter').val());
+                    this.filter(
+                        converse.rosterview.$('.roster-filter').val(),
+                        converse.rosterview.$('.filter-type').val()
+                    );
                 }
             },
 
@@ -3395,7 +3405,8 @@
             events: {
                 "keydown .roster-filter": "liveFilter",
                 "click .onX": "clearFilter",
-                "mousemove .x": "togglePointer"
+                "mousemove .x": "togglePointer",
+                "change .filter-type": "changeFilterType"
             },
 
             initialize: function () {
@@ -3418,11 +3429,20 @@
 
             render: function () {
                 this.$el.html(converse.templates.roster({
-                    placeholder: __('Type to filter contacts')
+                    placeholder: __('Type to filter'),
+                    label_contacts: LABEL_CONTACTS,
+                    label_groups: LABEL_GROUPS
                 }));
-                this.$filter = this.$('.roster-filter');
-                this.$roster = this.$('.roster-contacts');
                 return this;
+            },
+
+            changeFilterType: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                this.clearFilter();
+                this.filter(
+                    this.$('.roster-filter').val(),
+                    ev.target.value
+                );
             },
 
             tog: function (v) {
@@ -3435,32 +3455,46 @@
                 $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
             },
 
-            filter: function (q) {
-                _.each(this.getAll(), function (view) {
-                    view.filter(q);
-                });
+            filter: function (query, type) {
+                var matches;
+                query = query.toLowerCase();
+                if (type === 'groups') {
+                    matches = _.filter(this.getAll(), function (view) {
+                        return view.model.get('name').toLowerCase().indexOf(query) === -1;
+                    });
+                    _.each(matches, function (view) {
+                        view.hide();
+                    });
+                } else {
+                    _.each(this.getAll(), function (view) {
+                        view.filter(query, type);
+                    });
+                }
             },
 
             liveFilter: _.debounce(function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var q = ev.target.value;
+                var t = this.$('.filter-type').val();
                 $(ev.target)[this.tog(q)]('x');
-                this.filter(q);
+                this.filter(q, t);
             }, 500),
 
             clearFilter: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                $(ev.target).removeClass('x onX').val('');
+                if (ev && ev.preventDefault) {
+                    ev.preventDefault();
+                    $(ev.target).removeClass('x onX').val('');
+                }
                 this.filter('');
             },
 
             showHideFilter: function () {
-                var visible = this.$filter.is(':visible');
-                if (visible && this.$filter.val().length > 0) {
+                var $filter = this.$('.roster-filter');
+                var visible = $filter.is(':visible');
+                if (visible && $filter.val().length > 0) {
                     // Don't hide if user is currently filtering.
                     return;
                 }
-                var $filter = this.$('.roster-filter');
                 if (this.$('.roster-contacts').hasScrollBar()) {
                     if (!visible) {
                         $filter.show();

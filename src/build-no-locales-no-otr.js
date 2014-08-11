@@ -25,6 +25,7 @@
         "strophe.disco": "components/strophe.disco/index",
         "converse-dependencies": "src/deps-no-otr",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "utils": "src/utils",
         "moment":"components/momentjs/moment",
         "converse-templates":"src/templates",
         "tpl": "components/requirejs-tpl-jcbrand/tpl",

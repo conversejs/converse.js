@@ -35,6 +35,7 @@
         "backbone.overview": "components/backbone.overview/backbone.overview",
         "bootstrap": "components/bootstrap/dist/js/bootstrap",                  // XXX: Only required for https://conversejs.org website
         "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
+        "utils": "src/utils",
         "strophe": "components/strophe/strophe",
         "strophe.muc": "components/strophe.muc/index",
         "strophe.roster": "components/strophe.roster/index",

@@ -29,6 +29,7 @@
         "ru": "locale/ru/LC_MESSAGES/ru",
         "zh": "locale/zh/LC_MESSAGES/zh",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
+        "utils": "src/utils",
         "underscore": "components/underscore/underscore",
         "backbone": "components/backbone/backbone",
         "backbone.browserStorage": "components/backbone.browserStorage/backbone.browserStorage",

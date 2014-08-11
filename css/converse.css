@@ -754,7 +754,7 @@ dl.add-converse-contact {
   clear: right;
   height: 22px;
   width: 12px;
-  padding: 0px 5px 0 0;
+  padding: 0px 15px 0 0;
   color: #4f4f4f;
 }
 #conversejs ul#found-users {
@@ -817,7 +817,7 @@ dl.add-converse-contact {
   top: 1px;
 }
 #conversejs .controlbox-pane dt {
-  padding: 3px;
+  padding-bottom: 3px;
 }
 #conversejs .chatroom-form-container {
   height: 100%;
@@ -872,24 +872,52 @@ dl.add-converse-contact {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-#conversejs #converse-roster span.req-contact-name {
+#converse-roster span.req-contact-name {
   width: 65%;
 }
-#conversejs #converse-roster span.pending-contact-name,
-#conversejs #converse-roster a.open-chat {
+#converse-roster span.pending-contact-name,
+#converse-roster a.open-chat {
   width: 80%;
 }
 #converse-roster dd span {
   padding: 0 5px 0 0;
 }
 #converse-roster {
-  overflow-y: auto;
-  overflow-x: hidden;
   width: 100%;
   position: relative;
   margin: 0.5em 0 0 0;
-  height: 254px;
-  height: calc(100% - 70px);
+  height: 194px;
+  height: calc(100% - 25px);
+  overflow-x: hidden;
+}
+#converse-roster .roster-filter {
+  padding: 0;
+  margin: 0 0 5px 0.5em;
+  width: 111px;
+  height: 20px;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
+  border: 1px solid #999;
+  display: inline-block;
+}
+#converse-roster .filter-type {
+  height: 20px;
+  padding: 0;
+  margin: 0 0 0 -5px;
+}
+/* (jQ addClass:) if input has value: */
+#converse-roster .roster-filter.x {
+  background-position: right 3px center;
+}
+/* (jQ addClass:) if mouse is over the 'x' input area*/
+#converse-roster .roster-filter.onX {
+  cursor: pointer;
+}
+#converse-roster .roster-contacts {
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 195px;
+  max-height: calc(100% - 67px);
 }
 #converse-roster .group-toggle {
   color: #666;
@@ -961,7 +989,7 @@ dl.add-converse-contact {
   text-shadow: 0 1px 0 #fafafa;
   clear: both;
 }
-#conversejs #converse-roster dd {
+#converse-roster dd {
   line-height: 16px;
 }
 #conversejs .group-toggle {
@@ -970,20 +998,20 @@ dl.add-converse-contact {
 }
 #conversejs .roster-group:hover,
 #conversejs dd.available-chatroom:hover,
-#conversejs #converse-roster dd:hover {
+#converse-roster dd:hover {
   background-color: #eee;
 }
-#conversejs #converse-roster dd a.decline-xmpp-request {
+#converse-roster dd a.decline-xmpp-request {
   margin-left: 5px;
 }
-#conversejs #converse-roster dd a.remove-xmpp-contact {
+#converse-roster dd a.remove-xmpp-contact {
   float: right;
   width: 22px;
   margin: 0;
   display: none;
   color: #4f4f4f;
 }
-#conversejs #converse-roster dd:hover a.remove-xmpp-contact {
+#converse-roster dd:hover a.remove-xmpp-contact {
   display: inline-block;
 }
 #conversejs .chatbox,

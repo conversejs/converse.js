@@ -1,25 +1,25 @@
 (function (root, factory) {
     define([
         "mock",
-        "utils"
-        ], function (mock, utils) {
-            return factory(mock, utils);
+        "test_utils"
+        ], function (mock, test_utils) {
+            return factory(mock, test_utils);
         }
     );
-} (this, function (mock, utils) {
-    return describe("ChatRooms", $.proxy(function (mock, utils) {
+} (this, function (mock, test_utils) {
+    return describe("ChatRooms", $.proxy(function (mock, test_utils) {
         describe("A Chat Room", $.proxy(function () {
             beforeEach(function () {
                 runs(function () {
-                    utils.closeAllChatBoxes();
+                    test_utils.closeAllChatBoxes();
                 });
                 waits(250);
                 runs(function () {
-                    utils.openControlBox();
+                    test_utils.openControlBox();
                 });
                 waits(250);
                 runs(function () {
-                    utils.openRoomsPanel();
+                    test_utils.openRoomsPanel();
                 });
                 waits(501);
                 runs(function () {
@@ -35,7 +35,7 @@
                 });
                 waits(250);
                 runs(function () {
-                    utils.closeControlBox();
+                    test_utils.closeControlBox();
                 });
                 waits(250);
                 runs(function () {});
@@ -116,7 +116,7 @@
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
                 spyOn(this.chatboxviews, 'trimChats');
-                utils.openControlBox();
+                test_utils.openControlBox();
                 var newchatboxes = new this.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 // The chatboxes will then be fetched from browserStorage inside the
@@ -350,5 +350,5 @@
                 expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");
             }, converse));
         }, converse));
-    }, converse, mock, utils));
+    }, converse, mock, test_utils));
 }));

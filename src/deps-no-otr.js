@@ -4,6 +4,7 @@ define("converse-dependencies", [
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",
+    "utils",
     "strophe",
     "strophe.muc",
     "strophe.roster",

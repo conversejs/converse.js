@@ -887,7 +887,7 @@ dl.add-converse-contact {
   position: relative;
   margin: 0.5em 0 0 0;
   height: 194px;
-  height: calc(100% - 25px);
+  height: calc(100% - 68px);
   overflow-x: hidden;
 }
 #converse-roster .roster-filter {
@@ -917,7 +917,7 @@ dl.add-converse-contact {
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 195px;
-  max-height: calc(100% - 67px);
+  max-height: calc(100% - 26px);
 }
 #converse-roster .group-toggle {
   color: #666;

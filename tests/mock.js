@@ -20,6 +20,14 @@
     ];
     mock.num_contacts = mock.req_names.length + mock.pend_names.length + mock.cur_names.length;
 
+    mock.groups = {
+        'colleagues': 3,
+        'friends & acquaintences': 3,
+        'Family': 4,
+        'ænemies': 3,
+        'Ungrouped': 2
+    };
+
     mock.chatroom_names = [
         'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
     ];

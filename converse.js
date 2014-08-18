@@ -3479,7 +3479,7 @@
                 var t = this.$('.filter-type').val();
                 $(ev.target)[this.tog(q)]('x');
                 this.filter(q, t);
-            }, 500),
+            }, 300),
 
             clearFilter: function (ev) {
                 if (ev && ev.preventDefault) {

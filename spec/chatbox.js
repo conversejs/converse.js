@@ -15,7 +15,7 @@
                     test_utils.removeControlBox();
                     test_utils.clearBrowserStorage();
                     test_utils.initConverse();
-                    test_utils.createContacts();
+                    test_utils.createContacts('current');
                     test_utils.openControlBox();
                     test_utils.openContactsPanel();
                 });
@@ -684,7 +684,7 @@
                 test_utils.removeControlBox();
                 converse.roster.browserStorage._clear();
                 test_utils.initConverse();
-                test_utils.createContacts();
+                test_utils.createContacts('current');
                 test_utils.openControlBox();
                 test_utils.openContactsPanel();
             });

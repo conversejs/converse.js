@@ -8,14 +8,13 @@
     );
 } (this, function (mock, test_utils) {
     return describe("The Minimized Chats Widget", $.proxy(function(mock, test_utils) {
-
         beforeEach(function () {
             runs(function () {
                 test_utils.closeAllChatBoxes();
                 test_utils.removeControlBox();
                 converse.roster.browserStorage._clear();
                 test_utils.initConverse();
-                test_utils.createContacts();
+                test_utils.createContacts('current');
                 test_utils.openControlBox();
                 test_utils.openContactsPanel();
                 converse.minimized_chats.toggleview.model.browserStorage._clear();

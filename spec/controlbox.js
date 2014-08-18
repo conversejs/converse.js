@@ -122,51 +122,144 @@
         }, converse));
     }, converse, mock, test_utils));
 
-    describe("The Contacts Roster", $.proxy(function (mock, test_utils) {
+    describe("The Contacts Roster", $.proxy(function (mock, utils) {
+        function _clearContacts () {
+            utils.clearBrowserStorage();
+            converse.rosterview.model.reset();
+        }
+
+        describe("The live filter", $.proxy(function () {
+            it("will only appear when roster contacts flow over the visible area", $.proxy(function () {
+                _clearContacts();
+                var $filter = converse.rosterview.$('.roster-filter');
+                var names = mock.cur_names;
+                expect($filter.length).toBe(1);
+                expect($filter.is(':visible')).toBeFalsy();
+                for (i=0; i<names.length; i++) {
+                    converse.roster.create({
+                        ask: null,
+                        fullname: names[i],
+                        jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        requesting: 'false',
+                        subscription: 'both'
+                    });
+                    converse.rosterview.update(); // XXX: Will normally called as event handler
+                    if (converse.rosterview.$('.roster-contacts').hasScrollBar()) {
+                        expect($filter.is(':visible')).toBeTruthy();
+                    } else {
+                        expect($filter.is(':visible')).toBeFalsy();
+                    }
+                }
+            }, converse));
+
+            it("can be used to filter the contacts shown", function () {
+                converse.roster_groups = true;
+                _clearContacts();
+                utils.createGroupedContacts();
+                var $filter = converse.rosterview.$('.roster-filter');
+                var $roster = converse.rosterview.$('.roster-contacts');
+                runs(function () {
+                    expect($roster.find('dd:visible').length).toBe(15);
+                    expect($roster.find('dt:visible').length).toBe(5);
+                    $filter.val("candice");
+                    expect($roster.find('dd:visible').length).toBe(15); // because no keydown event
+                    expect($roster.find('dt:visible').length).toBe(5);  // ditto
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($roster.find('dd:visible').length).toBe(1);
+                    expect($roster.find('dd:visible').eq(0).text().trim()).toBe('Candice van der Knijff');
+                    expect($roster.find('dt:visible').length).toBe(1);
+                    expect($roster.find('dt:visible').eq(0).text()).toBe('colleagues');
+                    $filter.val("an");
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($roster.find('dd:visible').length).toBe(5);
+                    expect($roster.find('dt:visible').length).toBe(4);
+
+                    $filter.val("xxx");
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($roster.find('dd:visible').length).toBe(0);
+                    expect($roster.find('dt:visible').length).toBe(0);
+                });
+                converse.roster_groups = false;
+            });
+
+            it("can be used to filter the groups shown", function () {
+                converse.roster_groups = true;
+                _clearContacts();
+                utils.createGroupedContacts();
+                var $filter = converse.rosterview.$('.roster-filter');
+                var $roster = converse.rosterview.$('.roster-contacts');
+                var $type = converse.rosterview.$('.filter-type');
+                $type.val('groups');
+                runs(function () {
+                    expect($roster.find('dd:visible').length).toBe(15);
+                    expect($roster.find('dt:visible').length).toBe(5);
+                    $filter.val("colleagues");
+                    expect($roster.find('dd:visible').length).toBe(15); // because no keydown event
+                    expect($roster.find('dt:visible').length).toBe(5);  // ditto
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($roster.find('dt:visible').length).toBe(1);
+                    expect($roster.find('dt:visible').eq(0).text()).toBe('colleagues');
+                    // Check that all contacts under the group are shown
+                    expect($roster.find('dt:visible').nextUntil('dt', 'dd:hidden').length).toBe(0);
+                    $filter.val("xxx");
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($roster.find('dt:visible').length).toBe(0);
+                });
+                converse.roster_groups = false;
+            });
+
+            it("has a button with which its contents can be cleared", function () {
+                converse.roster_groups = true;
+                _clearContacts();
+                utils.createGroupedContacts();
+                var $filter = converse.rosterview.$('.roster-filter');
+                var $roster = converse.rosterview.$('.roster-contacts');
+                runs (function () {
+                    $filter.val("xxx");
+                    $filter.trigger('keydown');
+                    expect($filter.hasClass("x")).toBeFalsy();
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($filter.hasClass("x")).toBeTruthy();
+                    $filter.addClass("onX").click();
+                    expect($filter.val()).toBe("");
+                });
+                converse.roster_groups = false;
+            });
+        }, converse));
 
         describe("A Roster Group", $.proxy(function () {
-
             beforeEach(function () {
                 converse.roster_groups = true;
             });
-
             afterEach(function () {
                 converse.roster_groups = false;
             });
 
-            function _clearContacts () {
-                test_utils.clearBrowserStorage();
-                converse.rosterview.model.reset();
-            }
-
             it("can be used to organize existing contacts", $.proxy(function () {
                 _clearContacts();
-                var i=0, j=0, t;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'update').andCallThrough();
                 converse.rosterview.render();
-
-                test_utils.createContacts('pending');
-                test_utils.createContacts('requesting');
-                var groups = {
-                    'colleagues': 3,
-                    'friends & acquaintences': 3,
-                    'Family': 4,
-                    'ænemies': 3,
-                    'Ungrouped': 2
-                };
-                _.each(_.keys(groups), $.proxy(function (name) {
-                    j = i;
-                    for (i=j; i<j+groups[name]; i++) {
-                        this.roster.create({
-                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                            subscription: 'both',
-                            ask: null,
-                            groups: name === 'ungrouped'? [] : [name],
-                            fullname: mock.cur_names[i]
-                        });
-                    }
-                }, converse));
+                utils.createContacts('pending');
+                utils.createContacts('requesting');
+                utils.createGroupedContacts();
                 // Check that the groups appear alphabetically and that
                 // requesting and pending contacts are last.
                 var group_titles = $.map(this.rosterview.$el.find('dt'), function (o) { return $(o).text().trim(); });
@@ -180,7 +273,7 @@
                     "Pending contacts"
                 ]);
                 // Check that usernames appear alphabetically per group
-                _.each(_.keys(groups), $.proxy(function (name) {
+                _.each(_.keys(mock.groups), $.proxy(function (name) {
                     var $contacts = this.rosterview.$('dt.roster-group[data-group="'+name+'"]').nextUntil('dt', 'dd');
                     var names = $.map($contacts, function (o) { return $(o).text().trim(); });
                     expect(names).toEqual(_.clone(names).sort());
@@ -189,7 +282,7 @@
 
             it("can share contacts with other roster groups", $.proxy(function () {
                 _clearContacts();
-                var i=0, j=0, t;
+                var i=0, j=0;
                 spyOn(converse, 'emit');
                 spyOn(this.rosterview, 'update').andCallThrough();
                 converse.rosterview.render();
@@ -213,7 +306,7 @@
             }, converse));
 
             it("remembers whether it is closed or opened", $.proxy(function () {
-                var i=0, j=0, t;
+                var i=0, j=0;
                 var groups = {
                     'colleagues': 3,
                     'friends & acquaintences': 3,
@@ -243,14 +336,14 @@
 
         describe("Pending Contacts", $.proxy(function () {
             function _clearContacts () {
-                test_utils.clearBrowserStorage();
+                utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
             }
 
             function _addContacts () {
                 _clearContacts();
                 // Must be initialized, so that render is called and documentFragment set up.
-                test_utils.createContacts('pending').openControlBox().openContactsPanel();
+                utils.createContacts('pending').openControlBox().openContactsPanel();
             }
 
             it("can be collapsed under their own header", $.proxy(function () {
@@ -350,13 +443,13 @@
 
         describe("Existing Contacts", $.proxy(function () {
             function _clearContacts () {
-                test_utils.clearBrowserStorage();
+                utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
             }
 
             var _addContacts = function () {
                 _clearContacts();
-                test_utils.createContacts().openControlBox().openContactsPanel();
+                utils.createContacts('current').openControlBox().openContactsPanel();
             };
 
             it("can be collapsed under their own header", $.proxy(function () {
@@ -561,13 +654,13 @@
         describe("Requesting Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
                 runs(function () {
-                    test_utils.clearBrowserStorage();
+                    utils.clearBrowserStorage();
                     converse.rosterview.model.reset();
-                    test_utils.createContacts('requesting').openControlBox();
+                    utils.createContacts('requesting').openControlBox();
                 });
                 waits(50);
                 runs(function () {
-                    test_utils.openContactsPanel();
+                    utils.openContactsPanel();
                 });
             }, converse));
 
@@ -646,7 +739,7 @@
                 spyOn(converse, 'emit');
                 spyOn(this.connection.roster, 'unauthorize');
                 spyOn(window, 'confirm').andReturn(true);
-                test_utils.createContacts('requesting').openControlBox();
+                utils.createContacts('requesting').openControlBox();
                 var name = mock.req_names.sort()[1];
                 var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                 converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
@@ -661,10 +754,10 @@
 
         describe("All Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                test_utils.clearBrowserStorage();
+                utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
-                test_utils.createContacts('all').openControlBox();
-                test_utils.openContactsPanel();
+                utils.createContacts('all').openControlBox();
+                utils.openContactsPanel();
             }, converse));
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
@@ -686,17 +779,6 @@
                     // so we have to sort them here to do a proper
                     // comparison
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
-                }
-            }, converse));
-
-            afterEach($.proxy(function () {
-                // Contacts retrieved from browserStorage have chat_status of
-                // "offline".
-                // In the next test suite, we need some online contacts, so
-                // we make some online now
-                for (i=0; i<5; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    this.roster.get(jid).set('chat_status', 'online');
                 }
             }, converse));
         }, converse));

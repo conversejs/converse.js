@@ -110,9 +110,12 @@
         view.model.messages.browserStorage._clear();
     };
 
-    utils.createContacts = function (type) {
-        // Create current (as opposed to requesting or pending) contacts
-        // for the user's roster.
+    utils.createContacts = function (type, length) {
+        /* Create current (as opposed to requesting or pending) contacts
+         * for the user's roster.
+         *
+         * These contacts are not grouped. See below.
+         */
         var names;
         if (type === 'requesting') {
             names = mock.req_names;
@@ -124,16 +127,22 @@
             subscription = 'none';
             requesting = false;
             ask = 'subscribe';
-        } else if (type === 'all') {
-            this.createContacts().createContacts('request').createContacts('pending');
-            return this;
-        } else {
+        } else if (type === 'current') {
             names = mock.cur_names;
             subscription = 'both';
             requesting = false;
             ask = null;
+        } else if (type === 'all') {
+            this.createContacts('current').createContacts('requesting').createContacts('pending');
+            return this;
+        } else {
+            throw "Need to specify the type of contact to create";
         }
-        for (i=0; i<names.length; i++) {
+
+        if (typeof length === 'undefined') {
+            length = names.length;
+        }
+        for (i=0; i<length; i++) {
             converse.roster.create({
                 ask: ask,
                 fullname: names[i],
@@ -143,6 +152,24 @@
             });
         }
         return this;
+    };
+
+    utils.createGroupedContacts = function () {
+        /* Create grouped contacts
+         */
+        var i=0, j=0;
+        _.each(_.keys(mock.groups), $.proxy(function (name) {
+            j = i;
+            for (i=j; i<j+mock.groups[name]; i++) {
+                converse.roster.create({
+                    jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    subscription: 'both',
+                    ask: null,
+                    groups: name === 'ungrouped'? [] : [name],
+                    fullname: mock.cur_names[i]
+                });
+            }
+        }, converse));
     };
 
     utils.sendMessage = function (chatboxview, message) {

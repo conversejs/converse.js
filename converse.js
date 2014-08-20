@@ -132,6 +132,12 @@
             'dnd':          2,
             'online':       1
         };
+
+        var INACTIVE = 'inactive';
+        var ACTIVE = 'active';
+        var COMPOSING = 'composing';
+        var PAUSED = 'paused';
+
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -165,6 +171,7 @@
         this.i18n = locales.en;
         this.message_carbons = false;
         this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
+        this.play_sounds = false;
         this.prebind = false;
         this.roster_groups = false;
         this.show_controlbox_by_default = false;
@@ -206,6 +213,7 @@
             'i18n',
             'jid',
             'no_trimming',
+            'play_sounds',
             'prebind',
             'rid',
             'roster_groups',
@@ -814,19 +822,21 @@
                 var body = $message.children('body').text(),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     composing = $message.find('composing'),
+                    paused = $message.find('paused'),
                     delayed = $message.find('delay').length > 0,
                     fullname = this.get('fullname'),
                     stamp, time, sender;
                 fullname = (_.isEmpty(fullname)? from: fullname).split(' ')[0];
 
                 if (!body) {
-                    if (composing.length) {
+                    if (composing.length || paused.length) {
                         this.messages.add({
                             fullname: fullname,
                             sender: 'them',
                             delayed: delayed,
                             time: moment().format(),
-                            composing: composing.length
+                            composing: composing.length,
+                            paused: paused.length
                         });
                     }
                 } else {
@@ -1031,8 +1041,11 @@
                         }));
                     }
                 }
-                if (message.get('composing')) {
-                    this.showStatusNotification(message.get('fullname')+' '+'is typing');
+                if (message.get(COMPOSING)) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                    return;
+                } else if (message.get(PAUSED)) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                     return;
                 } else {
                     this.showMessage(_.clone(message.attributes));
@@ -2442,6 +2455,31 @@
                 });
             },
 
+            playNotification: function () {
+                var ping;
+                if (converse.play_sounds && typeof Audio !== "undefined"){
+                    ping = new Audio("sounds/ping.ogg");
+                    if (ping.canPlayType('audio/ogg')) {
+                        ping.play();
+                    } else {
+                        ping = new Audio("sounds/ping.mp3");
+                        ping.play();
+                    }
+                }
+            },
+
+            isOnlyChatStateNotification: function ($msg) {
+                // See XEP-0085 Chat State Notification
+                return (
+                    $msg.find('body').length === 0 && (
+                        $msg.find(ACTIVE).length !== 0 ||
+                        $msg.find(COMPOSING).length !== 0 ||
+                        $msg.find(INACTIVE).length !== 0 ||
+                        $msg.find(PAUSED).length !== 0
+                    )
+                );
+            },
+
             onMessage: function (message) {
                 var buddy_jid, $message = $(message),
                     message_from = $message.attr('from');
@@ -2489,6 +2527,9 @@
                         'image': roster_item.get('image'),
                         'url': roster_item.get('url')
                     });
+                }
+                if (!this.isOnlyChatStateNotification($message) && from !== converse.bare_jid) {
+                    this.playNotification();
                 }
                 chatbox.receiveMessage($message);
                 converse.roster.addResource(buddy_jid, resource);

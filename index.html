@@ -12,13 +12,7 @@
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
-    <![if gte IE 9]>
-        <script src="builds/converse.website.min.js"></script>
-    <![endif]>
-    <!--[if lt IE 9]>
-        <script src="builds/converse.website-no-otr.min.js"></script>
-    <![endif]-->
+    <script data-main="main" src="components/requirejs/require.js"></script>
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -239,6 +233,7 @@
             hide_muc_server: false,
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
             prebind: false,
+            play_sounds: true,
             show_controlbox_by_default: true,
             xhr_user_search: false,
             roster_groups: true

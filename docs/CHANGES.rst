@@ -4,8 +4,9 @@ Changelog
 0.8.1 (Unreleased)
 ------------------
 
+* Bugfix: Contacts weren't properly sorted according to chat status. [jcbrand]
+* #63 Support for sound notification on message received. [jcbrand]
 * #212 Provide a live filter of the roster contacts. [jcbrand]
-
 
 0.8.0 (2014-08-04)
 ------------------

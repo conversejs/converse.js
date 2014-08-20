@@ -2,7 +2,7 @@
 BOWER 		?= node_modules/.bin/bower
 BUILDDIR     = ./docs
 PAPER        =
-PHANTOMJS	?= phantomjs
+PHANTOMJS	?= node_modules/.bin/phantomjs
 SPHINXBUILD  = sphinx-build
 SPHINXOPTS   =
 

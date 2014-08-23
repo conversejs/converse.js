@@ -159,7 +159,7 @@
         this.allow_otr = true;
         this.animate = true;
         this.auto_list_rooms = false;
-        this.auto_reconnect = true;
+        this.auto_reconnect = false;
         this.auto_subscribe = false;
         this.bosh_service_url = undefined; // The BOSH connection manager URL.
         this.cache_otr_key = false;
@@ -2456,14 +2456,14 @@
             },
 
             playNotification: function () {
-                var ping;
+                var audio;
                 if (converse.play_sounds && typeof Audio !== "undefined"){
-                    ping = new Audio("sounds/ping.ogg");
-                    if (ping.canPlayType('audio/ogg')) {
-                        ping.play();
+                    audio = new Audio("sounds/msg_received.ogg");
+                    if (audio.canPlayType('/audio/ogg')) {
+                        audio.play();
                     } else {
-                        ping = new Audio("sounds/ping.mp3");
-                        ping.play();
+                        audio = new Audio("/sounds/msg_received.mp3");
+                        audio.play();
                     }
                 }
             },

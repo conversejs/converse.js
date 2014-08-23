@@ -17,16 +17,16 @@ Quickstart (to get a demo up and running)
 
 When you download a specific release of *Converse.js* there will be two minified files inside the zip file.
 
-* converse.min.js
-* converse.min.css
+* builds/converse.min.js
+* css/converse.min.css
 
 You can include these two files inside the *<head>* element of your website via the *script* and *link*
 tags:
 
 ::
 
-    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
-    <script src="converse.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="css/converse.min.css">
+    <script src="builds/converse.min.js"></script>
 
 You need to initialize Converse.js with configuration settings particular to
 your requirements.
@@ -34,7 +34,7 @@ your requirements.
 Please refer to the `Configuration variables`_ section further below for info on
 all the available configuration settings.
 
-To do this, put the following inline Javascript code at the
+To configure Converse.js, put the following inline Javascript code at the
 bottom of your page (after the closing *</body>* element).
 
 ::
@@ -48,12 +48,12 @@ bottom of your page (after the closing *</body>* element).
             i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
             prebind: false,
             show_controlbox_by_default: true,
-            xhr_user_search: false
+            roster_groups: true
         });
     });
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
-Converse.js repository serves as a nice usable example of this.
+Converse.js repository may serve as a nice usable example.
 
 These minified files provide the same demo-like functionality as is available
 on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing, but not very
@@ -79,7 +79,7 @@ website, *Converse.js* is not really meant to be a "Software-as-a-service" (SaaS
 webchat.
 
 Instead, its goal is to provide the means for website owners to add a tightly
-integrated instant messaging service to their own sites.
+integrated instant messaging service to their own websites.
 
 As a website owner, you are expected to host *Converse.js* yourself, and to do some legwork to
 properly configure and integrate it into your site.
@@ -114,8 +114,8 @@ You can find a list of public XMPP servers/providers on `xmpp.net`_ and a list o
 servers that you can set up yourself on `xmpp.org`_.
 
 
-Connection Manager
-==================
+A BOSH Connection Manager
+=========================
 
 Your website and *Converse.js* use `HTTP`_ as protocol to communicate with
 the webserver. HTTP connections are stateless and usually shortlived.
@@ -127,18 +127,25 @@ To enable a web application like *Converse.js* to communicate with an XMPP
 server, we need a proxy in the middle that can act as a bridge between the two
 protocols.
 
-This is the job of a connection manager. A connection manager can be either a
-standalone application or part of an XMPP server. `ejabberd`_ for example,
-includes a connection manager (but you have to enable it).
+The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
 
-The demo on the `Converse.js homepage`_ uses a a connection manager located at https://bind.conversejs.org.
-This connection manager is for testing purposes only, please don't use it in
-production.
+This is the job of a connection manager. A connection manager can be either a
+standalone application or part of an XMPP server. Popular XMPP servers such as
+`ejabberd <http://www.ejabberd.im>`_, `prosody <http://prosody.im/doc/setting_up_bosh>`_ and
+`openfire <http://www.igniterealtime.org/projects/openfire/>`_ all include their own connection managers
+(but you usually have to enable them in the configuration).
+
+Standalone connection managers also exist, see for example `Punjab <https://github.com/twonds/punjab>`_.
+
+The demo on the `Converse.js homepage`_ uses a connection manager located at https://bind.conversejs.org.
+This connection manager is available for testing purposes only, please don't use it in production.
 
 Overcoming cross-domain request restrictions
 --------------------------------------------
 
-The domain of the *Converse.js* demo is *conversejs.org*, but the domain of the connection manager is *opkode.im*.
+Lets say your domain is *example.org*, but the domain of your connection
+manager is *example.com*.
+
 HTTP requests are made by *Converse.js* to the connection manager via XmlHttpRequests (XHR).
 Until recently, it was not possible to make such requests to a different domain
 than the one currently being served (to prevent XSS attacks).
@@ -281,67 +288,6 @@ Example code for server-side prebinding
     See this `example Django application`_ by Jack Moffitt.
 
 
-Setting up a BOSH server
-------------------------
-
-The `Movim <http://movim.eu/>`_ project wiki has a very thorough page on setting up a BOSH server for
-a wide variety of standalone or XMPP servers.
-
-http://wiki.movim.eu/manual:bosh_servers
-
-Facebook integration
-====================
-
-.. Note ::
-    It should be possible to integrate Converse.js with Facebook chat, and
-    below I'll provide some tips and documentation on how to achieve this. That
-    said, I don't have a Facebook account and therefore haven't tried to do
-    this myself. Feedback and patches from people who have succesfully done this
-    will be appreciated.
-
-Converse.js uses `Strophe.js <http://strophe.im/strophejs>`_ to connect and
-communicate with the XMPP server. One nice thing about Strophe.js is that it
-can be extended via `plugins <http://github.com/strophe/strophejs-plugins>`_.
-
-Here is a `plugin for authenticating with facebook
-<https://github.com/kissrobber/turedsocial/blob/master/strophe-plugins/src/facebook.js>`_.
-
-You will need your own BOSH connection manager to act as a proxy between
-Converse.js/Strophe.js and Facebook's XMPP server. That is because Facebook's
-XMPP server doesn't support BOSH natively.
-
-The BOSH connection manager that I make available for
-testing purposes (at https://bind.conversejs.org) uses `Punjab <https://github.com/twonds/punjab>`_,
-although there are quite a few other options available as well.
-
-When you configure Converse.js, via its ``initialize`` method, you must specify the
-`bosh_service_url`_ value, which is to be your BOSH connection manager.
-
-Please note, to enable Facebook integration, you'll have to
-get your hands dirty and modify Converse.js's code, so that it calls the
-``facebookConnect`` method of the plugin above.
-
-The plugin above gives the following code example for you to meditate upon:
-
-::
-
-    connection = new Strophe.Connection("http://localhost:5280/bosh");
-    connection.facebookConnect(
-        "12345@chat.facebook.com",
-        onConnectFacebook,
-        300,
-        1,
-        '5e64a30272af065bd72258c565a03f2f',
-        '8147a27e4a7f9b55ffc85c2683f9529a',
-        FB.getSession().session_key
-    );
-
-The connection is already created inside Converse.js, so the
-``facebookConnect`` method needs to also be called from there.
-
-If someone submits a sane patch that does the above, I'll be happy to merge it.
-Until then, people will have to do this themselves.
-
 ========
 Features
 ========
@@ -374,6 +320,25 @@ To get an idea on how this applies to OTR support in Converse.js, please read
 For now, suffice to say that although its useful to have OTR support in
 Converse.js in order to avoid most eavesdroppers, if you need serious
 communications privacy, then you're much better off using native software.
+
+Sound Notifications
+===================
+
+From version 0.8.1 Converse.js can play a sound notification when you receive a
+message.
+
+For more info, please see the `play_sounds`_ configuration setting.
+
+Multilingual Support
+====================
+
+Converse.js is translated into multiple languages. The default build,
+``converse.min.js``, includes all languages.
+
+Languages increase the size of the Converse.js significantly.
+
+If you only need one, or a subset of the available languages, it's better to
+make a custom build which includes only those languages that you need.
 
 ===========
 Development
@@ -981,6 +946,21 @@ i18n
 
 Specify the locale/language. The language must be in the ``locales`` object. Refer to
 ``./locale/locales.js`` to see which locales are supported.
+
+play_sounds
+-----------
+
+Default:  ``false``
+
+Inside the ``./sounds`` directory of the Converse.js repo, you'll see MP3 and Ogg
+formatted sound files. We need both, because neither format is supported by all browsers.
+
+For now, sound files are looked up by convention, not configuration. So to have
+a sound play when a message is received, make sure that your webserver serves
+it in both formats as ``http://yoursite.com/sounds/msg_received.mp3`` and
+``http://yoursite.com/sounds/msg_received.ogg``.
+
+``http://yoursite.com`` should of course be your site's URL.
 
 prebind
 --------

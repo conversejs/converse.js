@@ -1,15 +1,28 @@
-/*******************************************************************************
-Slate Theme for GitHub Pages
-by Jason Costello, @jsncostello
-*******************************************************************************/
-
 @import url("default.css");
-@import url("../../../stylesheets/stylesheet.css");
 @import url(pygment_trac.css);
 
+body {
+    margin: 1em;
+}
+
+body,
+header,
 div.body,
 div.document {
-    background-color: transparent;
+    background-color: white;
+}
+
+header {
+    margin: 1em;
+}
+
+header h1#project_title {
+    color: black;
+    font-size: 44px;
+}
+
+header h1#project_title a {
+    color: black;
 }
 
 div.body h1, 

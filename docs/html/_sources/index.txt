@@ -384,6 +384,10 @@ notice that there are references to a missing *components* folder. Please
 follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
+.. Note:
+    Users have reported that converse.js cannot be built on Windows. Patches to
+    fix this are welcome.
+
 
 Install the development and front-end dependencies
 ==================================================
@@ -403,11 +407,18 @@ directory:
 
     make dev
 
+Or alternatively, if you don't have GNU Make:
+
+::
+
+    npm install
+    bower update
+
 This will first install the Node.js development tools (like Grunt and Bower)
 and then use Bower to install all of Converse.js's front-end dependencies.
 
 The front-end dependencies are those javascript files on which
-Converse.js directly depends and which will therefore be loaded in the browser.
+Converse.js directly depends and which will be loaded in the browser.
 
 If you are curious to know what the different dependencies are:
 
@@ -424,7 +435,7 @@ If you are curious to know what the different dependencies are:
     which contains all the front-end dependencies of Converse.js.
     If this directory does NOT exist, something must have gone wrong.
     Double-check the output of ```make dev``` to see if there are any errors
-    listed.
+    listed. For support, you can write to the mailing list: conversejs@librelist.com
 
 
 With AMD and require.js (recommended)
@@ -773,11 +784,11 @@ Here are the different events that are emitted:
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **roster**                       | When the roster is updated.                                                                       | ``converse.on('roster', function (items) { ... });``                                    |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **rosterViewUpdated**            | Whenever the roster view (i.e. the rendered HTML) has changed.                                    | ``converse.on('rosterViewUpdated', function (items) { ... });``                         |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **callButtonClicked**            | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.on('callButtonClicked', function (connection, model) { ... });``             |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **chatBoxOpened**                | When a chat box has been opened.                                                                  | ``converse.on('chatBoxOpened', function (chatbox) { ... });``                           |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **chatRoomOpened**               | When a chat room has been opened.                                                                 | ``converse.on('chatRoomOpened', function (chatbox) { ... });``                          |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **chatBoxClosed**                | When a chat box has been closed.                                                                  | ``converse.on('chatBoxClosed', function (chatbox) { ... });``                           |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
@@ -990,6 +1001,18 @@ values as ``jid``, ``sid``, ``rid``.
 
 Additionally, you have to specify ``bosh_service_url``.
 
+roster_groups
+-------------
+
+Default:  ``false``
+
+If set to ``true``, converse.js will show any roster groups you might have
+configured.
+
+.. Note ::
+    It's currently not possible to use converse.js to assign contacts to groups.
+    Converse.js can only show users and groups that were previously configured
+    elsewhere.
 
 show_controlbox_by_default
 --------------------------

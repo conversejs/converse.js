@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-06 17:58+0200\n"
+"POT-Creation-Date: 2014-08-25 14:37+0200\n"
 "PO-Revision-Date: 2014-01-25 21:30+0700\n"
 "Last-Translator: Priyadi Iman Nurcahyo <priyadi@priyadi.net>\n"
 "Language-Team: Bahasa Indonesia\n"
@@ -17,96 +17,125 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: converse.js:260
+#: converse.js:283
 msgid "unencrypted"
 msgstr "tak dienkripsi"
 
-#: converse.js:261
+#: converse.js:284
 msgid "unverified"
 msgstr "tak diverifikasi"
 
-#: converse.js:262
+#: converse.js:285
 msgid "verified"
 msgstr "diverifikasi"
 
-#: converse.js:263
+#: converse.js:286
 msgid "finished"
 msgstr "selesai"
 
-#: converse.js:266
+#: converse.js:289
 msgid "This contact is busy"
 msgstr "Teman ini sedang sibuk"
 
-#: converse.js:267
+#: converse.js:290
 msgid "This contact is online"
 msgstr "Teman ini terhubung"
 
-#: converse.js:268
+#: converse.js:291
 msgid "This contact is offline"
 msgstr "Teman ini tidak terhubung"
 
-#: converse.js:269
+#: converse.js:292
 msgid "This contact is unavailable"
 msgstr "Teman ini tidak tersedia"
 
-#: converse.js:270
+#: converse.js:293
 msgid "This contact is away for an extended period"
 msgstr "Teman ini tidak di tempat untuk waktu yang lama"
 
-#: converse.js:271
+#: converse.js:294
 msgid "This contact is away"
 msgstr "Teman ini tidak di tempat"
 
-#: converse.js:349
+#: converse.js:296
+#, fuzzy
+msgid "Click to hide these contacts"
+msgstr "Klik untuk menghapus teman ini"
+
+#: converse.js:298
+msgid "My contacts"
+msgstr "Teman saya"
+
+#: converse.js:299
+msgid "Pending contacts"
+msgstr "Teman yang menunggu"
+
+#: converse.js:300
+msgid "Contact requests"
+msgstr "Permintaan pertemanan"
+
+#: converse.js:301
+msgid "Ungrouped"
+msgstr ""
+
+#: converse.js:303
+msgid "Contacts"
+msgstr "Teman"
+
+#: converse.js:304
+msgid "Groups"
+msgstr ""
+
+#: converse.js:386
 #, fuzzy
 msgid "Reconnecting"
 msgstr "Menyambung"
 
-#: converse.js:385
+#: converse.js:422
 msgid "Disconnected"
 msgstr "Terputus"
 
-#: converse.js:393
+#: converse.js:430
 msgid "Error"
 msgstr "Kesalahan"
 
-#: converse.js:395
+#: converse.js:432
 msgid "Connecting"
 msgstr "Menyambung"
 
-#: converse.js:398
+#: converse.js:435
 msgid "Connection Failed"
 msgstr "Gagal Menyambung"
 
-#: converse.js:400
+#: converse.js:437
 msgid "Authenticating"
 msgstr "Melakukan otentikasi"
 
-#: converse.js:403
+#: converse.js:440
 msgid "Authentication Failed"
 msgstr "Otentikasi gagal"
 
-#: converse.js:405
+#: converse.js:442
 msgid "Disconnecting"
 msgstr "Memutuskan hubungan"
 
-#: converse.js:539 converse.js:580
+#: converse.js:542 converse.js:591
 msgid "Online Contacts"
 msgstr "Teman yang Terhubung"
 
-#: converse.js:699
+#: converse.js:709
 msgid "Re-establishing encrypted session"
 msgstr "Menyambung kembali sesi terenkripsi"
 
-#: converse.js:711
+#: converse.js:721
 msgid "Generating private key."
 msgstr ""
 
-#: converse.js:712
+#: converse.js:722
 msgid "Your browser might become unresponsive."
 msgstr ""
 
-#: converse.js:747
+#: converse.js:757
 msgid ""
 "Authentication request from %1$s\n"
 "\n"
@@ -122,60 +151,68 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: converse.js:756
+#: converse.js:766
 msgid "Could not verify this user's identify."
 msgstr "Tak dapat melakukan verifikasi identitas pengguna ini."
 
-#: converse.js:795
+#: converse.js:805
 msgid "Exchanging private key with buddy."
 msgstr ""
 
-#: converse.js:935
+#: converse.js:946
 msgid "Personal message"
 msgstr "Pesan pribadi"
 
-#: converse.js:965
+#: converse.js:976
 #, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "Anda bukan anggota dari ruangan ini"
 
-#: converse.js:986
+#: converse.js:997
 msgid "me"
 msgstr "saya"
 
-#: converse.js:1076 converse.js:1971
+#: converse.js:1045
+msgid "is typing"
+msgstr ""
+
+#: converse.js:1048
+msgid "has stopped typing"
+msgstr ""
+
+#: converse.js:1090 converse.js:1987
 msgid "Show this menu"
 msgstr "Tampilkan menu ini"
 
-#: converse.js:1077 converse.js:1972
+#: converse.js:1091 converse.js:1988
 msgid "Write in the third person"
 msgstr "Tulis ini menggunakan bahasa pihak ketiga"
 
-#: converse.js:1078 converse.js:1976
+#: converse.js:1092 converse.js:1992
 msgid "Remove messages"
 msgstr "Hapus pesan"
 
-#: converse.js:1164
+#: converse.js:1176
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr ""
 
-#: converse.js:1199
+#: converse.js:1211
 msgid "Your message could not be sent"
 msgstr "Pesan anda tak dapat dikirim"
 
-#: converse.js:1202
+#: converse.js:1214
 msgid "We received an unencrypted message"
 msgstr "Kami menerima pesan terenkripsi"
 
-#: converse.js:1205
+#: converse.js:1217
 msgid "We received an unreadable encrypted message"
 msgstr "Kami menerima pesan terenkripsi yang gagal dibaca"
 
-#: converse.js:1214
+#: converse.js:1226
 msgid "This user has requested an encrypted session."
 msgstr "Pengguna ini meminta sesi terenkripsi"
 
-#: converse.js:1236
+#: converse.js:1248
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"
@@ -197,7 +234,7 @@ msgstr ""
 "Jika anda bisa mengkonfirmasi sidik jadi cocok, klik Lanjutkan, jika tidak "
 "klik Batal."
 
-#: converse.js:1249
+#: converse.js:1261
 #, fuzzy
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
@@ -213,23 +250,23 @@ msgstr ""
 "jawaban yang sama (huruf kapital diperhatikan), identitas mereka "
 "diverifikasi."
 
-#: converse.js:1250
+#: converse.js:1262
 msgid "What is your security question?"
 msgstr "Apakah pertanyaan keamanan anda?"
 
-#: converse.js:1252
+#: converse.js:1264
 msgid "What is the answer to the security question?"
 msgstr "Apa jawaban dari pertanyaan keamanan tersebut?"
 
-#: converse.js:1256
+#: converse.js:1268
 msgid "Invalid authentication scheme provided"
 msgstr "Skema otentikasi salah"
 
-#: converse.js:1372
+#: converse.js:1384
 msgid "Your messages are not encrypted anymore"
 msgstr "Pesan anda tidak lagi terenkripsi"
 
-#: converse.js:1374
+#: converse.js:1386
 msgid ""
 "Your messages are now encrypted but your buddy's identity has not been "
 "verified."
@@ -237,30 +274,30 @@ msgstr ""
 "Pesan anda sekarang terenkripsi, namun identitas teman anda belum dapat "
 "diverifikasi."
 
-#: converse.js:1376
+#: converse.js:1388
 msgid "Your buddy's identify has been verified."
 msgstr "Identitas teman anda telah diverifikasi."
 
-#: converse.js:1378
+#: converse.js:1390
 msgid "Your buddy has ended encryption on their end, you should do the same."
 msgstr ""
 "Teman anda menghentikan percakapan terenkripsi, anda sebaiknya melakukan hal "
 "yang sama."
 
-#: converse.js:1387
+#: converse.js:1399
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
 "Pesan anda tak terenkripsi. Klik di sini untuk menyalakan enkripsi OTR."
 
-#: converse.js:1389
+#: converse.js:1401
 msgid "Your messages are encrypted, but your buddy has not been verified."
 msgstr "Pesan anda terenkripsi, tetapi teman anda belum diverifikasi."
 
-#: converse.js:1391
+#: converse.js:1403
 msgid "Your messages are encrypted and your buddy verified."
 msgstr "Pesan anda terenkripsi dan teman anda telah diverifikasi."
 
-#: converse.js:1393
+#: converse.js:1405
 msgid ""
 "Your buddy has closed their end of the private session, you should do the "
 "same"
@@ -268,294 +305,290 @@ msgstr ""
 "Teman anda telah mematikan sesi terenkripsi, dan anda juga sebaiknya "
 "melakukan hal yang sama"
 
-#: converse.js:1403
+#: converse.js:1415
 msgid "End encrypted conversation"
 msgstr "Sudahi percakapan terenkripsi"
 
-#: converse.js:1404
+#: converse.js:1416
 msgid "Refresh encrypted conversation"
 msgstr "Setel ulang percakapan terenkripsi"
 
-#: converse.js:1405
+#: converse.js:1417
 msgid "Start encrypted conversation"
 msgstr "Mulai sesi terenkripsi"
 
-#: converse.js:1406
+#: converse.js:1418
 msgid "Verify with fingerprints"
 msgstr "Verifikasi menggunakan sidik jari"
 
-#: converse.js:1407
+#: converse.js:1419
 msgid "Verify with SMP"
 msgstr "Verifikasi menggunakan SMP"
 
-#: converse.js:1408
+#: converse.js:1420
 msgid "What's this?"
 msgstr "Apakah ini?"
 
-#: converse.js:1498
+#: converse.js:1510
 msgid "Online"
 msgstr "Terhubung"
 
-#: converse.js:1499
+#: converse.js:1511
 msgid "Busy"
 msgstr "Sibuk"
 
-#: converse.js:1500
+#: converse.js:1512
 msgid "Away"
 msgstr "Pergi"
 
-#: converse.js:1501
+#: converse.js:1513
 msgid "Offline"
 msgstr "Tak Terhubung"
 
-#: converse.js:1503
-msgid "Contacts"
-msgstr "Teman"
-
-#: converse.js:1506
+#: converse.js:1518
 msgid "Contact name"
 msgstr "Nama teman"
 
-#: converse.js:1507
+#: converse.js:1519
 msgid "Search"
 msgstr "Cari"
 
-#: converse.js:1511
+#: converse.js:1523
 msgid "Contact username"
 msgstr "Username teman"
 
-#: converse.js:1512
+#: converse.js:1524
 msgid "Add"
 msgstr "Tambah"
 
-#: converse.js:1518
+#: converse.js:1530
 msgid "Click to add new chat contacts"
 msgstr "Klik untuk menambahkan teman baru"
 
-#: converse.js:1519
+#: converse.js:1531
 msgid "Add a contact"
 msgstr "Tambah teman"
 
-#: converse.js:1545
+#: converse.js:1557
 msgid "No users found"
 msgstr "Pengguna tak ditemukan"
 
-#: converse.js:1551
+#: converse.js:1563
 msgid "Click to add as a chat contact"
 msgstr "Klik untuk menambahkan sebagai teman"
 
-#: converse.js:1606
+#: converse.js:1618
 msgid "Room name"
 msgstr "Nama ruangan"
 
-#: converse.js:1607
+#: converse.js:1619
 msgid "Nickname"
 msgstr "Nama panggilan"
 
-#: converse.js:1608
+#: converse.js:1620
 msgid "Server"
 msgstr "Server"
 
-#: converse.js:1609
+#: converse.js:1621
 msgid "Join"
 msgstr "Ikuti"
 
-#: converse.js:1610
+#: converse.js:1622
 msgid "Show rooms"
 msgstr "Perlihatkan ruangan"
 
-#: converse.js:1630
+#: converse.js:1642
 msgid "Rooms"
 msgstr "Ruangan"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: converse.js:1637
+#: converse.js:1649
 msgid "No rooms on %1$s"
 msgstr "Tak ada ruangan di %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: converse.js:1652
+#: converse.js:1664
 msgid "Rooms on %1$s"
 msgstr "Ruangan di %1$s"
 
-#: converse.js:1661
+#: converse.js:1673
 msgid "Click to open this room"
 msgstr "Klik untuk membuka ruangan ini"
 
-#: converse.js:1662
+#: converse.js:1674
 msgid "Show more information on this room"
 msgstr "Tampilkan informasi ruangan ini"
 
-#: converse.js:1724
+#: converse.js:1736
 msgid "Description:"
 msgstr "Keterangan:"
 
-#: converse.js:1725
+#: converse.js:1737
 msgid "Occupants:"
 msgstr "Penghuni:"
 
-#: converse.js:1726
+#: converse.js:1738
 msgid "Features:"
 msgstr "Fitur:"
 
-#: converse.js:1727
+#: converse.js:1739
 msgid "Requires authentication"
 msgstr "Membutuhkan otentikasi"
 
-#: converse.js:1728
+#: converse.js:1740
 msgid "Hidden"
 msgstr "Tersembunyi"
 
-#: converse.js:1729
+#: converse.js:1741
 msgid "Requires an invitation"
 msgstr "Membutuhkan undangan"
 
-#: converse.js:1730
+#: converse.js:1742
 msgid "Moderated"
 msgstr "Dimoderasi"
 
-#: converse.js:1731
+#: converse.js:1743
 msgid "Non-anonymous"
 msgstr "Tidak anonim"
 
-#: converse.js:1732
+#: converse.js:1744
 msgid "Open room"
 msgstr "Ruangan terbuka"
 
-#: converse.js:1733
+#: converse.js:1745
 msgid "Permanent room"
 msgstr "Ruangan permanen"
 
-#: converse.js:1734
+#: converse.js:1746
 msgid "Public"
 msgstr "Umum"
 
-#: converse.js:1735
+#: converse.js:1747
 msgid "Semi-anonymous"
 msgstr "Semi-anonim"
 
-#: converse.js:1736
+#: converse.js:1748
 msgid "Temporary room"
 msgstr "Ruangan sementara"
 
-#: converse.js:1737
+#: converse.js:1749
 msgid "Unmoderated"
 msgstr "Tak dimoderasi"
 
-#: converse.js:1973
+#: converse.js:1989
 msgid "Set chatroom topic"
 msgstr "Setel topik ruangan"
 
-#: converse.js:1974
+#: converse.js:1990
 msgid "Kick user from chatroom"
 msgstr "Tendang pengguna dari ruangan"
 
-#: converse.js:1975
+#: converse.js:1991
 msgid "Ban user from chatroom"
 msgstr "Larang pengguna dari ruangan"
 
-#: converse.js:1991
+#: converse.js:2007
 msgid "Message"
 msgstr "Pesan"
 
-#: converse.js:2071 converse.js:3462
+#: converse.js:2087 converse.js:3815
 msgid "Save"
 msgstr "Simpan"
 
-#: converse.js:2072
+#: converse.js:2088
 msgid "Cancel"
 msgstr "Batal"
 
-#: converse.js:2117
+#: converse.js:2133
 msgid "An error occurred while trying to save the form."
 msgstr "Kesalahan terjadi saat menyimpan formulir ini."
 
-#: converse.js:2163
+#: converse.js:2179
 msgid "This chatroom requires a password"
 msgstr "Ruangan ini membutuhkan kata sandi"
 
-#: converse.js:2164
+#: converse.js:2180
 msgid "Password: "
 msgstr "Kata sandi: "
 
-#: converse.js:2165
+#: converse.js:2181
 msgid "Submit"
 msgstr "Kirim"
 
-#: converse.js:2179
+#: converse.js:2195
 msgid "This room is not anonymous"
 msgstr "Ruangan ini tidak anonim"
 
-#: converse.js:2180
+#: converse.js:2196
 msgid "This room now shows unavailable members"
 msgstr "Ruangan ini menampilkan anggota yang tak tersedia"
 
-#: converse.js:2181
+#: converse.js:2197
 msgid "This room does not show unavailable members"
 msgstr "Ruangan ini tidak menampilkan anggota yang tak tersedia"
 
-#: converse.js:2182
+#: converse.js:2198
 msgid "Non-privacy-related room configuration has changed"
 msgstr "Konfigurasi ruangan yang tak berhubungan dengan privasi telah diubah"
 
-#: converse.js:2183
+#: converse.js:2199
 msgid "Room logging is now enabled"
 msgstr "Pencatatan di ruangan ini sekarang dinyalakan"
 
-#: converse.js:2184
+#: converse.js:2200
 msgid "Room logging is now disabled"
 msgstr "Pencatatan di ruangan ini sekarang dimatikan"
 
-#: converse.js:2185
+#: converse.js:2201
 msgid "This room is now non-anonymous"
 msgstr "Ruangan ini sekarang tak-anonim"
 
-#: converse.js:2186
+#: converse.js:2202
 msgid "This room is now semi-anonymous"
 msgstr "Ruangan ini sekarang semi-anonim"
 
-#: converse.js:2187
+#: converse.js:2203
 msgid "This room is now fully-anonymous"
 msgstr "Ruangan ini sekarang anonim"
 
-#: converse.js:2188
+#: converse.js:2204
 msgid "A new room has been created"
 msgstr "Ruangan baru telah dibuat"
 
-#: converse.js:2189
+#: converse.js:2205
 msgid "Your nickname has been changed"
 msgstr "Nama panggilan anda telah diubah"
 
-#: converse.js:2203
+#: converse.js:2219
 msgid "<strong>%1$s</strong> has been banned"
 msgstr "<strong>%1$s</strong> telah dicekal"
 
-#: converse.js:2204
+#: converse.js:2220
 msgid "<strong>%1$s</strong> has been kicked out"
 msgstr "<strong>%1$s</strong> telah ditendang keluar"
 
-#: converse.js:2205
+#: converse.js:2221
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
 msgstr "<strong>%1$s</strong> telah dihapus karena perubahan afiliasi"
 
-#: converse.js:2206
+#: converse.js:2222
 msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "<strong>%1$s</strong> telah dihapus karena bukan anggota"
 
-#: converse.js:2210 converse.js:2270
+#: converse.js:2226 converse.js:2286
 msgid "You have been banned from this room"
 msgstr "Anda telah dicekal dari ruangan ini"
 
-#: converse.js:2211
+#: converse.js:2227
 msgid "You have been kicked from this room"
 msgstr "Anda telah ditendang dari ruangan ini"
 
-#: converse.js:2212
+#: converse.js:2228
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "Anda telah dihapus dari ruangan ini karena perubahan afiliasi"
 
-#: converse.js:2213
+#: converse.js:2229
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
@@ -563,7 +596,7 @@ msgstr ""
 "Anda telah dihapus dari ruangan ini karena ruangan ini hanya terbuka untuk "
 "anggota dan anda bukan anggota"
 
-#: converse.js:2214
+#: converse.js:2230
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
@@ -571,146 +604,148 @@ msgstr ""
 "Anda telah dihapus dari ruangan ini karena layanan MUC (Multi-user chat) "
 "telah dimatikan."
 
-#: converse.js:2268
+#: converse.js:2284
 msgid "You are not on the member list of this room"
 msgstr "Anda bukan anggota dari ruangan ini"
 
-#: converse.js:2274
+#: converse.js:2290
 msgid "No nickname was specified"
 msgstr "Nama panggilan belum ditentukan"
 
-#: converse.js:2278
+#: converse.js:2294
 msgid "You are not allowed to create new rooms"
 msgstr "Anda tak diizinkan untuk membuat ruangan baru"
 
-#: converse.js:2280
+#: converse.js:2296
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "Nama panggilan anda tidak sesuai aturan ruangan ini"
 
-#: converse.js:2282
+#: converse.js:2298
 msgid "Your nickname is already taken"
 msgstr "Nama panggilan anda telah digunakan orang lain"
 
-#: converse.js:2284
+#: converse.js:2300
 msgid "This room does not (yet) exist"
 msgstr "Ruangan ini belum dibuat"
 
-#: converse.js:2286
+#: converse.js:2302
 msgid "This room has reached it's maximum number of occupants"
 msgstr "Ruangan ini telah mencapai jumlah penghuni maksimum"
 
-#: converse.js:2364
+#: converse.js:2380
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Topik diganti oleh %1$s menjadi: %2$s"
 
-#: converse.js:2394
+#: converse.js:2410
 msgid "This user is a moderator"
 msgstr "Pengguna ini adalah moderator"
 
-#: converse.js:2395
+#: converse.js:2411
 msgid "This user can send messages in this room"
 msgstr "Pengguna ini dapat mengirim pesan di ruangan ini"
 
-#: converse.js:2396
+#: converse.js:2412
 msgid "This user can NOT send messages in this room"
 msgstr "Pengguna ini tak dapat mengirim pesan di ruangan ini"
 
-#: converse.js:2638
+#: converse.js:2682
 #, fuzzy
 msgid "Click to restore this chat"
 msgstr "Klik untuk menghapus teman ini"
 
-#: converse.js:2777
+#: converse.js:2820
 msgid "Minimized"
 msgstr ""
 
-#: converse.js:2832
+#: converse.js:2894
 #, fuzzy
 msgid "Are you sure you want to remove this contact?"
 msgstr "Klik untuk menghapus teman ini"
 
-#: converse.js:2882 converse.js:2900
+#: converse.js:2917
+#, fuzzy
+msgid "Are you sure you want to decline this contact request?"
+msgstr "Klik untuk menghapus teman ini"
+
+#: converse.js:2961 converse.js:2979
 msgid "Click to remove this contact"
 msgstr "Klik untuk menghapus teman ini"
 
-#: converse.js:2889
-msgid "Accept"
-msgstr ""
-
-#: converse.js:2890
+#: converse.js:2968
 #, fuzzy
-msgid "Decline"
-msgstr "Terhubung"
+msgid "Click to accept this contact request"
+msgstr "Klik untuk menghapus teman ini"
 
-#: converse.js:2899
+#: converse.js:2969
+#, fuzzy
+msgid "Click to decline this contact request"
+msgstr "Klik untuk menghapus teman ini"
+
+#: converse.js:2978
 msgid "Click to chat with this contact"
 msgstr "Klik untuk mulai perbinjangan dengan teman ini"
 
-#: converse.js:3228
-msgid "My contacts"
-msgstr "Teman saya"
+#: converse.js:3474
+msgid "Type to filter"
+msgstr ""
 
-#: converse.js:3233
-msgid "Contact requests"
-msgstr "Permintaan pertemanan"
-
-#: converse.js:3237
-msgid "Pending contacts"
-msgstr "Teman yang menunggu"
-
-#: converse.js:3461
+#: converse.js:3814
 msgid "Custom status"
 msgstr "Status kustom"
 
-#: converse.js:3487 converse.js:3495
+#: converse.js:3840 converse.js:3848
 msgid "online"
 msgstr "terhubung"
 
-#: converse.js:3489
+#: converse.js:3842
 msgid "busy"
 msgstr "sibuk"
 
-#: converse.js:3491
+#: converse.js:3844
 msgid "away for long"
 msgstr "lama tak di tempat"
 
-#: converse.js:3493
+#: converse.js:3846
 msgid "away"
 msgstr "tak di tempat"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: converse.js:3507 converse.js:3532
+#: converse.js:3860 converse.js:3885
 msgid "I am %1$s"
 msgstr "Saya %1$s"
 
-#: converse.js:3512 converse.js:3534
+#: converse.js:3865 converse.js:3887
 msgid "Click here to write a custom status message"
 msgstr "Klik untuk menulis status kustom"
 
-#: converse.js:3513 converse.js:3535
+#: converse.js:3866 converse.js:3888
 msgid "Click to change your chat status"
 msgstr "Klik untuk mengganti status"
 
-#: converse.js:3625
+#: converse.js:3982
 msgid "XMPP/Jabber Username:"
 msgstr "Nama pengguna XMPP/Jabber:"
 
-#: converse.js:3626
+#: converse.js:3983
 msgid "Password:"
 msgstr "Kata sandi:"
 
-#: converse.js:3627
+#: converse.js:3984
 msgid "Log In"
 msgstr "Masuk"
 
-#: converse.js:3634
+#: converse.js:3991
 msgid "Sign in"
 msgstr "Masuk"
 
-#: converse.js:3693
+#: converse.js:4051
 msgid "Toggle chat"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Decline"
+#~ msgstr "Terhubung"
 
 #~ msgid ""
 #~ "Your browser needs to generate a private key, which will be used in your "

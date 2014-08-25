@@ -53,7 +53,9 @@ Integration into other frameworks
 * `Wordpress <http://wordpress.org>`_:
     `ConverseJS <http://wordpress.org/plugins/conversejs>`_
 * `Patternslib <http://patternslib.com>`_:
-    `patterns.converse`_: `patterns.converse <https://github.com/jcbrand/patterns.converse>`_ provides a Patternslib pattern for Converse.js
+    `patterns.converse <https://github.com/jcbrand/patterns.converse>`_ provides a Patternslib pattern for Converse.js
+* `Alfresco <http://www.alfresco.com>`_:
+    `alfresco-js-chat-share`_: `alfresco-js-chat-share <https://github.com/keensoft/alfresco-js-chat-share>`_
 
 ----
 Demo

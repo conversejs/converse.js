@@ -7,6 +7,7 @@ define("converse-dependencies", [
     "backbone.overview",
     "jquery.browser",
     "jquery.easing", // XXX: Only for https://conversejs.org
+    "typeahead",
     "utils",
     "strophe",
     "strophe.muc",

@@ -50,6 +50,12 @@
         return this;
     };
 
+    var predicate = function (attr, query) {
+        return function (item) {
+            return item.get(attr).toLowerCase().indexOf(query) === -1;
+        };
+    };
+
     $.fn.addEmoticons = function() {
         if (converse.visible_toolbar_buttons.emoticons) {
             if (this.length > 0) {
@@ -2005,8 +2011,12 @@
                     highlight: true
                 }, {
                     name: 'contacts-dataset',
-                    source: function (query, cb) {
-                        cb([{ val: 'dog' }, { val: 'pig' }, { val: 'moose' }]);
+                    source: function (q, cb) {
+                        var results = [];
+                        _.each(converse.roster.filter(predicate('fullname', q)), function (n) {
+                            results.push({value: n.get('fullname')});
+                        });
+                        cb(results);
                     }
                 });
                 return this;
@@ -3351,9 +3361,6 @@
                  * group must be filtered out as well.
                  */
                 var matches, rejects;
-                var predicate = function (item) {
-                    return item.get('fullname').toLowerCase().indexOf(q) === -1;
-                };
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
                         this.model.contacts.each($.proxy(function (item) {
@@ -3365,14 +3372,14 @@
                     this.showIfInvisible();
                 } else {
                     q = q.toLowerCase();
-                    matches = this.model.contacts.filter(predicate);
+                    matches = this.model.contacts.filter(predicate('fullname', q));
                     if (matches.length === this.model.contacts.length) { // hide the whole group
                         this.hide();
                     } else {
                         _.each(matches, $.proxy(function (item) {
                             this.get(item.get('id')).$el.hide();
                         }, this));
-                        _.each(this.model.contacts.reject(predicate), $.proxy(function (item) {
+                        _.each(this.model.contacts.reject(predicate('fullname', q)), $.proxy(function (item) {
                             this.get(item.get('id')).$el.show();
                         }, this));
                         this.showIfInvisible();

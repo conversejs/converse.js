@@ -1999,6 +1999,19 @@
                 }
             },
 
+            initTypeAheadInviteWidget: function () {
+                this.$('input.invited-contact').typeahead({
+                    minLength: 1,
+                    highlight: true
+                }, {
+                    name: 'contacts-dataset',
+                    source: function (query, cb) {
+                        cb([{ val: 'dog' }, { val: 'pig' }, { val: 'moose' }]);
+                    }
+                });
+                return this;
+            },
+
             renderChatArea: function () {
                 if (!this.$el.find('.chat-area').length) {
                     this.$el.find('.chat-body').empty().append(
@@ -2007,7 +2020,7 @@
                             'label_message': __('Message')
                         })
                     );
-                    this.renderToolbar();
+                    this.initTypeAheadInviteWidget().renderToolbar();
                 }
                 return this;
             },

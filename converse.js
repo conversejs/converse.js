@@ -2536,10 +2536,20 @@
                     $x = $message.children('x[xmlns="jabber:x:conference"]'),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     room_jid = $x.attr('jid'),
+                    reason = $x.attr('reason'),
                     contact = converse.roster.get(from),
+                    result;
+
+                if (reason) {
                     result = confirm(
-                        __(___("%1$s has invited you to join a chat room: %2$s"), contact.get('fullname'), room_jid)
+                        ___("%1$s has invited you to join a chat room: %2$s", contact.get('fullname'), room_jid)
                     );
+                } else {
+                    result = confirm(
+                         ___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%2$s"',
+                             contact.get('fullname'), room_jid, reason)
+                    );
+                }
                 if (result === true) {
                     // TODO: Give user option to choose nickname?
                     var chatroom = converse.chatboxviews.showChat({

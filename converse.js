@@ -2034,10 +2034,9 @@
                     );
                     if (result === true) {
                         var reason = prompt(__("You may optionally include a message, explaining the reason for the invitation."));
-                        // TODO: add support for including password for protected rooms.
-                        converse.connection.muc.directInvite(this.model.get('id'), suggestion.jid, reason);
+                        converse.connection.muc.rooms[this.model.get('id')].directInvite(suggestion.jid, reason);
                     }
-                    $(ev.target).val('');
+                    $(ev.target).typeahead('val', '');
                 }, this));
                 return this;
             },
@@ -2540,25 +2539,25 @@
                     contact = converse.roster.get(from),
                     result;
 
-                if (reason) {
+                if (!reason) {
                     result = confirm(
-                        ___("%1$s has invited you to join a chat room: %2$s", contact.get('fullname'), room_jid)
+                        __(___("%1$s has invited you to join a chat room: %2$s"), contact.get('fullname'), room_jid)
                     );
                 } else {
                     result = confirm(
-                         ___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%2$s"',
-                             contact.get('fullname'), room_jid, reason)
+                         __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
+                                contact.get('fullname'), room_jid, reason)
                     );
                 }
                 if (result === true) {
-                    // TODO: Give user option to choose nickname?
                     var chatroom = converse.chatboxviews.showChat({
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
                         'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
                         'chatroom': true,
-                        'box_id' : b64_sha1(room_jid)
+                        'box_id' : b64_sha1(room_jid),
+                        'password': $x.attr('password')
                     });
                     if (!chatroom.get('connected')) {
                         converse.chatboxviews.get(jid).connect(null);
@@ -2729,6 +2728,9 @@
             },
 
             showChat: function (attrs) {
+                /* Find the chat box and show it.
+                 * If it doesn't exist, create it.
+                 */
                 var chatbox  = this.model.get(attrs.jid);
                 if (chatbox) {
                     if (chatbox.get('minimized')) {

@@ -2011,7 +2011,8 @@
             },
 
             initTypeAheadInviteWidget: function () {
-                this.$('input.invited-contact').typeahead({
+                var $el = this.$('input.invited-contact');
+                $el.typeahead({
                     minLength: 1,
                     highlight: true
                 }, {
@@ -2027,6 +2028,16 @@
                         suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
                     }
                 });
+
+                $el.on('typeahead:selected', function (ev, suggestion, dname) {
+                    var result = confirm(__("Do you want to invite "+ suggestion.value +" to this chat room?"));
+                    if (result === true) {
+                        alert(suggestion.jid);
+                    } else {
+                        $(this).val('');
+                    }
+                });
+
                 return this;
             },
 

@@ -2010,7 +2010,7 @@
                 }
             },
 
-            initTypeAheadInviteWidget: function () {
+            initInviteWidget: function () {
                 var $el = this.$('input.invited-contact');
                 $el.typeahead({
                     minLength: 1,
@@ -2028,16 +2028,17 @@
                         suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
                     }
                 });
-
-                $el.on('typeahead:selected', function (ev, suggestion, dname) {
-                    var result = confirm(__("Do you want to invite "+ suggestion.value +" to this chat room?"));
+                $el.on('typeahead:selected', $.proxy(function (ev, suggestion, dname) {
+                    var result = confirm(
+                        __(___('Do you want to invite %1$s to the chat room "%2$s"?'), suggestion.value, this.model.get('id'))
+                    );
                     if (result === true) {
-                        alert(suggestion.jid);
-                    } else {
-                        $(this).val('');
+                        var reason = prompt(__("You may optionally include a message, explaining the reason for the invitation."));
+                        // TODO: add support for including password for protected rooms.
+                        converse.connection.muc.directInvite(this.model.get('id'), suggestion.jid, reason);
                     }
-                });
-
+                    $(ev.target).val('');
+                }, this));
                 return this;
             },
 
@@ -2049,7 +2050,7 @@
                             'label_message': __('Message')
                         })
                     );
-                    this.initTypeAheadInviteWidget().renderToolbar();
+                    this.initInviteWidget().renderToolbar();
                 }
                 return this;
             },
@@ -2337,6 +2338,8 @@
                     } else if ($error.find('not-acceptable').length) {
                         this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
                     } else if ($error.find('conflict').length) {
+                        // TODO: give user the option of choosing a different
+                        // nickname
                         this.showDisconnectMessage(__("Your nickname is already taken"));
                     } else if ($error.find('item-not-found').length) {
                         this.showDisconnectMessage(__("This room does not (yet) exist"));
@@ -2469,6 +2472,12 @@
                         this.onMessage(message);
                         return true;
                     }, this), null, 'message', 'chat');
+
+                converse.connection.addHandler(
+                    $.proxy(function (message) {
+                        this.onInvite(message);
+                        return true;
+                    }, this), 'jabber:x:conference', 'message');
             },
 
             onConnected: function () {
@@ -2522,20 +2531,46 @@
                 );
             },
 
+            onInvite: function (message) {
+                var $message = $(message),
+                    $x = $message.children('x[xmlns="jabber:x:conference"]'),
+                    from = Strophe.getBareJidFromJid($message.attr('from')),
+                    room_jid = $x.attr('jid'),
+                    contact = converse.roster.get(from),
+                    result = confirm(
+                        __(___("%1$s has invited you to join a chat room: %2$s"), contact.get('fullname'), room_jid)
+                    );
+                if (result === true) {
+                    // TODO: Give user option to choose nickname?
+                    var chatroom = converse.chatboxviews.showChat({
+                        'id': room_jid,
+                        'jid': room_jid,
+                        'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
+                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
+                        'chatroom': true,
+                        'box_id' : b64_sha1(room_jid)
+                    });
+                    if (!chatroom.get('connected')) {
+                        converse.chatboxviews.get(jid).connect(null);
+                    }
+                }
+            },
+
             onMessage: function (message) {
-                var buddy_jid, $message = $(message),
+                var $message = $(message);
+                var buddy_jid, $forwarded, $received,
                     message_from = $message.attr('from');
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted
                     return true;
                 }
-                var $forwarded = $message.children('forwarded');
-                var $received = $message.children('received');
+                $forwarded = $message.children('forwarded');
+                $received = $message.children('received[xmlns="urn:xmpp:carbons:2"]');
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
-                } else if ($received.length && $received.attr('xmlns') === 'urn:xmpp:carbons:2') {
-                    $message = $message.children('received').children('forwarded').children('message');
+                } else if ($received.length) {
+                    $message = $received.children('forwarded').children('message');
                     message_from = $message.attr('from');
                 }
                 var from = Strophe.getBareJidFromJid(message_from),

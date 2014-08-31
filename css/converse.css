@@ -610,6 +610,10 @@ span.spinner.hor_centered {
   width: 99px;
   border-bottom: 1px solid #999;
 }
+#conversejs .participants label {
+  margin-top: 5px;
+  display: block;
+}
 #conversejs .participants ul.participant-list li {
   overflow: hidden;
   text-overflow: ellipsis;

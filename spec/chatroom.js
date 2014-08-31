@@ -12,16 +12,13 @@
             beforeEach(function () {
                 runs(function () {
                     test_utils.closeAllChatBoxes();
-                });
-                waits(250);
-                runs(function () {
                     test_utils.openControlBox();
                 });
-                waits(250);
+                waits(150);
                 runs(function () {
                     test_utils.openRoomsPanel();
                 });
-                waits(501);
+                waits(200);
                 runs(function () {
                     // Open a new chatroom
                     var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;
@@ -37,7 +34,6 @@
                 runs(function () {
                     test_utils.closeControlBox();
                 });
-                waits(250);
                 runs(function () {});
             });
 
@@ -70,6 +66,32 @@
             }, converse));
 
             it("allows the user to invite their roster contacts to enter the chat room", $.proxy(function () {
+                spyOn(converse, 'emit');
+                spyOn(window, 'prompt').andCallFake(function () {
+                    return null;
+                });
+                var roster = {}, $input;
+                var view = this.chatboxviews.get('lounge@muc.localhost');
+                view.$el.find('.chat-area').remove();
+                view.renderChatArea(); // Will init the widget
+                test_utils.createContacts('current'); // We need roster contacts, so that we have someone to invite
+                $input = view.$el.find('input.invited-contact.tt-input');
+                $hint = view.$el.find('input.invited-contact.tt-hint');
+                runs (function () {
+                    expect($input.length).toBe(1);
+                    expect($input.attr('placeholder')).toBe('Type to invite');
+                    $input.val("Felix");
+                    $input.trigger('input');
+                });
+                waits(350); // Needed, due to debounce
+                runs (function () {
+                    expect($input.val()).toBe('Felix');
+                    expect($hint.val()).toBe('Felix Amsel');
+                    var $sugg = view.$el.find('[data-jid="felix.amsel@localhost"]');
+                    expect($sugg.length).toBe(1);
+                    $sugg.trigger('click');
+                    expect(window.prompt).toHaveBeenCalled();
+                });
             }, converse));
 
             it("shows received groupchat messages", $.proxy(function () {

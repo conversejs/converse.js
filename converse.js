@@ -3998,6 +3998,7 @@
             */
             model: converse.Feature,
             initialize: function () {
+                this.addClientIdentities().addClientFeatures();
                 this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.features'+converse.bare_jid));
                 if (this.browserStorage.records.length === 0) {
@@ -4008,6 +4009,30 @@
                 } else {
                     this.fetch({add:true});
                 }
+            },
+
+            addClientIdentities: function () {
+                /* See http://xmpp.org/registrar/disco-categories.html
+                 */
+                 converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
+                 return this;
+            },
+
+            addClientFeatures: function () {
+                /* The strophe.disco.js plugin keeps a list of features which
+                 * it will advertise to any #info queries made to it.
+                 *
+                 * See: http://xmpp.org/extensions/xep-0030.html#info
+                 */
+                 converse.connection.disco.addFeature('http://jabber.org/protocol/chatstates'); // Limited support
+                 converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
+                 converse.connection.disco.addFeature('jabber:x:conference');
+                 converse.connection.disco.addFeature('urn:xmpp:carbons:2');
+                 converse.connection.disco.addFeature('vcard-temp');
+                 converse.connection.disco.addFeature(Strophe.NS.BOSH);
+                 converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+                 converse.connection.disco.addFeature(Strophe.NS.MUC);
+                 return this;
             },
 
             onItems: function (stanza) {

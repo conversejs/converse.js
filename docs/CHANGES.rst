@@ -4,6 +4,8 @@ Changelog
 0.8.1 (Unreleased)
 ------------------
 
+* Converse.js now responds to XEP-0030: Service Discovery requests. [jcbrand]
+* #215 (and also #75) XEP-0249: Direct MUC Invitations. [jcbrand]
 * #216 Contacts tab empty when using xhr_user_search. [hcderaad and jcbrand]
 
 0.8.1 (2014-08-23)

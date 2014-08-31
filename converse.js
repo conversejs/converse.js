@@ -2173,7 +2173,7 @@
 
             renderPasswordForm: function () {
                 this.$el.find('span.centered.spinner').remove();
-                this.$el.find('.chat-body').append(
+                this.$el.find('.chat-body').html(
                     $('<div class="chatroom-form-container">'+
                         '<form class="chatroom-form">'+
                             '<legend>'+__('This chatroom requires a password')+'</legend>' +

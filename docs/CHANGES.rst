@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Converse.js now responds to XEP-0030: Service Discovery requests. [jcbrand]
+* #212 Bugfix. Groups weren't being show again after the live filter was cleared. [jcbrand]
 * #215 (and also #75) XEP-0249: Direct MUC Invitations. [jcbrand]
 * #216 Contacts tab empty when using xhr_user_search. [hcderaad and jcbrand]
 

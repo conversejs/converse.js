@@ -179,7 +179,6 @@
                 runs (function () {
                     expect($roster.find('dd:visible').length).toBe(5);
                     expect($roster.find('dt:visible').length).toBe(4);
-
                     $filter.val("xxx");
                     $filter.trigger('keydown');
                 });
@@ -187,6 +186,13 @@
                 runs (function () {
                     expect($roster.find('dd:visible').length).toBe(0);
                     expect($roster.find('dt:visible').length).toBe(0);
+                    $filter.val("");  // Check that contacts are shown again, when the filter string is cleared.
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs(function () {
+                    expect($roster.find('dd:visible').length).toBe(15);
+                    expect($roster.find('dt:visible').length).toBe(5);
                 });
                 converse.roster_groups = false;
             });
@@ -219,6 +225,13 @@
                 waits(350); // Needed, due to debounce
                 runs (function () {
                     expect($roster.find('dt:visible').length).toBe(0);
+                    $filter.val(""); // Check that groups are shown again, when the filter string is cleared.
+                    $filter.trigger('keydown');
+                });
+                waits(350); // Needed, due to debounce
+                runs(function () {
+                    expect($roster.find('dd:visible').length).toBe(15);
+                    expect($roster.find('dt:visible').length).toBe(5);
                 });
                 converse.roster_groups = false;
             });

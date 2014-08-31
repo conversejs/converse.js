@@ -35,6 +35,7 @@ define("converse-templates", [
     "tpl!src/templates/roster",
     "tpl!src/templates/roster_item",
     "tpl!src/templates/select_option",
+    "tpl!src/templates/search_contact",
     "tpl!src/templates/status_option",
     "tpl!src/templates/toggle_chats",
     "tpl!src/templates/toolbar",
@@ -77,9 +78,10 @@ define("converse-templates", [
         roster:                 arguments[33],
         roster_item:            arguments[34],
         select_option:          arguments[35],
-        status_option:          arguments[36],
-        toggle_chats:           arguments[37],
-        toolbar:                arguments[38],
-        trimmed_chat:           arguments[39]
+        search_contact:         arguments[36],
+        status_option:          arguments[37],
+        toggle_chats:           arguments[38],
+        toolbar:                arguments[39],
+        trimmed_chat:           arguments[40]
     };
 });

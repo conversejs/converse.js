@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.8.1 (Unreleased)
+------------------
+
+* #216 Contacts tab empty when using xhr_user_search. [hcderaad and jcbrand]
+
 0.8.1 (2014-08-23)
 ------------------
 

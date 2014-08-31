@@ -79,6 +79,8 @@
             }
         },
         'disco': {
+            'addFeature': function () {},
+            'addIdentity': function () {},
             'info': function () {},
             'items': function () {}
         }

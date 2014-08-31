@@ -2045,6 +2045,7 @@
                     );
                     if (reason !== null) {
                         converse.connection.muc.rooms[this.model.get('id')].directInvite(suggestion.jid, reason);
+                        converse.emit('roomInviteSent', this, suggestion.jid, reason);
                     }
                     $(ev.target).typeahead('val', '');
                 }, this));

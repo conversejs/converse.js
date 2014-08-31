@@ -52,12 +52,22 @@
 
     var contains = function (attr, query) {
         return function (item) {
-            return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+            if (typeof attr === 'object') {
+                var value = false;
+                _.each(attr, function (a) {
+                    value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                });
+                return value;
+            } else if (typeof attr === 'string') {
+                return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+            } else {
+                throw new Error('Wrong attribute type. Must be string or array.');
+            }
         };
     };
     contains.not = function (attr, query) {
         return function (item) {
-            return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) === -1;
+            return !(contains(attr, query)(item));
         };
     };
 
@@ -2019,7 +2029,7 @@
                     name: 'contacts-dataset',
                     source: function (q, cb) {
                         var results = [];
-                        _.each(converse.roster.filter(contains('fullname', q)), function (n) {
+                        _.each(converse.roster.filter(contains(['fullname', 'jid'], q)), function (n) {
                             results.push({value: n.get('fullname'), jid: n.get('jid')});
                         });
                         cb(results);
@@ -2029,11 +2039,11 @@
                     }
                 });
                 $el.on('typeahead:selected', $.proxy(function (ev, suggestion, dname) {
-                    var result = confirm(
-                        __(___('Do you want to invite %1$s to the chat room "%2$s"?'), suggestion.value, this.model.get('id'))
+                    var reason = prompt(
+                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
+                        __("You may optionally include a message, explaining the reason for the invitation.")
                     );
-                    if (result === true) {
-                        var reason = prompt(__("You may optionally include a message, explaining the reason for the invitation."));
+                    if (reason !== null) {
                         converse.connection.muc.rooms[this.model.get('id')].directInvite(suggestion.jid, reason);
                     }
                     $(ev.target).typeahead('val', '');
@@ -3416,6 +3426,10 @@
                 return view;
             },
 
+            show: function () {
+                this.$el.nextUntil('dt').addBack().show();
+            },
+
             hide: function () {
                 this.$el.nextUntil('dt').addBack().hide();
             },
@@ -3587,11 +3601,12 @@
                 var matches;
                 query = query.toLowerCase();
                 if (type === 'groups') {
-                    matches = _.filter(this.getAll(), function (view) {
-                        return view.model.get('name').toLowerCase().indexOf(query) === -1;
-                    });
-                    _.each(matches, function (view) {
-                        view.hide();
+                    _.each(this.getAll(), function (view, idx) {
+                        if (view.model.get('name').toLowerCase().indexOf(query.toLowerCase()) === -1) {
+                            view.hide();
+                        } else if (view.model.contacts.length > 0) {
+                            view.show();
+                        }
                     });
                 } else {
                     _.each(this.getAll(), function (view) {

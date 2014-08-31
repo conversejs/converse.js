@@ -69,6 +69,9 @@
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
             }, converse));
 
+            it("allows the user to invite their roster contacts to enter the chat room", $.proxy(function () {
+            }, converse));
+
             it("shows received groupchat messages", $.proxy(function () {
                 spyOn(converse, 'emit');
                 var view = this.chatboxviews.get('lounge@muc.localhost');

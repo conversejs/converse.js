@@ -2056,7 +2056,8 @@
                     this.$el.find('.chat-body').empty().append(
                         converse.templates.chatarea({
                             'show_toolbar': converse.show_toolbar,
-                            'label_message': __('Message')
+                            'label_message': __('Message'),
+                            'label_invitation': __('Type to invite')
                         })
                     );
                     this.initInviteWidget().renderToolbar();

@@ -2058,7 +2058,7 @@
                         converse.templates.chatarea({
                             'show_toolbar': converse.show_toolbar,
                             'label_message': __('Message'),
-                            'label_invitation': __('Type to invite')
+                            'label_invitation': __('Invite...')
                         })
                     );
                     this.initInviteWidget().renderToolbar();

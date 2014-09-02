@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 * Converse.js now responds to XEP-0030: Service Discovery requests. [jcbrand]
+* Bugfix. Roster groups all appear offline after page reload (with prebind).
+  See http://librelist.com/browser//conversejs/2014/8/26/problem-with-contact-list-everyone-is-offline/ [heban and jcbrand]
 * #212 Bugfix. Groups weren't being show again after the live filter was cleared. [jcbrand]
 * #215 (and also #75) XEP-0249: Direct MUC Invitations. [jcbrand]
 * #216 Contacts tab empty when using xhr_user_search. [hcderaad and jcbrand]

@@ -899,11 +899,25 @@ Default:  ``false``
 If set to true, debugging output will be logged to the browser console.
 
 message_carbons
-----------------------
+---------------
 
 Default:  ``false``
 
 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
+
+In order to keep all IM clients for a user engaged in a conversation,
+outbound messages are carbon-copied to all interested resources.
+
+This is especially important in webchat, like converse.js, where each browser
+tab serves as a separate IM client.
+
+Both message_carbons and `forward_messages`_ try to solve the same problem
+(showing sent messages in all connected chat clients aka resources), but go about it
+in two different ways.
+
+Message carbons is the XEP (Jabber protocol extension) specifically drafted to
+solve this problem, while `forwarded_messages`_ uses 
+`stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 expose_rid_and_sid
 ------------------
@@ -922,13 +936,18 @@ forward_messages
 
 Default:  ``false``
 
-If set to ``true``, sent messages will also be forwarded to other connected
-XMPP resources (e.g. chat clients) of the same user.
+If set to ``true``, sent messages will also be forwarded to the sending user's
+bare JID (their Jabber ID independent of any chat clients aka resources).
 
-This is useful for example if converse.js is running in multiple tabs of the
-browser and you want sent messages to appear in all of them.
+This means that sent messages are visible from all the user's chat clients,
+and not just the one from which it was actually sent.
 
-See also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+This is especially important for web chat, such as converse.js, where each
+browser tab functions as a separate chat client, with its own resource.
+
+This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+
+For an alternative approach, see also `message carbons`_.
 
 fullname
 --------

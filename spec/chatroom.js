@@ -79,7 +79,7 @@
                 $hint = view.$el.find('input.invited-contact.tt-hint');
                 runs (function () {
                     expect($input.length).toBe(1);
-                    expect($input.attr('placeholder')).toBe('Type to invite');
+                    expect($input.attr('placeholder')).toBe('Invite...');
                     $input.val("Felix");
                     $input.trigger('input');
                 });
@@ -92,6 +92,33 @@
                     $sugg.trigger('click');
                     expect(window.prompt).toHaveBeenCalled();
                 });
+            }, converse));
+
+            it("can be joined automatically, based upon a received invite", $.proxy(function () {
+                spyOn(window, 'confirm').andCallFake(function () {
+                    return true;
+                });
+                test_utils.createContacts('current'); // We need roster contacts, who can invite us
+                var view = this.chatboxviews.get('lounge@muc.localhost');
+                view.close();
+                var name = mock.cur_names[0];
+                var from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                var room_jid = 'lounge@localhost';
+                var reason = "Please join this chat room";
+                var message = $(
+                    "<message from='"+from_jid+"' to='"+converse.bare_jid+"'>" +
+                        "<x xmlns='jabber:x:conference'" +
+                            "jid='"+room_jid+"'" +
+                            "reason='"+reason+"'/>"+
+                    "</message>"
+                )[0];
+                expect(converse.chatboxes.models.length).toBe(0);
+                converse.chatboxes.onInvite(message);
+                expect(window.confirm).toHaveBeenCalledWith( 
+                    name + ' has invited you to join a chat room: '+ room_jid +
+                    ', and left the following reason: "'+reason+'"');
+                expect(converse.chatboxes.models.length).toBe(1);
+                expect(converse.chatboxes.models[0].id).toBe(room_jid);
             }, converse));
 
             it("shows received groupchat messages", $.proxy(function () {

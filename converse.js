@@ -2572,7 +2572,7 @@
                         'password': $x.attr('password')
                     });
                     if (!chatroom.get('connected')) {
-                        converse.chatboxviews.get(jid).connect(null);
+                        converse.chatboxviews.get(room_jid).connect(null);
                     }
                 }
             },

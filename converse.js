@@ -2933,17 +2933,15 @@
         this.RosterContact = Backbone.Model.extend({
             initialize: function (attributes, options) {
                 var jid = attributes.jid;
-                if (!attributes.fullname) {
-                    attributes.fullname = jid;
-                }
                 var attrs = _.extend({
                     'id': jid,
+                    'fullname': jid,
+                    'chat_status': 'offline',
                     'user_id': Strophe.getNodeFromJid(jid),
                     'resources': [],
                     'groups': [],
                     'status': ''
                 }, attributes);
-                attrs.chat_status = 'offline';
                 this.set(attrs);
             }
         });

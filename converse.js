@@ -219,7 +219,7 @@
             'emoticons': true,
             'call': false,
             'clear': true,
-            'toggle-participants': true
+            'toggle_participants': true
         };
         this.xhr_custom_status = false;
         this.xhr_custom_status_url = '';
@@ -269,7 +269,7 @@
             _.extend(
                 this.visible_toolbar_buttons,
                 _.pick(settings.visible_toolbar_buttons, [
-                    'emoticons', 'call', 'clear'
+                    'emoticons', 'call', 'clear', 'toggle_participants'
                 ]
             ));
         }
@@ -1482,7 +1482,7 @@
                                 show_call_button: converse.visible_toolbar_buttons.call,
                                 show_clear_button: converse.visible_toolbar_buttons.clear,
                                 show_emoticons: converse.visible_toolbar_buttons.emoticons,
-                                show_participants_toggle: this.is_chatroom && converse.visible_toolbar_buttons['toggle-participants']
+                                show_participants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_participants
                             })
                         )
                     );

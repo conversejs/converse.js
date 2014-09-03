@@ -1086,20 +1086,17 @@ Default:
 ::
 
     {
-        'emoticons': true,
-        'call': false,
-        'clear': true
+        call: false,
+        clear: true,
+        emoticons: true,
+        toggle_participants: true
     }
 
 Allows you to show or hide buttons on the chat boxes' toolbars.
 
-* *emoticons*: 
-    Enables rendering of emoticons and provides a toolbar button for choosing them.
 * *call*: 
     Provides a button with a picture of a telephone on it.
-    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
-
-    ::
+    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
 
         converse.on('callButtonClicked', function(event, data) {
             console.log('Strophe connection is', data.connection);
@@ -1108,7 +1105,10 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
         });
 * *clear*: 
     Provides a button for clearing messages from a chat box.
-
+* *emoticons*: 
+    Enables rendering of emoticons and provides a toolbar button for choosing them.
+* toggle_participants:
+    Shows a button for toggling (i.e. showing/hiding) the list of participants in a chat room.
 
 xhr_custom_status
 -----------------

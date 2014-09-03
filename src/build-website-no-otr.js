@@ -45,6 +45,7 @@
         "moment":"components/momentjs/moment",
         "converse-templates":"src/templates",
         "tpl": "components/requirejs-tpl-jcbrand/tpl",
-        "text": "components/requirejs-text/text"
+        "text": "components/requirejs-text/text",
+        "typeahead": 'components/typeahead.js/dist/typeahead.jquery'
     }
 })

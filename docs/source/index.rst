@@ -975,6 +975,9 @@ play_sounds
 
 Default:  ``false``
 
+Plays a notification sound when you receive a personal message or when your
+nickname is mentioned in a chat room.
+
 Inside the ``./sounds`` directory of the Converse.js repo, you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
 

@@ -32,6 +32,7 @@
         console = { log: function () {}, error: function () {} };
     }
 
+    // TODO: these non-backbone methods should all be moved to utils.
     $.fn.addHyperlinks = function() {
         if (this.length > 0) {
             this.each(function(i, obj) {
@@ -69,6 +70,19 @@
         return function (item) {
             return !(contains(attr, query)(item));
         };
+    };
+
+    var playNotification = function () {
+        var audio;
+        if (converse.play_sounds && typeof Audio !== "undefined"){
+            audio = new Audio("sounds/msg_received.ogg");
+            if (audio.canPlayType('/audio/ogg')) {
+                audio.play();
+            } else {
+                audio = new Audio("/sounds/msg_received.mp3");
+                audio.play();
+            }
+        }
     };
 
     $.fn.addEmoticons = function() {
@@ -2438,6 +2452,9 @@
                 }
                 if (!body) { return true; }
                 var display_sender = sender === this.model.get('nick') && 'me' || 'room';
+                if (!delayed && display_sender === 'room' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
+                    playNotification();
+                }
                 this.showMessage({
                     'message': body,
                     'sender': display_sender,
@@ -2515,19 +2532,6 @@
                         }
                     }, this)
                 });
-            },
-
-            playNotification: function () {
-                var audio;
-                if (converse.play_sounds && typeof Audio !== "undefined"){
-                    audio = new Audio("sounds/msg_received.ogg");
-                    if (audio.canPlayType('/audio/ogg')) {
-                        audio.play();
-                    } else {
-                        audio = new Audio("/sounds/msg_received.mp3");
-                        audio.play();
-                    }
-                }
             },
 
             isOnlyChatStateNotification: function ($msg) {
@@ -2627,7 +2631,7 @@
                     });
                 }
                 if (!this.isOnlyChatStateNotification($message) && from !== converse.bare_jid) {
-                    this.playNotification();
+                    playNotification();
                 }
                 chatbox.receiveMessage($message);
                 converse.roster.addResource(buddy_jid, resource);

@@ -18,10 +18,13 @@
     </li>
 {[ } ]}
 {[ if (show_call_button)  { ]}
-    <li class="toggle-call"><a class="icon-phone" title="Start a call"></a></li>
+<li class="toggle-call"><a class="icon-phone" title="{{label_start_call}}"></a></li>
+{[ } ]}
+{[ if (show_participants_toggle)  { ]}
+<li class="toggle-participants"><a class="icon-hide-users" title="{{label_hide_participants}}"></a></li>
 {[ } ]}
 {[ if (show_clear_button)  { ]}
-    <li class="toggle-clear"><a class="icon-remove" title="Clear all messages"></a></li>
+<li class="toggle-clear"><a class="icon-remove" title="{{label_clear}}"></a></li>
 {[ } ]}
 {[ if (allow_otr)  { ]}
     <li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">

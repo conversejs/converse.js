@@ -7,8 +7,8 @@
  */
 @font-face {
   font-family: 'Converse-js';
-  src: url('../fonticons/fonts/icomoon.eot?7poj4t');
-  src: url('../fonticons/fonts/icomoon.eot?#iefix7poj4t') format('embedded-opentype'), url('../fonticons/fonts/icomoon.woff?7poj4t') format('woff'), url('../fonticons/fonts/icomoon.ttf?7poj4t') format('truetype'), url('../fonticons/fonts/icomoon.svg?7poj4t#icomoon') format('svg');
+  src: url('../fonticons/fonts/icomoon.eot?-5hv4s0');
+  src: url('../fonticons/fonts/icomoon.eot?#iefix-5hv4s0') format('embedded-opentype'), url('../fonticons/fonts/icomoon.woff?-5hv4s0') format('woff'), url('../fonticons/fonts/icomoon.ttf?-5hv4s0') format('truetype'), url('../fonticons/fonts/icomoon.svg?-5hv4s0#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -38,13 +38,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.icon-closed:before {
+#conversejs .icon-closed:before {
   content: "\25ba";
 }
-.icon-opened:before {
+#conversejs .icon-opened:before {
   content: "\25bc";
 }
-.icon-checkmark:before {
+#conversejs .icon-checkmark:before {
   content: "\2713";
 }
 #conversejs .icon-home:before {
@@ -104,6 +104,12 @@
 #conversejs .icon-user:before {
   content: "\e01a";
 }
+#conversejs .icon-hide-users:before {
+  content: "\e01c";
+}
+#conversejs .icon-show-users:before {
+  content: "\e01e";
+}
 #conversejs .icon-users:before {
   content: "\e01b";
 }
@@ -148,9 +154,6 @@
 }
 #conversejs .icon-remove:before {
   content: "\e02d";
-}
-#conversejs .icon-remove-2:before {
-  content: "\e02e";
 }
 #conversejs .icon-eye:before {
   content: "\e030";

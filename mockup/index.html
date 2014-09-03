@@ -396,6 +396,8 @@
                                     <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>
                                 </ul>
                             </li>
+                            <li class="toggle-participants"><a class="icon-hide-users" title="Hide the list of participants"></a></li>
+                            <li class="toggle-clear"><a class="icon-remove" title="Clear all messages"></a></li>
                         </ul>
                         <textarea type="text" class="chat-textarea" placeholder="Message"></textarea>
                     </form>
@@ -570,6 +572,22 @@ $(document).ready(function () {
                 document.getElementById('conversejs').offsetHeight; // no need to store this anywhere, the reference is enough
                 document.getElementById('conversejs').style.display = 'block';
             });
+        });
+
+        $('.toggle-participants a').click(function (ev) {
+            var $el = $(ev.target);
+            if ($el.hasClass("icon-hide-users")) {
+                $el.removeClass('icon-hide-users').addClass('icon-show-users');
+                $('div.participants').animate({width: 0}).hide();
+                $el.closest('.chat-area').animate({width: '100%'});
+                $el.closest('form.sendXMPPMessage').animate({width: '100%'});
+            } else {
+                $el.removeClass('icon-show-users').addClass('icon-hide-users');
+                $el.closest('.chat-area').animate({width: '200px'}, function () {
+                    $('div.participants').css({width: '100px'}).show();
+                });
+                $el.closest('form.sendXMPPMessage').animate({width: '200px'});
+            }
         });
 
         $('.toggle-chatbox-button').click(function(ev) {

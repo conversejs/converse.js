@@ -562,13 +562,14 @@ span.spinner.hor_centered {
 }
 #conversejs .chatroom .chat-area {
   float: left;
-  width: 200px;
   height: 100%;
+  width: 200px;
 }
 #conversejs .chatroom .participants {
-  float: left;
+  float: right;
   background-color: white;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-left: 1px solid #AAA;
   border-bottom-right-radius: 4px;
   width: 100px;
@@ -1202,11 +1203,7 @@ select#select-xmpp-status {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   width: 200px;
-  height: 84px;
-}
-#conversejs .chatroom form.sendXMPPMessage {
-  -webkit-border-bottom-right-radius: 0;
-  border-bottom-right-radius: 0;
+  height: 83px;
 }
 #conversejs .chat-textarea {
   box-sizing: border-box;
@@ -1228,8 +1225,8 @@ select#select-xmpp-status {
   padding: 0 5px 0 0;
   height: 20px;
   display: block;
-  width: 195px;
 }
+#conversejs .chat-toolbar .toggle-participants,
 #conversejs .chat-toolbar .toggle-clear,
 #conversejs .chat-toolbar .toggle-otr {
   float: right;

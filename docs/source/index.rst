@@ -1061,6 +1061,16 @@ it's closed, the data is cleared.
 
 Data in localStorage on the other hand is kept indefinitely.
 
+.. Note ::
+    Since version 0.8.0, the use of local storage is not recommended. The
+    statuses (online, away, busy etc.) of your roster contacts are cached in
+    the browser storage. If you use local storage, these values are stored for
+    multiple sessions, and they will likely become out of sync with your contacts'
+    actual statuses. The session storage doesn't have this problem, because
+    roster contact statuses will not become out of sync in a single session,
+    only across more than one session.
+
+
 use_otr_by_default
 ------------------
 

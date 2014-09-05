@@ -72,6 +72,11 @@
         };
     };
 
+    String.prototype.splitOnce = function (delimiter) {
+        var components = this.split(delimiter);
+        return [components.shift(), components.join(delimiter)];
+    };
+
     var playNotification = function () {
         var audio;
         if (converse.play_sounds && typeof Audio !== "undefined"){
@@ -1000,10 +1005,12 @@
                 return this;
             },
 
-            showStatusNotification: function (message, replace) {
+            showStatusNotification: function (message, keep_old) {
                 var $chat_content = this.$el.find('.chat-content');
-                $chat_content.find('div.chat-event').remove().end()
-                    .append($('<div class="chat-event"></div>').text(message));
+                if (!keep_old) {
+                    $chat_content.find('div.chat-event').remove();
+                }
+                $chat_content.append($('<div class="chat-event"></div>').text(message));
                 this.scrollDown();
             },
 
@@ -2017,18 +2024,25 @@
                 return this;
             },
 
+            onCommandError: function (stanza) {
+                this.showStatusNotification(__("Error: could not execute the command"), true);
+            },
+
             sendChatRoomMessage: function (body) {
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
-                    $chat_content;
+                    $chat_content, args;
+
                 switch (match[1]) {
                     case 'ban':
-                        converse.connection.muc.ban(this.model.get('jid'), match[2]);
+                        args = match[2].splitOnce(' ');
+                        converse.connection.muc.ban(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'clear':
                         this.clearChatRoomMessages();
                         break;
                     case 'deop':
-                        converse.connection.muc.deop(this.model.get('jid'), match[2]);
+                        args = match[2].splitOnce(' ');
+                        converse.connection.muc.deop(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'help':
                         $chat_content = this.$el.find('.chat-content');
@@ -2046,22 +2060,26 @@
                         this.showHelpMessages(msgs);
                         break;
                     case 'kick':
-                        converse.connection.muc.kick(this.model.get('jid'), match[2]);
+                        args = match[2].splitOnce(' ');
+                        converse.connection.muc.kick(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'mute':
-                        converse.connection.muc.mute(this.model.get('jid'), match[2]);
+                        args = match[2].splitOnce(' ');
+                        converse.connection.muc.mute(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'nick':
                         converse.connection.muc.changeNick(this.model.get('jid'), match[2]);
                         break;
                     case 'op':
-                        converse.connection.muc.op(this.model.get('jid'), match[2]);
+                        args = match[2].splitOnce(' ');
+                        converse.connection.muc.op(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'topic':
                         converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
                         break;
                     case 'voice':
-                        converse.connection.muc.voice(this.model.get('jid'), match[2]);
+                        args = match[2].splitOnce(' ');
+                        converse.connection.muc.voice(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     default:
                         this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);

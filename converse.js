@@ -2021,23 +2021,11 @@
                 var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
                     $chat_content;
                 switch (match[1]) {
-                    case 'msg':
-                        // TODO: Private messages
-                        break;
-                    case 'clear':
-                        this.clearChatRoomMessages();
-                        break;
-                    case 'topic':
-                        converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
-                        break;
-                    case 'kick':
-                        converse.connection.muc.kick(this.model.get('jid'), match[2]);
-                        break;
                     case 'ban':
                         converse.connection.muc.ban(this.model.get('jid'), match[2]);
                         break;
-                    case 'op':
-                        converse.connection.muc.op(this.model.get('jid'), match[2]);
+                    case 'clear':
+                        this.clearChatRoomMessages();
                         break;
                     case 'deop':
                         converse.connection.muc.deop(this.model.get('jid'), match[2]);
@@ -2045,14 +2033,35 @@
                     case 'help':
                         $chat_content = this.$el.find('.chat-content');
                         msgs = [
-                            '<strong>/help</strong>:'+__('Show this menu')+'',
-                            '<strong>/me</strong>:'+__('Write in the third person')+'',
-                            '<strong>/topic</strong>:'+__('Set chatroom topic')+'',
-                            '<strong>/kick</strong>:'+__('Kick user from chatroom')+'',
-                            '<strong>/ban</strong>:'+__('Ban user from chatroom')+'',
-                            '<strong>/clear</strong>:'+__('Remove messages')+''
+                            '<strong>/ban</strong>: '   +__('Ban user from room'),
+                            '<strong>/clear</strong>: ' +__('Remove messages'),
+                            '<strong>/help</strong>: '  +__('Show this menu'),
+                            '<strong>/kick</strong>: '  +__('Kick user from room'),
+                            '<strong>/me</strong>: '    +__('Write in 3rd person'),
+                            '<strong>/mute</strong>: '  +__("Remove user's ability to post messages"),
+                            '<strong>/nick</strong>: '  +__('Change your nickname'),
+                            '<strong>/topic</strong>: ' +__('Set room topic'),
+                            '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
                             ];
                         this.showHelpMessages(msgs);
+                        break;
+                    case 'kick':
+                        converse.connection.muc.kick(this.model.get('jid'), match[2]);
+                        break;
+                    case 'mute':
+                        converse.connection.muc.mute(this.model.get('jid'), match[2]);
+                        break;
+                    case 'nick':
+                        converse.connection.muc.changeNick(this.model.get('jid'), match[2]);
+                        break;
+                    case 'op':
+                        converse.connection.muc.op(this.model.get('jid'), match[2]);
+                        break;
+                    case 'topic':
+                        converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
+                        break;
+                    case 'voice':
+                        converse.connection.muc.voice(this.model.get('jid'), match[2]);
                         break;
                     default:
                         this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);

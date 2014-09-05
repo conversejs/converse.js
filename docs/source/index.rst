@@ -340,6 +340,40 @@ Languages increase the size of the Converse.js significantly.
 If you only need one, or a subset of the available languages, it's better to
 make a custom build which includes only those languages that you need.
 
+Chat Rooms
+==========
+
+Commands
+--------
+
+Here are the different commands that may be used in a chat room:
+
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| Event Type | When is it triggered?                                                                        | Example (substitue $nickname with an actual user's nickname)  |
++============+==============================================================================================+===============================================================+
+| **ban**    | Ban a user from the chat room. They will not be able to join again.                          | /ban $nickname                                                |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **clear**  | Clear the messages shown in the chat room.                                                   | /clear                                                        |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **deop**   | Make a moderator a normal participant.                                                       | /deop $nickname                                               |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **help**   | Show the list of available commands.                                                         | /help                                                         |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **kick**   | Kick a user out of a room. They will be able to join again.                                  | /kick $nickname                                               |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **me**     | Speak in the 3rd person.                                                                     | /me $message                                                  |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **mute**   | Remove a user's ability to post messages to the room. They will still be able to observe.    | /mute $nickname                                               |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **nick**   | Change your nickname.                                                                        | /nick $nickname                                               |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **op**     | Make a normal participant a moderator.                                                       | /op $nickname                                                 |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **topic**  | Set the topic of the chat room.                                                              | /topic ${topic text}                                          |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **voice**  | Allow a muted user to post messages to the room.                                             | /voice $nickname                                              |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+
 ===========
 Development
 ===========
@@ -916,7 +950,7 @@ Both message_carbons and `forward_messages`_ try to solve the same problem
 in two different ways.
 
 Message carbons is the XEP (Jabber protocol extension) specifically drafted to
-solve this problem, while `forwarded_messages`_ uses 
+solve this problem, while `forwarded_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 expose_rid_and_sid
@@ -1049,7 +1083,7 @@ Default: ``session``
 
 Valid options: ``session``, ``local``.
 
-This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_ 
+This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
 (``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
 
 Originally converse.js used only localStorage, however sessionStorage is from a
@@ -1104,7 +1138,7 @@ Default:
 
 Allows you to show or hide buttons on the chat boxes' toolbars.
 
-* *call*: 
+* *call*:
     Provides a button with a picture of a telephone on it.
     When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
 
@@ -1113,9 +1147,9 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...
         });
-* *clear*: 
+* *clear*:
     Provides a button for clearing messages from a chat box.
-* *emoticons*: 
+* *emoticons*:
     Enables rendering of emoticons and provides a toolbar button for choosing them.
 * toggle_participants:
     Shows a button for toggling (i.e. showing/hiding) the list of participants in a chat room.

@@ -4,6 +4,8 @@ Changelog
 0.8.1 (Unreleased)
 ------------------
 
+* Allow changing of nickname in a chat room via /nick command. [jcbrand]
+* Allow a chat room user to be muted or unmuted with the /mute and /voice commands. [jcbrand]
 * Add a chat room toolbar button for toggling the list of participants. [jcbrand]
 * Converse.js now responds to XEP-0030: Service Discovery requests. [jcbrand]
 * Bugfix. Roster groups all appear offline after page reload (with prebind).

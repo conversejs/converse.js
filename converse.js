@@ -2363,18 +2363,14 @@
                     msgs, i;
                 for (i=0; i<$stats.length; i++) {
                     var stat = $stats[i].getAttribute('code');
-                    if (is_self) {
-                        if (_.contains(_.keys(this.disconnectMessages), stat)) {
-                            disconnect_msgs.push(this.disconnectMessages[stat]);
-                        }
-                    } else {
-                        if (_.contains(_.keys(this.infoMessages), stat)) {
-                            info_msgs.push(this.infoMessages[stat]);
-                        } else if (_.contains(_.keys(this.actionInfoMessages), stat)) {
-                            action_msgs.push(
-                                __(this.actionInfoMessages[stat], Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from'))))
-                            );
-                        }
+                    if (is_self && _.contains(_.keys(this.disconnectMessages), stat)) {
+                        disconnect_msgs.push(this.disconnectMessages[stat]);
+                    } else if (!is_self && _.contains(_.keys(this.actionInfoMessages), stat)) {
+                        action_msgs.push(
+                            __(this.actionInfoMessages[stat], Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from'))))
+                        );
+                    } else if (_.contains(_.keys(this.infoMessages), stat)) {
+                        info_msgs.push(this.infoMessages[stat]);
                     }
                 }
                 if (disconnect_msgs.length > 0) {

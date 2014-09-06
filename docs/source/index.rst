@@ -636,8 +636,8 @@ making sure to also paste the JSON data as value to the "locale_data" key.
 
 .. Note ::
     If you are adding translations for a new language that is not already supported,
-    you'll have to make one more edit in ./locale/locales.js to make sure the
-    language is loaded by require.js.
+    you'll have to add the language path in main.js and make one more edit in ./locale/locales.js
+    to make sure the language is loaded by require.js.
 
 Congratulations, you've now succesfully added your translations. Sorry for all
 those hoops you had to jump through.

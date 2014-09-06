@@ -932,6 +932,14 @@ Default:  ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
+keepalive
+---------
+
+Default:    ``true``
+
+Determines whether Converse.js will maintain the chat session across page
+loads.
+
 message_carbons
 ---------------
 

@@ -4,6 +4,9 @@ Changelog
 0.8.1 (Unreleased)
 ------------------
 
+* Converse.js now has the ability to maintain sessions across page loads
+  (previously, the session tokens had to be handled externally and passed in).
+  See the `keepalive <https://conversejs.org/docs/html/index.html#keepalive`_ configuration setting. [jcbrand]
 * Allow changing of nickname in a chat room via /nick command. [jcbrand]
 * Allow a chat room user to be muted or unmuted with the /mute and /voice commands. [jcbrand]
 * Add a chat room toolbar button for toggling the list of participants. [jcbrand]

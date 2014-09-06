@@ -6,25 +6,6 @@
  */
 
 (function (root, factory) {
-    require.config({
-        paths: {
-            "af": "locale/af/LC_MESSAGES/af",
-            "de": "locale/de/LC_MESSAGES/de",
-            "en": "locale/en/LC_MESSAGES/en",
-            "es": "locale/es/LC_MESSAGES/es",
-            "fr": "locale/fr/LC_MESSAGES/fr",
-            "he": "locale/he/LC_MESSAGES/he",
-            "hu": "locale/hu/LC_MESSAGES/hu",
-            "id": "locale/id/LC_MESSAGES/id",
-            "it": "locale/it/LC_MESSAGES/it",
-            "ja": "locale/ja/LC_MESSAGES/ja",
-            "nl": "locale/nl/LC_MESSAGES/nl",
-            "pt_BR": "locale/pt_BR/LC_MESSAGES/pt_BR",
-            "ru": "locale/ru/LC_MESSAGES/ru",
-            "zh": "locale/zh/LC_MESSAGES/zh"
-        }
-    });
-
     define("locales", [
         'jed',
         'af',

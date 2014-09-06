@@ -541,7 +541,11 @@
             this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.session.fetch();
             $(window).on('beforeunload', $.proxy(function () {
-                this.setSession();
+                if (converse.connection.connected) {
+                    this.setSession();
+                } else {
+                    this.session.browserStorage._clear();
+                }
             }, this));
         };
 

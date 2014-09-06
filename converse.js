@@ -209,6 +209,7 @@
         this.forward_messages = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
+        this.keepalive = true;
         this.message_carbons = false;
         this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
         this.play_sounds = false;
@@ -246,6 +247,7 @@
             'connection',
             'debug',
             'default_box_height',
+            'keepalive',
             'message_carbons',
             'expose_rid_and_sid',
             'forward_messages',
@@ -532,6 +534,27 @@
             this.xmppstatus.fetch({success: callback, error: callback});
         };
 
+        this.initSession = function () {
+            this.session = new this.BOSHSession();
+            var id = b64_sha1('converse.bosh-session');
+            this.session.id = id; // Appears to be necessary for backbone.browserStorage
+            this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+            this.session.fetch();
+            $(window).on('beforeunload', $.proxy(function () {
+                this.setSession();
+            }, this));
+        };
+
+        this.setSession = function () {
+            if (this.keepalive) {
+                this.session.save({
+                    jid: this.connection.jid,
+                    rid: this.connection._proto.rid,
+                    sid: this.connection._proto.sid
+                });
+            }
+        };
+
         this.registerGlobalEventHandlers = function () {
             $(document).click(function() {
                 if ($('.toggle-otr ul').is(':visible')) {
@@ -552,7 +575,7 @@
                 if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
                 var height = this.applyHeightResistance(this.resized_chatbox.height);
-                if (this.connection) {
+                if (this.connection.connected) {
                     this.resized_chatbox.model.save({'height': height});
                 } else {
                     this.resized_chatbox.model.set({'height': height});
@@ -612,6 +635,7 @@
                     console.log('ERROR: '+msg);
                 };
             }
+            this.setSession();
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.minimized_chats = new converse.MinimizedChats({model: this.chatboxes});
@@ -999,7 +1023,7 @@
 
             initDragResize: function () {
                 this.prev_pageY = 0; // To store last known mouse position
-                if (converse.connection) {
+                if (converse.connection.connected) {
                     this.height = this.model.get('height');
                 }
                 return this;
@@ -1334,7 +1358,6 @@
 
             toggleCall: function (ev) {
                 ev.stopPropagation();
-
                 converse.emit('callButtonClicked', {
                     connection: converse.connection,
                     model: this.model
@@ -1391,7 +1414,7 @@
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
-                if (converse.connection) {
+                if (converse.connection.connected) {
                     this.model.destroy();
                 } else {
                     this.model.trigger('hide');
@@ -1537,7 +1560,7 @@
                     return this.focus();
                 }
                 this.$el.fadeIn(callback);
-                if (converse.connection) {
+                if (converse.connection.connected) {
                     // Without a connection, we haven't yet initialized
                     // localstorage
                     this.model.save();
@@ -1896,7 +1919,7 @@
             },
 
             render: function () {
-                if ((!converse.prebind) && (!converse.connection)) {
+                if ((!converse.prebind) && (!converse.connection.connected)) {
                     // Add login panel if the user still has to authenticate
                     this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                     this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
@@ -2312,7 +2335,7 @@
                 this.$el.find('.chat-body').append($('<p>'+msg+'</p>'));
             },
 
-            /* http://xmpp.org/extensions/xep-0045.html 
+            /* http://xmpp.org/extensions/xep-0045.html
              * ----------------------------------------
              * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
              * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
@@ -4079,6 +4102,7 @@
             }
         });
 
+        this.BOSHSession = Backbone.Model;
         this.Feature = Backbone.Model;
         this.Features = Backbone.Collection.extend({
             /* Service Discovery
@@ -4115,6 +4139,9 @@
                  * it will advertise to any #info queries made to it.
                  *
                  * See: http://xmpp.org/extensions/xep-0030.html#info
+                 *
+                 * TODO: these features need to be added in the relevant
+                 * feature-providing Models, not here
                  */
                  converse.connection.disco.addFeature('http://jabber.org/protocol/chatstates'); // Limited support
                  converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
@@ -4167,7 +4194,6 @@
                 if (!resource) {
                     jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
                 }
-                converse.connection = new Strophe.Connection(converse.bosh_service_url);
                 converse.connection.connect(jid, password, converse.onConnect);
             },
 
@@ -4278,7 +4304,7 @@
                         height: converse.default_box_height
                     });
                     controlbox = converse.chatboxes.get('controlbox');
-                    if (converse.connection) {
+                    if (converse.connection.connected) {
                         converse.chatboxes.get('controlbox').save();
                     }
                 }
@@ -4289,7 +4315,7 @@
                 e.preventDefault();
                 if ($("div#controlbox").is(':visible')) {
                     var controlbox = converse.chatboxes.get('controlbox');
-                    if (converse.connection) {
+                    if (converse.connection.connected) {
                         controlbox.destroy();
                     } else {
                         controlbox.trigger('hide');
@@ -4300,27 +4326,58 @@
             }
         });
 
+        this.initConnection = function () {
+            var rid, sid, jid;
+            if (this.connection) {
+                this.onConnected();
+            } else {
+                // XXX: it's not yet clear what the order of preference should
+                // be between RID and SID received via the initialize method or
+                // those received from sessionStorage.
+                //
+                // What do you we if we receive values from both avenues?
+                //
+                // Also, what do we do when the keepalive session values are
+                // expired? Do we try to fall back?
+                if (!this.bosh_service_url) {
+                    throw("Error: you must supply a value for the bosh_service_url");
+                }
+                this.connection = new Strophe.Connection(this.bosh_service_url);
+
+                if (this.keepalive) {
+                    rid = this.session.get('rid');
+                    sid = this.session.get('sid');
+                    jid = this.session.get('jid');
+                    if (rid && jid && sid) {
+                        // We have the necessary tokens for resuming a session
+                        rid += 1;
+                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                        this.connection.attach(jid, sid, rid, this.onConnect);
+                        return;
+                    }
+                }
+                if (this.prebind) {
+                    if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
+                        throw('If you set prebind=true, you MUST supply JID, RID and SID values');
+                    }
+                    this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                }
+            }
+        };
+
         this._initialize = function () {
             this.chatboxes = new this.ChatBoxes();
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
             this.controlboxtoggle = new this.ControlBoxToggle();
             this.otr = new this.OTR();
+            this.initSession();
+            this.initConnection();
         };
 
         // Initialization
         // --------------
         // This is the end of the initialize method.
         this._initialize();
-        if ((this.prebind) && (!this.connection)) {
-            if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
-                this.log('If you set prebind=true, you MUST supply JID, RID and SID values');
-                return;
-            }
-            this.connection = new Strophe.Connection(this.bosh_service_url);
-            this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
-        } else if (this.connection) {
-            this.onConnected();
-        }
         if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
         this.registerGlobalEventHandlers();
         converse.emit('initialized');

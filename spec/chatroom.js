@@ -202,7 +202,7 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 var view = this.chatboxviews.get('lounge@localhost');
-                view.onChatRoomPresence(presence, {'nick': 'lounge'});
+                view.onChatRoomPresence(presence, {nick: 'oldnick', name: 'lounge@localhost'});
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('div.chat-info').length).toBe(1);
                 expect($chat_content.find('div.chat-info').html()).toBe('Your nickname has been changed to: <strong>newnick</strong>');
@@ -220,9 +220,48 @@
                         role: 'participant'
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
-                view.onChatRoomPresence(presence, {'nick': 'lounge'});
+                view.onChatRoomPresence(presence, {nick: 'newnick', name: 'lounge@localhost'});
                 expect($chat_content.find('div.chat-info').length).toBe(1);
                 expect($chat_content.find('div.chat-info').html()).toBe('Your nickname has been changed to: <strong>newnick</strong>');
+            }, converse));
+
+            it("informs users if they have been kicked out of the chat room", $.proxy(function () {
+                /*  <presence
+                 *      from='harfleur@chat.shakespeare.lit/pistol'
+                 *      to='pistol@shakespeare.lit/harfleur'
+                 *      type='unavailable'>
+                 *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                 *      <item affiliation='none' role='none'>
+                 *      <actor nick='Fluellen'/>
+                 *      <reason>Avaunt, you cullion!</reason>
+                 *      </item>
+                 *      <status code='307'/>
+                 *  </x>
+                 *  </presence>
+                 */
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var presence = $pres().attrs({
+                        from:'lounge@localhost/dummy',
+                        to:'dummy@localhost/pda',
+                        type:'unavailable'
+                    })
+                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        affiliation: 'none',
+                        jid: 'dummy@localhost/pda',
+                        role: 'none'
+                    })
+                    .c('actor').attrs({nick: 'Fluellen'}).up()
+                    .c('reason').t('Avaunt, you cullion!').up()
+                    .up()
+                    .c('status').attrs({code:'307'}).nodeTree;
+
+                var view = this.chatboxviews.get('lounge@localhost');
+                view.onChatRoomPresence(presence, {nick: 'dummy', name: 'lounge@localhost'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.length).toBe(0); // There shouldn't be a chat content area anymore
+                var $chat_body = view.$el.find('.chat-body');
+                expect($chat_body.html()).toBe('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>');
             }, converse));
 
             it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {

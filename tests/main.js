@@ -40,6 +40,9 @@ require([
         window.converse_api = converse;
         window.localStorage.clear();
         window.sessionStorage.clear();
+        // XXX: call this to initialize Strophe plugins
+        new Strophe.Connection('localhost');
+
         converse.initialize({
             prebind: false,
             xhr_user_search: false,

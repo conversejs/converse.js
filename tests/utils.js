@@ -89,6 +89,18 @@
         return converse.roster.get(jid).trigger("open");
     };
 
+    utils.openChatRoom = function (room, server, nick) {
+        // Open a new chatroom
+        this.openControlBox();
+        this.openRoomsPanel();
+        var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;
+        roomspanel.$el.find('input.new-chatroom-name').val(room);
+        roomspanel.$el.find('input.new-chatroom-nick').val(nick);
+        roomspanel.$el.find('input.new-chatroom-server').val(server);
+        roomspanel.$el.find('form').submit();
+        this.closeControlBox();
+    };
+
     utils.removeRosterContacts = function () {
         var model;
         while (converse.rosterview.model.length) {

@@ -12,33 +12,12 @@
             beforeEach(function () {
                 runs(function () {
                     test_utils.closeAllChatBoxes();
-                    test_utils.openControlBox();
                 });
-                waits(150);
-                runs(function () {
-                    test_utils.openRoomsPanel();
-                });
-                waits(200);
-                runs(function () {
-                    // Open a new chatroom
-                    var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;
-                    var $input = roomspanel.$el.find('input.new-chatroom-name');
-                    var $nick = roomspanel.$el.find('input.new-chatroom-nick');
-                    var $server = roomspanel.$el.find('input.new-chatroom-server');
-                    $input.val('lounge');
-                    $nick.val('dummy');
-                    $server.val('muc.localhost');
-                    roomspanel.$el.find('form').submit();
-                });
-                waits(250);
-                runs(function () {
-                    test_utils.closeControlBox();
-                });
-                runs(function () {});
             });
 
             it("shows users currently present in the room", $.proxy(function () {
-                var chatroomview = this.chatboxviews.get('lounge@muc.localhost'),
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var chatroomview = this.chatboxviews.get('lounge@localhost'),
                     $participant_list;
                 var roster = {}, room = {}, i;
                 for (i=0; i<mock.chatroom_names.length-1; i++) {
@@ -53,7 +32,8 @@
             }, converse));
 
             it("indicates moderators by means of a special css class and tooltip", $.proxy(function () {
-                var chatroomview = this.chatboxviews.get('lounge@muc.localhost');
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var chatroomview = this.chatboxviews.get('lounge@localhost');
                 var roster = {}, idx = mock.chatroom_names.length-1;
                 roster[mock.chatroom_names[idx]] = {};
                 roster[mock.chatroom_names[idx]].role = 'moderator';
@@ -66,12 +46,13 @@
             }, converse));
 
             it("allows the user to invite their roster contacts to enter the chat room", $.proxy(function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 spyOn(window, 'prompt').andCallFake(function () {
                     return null;
                 });
                 var roster = {}, $input;
-                var view = this.chatboxviews.get('lounge@muc.localhost');
+                var view = this.chatboxviews.get('lounge@localhost');
                 view.$el.find('.chat-area').remove();
                 view.renderChatArea(); // Will init the widget
                 test_utils.createContacts('current'); // We need roster contacts, so that we have someone to invite
@@ -95,11 +76,12 @@
             }, converse));
 
             it("can be joined automatically, based upon a received invite", $.proxy(function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(window, 'confirm').andCallFake(function () {
                     return true;
                 });
                 test_utils.createContacts('current'); // We need roster contacts, who can invite us
-                var view = this.chatboxviews.get('lounge@muc.localhost');
+                var view = this.chatboxviews.get('lounge@localhost');
                 view.close();
                 var name = mock.cur_names[0];
                 var from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -122,13 +104,14 @@
             }, converse));
 
             it("shows received groupchat messages", $.proxy(function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
-                var view = this.chatboxviews.get('lounge@muc.localhost');
+                var view = this.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                 var nick = mock.chatroom_names[0];
                 var text = 'This is a received message';
                 var message = $msg({
-                    from: 'lounge@muc.localhost/'+nick,
+                    from: 'lounge@localhost/'+nick,
                     id: '1',
                     to: 'dummy@localhost',
                     type: 'groupchat'
@@ -141,8 +124,9 @@
             }, converse));
 
             it("shows sent groupchat messages", $.proxy(function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
-                var view = this.chatboxviews.get('lounge@muc.localhost');
+                var view = this.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                 var nick = mock.chatroom_names[0];
                 var text = 'This is a sent message';
@@ -151,7 +135,7 @@
                 expect(converse.emit).toHaveBeenCalledWith('messageSend', text);
 
                 var message = $msg({
-                    from: 'lounge@muc.localhost/dummy',
+                    from: 'lounge@localhost/dummy',
                     id: '2',
                     to: 'dummy@localhost.com',
                     type: 'groupchat'
@@ -164,7 +148,85 @@
                 expect(converse.emit.callCount, 1);
             }, converse));
 
+            it("informs users if their nicknames has been changed.", $.proxy(function () {
+                /* The service then sends two presence stanzas to the full JID
+                 * of each occupant (including the occupant who is changing his
+                 * or her room nickname), one of type "unavailable" for the old
+                 * nickname and one indicating availability for the new
+                 * nickname.
+                 *
+                 * See: http://xmpp.org/extensions/xep-0045.html#changenick
+                 *
+                 *  <presence
+                 *      from='coven@localhost/thirdwitch'
+                 *      id='DC352437-C019-40EC-B590-AF29E879AF98'
+                 *      to='hag66@shakespeare.lit/pda'
+                 *      type='unavailable'>
+                 *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                 *      <item affiliation='member'
+                 *          jid='hag66@shakespeare.lit/pda'
+                 *          nick='oldhag'
+                 *          role='participant'/>
+                 *      <status code='303'/>
+                 *      <status code='110'/>
+                 *  </x>
+                 *  </presence>
+                 *           
+                 *  <presence
+                 *      from='coven@localhost/oldhag'
+                 *      id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
+                 *      to='hag66@shakespeare.lit/pda'>
+                 *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                 *      <item affiliation='member'
+                 *          jid='hag66@shakespeare.lit/pda'
+                 *          role='participant'/>
+                 *      <status code='110'/>
+                 *  </x>
+                 *  </presence>
+                 */
+                test_utils.openChatRoom('lounge', 'localhost', 'oldnick');
+                var presence = $pres().attrs({
+                        from:'lounge@localhost/oldnick',
+                        id:'DC352437-C019-40EC-B590-AF29E879AF98',
+                        to:'dummy@localhost/pda',
+                        type:'unavailable'
+                    })
+                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        affiliation: 'member',
+                        jid: 'dummy@localhost/pda',
+                        nick: 'newnick',
+                        role: 'participant'
+                    }).up()
+                    .c('status').attrs({code:'303'}).up()
+                    .c('status').attrs({code:'110'}).nodeTree;
+
+                var view = this.chatboxviews.get('lounge@localhost');
+                view.onChatRoomPresence(presence, {'nick': 'lounge'});
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.find('div.chat-info').length).toBe(1);
+                expect($chat_content.find('div.chat-info').html()).toBe('Your nickname has been changed to: <strong>newnick</strong>');
+
+                // The second presence shouldn't do anything...
+                presence = $pres().attrs({
+                        from:'lounge@localhost/newnick',
+                        id:'5B4F27A4-25ED-43F7-A699-382C6B4AFC67',
+                        to:'dummy@localhost/pda'
+                    })
+                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        affiliation: 'member',
+                        jid: 'dummy@localhost/pda',
+                        role: 'participant'
+                    }).up()
+                    .c('status').attrs({code:'110'}).nodeTree;
+                view.onChatRoomPresence(presence, {'nick': 'lounge'});
+                expect($chat_content.find('div.chat-info').length).toBe(1);
+                expect($chat_content.find('div.chat-info').html()).toBe('Your nickname has been changed to: <strong>newnick</strong>');
+            }, converse));
+
             it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
                 spyOn(this.chatboxviews, 'trimChats');
@@ -192,7 +254,8 @@
             }, converse));
 
             it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'", function () {
-                var view = this.chatboxviews.get('lounge@muc.localhost'),
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var view = this.chatboxviews.get('lounge@localhost'),
                     trimmed_chatboxes = this.minimized_chats;
                 spyOn(view, 'minimize').andCallThrough();
                 spyOn(view, 'maximize').andCallThrough();
@@ -224,7 +287,8 @@
 
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
-                var view = this.chatboxviews.get('lounge@muc.localhost'), chatroom = view.model, $el;
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var view = this.chatboxviews.get('lounge@localhost'), chatroom = view.model, $el;
                 spyOn(view, 'close').andCallThrough();
                 spyOn(converse, 'emit');
                 spyOn(converse.connection.muc, 'leave');
@@ -260,12 +324,12 @@
 
             it("will show an error message if the room requires a password", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
+                .c('error').attrs({by:'lounge@localhost', type:'auth'})
                     .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
                 var view = this.chatboxviews.get('problematic@muc.localhost');
@@ -284,12 +348,12 @@
 
             it("will show an error message if the room is members-only and the user not included", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
+                .c('error').attrs({by:'lounge@localhost', type:'auth'})
                     .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -299,12 +363,12 @@
 
             it("will show an error message if the user has been banned", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'auth'})
+                .c('error').attrs({by:'lounge@localhost', type:'auth'})
                     .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -314,12 +378,12 @@
 
             it("will show an error message if no nickname was specified for the user", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'modify'})
+                .c('error').attrs({by:'lounge@localhost', type:'modify'})
                     .c('jid-malformed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -329,12 +393,12 @@
 
             it("will show an error message if the user is not allowed to have created the room", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -344,12 +408,12 @@
 
             it("will show an error message if the user's nickname doesn't conform to room policy", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -359,12 +423,12 @@
 
             it("will show an error message if the user's nickname is already taken", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -374,12 +438,12 @@
 
             it("will show an error message if the room doesn't yet exist", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
@@ -389,12 +453,12 @@
 
             it("will show an error message if the room has reached it's maximum number of occupants", $.proxy(function () {
                 var presence = $pres().attrs({
-                    from:'coven@chat.shakespeare.lit/thirdwitch',
+                    from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
-                        to:'hag66@shakespeare.lit/pda',
+                        to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'coven@chat.shakespeare.lit', type:'cancel'})
+                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();

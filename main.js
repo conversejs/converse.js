@@ -1,6 +1,7 @@
 config = {
     baseUrl: '.',
     paths: {
+        "jed": "components/jed/jed",
         "jquery": "components/jquery/dist/jquery",
         "jquery.browser": "components/jquery.browser/dist/jquery.browser",
         "jquery.easing": "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website

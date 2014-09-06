@@ -8,7 +8,6 @@
 (function (root, factory) {
     require.config({
         paths: {
-            "jed": "components/jed/jed",
             "af": "locale/af/LC_MESSAGES/af",
             "de": "locale/de/LC_MESSAGES/de",
             "en": "locale/en/LC_MESSAGES/en",

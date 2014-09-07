@@ -5,6 +5,9 @@
             <option value="dnd">{{label_busy}}</option>
             <option value="away">{{label_away}}</option>
             <option value="offline">{{label_offline}}</option>
+            {[ if (allow_logout)  { ]}
+            <option value="logout">{{label_logout}}</option>
+            {[ } ]}
         </select>
     </span>
 </form>

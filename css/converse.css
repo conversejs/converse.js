@@ -941,7 +941,7 @@ dl.add-converse-contact {
   margin: 0.5em 0 0 0;
   height: 194px;
   height: calc(100% - 68px);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 #converse-roster .roster-filter {
   padding: 0;

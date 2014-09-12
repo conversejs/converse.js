@@ -2026,6 +2026,123 @@
             }
         });
 
+        this.ChatRoomOccupant = Backbone.Model;
+        this.ChatRoomOccupantView = Backbone.View.extend({
+            tagName: 'li',
+            initialize: function () {
+                this.model.on('change', this.render, this);
+            },
+            render: function () {
+                var $new = converse.templates.occupant(
+                    _.extend(
+                        this.model.toJSON(), {
+                            'desc_moderator': __('This user is a moderator'),
+                            'desc_participant': __('This user can send messages in this room'),
+                            'desc_visitor': __('This user can NOT send messages in this room')
+                    })
+                );
+                this.$el.replaceWith($new);
+                this.setElement($new, true);
+                return this;
+            }
+        });
+
+        this.ChatRoomOccupants = Backbone.Collection.extend({
+            model: converse.ChatRoomOccupant,
+            initialize: function (options) {
+                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.occupants'+converse.bare_jid+options.nick));
+            },
+        });
+
+        this.ChatRoomOccupantsView = Backbone.Overview.extend({
+            tagName: 'div',
+            className: 'participants',
+
+            initialize: function () {
+                this.model.on("add", this.onOccupantAdded, this);
+            },
+
+            render: function () {
+                this.$el.html(
+                    converse.templates.chatroom_sidebar({
+                        'label_invitation': __('Invite...'),
+                        'label_occupants': __('Occupants')
+                    })
+                );
+                return this.initInviteWidget();
+            },
+
+            onOccupantAdded: function (item) {
+                var view = this.get(item.get('id'));
+                if (!view) {
+                    view = this.add(item.get('id'), new converse.ChatRoomOccupantView({model: item}));
+                } else {
+                    delete view.model; // Remove ref to old model to help garbage collection
+                    view.model = item;
+                    view.initialize();
+                }
+                this.$('.participant-list').append(view.render().$el);
+            },
+
+            onChatRoomRoster: function (roster, room) {
+                var roster_size = _.size(roster),
+                    $participant_list = this.$('.participant-list'),
+                    participants = [],
+                    keys = _.keys(roster),
+                    occupant, attrs, i, nick;
+                // XXX: this.$('.participant-list').empty();
+                for (i=0; i<roster_size; i++) {
+                    nick = Strophe.unescapeNode(keys[i]);
+                    attrs = {
+                        'id': nick,
+                        'role': roster[keys[i]].role,
+                        'nick': nick
+                    };
+                    occupant = this.model.get(nick);
+                    if (occupant) {
+                        occupant.save(attrs);
+                    } else {
+                        this.model.create(attrs);
+                    }
+                }
+                return true;
+            },
+
+            initInviteWidget: function () {
+                var $el = this.$('input.invited-contact');
+                $el.typeahead({
+                    minLength: 1,
+                    highlight: true
+                }, {
+                    name: 'contacts-dataset',
+                    source: function (q, cb) {
+                        var results = [];
+                        _.each(converse.roster.filter(contains(['fullname', 'jid'], q)), function (n) {
+                            results.push({value: n.get('fullname'), jid: n.get('jid')});
+                        });
+                        cb(results);
+                    },
+                    templates: {
+                        suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
+                    }
+                });
+                $el.on('typeahead:selected', $.proxy(function (ev, suggestion, dname) {
+                    var reason = prompt(
+                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
+                        __("You may optionally include a message, explaining the reason for the invitation.")
+                    );
+                    if (reason !== null) {
+                        converse.connection.muc.rooms[this.model.get('id')].directInvite(suggestion.jid, reason);
+                        converse.emit('roomInviteSent', this, suggestion.jid, reason);
+                    }
+                    $(ev.target).typeahead('val', '');
+                }, this));
+                return this;
+            },
+
+        });
+
         this.ChatRoomView = converse.ChatBoxView.extend({
             length: 300,
             tagName: 'div',
@@ -2044,7 +2161,6 @@
             is_chatroom: true,
 
             initialize: function () {
-                this.connect(null);
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('change:minimized', function (item) {
                     if (item.get('minimized')) {
@@ -2062,8 +2178,16 @@
                         undefined);
                 },
                 this);
+
+                this.occupantsview = new converse.ChatRoomOccupantsView({
+                    model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
+                });
+                this.render();
+                this.occupantsview.model.fetch({add:true});
+                this.connect(null);
+
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                this.render().model.messages.fetch({add: true});
+                this.model.messages.fetch({add: true});
                 if (this.model.get('minimized')) {
                     this.hide();
                 } else {
@@ -2074,10 +2198,26 @@
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
                         .html(converse.templates.chatroom(this.model.toJSON()));
-                converse.emit('chatRoomOpened', this);
+
+                this.renderChatArea();
                 setTimeout(function () {
                     converse.refreshWebkit();
                 }, 50);
+                converse.emit('chatRoomOpened', this);
+                return this;
+            },
+
+            renderChatArea: function () {
+                if (!this.$('.chat-area').length) {
+                    this.$('.chat-body').empty()
+                        .append(
+                            converse.templates.chatarea({
+                                'show_toolbar': converse.show_toolbar,
+                                'label_message': __('Message'),
+                            }))
+                        .append(this.occupantsview.render().$el);
+                    this.renderToolbar();
+                }
                 return this;
             },
 
@@ -2142,52 +2282,6 @@
                         this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);
                     break;
                 }
-            },
-
-            initInviteWidget: function () {
-                var $el = this.$('input.invited-contact');
-                $el.typeahead({
-                    minLength: 1,
-                    highlight: true
-                }, {
-                    name: 'contacts-dataset',
-                    source: function (q, cb) {
-                        var results = [];
-                        _.each(converse.roster.filter(contains(['fullname', 'jid'], q)), function (n) {
-                            results.push({value: n.get('fullname'), jid: n.get('jid')});
-                        });
-                        cb(results);
-                    },
-                    templates: {
-                        suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
-                    }
-                });
-                $el.on('typeahead:selected', $.proxy(function (ev, suggestion, dname) {
-                    var reason = prompt(
-                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
-                        __("You may optionally include a message, explaining the reason for the invitation.")
-                    );
-                    if (reason !== null) {
-                        converse.connection.muc.rooms[this.model.get('id')].directInvite(suggestion.jid, reason);
-                        converse.emit('roomInviteSent', this, suggestion.jid, reason);
-                    }
-                    $(ev.target).typeahead('val', '');
-                }, this));
-                return this;
-            },
-
-            renderChatArea: function () {
-                if (!this.$el.find('.chat-area').length) {
-                    this.$el.find('.chat-body').empty().append(
-                        converse.templates.chatarea({
-                            'show_toolbar': converse.show_toolbar,
-                            'label_message': __('Message'),
-                            'label_invitation': __('Invite...')
-                        })
-                    );
-                    this.initInviteWidget().renderToolbar();
-                }
-                return this;
             },
 
             connect: function (password) {
@@ -2485,7 +2579,6 @@
                     this.model.set('connected', false);
                     return;
                 }
-                this.renderChatArea();
                 $chat_content = this.$el.find('.chat-content');
                 for (i=0; i<msgs.length; i++) {
                     $chat_content.append(converse.templates.info({message: msgs[i]}));
@@ -2599,24 +2692,7 @@
             },
 
             onChatRoomRoster: function (roster, room) {
-                this.renderChatArea();
-                var controlboxview = converse.chatboxviews.get('controlbox'),
-                    roster_size = _.size(roster),
-                    $participant_list = this.$el.find('.participant-list'),
-                    participants = [], keys = _.keys(roster), i;
-                this.$el.find('.participant-list').empty();
-                for (i=0; i<roster_size; i++) {
-                    participants.push(
-                        converse.templates.occupant({
-                            'role': roster[keys[i]].role,
-                            'nick': Strophe.unescapeNode(keys[i]),
-                            'desc_moderator': __('This user is a moderator'),
-                            'desc_participant': __('This user can send messages in this room'),
-                            'desc_visitor': __('This user can NOT send messages in this room')
-                        }));
-                }
-                $participant_list.append(participants.join(""));
-                return true;
+                return this.occupantsview.onChatRoomRoster(roster, room);
             }
         });
 
@@ -2772,7 +2848,7 @@
         this.ChatBoxViews = Backbone.Overview.extend({
 
             initialize: function () {
-                this.model.on("add", this.onChatAdded, this);
+                this.model.on("add", this.onChatBoxAdded, this);
                 this.model.on("change:minimized", function (item) {
                     if (item.get('minimized') === false) {
                          this.trimChats(this.get(item.get('id')));
@@ -2799,7 +2875,7 @@
                 }
             },
 
-            onChatAdded: function (item) {
+            onChatBoxAdded: function (item) {
                 var view = this.get(item.get('id'));
                 if (!view) {
                     if (item.get('chatroom')) {

@@ -2031,6 +2031,7 @@
             tagName: 'li',
             initialize: function () {
                 this.model.on('change', this.render, this);
+                this.model.on('destroy', this.destroy, this);
             },
             render: function () {
                 var $new = converse.templates.occupant(
@@ -2044,6 +2045,10 @@
                 this.$el.replaceWith($new);
                 this.setElement($new, true);
                 return this;
+            },
+
+            destroy: function () {
+                this.$el.remove();
             }
         });
 
@@ -2091,7 +2096,7 @@
                     participants = [],
                     keys = _.keys(roster),
                     occupant, attrs, i, nick;
-                // XXX: this.$('.participant-list').empty();
+
                 for (i=0; i<roster_size; i++) {
                     nick = Strophe.unescapeNode(keys[i]);
                     attrs = {
@@ -2106,6 +2111,9 @@
                         this.model.create(attrs);
                     }
                 }
+                _.each(_.difference(this.model.pluck('id'), keys), function (id) {
+                    this.model.get(id).destroy();
+                }, this);
                 return true;
             },
 

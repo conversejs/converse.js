@@ -910,12 +910,18 @@
 
             createMessage: function ($message) {
                 var body = $message.children('body').text(),
-                    from = Strophe.getBareJidFromJid($message.attr('from')),
                     composing = $message.find('composing'),
                     paused = $message.find('paused'),
                     delayed = $message.find('delay').length > 0,
                     fullname = this.get('fullname'),
-                    stamp, time, sender;
+                    is_groupchat = $message.attr('type') === 'groupchat',
+                    stamp, time, sender, from;
+
+                if (is_groupchat) {
+                    from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
+                } else {
+                    from = Strophe.getBareJidFromJid($message.attr('from'));
+                }
                 fullname = (_.isEmpty(fullname)? from: fullname).split(' ')[0];
 
                 if (!body) {
@@ -936,7 +942,7 @@
                     } else {
                         time = moment().format();
                     }
-                    if (from == converse.bare_jid) {
+                    if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from == converse.bare_jid)) {
                         sender = 'me';
                     } else {
                         sender = 'them';
@@ -2648,52 +2654,28 @@
                 var $message = $(message),
                     body = $message.children('body').text(),
                     jid = $message.attr('from'),
-                    $chat_content = this.$el.find('.chat-content'),
                     resource = Strophe.getResourceFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '',
                     delayed = $message.find('delay').length > 0,
-                    subject = $message.children('subject').text(),
-                    match, template, dates, message_datetime, message_date, message_date_str;
-
-                if (delayed) {
-                    message_datetime = moment($message.find('delay').attr('stamp'));
-                } else {
-                    message_datetime = moment();
-                }
-                // If this message is on a different day than the one received
-                // prior, then indicate it on the chatbox.
-                dates = $chat_content.find("time").map(function(){return $(this).attr("datetime");}).get();
-                message_date = message_datetime.clone().startOf('day');
-                message_date_str = message_date.format("YYYY-MM-DD");
-                if (_.indexOf(dates, message_date_str) === -1) {
-                    $chat_content.append(converse.templates.new_day({
-                        isodate: message_date_str,
-                        datestring: message_date.format("dddd MMM Do YYYY")
-                    }));
-                }
-
+                    subject = $message.children('subject').text();
                 this.showStatusMessages($message);
                 if (subject) {
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                     // # For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
                     // # Example: Topic set by JC Brand to: Hello World!
-                    $chat_content.append(
+                    this.$el.find('.chat-content').append(
                         converse.templates.info({
                             'message': __('Topic set by %1$s to: %2$s', sender, subject)
                         }));
                 }
-                if (!body) { return true; }
-                var display_sender = sender === this.model.get('nick') && 'me' || 'room';
-                if (!delayed && display_sender === 'room' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
+                if (sender === '') {
+                    return true;
+                }
+                this.model.createMessage($message);
+                if (!delayed && sender !== this.model.get('nick') && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
                     playNotification();
                 }
-                this.showMessage({
-                    'message': body,
-                    'sender': display_sender,
-                    'fullname': sender,
-                    'time': message_datetime.format()
-                });
-                if (display_sender === 'room') {
+                if (sender !== this.model.get('nick')) {
                     // We only emit an event if it's not our own message
                     converse.emit('message', message);
                 }

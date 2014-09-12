@@ -2133,7 +2133,7 @@
                         __("You may optionally include a message, explaining the reason for the invitation.")
                     );
                     if (reason !== null) {
-                        converse.connection.muc.rooms[this.model.get('id')].directInvite(suggestion.jid, reason);
+                        converse.connection.muc.rooms[this.chatroomview.model.get('id')].directInvite(suggestion.jid, reason);
                         converse.emit('roomInviteSent', this, suggestion.jid, reason);
                     }
                     $(ev.target).typeahead('val', '');
@@ -2180,8 +2180,9 @@
                 this);
 
                 this.occupantsview = new converse.ChatRoomOccupantsView({
-                    model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
+                    model: new converse.ChatRoomOccupants({nick: this.model.get('nick')}),
                 });
+                this.occupantsview.chatroomview = this;
                 this.render();
                 this.occupantsview.model.fetch({add:true});
                 this.connect(null);

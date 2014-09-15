@@ -2918,7 +2918,7 @@
 
                 _.each(this.getAll(), function (view) {
                     var id = view.model.get('id');
-                    if ((id !== 'controlbox') && (id !== new_id) && (!view.model.get('minimized'))) {
+                    if ((id !== 'controlbox') && (id !== new_id) && (!view.model.get('minimized')) && view.$el.is(':visible')) {
                         boxes_width += view.$el.outerWidth(true);
                     }
                 });

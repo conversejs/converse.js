@@ -1944,15 +1944,13 @@
                 /* We initialize the roster, which will appear inside the
                  * Contacts Panel.
                  */
-                if (!converse.roster) {
-                    converse.roster = new converse.RosterContacts();
-                    converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.contacts-'+converse.bare_jid));
-                    var rostergroups = new converse.RosterGroups();
-                    rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.roster.groups'+converse.bare_jid));
-                    converse.rosterview = new converse.RosterView({model: rostergroups});
-                }
+                converse.roster = new converse.RosterContacts();
+                converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.contacts-'+converse.bare_jid));
+                var rostergroups = new converse.RosterGroups();
+                rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.roster.groups'+converse.bare_jid));
+                converse.rosterview = new converse.RosterView({model: rostergroups});
                 converse.rosterview.render().fetch().update();
                 this.contactspanel.$el.append(converse.rosterview.$el);
                 converse.connection.roster.get(function () {});

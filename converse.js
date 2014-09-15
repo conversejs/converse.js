@@ -3509,7 +3509,7 @@
                                         subscription: 'none',
                                         ask: null,
                                         requesting: true,
-                                        fullname: fullname,
+                                        fullname: fullname || jid,
                                         image: img,
                                         image_type: img_type,
                                         url: url,

@@ -667,14 +667,6 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-                this.roster = new converse.RosterContacts();
-                this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
-                    b64_sha1('converse.contacts-'+this.bare_jid));
-
-                var rostergroups = new this.RosterGroups();
-                rostergroups.browserStorage = new Backbone.BrowserStorage[this.storage](
-                    b64_sha1('converse.roster.groups'+this.bare_jid));
-                this.rosterview = new this.RosterView({model: rostergroups});
 
                 this.chatboxes.onConnected();
                 this.connection.roster.get(function () {});
@@ -1623,6 +1615,21 @@
             initialize: function (cfg) {
                 cfg.$parent.append(this.$el);
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                this.initRoster();
+            },
+
+            initRoster: function () {
+                /* We initialize the roster, which will appear inside the
+                 * Contacts Panel.
+                 */
+                converse.roster = new converse.RosterContacts();
+                converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.contacts-'+converse.bare_jid));
+                var rostergroups = new converse.RosterGroups();
+                rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.roster.groups'+converse.bare_jid));
+                converse.rosterview = new converse.RosterView({model: rostergroups});
+                converse.rosterview.render().fetch().update();
             },
 
             render: function () {
@@ -1656,7 +1663,6 @@
                 this.$el.html(widgets);
                 this.$el.find('.search-xmpp ul').append(markup);
                 this.$el.append(converse.rosterview.$el);
-                converse.rosterview.update(); // Will render live filter if needed.
                 return this;
             },
 
@@ -3622,6 +3628,16 @@
                 return this;
             },
 
+            addContact: function (contact) {
+                var view = new converse.RosterContactView({model: contact});
+                this.add(contact.get('id'), view);
+                view = this.positionContact(contact).render();
+                if (this.model.get('state') === CLOSED) {
+                    view.$el.hide();
+                }
+                this.$el.show();
+            },
+
             positionContact: function (contact) {
                 /* Place the contact's DOM element in the correct alphabetical
                  * position amongst the other contacts in this group.
@@ -3703,16 +3719,6 @@
                 }
             },
 
-            addContact: function (contact) {
-                var view = new converse.RosterContactView({model: contact});
-                this.add(contact.get('id'), view);
-                view = this.positionContact(contact).render();
-                if (this.model.get('state') === CLOSED) {
-                    view.$el.hide();
-                }
-                this.$el.show();
-            },
-
             onContactGroupChange: function (contact) {
                 var in_this_group = _.contains(contact.get('groups'), this.model.get('name'));
                 var cid = contact.get('id');
@@ -3774,12 +3780,16 @@
                 converse.roster.on("remove", this.update, this);
                 this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
-                this.render();
-                this.model.fetch({
-                    silent: true,
-                    success: $.proxy(this.positionFetchedGroups, this)
-                });
-                converse.roster.fetch({add: true});
+            },
+
+            update: function () {
+                // XXX: Is this still being used/valid?
+                var $count = $('#online-count');
+                $count.text('('+converse.roster.getNumOnlineContacts()+')');
+                if (!$count.is(':visible')) {
+                    $count.show();
+                }
+                return this.showHideFilter();
             },
 
             render: function () {
@@ -3788,6 +3798,15 @@
                     label_contacts: LABEL_CONTACTS,
                     label_groups: LABEL_GROUPS
                 }));
+                return this;
+            },
+
+            fetch: function () {
+                this.model.fetch({
+                    silent: true,
+                    success: $.proxy(this.positionFetchedGroups, this)
+                });
+                converse.roster.fetch({add: true});
                 return this;
             },
 
@@ -3862,16 +3881,6 @@
                     $type.hide();
                 }
                 return this;
-            },
-
-            update: function () {
-                // XXX: Is this still being used/valid?
-                var $count = $('#online-count');
-                $count.text('('+converse.roster.getNumOnlineContacts()+')');
-                if (!$count.is(':visible')) {
-                    $count.show();
-                }
-                return this.showHideFilter();
             },
 
             reset: function () {

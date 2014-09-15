@@ -669,7 +669,6 @@
             this.initStatus($.proxy(function () {
 
                 this.chatboxes.onConnected();
-                this.connection.roster.get(function () {});
                 this.giveFeedback(__('Online Contacts'));
                 if (this.callback) {
                     if (this.connection.service === 'jasmine tests') {
@@ -1615,21 +1614,6 @@
             initialize: function (cfg) {
                 cfg.$parent.append(this.$el);
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-                this.initRoster();
-            },
-
-            initRoster: function () {
-                /* We initialize the roster, which will appear inside the
-                 * Contacts Panel.
-                 */
-                converse.roster = new converse.RosterContacts();
-                converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.contacts-'+converse.bare_jid));
-                var rostergroups = new converse.RosterGroups();
-                rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.roster.groups'+converse.bare_jid));
-                converse.rosterview = new converse.RosterView({model: rostergroups});
-                converse.rosterview.render().fetch().update();
             },
 
             render: function () {
@@ -1662,7 +1646,6 @@
                 }
                 this.$el.html(widgets);
                 this.$el.find('.search-xmpp ul').append(markup);
-                this.$el.append(converse.rosterview.$el);
                 return this;
             },
 
@@ -1941,6 +1924,7 @@
                 this.model.on('change:connected', $.proxy(function (item) {
                     this.render();
                     if (this.model.get('connected')) {
+                        this.initRoster();
                         converse.features.off('add', this.featureAdded, this);
                         converse.features.on('add', this.featureAdded, this);
                         // Features could have been added before the controlbox was
@@ -1954,6 +1938,24 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('hide', this.hide, this);
+            },
+
+            initRoster: function () {
+                /* We initialize the roster, which will appear inside the
+                 * Contacts Panel.
+                 */
+                if (!converse.roster) {
+                    converse.roster = new converse.RosterContacts();
+                    converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                        b64_sha1('converse.contacts-'+converse.bare_jid));
+                    var rostergroups = new converse.RosterGroups();
+                    rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                        b64_sha1('converse.roster.groups'+converse.bare_jid));
+                    converse.rosterview = new converse.RosterView({model: rostergroups});
+                }
+                converse.rosterview.render().fetch().update();
+                this.contactspanel.$el.append(converse.rosterview.$el);
+                converse.connection.roster.get(function () {});
             },
 
             render: function () {
@@ -3413,27 +3415,26 @@
                 return count;
             },
 
-            cleanCache: function (items) {
+            clearCache: function (items) {
                 /* The localstorage cache containing roster contacts might contain
                 * some contacts that aren't actually in our roster anymore. We
                 * therefore need to remove them now.
                 */
-                var id, i,
-                    roster_ids = [];
-                for (i=0; i < items.length; ++i) {
-                    roster_ids.push(items[i].jid);
-                }
+                var id, i, contact;
                 for (i=0; i < this.models.length; ++i) {
                     id = this.models[i].get('id');
-                    if (_.indexOf(roster_ids, id) === -1) {
-                        this.get(id).destroy();
+                    if (_.indexOf(_.pluck(items, 'jid'), id) === -1) {
+                        contact = this.get(id);
+                        if (contact) {
+                            contact.destroy();
+                        }
                     }
                 }
             },
 
             rosterHandler: function (items) {
                 converse.emit('roster', items);
-                this.cleanCache(items);
+                this.clearCache(items);
                 _.each(items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
                     var model = this.get(item.jid);
@@ -3634,8 +3635,10 @@
                 view = this.positionContact(contact).render();
                 if (this.model.get('state') === CLOSED) {
                     view.$el.hide();
+                    this.$el.show();
+                } else {
+                    this.show();
                 }
-                this.$el.show();
             },
 
             positionContact: function (contact) {
@@ -4013,7 +4016,7 @@
                 this.getGroup(name).contacts.add(contact);
             },
 
-            addCurrentContact: function (contact) {
+            addExistingContact: function (contact) {
                 var groups;
                 if (converse.roster_groups) {
                     groups = contact.get('groups');
@@ -4029,11 +4032,10 @@
             },
 
             addRosterContact: function (contact) {
-                var view;
                 if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
-                    this.addCurrentContact(contact);
+                    this.addExistingContact(contact);
                 } else {
-                    view = (new converse.RosterContactView({model: contact})).render();
+                    (new converse.RosterContactView({model: contact})).render();
                     if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
                         this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
                     } else if (contact.get('requesting') === true) {

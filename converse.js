@@ -3951,10 +3951,11 @@
                         this.addExistingContact(contact);
                     }
                 }
-                if (_.has(contact.changed, 'subscription')) {
-                    if (contact.changed.requesting == 'true') {
-                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
-                    }
+                if (_.has(contact.changed, 'ask') && contact.changed.ask == 'subscribe') {
+                    this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                }
+                if (_.has(contact.changed, 'subscription') && contact.changed.requesting == 'true') {
+                    this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
                 }
             },
 

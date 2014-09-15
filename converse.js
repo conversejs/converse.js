@@ -3606,6 +3606,8 @@
 
             initialize: function () {
                 this.model.contacts.on("add", this.addContact, this);
+                this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
+                this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
                 this.model.contacts.on("change:chat_status", function (contact) {
                     // This might be optimized by instead of first sorting,
                     // finding the correct position in positionContact
@@ -3727,13 +3729,26 @@
                 var cid = contact.get('id');
                 var in_this_overview = !this.get(cid);
                 if (in_this_group && !in_this_overview) {
-                    this.remove(cid); // Contact has been added to this group
+                    this.model.contacts.remove(cid);
                 } else if (!in_this_group && in_this_overview) {
-                    this.addContact(contact); // Contact has been removed from this group
+                    this.addContact(contact);
+                }
+            },
+
+            onContactSubscriptionChange: function (contact) {
+                if ((this.model.get('name') === HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
+                    this.model.contacts.remove(contact.get('id'));
+                }
+            },
+
+            onContactRequestChange: function (contact) {
+                if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
+                    this.model.contacts.remove(contact.get('id'));
                 }
             },
 
             onRemove: function (contact) {
+                this.remove(contact.get('id'));
                 if (this.model.contacts.length === 0) {
                     this.$el.hide();
                 }
@@ -3931,9 +3946,21 @@
 
             onContactChange: function (contact) {
                 this.updateChatBox(contact).update();
+                if (_.has(contact.changed, 'subscription')) {
+                    if (contact.changed.subscription == 'from') {
+                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                    } else if (contact.get('subscription') === 'both') {
+                        this.addExistingContact(contact);
+                    }
+                }
+                if (_.has(contact.changed, 'subscription')) {
+                    if (contact.changed.requesting == 'true') {
+                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+                    }
+                }
             },
 
-            updateChatBox: function (contact, changed) {
+            updateChatBox: function (contact) {
                 var chatbox = converse.chatboxes.get(contact.get('jid')),
                     changes = {};
                 if (!chatbox) {
@@ -4035,7 +4062,6 @@
                 if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
                     this.addExistingContact(contact);
                 } else {
-                    (new converse.RosterContactView({model: contact})).render();
                     if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
                         this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
                     } else if (contact.get('requesting') === true) {

@@ -38,6 +38,8 @@
 
     mock.mock_connection = {
         '_proto': {},
+        'connected': true,
+        'authenticated': true,
         'mock': true,
         'muc': {
             'listRooms': function () {},

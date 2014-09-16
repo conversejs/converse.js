@@ -12,6 +12,7 @@
             beforeEach(function () {
                 runs(function () {
                     test_utils.closeAllChatBoxes();
+                    test_utils.clearBrowserStorage();
                 });
             });
 
@@ -261,7 +262,7 @@
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.length).toBe(0); // There shouldn't be a chat content area anymore
                 var $chat_body = view.$el.find('.chat-body');
-                expect($chat_body.html()).toBe('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>');
+                expect($chat_body.html().trim()).toBe('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>');
             }, converse));
 
             it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {

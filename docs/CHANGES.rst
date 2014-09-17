@@ -4,8 +4,8 @@ Changelog
 0.8.1 (Unreleased)
 ------------------
 
-* Converse.js now has the ability to maintain sessions across page loads
-  (previously, the session tokens had to be handled externally and passed in).
+* Converse.js now has the ability to maintain sessions across page loads.
+  Previously, the session tokens had to be handled externally and passed in.
   See the `keepalive <https://conversejs.org/docs/html/index.html#keepalive`_ configuration setting. [jcbrand]
 * Allow changing of nickname in a chat room via /nick command. [jcbrand]
 * Allow a chat room user to be muted or unmuted with the /mute and /voice commands. [jcbrand]
@@ -18,6 +18,7 @@ Changelog
 * #212 Bugfix. Groups weren't being show again after the live filter was cleared. [jcbrand]
 * #215 (and also #75) XEP-0249: Direct MUC Invitations. [jcbrand]
 * #216 Contacts tab empty when using xhr_user_search. [hcderaad and jcbrand]
+* #219 New contacts added need page refresh to be accepted and become visible [hcderaad and jcbrand]
 
 0.8.1 (2014-08-23)
 ------------------

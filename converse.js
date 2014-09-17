@@ -1095,6 +1095,7 @@
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     fullname = msg_dict.fullname || this.model.get('fullname'), // XXX Perhaps always use model's?
+                    extra_classes = msg_dict.delayed && 'delayed' || '',
                     template, username;
 
                 if ((match) && (match[1] === 'me')) {
@@ -1106,12 +1107,19 @@
                     username = msg_dict.sender === 'me' && __('me') || fullname;
                 }
                 $content.find('div.chat-event').remove();
+
+                if (this.is_chatroom && msg_dict.sender == 'them' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(text)) {
+                    // Add special class to mark groupchat messages in which we
+                    // are mentioned.
+                    extra_classes += ' mentioned';
+                }
+
                 var message = template({
                     'sender': msg_dict.sender,
                     'time': msg_time.format('hh:mm'),
                     'username': username,
                     'message': '',
-                    'extra_classes': msg_dict.delayed && 'delayed' || ''
+                    'extra_classes': extra_classes
                 });
                 $content.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
                 this.scrollDown();

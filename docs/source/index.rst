@@ -940,6 +940,9 @@ Default:    ``true``
 Determines whether Converse.js will maintain the chat session across page
 loads.
 
+*Please be aware*: This is a new still relatively experimental feature and there might be some
+unhandled edge-cases.
+
 message_carbons
 ---------------
 

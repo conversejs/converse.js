@@ -1455,9 +1455,7 @@
             },
 
             minimize: function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 // Minimizes a chat box
                 this.model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);
@@ -4507,6 +4505,17 @@
                     this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
                 }
             }
+        };
+
+        this._tearDown = function () {
+            this.features.off().remove();
+            this.otr.destroy();
+            this.chatboxes.off().remove();
+            this.chatboxviews.off().remove();
+            this.controlboxtoggle.off().remove();
+            this.minimized_chats.off().remove();
+            delete this.chatboxes;
+            delete this.features;
         };
 
         this._initialize = function () {

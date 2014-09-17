@@ -31,8 +31,8 @@
     };
 
     utils.initConverse = function () {
+        converse._tearDown();
         converse._initialize();
-        converse.onConnected();
     };
 
     utils.initRoster = function () {

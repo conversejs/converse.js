@@ -31,6 +31,15 @@
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
+    
+    // Configuration of underscore templates (this config is distict to the
+    // config of requirejs-tpl in main.js). This one is for normal inline
+    // templates.
+    // Use Mustache style syntax for variable interpolation
+    _.templateSettings = {
+        evaluate : /\{\[([\s\S]+?)\]\}/g,
+        interpolate : /\{\{([\s\S]+?)\}\}/g
+    };
 
     // TODO: these non-backbone methods should all be moved to utils.
     $.fn.addHyperlinks = function() {

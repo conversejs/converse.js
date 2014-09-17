@@ -1060,26 +1060,6 @@
                 this.scrollDown();
             },
 
-            toggleParticipants: function (ev) {
-                if (ev) {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
-                var $el = $(ev.target);
-                if ($el.hasClass("icon-hide-users")) {
-                    $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                    this.$('div.participants').animate({width: 0}).hide();
-                    this.$('.chat-area').animate({width: '100%'});
-                    this.$('form.sendXMPPMessage').animate({width: '100%'});
-                } else {
-                    $el.removeClass('icon-show-users').addClass('icon-hide-users');
-                    this.$('.chat-area').animate({width: '200px'}, $.proxy(function () {
-                        this.$('div.participants').css({width: '100px'}).show();
-                    }, this));
-                    this.$('form.sendXMPPMessage').animate({width: '200px'});
-                }
-            },
-
             clearChatRoomMessages: function (ev) {
                 ev.stopPropagation();
                 var result = confirm(__("Are you sure you want to clear the messages from this room?"));
@@ -2180,7 +2160,7 @@
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearChatRoomMessages',
-                'click .toggle-participants a': 'toggleParticipants',
+                'click .toggle-participants a': 'toggleOccupants',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'mousedown .dragresize-tm': 'onDragResizeStart'
             },
@@ -2245,8 +2225,35 @@
                         .append(this.occupantsview.render().$el);
                     this.renderToolbar();
                 }
+                // XXX: This is a bit of a hack, to make sure that the
+                // sidebar's state is remembered.
+                this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
+                this.toggleOccupants();
                 return this;
             },
+
+            toggleOccupants: function (ev) {
+                if (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
+                var $el = this.$('.icon-hide-users');
+                if (!this.model.get('hidden_occupants')) {
+                    this.model.save({hidden_occupants: true});
+                    $el.removeClass('icon-hide-users').addClass('icon-show-users');
+                    this.$('div.participants').animate({width: 0}).hide();
+                    this.$('.chat-area').animate({width: '100%'});
+                    this.$('form.sendXMPPMessage').animate({width: '100%'});
+                } else {
+                    this.model.save({hidden_occupants: false});
+                    $el.removeClass('icon-show-users').addClass('icon-hide-users');
+                    this.$('.chat-area').animate({width: '200px'}, $.proxy(function () {
+                        this.$('div.participants').css({width: '100px'}).show();
+                    }, this));
+                    this.$('form.sendXMPPMessage').animate({width: '200px'});
+                }
+            },
+
 
             onCommandError: function (stanza) {
                 this.showStatusNotification(__("Error: could not execute the command"), true);

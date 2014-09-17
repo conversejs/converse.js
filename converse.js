@@ -4501,6 +4501,12 @@
                 }
                 this.connection = new Strophe.Connection(this.bosh_service_url);
 
+                if (this.prebind) {
+                    if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
+                        throw('If you set prebind=true, you MUST supply JID, RID and SID values');
+                    }
+                    this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                }
                 if (this.keepalive) {
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
@@ -4512,12 +4518,6 @@
                         this.connection.attach(jid, sid, rid, this.onConnect);
                         return;
                     }
-                }
-                if (this.prebind) {
-                    if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
-                        throw('If you set prebind=true, you MUST supply JID, RID and SID values');
-                    }
-                    this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
                 }
             }
         };

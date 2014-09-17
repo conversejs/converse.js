@@ -340,6 +340,40 @@ Languages increase the size of the Converse.js significantly.
 If you only need one, or a subset of the available languages, it's better to
 make a custom build which includes only those languages that you need.
 
+Chat Rooms
+==========
+
+Commands
+--------
+
+Here are the different commands that may be used in a chat room:
+
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| Event Type | When is it triggered?                                                                        | Example (substitue $nickname with an actual user's nickname)  |
++============+==============================================================================================+===============================================================+
+| **ban**    | Ban a user from the chat room. They will not be able to join again.                          | /ban $nickname                                                |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **clear**  | Clear the messages shown in the chat room.                                                   | /clear                                                        |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **deop**   | Make a moderator a normal participant.                                                       | /deop $nickname [$reason]                                     |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **help**   | Show the list of available commands.                                                         | /help                                                         |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **kick**   | Kick a user out of a room. They will be able to join again.                                  | /kick $nickname [$reason]                                     |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **me**     | Speak in the 3rd person.                                                                     | /me $message                                                  |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **mute**   | Remove a user's ability to post messages to the room. They will still be able to observe.    | /mute $nickname [$reason]                                     |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **nick**   | Change your nickname.                                                                        | /nick $nickname                                               |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **op**     | Make a normal participant a moderator.                                                       | /op $nickname [$reason]                                       |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **topic**  | Set the topic of the chat room.                                                              | /topic ${topic text}                                          |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **voice**  | Allow a muted user to post messages to the room.                                             | /voice $nickname [$reason]                                    |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+
 ===========
 Development
 ===========
@@ -602,8 +636,8 @@ making sure to also paste the JSON data as value to the "locale_data" key.
 
 .. Note ::
     If you are adding translations for a new language that is not already supported,
-    you'll have to make one more edit in ./locale/locales.js to make sure the
-    language is loaded by require.js.
+    you'll have to add the language path in main.js and make one more edit in ./locale/locales.js
+    to make sure the language is loaded by require.js.
 
 Congratulations, you've now succesfully added your translations. Sorry for all
 those hoops you had to jump through.
@@ -761,6 +795,10 @@ Here are the different events that are emitted:
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **chatBoxToggled**               | When a chat box has been minimized or maximized.                                                  | ``converse.on('chatBoxToggled', function (chatbox) { ... });``                          |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **roomInviteSent**               | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.on('roomInvite', function (roomview, invitee_jid, reason) { ... });``        |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **roomInviteReceived**           | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.on('roomInvite', function (roomview, invitee_jid, reason) { ... });``        |
++----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **statusChanged**                | When own chat status has changed.                                                                 | ``converse.on('statusChanged', function (status) { ... });``                            |
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **statusMessageChanged**         | When own custom status message has changed.                                                       | ``converse.on('statusMessageChanged', function (message) { ... });``                    |
@@ -894,12 +932,37 @@ Default:  ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
+keepalive
+---------
+
+Default:    ``true``
+
+Determines whether Converse.js will maintain the chat session across page
+loads.
+
+*Please be aware*: This is a new still relatively experimental feature and there might be some
+unhandled edge-cases.
+
 message_carbons
-----------------------
+---------------
 
 Default:  ``false``
 
 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
+
+In order to keep all IM clients for a user engaged in a conversation,
+outbound messages are carbon-copied to all interested resources.
+
+This is especially important in webchat, like converse.js, where each browser
+tab serves as a separate IM client.
+
+Both message_carbons and `forward_messages`_ try to solve the same problem
+(showing sent messages in all connected chat clients aka resources), but go about it
+in two different ways.
+
+Message carbons is the XEP (Jabber protocol extension) specifically drafted to
+solve this problem, while `forwarded_messages`_ uses
+`stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 expose_rid_and_sid
 ------------------
@@ -918,13 +981,18 @@ forward_messages
 
 Default:  ``false``
 
-If set to ``true``, sent messages will also be forwarded to other connected
-XMPP resources (e.g. chat clients) of the same user.
+If set to ``true``, sent messages will also be forwarded to the sending user's
+bare JID (their Jabber ID independent of any chat clients aka resources).
 
-This is useful for example if converse.js is running in multiple tabs of the
-browser and you want sent messages to appear in all of them.
+This means that sent messages are visible from all the user's chat clients,
+and not just the one from which it was actually sent.
 
-See also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+This is especially important for web chat, such as converse.js, where each
+browser tab functions as a separate chat client, with its own resource.
+
+This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+
+For an alternative approach, see also `message carbons`_.
 
 fullname
 --------
@@ -951,6 +1019,9 @@ play_sounds
 -----------
 
 Default:  ``false``
+
+Plays a notification sound when you receive a personal message or when your
+nickname is mentioned in a chat room.
 
 Inside the ``./sounds`` directory of the Converse.js repo, you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
@@ -1023,7 +1094,7 @@ Default: ``session``
 
 Valid options: ``session``, ``local``.
 
-This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_ 
+This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
 (``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
 
 Originally converse.js used only localStorage, however sessionStorage is from a
@@ -1034,6 +1105,16 @@ the current tab or window containing a converse.js instance is open. As soon as
 it's closed, the data is cleared.
 
 Data in localStorage on the other hand is kept indefinitely.
+
+.. Note ::
+    Since version 0.8.0, the use of local storage is not recommended. The
+    statuses (online, away, busy etc.) of your roster contacts are cached in
+    the browser storage. If you use local storage, these values are stored for
+    multiple sessions, and they will likely become out of sync with your contacts'
+    actual statuses. The session storage doesn't have this problem, because
+    roster contact statuses will not become out of sync in a single session,
+    only across more than one session.
+
 
 use_otr_by_default
 ------------------
@@ -1060,29 +1141,29 @@ Default:
 ::
 
     {
-        'emoticons': true,
-        'call': false,
-        'clear': true
+        call: false,
+        clear: true,
+        emoticons: true,
+        toggle_participants: true
     }
 
 Allows you to show or hide buttons on the chat boxes' toolbars.
 
-* *emoticons*: 
-    Enables rendering of emoticons and provides a toolbar button for choosing them.
-* *call*: 
+* *call*:
     Provides a button with a picture of a telephone on it.
-    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
-
-    ::
+    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
 
         converse.on('callButtonClicked', function(event, data) {
             console.log('Strophe connection is', data.connection);
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...
         });
-* *clear*: 
+* *clear*:
     Provides a button for clearing messages from a chat box.
-
+* *emoticons*:
+    Enables rendering of emoticons and provides a toolbar button for choosing them.
+* toggle_participants:
+    Shows a button for toggling (i.e. showing/hiding) the list of participants in a chat room.
 
 xhr_custom_status
 -----------------

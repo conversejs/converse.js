@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.8.0 documentation</title>
+    <title>Quickstart (to get a demo up and running) &mdash; Converse.js 0.8.1 documentation</title>
     
     <link rel="stylesheet" href="_static/stylesheet.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.8.0',
+        VERSION:     '0.8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Converse.js 0.8.0 documentation" href="#" /> 
+    <link rel="top" title="Converse.js 0.8.1 documentation" href="#" /> 
   </head>
   <body>
     <div id="header_wrap" class="outer">
@@ -41,7 +41,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">Converse.js 0.8.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.8.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
 <section id="main_content" class="inner">  
@@ -76,69 +76,74 @@
 <li><a class="reference internal" href="#off-the-record-encryption" id="id17">Off-the-record encryption</a></li>
 <li><a class="reference internal" href="#sound-notifications" id="id18">Sound Notifications</a></li>
 <li><a class="reference internal" href="#multilingual-support" id="id19">Multilingual Support</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#development" id="id20">Development</a><ul>
-<li><a class="reference internal" href="#install-the-development-and-front-end-dependencies" id="id21">Install the development and front-end dependencies</a></li>
-<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id22">With AMD and require.js (recommended)</a></li>
-<li><a class="reference internal" href="#without-amd-and-require-js" id="id23">Without AMD and require.js</a></li>
-<li><a class="reference internal" href="#before-submitting-a-pull-request" id="id24">Before submitting a pull request</a><ul>
-<li><a class="reference internal" href="#add-tests-for-your-bugfix-or-feature" id="id25">Add tests for your bugfix or feature</a></li>
-<li><a class="reference internal" href="#check-that-the-tests-pass" id="id26">Check that the tests pass</a></li>
-<li><a class="reference internal" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" id="id27">Check your code for errors or bad habits by running JSHint</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#minification" id="id28">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript-and-css" id="id29">Minifying Javascript and CSS</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#translations" id="id30">Translations</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#troubleshooting" id="id31">Troubleshooting</a><ul>
-<li><a class="reference internal" href="#conflicts-with-other-javascript-libraries" id="id32">Conflicts with other Javascript libraries</a><ul>
-<li><a class="reference internal" href="#problem" id="id33">Problem:</a></li>
-<li><a class="reference internal" href="#solution" id="id34">Solution:</a></li>
+<li><a class="reference internal" href="#chat-rooms" id="id20">Chat Rooms</a><ul>
+<li><a class="reference internal" href="#commands" id="id21">Commands</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#events" id="id35">Events</a><ul>
-<li><a class="reference internal" href="#event-methods" id="id36">Event Methods</a></li>
-<li><a class="reference internal" href="#event-types" id="id37">Event Types</a></li>
+<li><a class="reference internal" href="#development" id="id22">Development</a><ul>
+<li><a class="reference internal" href="#install-the-development-and-front-end-dependencies" id="id23">Install the development and front-end dependencies</a></li>
+<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id24">With AMD and require.js (recommended)</a></li>
+<li><a class="reference internal" href="#without-amd-and-require-js" id="id25">Without AMD and require.js</a></li>
+<li><a class="reference internal" href="#before-submitting-a-pull-request" id="id26">Before submitting a pull request</a><ul>
+<li><a class="reference internal" href="#add-tests-for-your-bugfix-or-feature" id="id27">Add tests for your bugfix or feature</a></li>
+<li><a class="reference internal" href="#check-that-the-tests-pass" id="id28">Check that the tests pass</a></li>
+<li><a class="reference internal" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" id="id29">Check your code for errors or bad habits by running JSHint</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuration" id="id38">Configuration</a><ul>
-<li><a class="reference internal" href="#configuration-variables" id="id39">Configuration variables</a><ul>
-<li><a class="reference internal" href="#allow-contact-requests" id="id40">allow_contact_requests</a></li>
-<li><a class="reference internal" href="#allow-muc" id="id41">allow_muc</a></li>
-<li><a class="reference internal" href="#id3" id="id42">allow_muc</a></li>
-<li><a class="reference internal" href="#animate" id="id43">animate</a></li>
-<li><a class="reference internal" href="#auto-list-rooms" id="id44">auto_list_rooms</a></li>
-<li><a class="reference internal" href="#auto-reconnect" id="id45">auto_reconnect</a></li>
-<li><a class="reference internal" href="#auto-subscribe" id="id46">auto_subscribe</a></li>
-<li><a class="reference internal" href="#bosh-service-url" id="id47">bosh_service_url</a></li>
-<li><a class="reference internal" href="#cache-otr-key" id="id48">cache_otr_key</a></li>
-<li><a class="reference internal" href="#debug" id="id49">debug</a></li>
-<li><a class="reference internal" href="#message-carbons" id="id50">message_carbons</a></li>
-<li><a class="reference internal" href="#expose-rid-and-sid" id="id51">expose_rid_and_sid</a></li>
-<li><a class="reference internal" href="#forward-messages" id="id52">forward_messages</a></li>
-<li><a class="reference internal" href="#fullname" id="id53">fullname</a></li>
-<li><a class="reference internal" href="#hide-muc-server" id="id54">hide_muc_server</a></li>
-<li><a class="reference internal" href="#i18n" id="id55">i18n</a></li>
-<li><a class="reference internal" href="#play-sounds" id="id56">play_sounds</a></li>
-<li><a class="reference internal" href="#prebind" id="id57">prebind</a></li>
-<li><a class="reference internal" href="#roster-groups" id="id58">roster_groups</a></li>
-<li><a class="reference internal" href="#show-controlbox-by-default" id="id59">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#show-only-online-users" id="id60">show_only_online_users</a></li>
-<li><a class="reference internal" href="#storage" id="id61">storage</a></li>
-<li><a class="reference internal" href="#use-otr-by-default" id="id62">use_otr_by_default</a></li>
-<li><a class="reference internal" href="#use-vcards" id="id63">use_vcards</a></li>
-<li><a class="reference internal" href="#visible-toolbar-buttons" id="id64">visible_toolbar_buttons</a></li>
-<li><a class="reference internal" href="#xhr-custom-status" id="id65">xhr_custom_status</a></li>
-<li><a class="reference internal" href="#xhr-custom-status-url" id="id66">xhr_custom_status_url</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id67">xhr_user_search</a></li>
-<li><a class="reference internal" href="#xhr-user-search-url" id="id68">xhr_user_search_url</a></li>
+<li><a class="reference internal" href="#minification" id="id30">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript-and-css" id="id31">Minifying Javascript and CSS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#translations" id="id32">Translations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#troubleshooting" id="id33">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#conflicts-with-other-javascript-libraries" id="id34">Conflicts with other Javascript libraries</a><ul>
+<li><a class="reference internal" href="#problem" id="id35">Problem:</a></li>
+<li><a class="reference internal" href="#solution" id="id36">Solution:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#events" id="id37">Events</a><ul>
+<li><a class="reference internal" href="#event-methods" id="id38">Event Methods</a></li>
+<li><a class="reference internal" href="#event-types" id="id39">Event Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration" id="id40">Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-variables" id="id41">Configuration variables</a><ul>
+<li><a class="reference internal" href="#allow-contact-requests" id="id42">allow_contact_requests</a></li>
+<li><a class="reference internal" href="#allow-muc" id="id43">allow_muc</a></li>
+<li><a class="reference internal" href="#id3" id="id44">allow_muc</a></li>
+<li><a class="reference internal" href="#animate" id="id45">animate</a></li>
+<li><a class="reference internal" href="#auto-list-rooms" id="id46">auto_list_rooms</a></li>
+<li><a class="reference internal" href="#auto-reconnect" id="id47">auto_reconnect</a></li>
+<li><a class="reference internal" href="#auto-subscribe" id="id48">auto_subscribe</a></li>
+<li><a class="reference internal" href="#bosh-service-url" id="id49">bosh_service_url</a></li>
+<li><a class="reference internal" href="#cache-otr-key" id="id50">cache_otr_key</a></li>
+<li><a class="reference internal" href="#debug" id="id51">debug</a></li>
+<li><a class="reference internal" href="#keepalive" id="id52">keepalive</a></li>
+<li><a class="reference internal" href="#message-carbons" id="id53">message_carbons</a></li>
+<li><a class="reference internal" href="#expose-rid-and-sid" id="id54">expose_rid_and_sid</a></li>
+<li><a class="reference internal" href="#forward-messages" id="id55">forward_messages</a></li>
+<li><a class="reference internal" href="#fullname" id="id56">fullname</a></li>
+<li><a class="reference internal" href="#hide-muc-server" id="id57">hide_muc_server</a></li>
+<li><a class="reference internal" href="#i18n" id="id58">i18n</a></li>
+<li><a class="reference internal" href="#play-sounds" id="id59">play_sounds</a></li>
+<li><a class="reference internal" href="#prebind" id="id60">prebind</a></li>
+<li><a class="reference internal" href="#roster-groups" id="id61">roster_groups</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id62">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#show-only-online-users" id="id63">show_only_online_users</a></li>
+<li><a class="reference internal" href="#storage" id="id64">storage</a></li>
+<li><a class="reference internal" href="#use-otr-by-default" id="id65">use_otr_by_default</a></li>
+<li><a class="reference internal" href="#use-vcards" id="id66">use_vcards</a></li>
+<li><a class="reference internal" href="#visible-toolbar-buttons" id="id67">visible_toolbar_buttons</a></li>
+<li><a class="reference internal" href="#xhr-custom-status" id="id68">xhr_custom_status</a></li>
+<li><a class="reference internal" href="#xhr-custom-status-url" id="id69">xhr_custom_status_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id70">xhr_user_search</a></li>
+<li><a class="reference internal" href="#xhr-user-search-url" id="id71">xhr_user_search_url</a></li>
 </ul>
 </li>
 </ul>
@@ -409,15 +414,81 @@ message.</p>
 <p>If you only need one, or a subset of the available languages, it&#8217;s better to
 make a custom build which includes only those languages that you need.</p>
 </div>
+<div class="section" id="chat-rooms">
+<h2><a class="toc-backref" href="#id20">Chat Rooms</a><a class="headerlink" href="#chat-rooms" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="commands">
+<h3><a class="toc-backref" href="#id21">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<p>Here are the different commands that may be used in a chat room:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="56%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Event Type</th>
+<th class="head">When is it triggered?</th>
+<th class="head">Example (substitue $nickname with an actual user&#8217;s nickname)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>ban</strong></td>
+<td>Ban a user from the chat room. They will not be able to join again.</td>
+<td>/ban $nickname</td>
+</tr>
+<tr class="row-odd"><td><strong>clear</strong></td>
+<td>Clear the messages shown in the chat room.</td>
+<td>/clear</td>
+</tr>
+<tr class="row-even"><td><strong>deop</strong></td>
+<td>Make a moderator a normal participant.</td>
+<td>/deop $nickname [$reason]</td>
+</tr>
+<tr class="row-odd"><td><strong>help</strong></td>
+<td>Show the list of available commands.</td>
+<td>/help</td>
+</tr>
+<tr class="row-even"><td><strong>kick</strong></td>
+<td>Kick a user out of a room. They will be able to join again.</td>
+<td>/kick $nickname [$reason]</td>
+</tr>
+<tr class="row-odd"><td><strong>me</strong></td>
+<td>Speak in the 3rd person.</td>
+<td>/me $message</td>
+</tr>
+<tr class="row-even"><td><strong>mute</strong></td>
+<td>Remove a user&#8217;s ability to post messages to the room. They will still be able to observe.</td>
+<td>/mute $nickname [$reason]</td>
+</tr>
+<tr class="row-odd"><td><strong>nick</strong></td>
+<td>Change your nickname.</td>
+<td>/nick $nickname</td>
+</tr>
+<tr class="row-even"><td><strong>op</strong></td>
+<td>Make a normal participant a moderator.</td>
+<td>/op $nickname [$reason]</td>
+</tr>
+<tr class="row-odd"><td><strong>topic</strong></td>
+<td>Set the topic of the chat room.</td>
+<td>/topic ${topic text}</td>
+</tr>
+<tr class="row-even"><td><strong>voice</strong></td>
+<td>Allow a muted user to post messages to the room.</td>
+<td>/voice $nickname [$reason]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div class="section" id="development">
-<h1><a class="toc-backref" href="#id20">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id22">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
 <p>If you want to work with the non-minified Javascript and CSS files you&#8217;ll soon
 notice that there are references to a missing <em>components</em> folder. Please
 follow the instructions below to create this folder and fetch Converse&#8217;s
 3rd-party dependencies.</p>
 <div class="section" id="install-the-development-and-front-end-dependencies">
-<h2><a class="toc-backref" href="#id21">Install the development and front-end dependencies</a><a class="headerlink" href="#install-the-development-and-front-end-dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">Install the development and front-end dependencies</a><a class="headerlink" href="#install-the-development-and-front-end-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>We use development tools (<a class="reference external" href="http://gruntjs.com">Grunt</a> and <a class="reference external" href="http://bower.io">Bower</a>)
 which depend on Node.js and npm (the Node package manager).</p>
 <p>If you don&#8217;t have Node.js installed, you can download and install the latest
@@ -456,7 +527,7 @@ Converse.js directly depends and which will be loaded in the browser.</p>
 </ul>
 </div>
 <div class="section" id="with-amd-and-require-js-recommended">
-<h2><a class="toc-backref" href="#id22">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js uses <a class="reference external" href="http://requirejs.org">require.js</a> to asynchronously load dependencies.</p>
 <p>If you want to develop or customize converse.js, you&#8217;ll want to load the
 non-minified javascript files.</p>
@@ -470,7 +541,7 @@ attribute on the <em>script</em> tag), which will in turn cause converse.js to b
 parsed.</p>
 </div>
 <div class="section" id="without-amd-and-require-js">
-<h2><a class="toc-backref" href="#id23">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js can also be used without require.js. If you for some reason prefer
 to use it this way, please refer to
 <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
@@ -478,9 +549,9 @@ for an example of how and in what order all the Javascript files that converse.j
 depends on need to be loaded.</p>
 </div>
 <div class="section" id="before-submitting-a-pull-request">
-<h2><a class="toc-backref" href="#id24">Before submitting a pull request</a><a class="headerlink" href="#before-submitting-a-pull-request" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">Before submitting a pull request</a><a class="headerlink" href="#before-submitting-a-pull-request" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="add-tests-for-your-bugfix-or-feature">
-<h3><a class="toc-backref" href="#id25">Add tests for your bugfix or feature</a><a class="headerlink" href="#add-tests-for-your-bugfix-or-feature" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">Add tests for your bugfix or feature</a><a class="headerlink" href="#add-tests-for-your-bugfix-or-feature" title="Permalink to this headline">¶</a></h3>
 <p>Add a test for any bug fixed or feature added. We use Jasmine
 for testing.</p>
 <p>Take a look at <tt class="docutils literal"><span class="pre">tests.html</span></tt> and <tt class="docutils literal"><span class="pre">spec/MainSpec.js</span></tt> to see how
@@ -489,7 +560,7 @@ the tests are implemented.</p>
 <a class="reference external" href="http://opkode.com/contact">contact me</a> and I&#8217;ll be happy to help.</p>
 </div>
 <div class="section" id="check-that-the-tests-pass">
-<h3><a class="toc-backref" href="#id26">Check that the tests pass</a><a class="headerlink" href="#check-that-the-tests-pass" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">Check that the tests pass</a><a class="headerlink" href="#check-that-the-tests-pass" title="Permalink to this headline">¶</a></h3>
 <p>Check that the Jasmine tests complete sucessfully. Open
 <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/tests.html">tests.html</a>
 in your browser, and the tests will run automatically.</p>
@@ -499,7 +570,7 @@ in your browser, and the tests will run automatically.</p>
 </div>
 </div>
 <div class="section" id="check-your-code-for-errors-or-bad-habits-by-running-jshint">
-<h3><a class="toc-backref" href="#id27">Check your code for errors or bad habits by running JSHint</a><a class="headerlink" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">Check your code for errors or bad habits by running JSHint</a><a class="headerlink" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://jshint.com">JSHint</a> will do a static analysis of your code and hightlight potential errors
 and/or bad habits.</p>
 <div class="highlight-python"><div class="highlight"><pre>grunt jshint
@@ -512,9 +583,9 @@ and/or bad habits.</p>
 </div>
 </div>
 <div class="section" id="minification">
-<h2><a class="toc-backref" href="#id28">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id30">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="minifying-javascript-and-css">
-<h3><a class="toc-backref" href="#id29">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id31">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h3>
 <p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
 all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
 and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
@@ -532,7 +603,7 @@ using <a class="reference external" href="https://github.com/jrburke/almond">alm
 </div>
 </div>
 <div class="section" id="translations">
-<h2><a class="toc-backref" href="#id30">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id32">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Translations take up a lot of space and will bloat your minified file.
@@ -607,19 +678,19 @@ create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you are adding translations for a new language that is not already supported,
-you&#8217;ll have to make one more edit in ./locale/locales.js to make sure the
-language is loaded by require.js.</p>
+you&#8217;ll have to add the language path in main.js and make one more edit in ./locale/locales.js
+to make sure the language is loaded by require.js.</p>
 </div>
 <p>Congratulations, you&#8217;ve now succesfully added your translations. Sorry for all
 those hoops you had to jump through.</p>
 </div>
 </div>
 <div class="section" id="troubleshooting">
-<h1><a class="toc-backref" href="#id31">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id33">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="conflicts-with-other-javascript-libraries">
-<h2><a class="toc-backref" href="#id32">Conflicts with other Javascript libraries</a><a class="headerlink" href="#conflicts-with-other-javascript-libraries" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id34">Conflicts with other Javascript libraries</a><a class="headerlink" href="#conflicts-with-other-javascript-libraries" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="problem">
-<h3><a class="toc-backref" href="#id33">Problem:</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">Problem:</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h3>
 <p>You are using other Javascript libraries (like JQuery plugins), and
 get errors like these in your browser console:</p>
 <div class="highlight-python"><div class="highlight"><pre>Uncaught TypeError: Object [object Object] has no method &#39;xxx&#39; from example.js
@@ -627,7 +698,7 @@ get errors like these in your browser console:</p>
 </div>
 </div>
 <div class="section" id="solution">
-<h3><a class="toc-backref" href="#id34">Solution:</a><a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id36">Solution:</a><a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
 <p>First, find out which object is referred to by <tt class="docutils literal"><span class="pre">Object</span> <span class="pre">[object</span> <span class="pre">Object]</span></tt>.</p>
 <p>It will probably be the jQuery object <tt class="docutils literal"><span class="pre">$</span></tt> or perhaps the underscore.js object <tt class="docutils literal"><span class="pre">_</span></tt>.</p>
 <p>For the purpose of demonstration, I&#8217;m going to assume its <tt class="docutils literal"><span class="pre">$</span></tt>, but the same
@@ -669,11 +740,11 @@ jQuery plugins must load after jQuery).</p>
 </div>
 </div>
 <div class="section" id="events">
-<h1><a class="toc-backref" href="#id35">Events</a><a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id37">Events</a><a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
 <p>Converse.js emits events to which you can subscribe from your own Javascript.</p>
 <p>Concerning events, the following methods are available:</p>
 <div class="section" id="event-methods">
-<h2><a class="toc-backref" href="#id36">Event Methods</a><a class="headerlink" href="#event-methods" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id38">Event Methods</a><a class="headerlink" href="#event-methods" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p class="first"><strong>on(eventName, callback)</strong>:</p>
 <blockquote>
@@ -719,7 +790,7 @@ exactly once.</p>
 </ul>
 </div>
 <div class="section" id="event-types">
-<h2><a class="toc-backref" href="#id37">Event Types</a><a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id39">Event Types</a><a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
 <p>Here are the different events that are emitted:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -782,6 +853,14 @@ exactly once.</p>
 <td>When a chat box has been minimized or maximized.</td>
 <td><tt class="docutils literal"><span class="pre">converse.on('chatBoxToggled',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
 </tr>
+<tr class="row-even"><td><strong>roomInviteSent</strong></td>
+<td>After the user has sent out a direct invitation, to a roster contact, asking them to join a room.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('roomInvite',</span> <span class="pre">function</span> <span class="pre">(roomview,</span> <span class="pre">invitee_jid,</span> <span class="pre">reason)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>roomInviteReceived</strong></td>
+<td>After the user has sent out a direct invitation, to a roster contact, asking them to join a room.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('roomInvite',</span> <span class="pre">function</span> <span class="pre">(roomview,</span> <span class="pre">invitee_jid,</span> <span class="pre">reason)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
 <tr class="row-even"><td><strong>statusChanged</strong></td>
 <td>When own chat status has changed.</td>
 <td><tt class="docutils literal"><span class="pre">converse.on('statusChanged',</span> <span class="pre">function</span> <span class="pre">(status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
@@ -803,7 +882,7 @@ exactly once.</p>
 </div>
 </div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#id38">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id40">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>The included minified JS and CSS files can be used for demoing or testing, but
 you&#8217;ll want to configure <em>Converse.js</em> to suit your needs before you deploy it
 on your website.</p>
@@ -817,9 +896,9 @@ all the available configuration settings.</p>
 JS file so that it will include the new settings. Please refer to the
 <a class="reference internal" href="#minification">Minification</a> section for more info on how to do this.</p>
 <div class="section" id="configuration-variables">
-<h2><a class="toc-backref" href="#id39">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id41">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="allow-contact-requests">
-<h3><a class="toc-backref" href="#id40">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow users to add one another as contacts. If this is set to false, the
 <strong>Add a contact</strong> widget, <strong>Contact Requests</strong> and <strong>Pending Contacts</strong> roster
@@ -827,23 +906,23 @@ sections will all not appear. Additionally, all incoming contact requests will b
 ignored.</p>
 </div>
 <div class="section" id="allow-muc">
-<h3><a class="toc-backref" href="#id41">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id43">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow multi-user chat (muc) in chatrooms. Setting this to <tt class="docutils literal"><span class="pre">false</span></tt> will remove
 the <tt class="docutils literal"><span class="pre">Chatrooms</span></tt> tab from the control box.</p>
 </div>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id42">allow_muc</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">allow_muc</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow Off-the-record encryption of single-user chat messages.</p>
 </div>
 <div class="section" id="animate">
-<h3><a class="toc-backref" href="#id43">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id45">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Show animations, for example when opening and closing chat boxes.</p>
 </div>
 <div class="section" id="auto-list-rooms">
-<h3><a class="toc-backref" href="#id44">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id46">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.</p>
@@ -853,24 +932,24 @@ features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.</p>
 </div>
 <div class="section" id="auto-reconnect">
-<h3><a class="toc-backref" href="#id45">auto_reconnect</a><a class="headerlink" href="#auto-reconnect" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id47">auto_reconnect</a><a class="headerlink" href="#auto-reconnect" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.</p>
 </div>
 <div class="section" id="auto-subscribe">
-<h3><a class="toc-backref" href="#id46">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, the user will automatically subscribe back to any contact requests.</p>
 </div>
 <div class="section" id="bosh-service-url">
-<h3><a class="toc-backref" href="#id47">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id49">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
 <p>Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.</p>
 <p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">here</a> for more information.</p>
 </div>
 <div class="section" id="cache-otr-key">
-<h3><a class="toc-backref" href="#id48">cache_otr_key</a><a class="headerlink" href="#cache-otr-key" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id50">cache_otr_key</a><a class="headerlink" href="#cache-otr-key" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Let the <a class="reference external" href="https://otr.cypherpunks.ca">OTR (Off-the-record encryption)</a> private
 key be cached in your browser&#8217;s session storage.</p>
@@ -889,17 +968,35 @@ current session. Previous sessions however cannot be decrypted.</p>
 </div>
 </div>
 <div class="section" id="debug">
-<h3><a class="toc-backref" href="#id49">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id51">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to true, debugging output will be logged to the browser console.</p>
 </div>
+<div class="section" id="keepalive">
+<h3><a class="toc-backref" href="#id52">keepalive</a><a class="headerlink" href="#keepalive" title="Permalink to this headline">¶</a></h3>
+<p>Default:    <tt class="docutils literal"><span class="pre">true</span></tt></p>
+<p>Determines whether Converse.js will maintain the chat session across page
+loads.</p>
+<p><em>Please be aware</em>: This is a new still relatively experimental feature and there might be some
+unhandled edge-cases.</p>
+</div>
 <div class="section" id="message-carbons">
-<h3><a class="toc-backref" href="#id50">message_carbons</a><a class="headerlink" href="#message-carbons" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id53">message_carbons</a><a class="headerlink" href="#message-carbons" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Support for <a class="reference external" href="https://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a></p>
+<p>In order to keep all IM clients for a user engaged in a conversation,
+outbound messages are carbon-copied to all interested resources.</p>
+<p>This is especially important in webchat, like converse.js, where each browser
+tab serves as a separate IM client.</p>
+<p>Both message_carbons and <a class="reference internal" href="#forward-messages">forward_messages</a> try to solve the same problem
+(showing sent messages in all connected chat clients aka resources), but go about it
+in two different ways.</p>
+<p>Message carbons is the XEP (Jabber protocol extension) specifically drafted to
+solve this problem, while <a href="#id72"><span class="problematic" id="id73">`forwarded_messages`_</span></a> uses
+<a class="reference external" href="http://www.xmpp.org/extensions/xep-0297.html">stanza forwarding</a></p>
 </div>
 <div class="section" id="expose-rid-and-sid">
-<h3><a class="toc-backref" href="#id51">expose_rid_and_sid</a><a class="headerlink" href="#expose-rid-and-sid" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id54">expose_rid_and_sid</a><a class="headerlink" href="#expose-rid-and-sid" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
 globally via the API. This allows other scripts served on the same page to use
@@ -908,34 +1005,39 @@ these values.</p>
 and inject fake chat messages.</p>
 </div>
 <div class="section" id="forward-messages">
-<h3><a class="toc-backref" href="#id52">forward_messages</a><a class="headerlink" href="#forward-messages" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id55">forward_messages</a><a class="headerlink" href="#forward-messages" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
-<p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, sent messages will also be forwarded to other connected
-XMPP resources (e.g. chat clients) of the same user.</p>
-<p>This is useful for example if converse.js is running in multiple tabs of the
-browser and you want sent messages to appear in all of them.</p>
-<p>See also <a class="reference external" href="http://www.xmpp.org/extensions/xep-0297.html">XEP 0297: Stanza Forwarding</a></p>
+<p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, sent messages will also be forwarded to the sending user&#8217;s
+bare JID (their Jabber ID independent of any chat clients aka resources).</p>
+<p>This means that sent messages are visible from all the user&#8217;s chat clients,
+and not just the one from which it was actually sent.</p>
+<p>This is especially important for web chat, such as converse.js, where each
+browser tab functions as a separate chat client, with its own resource.</p>
+<p>This feature uses Stanza forwarding, see also <a class="reference external" href="http://www.xmpp.org/extensions/xep-0297.html">XEP 0297: Stanza Forwarding</a></p>
+<p>For an alternative approach, see also <a href="#id74"><span class="problematic" id="id75">`message carbons`_</span></a>.</p>
 </div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id53">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id56">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
 <p>If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user&#8217;s vCard will be fetched.</p>
 </div>
 <div class="section" id="hide-muc-server">
-<h3><a class="toc-backref" href="#id54">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id57">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Hide the <tt class="docutils literal"><span class="pre">server</span></tt> input field of the form inside the <tt class="docutils literal"><span class="pre">Room</span></tt> panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.</p>
 </div>
 <div class="section" id="i18n">
-<h3><a class="toc-backref" href="#id55">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id58">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
 <p>Specify the locale/language. The language must be in the <tt class="docutils literal"><span class="pre">locales</span></tt> object. Refer to
 <tt class="docutils literal"><span class="pre">./locale/locales.js</span></tt> to see which locales are supported.</p>
 </div>
 <div class="section" id="play-sounds">
-<h3><a class="toc-backref" href="#id56">play_sounds</a><a class="headerlink" href="#play-sounds" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id59">play_sounds</a><a class="headerlink" href="#play-sounds" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
+<p>Plays a notification sound when you receive a personal message or when your
+nickname is mentioned in a chat room.</p>
 <p>Inside the <tt class="docutils literal"><span class="pre">./sounds</span></tt> directory of the Converse.js repo, you&#8217;ll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.</p>
 <p>For now, sound files are looked up by convention, not configuration. So to have
@@ -945,7 +1047,7 @@ it in both formats as <tt class="docutils literal"><span class="pre">http://your
 <p><tt class="docutils literal"><span class="pre">http://yoursite.com</span></tt> should of course be your site&#8217;s URL.</p>
 </div>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id57">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id60">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
@@ -958,7 +1060,7 @@ values as <tt class="docutils literal"><span class="pre">jid</span></tt>, <tt cl
 <p>Additionally, you have to specify <tt class="docutils literal"><span class="pre">bosh_service_url</span></tt>.</p>
 </div>
 <div class="section" id="roster-groups">
-<h3><a class="toc-backref" href="#id58">roster_groups</a><a class="headerlink" href="#roster-groups" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id61">roster_groups</a><a class="headerlink" href="#roster-groups" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, converse.js will show any roster groups you might have
 configured.</p>
@@ -970,7 +1072,7 @@ elsewhere.</p>
 </div>
 </div>
 <div class="section" id="show-controlbox-by-default">
-<h3><a class="toc-backref" href="#id59">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id62">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.</p>
@@ -980,13 +1082,13 @@ the page with class <em>toggle-controlbox</em>.</p>
 page load.</p>
 </div>
 <div class="section" id="show-only-online-users">
-<h3><a class="toc-backref" href="#id60">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id63">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 </div>
 <div class="section" id="storage">
-<h3><a class="toc-backref" href="#id61">storage</a><a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id64">storage</a><a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
 <p>Default: <tt class="docutils literal"><span class="pre">session</span></tt></p>
 <p>Valid options: <tt class="docutils literal"><span class="pre">session</span></tt>, <tt class="docutils literal"><span class="pre">local</span></tt>.</p>
 <p>This option determines the type of <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage">storage</a>
@@ -997,42 +1099,47 @@ privacy perspective a better choice.</p>
 the current tab or window containing a converse.js instance is open. As soon as
 it&#8217;s closed, the data is cleared.</p>
 <p>Data in localStorage on the other hand is kept indefinitely.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since version 0.8.0, the use of local storage is not recommended. The
+statuses (online, away, busy etc.) of your roster contacts are cached in
+the browser storage. If you use local storage, these values are stored for
+multiple sessions, and they will likely become out of sync with your contacts&#8217;
+actual statuses. The session storage doesn&#8217;t have this problem, because
+roster contact statuses will not become out of sync in a single session,
+only across more than one session.</p>
+</div>
 </div>
 <div class="section" id="use-otr-by-default">
-<h3><a class="toc-backref" href="#id62">use_otr_by_default</a><a class="headerlink" href="#use-otr-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id65">use_otr_by_default</a><a class="headerlink" href="#use-otr-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, Converse.js will automatically try to initiate an OTR (off-the-record)
 encrypted chat session every time you open a chat box.</p>
 </div>
 <div class="section" id="use-vcards">
-<h3><a class="toc-backref" href="#id63">use_vcards</a><a class="headerlink" href="#use-vcards" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id66">use_vcards</a><a class="headerlink" href="#use-vcards" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Determines whether the XMPP server will be queried for roster contacts&#8217; VCards
 or not. VCards contain extra personal information such as your fullname and
 avatar image.</p>
 </div>
 <div class="section" id="visible-toolbar-buttons">
-<h3><a class="toc-backref" href="#id64">visible_toolbar_buttons</a><a class="headerlink" href="#visible-toolbar-buttons" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id67">visible_toolbar_buttons</a><a class="headerlink" href="#visible-toolbar-buttons" title="Permalink to this headline">¶</a></h3>
 <p>Default:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-    <span class="s">&#39;emoticons&#39;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-    <span class="s">&#39;call&#39;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
-    <span class="s">&#39;clear&#39;</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">call</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="n">clear</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="n">emoticons</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="n">toggle_participants</span><span class="p">:</span> <span class="n">true</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Allows you to show or hide buttons on the chat boxes&#8217; toolbars.</p>
 <ul>
 <li><dl class="first docutils">
-<dt><em>emoticons</em>:</dt>
-<dd><p class="first last">Enables rendering of emoticons and provides a toolbar button for choosing them.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
 <dt><em>call</em>:</dt>
 <dd><p class="first">Provides a button with a picture of a telephone on it.
-When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.</p>
+When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.:</p>
 <div class="last highlight-python"><div class="highlight"><pre>converse.on(&#39;callButtonClicked&#39;, function(event, data) {
     console.log(&#39;Strophe connection is&#39;, data.connection);
     console.log(&#39;Bare buddy JID is&#39;, data.model.get(&#39;jid&#39;));
@@ -1049,10 +1156,22 @@ When the call button is pressed, it will emit an event that can be used by a thi
 </dd>
 </dl>
 </li>
+<li><dl class="first docutils">
+<dt><em>emoticons</em>:</dt>
+<dd><p class="first last">Enables rendering of emoticons and provides a toolbar button for choosing them.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>toggle_participants:</dt>
+<dd><p class="first last">Shows a button for toggling (i.e. showing/hiding) the list of participants in a chat room.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div>
 <div class="section" id="xhr-custom-status">
-<h3><a class="toc-backref" href="#id65">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id68">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1062,7 +1181,7 @@ When the call button is pressed, it will emit an event that can be used by a thi
 remote server.</p>
 </div>
 <div class="section" id="xhr-custom-status-url">
-<h3><a class="toc-backref" href="#id66">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id69">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -1074,7 +1193,7 @@ message will be made.</p>
 <p>The message itself is sent in the request under the key <tt class="docutils literal"><span class="pre">msg</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id67">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id70">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1091,7 +1210,7 @@ message will be made.</p>
 corresponds to a matched user and needs the keys <tt class="docutils literal"><span class="pre">id</span></tt> and <tt class="docutils literal"><span class="pre">fullname</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search-url">
-<h3><a class="toc-backref" href="#id68">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id71">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -1119,7 +1238,7 @@ The available options are:</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">Converse.js 0.8.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Converse.js 0.8.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
 </div>

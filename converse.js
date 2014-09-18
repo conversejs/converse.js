@@ -219,7 +219,7 @@
         this.forward_messages = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
-        this.keepalive = true;
+        this.keepalive = false;
         this.message_carbons = false;
         this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
         this.play_sounds = false;
@@ -454,13 +454,9 @@
         };
 
         this.showLoginForm = function () {
+            converse._tearDown();
             var view = converse.chatboxviews.get('controlbox');
             view.model.set({connected:false});
-            if (typeof view.loginpanel !== 'undefined' && view.loginpanel.$el.is(':visible')) {
-                view.loginpanel.showLoginButton();
-            } else {
-                view.render();
-            }
         };
 
         this.onConnect = function (status, condition, reconnect) {
@@ -4532,14 +4528,16 @@
         };
 
         this._tearDown = function () {
-            this.features.off().remove();
-            this.otr.destroy();
-            this.chatboxes.off().remove();
-            this.chatboxviews.off().remove();
-            this.controlboxtoggle.off().remove();
-            this.minimized_chats.off().remove();
-            delete this.chatboxes;
-            delete this.features;
+            /* Remove those views which are only allowed with a valid
+             * connection.
+             */
+            if (this.features) {
+                this.features.off().remove();
+            }
+            if (this.minimized_chats) {
+                this.minimized_chats.off().remove();
+            }
+            return this;
         };
 
         this._initialize = function () {
@@ -4549,6 +4547,7 @@
             this.otr = new this.OTR();
             this.initSession();
             this.initConnection();
+            return this;
         };
 
         // Initialization

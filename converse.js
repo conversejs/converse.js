@@ -430,7 +430,7 @@
                         });
                     }
                     if (errback) {
-                        errback(iq);
+                        errback(jid, iq);
                     }
                 }
             );
@@ -453,14 +453,11 @@
             }
         };
 
-        this.showLoginForm = function () {
+        this.renderLoginPanel = function () {
+            converse._tearDown();
             var view = converse.chatboxviews.get('controlbox');
             view.model.set({connected:false});
-            if (typeof view.loginpanel !== 'undefined' && view.loginpanel.$el.is(':visible')) {
-                view.loginpanel.showLoginButton();
-            } else {
-                view.render();
-            }
+            view.renderLoginPanel();
         };
 
         this.onConnect = function (status, condition, reconnect) {
@@ -479,22 +476,25 @@
                 if (converse.auto_reconnect) {
                     converse.reconnect();
                 } else {
-                    converse.showLoginForm();
+                    converse.renderLoginPanel();
                 }
             } else if (status === Strophe.Status.Error) {
-                converse.showLoginForm();
+                converse.renderLoginPanel();
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.showLoginForm();
+                converse.renderLoginPanel();
                 converse.giveFeedback(__('Connection Failed'), 'error');
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.showLoginForm();
+                converse.renderLoginPanel();
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
+                if (!converse.connection.connected) {
+                    converse.renderLoginPanel();
+                }
                 converse.giveFeedback(__('Disconnecting'), 'error');
             }
         };
@@ -1917,8 +1917,8 @@
             initialize: function () {
                 this.$el.insertAfter(converse.controlboxtoggle.$el);
                 this.model.on('change:connected', $.proxy(function (item) {
-                    this.render();
                     if (this.model.get('connected')) {
+                        this.render();
                         this.initRoster();
                         converse.features.off('add', this.featureAdded, this);
                         converse.features.on('add', this.featureAdded, this);
@@ -1963,7 +1963,12 @@
 
             renderLoginPanel: function () {
                 this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
+                var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
+                if (!this.loginpanel) {
+                    this.loginpanel = new converse.LoginPanel(cfg);
+                } else {
+                    this.loginpanel.delegateEvents().initialize(cfg);
+                }
                 this.loginpanel.render();
                 this.initDragResize();
             },
@@ -3540,15 +3545,15 @@
                                         vcard_updated: moment().format()
                                     });
                                 }, this),
-                                $.proxy(function (jid, fullname, img, img_type, url) {
+                                $.proxy(function (jid, iq) {
                                     converse.log("Error while retrieving vcard");
-                                    // XXX: Should vcard_updated be set here as well?
                                     this.add({
                                         jid: bare_jid,
                                         subscription: 'none',
                                         ask: null,
                                         requesting: true,
-                                        fullname: jid
+                                        fullname: bare_jid,
+                                        vcard_updated: moment().format()
                                     });
                                 }, this)
                             );
@@ -4534,14 +4539,16 @@
         };
 
         this._tearDown = function () {
-            this.features.off().remove();
-            this.otr.destroy();
-            this.chatboxes.off().remove();
-            this.chatboxviews.off().remove();
-            this.controlboxtoggle.off().remove();
-            this.minimized_chats.off().remove();
-            delete this.chatboxes;
-            delete this.features;
+            /* Remove those views which are only allowed with a valid
+             * connection.
+             */
+            if (this.features) {
+                this.features.off().remove();
+            }
+            if (this.minimized_chats) {
+                this.minimized_chats.off().remove();
+            }
+            return this;
         };
 
         this._initialize = function () {
@@ -4551,6 +4558,7 @@
             this.otr = new this.OTR();
             this.initSession();
             this.initConnection();
+            return this;
         };
 
         // Initialization

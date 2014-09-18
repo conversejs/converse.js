@@ -219,7 +219,7 @@
         this.forward_messages = false;
         this.hide_muc_server = false;
         this.i18n = locales.en;
-        this.keepalive = true;
+        this.keepalive = false;
         this.message_carbons = false;
         this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
         this.play_sounds = false;
@@ -2251,18 +2251,20 @@
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
                     this.$('div.participants').animate({width: 0}).hide();
-                    this.$('.chat-area').animate({width: '100%'});
+                    this.$('.chat-area').animate({width: '100%'}, $.proxy(function () {
+                        this.scrollDown();
+                    }, this));
                     this.$('form.sendXMPPMessage').animate({width: '100%'});
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
                     this.$('.chat-area').animate({width: '200px'}, $.proxy(function () {
                         this.$('div.participants').css({width: '100px'}).show();
+                        this.scrollDown();
                     }, this));
                     this.$('form.sendXMPPMessage').animate({width: '200px'});
                 }
             },
-
 
             onCommandError: function (stanza) {
                 this.showStatusNotification(__("Error: could not execute the command"), true);

@@ -579,7 +579,6 @@
         };
 
         this.logOut = function () {
-            // TODO render the login form
             converse.chatboxviews.closeAllChatBoxes(false);
             converse.clearSession();
             converse.connection.disconnect();
@@ -1941,10 +1940,10 @@
                  */
                 converse.roster = new converse.RosterContacts();
                 converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.contacts-'+converse.bare_jid));
+                    b64_sha1('converse.contacts-'+converse.jid));
                 var rostergroups = new converse.RosterGroups();
                 rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.roster.groups'+converse.bare_jid));
+                    b64_sha1('converse.roster.groups'+converse.jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 converse.rosterview.render().fetch().update();
                 this.contactspanel.$el.append(converse.rosterview.$el);
@@ -4542,6 +4541,8 @@
             /* Remove those views which are only allowed with a valid
              * connection.
              */
+            converse.roster.remove(); // Removes roster contacts
+            converse.initial_presence_sent = false;
             if (this.features) {
                 this.features.off().remove();
             }

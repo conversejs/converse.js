@@ -430,7 +430,7 @@
                         });
                     }
                     if (errback) {
-                        errback(iq);
+                        errback(jid, iq);
                     }
                 }
             );
@@ -453,10 +453,11 @@
             }
         };
 
-        this.showLoginForm = function () {
+        this.renderLoginPanel = function () {
             converse._tearDown();
             var view = converse.chatboxviews.get('controlbox');
             view.model.set({connected:false});
+            view.renderLoginPanel();
         };
 
         this.onConnect = function (status, condition, reconnect) {
@@ -475,22 +476,25 @@
                 if (converse.auto_reconnect) {
                     converse.reconnect();
                 } else {
-                    converse.showLoginForm();
+                    converse.renderLoginPanel();
                 }
             } else if (status === Strophe.Status.Error) {
-                converse.showLoginForm();
+                converse.renderLoginPanel();
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.showLoginForm();
+                converse.renderLoginPanel();
                 converse.giveFeedback(__('Connection Failed'), 'error');
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.showLoginForm();
+                converse.renderLoginPanel();
                 converse.giveFeedback(__('Authentication Failed'), 'error');
             } else if (status === Strophe.Status.DISCONNECTING) {
+                if (!converse.connection.connected) {
+                    converse.renderLoginPanel();
+                }
                 converse.giveFeedback(__('Disconnecting'), 'error');
             }
         };
@@ -1913,8 +1917,8 @@
             initialize: function () {
                 this.$el.insertAfter(converse.controlboxtoggle.$el);
                 this.model.on('change:connected', $.proxy(function (item) {
-                    this.render();
                     if (this.model.get('connected')) {
+                        this.render();
                         this.initRoster();
                         converse.features.off('add', this.featureAdded, this);
                         converse.features.on('add', this.featureAdded, this);
@@ -1959,7 +1963,12 @@
 
             renderLoginPanel: function () {
                 this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                this.loginpanel = new converse.LoginPanel({'$parent': this.$el.find('.controlbox-panes'), 'model': this});
+                var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
+                if (!this.loginpanel) {
+                    this.loginpanel = new converse.LoginPanel(cfg);
+                } else {
+                    this.loginpanel.delegateEvents().initialize(cfg);
+                }
                 this.loginpanel.render();
                 this.initDragResize();
             },
@@ -3534,15 +3543,15 @@
                                         vcard_updated: moment().format()
                                     });
                                 }, this),
-                                $.proxy(function (jid, fullname, img, img_type, url) {
+                                $.proxy(function (jid, iq) {
                                     converse.log("Error while retrieving vcard");
-                                    // XXX: Should vcard_updated be set here as well?
                                     this.add({
                                         jid: bare_jid,
                                         subscription: 'none',
                                         ask: null,
                                         requesting: true,
-                                        fullname: jid
+                                        fullname: bare_jid,
+                                        vcard_updated: moment().format()
                                     });
                                 }, this)
                             );

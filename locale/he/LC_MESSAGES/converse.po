@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 0.7.0\n"
+"Project-Id-Version: Converse.js 0.8.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-08-25 14:37+0200\n"
 "PO-Revision-Date: 2014-02-21 06:07+0200\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: converse.js:283
 msgid "unencrypted"
@@ -60,9 +61,8 @@ msgid "This contact is away"
 msgstr "איש קשר זה הינו נעדר"
 
 #: converse.js:296
-#, fuzzy
 msgid "Click to hide these contacts"
-msgstr "לחץ כדי להסיר את איש קשר זה"
+msgstr "לחץ כדי להסתיר את אנשי קשר אלה"
 
 #: converse.js:298
 msgid "My contacts"
@@ -78,7 +78,7 @@ msgstr "בקשות איש קשר"
 
 #: converse.js:301
 msgid "Ungrouped"
-msgstr ""
+msgstr "ללא קבוצה"
 
 #: converse.js:303
 msgid "Contacts"
@@ -86,10 +86,9 @@ msgstr "אנשי קשר"
 
 #: converse.js:304
 msgid "Groups"
-msgstr ""
+msgstr "קבוצות"
 
 #: converse.js:386
-#, fuzzy
 msgid "Reconnecting"
 msgstr "כעת מתחבר"
 
@@ -131,11 +130,11 @@ msgstr "בסס מחדש ישיבה מוצפנת"
 
 #: converse.js:721
 msgid "Generating private key."
-msgstr ""
+msgstr "כעת מפיק מפתח פרטי."
 
 #: converse.js:722
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "הדפדפן שלך עשוי שלא להגיב."
 
 #: converse.js:757
 msgid ""
@@ -158,16 +157,15 @@ msgstr "לא היתה אפשרות לאמת את זהות משתמש זה."
 
 #: converse.js:805
 msgid "Exchanging private key with buddy."
-msgstr ""
+msgstr "ממיר מפתח פרטי עם איש קשר."
 
 #: converse.js:946
 msgid "Personal message"
 msgstr "הודעה אישית"
 
 #: converse.js:976
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "אינך ברשימת החברים של חדר זה"
+msgstr "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"
 
 #: converse.js:997
 msgid "me"
@@ -175,11 +173,11 @@ msgstr "אני"
 
 #: converse.js:1045
 msgid "is typing"
-msgstr ""
+msgstr "מקליד/ה כעת"
 
 #: converse.js:1048
 msgid "has stopped typing"
-msgstr ""
+msgstr "חדל/ה מלהקליד"
 
 #: converse.js:1090 converse.js:1987
 msgid "Show this menu"
@@ -195,7 +193,7 @@ msgstr "הסר הודעות"
 
 #: converse.js:1176
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך תיבת שיחה זה?"
 
 #: converse.js:1211
 msgid "Your message could not be sent"
@@ -294,7 +292,7 @@ msgstr "ההודעות שלך מוצפנות כעת והאישיות שכנגד 
 msgid ""
 "Your buddy has closed their end of the private session, you should do the "
 "same"
-msgstr "האישיות שכנגד סגרה את קצה הישיבה הפרטית שלה, עליך לעשות את אותו הדבר."
+msgstr "האישיות שכנגד סגרה את קצה הישיבה הפרטית שלה, עליך לעשות את אותו הדבר"
 
 #: converse.js:1415
 msgid "End encrypted conversation"
@@ -582,8 +580,8 @@ msgstr "הוסרת מתוך חדר זה משום שינוי שיוך"
 
 #: converse.js:2229
 msgid ""
-"You have been removed from this room because the room has changed to members-"
-"only and you're not a member"
+"You have been removed from this room because the room has changed to "
+"members-only and you're not a member"
 msgstr "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"
 
 #: converse.js:2230
@@ -642,37 +640,32 @@ msgid "This user can NOT send messages in this room"
 msgstr "משתמש זה ﬥﬡ מסוגל לשלוח הודעות בתוך חדר זה"
 
 #: converse.js:2682
-#, fuzzy
 msgid "Click to restore this chat"
-msgstr "לחץ כדי להסיר את איש קשר זה"
+msgstr "לחץ כדי לשחזר את שיחה זו"
 
 #: converse.js:2820
 msgid "Minimized"
-msgstr ""
+msgstr "ממוזער"
 
 #: converse.js:2894
-#, fuzzy
 msgid "Are you sure you want to remove this contact?"
-msgstr "לחץ כדי להסיר את איש קשר זה"
+msgstr "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
 
 #: converse.js:2917
-#, fuzzy
 msgid "Are you sure you want to decline this contact request?"
-msgstr "לחץ כדי להסיר את איש קשר זה"
+msgstr "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
 
 #: converse.js:2961 converse.js:2979
 msgid "Click to remove this contact"
 msgstr "לחץ כדי להסיר את איש קשר זה"
 
 #: converse.js:2968
-#, fuzzy
 msgid "Click to accept this contact request"
-msgstr "לחץ כדי להסיר את איש קשר זה"
+msgstr "לחץ כדי לקבל את בקשת איש קשר זה"
 
 #: converse.js:2969
-#, fuzzy
 msgid "Click to decline this contact request"
-msgstr "לחץ כדי להסיר את איש קשר זה"
+msgstr "לחץ כדי לסרב את בקשת איש קשר זה"
 
 #: converse.js:2978
 msgid "Click to chat with this contact"
@@ -680,7 +673,7 @@ msgstr "לחץ כדי לשוחח עם איש קשר זה"
 
 #: converse.js:3474
 msgid "Type to filter"
-msgstr ""
+msgstr "הקלד כדי לסנן"
 
 #: converse.js:3814
 msgid "Custom status"
@@ -735,9 +728,8 @@ msgstr "התחברות"
 
 #: converse.js:4051
 msgid "Toggle chat"
-msgstr ""
+msgstr "הפעל שיח"
 
-#, fuzzy
 #~ msgid "Decline"
 #~ msgstr "מקוון"
 

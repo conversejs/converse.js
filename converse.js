@@ -1900,9 +1900,6 @@
                     'chatroom': true,
                     'box_id' : b64_sha1(jid)
                 });
-                if (!chatroom.get('connected')) {
-                    converse.chatboxviews.get(jid).connect(null);
-                }
             }
         });
 

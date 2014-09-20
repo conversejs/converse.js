@@ -19,7 +19,7 @@
     "strophe.roster": "https://raw.github.com/strophe/strophejs-plugins/b1f364eb6e854ffe844c57add38e885cfeb9b498/roster/strophe.roster.js",
     "strophe.vcard": "https://raw.github.com/strophe/strophejs-plugins/f5c9e16b463610d501591452cded0359f53aae48/vcard/strophe.vcard.js",
     "strophe.disco": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/disco/strophe.disco.js",
-    "strophe.muc": "https://raw.githubusercontent.com/strophe/strophejs-plugins/84e703f9ac8329a04c1dcbfd32ea8c753783a912/muc/strophe.muc.js",
+    "strophe.muc": "https://raw.githubusercontent.com/strophe/strophejs-plugins/8056cbca4dcd69700c44e1e3341a9ce387a6af0c/muc/strophe.muc.js",
     "otr": "0.2.12",
     "crypto-js-evanvosberg": "~3.1.2",
     "almond": "~0.2.9",

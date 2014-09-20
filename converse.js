@@ -2211,6 +2211,7 @@
                 this.render();
                 this.occupantsview.model.fetch({add:true});
                 this.connect(null);
+                converse.emit('chatRoomOpened', this);
 
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
                 this.model.messages.fetch({add: true});
@@ -2224,12 +2225,10 @@
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
                         .html(converse.templates.chatroom(this.model.toJSON()));
-
                 this.renderChatArea();
                 setTimeout(function () {
                     converse.refreshWebkit();
                 }, 50);
-                converse.emit('chatRoomOpened', this);
                 return this;
             },
 
@@ -2342,7 +2341,7 @@
             connect: function (password) {
                 if (_.has(converse.connection.muc.rooms, this.model.get('jid'))) {
                     // If the room exists, it already has event listeners, so we
-                    // doing add them again.
+                    // don't add them again.
                     converse.connection.muc.join(
                         this.model.get('jid'), this.model.get('nick'), null, null, null, password);
                 } else {
@@ -2476,9 +2475,8 @@
                 if (this.$el.find('div.chatroom-form-container').length) {
                     return;
                 }
-                this.$el.find('.chat-area').hide();
-                this.$el.find('.participants').hide();
-                this.$el.find('.chat-body').append(
+                this.$('.chat-body').children().hide();
+                this.$('.chat-body').append(
                     $('<div class="chatroom-form-container">'+
                         '<form class="chatroom-form">'+
                         '<span class="spinner centered"/>'+
@@ -2493,29 +2491,27 @@
             submitPassword: function (ev) {
                 ev.preventDefault();
                 var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-                this.$el.find('.chatroom-form-container').replaceWith(
-                    '<span class="spinner centered"/>');
+                this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
                 this.connect(password);
             },
 
             renderPasswordForm: function () {
-                this.$el.find('span.centered.spinner').remove();
-                this.$el.find('.chat-body').html(
-                    $('<div class="chatroom-form-container">'+
-                        '<form class="chatroom-form">'+
-                            '<legend>'+__('This chatroom requires a password')+'</legend>' +
-                            '<label>'+__('Password: ')+'<input type="password" name="password"/></label>' +
-                            '<input type="submit" value="'+__('Submit')+'/>' +
-                        '</form>'+
-                    '</div>'));
-                this.$el.find('.chatroom-form').on('submit', $.proxy(this.submitPassword, this));
+                this.$('.chat-body').children().hide();
+                this.$('span.centered.spinner').remove();
+                this.$('.chat-body').append(
+                    converse.templates.chatroom_password_form({
+                        heading: __('This chatroom requires a password'),
+                        label_password: __('Password: '),
+                        label_submit: __('Submit')
+                    }));
+                this.$('.chatroom-form').on('submit', $.proxy(this.submitPassword, this));
             },
 
             showDisconnectMessage: function (msg) {
-                this.$el.find('.chat-area').remove();
-                this.$el.find('.participants').remove();
-                this.$el.find('span.centered.spinner').remove();
-                this.$el.find('.chat-body').append($('<p>'+msg+'</p>'));
+                this.$('.chat-area').hide();
+                this.$('.participants').hide();
+                this.$('span.centered.spinner').remove();
+                this.$('.chat-body').append($('<p>'+msg+'</p>'));
             },
 
             /* http://xmpp.org/extensions/xep-0045.html
@@ -2684,7 +2680,11 @@
                     this.showErrorMessage($presence.find('error'), room);
                 } else {
                     is_self = ($presence.find("status[code='110']").length) || ($presence.attr('from') == room.name+'/'+Strophe.escapeNode(room.nick));
-                    this.model.set('connected', true);
+                    if (!this.model.get('conneced')) {
+                        this.model.set('connected', true);
+                        this.$('span.centered.spinner').remove();
+                        this.$el.find('.chat-body').children().show();
+                    }
                     this.showStatusMessages($presence, is_self);
                 }
                 return true;

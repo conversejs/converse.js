@@ -903,6 +903,7 @@ dl.add-converse-contact {
   margin-bottom: 5px;
 }
 #conversejs .chatroom-form label {
+  height: 30px;
   font-weight: bold;
   display: block;
   clear: both;

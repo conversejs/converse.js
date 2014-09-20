@@ -259,10 +259,10 @@
 
                 var view = this.chatboxviews.get('lounge@localhost');
                 view.onChatRoomPresence(presence, {nick: 'dummy', name: 'lounge@localhost'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.length).toBe(0); // There shouldn't be a chat content area anymore
-                var $chat_body = view.$el.find('.chat-body');
-                expect($chat_body.html().trim()).toBe('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>');
+                expect(view.$('.chat-area').is(':visible')).toBeFalsy();
+                expect(view.$('.participants').is(':visible')).toBeFalsy();
+                var $chat_body = view.$('.chat-body');
+                expect($chat_body.html().trim().indexOf('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>')).not.toBe(-1);
             }, converse));
 
             it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {

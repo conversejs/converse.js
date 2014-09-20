@@ -31,7 +31,7 @@
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
-    
+
     // Configuration of underscore templates (this config is distict to the
     // config of requirejs-tpl in main.js). This one is for normal inline
     // templates.
@@ -494,8 +494,9 @@
             } else if (status === Strophe.Status.DISCONNECTING) {
                 if (!converse.connection.connected) {
                     converse.renderLoginPanel();
+                } else {
+                    converse.giveFeedback(__('Disconnecting'), 'error');
                 }
-                converse.giveFeedback(__('Disconnecting'), 'error');
             }
         };
 
@@ -582,6 +583,7 @@
             converse.chatboxviews.closeAllChatBoxes(false);
             converse.clearSession();
             converse.connection.disconnect();
+            converse.connection.reset();
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -669,6 +671,7 @@
             // close them now.
             this.chatboxviews.closeAllChatBoxes();
             this.setSession();
+            this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.minimized_chats = new converse.MinimizedChats({model: this.chatboxes});
@@ -1940,13 +1943,13 @@
                  */
                 converse.roster = new converse.RosterContacts();
                 converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.contacts-'+converse.jid));
+                    b64_sha1('converse.contacts-'+converse.bare_jid));
                 var rostergroups = new converse.RosterGroups();
                 rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.roster.groups'+converse.jid));
+                    b64_sha1('converse.roster.groups'+converse.bare_jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
-                converse.rosterview.render().fetch().update();
                 this.contactspanel.$el.append(converse.rosterview.$el);
+                converse.rosterview.render().fetch().update();
                 converse.connection.roster.get(function () {});
             },
 
@@ -2000,6 +2003,9 @@
             show: function () {
                 converse.controlboxtoggle.hide($.proxy(function () {
                     this.$el.show('fast', function () {
+                        if (converse.rosterview) {
+                            converse.rosterview.update();
+                        }
                         converse.refreshWebkit();
                     }.bind(this));
                     converse.emit('controlBoxOpened', this);
@@ -3083,6 +3089,14 @@
                 this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
             },
 
+            tearDown: function () {
+                this.model.off("add", this.onChanged);
+                this.model.off("destroy", this.removeChat);
+                this.model.off("change:minimized", this.onChanged);
+                this.model.off('change:num_unread', this.updateUnreadMessagesCounter);
+                return this;
+            },
+
             initToggle: function () {
                 this.toggleview = new converse.MinimizedChatsToggleView({
                     model: new converse.MinimizedChatsToggle()
@@ -3827,7 +3841,6 @@
             },
 
             update: function () {
-                // XXX: Is this still being used/valid?
                 var $count = $('#online-count');
                 $count.text('('+converse.roster.getNumOnlineContacts()+')');
                 if (!$count.is(':visible')) {
@@ -3908,6 +3921,9 @@
             },
 
             showHideFilter: function () {
+                if (!this.$el.is(':visible')) {
+                    return;
+                }
                 var $filter = this.$('.roster-filter');
                 var $type  = this.$('.filter-type');
                 var visible = $filter.is(':visible');
@@ -4541,13 +4557,20 @@
             /* Remove those views which are only allowed with a valid
              * connection.
              */
-            converse.roster.remove(); // Removes roster contacts
-            converse.initial_presence_sent = false;
+            this.initial_presence_sent = false;
+            this.roster.off().reset(); // Removes roster contacts
+            this.connection.roster._callbacks = []; // Remove all Roster handlers (e.g. rosterHandler)
+            this.rosterview.model.off().reset(); // Removes roster groups
+            this.rosterview.undelegateEvents().remove();
+            this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             if (this.features) {
-                this.features.off().remove();
+                this.features.reset();
             }
             if (this.minimized_chats) {
-                this.minimized_chats.off().remove();
+                this.minimized_chats.undelegateEvents().model.reset();
+                this.minimized_chats.removeAll(); // Remove sub-views
+                this.minimized_chats.tearDown().remove(); // Remove overview
+                delete this.minimized_chats;
             }
             return this;
         };

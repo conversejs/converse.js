@@ -8,12 +8,19 @@
     <meta name="description" content="Converse.js: A free chat client for your website" />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
+    <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <script src="components/requirejs/require.js"></script>
-    <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.min.css" />
+    <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
+    <![if gte IE 9]>
+        <script src="builds/converse.website.min.js"></script>
+    <![endif]>
+    <!--[if lt IE 9]>
+        <script src="builds/converse.website-no-otr.min.js"></script>
+    <![endif]-->
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -87,7 +94,7 @@
                 </div>
             </div>
         </div>
-    </section
+    </section>
 
     <section id="about" class="container content-section text-center">
         <div class="row">
@@ -225,23 +232,21 @@
 <script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
 
 <script>
-    require(['main.js'], function () {
-        // Configuration loaded, so safe to make other require calls.
-        require(['converse'], function (converse) {
-            converse.initialize({
-                allow_otr: true,
-                auto_list_rooms: false,
-                auto_subscribe: false,
-                bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
-                hide_muc_server: false,
-                i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
-                keepalive: true,
-                play_sounds: true,
-                prebind: false,
-                show_controlbox_by_default: true,
-                debug: true,
-                roster_groups: true
-            });
+    // Configuration loaded, so safe to make other require calls.
+    require(['converse'], function (converse) {
+        converse.initialize({
+            allow_otr: true,
+            auto_list_rooms: false,
+            auto_subscribe: false,
+            bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
+            hide_muc_server: false,
+            i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
+            keepalive: true,
+            play_sounds: true,
+            prebind: false,
+            show_controlbox_by_default: true,
+            debug: true,
+            roster_groups: true
         });
     });
 </script>

@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('fonts/icomoon.eot?-5hv4s0');
-	src:url('fonts/icomoon.eot?#iefix-5hv4s0') format('embedded-opentype'),
-		url('fonts/icomoon.woff?-5hv4s0') format('woff'),
-		url('fonts/icomoon.ttf?-5hv4s0') format('truetype'),
-		url('fonts/icomoon.svg?-5hv4s0#icomoon') format('svg');
+	src:url('fonts/icomoon.eot?-mnoxh0');
+	src:url('fonts/icomoon.eot?#iefix-mnoxh0') format('embedded-opentype'),
+		url('fonts/icomoon.woff?-mnoxh0') format('woff'),
+		url('fonts/icomoon.ttf?-mnoxh0') format('truetype'),
+		url('fonts/icomoon.svg?-mnoxh0#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -23,270 +23,276 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.icon-closed:before {
+#conversejs .icon-conversejs:before {
+	content: "\e600";
+}
+#conversejs .icon-closed:before {
 	content: "\25ba";
 }
-.icon-opened:before {
+#conversejs .icon-opened:before {
 	content: "\25bc";
 }
-.icon-checkmark:before {
+#conversejs .icon-checkmark:before {
 	content: "\2713";
 }
-.icon-home:before {
+#conversejs .icon-home:before {
 	content: "\e000";
 }
-.icon-pencil:before {
+#conversejs .icon-pencil:before {
 	content: "\270e";
 }
-.icon-camera:before {
+#conversejs .icon-camera:before {
 	content: "\e003";
 }
-.icon-camera2:before {
+#conversejs .icon-camera-2:before {
 	content: "\2616";
 }
-.icon-play22:before {
+#conversejs .icon-play:before {
 	content: "\25d9";
 }
-.icon-music:before {
+#conversejs .icon-music:before {
 	content: "\266b";
 }
-.icon-headphones:before {
+#conversejs .icon-headphones:before {
 	content: "\266c";
 }
-.icon-phone:before {
+#conversejs .icon-phone:before {
 	content: "\260f";
 }
-.icon-phone-hang-up:before {
+#conversejs .icon-phone-hang-up:before {
 	content: "\260e";
 }
-.icon-address-book:before {
+#conversejs .icon-address-book:before {
 	content: "\270f";
 }
-.icon-notebook:before {
+#conversejs .icon-notebook:before {
 	content: "\2710";
 }
-.icon-envelop:before {
+#conversejs .icon-envelop:before {
 	content: "\2709";
 }
-.icon-pushpin:before {
+#conversejs .icon-pushpin:before {
 	content: "\e012";
 }
-.icon-bubble:before {
+#conversejs .icon-online:before {
 	content: "\25fc";
 }
-.icon-bubble2:before {
+#conversejs .icon-away:before {
 	content: "\25fb";
 }
-.icon-bubbles:before {
+#conversejs .icon-bubbles:before {
 	content: "\e015";
 }
-.icon-bubbles2:before {
+#conversejs .icon-bubbles2:before {
 	content: "\e016";
 }
-.icon-bubbles3:before {
+#conversejs .icon-bubbles3:before {
 	content: "\e017";
 }
-.icon-user:before {
+#conversejs .icon-user:before {
 	content: "\e01a";
 }
-.icon-hide-users:before {
+#conversejs .icon-hide-users:before {
 	content: "\e01c";
 }
-.icon-show-users:before {
+#conversejs .icon-show-users:before {
 	content: "\e01e";
 }
-.icon-users:before {
+#conversejs .icon-users:before {
 	content: "\e01b";
 }
-.icon-quotes-left:before {
+#conversejs .icon-quotes-left:before {
 	content: "\e01d";
 }
-.icon-spinner:before {
+#conversejs .icon-spinner:before {
 	content: "\231b";
 }
-.icon-search:before {
+#conversejs .icon-search:before {
 	content: "\e021";
 }
-.icon-cogs:before {
+#conversejs .icon-cogs:before {
 	content: "\e022";
 }
-.icon-wrench:before {
+#conversejs .icon-wrench:before {
 	content: "\e024";
 }
-.icon-unlocked:before {
+#conversejs .icon-unlocked:before {
 	content: "\e025";
 }
-.icon-lock:before {
+#conversejs .icon-lock:before {
 	content: "\e026";
 }
-.icon-lock2:before {
+#conversejs .icon-lock-2:before {
 	content: "\e027";
 }
-.icon-key:before {
+#conversejs .icon-key:before {
 	content: "\e028";
 }
-.icon-key2:before {
+#conversejs .icon-key-2:before {
 	content: "\e029";
 }
-.icon-zoomout:before {
+#conversejs .icon-zoomout:before {
 	content: "\e02a";
 }
-.icon-zoomin:before {
+#conversejs .icon-zoomin:before {
 	content: "\e02b";
 }
-.icon-cog:before {
+#conversejs .icon-cog:before {
 	content: "\e02f";
 }
-.icon-remove:before {
+#conversejs .icon-remove:before {
 	content: "\e02d";
 }
-.icon-eye:before {
+#conversejs .icon-eye:before {
 	content: "\e030";
 }
-.icon-eye-blocked:before {
+#conversejs .icon-eye-blocked:before {
 	content: "\e031";
 }
-.icon-attachment:before {
+#conversejs .icon-attachment:before {
 	content: "\e032";
 }
-.icon-globe:before {
+#conversejs .icon-globe:before {
 	content: "\e033";
 }
-.icon-heart:before {
+#conversejs .icon-heart:before {
 	content: "\2764";
 }
-.icon-happy:before {
+#conversejs .icon-happy:before {
 	content: "\263b";
 }
-.icon-thumbs-up:before {
+#conversejs .icon-thumbs-up:before {
 	content: "\261d";
 }
-.icon-smiley:before {
+#conversejs .icon-smiley:before {
 	content: "\263a";
 }
-.icon-tongue:before {
+#conversejs .icon-tongue:before {
 	content: "\e038";
 }
-.icon-sad:before {
+#conversejs .icon-sad:before {
 	content: "\2639";
 }
-.icon-wink:before {
+#conversejs .icon-wink:before {
 	content: "\e03a";
 }
-.icon-wondering:before {
+#conversejs .icon-wondering:before {
 	content: "\2369";
 }
-.icon-confused:before {
+#conversejs .icon-confused:before {
 	content: "\2368";
 }
-.icon-shocked:before {
+#conversejs .icon-shocked:before {
 	content: "\2364";
 }
-.icon-evil:before {
+#conversejs .icon-evil:before {
 	content: "\261f";
 }
-.icon-angry:before {
+#conversejs .icon-angry:before {
 	content: "\e03f";
 }
-.icon-cool:before {
+#conversejs .icon-cool:before {
 	content: "\e040";
 }
-.icon-grin:before {
+#conversejs .icon-grin:before {
 	content: "\e041";
 }
-.icon-info:before {
+#conversejs .icon-info:before {
 	content: "\2360";
 }
-.icon-notification:before {
+#conversejs .icon-notification:before {
 	content: "\e01f";
 }
-.icon-warning:before {
+#conversejs .icon-warning:before {
 	content: "\26a0";
 }
-.icon-spell-check:before {
+#conversejs .icon-spell-check:before {
 	content: "\e045";
 }
-.icon-volume-high:before {
+#conversejs .icon-volume-high:before {
 	content: "\e046";
 }
-.icon-volume-medium:before {
+#conversejs .icon-volume-medium:before {
 	content: "\e047";
 }
-.icon-volume-low:before {
+#conversejs .icon-volume-low:before {
 	content: "\e048";
 }
-.icon-volume-mute:before {
+#conversejs .icon-volume-mute:before {
 	content: "\e049";
 }
-.icon-volume-mute2:before {
+#conversejs .icon-volume-mute2:before {
 	content: "\e04a";
 }
-.icon-volume-decrease:before {
+#conversejs .icon-volume-decrease:before {
 	content: "\e04b";
 }
-.icon-volume-increase:before {
+#conversejs .icon-volume-increase:before {
 	content: "\e04c";
 }
-.icon-bold:before {
+#conversejs .icon-bold:before {
 	content: "\e04d";
 }
-.icon-underline:before {
+#conversejs .icon-underline:before {
 	content: "\e04e";
 }
-.icon-italic:before {
+#conversejs .icon-italic:before {
 	content: "\e04f";
 }
-.icon-strikethrough:before {
+#conversejs .icon-strikethrough:before {
 	content: "\e050";
 }
-.icon-newtab:before {
+#conversejs .icon-newtab:before {
 	content: "\e053";
 }
-.icon-youtube:before {
+#conversejs .icon-youtube:before {
 	content: "\e055";
 }
-.icon-close:before {
+#conversejs .icon-close:before {
 	content: "\2715";
 }
-.icon-blocked:before {
+#conversejs .icon-blocked:before {
 	content: "\2718";
 }
-.icon-cancel-circle:before {
+#conversejs .icon-cancel-circle:before {
 	content: "\e058";
 }
-.icon-minus:before {
+#conversejs .icon-minus:before {
 	content: "\e05a";
 }
-.icon-plus:before {
+#conversejs .icon-plus:before {
 	content: "\271a";
 }
-.icon-checkbox-checked:before {
+#conversejs .icon-checkbox-checked:before {
 	content: "\2611";
 }
-.icon-checkbox-unchecked:before {
+#conversejs .icon-checkbox-unchecked:before {
 	content: "\2b27";
 }
-.icon-checkbox-partial:before {
+#conversejs .icon-checkbox-partial:before {
 	content: "\2b28";
 }
-.icon-radio-checked:before {
+#conversejs .icon-radio-checked:before {
 	content: "\2b26";
 }
-.icon-radio-unchecked:before {
+#conversejs .icon-radio-unchecked:before {
 	content: "\2b25";
 }
-.icon-info2:before {
+#conversejs .icon-room-info:before {
 	content: "\e059";
 }
-.icon-newspaper:before {
+#conversejs .icon-newspaper:before {
 	content: "\e001";
 }
-.icon-image:before {
+#conversejs .icon-image:before {
 	content: "\2b14";
 }
-.icon-offline:before {
+#conversejs .icon-offline:before {
 	content: "\e002";
 }
-.icon-busy:before {
+#conversejs .icon-busy:before {
 	content: "\e004";
+}
+#conversejs .icon-exit:before {
+	content: "\e601";
 }

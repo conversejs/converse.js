@@ -721,8 +721,8 @@ Converse.js emits events to which you can subscribe from your own Javascript.
 
 Concerning events, the following methods are available:
 
-Event Methods
-=============
+Event API Methods
+=================
 
 * **on(eventName, callback)**:
 
@@ -809,6 +809,95 @@ Here are the different events that are emitted:
 +----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 
 =============
+Developer API
+=============
+
+.. Note :: See also the `Event API Methods`_, not listed here.
+
+initialize
+==========
+
+Initializes converse.js. This method must always be called when using
+converse.js.
+
+The `initialize` method takes a map (also called a hash or dictionary) of
+`configuration variables`_.
+
+Example::
+
+    converse.initialize({
+            allow_otr: true,
+            auto_list_rooms: false,
+            auto_subscribe: false,
+            bosh_service_url: 'https://bind.example.com',
+            hide_muc_server: false,
+            i18n: locales['en'],
+            keepalive: true,
+            play_sounds: true,
+            prebind: false,
+            show_controlbox_by_default: true,
+            debug: false,
+            roster_groups: true
+        });
+
+
+getBuddy
+========
+
+Returns a map of attributes for a given buddy (i.e. roster contact), specified
+by JID (Jabber ID).
+
+Example::
+
+    converse.getBuddy('buddy@example.com')
+
+The map of attributes:
+
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| Attribute      |                                                                                                                                      |
++================+======================================================================================================================================+
+| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                                         |          
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| fullname       | The person's full name.                                                                                                              |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| jid            | The person's Jabber/XMPP username.                                                                                                   |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| requesting     | If true, then this person is asking to be our chat buddy.                                                                            |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| subscription   | The subscription state between the current user and this chat buddy. Can be `none`, `to`, `from` or `both`.                          |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| id             | A unique id, same as the jid.                                                                                                        |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| chat_status    | The person's chat status. Can be `online`, `offline`, `busy`, `xa` (extended away) or `away`.                                        |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| user_id        | The user id part of the JID (the part before the `@`).                                                                               |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| resources      | The known resources for this chat buddy. Each resource denotes a separate and connected chat client.                                 |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| groups         | The roster groups in which this chat buddy was placed.                                                                               |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| status         | Their human readable custom status message.                                                                                          |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| image_type     | The image's file type.                                                                                                               |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| image          | The Base64 encoded image data.                                                                                                       |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| url            | The buddy's website URL, as specified in their VCard data.                                                                           |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+
+getRID
+======
+
+Returns the current RID (request ID) value.
+
+getSID
+======
+
+Returns the current SID (Session ID) value.
+
+=============
 Configuration
 =============
 
@@ -828,6 +917,9 @@ all the available configuration settings.
 After you have configured *Converse.js*, you'll have to regenerate the minified
 JS file so that it will include the new settings. Please refer to the
 `Minification`_ section for more info on how to do this.
+
+
+
 
 Configuration variables
 =======================

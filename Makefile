@@ -18,6 +18,7 @@ all: dev
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  dev        to set up the development environment"
+	@echo "  build      create minified builds containing converse.js and all its dependencies"
 	@echo "  gettext    to make PO message catalogs of the documentation"
 	@echo "  html       to make standalone HTML files of the documentation"
 	@echo "  pot        to generate a gettext POT file to be used for translations"
@@ -90,6 +91,7 @@ css::
 	./node_modules/.bin/lessc less/converse.less > css/converse.css
 
 build::
+	./node_modules/.bin/grunt jst
 	./node_modules/.bin/grunt minify
 
 ########################################################################

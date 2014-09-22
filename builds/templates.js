@@ -97,7 +97,7 @@ __p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
  } ;
 __p += '\n        <textarea type="text" class="chat-textarea" \n            placeholder="' +
 ((__t = (label_message)) == null ? '' : __t) +
-'"/>\n    </form>\n</div>\n<div class="participants">\n    <ul class="participant-list"></ul>\n</div>\n';
+'"/>\n    </form>\n</div>\n';
 
 }
 return __p
@@ -153,6 +153,36 @@ __p += '>\n    <div class="dragresize dragresize-tm"></div>\n    <div class="cha
 return __p
 };
 
+this["JST"]["chatroom_password_form"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="chatroom-form">\n        <legend>' +
+((__t = (heading)) == null ? '' : __t) +
+'</legend>\n        <label>' +
+((__t = (label_password)) == null ? '' : __t) +
+'<input type="password" name="password"/></label>\n        <input type="submit" value="' +
+((__t = (label_submit)) == null ? '' : __t) +
+'"/>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
+this["JST"]["chatroom_sidebar"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<!-- <div class="participants"> -->\n<form class="room-invite">\n    <input class="invited-contact" placeholder="' +
+((__t = (label_invitation)) == null ? '' : __t) +
+'" type="text"/>\n</form>\n<label>' +
+((__t = (label_occupants)) == null ? '' : __t) +
+':</label>\n<ul class="participant-list"></ul>\n<!-- </div> -->\n';
+
+}
+return __p
+};
+
 this["JST"]["chatrooms_tab"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -185,21 +215,10 @@ __p += '<dl id="target" class="dropdown">\n    <dt id="fancy-xmpp-status-select"
 return __p
 };
 
-this["JST"]["contacts"] = function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<dt id="xmpp-contacts">' +
-((__t = (label_contacts)) == null ? '' : __t) +
-'</dt>\n';
-
-}
-return __p
-};
-
 this["JST"]["contacts_panel"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<form class="set-xmpp-status" action="" method="post">\n    <span id="xmpp-status-holder">\n        <select id="select-xmpp-status" style="display:none">\n            <option value="online">' +
 ((__t = (label_online)) == null ? '' : __t) +
@@ -209,7 +228,13 @@ __p += '<form class="set-xmpp-status" action="" method="post">\n    <span id="xm
 ((__t = (label_away)) == null ? '' : __t) +
 '</option>\n            <option value="offline">' +
 ((__t = (label_offline)) == null ? '' : __t) +
-'</option>\n        </select>\n    </span>\n</form>\n';
+'</option>\n            ';
+ if (allow_logout)  { ;
+__p += '\n            <option value="logout">' +
+((__t = (label_logout)) == null ? '' : __t) +
+'</option>\n            ';
+ } ;
+__p += '\n        </select>\n    </span>\n</form>\n';
 
 }
 return __p
@@ -317,6 +342,22 @@ __p += '<label>' +
 return __p
 };
 
+this["JST"]["group_header"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<a href="#" class="group-toggle icon-' +
+((__t = (toggle_state)) == null ? '' : __t) +
+'" title="' +
+((__t = (desc_group_toggle)) == null ? '' : __t) +
+'">' +
+((__t = (label_group)) == null ? '' : __t) +
+'</a>\n';
+
+}
+return __p
+};
+
 this["JST"]["info"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -333,13 +374,13 @@ this["JST"]["login_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<form id="converse-login">\n    <label>' +
+__p += '<form id="converse-login" method="post">\n    <label>' +
 ((__t = (label_username)) == null ? '' : __t) +
-'</label>\n    <input type="username" name="jid">\n    <label>' +
+'</label>\n    <input type="username" name="jid" placeholder="Username">\n    <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
-'</label>\n    <input type="password" name="password">\n    <input class="login-submit" type="submit" value="' +
+'</label>\n    <input type="password" name="password" placeholder="Password">\n    <input class="login-submit" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
-'">\n</form">\n';
+'">\n    <span class="conn-feedback"></span>\n</form">\n';
 
 }
 return __p
@@ -428,7 +469,7 @@ this["JST"]["pending_contact"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span>' +
+__p += '<span class="pending-contact-name">' +
 ((__t = (fullname)) == null ? '' : __t) +
 '</span> <a class="remove-xmpp-contact icon-remove" title="' +
 ((__t = (desc_remove)) == null ? '' : __t) +
@@ -442,9 +483,13 @@ this["JST"]["pending_contacts"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<dt id="pending-xmpp-contacts">' +
+__p += '<dt id="pending-xmpp-contacts"><a href="#" class="group-toggle icon-' +
+((__t = (toggle_state)) == null ? '' : __t) +
+'" title="' +
+((__t = (desc_group_toggle)) == null ? '' : __t) +
+'">' +
 ((__t = (label_pending_contacts)) == null ? '' : __t) +
-'</dt>\n';
+'</a></dt>\n';
 
 }
 return __p
@@ -454,13 +499,13 @@ this["JST"]["requesting_contact"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div>' +
+__p += '<span class="req-contact-name">' +
 ((__t = (fullname)) == null ? '' : __t) +
-'</div>\n<button type="button" class="accept-xmpp-request">' +
-((__t = (label_accept)) == null ? '' : __t) +
-'</button>\n<button type="button" class="decline-xmpp-request">' +
-((__t = (label_decline)) == null ? '' : __t) +
-'</button>\n';
+'</span>\n<span class="request-actions">\n    <a class="accept-xmpp-request icon-checkmark" title="' +
+((__t = (desc_accept)) == null ? '' : __t) +
+'" href="#"></a>\n    <a class="decline-xmpp-request icon-close" title="' +
+((__t = (desc_decline)) == null ? '' : __t) +
+'" href="#"></a>\n</span>\n';
 
 }
 return __p
@@ -470,9 +515,13 @@ this["JST"]["requesting_contacts"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<dt id="xmpp-contact-requests">' +
+__p += '<dt id="xmpp-contact-requests"><a href="#" class="group-toggle icon-' +
+((__t = (toggle_state)) == null ? '' : __t) +
+'" title="' +
+((__t = (desc_group_toggle)) == null ? '' : __t) +
+'">' +
 ((__t = (label_contact_requests)) == null ? '' : __t) +
-'</dt>\n';
+'</a></dt>\n';
 
 }
 return __p
@@ -607,6 +656,22 @@ __p += '<form class="add-chatroom" action="" method="post">\n    <input type="te
 return __p
 };
 
+this["JST"]["roster"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<input class="roster-filter" placeholder="' +
+((__t = (placeholder)) == null ? '' : __t) +
+'">\n<select class="filter-type">\n    <option value="contacts">' +
+((__t = (label_contacts)) == null ? '' : __t) +
+'</option>\n    <option value="groups">' +
+((__t = (label_groups)) == null ? '' : __t) +
+'</option>\n</select>\n<dl class="roster-contacts"></dl>\n';
+
+}
+return __p
+};
+
 this["JST"]["roster_item"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -705,11 +770,21 @@ __p += '\n    <li class="toggle-smiley icon-happy" title="Insert a smilery">\n  
  } ;
 __p += '\n';
  if (show_call_button)  { ;
-__p += '\n    <li class="toggle-call"><a class="icon-phone" title="Start a call"></a></li>\n';
+__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
+((__t = (label_start_call)) == null ? '' : __t) +
+'"></a></li>\n';
+ } ;
+__p += '\n';
+ if (show_participants_toggle)  { ;
+__p += '\n<li class="toggle-participants"><a class="icon-hide-users" title="' +
+((__t = (label_hide_participants)) == null ? '' : __t) +
+'"></a></li>\n';
  } ;
 __p += '\n';
  if (show_clear_button)  { ;
-__p += '\n    <li class="toggle-clear"><a class="icon-remove" title="Clear all messages"></a></li>\n';
+__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
+((__t = (label_clear)) == null ? '' : __t) +
+'"></a></li>\n';
  } ;
 __p += '\n';
  if (allow_otr)  { ;

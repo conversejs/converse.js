@@ -18,7 +18,10 @@ Changelog
 * #212 Bugfix. Groups weren't being show again after the live filter was cleared. [jcbrand]
 * #215 (and also #75) XEP-0249: Direct MUC Invitations. [jcbrand]
 * #216 Contacts tab empty when using xhr_user_search. [hcderaad and jcbrand]
-* #219 New contacts added need page refresh to be accepted and become visible [hcderaad and jcbrand]
+* #219 New contacts added need page refresh to be accepted and become visible. [hcderaad and jcbrand]
+* #220 Non-AMD example page was not working. [xavier83ar and jcbrand]
+* #222 Control box state not remembered. [priyadi and jcbrand]
+* #223 Provide API to query buddy status. [priyadi and jcbrand]
 
 0.8.1 (2014-08-23)
 ------------------

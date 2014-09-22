@@ -209,22 +209,25 @@
                 runs(function () {
                     test_utils.closeControlBox();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
                     expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                    expect(converse.chatboxes.length).toEqual(0);
+                    expect(converse.chatboxes.length).toEqual(1);
+                    expect(converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                     test_utils.openChatBoxes(6);
                     expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
-                    expect(converse.chatboxes.length).toEqual(6);
+                    expect(converse.chatboxes.length).toEqual(7);
                     expect(converse.emit).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
                     test_utils.closeAllChatBoxes();
                 });
-                waits(250);
+                waits(50);
                 runs(function () {
-                    expect(converse.chatboxes.length).toEqual(0);
+                    expect(converse.chatboxes.length).toEqual(1);
+                    expect(converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                     expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                     var newchatboxes = new this.ChatBoxes();
                     expect(newchatboxes.length).toEqual(0);
+                    expect(converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                     // onConnected will fetch chatboxes in browserStorage, but
                     // because there aren't any open chatboxes, there won't be any
                     // in browserStorage either. XXX except for the controlbox

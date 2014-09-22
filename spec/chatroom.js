@@ -95,13 +95,15 @@
                             "reason='"+reason+"'/>"+
                     "</message>"
                 )[0];
-                expect(converse.chatboxes.models.length).toBe(0);
+                expect(converse.chatboxes.models.length).toBe(1);
+                expect(converse.chatboxes.models[0].id).toBe("controlbox");
                 converse.chatboxes.onInvite(message);
                 expect(window.confirm).toHaveBeenCalledWith( 
                     name + ' has invited you to join a chat room: '+ room_jid +
                     ', and left the following reason: "'+reason+'"');
-                expect(converse.chatboxes.models.length).toBe(1);
-                expect(converse.chatboxes.models[0].id).toBe(room_jid);
+                expect(converse.chatboxes.models.length).toBe(2);
+                expect(converse.chatboxes.models[0].id).toBe('controlbox');
+                expect(converse.chatboxes.models[1].id).toBe(room_jid);
             }, converse));
 
             it("shows received groupchat messages", $.proxy(function () {
@@ -269,14 +271,12 @@
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
-                spyOn(this.chatboxviews, 'trimChats');
                 test_utils.openControlBox();
                 var newchatboxes = new this.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 // The chatboxes will then be fetched from browserStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
-                expect(this.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(newchatboxes.length).toEqual(2); // XXX: Includes controlbox, is this a bug?
                 // Check that the chatrooms retrieved from browserStorage
                 // have the same attributes values as the original ones.

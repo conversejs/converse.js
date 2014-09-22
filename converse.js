@@ -1432,9 +1432,7 @@
             },
 
             close: function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (converse.connection.connected) {
                     this.model.destroy();
                 } else {
@@ -1915,23 +1913,34 @@
 
             initialize: function () {
                 this.$el.insertAfter(converse.controlboxtoggle.$el);
-                this.model.on('change:connected', $.proxy(function (item) {
-                    if (this.model.get('connected')) {
-                        this.render();
-                        this.initRoster();
-                        converse.features.off('add', this.featureAdded, this);
-                        converse.features.on('add', this.featureAdded, this);
-                        // Features could have been added before the controlbox was
-                        // initialized. Currently we're only interested in MUC
-                        var feature = converse.features.findWhere({'var': 'http://jabber.org/protocol/muc'});
-                        if (feature) {
-                            this.featureAdded(feature);
-                        }
-                    }
-                }, this));
-                this.model.on('show', this.show, this);
+                this.model.on('change:connected', this.onConnected, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('hide', this.hide, this);
+                this.model.on('show', this.show, this);
+                this.model.on('change:closed', this.ensureClosedState, this);
+                this.render();
+                if (this.model.get('connected')) {
+                    this.initRoster();
+                }
+                if (!this.model.get('closed')) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            },
+
+            onConnected: function () {
+                if (this.model.get('connected')) {
+                    this.render().initRoster();
+                    converse.features.off('add', this.featureAdded, this);
+                    converse.features.on('add', this.featureAdded, this);
+                    // Features could have been added before the controlbox was
+                    // initialized. Currently we're only interested in MUC
+                    var feature = converse.features.findWhere({'var': 'http://jabber.org/protocol/muc'});
+                    if (feature) {
+                        this.featureAdded(feature);
+                    }
+                }
             },
 
             initRoster: function () {
@@ -1948,6 +1957,7 @@
                 this.contactspanel.$el.append(converse.rosterview.$el);
                 converse.rosterview.render().fetch().update();
                 converse.connection.roster.get(function () {});
+                return this;
             },
 
             render: function () {
@@ -1985,6 +1995,25 @@
                 this.initDragResize();
             },
 
+            close: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                if (converse.connection.connected) {
+                    this.model.save({'closed': true});
+                } else {
+                    this.model.trigger('hide');
+                }
+                converse.emit('controlBoxClosed', this);
+                return this;
+            },
+
+            ensureClosedState: function () {
+                if (this.model.get('closed')) {
+                    this.hide();
+                } else {
+                    this.show();
+                }
+            },
+
             hide: function (callback) {
                 this.$el.hide('fast', function () {
                     converse.refreshWebkit();
@@ -1995,6 +2024,7 @@
                         }
                     });
                 });
+                return this;
             },
 
             show: function () {
@@ -2745,24 +2775,17 @@
             onConnected: function () {
                 this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.chatboxes-'+converse.bare_jid));
-                if (!this.get('controlbox')) {
-                    this.add({
-                        id: 'controlbox',
-                        box_id: 'controlbox'
-                    });
-                }
-                this.get('controlbox').fetch();
-                // This line below will make sure the Roster is set up
-                this.get('controlbox').save({connected:true});
                 this.registerMessageHandler();
-                // Get cached chatboxes from localstorage
                 this.fetch({
                     add: true,
                     success: $.proxy(function (collection, resp) {
-                        if (_.include(_.pluck(resp, 'id'), 'controlbox')) {
-                            // If the controlbox was saved in localstorage, it must be visible
-                            this.get('controlbox').trigger('show');
+                        if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
+                            this.add({
+                                id: 'controlbox',
+                                box_id: 'controlbox'
+                            });
                         }
+                        this.get('controlbox').save({connected:true});
                     }, this)
                 });
             },
@@ -2909,7 +2932,7 @@
                     if (item.get('chatroom')) {
                         view = new converse.ChatRoomView({'model': item});
                     } else if (item.get('box_id') === 'controlbox') {
-                        view = new converse.ControlBoxView({model: item}).render();
+                        view = new converse.ControlBoxView({model: item});
                     } else {
                         view = new converse.ChatBoxView({model: item});
                     }
@@ -3053,9 +3076,7 @@
             },
 
             close: function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.remove();
                 this.model.destroy();
                 converse.emit('chatBoxClosed', this);
@@ -4460,15 +4481,16 @@
             },
 
             render: function () {
-                var toggle = this.$el.html(
+                $('#conversejs').prepend(this.$el.html(
                     converse.templates.controlbox_toggle({
                         'label_toggle': __('Toggle chat')
                     })
-                );
-                if (converse.show_controlbox_by_default) {
-                    toggle.hide(); // It's either or
-                }
-                $('#conversejs').prepend(toggle);
+                ));
+                // We let the render method of ControlBoxView decide whether
+                // the ControlBox or the Toggle must be shown. This prevents
+                // artifacts (i.e. on page load the toggle is shown only to then
+                // seconds later be hidden in favor of the control box).
+                this.$el.hide();
                 return this;
             },
 
@@ -4483,17 +4505,13 @@
             showControlBox: function () {
                 var controlbox = converse.chatboxes.get('controlbox');
                 if (!controlbox) {
-                    converse.chatboxes.add({
-                        id: 'controlbox',
-                        box_id: 'controlbox',
-                        height: converse.default_box_height
-                    });
-                    controlbox = converse.chatboxes.get('controlbox');
-                    if (converse.connection.connected) {
-                        converse.chatboxes.get('controlbox').save();
-                    }
+                    controlbox = converse.addControlBox();
                 }
-                controlbox.trigger('show');
+                if (converse.connection.connected) {
+                    controlbox.save({closed: false});
+                } else {
+                    controlbox.trigger('show');
+                }
             },
 
             onClick: function (e) {
@@ -4501,7 +4519,7 @@
                 if ($("div#controlbox").is(':visible')) {
                     var controlbox = converse.chatboxes.get('controlbox');
                     if (converse.connection.connected) {
-                        controlbox.destroy();
+                        controlbox.save({closed: true});
                     } else {
                         controlbox.trigger('hide');
                     }
@@ -4510,6 +4528,15 @@
                 }
             }
         });
+
+        this.addControlBox = function () {
+            return this.chatboxes.add({
+                id: 'controlbox',
+                box_id: 'controlbox',
+                height: this.default_box_height,
+                closed: !this.show_controlbox_by_default
+            });
+        };
 
         this.initConnection = function () {
             var rid, sid, jid;
@@ -4579,6 +4606,7 @@
             this.otr = new this.OTR();
             this.initSession();
             this.initConnection();
+            this.addControlBox();
             return this;
         };
 
@@ -4586,7 +4614,6 @@
         // --------------
         // This is the end of the initialize method.
         this._initialize();
-        if (this.show_controlbox_by_default) { this.controlboxtoggle.showControlBox(); }
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
     };

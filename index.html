@@ -235,12 +235,8 @@
     // Configuration loaded, so safe to make other require calls.
     require(['converse'], function (converse) {
         converse.initialize({
-            allow_otr: true,
-            auto_list_rooms: false,
-            auto_subscribe: false,
             bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
-            hide_muc_server: false,
-            i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
+            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
             keepalive: true,
             play_sounds: true,
             prebind: false,

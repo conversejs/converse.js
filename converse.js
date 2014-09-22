@@ -186,6 +186,7 @@
         var ACTIVE = 'active';
         var COMPOSING = 'composing';
         var PAUSED = 'paused';
+        var GONE = 'gone';
 
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
@@ -2797,7 +2798,8 @@
                         $msg.find(ACTIVE).length !== 0 ||
                         $msg.find(COMPOSING).length !== 0 ||
                         $msg.find(INACTIVE).length !== 0 ||
-                        $msg.find(PAUSED).length !== 0
+                        $msg.find(PAUSED).length !== 0 ||
+                        $msg.find(GONE).length !== 0
                     )
                 );
             },

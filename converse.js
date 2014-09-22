@@ -4621,6 +4621,12 @@
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
+        'getBuddy': function (jid) {
+            var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+            if (contact) {
+                return contact.attributes;
+            }
+        },
         'getRID': function () {
             if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
                 return converse.connection.rid || converse.connection._proto.rid;

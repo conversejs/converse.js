@@ -43,5 +43,15 @@
             // Restore the connection
             converse.connection = old_connection;
         }, converse));
+
+        it("has an API method for retrieving a buddy's attributes", $.proxy(function () {
+            var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            expect(converse_api.getBuddy(jid)).toBeFalsy();
+            test_utils.createContacts('current');
+            var attrs = converse_api.getBuddy(jid);
+            expect(typeof attrs).toBe('object');
+            expect(attrs.fullname).toBe(mock.cur_names[0]);
+            expect(attrs.jid).toBe(jid);
+        }, converse));
     }, converse, mock, test_utils));
 }));

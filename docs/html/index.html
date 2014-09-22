@@ -494,6 +494,11 @@ make a custom build which includes only those languages that you need.</p>
 notice that there are references to a missing <em>components</em> folder. Please
 follow the instructions below to create this folder and fetch Converse&#8217;s
 3rd-party dependencies.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Users have reported that converse.js cannot be built on Windows. Patches to
+fix this are welcome.</p>
+</div>
 <div class="section" id="install-the-development-and-front-end-dependencies">
 <h2><a class="toc-backref" href="#id23">Install the development and front-end dependencies</a><a class="headerlink" href="#install-the-development-and-front-end-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>We use development tools (<a class="reference external" href="http://gruntjs.com">Grunt</a> and <a class="reference external" href="http://bower.io">Bower</a>)
@@ -532,6 +537,14 @@ Converse.js directly depends and which will be loaded in the browser.</p>
 </dl>
 </li>
 </ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">After running <tt class="docutils literal"><span class="pre">`make</span> <span class="pre">dev`</span></tt>, you should now have a new directory <em>components</em>,
+which contains all the front-end dependencies of Converse.js.
+If this directory does NOT exist, something must have gone wrong.
+Double-check the output of <tt class="docutils literal"><span class="pre">`make</span> <span class="pre">dev`</span></tt> to see if there are any errors
+listed. For support, you can write to the mailing list: <a class="reference external" href="mailto:conversejs&#37;&#52;&#48;librelist&#46;com">conversejs<span>&#64;</span>librelist<span>&#46;</span>com</a></p>
+</div>
 </div>
 <div class="section" id="with-amd-and-require-js-recommended">
 <h2><a class="toc-backref" href="#id24">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
@@ -892,7 +905,7 @@ exactly once.</p>
 <h1><a class="toc-backref" href="#id40">Developer API</a><a class="headerlink" href="#developer-api" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See also the <a class="reference internal" href="#event-api-methods">Event API Methods</a>, not listed here.</p>
+<p class="last">see also the <a class="reference internal" href="#event-api-methods">event api methods</a>, not listed here.</p>
 </div>
 <div class="section" id="initialize">
 <h2><a class="toc-backref" href="#id41">initialize</a><a class="headerlink" href="#initialize" title="Permalink to this headline">¶</a></h2>

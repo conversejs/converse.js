@@ -383,7 +383,7 @@ notice that there are references to a missing *components* folder. Please
 follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
-.. Note:
+.. note::
     Users have reported that converse.js cannot be built on Windows. Patches to
     fix this are welcome.
 
@@ -429,7 +429,7 @@ If you are curious to know what the different dependencies are:
     See *dependencies* in
     `bower.json <https://github.com/jcbrand/converse.js/blob/master/bower.json>`_.
 
-.. Note:
+.. note::
     After running ```make dev```, you should now have a new directory *components*,
     which contains all the front-end dependencies of Converse.js.
     If this directory does NOT exist, something must have gone wrong.
@@ -541,7 +541,7 @@ CSS is minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.
 Translations
 ============
 
-.. Note ::
+.. note::
    Translations take up a lot of space and will bloat your minified file.
    At the time of writing, all the translations add about 50KB of extra data to
    the minified javascript file. Therefore, make sure to only
@@ -634,7 +634,7 @@ create or update the file ./locale/LC_MESSAGES/de.js with the following code:
 
 making sure to also paste the JSON data as value to the "locale_data" key.
 
-.. Note ::
+.. note::
     If you are adding translations for a new language that is not already supported,
     you'll have to add the language path in main.js and make one more edit in ./locale/locales.js
     to make sure the language is loaded by require.js.
@@ -812,7 +812,7 @@ Here are the different events that are emitted:
 Developer API
 =============
 
-.. Note :: See also the `Event API Methods`_, not listed here.
+.. note:: see also the `event api methods`_, not listed here.
 
 initialize
 ==========
@@ -1009,8 +1009,7 @@ for each page load. While more inconvenient, this is a much more secure option.
 
 This setting can only be used together with ``allow_otr = true``.
 
-
-.. Note ::
+.. note::
     A browser window's session storage is accessible by all javascript that
     is served from the same domain. So if there is malicious javascript served by
     the same server (or somehow injected via an attacker), then they will be able
@@ -1152,7 +1151,7 @@ Default:  ``false``
 If set to ``true``, converse.js will show any roster groups you might have
 configured.
 
-.. Note ::
+.. note::
     It's currently not possible to use converse.js to assign contacts to groups.
     Converse.js can only show users and groups that were previously configured
     elsewhere.
@@ -1198,7 +1197,7 @@ it's closed, the data is cleared.
 
 Data in localStorage on the other hand is kept indefinitely.
 
-.. Note ::
+.. note::
     Since version 0.8.0, the use of local storage is not recommended. The
     statuses (online, away, busy etc.) of your roster contacts are cached in
     the browser storage. If you use local storage, these values are stored for
@@ -1262,7 +1261,7 @@ xhr_custom_status
 
 Default:  ``false``
 
-.. Note ::
+.. note::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 This option will let converse.js make an AJAX POST with your changed custom chat status to a
@@ -1271,7 +1270,7 @@ remote server.
 xhr_custom_status_url
 ---------------------
 
-.. Note ::
+.. note::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 Default:  Empty string
@@ -1288,7 +1287,7 @@ xhr_user_search
 
 Default:  ``false``
 
-.. Note ::
+.. note::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 There are two ways to add users.
@@ -1306,7 +1305,7 @@ corresponds to a matched user and needs the keys ``id`` and ``fullname``.
 xhr_user_search_url
 -------------------
 
-.. Note ::
+.. note::
     XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
 
 Default:  Empty string

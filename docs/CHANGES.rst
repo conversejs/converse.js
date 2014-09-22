@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.8.3 (2014-09-22)
+------------------
+
+* The Javascript build files in the 0.8.2 release weren't updated due to a
+  unnoticed build error. [jcbrand]
+
 0.8.2 (2014-09-22)
 ------------------
 

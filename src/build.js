@@ -75,6 +75,7 @@
         "chatarea":                 "src/templates/chatarea",
         "chatbox":                  "src/templates/chatbox",
         "chatroom":                 "src/templates/chatroom",
+        "chatroom_password_form":   "src/templates/chatroom_password_form",
         "chatroom_sidebar":         "src/templates/chatroom_sidebar",
         "chatrooms_tab":            "src/templates/chatrooms_tab",
         "chats_panel":              "src/templates/chats_panel",

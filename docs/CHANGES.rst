@@ -22,6 +22,7 @@ Changelog
 * #220 Non-AMD example page was not working. [xavier83ar and jcbrand]
 * #222 Control box state not remembered. [priyadi and jcbrand]
 * #223 Provide API to query buddy status. [priyadi and jcbrand]
+* #227 Updated Hebrew translations [GreenLunar]
 
 0.8.1 (2014-08-23)
 ------------------

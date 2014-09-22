@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.1 (Unreleased)
+0.8.1 (2014-09-22)
 ------------------
 
 * Converse.js now has the ability to maintain sessions across page loads.

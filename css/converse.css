@@ -322,7 +322,7 @@
 #conversejs .icon-dnd:before {
   content: "\e004";
 }
-#conversejs .icon-exit:before {
+#conversejs .icon-logout:before {
   content: "\e601";
 }
 #conversejs .no-text-select {
@@ -1412,6 +1412,10 @@ input.custom-xmpp-status {
 }
 #conversejs .xmpp-status-menu li a {
   width: 100%;
+}
+#conversejs .xmpp-status-menu li a.logout,
+#conversejs .xmpp-status-menu li a.logout span {
+  color: darkred;
 }
 #conversejs .xmpp-status-menu li a span {
   padding: 0 5px 0 5px;

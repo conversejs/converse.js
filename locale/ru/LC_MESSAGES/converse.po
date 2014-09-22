@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-25 14:37+0200\n"
+"POT-Creation-Date: 2014-09-22 17:23+0200\n"
 "PO-Revision-Date: 2013-09-29 17:24+0300\n"
 "Last-Translator: Boris Kocherov <bk@raskon.org>\n"
 "Language-Team:  <bk@raskon.ru>\n"
@@ -17,125 +17,125 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: converse.js:283
+#: converse.js:338
 msgid "unencrypted"
 msgstr "не зашифровано"
 
-#: converse.js:284
+#: converse.js:339
 msgid "unverified"
 msgstr "непроверено"
 
-#: converse.js:285
+#: converse.js:340
 msgid "verified"
 msgstr "проверено"
 
-#: converse.js:286
+#: converse.js:341
 msgid "finished"
 msgstr "закончено"
 
-#: converse.js:289
+#: converse.js:344
 msgid "This contact is busy"
 msgstr "Занят"
 
-#: converse.js:290
+#: converse.js:345
 msgid "This contact is online"
 msgstr "В сети"
 
-#: converse.js:291
+#: converse.js:346
 msgid "This contact is offline"
 msgstr "Не в сети"
 
-#: converse.js:292
+#: converse.js:347
 msgid "This contact is unavailable"
 msgstr "Не доступен"
 
-#: converse.js:293
+#: converse.js:348
 msgid "This contact is away for an extended period"
 msgstr "На долго отошёл"
 
-#: converse.js:294
+#: converse.js:349
 msgid "This contact is away"
 msgstr "Отошёл"
 
-#: converse.js:296
+#: converse.js:351
 #, fuzzy
 msgid "Click to hide these contacts"
 msgstr "Удалить контакт"
 
-#: converse.js:298
+#: converse.js:353
 msgid "My contacts"
 msgstr "Контакты"
 
-#: converse.js:299
+#: converse.js:354
 msgid "Pending contacts"
 msgstr "Собеседники ожидающие авторизации"
 
-#: converse.js:300
+#: converse.js:355
 msgid "Contact requests"
 msgstr "Запросы на авторизацию"
 
-#: converse.js:301
+#: converse.js:356
 msgid "Ungrouped"
 msgstr ""
 
-#: converse.js:303
+#: converse.js:358
 msgid "Contacts"
 msgstr "Контакты"
 
-#: converse.js:304
+#: converse.js:359
 msgid "Groups"
 msgstr ""
 
-#: converse.js:386
+#: converse.js:441
 #, fuzzy
 msgid "Reconnecting"
 msgstr "Соединение"
 
-#: converse.js:422
+#: converse.js:476
 msgid "Disconnected"
 msgstr "Отключено"
 
-#: converse.js:430
+#: converse.js:484
 msgid "Error"
 msgstr "Ошибка"
 
-#: converse.js:432
+#: converse.js:486
 msgid "Connecting"
 msgstr "Соединение"
 
-#: converse.js:435
+#: converse.js:489
 msgid "Connection Failed"
 msgstr "Не удалось соединится"
 
-#: converse.js:437
+#: converse.js:491
 msgid "Authenticating"
 msgstr "Авторизация"
 
-#: converse.js:440
+#: converse.js:494
 msgid "Authentication Failed"
 msgstr "Не удалось авторизоваться"
 
-#: converse.js:442
+#: converse.js:499
 msgid "Disconnecting"
 msgstr "Отключаемся"
 
-#: converse.js:542 converse.js:591
+#: converse.js:638 converse.js:684
 msgid "Online Contacts"
 msgstr "Cписок собеседников"
 
-#: converse.js:709
+#: converse.js:802
 msgid "Re-establishing encrypted session"
 msgstr ""
 
-#: converse.js:721
+#: converse.js:814
 msgid "Generating private key."
 msgstr ""
 
-#: converse.js:722
+#: converse.js:815
 msgid "Your browser might become unresponsive."
 msgstr ""
 
-#: converse.js:757
+#: converse.js:850
 msgid ""
 "Authentication request from %1$s\n"
 "\n"
@@ -145,68 +145,68 @@ msgid ""
 "%2$s"
 msgstr ""
 
-#: converse.js:766
+#: converse.js:859
 msgid "Could not verify this user's identify."
 msgstr ""
 
-#: converse.js:805
+#: converse.js:898
 msgid "Exchanging private key with buddy."
 msgstr ""
 
-#: converse.js:946
+#: converse.js:1045
 msgid "Personal message"
 msgstr "Введите сообщение"
 
-#: converse.js:976
+#: converse.js:1077
 #, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "Вас нет в списке этой конференции"
 
-#: converse.js:997
+#: converse.js:1099
 msgid "me"
 msgstr "Я"
 
-#: converse.js:1045
+#: converse.js:1154
 msgid "is typing"
 msgstr ""
 
-#: converse.js:1048
+#: converse.js:1157
 msgid "has stopped typing"
 msgstr ""
 
-#: converse.js:1090 converse.js:1987
+#: converse.js:1199 converse.js:2331
 msgid "Show this menu"
 msgstr "Показать это меню"
 
-#: converse.js:1091 converse.js:1988
+#: converse.js:1200
 msgid "Write in the third person"
 msgstr ""
 
-#: converse.js:1092 converse.js:1992
+#: converse.js:1201 converse.js:2330
 msgid "Remove messages"
 msgstr "Удалить сообщения"
 
-#: converse.js:1176
+#: converse.js:1285
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr ""
 
-#: converse.js:1211
+#: converse.js:1320
 msgid "Your message could not be sent"
 msgstr "Ваше сообщение не послано"
 
-#: converse.js:1214
+#: converse.js:1323
 msgid "We received an unencrypted message"
 msgstr ""
 
-#: converse.js:1217
+#: converse.js:1326
 msgid "We received an unreadable encrypted message"
 msgstr ""
 
-#: converse.js:1226
+#: converse.js:1335
 msgid "This user has requested an encrypted session."
 msgstr ""
 
-#: converse.js:1248
+#: converse.js:1357
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"
@@ -219,7 +219,7 @@ msgid ""
 "Cancel."
 msgstr ""
 
-#: converse.js:1261
+#: converse.js:1370
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
 "that question.\n"
@@ -228,23 +228,23 @@ msgid ""
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
 
-#: converse.js:1262
+#: converse.js:1371
 msgid "What is your security question?"
 msgstr ""
 
-#: converse.js:1264
+#: converse.js:1373
 msgid "What is the answer to the security question?"
 msgstr ""
 
-#: converse.js:1268
+#: converse.js:1377
 msgid "Invalid authentication scheme provided"
 msgstr ""
 
-#: converse.js:1384
+#: converse.js:1488
 msgid "Your messages are not encrypted anymore"
 msgstr "Ваши сообщения больше не шифруются"
 
-#: converse.js:1386
+#: converse.js:1490
 msgid ""
 "Your messages are now encrypted but your buddy's identity has not been "
 "verified."
@@ -252,466 +252,551 @@ msgstr ""
 "Ваши сообщения шифруются, но ваша учётная запись не проверена вашим "
 "собеседником."
 
-#: converse.js:1388
+#: converse.js:1492
 msgid "Your buddy's identify has been verified."
 msgstr "Ваша учётная запись проверена вашим собеседником."
 
-#: converse.js:1390
+#: converse.js:1494
 msgid "Your buddy has ended encryption on their end, you should do the same."
 msgstr ""
 
-#: converse.js:1399
+#: converse.js:1503
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr "Ваши сообщения не шифруются. Нажмите здесь чтобы настроить шифрование."
 
-#: converse.js:1401
+#: converse.js:1505
 msgid "Your messages are encrypted, but your buddy has not been verified."
 msgstr "Ваши сообщения шифруются, но ваш контакт не проверен."
 
-#: converse.js:1403
+#: converse.js:1507
 msgid "Your messages are encrypted and your buddy verified."
 msgstr "Ваши сообщения шифруются и ваш контакт проверен"
 
-#: converse.js:1405
+#: converse.js:1509
 msgid ""
 "Your buddy has closed their end of the private session, you should do the "
 "same"
 msgstr ""
 
-#: converse.js:1415
+#: converse.js:1519
+#, fuzzy
+msgid "Clear all messages"
+msgstr "Введите сообщение"
+
+#: converse.js:1520
 msgid "End encrypted conversation"
 msgstr ""
 
-#: converse.js:1416
+#: converse.js:1521
+msgid "Hide the list of participants"
+msgstr ""
+
+#: converse.js:1522
 msgid "Refresh encrypted conversation"
 msgstr ""
 
-#: converse.js:1417
+#: converse.js:1523
+msgid "Start a call"
+msgstr ""
+
+#: converse.js:1524
 msgid "Start encrypted conversation"
 msgstr ""
 
-#: converse.js:1418
+#: converse.js:1525
 msgid "Verify with fingerprints"
 msgstr ""
 
-#: converse.js:1419
+#: converse.js:1526
 msgid "Verify with SMP"
 msgstr ""
 
-#: converse.js:1420
+#: converse.js:1527
 msgid "What's this?"
 msgstr "Что это?"
 
-#: converse.js:1510
+#: converse.js:1618
 msgid "Online"
 msgstr "В сети"
 
-#: converse.js:1511
+#: converse.js:1619
 msgid "Busy"
 msgstr "Занят"
 
-#: converse.js:1512
+#: converse.js:1620
 msgid "Away"
 msgstr "Отошёл"
 
-#: converse.js:1513
+#: converse.js:1621
 msgid "Offline"
 msgstr "Не в сети"
 
-#: converse.js:1518
+#: converse.js:1622
+#, fuzzy
+msgid "Log out"
+msgstr "Войти"
+
+#: converse.js:1628
 msgid "Contact name"
 msgstr "Имя контакта"
 
-#: converse.js:1519
+#: converse.js:1629
 msgid "Search"
 msgstr "Поиск"
 
-#: converse.js:1523
+#: converse.js:1633
 msgid "Contact username"
 msgstr "Имя пользователя"
 
-#: converse.js:1524
+#: converse.js:1634
 msgid "Add"
 msgstr "Добавить"
 
-#: converse.js:1530
+#: converse.js:1639
 msgid "Click to add new chat contacts"
 msgstr "Добавить новую конференцию"
 
-#: converse.js:1531
+#: converse.js:1640
 msgid "Add a contact"
 msgstr "Добавть контакт"
 
-#: converse.js:1557
+#: converse.js:1664
 msgid "No users found"
 msgstr "Пользователи не найдены"
 
-#: converse.js:1563
+#: converse.js:1670
 msgid "Click to add as a chat contact"
 msgstr "Добавить контакт"
 
-#: converse.js:1618
+#: converse.js:1725
 msgid "Room name"
 msgstr "Имя конференции"
 
-#: converse.js:1619
+#: converse.js:1726
 msgid "Nickname"
 msgstr "Псевдоним"
 
-#: converse.js:1620
+#: converse.js:1727
 msgid "Server"
 msgstr "Сервер"
 
-#: converse.js:1621
+#: converse.js:1728
 msgid "Join"
 msgstr "Подключиться"
 
-#: converse.js:1622
+#: converse.js:1729
 msgid "Show rooms"
 msgstr "Обновить"
 
-#: converse.js:1642
+#: converse.js:1749
 msgid "Rooms"
 msgstr "Конфер."
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: converse.js:1649
+#: converse.js:1756
 msgid "No rooms on %1$s"
 msgstr "Нет доступных конференций %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: converse.js:1664
+#: converse.js:1771
 msgid "Rooms on %1$s"
 msgstr "Конференции %1$s:"
 
-#: converse.js:1673
+#: converse.js:1780
 msgid "Click to open this room"
 msgstr "Зайти в конференцию"
 
-#: converse.js:1674
+#: converse.js:1781
 msgid "Show more information on this room"
 msgstr "Показать больше информации об этой конференции"
 
-#: converse.js:1736
+#: converse.js:1843
 msgid "Description:"
 msgstr "Описание:"
 
-#: converse.js:1737
+#: converse.js:1844
 msgid "Occupants:"
 msgstr "Участники:"
 
-#: converse.js:1738
+#: converse.js:1845
 msgid "Features:"
 msgstr "Свойства:"
 
-#: converse.js:1739
+#: converse.js:1846
 msgid "Requires authentication"
 msgstr "Требуется авторизация"
 
-#: converse.js:1740
+#: converse.js:1847
 msgid "Hidden"
 msgstr "Скрыто"
 
-#: converse.js:1741
+#: converse.js:1848
 msgid "Requires an invitation"
 msgstr "Требуется приглашение"
 
-#: converse.js:1742
+#: converse.js:1849
 msgid "Moderated"
 msgstr "Модерируемая"
 
-#: converse.js:1743
+#: converse.js:1850
 msgid "Non-anonymous"
 msgstr "Не анонимная"
 
-#: converse.js:1744
+#: converse.js:1851
 msgid "Open room"
 msgstr "Открыть конференцию"
 
-#: converse.js:1745
+#: converse.js:1852
 msgid "Permanent room"
 msgstr "Перманентная конференция"
 
-#: converse.js:1746
+#: converse.js:1853
 msgid "Public"
 msgstr "Публичный"
 
-#: converse.js:1747
+#: converse.js:1854
 msgid "Semi-anonymous"
 msgstr "Частично анонимная"
 
-#: converse.js:1748
+#: converse.js:1855
 msgid "Temporary room"
 msgstr "Временная конференция"
 
-#: converse.js:1749
+#: converse.js:1856
 msgid "Unmoderated"
 msgstr "Немодерируемая"
 
-#: converse.js:1989
-msgid "Set chatroom topic"
-msgstr "Установить тему"
+#: converse.js:2085
+msgid "This user is a moderator"
+msgstr "Модератор"
 
-#: converse.js:1990
-msgid "Kick user from chatroom"
-msgstr "Отключить пользователя от кнофер."
+#: converse.js:2086
+msgid "This user can send messages in this room"
+msgstr "Собеседник"
 
-#: converse.js:1991
-msgid "Ban user from chatroom"
-msgstr "Забанить пользователя в этой конф."
+#: converse.js:2087
+msgid "This user can NOT send messages in this room"
+msgstr "Пользователь не может посылать сообщения в эту комнату"
 
-#: converse.js:2007
+#: converse.js:2119
+msgid "Invite..."
+msgstr ""
+
+#: converse.js:2120
+#, fuzzy
+msgid "Occupants"
+msgstr "Участники:"
+
+#: converse.js:2185
+msgid "You are about to invite %1$s to the chat room \"%2$s\". "
+msgstr ""
+
+#: converse.js:2186
+msgid ""
+"You may optionally include a message, explaining the reason for the "
+"invitation."
+msgstr ""
+
+#: converse.js:2269
 msgid "Message"
 msgstr "Сообщение"
 
-#: converse.js:2087 converse.js:3815
+#: converse.js:2307
+msgid "Error: could not execute the command"
+msgstr ""
+
+#: converse.js:2329
+#, fuzzy
+msgid "Ban user from room"
+msgstr "Забанить пользователя в этой конф."
+
+#: converse.js:2332
+#, fuzzy
+msgid "Kick user from room"
+msgstr "Отключить пользователя от кнофер."
+
+#: converse.js:2333
+msgid "Write in 3rd person"
+msgstr ""
+
+#: converse.js:2334
+msgid "Remove user's ability to post messages"
+msgstr ""
+
+#: converse.js:2335
+msgid "Change your nickname"
+msgstr ""
+
+#: converse.js:2336
+#, fuzzy
+msgid "Set room topic"
+msgstr "Установить тему"
+
+#: converse.js:2337
+msgid "Allow muted user to post messages"
+msgstr ""
+
+#: converse.js:2441 converse.js:4262
 msgid "Save"
 msgstr "Сохранить"
 
-#: converse.js:2088
+#: converse.js:2442
 msgid "Cancel"
 msgstr "Отменить"
 
-#: converse.js:2133
+#: converse.js:2487
 msgid "An error occurred while trying to save the form."
 msgstr "При сохранение формы произошла ошибка."
 
-#: converse.js:2179
+#: converse.js:2531
 msgid "This chatroom requires a password"
 msgstr "Для доступа в конфер. необходим пароль."
 
-#: converse.js:2180
+#: converse.js:2532
 msgid "Password: "
 msgstr "Пароль: "
 
-#: converse.js:2181
+#: converse.js:2533
 msgid "Submit"
 msgstr "Отправить"
 
-#: converse.js:2195
+#: converse.js:2568
 msgid "This room is not anonymous"
 msgstr "Эта комната не анонимная"
 
-#: converse.js:2196
+#: converse.js:2569
 msgid "This room now shows unavailable members"
 msgstr "Эта комната показывает доступных собеседников"
 
-#: converse.js:2197
+#: converse.js:2570
 msgid "This room does not show unavailable members"
 msgstr "Эта комната не показывает недоступных собеседников"
 
-#: converse.js:2198
+#: converse.js:2571
 msgid "Non-privacy-related room configuration has changed"
 msgstr ""
 
-#: converse.js:2199
+#: converse.js:2572
 msgid "Room logging is now enabled"
 msgstr ""
 
-#: converse.js:2200
+#: converse.js:2573
 msgid "Room logging is now disabled"
 msgstr ""
 
-#: converse.js:2201
+#: converse.js:2574
 msgid "This room is now non-anonymous"
 msgstr "Эта комната не анонимная"
 
-#: converse.js:2202
+#: converse.js:2575
 msgid "This room is now semi-anonymous"
 msgstr "Эта комната частично анонимная"
 
-#: converse.js:2203
+#: converse.js:2576
 msgid "This room is now fully-anonymous"
 msgstr "Эта комната стала полностью анонимной"
 
-#: converse.js:2204
+#: converse.js:2577
 msgid "A new room has been created"
 msgstr "Новая комната была создана"
 
-#: converse.js:2205
-msgid "Your nickname has been changed"
-msgstr "Ваш псевдоним уже используется другим пользователем"
-
-#: converse.js:2219
-msgid "<strong>%1$s</strong> has been banned"
-msgstr "<strong>%1$s</strong> забанен"
-
-#: converse.js:2220
-msgid "<strong>%1$s</strong> has been kicked out"
-msgstr "<strong>%1$s</strong> выдворен"
-
-#: converse.js:2221
-msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
-msgstr ""
-"<strong>%1$s</strong> has been removed because of an affiliation change"
-
-#: converse.js:2222
-msgid "<strong>%1$s</strong> has been removed for not being a member"
-msgstr "<strong>%1$s</strong> удалён потому что не участник"
-
-#: converse.js:2226 converse.js:2286
+#: converse.js:2581 converse.js:2681
 msgid "You have been banned from this room"
 msgstr "Вам запрещено подключатся к этой конференции"
 
-#: converse.js:2227
+#: converse.js:2582
 msgid "You have been kicked from this room"
 msgstr "Вам запрещено подключатся к этой конференции"
 
-#: converse.js:2228
+#: converse.js:2583
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "<strong>%1$s</strong> удалён потому что изменились права"
 
-#: converse.js:2229
+#: converse.js:2584
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
 msgstr ""
 "Вы отключены от этой конференции потому что режим изменился: только-участники"
 
-#: converse.js:2230
+#: converse.js:2585
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
 msgstr ""
 "Вы отключены от этой конференции потому что сервись конференций выключен."
 
-#: converse.js:2284
+#: converse.js:2599
+msgid "<strong>%1$s</strong> has been banned"
+msgstr "<strong>%1$s</strong> забанен"
+
+#: converse.js:2600
+#, fuzzy
+msgid "<strong>%1$s</strong>'s nickname has changed"
+msgstr "<strong>%1$s</strong> забанен"
+
+#: converse.js:2601
+msgid "<strong>%1$s</strong> has been kicked out"
+msgstr "<strong>%1$s</strong> выдворен"
+
+#: converse.js:2602
+msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
+msgstr ""
+"<strong>%1$s</strong> has been removed because of an affiliation change"
+
+#: converse.js:2603
+msgid "<strong>%1$s</strong> has been removed for not being a member"
+msgstr "<strong>%1$s</strong> удалён потому что не участник"
+
+#: converse.js:2607
+#, fuzzy
+msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
+msgstr "Ваш псевдоним уже используется другим пользователем"
+
+#: converse.js:2608
+#, fuzzy
+msgid "Your nickname has been changed to: <strong>%1$s</strong>"
+msgstr "Ваш псевдоним уже используется другим пользователем"
+
+#: converse.js:2656 converse.js:2666
+msgid "The reason given is: \""
+msgstr ""
+
+#: converse.js:2679
 msgid "You are not on the member list of this room"
 msgstr "Вас нет в списке этой конференции"
 
-#: converse.js:2290
+#: converse.js:2685
 msgid "No nickname was specified"
 msgstr "Вы не указали псевдоним"
 
-#: converse.js:2294
+#: converse.js:2689
 msgid "You are not allowed to create new rooms"
 msgstr "Вы не имеете права создавать конфер."
 
-#: converse.js:2296
+#: converse.js:2691
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "Псевдоним не согласуется с правилами конфер."
 
-#: converse.js:2298
+#: converse.js:2695
 msgid "Your nickname is already taken"
 msgstr "Ваш ник уже используется другим пользователем"
 
-#: converse.js:2300
+#: converse.js:2697
 msgid "This room does not (yet) exist"
 msgstr "Эта комната не существует"
 
-#: converse.js:2302
+#: converse.js:2699
 msgid "This room has reached it's maximum number of occupants"
 msgstr "Конференция достигла максимального количества участников"
 
-#: converse.js:2380
+#: converse.js:2736
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Тема %2$s устатновлена %1$s"
 
-#: converse.js:2410
-msgid "This user is a moderator"
-msgstr "Модератор"
+#: converse.js:2818
+msgid "%1$s has invited you to join a chat room: %2$s"
+msgstr ""
 
-#: converse.js:2411
-msgid "This user can send messages in this room"
-msgstr "Собеседник"
+#: converse.js:2822
+msgid ""
+"%1$s has invited you to join a chat room: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
 
-#: converse.js:2412
-msgid "This user can NOT send messages in this room"
-msgstr "Пользователь не может посылать сообщения в эту комнату"
-
-#: converse.js:2682
+#: converse.js:3058
 #, fuzzy
 msgid "Click to restore this chat"
 msgstr "Удалить контакт"
 
-#: converse.js:2820
+#: converse.js:3202
 msgid "Minimized"
 msgstr ""
 
-#: converse.js:2894
+#: converse.js:3274
 #, fuzzy
 msgid "Are you sure you want to remove this contact?"
 msgstr "Удалить контакт"
 
-#: converse.js:2917
+#: converse.js:3297
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Удалить контакт"
 
-#: converse.js:2961 converse.js:2979
+#: converse.js:3341 converse.js:3359
 msgid "Click to remove this contact"
 msgstr "Удалить контакт"
 
-#: converse.js:2968
+#: converse.js:3348
 #, fuzzy
 msgid "Click to accept this contact request"
 msgstr "Удалить контакт"
 
-#: converse.js:2969
+#: converse.js:3349
 #, fuzzy
 msgid "Click to decline this contact request"
 msgstr "Удалить контакт"
 
-#: converse.js:2978
+#: converse.js:3358
 msgid "Click to chat with this contact"
 msgstr "Начать общение"
 
-#: converse.js:3474
+#: converse.js:3874
 msgid "Type to filter"
 msgstr ""
 
-#: converse.js:3814
-msgid "Custom status"
-msgstr "Произвольный статус"
-
-#: converse.js:3840 converse.js:3848
-msgid "online"
-msgstr "на связи"
-
-#: converse.js:3842
-msgid "busy"
-msgstr "занят"
-
-#: converse.js:3844
-msgid "away for long"
-msgstr "отошёл на долго"
-
-#: converse.js:3846
-msgid "away"
-msgstr "отошёл"
-
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: converse.js:3860 converse.js:3885
+#: converse.js:4233 converse.js:4310
 msgid "I am %1$s"
 msgstr "%1$s"
 
-#: converse.js:3865 converse.js:3887
+#: converse.js:4235 converse.js:4315
 msgid "Click here to write a custom status message"
 msgstr "Редактировать произвольный статус"
 
-#: converse.js:3866 converse.js:3888
+#: converse.js:4236 converse.js:4316
 msgid "Click to change your chat status"
 msgstr "Изменить ваш статус"
 
-#: converse.js:3982
+#: converse.js:4261
+msgid "Custom status"
+msgstr "Произвольный статус"
+
+#: converse.js:4290 converse.js:4298
+msgid "online"
+msgstr "на связи"
+
+#: converse.js:4292
+msgid "busy"
+msgstr "занят"
+
+#: converse.js:4294
+msgid "away for long"
+msgstr "отошёл на долго"
+
+#: converse.js:4296
+msgid "away"
+msgstr "отошёл"
+
+#: converse.js:4419
 msgid "XMPP/Jabber Username:"
 msgstr "JID:"
 
-#: converse.js:3983
+#: converse.js:4420
 msgid "Password:"
 msgstr "Пароль:"
 
-#: converse.js:3984
+#: converse.js:4421
 msgid "Log In"
 msgstr "Войти"
 
-#: converse.js:3991
+#: converse.js:4428
 msgid "Sign in"
 msgstr "Подписать"
 
-#: converse.js:4051
+#: converse.js:4488
 msgid "Toggle chat"
 msgstr ""
 

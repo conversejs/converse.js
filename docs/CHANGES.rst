@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.8.4 (Unreleased)
+------------------
+
+* Bugfix. Error when trying to use prebind and keepalive together. [jcbrand]
+
 0.8.3 (2014-09-22)
 ------------------
 

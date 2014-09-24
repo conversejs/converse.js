@@ -4563,6 +4563,7 @@
                         throw('If you set prebind=true, you MUST supply JID, RID and SID values');
                     }
                     this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                    return;
                 }
                 if (this.keepalive) {
                     rid = this.session.get('rid');

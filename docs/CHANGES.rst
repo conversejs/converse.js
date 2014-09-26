@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Bugfix. Error when trying to use prebind and keepalive together. [jcbrand]
+* Bugfix. Cannot read property "top" of undefined. [jcbrand]
 
 0.8.3 (2014-09-22)
 ------------------

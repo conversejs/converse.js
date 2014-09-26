@@ -151,32 +151,9 @@ config = {
     }
 };
 
-var initializeEasing = function () {
-    /* XXX: This function initializes jquery.easing for the https://conversejs.org
-     * website. This code is only useful in the context of the converse.js
-     * website and converse.js itself is not dependent on it.
-     */
-    $(window).scroll(function() {
-        if ($(".navbar").offset().top > 50) {
-            $(".navbar-fixed-top").addClass("top-nav-collapse");
-        } else {
-            $(".navbar-fixed-top").removeClass("top-nav-collapse");
-        }
-    });
-    //jQuery for page scrolling feature - requires jQuery Easing plugin
-    $('.page-scroll a').bind('click', function(event) {
-        var $anchor = $(this);
-        $('html, body').stop().animate({
-            scrollTop: $($anchor.attr('href')).offset().top
-        }, 700, 'easeInOutExpo');
-        event.preventDefault();
-    });
-};
-
 if (typeof(require) !== 'undefined') {
     require.config(config);
     require(["jquery", "converse"], function($, converse) {
         window.converse = converse;
-        initializeEasing(); // Only for https://conversejs.org website
     });
 }

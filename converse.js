@@ -4563,7 +4563,6 @@
                         throw('If you set prebind=true, you MUST supply JID, RID and SID values');
                     }
                     this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
-                    return;
                 }
                 if (this.keepalive) {
                     rid = this.session.get('rid');
@@ -4574,7 +4573,9 @@
                         rid += 1;
                         this.session.save({rid: rid}); // The RID needs to be increased with each request.
                         this.connection.attach(jid, sid, rid, this.onConnect);
-                        return;
+                    } else {
+                        delete this.connection;
+                        this.emit('noResumeableSession');
                     }
                 }
             }
@@ -4609,7 +4610,9 @@
             this.otr = new this.OTR();
             this.initSession();
             this.initConnection();
-            this.addControlBox();
+            if (this.connection) {
+                this.addControlBox();
+            }
             return this;
         };
 

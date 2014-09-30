@@ -1033,8 +1033,10 @@ Default:    ``true``
 Determines whether Converse.js will maintain the chat session across page
 loads.
 
-*Please be aware*: This is a new still relatively experimental feature and there might be some
-unhandled edge-cases.
+See also: 
+
+* `Prebinding and Single Session Support`_
+* `Using prebind in connection with keepalive`_
 
 message_carbons
 ---------------
@@ -1131,19 +1133,71 @@ prebind
 
 Default:  ``false``
 
+See also: `Prebinding and Single Session Support`_
+
 Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).
 
 This is useful when you don't want to render the login form on the chat control
 box with each page load.
 
-For prebinding to work, your backend server must authenticate for you, and
-then return a JID (jabber ID), SID (session ID) and RID (Request ID).
+For prebinding to work, you must set up a pre-authenticated BOSH session,
+for which you will receive a JID (jabber ID), SID (session ID) and RID
+(Request ID).
 
-If you set ``prebind`` to ``true``, you have to make sure to also pass in these
-values as ``jid``, ``sid``, ``rid``.
+These values (``rid``, ``sid`` and ``jid``) need to be passed into
+``converse.initialize`` (with the exception of ``keepalive``, see below).
 
-Additionally, you have to specify ``bosh_service_url``.
+Additionally, you also have to specify a ``bosh_service_url``.
+
+Using prebind in connection with keepalive
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``prebind`` and `keepalive`_ options can be used together.
+
+The ``keepalive`` option caches the ``rid``, ``sid`` and ``jid`` values
+(henceforth referred to as *session tokens*) one receives from a prebinded
+BOSH session, in order to re-use them when the page reloads.
+
+However, if besides setting ``keepalive`` to ``true``, you also set ``prebind`` 
+to ``true``, and you pass in valid session tokens to ``converse.initialize``,
+then those passed in session tokens will be used instead of any tokens cached by
+``keepalive``.
+
+If you set ``prebind`` to ``true``  and don't pass in the session tokens to
+``converse.initialize``, then converse.js will look for tokens cached by
+``keepalive``.
+
+If you've set ``keepalive`` and ``prebind`` to ``true``, don't pass in session
+tokens and converse.js doesn't find any cached session tokens, then
+converse.js will emit an event ``noResumeableSession`` and exit.
+
+This allows you to start a prebinded session with valid tokens, and then fall
+back to ``keepalive`` for maintaining that session across page reloads. When
+for some reason ``keepalive`` doesn't have cached session tokens anymore, you
+can listen for the ``noResumeableSession`` event and take that as a cue that
+you should again prebind in order to get valid session tokens.
+
+Here is a code example::
+
+        converse.on('noResumeableSession', function () {
+            $.getJSON('/prebind', function (data) {
+                converse.initialize({
+                    prebind: true,
+                    keepalive: true,
+                    bosh_service_url: 'https://bind.example.com',
+                    jid: data.jid,
+                    sid: data.sid,
+                    rid: data.rid
+                });
+            });
+        });
+        converse.initialize({
+            prebind: true,
+            keepalive: true,
+            bosh_service_url: 'https://bind.example.com'
+        }));
+
 
 roster_groups
 -------------

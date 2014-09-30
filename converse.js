@@ -4559,10 +4559,13 @@
                 this.connection = new Strophe.Connection(this.bosh_service_url);
 
                 if (this.prebind) {
-                    if ((!this.jid) || (!this.sid) || (!this.rid) || (!this.bosh_service_url)) {
-                        throw('If you set prebind=true, you MUST supply JID, RID and SID values');
+                    if (this.jid && this.sid && this.rid) {
+                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
                     }
-                    this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                    if (!this.keepalive) {
+                        throw("If you use prebind and don't use keepalive, "+
+                              "then you MUST supply JID, RID and SID values");
+                    }
                 }
                 if (this.keepalive) {
                     rid = this.session.get('rid');
@@ -4573,7 +4576,7 @@
                         rid += 1;
                         this.session.save({rid: rid}); // The RID needs to be increased with each request.
                         this.connection.attach(jid, sid, rid, this.onConnect);
-                    } else {
+                    } else if (prebind) {
                         delete this.connection;
                         this.emit('noResumeableSession');
                     }

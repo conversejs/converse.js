@@ -4,7 +4,7 @@ Changelog
 0.8.4 (Unreleased)
 ------------------
 
-* Bugfix. Error when trying to use prebind and keepalive together. [jcbrand]
+* Bugfix. Error when trying to use prebind and keepalive together. [heban and jcbrand]
 * Bugfix. Cannot read property "top" of undefined. [jcbrand]
 * Add new event, noResumeableSession, for when keepalive=true and there aren't
   any prebind session tokens. [jcbrand]

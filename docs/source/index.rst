@@ -858,7 +858,7 @@ The map of attributes:
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 | Attribute      |                                                                                                                                      |
 +================+======================================================================================================================================+
-| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                                         |          
+| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                                         |
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 | fullname       | The person's full name.                                                                                                              |
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
@@ -944,7 +944,7 @@ Default:  ``true``
 Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
 the ``Chatrooms`` tab from the control box.
 
-allow_muc
+allow_otr
 ---------
 
 Default:  ``true``
@@ -1033,7 +1033,7 @@ Default:    ``true``
 Determines whether Converse.js will maintain the chat session across page
 loads.
 
-See also: 
+See also:
 
 * `Prebinding and Single Session Support`_
 * `Using prebind in connection with keepalive`_
@@ -1159,7 +1159,7 @@ The ``keepalive`` option caches the ``rid``, ``sid`` and ``jid`` values
 (henceforth referred to as *session tokens*) one receives from a prebinded
 BOSH session, in order to re-use them when the page reloads.
 
-However, if besides setting ``keepalive`` to ``true``, you also set ``prebind`` 
+However, if besides setting ``keepalive`` to ``true``, you also set ``prebind``
 to ``true``, and you pass in valid session tokens to ``converse.initialize``,
 then those passed in session tokens will be used instead of any tokens cached by
 ``keepalive``.

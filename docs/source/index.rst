@@ -944,7 +944,7 @@ Default:  ``true``
 Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
 the ``Chatrooms`` tab from the control box.
 
-allow_muc
+allow_otr
 ---------
 
 Default:  ``true``

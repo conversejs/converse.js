@@ -13,10 +13,11 @@
 
   if (typeof define === 'function' && define.amd) {
     define([
-        "bigint"
-      , "crypto"
-      , "eventemitter"
-    ], function (BigInt, CryptoJS, EventEmitter) {
+        "jquery",
+        "bigint",
+        "crypto",
+        "eventemitter"
+    ], function ($, BigInt, CryptoJS, EventEmitter) {
       if ($.browser.msie) {
           return undefined;
       }

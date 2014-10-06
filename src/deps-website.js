@@ -1,4 +1,5 @@
 define("converse-dependencies", [
+    "jquery",
     "otr",
     "moment",
     "locales",
@@ -14,8 +15,9 @@ define("converse-dependencies", [
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function(otr, moment) {
+], function($, otr, moment) {
     return {
+        'jQuery': $,
         'otr': otr,
         'moment': moment
     };

@@ -1,4 +1,5 @@
 define("converse-dependencies", [
+    "jquery",
     "moment",
     "locales",
     "bootstrap", // XXX: Can be removed, only for https://conversejs.org
@@ -13,8 +14,9 @@ define("converse-dependencies", [
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function(moment) {
+], function($, moment) {
     return {
+        'jQuery': $,
         'otr': undefined,
         'moment': moment
     };

@@ -15,9 +15,9 @@
                 var otr = dependencies.otr,
                     moment = dependencies.moment;
                 if (typeof otr !== "undefined") {
-                    return factory(jQuery, _, otr.OTR, otr.DSA, templates, moment);
+                    return factory(dependencies.jQuery, _, otr.OTR, otr.DSA, templates, moment);
                 } else {
-                    return factory(jQuery, _, undefined, undefined, templates, moment);
+                    return factory(dependencies.jQuery, _, undefined, undefined, templates, moment);
                 }
             }
         );
@@ -4576,7 +4576,7 @@
                         rid += 1;
                         this.session.save({rid: rid}); // The RID needs to be increased with each request.
                         this.connection.attach(jid, sid, rid, this.onConnect);
-                    } else if (prebind) {
+                    } else if (this.prebind) {
                         delete this.connection;
                         this.emit('noResumeableSession');
                     }
@@ -4656,6 +4656,7 @@
         },
         'off': function(evt, handler) {
             converse.off(evt, handler);
-        }
+        },
+        'jQuery': $
     };
 }));

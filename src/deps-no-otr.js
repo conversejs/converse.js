@@ -1,4 +1,5 @@
 define("converse-dependencies", [
+    "jquery",
     "moment",
     "locales",
     "backbone.browserStorage",
@@ -11,8 +12,9 @@ define("converse-dependencies", [
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function(moment) {
+], function($, moment) {
     return {
+        'jQuery': $,
         'otr': undefined,
         'moment': moment
     };

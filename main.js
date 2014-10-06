@@ -9,6 +9,7 @@ config = {
         "converse-templates":       "src/templates",
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
+        "jquery-private":           "src/jquery-private",
         "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
@@ -115,17 +116,6 @@ config = {
 
     // define module dependencies for modules not using define
     shim: {
-        'backbone': {
-            //These script dependencies should be loaded before loading
-            //backbone.js
-            deps: [
-                'underscore',
-                'jquery'
-                ],
-            //Once loaded, use the global 'Backbone' as the
-            //module value.
-            exports: 'Backbone'
-        },
         'underscore':           { exports: '_' },
         'bootstrap':            { deps: ['jquery'] },
         'crypto.aes':           { deps: ['crypto.cipher-core'] },
@@ -142,10 +132,8 @@ config = {
         'typeahead':            { deps: ['jquery'] },
         'jquery.browser':       { deps: ['jquery'] },
         'jquery.easing':        { deps: ['jquery'] },
-        'utils':                { deps: ['jquery'] },
-        'strophe':              { deps: ['jquery'] },
         'strophe.disco':        { deps: ['strophe'] },
-        'strophe.muc':          { deps: ['strophe', 'jquery'] },
+        'strophe.muc':          { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }
     }

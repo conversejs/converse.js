@@ -10,6 +10,15 @@
             interpolate : /\{\{([\s\S]+?)\}\}/g
         }
     },
+    map: {
+        // '*' means all modules will get 'jquery-private'
+        // for their 'jquery' dependency.
+        '*': { 'jquery': 'jquery-private' },
+        // 'jquery-private' wants the real jQuery module
+        // though. If this line was not here, there would
+        // be an unresolvable cyclic dependency.
+        'jquery-private': { 'jquery': 'jquery' }
+    },
     paths: {
         "backbone":                 "components/backbone/backbone",
         "backbone.browserStorage":  "components/backbone.browserStorage/backbone.browserStorage",
@@ -18,6 +27,7 @@
         "converse-templates":       "src/templates",
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
+        "jquery-private":           "src/jquery-private",
         "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "moment":                   "components/momentjs/moment",
         "strophe":                  "components/strophe/strophe",

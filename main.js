@@ -105,6 +105,16 @@ config = {
         "trimmed_chat":             "src/templates/trimmed_chat"
     },
 
+    map: {
+        // '*' means all modules will get 'jquery-private'
+        // for their 'jquery' dependency.
+        '*': { 'jquery': 'jquery-private' },
+        // 'jquery-private' wants the real jQuery module
+        // though. If this line was not here, there would
+        // be an unresolvable cyclic dependency.
+        'jquery-private': { 'jquery': 'jquery' }
+    },
+
     tpl: {
         // Configuration for requirejs-tpl
         // Use Mustache style syntax for variable interpolation
@@ -117,7 +127,6 @@ config = {
     // define module dependencies for modules not using define
     shim: {
         'underscore':           { exports: '_' },
-        'bootstrap':            { deps: ['jquery'] },
         'crypto.aes':           { deps: ['crypto.cipher-core'] },
         'crypto.cipher-core':   { deps: ['crypto.enc-base64', 'crypto.evpkdf'] },
         'crypto.enc-base64':    { deps: ['crypto.core'] },
@@ -129,9 +138,6 @@ config = {
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
-        'typeahead':            { deps: ['jquery'] },
-        'jquery.browser':       { deps: ['jquery'] },
-        'jquery.easing':        { deps: ['jquery'] },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },

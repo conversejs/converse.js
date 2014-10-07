@@ -3,7 +3,7 @@ define("converse-dependencies", [
     "otr",
     "moment",
     "locales",
-    "bootstrap", // XXX: Only for https://conversejs.org
+    "bootstrapJS", // XXX: Only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",

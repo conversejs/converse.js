@@ -29,8 +29,8 @@
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
-        "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
-        "jquery.easing":            "components/jquery-easing-original/jquery.easing.1.3", // XXX: Only required for https://conversejs.org website
+        "jquery.browser":           "components/jquery.browser/index",
+        "jquery.easing":            "components/jquery-easing-original/index", // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
         "strophe":                  "components/strophe/strophe",
         "strophe.disco":            "components/strophe.disco/index",
@@ -39,7 +39,7 @@
         "strophe.vcard":            "components/strophe.vcard/index",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
-        "typeahead":                "components/typeahead.js/dist/typeahead.jquery",
+        "typeahead":                "components/typeahead.js/index",
         "underscore":               "components/underscore/underscore",
         "utils":                    "src/utils",
 

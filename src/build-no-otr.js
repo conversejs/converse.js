@@ -28,7 +28,7 @@
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
-        "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
+        "jquery.browser":           "components/jquery.browser/index",
         "moment":                   "components/momentjs/moment",
         "strophe":                  "components/strophe/strophe",
         "strophe.disco":            "components/strophe.disco/index",
@@ -37,7 +37,7 @@
         "strophe.vcard":            "components/strophe.vcard/index",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
-        "typeahead":                "components/typeahead.js/dist/typeahead.jquery",
+        "typeahead":                "components/typeahead.js/index",
         "underscore":               "components/underscore/underscore",
         "utils":                    "src/utils",
 

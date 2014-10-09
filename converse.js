@@ -3085,10 +3085,14 @@
                 return this;
             },
 
-            restore: _.debounce(function (ev) {
+            restore: function(ev) {
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
+                this._restore();
+            },
+
+            _restore: _.debounce(function () {
                 this.remove();
                 this.model.maximize();
             }, 200)

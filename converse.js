@@ -135,6 +135,7 @@
     };
 
     var converse = {
+        plugins: {},
         templates: templates,
         emit: function (evt, data) {
             $(this).trigger(evt, data);
@@ -4666,6 +4667,7 @@
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
+        'jQuery': $,
         'openChatBox': function (jid) {
             var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
             if (contact) {
@@ -4681,6 +4683,8 @@
         'off': function (evt, handler) {
             converse.off(evt, handler);
         },
-        'jQuery': $
+        'registerPlugin': function (name, callback) {
+            converse.plugins[name] = callback(converse);
+        },
     };
 }));

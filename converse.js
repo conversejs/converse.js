@@ -3019,18 +3019,17 @@
                  * If it doesn't exist, create it.
                  */
                 var chatbox  = this.model.get(attrs.jid);
-                if (chatbox) {
-                    if (chatbox.get('minimized')) {
-                        chatbox.maximize();
-                    } else {
-                        chatbox.trigger('show');
-                    }
-                } else {
+                if (!chatbox) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
                             converse.log(response.responseText);
                         }
                     });
+                }
+                if (chatbox.get('minimized')) {
+                    chatbox.maximize();
+                } else {
+                    chatbox.trigger('show');
                 }
                 return chatbox;
             }
@@ -3258,6 +3257,8 @@
 
             openChat: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                // XXX: Can this.model.attributes be used here, instead of
+                // manually specifying all attributes?
                 return converse.chatboxviews.showChat({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
@@ -4636,6 +4637,20 @@
                 return contact.attributes;
             }
         },
+        'getChatBox': function (jid) {
+            var chatbox = converse.chatboxes.get(jid);
+            if (chatbox) {
+                return {
+                    'attributes': chatbox.attributes,
+                    'endOTR': chatbox.endOTR,
+                    'get': chatbox.get,
+                    'initiateOTR': chatbox.initiateOTR,
+                    'maximize': chatbox.maximize,
+                    'minimize': chatbox.minimize,
+                    'set': chatbox.set
+                };
+            }
+        },
         'getRID': function () {
             if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
                 return converse.connection.rid || converse.connection._proto.rid;
@@ -4647,6 +4662,22 @@
                 return converse.connection.sid || converse.connection._proto.sid;
             }
             return null;
+        },
+        'openChatBox': function (jid) {
+            var chatbox;
+            var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+            if (contact) {
+                chatbox = converse.chatboxviews.showChat(contact.attributes);
+                return {
+                    'attributes': chatbox.attributes,
+                    'endOTR': chatbox.endOTR,
+                    'get': chatbox.get,
+                    'initiateOTR': chatbox.initiateOTR,
+                    'maximize': chatbox.maximize,
+                    'minimize': chatbox.minimize,
+                    'set': chatbox.set
+                };
+            }
         },
         'once': function (evt, handler) {
             converse.once(evt, handler);

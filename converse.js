@@ -4621,9 +4621,16 @@
             return this;
         };
 
+        this._initializePlugins = function () {
+            _.each(this.plugins, $.proxy(function (plugin) {
+                $.proxy(plugin, this)();
+            }, this));
+        };
+
         // Initialization
         // --------------
         // This is the end of the initialize method.
+        this._initializePlugins();
         this._initialize();
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
@@ -4684,7 +4691,7 @@
             converse.off(evt, handler);
         },
         'registerPlugin': function (name, callback) {
-            converse.plugins[name] = callback(converse);
+            converse.plugins[name] = callback;
         },
     };
 }));

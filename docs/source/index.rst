@@ -590,6 +590,45 @@ The map of attributes:
 | vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 
+getChatBox
+----------
+
+Returns an object/map representing a chat box (without opening or affecting that chat box). 
+
+Example::
+
+    converse.getChatBox('buddy@example.com')
+
+The returned chat box contains the following methods:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++-------------+------------------------------------------+
+| Method      | Description                              |
++=============+==========================================+
+| endOTR      | End an OTR (Off-the-record) session.     |
++-------------+------------------------------------------+
+| get         | Get an attribute (i.e. accessor).        |
++-------------+------------------------------------------+
+| initiateOTR | Start an OTR (off-the-record) session.   |
++-------------+------------------------------------------+
+| maximize    | Minimize the chat box.                   |
++-------------+------------------------------------------+
+| minimize    | Maximize the chat box.                   |
++-------------+------------------------------------------+
+| set         | Set an attribute (i.e. mutator).         |
++-------------+------------------------------------------+
+
+The get and set methods can be used to retrieve and change the following attributes:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++-------------+-----------------------------------------------------+
+| Attribute   | Description                                         |
++=============+=====================================================+
+| height      | The height of the chat box.                         |
++-------------+-----------------------------------------------------+
+| url         | The URL of the chat box heading.                    |
++-------------+-----------------------------------------------------+
+
 getRID
 ------
 
@@ -599,6 +638,19 @@ getSID
 ------
 
 Returns the current SID (Session ID) value.
+
+openChatBox
+-----------
+
+Opens a chat box and returns an object/map representating that chat box.
+If the chat box is already open, its text area will be focused.
+
+Example::
+
+    converse.openChatBox('buddy@example.com')
+
+Refer to `getChatBox`_ for more information on the object returned by this
+method (which is the same for both).
 
 
 Events

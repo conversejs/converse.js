@@ -4627,10 +4627,18 @@
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
     };
+
+    var wrappedChatBox = function (chatbox) {
+        return {
+            'endOTR': $.proxy(chatbox.endOTR, chatbox),
+            'get': $.proxy(chatbox.get, chatbox),
+            'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
+            'maximize': $.proxy(chatbox.maximize, chatbox),
+            'minimize': $.proxy(chatbox.minimize, chatbox),
+            'set': $.proxy(chatbox.set, chatbox)
+        };
+    };
     return {
-        'initialize': function (settings, callback) {
-            converse.initialize(settings, callback);
-        },
         'getBuddy': function (jid) {
             var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
             if (contact) {
@@ -4640,14 +4648,7 @@
         'getChatBox': function (jid) {
             var chatbox = converse.chatboxes.get(jid);
             if (chatbox) {
-                return {
-                    'endOTR': chatbox.endOTR,
-                    'get': chatbox.get,
-                    'initiateOTR': chatbox.initiateOTR,
-                    'maximize': chatbox.maximize,
-                    'minimize': chatbox.minimize,
-                    'set': chatbox.set
-                };
+                return wrappedChatBox(chatbox);
             }
         },
         'getRID': function () {
@@ -4662,20 +4663,13 @@
             }
             return null;
         },
+        'initialize': function (settings, callback) {
+            converse.initialize(settings, callback);
+        },
         'openChatBox': function (jid) {
-            var chatbox;
             var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
             if (contact) {
-                chatbox = converse.chatboxviews.showChat(contact.attributes);
-                return {
-                    'attributes': chatbox.attributes,
-                    'endOTR': chatbox.endOTR,
-                    'get': chatbox.get,
-                    'initiateOTR': chatbox.initiateOTR,
-                    'maximize': chatbox.maximize,
-                    'minimize': chatbox.minimize,
-                    'set': chatbox.set
-                };
+                return wrappedChatBox(converse.chatboxviews.showChat(contact.attributes));
             }
         },
         'once': function (evt, handler) {

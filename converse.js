@@ -4641,7 +4641,6 @@
             var chatbox = converse.chatboxes.get(jid);
             if (chatbox) {
                 return {
-                    'attributes': chatbox.attributes,
                     'endOTR': chatbox.endOTR,
                     'get': chatbox.get,
                     'initiateOTR': chatbox.initiateOTR,

@@ -11,7 +11,7 @@
     if (typeof define === 'function' && define.amd) {
         define("converse",
               ["converse-dependencies", "converse-templates"],
-            function(dependencies, templates) {
+            function (dependencies, templates) {
                 var otr = dependencies.otr,
                     moment = dependencies.moment;
                 if (typeof otr !== "undefined") {
@@ -42,9 +42,9 @@
     };
 
     // TODO: these non-backbone methods should all be moved to utils.
-    $.fn.addHyperlinks = function() {
+    $.fn.addHyperlinks = function () {
         if (this.length > 0) {
-            this.each(function(i, obj) {
+            this.each(function (i, obj) {
                 var x = $(obj).html();
                 var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
                 if (list) {
@@ -99,10 +99,10 @@
         }
     };
 
-    $.fn.addEmoticons = function() {
+    $.fn.addEmoticons = function () {
         if (converse.visible_toolbar_buttons.emoticons) {
             if (this.length > 0) {
-                this.each(function(i, obj) {
+                this.each(function (i, obj) {
                     var text = $(obj).html();
                     text = text.replace(/&gt;:\)/g, '<span class="emoticon icon-evil"></span>');
                     text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
@@ -136,16 +136,16 @@
 
     var converse = {
         templates: templates,
-        emit: function(evt, data) {
+        emit: function (evt, data) {
             $(this).trigger(evt, data);
         },
-        once: function(evt, handler) {
+        once: function (evt, handler) {
             $(this).one(evt, handler);
         },
-        on: function(evt, handler) {
+        on: function (evt, handler) {
             $(this).bind(evt, handler);
         },
-        off: function(evt, handler) {
+        off: function (evt, handler) {
             $(this).unbind(evt, handler);
         },
         refreshWebkit: function () {
@@ -588,7 +588,7 @@
         };
 
         this.registerGlobalEventHandlers = function () {
-            $(document).click(function() {
+            $(document).click(function () {
                 if ($('.toggle-otr ul').is(':visible')) {
                     $('.toggle-otr ul', this).slideUp();
                 }
@@ -653,7 +653,7 @@
               })
               .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
             this.connection.send(carbons_iq);
-            this.connection.addHandler(function(iq) {
+            this.connection.addHandler(function (iq) {
                 //TODO: check if carbons was enabled:
             }, null, "iq", null, "enablecarbons");
         };
@@ -1550,7 +1550,7 @@
                 }
                 var ctx = canvas.getContext('2d');
                 var img = new Image();   // Create new Image object
-                img.onload = function() {
+                img.onload = function () {
                     var ratio = img.width/img.height;
                     ctx.drawImage(img, 0,0, 35*ratio, 35);
                 };
@@ -2911,7 +2911,7 @@
                 }, this);
             },
 
-            _ensureElement: function() {
+            _ensureElement: function () {
                 /* Override method from backbone.js
                  * If the #conversejs element doesn't exist, create it.
                  */
@@ -3019,18 +3019,17 @@
                  * If it doesn't exist, create it.
                  */
                 var chatbox  = this.model.get(attrs.jid);
-                if (chatbox) {
-                    if (chatbox.get('minimized')) {
-                        chatbox.maximize();
-                    } else {
-                        chatbox.trigger('show');
-                    }
-                } else {
+                if (!chatbox) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
                             converse.log(response.responseText);
                         }
                     });
+                }
+                if (chatbox.get('minimized')) {
+                    chatbox.maximize();
+                } else {
+                    chatbox.trigger('show');
                 }
                 return chatbox;
             }
@@ -3258,6 +3257,8 @@
 
             openChat: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                // XXX: Can this.model.attributes be used here, instead of
+                // manually specifying all attributes?
                 return converse.chatboxviews.showChat({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
@@ -4236,7 +4237,7 @@
                             'desc_change_status': __('Click to change your chat status')
                             }));
                 // iterate through all the <option> elements and add option values
-                options.each(function(){
+                options.each(function (){
                     options_list.push(converse.templates.status_option({
                         'value': $(this).val(),
                         'text': this.text
@@ -4626,14 +4627,28 @@
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
     };
+
+    var wrappedChatBox = function (chatbox) {
+        return {
+            'endOTR': $.proxy(chatbox.endOTR, chatbox),
+            'get': $.proxy(chatbox.get, chatbox),
+            'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
+            'maximize': $.proxy(chatbox.maximize, chatbox),
+            'minimize': $.proxy(chatbox.minimize, chatbox),
+            'set': $.proxy(chatbox.set, chatbox)
+        };
+    };
     return {
-        'initialize': function (settings, callback) {
-            converse.initialize(settings, callback);
-        },
         'getBuddy': function (jid) {
             var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
             if (contact) {
                 return contact.attributes;
+            }
+        },
+        'getChatBox': function (jid) {
+            var chatbox = converse.chatboxes.get(jid);
+            if (chatbox) {
+                return wrappedChatBox(chatbox);
             }
         },
         'getRID': function () {
@@ -4648,13 +4663,22 @@
             }
             return null;
         },
-        'once': function(evt, handler) {
+        'initialize': function (settings, callback) {
+            converse.initialize(settings, callback);
+        },
+        'openChatBox': function (jid) {
+            var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+            if (contact) {
+                return wrappedChatBox(converse.chatboxviews.showChat(contact.attributes));
+            }
+        },
+        'once': function (evt, handler) {
             converse.once(evt, handler);
         },
-        'on': function(evt, handler) {
+        'on': function (evt, handler) {
             converse.on(evt, handler);
         },
-        'off': function(evt, handler) {
+        'off': function (evt, handler) {
             converse.off(evt, handler);
         },
         'jQuery': $

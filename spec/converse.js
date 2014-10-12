@@ -10,8 +10,10 @@
     return describe("Converse", $.proxy(function(mock, test_utils) {
 
         beforeEach($.proxy(function () {
-            window.localStorage.clear();
-            window.sessionStorage.clear();
+            test_utils.closeAllChatBoxes();
+            test_utils.clearBrowserStorage();
+            converse.rosterview.model.reset();
+            test_utils.createContacts('current');
         }, converse));
 
         it("has an API method for retrieving the next RID", $.proxy(function () {
@@ -46,12 +48,43 @@
 
         it("has an API method for retrieving a buddy's attributes", $.proxy(function () {
             var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            expect(converse_api.getBuddy(jid)).toBeFalsy();
-            test_utils.createContacts('current');
+            expect(converse_api.getBuddy('non-existing@jabber.org')).toBeFalsy();
             var attrs = converse_api.getBuddy(jid);
             expect(typeof attrs).toBe('object');
             expect(attrs.fullname).toBe(mock.cur_names[0]);
             expect(attrs.jid).toBe(jid);
         }, converse));
+
+        it("has an API method, openChatBox, for opening a chat box for a buddy", $.proxy(function () {
+            expect(converse_api.openChatBox('non-existing@jabber.org')).toBeFalsy(); // test on user that doesn't exist.
+            var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            var box = converse_api.openChatBox(jid);
+            expect(box instanceof Object).toBeTruthy();
+            expect(box.get('box_id')).toBe(b64_sha1(jid));
+            var chatboxview = this.chatboxviews.get(jid);
+            expect(chatboxview.$el.is(':visible')).toBeTruthy();
+        }, converse));
+
+        it("will focus an already open chat box, if the openChatBox API method is called for it.", $.proxy(function () {
+            // Calling openChatBox on an already open chat will focus it.
+            var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            var chatboxview = this.chatboxviews.get(jid);
+            spyOn(chatboxview, 'focus');
+            test_utils.openChatBoxFor(jid);
+            box = converse_api.openChatBox(jid);
+            expect(chatboxview.focus).toHaveBeenCalled();
+            expect(box.get('box_id')).toBe(b64_sha1(jid));
+
+        }, converse));
+
+        it("has an API method, getChatBox, for retrieving chat box", $.proxy(function () {
+            var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            expect(converse_api.getChatBox(jid)).toBeFalsy();
+            test_utils.openChatBoxFor(jid);
+            var box = converse_api.getChatBox(jid);
+            expect(box instanceof Object).toBeTruthy();
+            expect(box.get('box_id')).toBe(b64_sha1(jid));
+        }, converse));
+
     }, converse, mock, test_utils));
 }));

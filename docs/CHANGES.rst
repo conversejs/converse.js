@@ -8,6 +8,7 @@ Changelog
 * Bugfix. Cannot read property "top" of undefined. [jcbrand]
 * Add new event, noResumeableSession, for when keepalive=true and there aren't
   any prebind session tokens. [jcbrand]
+* Add 2 new API methods, getChatBox and openChatBox. [jcbrand]
 
 0.8.3 (2014-09-22)
 ------------------

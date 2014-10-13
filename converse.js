@@ -41,25 +41,6 @@
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
-    // TODO: these non-backbone methods should all be moved to utils.
-    $.fn.addHyperlinks = function () {
-        if (this.length > 0) {
-            this.each(function (i, obj) {
-                var x = $(obj).html();
-                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
-                if (list) {
-                    for (i=0; i<list.length; i++) {
-                        var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], "<a target='_blank' href='" + prot + escaped_url + "'>"+ list[i] + "</a>" );
-                    }
-                }
-                $(obj).html(x);
-            });
-        }
-        return this;
-    };
-
     var contains = function (attr, query) {
         return function (item) {
             if (typeof attr === 'object') {
@@ -81,22 +62,22 @@
         };
     };
 
+    // XXX: these can perhaps be moved to src/polyfills.js
     String.prototype.splitOnce = function (delimiter) {
         var components = this.split(delimiter);
         return [components.shift(), components.join(delimiter)];
     };
 
-    var playNotification = function () {
-        var audio;
-        if (converse.play_sounds && typeof Audio !== "undefined"){
-            audio = new Audio("sounds/msg_received.ogg");
-            if (audio.canPlayType('/audio/ogg')) {
-                audio.play();
-            } else {
-                audio = new Audio("/sounds/msg_received.mp3");
-                audio.play();
-            }
+    String.prototype.hash = function() {
+        // XXX: We should probably use the crypto libs we already use for OTR
+        var hash = 0, i, chr, len;
+        if (this.length === 0) return hash;
+        for (i = 0, len = this.length; i < len; i++) {
+            chr   = this.charCodeAt(i);
+            hash  = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
         }
+        return Math.abs(hash);
     };
 
     $.fn.addEmoticons = function () {
@@ -132,6 +113,19 @@
             }
         }
         return this;
+    };
+
+    var playNotification = function () {
+        var audio;
+        if (converse.play_sounds && typeof Audio !== "undefined"){
+            audio = new Audio("sounds/msg_received.ogg");
+            if (audio.canPlayType('/audio/ogg')) {
+                audio.play();
+            } else {
+                audio = new Audio("/sounds/msg_received.mp3");
+                audio.play();
+            }
+        }
     };
 
     var converse = {
@@ -2308,10 +2302,8 @@
                 this.showStatusNotification(__("Error: could not execute the command"), true);
             },
 
-            sendChatRoomMessage: function (body) {
-                var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
-                    $chat_content, args;
-
+            sendChatRoomMessage: function (text) {
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args, fullname, time;
                 switch (match[1]) {
                     case 'ban':
                         args = match[2].splitOnce(' ');
@@ -2325,8 +2317,7 @@
                         converse.connection.muc.deop(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'help':
-                        $chat_content = this.$el.find('.chat-content');
-                        msgs = [
+                        this.showHelpMessages([
                             '<strong>/ban</strong>: '   +__('Ban user from room'),
                             '<strong>/clear</strong>: ' +__('Remove messages'),
                             '<strong>/help</strong>: '  +__('Show this menu'),
@@ -2336,8 +2327,7 @@
                             '<strong>/nick</strong>: '  +__('Change your nickname'),
                             '<strong>/topic</strong>: ' +__('Set room topic'),
                             '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
-                            ];
-                        this.showHelpMessages(msgs);
+                        ]);
                         break;
                     case 'kick':
                         args = match[2].splitOnce(' ');
@@ -2362,7 +2352,15 @@
                         converse.connection.muc.voice(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     default:
-                        this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);
+                        fullname = converse.xmppstatus.get('fullname');
+                        time = moment().format();
+                        this.model.messages.create({
+                            fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
+                            sender: 'me',
+                            time: time,
+                            message: text,
+                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((time+text).hash()))
+                        });
                     break;
                 }
             },
@@ -2723,10 +2721,15 @@
                 var $message = $(message),
                     body = $message.children('body').text(),
                     jid = $message.attr('from'),
+                    msgid = $message.attr('id'),
                     resource = Strophe.getResourceFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '',
                     delayed = $message.find('delay').length > 0,
                     subject = $message.children('subject').text();
+
+                if (this.model.messages.findWhere({msgid: msgid})) {
+                    return true; // We already have this message stored.
+                }
                 this.showStatusMessages($message);
                 if (subject) {
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);

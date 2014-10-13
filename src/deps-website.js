@@ -1,5 +1,6 @@
 define("converse-dependencies", [
     "jquery",
+    "utils",
     "otr",
     "moment",
     "locales",
@@ -9,16 +10,16 @@ define("converse-dependencies", [
     "jquery.browser",
     "jquery.easing", // XXX: Only for https://conversejs.org
     "typeahead",
-    "utils",
     "strophe",
     "strophe.muc",
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function($, otr, moment) {
+], function($, utils, otr, moment) {
     return {
         'jQuery': $,
         'otr': otr,
-        'moment': moment
+        'moment': moment,
+        'utils': utils
     };
 });

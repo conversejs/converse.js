@@ -26,4 +26,33 @@ define(["jquery"], function ($) {
         }
         return this;
     };
+
+    var utils = {
+        // Translation machinery
+        // ---------------------
+        __: $.proxy(function (str) {
+            // Translation factory
+            if (this.i18n === undefined) {
+                this.i18n = locales.en;
+            }
+            var t = this.i18n.translate(str);
+            if (arguments.length>1) {
+                return t.fetch.apply(t, [].slice.call(arguments,1));
+            } else {
+                return t.fetch();
+            }
+        }, this),
+
+        ___: function (str) {
+            /* XXX: This is part of a hack to get gettext to scan strings to be
+                * translated. Strings we cannot send to the function above because
+                * they require variable interpolation and we don't yet have the
+                * variables at scan time.
+                *
+                * See actionInfoMessages
+                */
+            return str;
+        }
+    };
+    return utils;
 });

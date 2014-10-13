@@ -12,19 +12,34 @@
         define("converse",
               ["converse-dependencies", "converse-templates"],
             function (dependencies, templates) {
-                var otr = dependencies.otr,
-                    moment = dependencies.moment;
+                var otr = dependencies.otr;
                 if (typeof otr !== "undefined") {
-                    return factory(dependencies.jQuery, _, otr.OTR, otr.DSA, templates, moment);
+                    return factory(
+                        dependencies.jQuery,
+                        _,
+                        otr.OTR,
+                        otr.DSA,
+                        templates,
+                        dependencies.moment,
+                        dependencies.utils
+                    );
                 } else {
-                    return factory(dependencies.jQuery, _, undefined, undefined, templates, moment);
+                    return factory(
+                        dependencies.jQuery,
+                        _,
+                        undefined,
+                        undefined,
+                        templates,
+                        dependencies.moment,
+                        dependencies.utils
+                    );
                 }
             }
         );
     } else {
-        root.converse = factory(jQuery, _, OTR, DSA, JST, moment);
+        root.converse = factory(jQuery, _, OTR, DSA, JST, moment, utils);
     }
-}(this, function ($, _, OTR, DSA, templates, moment) {
+}(this, function ($, _, OTR, DSA, templates, moment, utils) {
     // "use strict";
     // Cannot use this due to Safari bug.
     // See https://github.com/jcbrand/converse.js/issues/196
@@ -297,30 +312,8 @@
 
         // Translation machinery
         // ---------------------
-        var __ = $.proxy(function (str) {
-            // Translation factory
-            if (this.i18n === undefined) {
-                this.i18n = locales.en;
-            }
-            var t = this.i18n.translate(str);
-            if (arguments.length>1) {
-                return t.fetch.apply(t, [].slice.call(arguments,1));
-            } else {
-                return t.fetch();
-            }
-        }, this);
-
-        var ___ = function (str) {
-            /* XXX: This is part of a hack to get gettext to scan strings to be
-             * translated. Strings we cannot send to the function above because
-             * they require variable interpolation and we don't yet have the
-             * variables at scan time.
-             *
-             * See actionInfoMessages
-             */
-            return str;
-        };
-
+        var __ = utils.__;
+        var ___ = utils.___;
         // Translation aware constants
         // ---------------------------
         var OTR_CLASS_MAPPING = {};
@@ -1100,7 +1093,6 @@
                     // are mentioned.
                     extra_classes += ' mentioned';
                 }
-
                 var message = template({
                     'sender': msg_dict.sender,
                     'time': msg_time.format('hh:mm'),
@@ -4626,7 +4618,7 @@
 
         this._initializePlugins = function () {
             _.each(this.plugins, $.proxy(function (plugin) {
-                $.proxy(plugin, this)();
+                $.proxy(plugin, this)(this);
             }, this));
         };
 

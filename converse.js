@@ -2284,8 +2284,19 @@
                 this.showStatusNotification(__("Error: could not execute the command"), true);
             },
 
+            createChatRoomMessage: function (text) {
+                var fullname = converse.xmppstatus.get('fullname');
+                this.model.messages.create({
+                    fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
+                    sender: 'me',
+                    time: moment().format(),
+                    message: text,
+                    msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((new Date()).getTime()))
+                });
+            },
+
             sendChatRoomMessage: function (text) {
-                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args, fullname;
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args;
                 switch (match[1]) {
                     case 'ban':
                         args = match[2].splitOnce(' ');
@@ -2334,14 +2345,7 @@
                         converse.connection.muc.voice(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     default:
-                        fullname = converse.xmppstatus.get('fullname');
-                        this.model.messages.create({
-                            fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
-                            sender: 'me',
-                            time: moment().format(),
-                            message: text,
-                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((new Date()).getTime()))
-                        });
+                        this.createChatRoomMessage(text);
                     break;
                 }
             },

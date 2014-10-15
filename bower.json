@@ -17,9 +17,7 @@
     "backbone.overview": "*",
     "strophe": "~1.1.3",
     "strophe.roster": "https://raw.github.com/strophe/strophejs-plugins/b1f364eb6e854ffe844c57add38e885cfeb9b498/roster/strophe.roster.js",
-    "strophe.vcard": "https://raw.github.com/strophe/strophejs-plugins/f5c9e16b463610d501591452cded0359f53aae48/vcard/strophe.vcard.js",
-    "strophe.disco": "https://raw.github.com/jcbrand/strophejs-plugins/75c8693992bc357c699b6d615eeb396e799f5c02/disco/strophe.disco.js",
-    "strophe.muc": "https://raw.githubusercontent.com/strophe/strophejs-plugins/8056cbca4dcd69700c44e1e3341a9ce387a6af0c/muc/strophe.muc.js",
+    "strophe.muc": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/muc/strophe.muc.js",
     "otr": "0.2.12",
     "crypto-js-evanvosberg": "~3.1.2",
     "almond": "~0.2.9",
@@ -32,6 +30,7 @@
     "bootstrapJS": "https://raw.githubusercontent.com/jcbrand/bootstrap/7d96a5f60d26c67b5348b270a775518b96a702c8/dist/js/bootstrap.js",
     "fontawesome": "~4.1.0",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js"
+    "strophejs-plugins": "~0.0.4"
   },
   "exportsOverride": {}
 }

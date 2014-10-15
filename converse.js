@@ -11,20 +11,35 @@
     if (typeof define === 'function' && define.amd) {
         define("converse",
               ["converse-dependencies", "converse-templates"],
-            function(dependencies, templates) {
-                var otr = dependencies.otr,
-                    moment = dependencies.moment;
+            function (dependencies, templates) {
+                var otr = dependencies.otr;
                 if (typeof otr !== "undefined") {
-                    return factory(dependencies.jQuery, _, otr.OTR, otr.DSA, templates, moment);
+                    return factory(
+                        dependencies.jQuery,
+                        _,
+                        otr.OTR,
+                        otr.DSA,
+                        templates,
+                        dependencies.moment,
+                        dependencies.utils
+                    );
                 } else {
-                    return factory(dependencies.jQuery, _, undefined, undefined, templates, moment);
+                    return factory(
+                        dependencies.jQuery,
+                        _,
+                        undefined,
+                        undefined,
+                        templates,
+                        dependencies.moment,
+                        dependencies.utils
+                    );
                 }
             }
         );
     } else {
-        root.converse = factory(jQuery, _, OTR, DSA, JST, moment);
+        root.converse = factory(jQuery, _, OTR, DSA, JST, moment, utils);
     }
-}(this, function ($, _, OTR, DSA, templates, moment) {
+}(this, function ($, _, OTR, DSA, templates, moment, utils) {
     // "use strict";
     // Cannot use this due to Safari bug.
     // See https://github.com/jcbrand/converse.js/issues/196
@@ -39,25 +54,6 @@
     _.templateSettings = {
         evaluate : /\{\[([\s\S]+?)\]\}/g,
         interpolate : /\{\{([\s\S]+?)\}\}/g
-    };
-
-    // TODO: these non-backbone methods should all be moved to utils.
-    $.fn.addHyperlinks = function() {
-        if (this.length > 0) {
-            this.each(function(i, obj) {
-                var x = $(obj).html();
-                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
-                if (list) {
-                    for (i=0; i<list.length; i++) {
-                        var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], "<a target='_blank' href='" + prot + escaped_url + "'>"+ list[i] + "</a>" );
-                    }
-                }
-                $(obj).html(x);
-            });
-        }
-        return this;
     };
 
     var contains = function (attr, query) {
@@ -81,28 +77,28 @@
         };
     };
 
+    // XXX: these can perhaps be moved to src/polyfills.js
     String.prototype.splitOnce = function (delimiter) {
         var components = this.split(delimiter);
         return [components.shift(), components.join(delimiter)];
     };
 
-    var playNotification = function () {
-        var audio;
-        if (converse.play_sounds && typeof Audio !== "undefined"){
-            audio = new Audio("sounds/msg_received.ogg");
-            if (audio.canPlayType('/audio/ogg')) {
-                audio.play();
-            } else {
-                audio = new Audio("/sounds/msg_received.mp3");
-                audio.play();
-            }
+    String.prototype.hash = function() {
+        // XXX: We should probably use the crypto libs we already use for OTR
+        var hash = 0, i, chr, len;
+        if (this.length === 0) return hash;
+        for (i = 0, len = this.length; i < len; i++) {
+            chr   = this.charCodeAt(i);
+            hash  = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
         }
+        return Math.abs(hash);
     };
 
-    $.fn.addEmoticons = function() {
+    $.fn.addEmoticons = function () {
         if (converse.visible_toolbar_buttons.emoticons) {
             if (this.length > 0) {
-                this.each(function(i, obj) {
+                this.each(function (i, obj) {
                     var text = $(obj).html();
                     text = text.replace(/&gt;:\)/g, '<span class="emoticon icon-evil"></span>');
                     text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
@@ -134,18 +130,32 @@
         return this;
     };
 
+    var playNotification = function () {
+        var audio;
+        if (converse.play_sounds && typeof Audio !== "undefined"){
+            audio = new Audio("sounds/msg_received.ogg");
+            if (audio.canPlayType('/audio/ogg')) {
+                audio.play();
+            } else {
+                audio = new Audio("/sounds/msg_received.mp3");
+                audio.play();
+            }
+        }
+    };
+
     var converse = {
+        plugins: {},
         templates: templates,
-        emit: function(evt, data) {
+        emit: function (evt, data) {
             $(this).trigger(evt, data);
         },
-        once: function(evt, handler) {
+        once: function (evt, handler) {
             $(this).one(evt, handler);
         },
-        on: function(evt, handler) {
+        on: function (evt, handler) {
             $(this).bind(evt, handler);
         },
-        off: function(evt, handler) {
+        off: function (evt, handler) {
             $(this).unbind(evt, handler);
         },
         refreshWebkit: function () {
@@ -302,30 +312,8 @@
 
         // Translation machinery
         // ---------------------
-        var __ = $.proxy(function (str) {
-            // Translation factory
-            if (this.i18n === undefined) {
-                this.i18n = locales.en;
-            }
-            var t = this.i18n.translate(str);
-            if (arguments.length>1) {
-                return t.fetch.apply(t, [].slice.call(arguments,1));
-            } else {
-                return t.fetch();
-            }
-        }, this);
-
-        var ___ = function (str) {
-            /* XXX: This is part of a hack to get gettext to scan strings to be
-             * translated. Strings we cannot send to the function above because
-             * they require variable interpolation and we don't yet have the
-             * variables at scan time.
-             *
-             * See actionInfoMessages
-             */
-            return str;
-        };
-
+        var __ = utils.__;
+        var ___ = utils.___;
         // Translation aware constants
         // ---------------------------
         var OTR_CLASS_MAPPING = {};
@@ -588,7 +576,7 @@
         };
 
         this.registerGlobalEventHandlers = function () {
-            $(document).click(function() {
+            $(document).click(function () {
                 if ($('.toggle-otr ul').is(':visible')) {
                     $('.toggle-otr ul', this).slideUp();
                 }
@@ -653,7 +641,7 @@
               })
               .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
             this.connection.send(carbons_iq);
-            this.connection.addHandler(function(iq) {
+            this.connection.addHandler(function (iq) {
                 //TODO: check if carbons was enabled:
             }, null, "iq", null, "enablecarbons");
         };
@@ -1105,7 +1093,6 @@
                     // are mentioned.
                     extra_classes += ' mentioned';
                 }
-
                 var message = template({
                     'sender': msg_dict.sender,
                     'time': msg_time.format('hh:mm'),
@@ -1550,7 +1537,7 @@
                 }
                 var ctx = canvas.getContext('2d');
                 var img = new Image();   // Create new Image object
-                img.onload = function() {
+                img.onload = function () {
                     var ratio = img.width/img.height;
                     ctx.drawImage(img, 0,0, 35*ratio, 35);
                 };
@@ -2307,10 +2294,8 @@
                 this.showStatusNotification(__("Error: could not execute the command"), true);
             },
 
-            sendChatRoomMessage: function (body) {
-                var match = body.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false],
-                    $chat_content, args;
-
+            sendChatRoomMessage: function (text) {
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args, fullname, time;
                 switch (match[1]) {
                     case 'ban':
                         args = match[2].splitOnce(' ');
@@ -2324,8 +2309,7 @@
                         converse.connection.muc.deop(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'help':
-                        $chat_content = this.$el.find('.chat-content');
-                        msgs = [
+                        this.showHelpMessages([
                             '<strong>/ban</strong>: '   +__('Ban user from room'),
                             '<strong>/clear</strong>: ' +__('Remove messages'),
                             '<strong>/help</strong>: '  +__('Show this menu'),
@@ -2335,8 +2319,7 @@
                             '<strong>/nick</strong>: '  +__('Change your nickname'),
                             '<strong>/topic</strong>: ' +__('Set room topic'),
                             '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
-                            ];
-                        this.showHelpMessages(msgs);
+                        ]);
                         break;
                     case 'kick':
                         args = match[2].splitOnce(' ');
@@ -2361,7 +2344,15 @@
                         converse.connection.muc.voice(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
                         break;
                     default:
-                        this.last_msgid = converse.connection.muc.groupchat(this.model.get('jid'), body);
+                        fullname = converse.xmppstatus.get('fullname');
+                        time = moment().format();
+                        this.model.messages.create({
+                            fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
+                            sender: 'me',
+                            time: time,
+                            message: text,
+                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((time+text).hash()))
+                        });
                     break;
                 }
             },
@@ -2722,10 +2713,15 @@
                 var $message = $(message),
                     body = $message.children('body').text(),
                     jid = $message.attr('from'),
+                    msgid = $message.attr('id'),
                     resource = Strophe.getResourceFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '',
                     delayed = $message.find('delay').length > 0,
                     subject = $message.children('subject').text();
+
+                if (this.model.messages.findWhere({msgid: msgid})) {
+                    return true; // We already have this message stored.
+                }
                 this.showStatusMessages($message);
                 if (subject) {
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
@@ -2911,7 +2907,7 @@
                 }, this);
             },
 
-            _ensureElement: function() {
+            _ensureElement: function () {
                 /* Override method from backbone.js
                  * If the #conversejs element doesn't exist, create it.
                  */
@@ -3019,18 +3015,17 @@
                  * If it doesn't exist, create it.
                  */
                 var chatbox  = this.model.get(attrs.jid);
-                if (chatbox) {
-                    if (chatbox.get('minimized')) {
-                        chatbox.maximize();
-                    } else {
-                        chatbox.trigger('show');
-                    }
-                } else {
+                if (!chatbox) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
                             converse.log(response.responseText);
                         }
                     });
+                }
+                if (chatbox.get('minimized')) {
+                    chatbox.maximize();
+                } else {
+                    chatbox.trigger('show');
                 }
                 return chatbox;
             }
@@ -3085,14 +3080,10 @@
                 return this;
             },
 
-            restore: function(ev) {
+            restore: _.debounce(function (ev) {
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
-                this._restore();
-            },
-
-            _restore: _.debounce(function () {
                 this.remove();
                 this.model.maximize();
             }, 200)
@@ -3262,6 +3253,8 @@
 
             openChat: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                // XXX: Can this.model.attributes be used here, instead of
+                // manually specifying all attributes?
                 return converse.chatboxviews.showChat({
                     'id': this.model.get('jid'),
                     'jid': this.model.get('jid'),
@@ -4240,7 +4233,7 @@
                             'desc_change_status': __('Click to change your chat status')
                             }));
                 // iterate through all the <option> elements and add option values
-                options.each(function(){
+                options.each(function (){
                     options_list.push(converse.templates.status_option({
                         'value': $(this).val(),
                         'text': this.text
@@ -4623,21 +4616,42 @@
             return this;
         };
 
+        this._initializePlugins = function () {
+            _.each(this.plugins, $.proxy(function (plugin) {
+                $.proxy(plugin, this)(this);
+            }, this));
+        };
+
         // Initialization
         // --------------
         // This is the end of the initialize method.
+        this._initializePlugins();
         this._initialize();
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
     };
+
+    var wrappedChatBox = function (chatbox) {
+        return {
+            'endOTR': $.proxy(chatbox.endOTR, chatbox),
+            'get': $.proxy(chatbox.get, chatbox),
+            'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
+            'maximize': $.proxy(chatbox.maximize, chatbox),
+            'minimize': $.proxy(chatbox.minimize, chatbox),
+            'set': $.proxy(chatbox.set, chatbox)
+        };
+    };
     return {
-        'initialize': function (settings, callback) {
-            converse.initialize(settings, callback);
-        },
         'getBuddy': function (jid) {
             var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
             if (contact) {
                 return contact.attributes;
+            }
+        },
+        'getChatBox': function (jid) {
+            var chatbox = converse.chatboxes.get(jid);
+            if (chatbox) {
+                return wrappedChatBox(chatbox);
             }
         },
         'getRID': function () {
@@ -4652,15 +4666,27 @@
             }
             return null;
         },
-        'once': function(evt, handler) {
+        'initialize': function (settings, callback) {
+            converse.initialize(settings, callback);
+        },
+        'jQuery': $,
+        'openChatBox': function (jid) {
+            var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+            if (contact) {
+                return wrappedChatBox(converse.chatboxviews.showChat(contact.attributes));
+            }
+        },
+        'once': function (evt, handler) {
             converse.once(evt, handler);
         },
-        'on': function(evt, handler) {
+        'on': function (evt, handler) {
             converse.on(evt, handler);
         },
-        'off': function(evt, handler) {
+        'off': function (evt, handler) {
             converse.off(evt, handler);
         },
-        'jQuery': $
+        'registerPlugin': function (name, callback) {
+            converse.plugins[name] = callback;
+        },
     };
 }));

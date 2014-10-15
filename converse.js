@@ -2338,7 +2338,7 @@
                             sender: 'me',
                             time: moment().format(),
                             message: text,
-                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, (new Date()).getTime())
+                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((new Date()).getTime()))
                         });
                     break;
                 }

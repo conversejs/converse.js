@@ -1,12 +1,13 @@
 (function (root, factory) {
     define([
+        "jquery",
         "mock",
         "test_utils"
-        ], function (mock, test_utils) {
-            return factory(mock, test_utils);
+        ], function ($, mock, test_utils) {
+            return factory($, mock, test_utils);
         }
     );
-} (this, function (mock, test_utils) {
+} (this, function ($, mock, test_utils) {
     return describe("Chatboxes", $.proxy(function(mock, test_utils) {
         describe("A Chatbox", $.proxy(function () {
             beforeEach(function () {

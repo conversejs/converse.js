@@ -46,7 +46,7 @@
             'join': function () {},
             'leave': function () {},
             'rooms': {},
-            'groupchat': function () {}
+            'groupchat': function () {return String((new Date()).getTime()); }
         },
         'service': 'jasmine tests',
         'jid': 'dummy@localhost',

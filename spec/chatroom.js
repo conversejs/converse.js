@@ -1,12 +1,13 @@
 (function (root, factory) {
     define([
+        "jquery",
         "mock",
         "test_utils"
-        ], function (mock, test_utils) {
-            return factory(mock, test_utils);
+        ], function ($, mock, test_utils) {
+            return factory($, mock, test_utils);
         }
     );
-} (this, function (mock, test_utils) {
+} (this, function ($, mock, test_utils) {
     return describe("ChatRooms", $.proxy(function (mock, test_utils) {
         describe("A Chat Room", $.proxy(function () {
             beforeEach(function () {
@@ -139,9 +140,9 @@
 
                 var message = $msg({
                     from: 'lounge@localhost/dummy',
-                    id: '2',
                     to: 'dummy@localhost.com',
-                    type: 'groupchat'
+                    type: 'groupchat',
+                    id: view.model.messages.at(0).get('msgid')
                 }).c('body').t(text);
                 view.onChatRoomMessage(message.nodeTree);
                 var $chat_content = view.$el.find('.chat-content');

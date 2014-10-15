@@ -1,12 +1,13 @@
 (function (root, factory) {
     define([
+        "jquery",
         "mock",
         "test_utils"
-        ], function (mock, test_utils) {
-            return factory(mock, test_utils);
+        ], function ($, mock, test_utils) {
+            return factory($, mock, test_utils);
         }
     );
-} (this, function (mock, test_utils) {
+} (this, function ($, mock, test_utils) {
     return describe("The Converse Event Emitter", $.proxy(function(mock, test_utils) {
         window.localStorage.clear();
         window.sessionStorage.clear();

@@ -83,18 +83,6 @@
         return [components.shift(), components.join(delimiter)];
     };
 
-    String.prototype.hash = function() {
-        // XXX: We should probably use the crypto libs we already use for OTR
-        var hash = 0, i, chr, len;
-        if (this.length === 0) return hash;
-        for (i = 0, len = this.length; i < len; i++) {
-            chr   = this.charCodeAt(i);
-            hash  = ((hash << 5) - hash) + chr;
-            hash |= 0; // Convert to 32bit integer
-        }
-        return Math.abs(hash);
-    };
-
     $.fn.addEmoticons = function () {
         if (converse.visible_toolbar_buttons.emoticons) {
             if (this.length > 0) {
@@ -2295,7 +2283,7 @@
             },
 
             sendChatRoomMessage: function (text) {
-                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args, fullname, time;
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args, fullname;
                 switch (match[1]) {
                     case 'ban':
                         args = match[2].splitOnce(' ');
@@ -2345,13 +2333,12 @@
                         break;
                     default:
                         fullname = converse.xmppstatus.get('fullname');
-                        time = moment().format();
                         this.model.messages.create({
                             fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
                             sender: 'me',
-                            time: time,
+                            time: moment().format(),
                             message: text,
-                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((time+text).hash()))
+                            msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, (new Date()).getTime())
                         });
                     break;
                 }

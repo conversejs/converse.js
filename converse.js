@@ -894,6 +894,7 @@
                     delayed = $message.find('delay').length > 0,
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
+                    msgid = $message.attr('id'),
                     stamp, time, sender, from;
 
                 if (is_groupchat) {
@@ -931,7 +932,8 @@
                         sender: sender,
                         delayed: delayed,
                         time: time,
-                        message: body
+                        message: body,
+                        msgid: msgid
                     });
                 }
             },

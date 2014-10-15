@@ -15,10 +15,10 @@ config = {
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
         "strophe":                  "components/strophe/strophe",
-        "strophe.disco":            "components/strophe.disco/index",
+        "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.muc":              "components/strophe.muc/index",
         "strophe.roster":           "components/strophe.roster/index",
-        "strophe.vcard":            "components/strophe.vcard/index",
+        "strophe.vcard":            "components/strophejs-plugins/vcard/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
         "typeahead":                "components/typeahead.js/index",

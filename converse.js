@@ -1051,7 +1051,7 @@
             },
 
             clearChatRoomMessages: function (ev) {
-                ev.stopPropagation();
+                if (typeof ev !== "undefined") { ev.stopPropagation(); }
                 var result = confirm(__("Are you sure you want to clear the messages from this room?"));
                 if (result === true) {
                     this.$el.find('.chat-content').empty();

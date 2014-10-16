@@ -50,7 +50,7 @@ msgstr "Ce contact est déconnecté"
 
 #: converse.js:347
 msgid "This contact is unavailable"
-msgstr "Ce scontact est indisponible"
+msgstr "Ce contact est indisponible"
 
 #: converse.js:348
 msgid "This contact is away for an extended period"
@@ -194,7 +194,7 @@ msgstr "Effacer les messages"
 
 #: converse.js:1285
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr "Êtes-vous sûr(e) d'effecer les messages de ce chat?"
+msgstr "Êtes-vous sûr(e) de vouloir effacer les messages de ce chat?"
 
 #: converse.js:1320
 msgid "Your message could not be sent"
@@ -258,7 +258,7 @@ msgstr "Quelle est la réponse à la question de sécurité?"
 
 #: converse.js:1377
 msgid "Invalid authentication scheme provided"
-msgstr "Mode d'authentification fourni invalid"
+msgstr "Mode d'authentification fourni invalide"
 
 #: converse.js:1488
 msgid "Your messages are not encrypted anymore"
@@ -274,7 +274,7 @@ msgstr ""
 
 #: converse.js:1492
 msgid "Your buddy's identify has been verified."
-msgstr "L'identité de votre interlocuteur a été vérifiée.""
+msgstr "L'identité de votre interlocuteur a été vérifiée."
 
 #: converse.js:1494
 msgid "Your buddy has ended encryption on their end, you should do the same."
@@ -726,11 +726,11 @@ msgstr ""
 
 #: converse.js:3058
 msgid "Click to restore this chat"
-msgstr "Cliquez pour rouvrir ce chat"
+msgstr "Cliquez pour ré-ouvrir ce chat"
 
 #: converse.js:3202
 msgid "Minimized"
-msgstr "Minimisée"
+msgstr "Réduit"
 
 #: converse.js:3274
 msgid "Are you sure you want to remove this contact?"

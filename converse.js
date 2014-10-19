@@ -2264,19 +2264,17 @@
                 if (!this.model.get('hidden_occupants')) {
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                    this.$('div.participants').animate({width: 0}).hide();
-                    this.$('.chat-area').animate({width: '100%'}, $.proxy(function () {
+                    this.$('form.sendXMPPMessage, .chat-area').animate({width: '100%'});
+                    this.$('div.participants').animate({width: 0}, $.proxy(function () {
                         this.scrollDown();
                     }, this));
-                    this.$('form.sendXMPPMessage').animate({width: '100%'});
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
-                    this.$('.chat-area').animate({width: '200px'}, $.proxy(function () {
-                        this.$('div.participants').css({width: '100px'}).show();
+                    this.$('.chat-area, form.sendXMPPMessage').css({width: ''});
+                    this.$('div.participants').show().animate({width: 'auto'}, $.proxy(function () {
                         this.scrollDown();
                     }, this));
-                    this.$('form.sendXMPPMessage').animate({width: '200px'});
                 }
             },
 

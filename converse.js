@@ -4530,7 +4530,7 @@
 
         this.initConnection = function () {
             var rid, sid, jid;
-            if (this.connection) {
+            if (this.connection && this.connection.connected) {
                 this.onConnected();
             } else {
                 // XXX: it's not yet clear what the order of preference should

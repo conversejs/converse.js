@@ -4676,6 +4676,29 @@
         'off': function (evt, handler) {
             converse.off(evt, handler);
         },
+        'override': function (obj, attributes) {
+            /* Helper method for overriding or extending Converse's Backbone Views or Models
+             *
+             * When a method is overriden, the original will still be available
+             * on the _super attribute of the object being overridden.
+             *
+             * obj: The Backbone View or Model
+             * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
+             */
+            if (!obj.prototype._super) {
+                obj.prototype._super = {};
+            }
+            _.each(attributes, function (value, key) {
+                if (key === 'events') {
+                    obj.prototype[key] = _.extend(value, obj.prototype[key]);
+                } else {
+                    if (typeof key === 'function') {
+                        obj.prototype._super[key] = obj.prototype[key];
+                    }
+                    obj.prototype[key] = value;
+                }
+            });
+        },
         'registerPlugin': function (name, callback) {
             converse.plugins[name] = callback;
         },

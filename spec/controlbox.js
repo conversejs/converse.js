@@ -385,11 +385,15 @@
             }, converse));
 
             it("can be removed by the user", $.proxy(function () {
-                // XXX
-                // This tests fails because "remove" function in strophe.roster
-                // (line 292) gets called and it then tries to actually remove
-                // the user which is not in the roster...
-                // We'll perhaps have to first add the user again...
+                /* FIXME: Monkepatch
+                 * After refactoring the mock connection to use a
+                 * Strophe.Connection object, these tests fail because "remove"
+                 * function in strophe.roster (line 292) gets called and it
+                 * then tries to actually remove the user which is not in the roster...
+                 */
+                var old_remove = this.connection.roster.remove;
+                this.connection.roster.remove = function (jid, callback) { callback(); };
+
                 _addContacts();
                 var name = mock.pend_names[0];
                 var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -407,6 +411,9 @@
                 expect(this.connection.roster.unauthorize).toHaveBeenCalled();
                 expect(this.rosterview.model.remove).toHaveBeenCalled();
                 expect(converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length).toEqual(0);
+
+                /* XXX Restore Monkeypatch */
+                this.connection.roster.remove = old_remove;
             }, converse));
 
             it("do not have a header if there aren't any", $.proxy(function () {
@@ -822,7 +829,7 @@
             }, converse));
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
-                var new_attrs, old_attrs, attrs, old_roster;
+                var new_attrs, old_attrs, attrs;
                 var num_contacts = this.roster.length;
                 new_roster = new this.RosterContacts();
                 // Roster items are yet to be fetched from browserStorage

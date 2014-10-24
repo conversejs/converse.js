@@ -15,7 +15,7 @@
             converse.connection._changeConnectStatus(Strophe.Status.CONNECTED);
         });
 
-        it("adds contacts on presence stanza", $.proxy(function() {
+        xit("adds contacts on presence stanza", $.proxy(function() {
             spyOn(this.roster, 'clearCache').andCallThrough();
             expect(this.roster.pluck('jid').length).toBe(0);
 

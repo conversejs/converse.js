@@ -15,42 +15,40 @@
             converse.connection._changeConnectStatus(Strophe.Status.CONNECTED);
         });
 
-        xit("adds contacts on presence stanza", $.proxy(function() {
+        it("adds hundreds of contacts to the roster", $.proxy(function() {
+        }, converse));
+
+        it("adds hundreds of contacts to the roster, with roster groups", $.proxy(function() {
+            // XXX: Try with groups for now (might also add a test without groups)
+            converse.roster_groups = true;
+
             spyOn(this.roster, 'clearCache').andCallThrough();
             expect(this.roster.pluck('jid').length).toBe(0);
 
-            var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
-            this.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(this.roster.pluck('jid').length).toBe(1);
-            expect(_.contains(this.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
-
-            // Taken from the spec
-            // http://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
-            stanza = $iq({
+            var stanza = $iq({
                 to: this.connection.jid,
                 type: 'result',
                 id: 'roster_1'
             }).c('query', {
-                xmlns: 'jabber:iq:roster',
-            }).c('item', {
-                jid: 'romeo@example.net',
-                name: 'Romeo',
-                subscription:'both'
-            }).c('group').t('Friends').up().up()
-              .c('item', {
-                jid: 'mercutio@example.org',
-                name: 'Mercutio',
-                subscription:'from'
-            }).c('group').t('Friends').up().up()
-              .c('item', {
-                jid: 'benvolio@example.org',
-                name: 'Benvolio',
-                subscription:'both'
-            }).c('group').t('Friends');
+                xmlns: 'jabber:iq:roster'
+            });
+
+            _.each(['Friends', 'Colleagues', 'Family', 'Acquaintances'], function (group) {
+                var i, prefix = group.toLowerCase();
+                for (i=0; i<100; i++) {
+                    stanza = stanza.c('item', {
+                        jid: prefix+i+'@example.net',
+                        subscription:'both'
+                    }).c('group').t('Friends').up().up();
+                }
+            });
             this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());
             expect(this.roster.clearCache).toHaveBeenCalled();
 
-            expect(_.contains(this.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+            expect(this.roster.pluck('jid').length).toBe(400);
+        }, converse));
+
+        it("contacts in a very large roster change their statuses", $.proxy(function() {
         }, converse));
 
     });

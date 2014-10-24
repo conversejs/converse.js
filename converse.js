@@ -638,7 +638,9 @@
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+                Strophe.log = function (level, msg) {
+                    console.log(level+' '+msg);
+                };
                 Strophe.error = function (msg) {
                     console.log('ERROR: '+msg);
                 };
@@ -3473,14 +3475,15 @@
                     id = this.models[i].get('id');
                     if (_.indexOf(_.pluck(items, 'jid'), id) === -1) {
                         contact = this.get(id);
-                        if (contact) {
+                        if (contact && !contact.get('requesting')) {
                             contact.destroy();
                         }
                     }
                 }
             },
 
-            rosterHandler: function (items) {
+            // TODO: see if we can only use 2nd item par
+            rosterHandler: function (items, item) {
                 converse.emit('roster', items);
                 this.clearCache(items);
                 _.each(items, function (item, index, items) {

@@ -385,6 +385,11 @@
             }, converse));
 
             it("can be removed by the user", $.proxy(function () {
+                // XXX
+                // This tests fails because "remove" function in strophe.roster
+                // (line 292) gets called and it then tries to actually remove
+                // the user which is not in the roster...
+                // We'll perhaps have to first add the user again...
                 _addContacts();
                 var name = mock.pend_names[0];
                 var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -764,6 +769,48 @@
                 // There should now be one less contact
                 expect(this.roster.length).toEqual(mock.req_names.length-1);
             }, converse));
+
+            it("are persisted even if other contacts' change their presence ", $.proxy(function() {
+                /* This is a regression test.
+                 * https://github.com/jcbrand/converse.js/issues/262
+                 */
+                this.rosterview.model.reset();
+                spyOn(this.roster, 'clearCache').andCallThrough();
+                expect(this.roster.pluck('jid').length).toBe(0);
+
+                var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
+                this.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(this.roster.pluck('jid').length).toBe(1);
+                expect(_.contains(this.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+
+                // Taken from the spec
+                // http://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
+                stanza = $iq({
+                    to: this.connection.jid,
+                    type: 'result',
+                    id: 'roster_1'
+                }).c('query', {
+                    xmlns: 'jabber:iq:roster',
+                }).c('item', {
+                    jid: 'romeo@example.net',
+                    name: 'Romeo',
+                    subscription:'both'
+                }).c('group').t('Friends').up().up()
+                .c('item', {
+                    jid: 'mercutio@example.org',
+                    name: 'Mercutio',
+                    subscription:'from'
+                }).c('group').t('Friends').up().up()
+                .c('item', {
+                    jid: 'benvolio@example.org',
+                    name: 'Benvolio',
+                    subscription:'both'
+                }).c('group').t('Friends');
+                this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());
+                expect(this.roster.clearCache).toHaveBeenCalled();
+                expect(_.contains(this.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+            }, converse));
+
         }, converse));
 
         describe("All Contacts", $.proxy(function () {

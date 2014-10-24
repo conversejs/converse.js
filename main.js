@@ -139,6 +139,7 @@ config = {
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
+        'strophe':              { exports: 'Strophe' },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },

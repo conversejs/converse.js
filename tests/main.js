@@ -40,8 +40,6 @@ require([
         window.converse_api = converse;
         window.localStorage.clear();
         window.sessionStorage.clear();
-        // XXX: call this to initialize Strophe plugins
-        new Strophe.Connection('localhost');
 
         converse.initialize({
             prebind: false,
@@ -49,7 +47,8 @@ require([
             auto_subscribe: false,
             animate: false,
             connection: mock.mock_connection,
-            no_trimming: true
+            no_trimming: true,
+            debug: true
         }, function (converse) {
             window.converse = converse;
             window.crypto = {
@@ -68,7 +67,8 @@ require([
                 "spec/controlbox",
                 "spec/chatbox",
                 "spec/chatroom",
-                "spec/minchats"
+                "spec/minchats",
+                "spec/profiling"
             ], function () {
                 // Make sure this callback is only called once.
                 delete converse.callback;

@@ -3851,14 +3851,14 @@
                 this.model.on("reset", this.reset, this);
             },
 
-            update: function () {
+            update: _.debounce(function () {
                 var $count = $('#online-count');
                 $count.text('('+converse.roster.getNumOnlineContacts()+')');
                 if (!$count.is(':visible')) {
                     $count.show();
                 }
                 return this.showHideFilter();
-            },
+            }, 300),
 
             render: function () {
                 this.$el.html(converse.templates.roster({

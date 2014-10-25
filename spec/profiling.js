@@ -50,7 +50,5 @@
 
         it("contacts in a very large roster change their statuses", $.proxy(function() {
         }, converse));
-
     });
-
 }));

@@ -34,12 +34,12 @@
             });
 
             _.each(['Friends', 'Colleagues', 'Family', 'Acquaintances'], function (group) {
-                var i, prefix = group.toLowerCase();
+                var i;
                 for (i=0; i<100; i++) {
                     stanza = stanza.c('item', {
-                        jid: prefix+i+'@example.net',
+                        jid: Math.random().toString().replace('0.', '')+'@example.net',
                         subscription:'both'
-                    }).c('group').t('Friends').up().up();
+                    }).c('group').t(group).up().up();
                 }
             });
             this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());

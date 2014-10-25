@@ -3356,13 +3356,13 @@
 
         this.RosterContacts = Backbone.Collection.extend({
             model: converse.RosterContact,
-
             comparator: function (contact1, contact2) {
-                var name1 = contact1.get('fullname').toLowerCase();
+                var name1, name2;
                 var status1 = contact1.get('chat_status') || 'offline';
-                var name2 = contact2.get('fullname').toLowerCase();
                 var status2 = contact2.get('chat_status') || 'offline';
                 if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
+                    name1 = contact1.get('fullname').toLowerCase();
+                    name2 = contact2.get('fullname').toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
                     return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
@@ -3503,7 +3503,7 @@
                             groups: item.groups,
                             jid: item.jid,
                             subscription: item.subscription
-                        });
+                        }, {sort: false});
                     } else {
                         if ((item.subscription === 'none') && (item.ask === null)) {
                             // This user is no longer in our roster
@@ -3849,6 +3849,7 @@
                 converse.roster.on("remove", this.update, this);
                 this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
+                this.$roster = $('<dl class="roster-contacts"></dl>');
             },
 
             update: _.debounce(function () {
@@ -3856,6 +3857,9 @@
                 $count.text('('+converse.roster.getNumOnlineContacts()+')');
                 if (!$count.is(':visible')) {
                     $count.show();
+                }
+                if (this.$roster.parent().length === 0) {
+                    this.$el.append(this.$roster);
                 }
                 return this.showHideFilter();
             }, 300),
@@ -3942,7 +3946,7 @@
                     // Don't hide if user is currently filtering.
                     return;
                 }
-                if (this.$('.roster-contacts').hasScrollBar()) {
+                if (this.$roster.hasScrollBar()) {
                     if (!visible) {
                         $filter.show();
                         $type.show();
@@ -4047,7 +4051,7 @@
                         this.add(group.get('name'), view.render());
                     }
                     if (idx === 0) {
-                        this.$('.roster-contacts').append(view.$el);
+                        this.$roster.append(view.$el);
                     } else {
                         this.appendGroup(view);
                     }
@@ -4060,7 +4064,7 @@
                  */
                 var index = this.model.indexOf(view.model);
                 if (index === 0) {
-                    this.$('.roster-contacts').prepend(view.$el);
+                    this.$roster.prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
                     this.appendGroup(view);
                 } else {

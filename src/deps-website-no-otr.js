@@ -12,8 +12,8 @@ define("converse-dependencies", [
     "strophe",
     "strophe.muc",
     "strophe.roster",
-    "strophe.vcard",
-    "strophe.disco"
+    "components/strophejs-plugins/vcard/strophe.vcard",
+    "components/strophejs-plugins/disco/strophe.disco"
 ], function($, utils, moment) {
     return {
         'jQuery': $,

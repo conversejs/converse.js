@@ -3223,6 +3223,10 @@
                     'status': ''
                 }, attributes);
                 this.set(attrs);
+            },
+
+            showInRoster: function () {
+                return (!converse.show_only_online_users || this.get('chat_status') === 'online');
             }
         });
 
@@ -3237,22 +3241,10 @@
             },
 
             initialize: function () {
-                this.model.on("change", this.onChange, this);
+                this.model.on("change", this.render, this);
                 this.model.on("remove", this.remove, this);
                 this.model.on("destroy", this.remove, this);
                 this.model.on("open", this.openChat, this);
-            },
-
-            onChange: function () {
-                if (converse.show_only_online_users) {
-                    if (this.model.get('chat_status') !== 'online') {
-                        this.$el.hide();
-                    } else {
-                        this.$el.show();
-                    }
-                } else {
-                    this.render();
-                }
             },
 
             openChat: function (ev) {
@@ -3304,6 +3296,12 @@
             },
 
             render: function () {
+                if (!this.model.showInRoster()) {
+                    this.$el.hide();
+                    return this;
+                } else if (this.$el[0].style.display === "none") {
+                    this.$el.show();
+                }
                 var item = this.model,
                     ask = item.get('ask'),
                     chat_status = item.get('chat_status'),
@@ -3697,11 +3695,13 @@
                 var view = new converse.RosterContactView({model: contact});
                 this.add(contact.get('id'), view);
                 view = this.positionContact(contact).render();
-                if (this.model.get('state') === CLOSED) {
-                    view.$el.hide();
-                    this.$el.show();
-                } else {
-                    this.show();
+                if (contact.showInRoster()) {
+                    if (this.model.get('state') === CLOSED) {
+                        if (view.$el[0].style.display !== "none") { view.$el.hide(); }
+                        if (this.$el[0].style.display === "none") { this.$el.show(); }
+                    } else {
+                        if (this.$el[0].style.display !== "block") { this.show(); }
+                    }
                 }
             },
 
@@ -3723,6 +3723,9 @@
             },
 
             show: function () {
+                // FIXME: There's a bug here, if show_only_online_users is true
+                // Possible solution, get the group, call _.each and check
+                // showInRoster 
                 this.$el.nextUntil('dt').addBack().show();
             },
 
@@ -3740,7 +3743,7 @@
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
                         this.model.contacts.each($.proxy(function (item) {
-                            if (!(converse.show_only_online_users && item.get('chat_status') === 'online')) {
+                            if (item.showInRoster()) {
                                 this.get(item.get('id')).$el.show();
                             }
                         }, this));

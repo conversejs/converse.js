@@ -4077,13 +4077,14 @@
                 /* Place the group's DOM element in the correct alphabetical
                  * position amongst the other groups in the roster.
                  */
-                var index = this.model.indexOf(view.model);
+                var $groups = this.$('.roster-group'),
+                    index = $groups.length ? this.model.indexOf(view.model) : 0;
                 if (index === 0) {
                     this.$roster.prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
                     this.appendGroup(view);
                 } else {
-                    $(this.$('.roster-group').eq(index)).before(view.$el);
+                    $($groups.eq(index)).before(view.$el);
                 }
                 return this;
             },

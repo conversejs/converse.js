@@ -53,7 +53,7 @@
             });
             _.each(['Friends', 'Colleagues', 'Family', 'Acquaintances'], function (group) {
                 var i;
-                for (i=0; i<500; i++) {
+                for (i=0; i<100; i++) {
                     stanza = stanza.c('item', {
                         jid: Math.random().toString().replace('0.', '')+'@example.net',
                         subscription:'both'

@@ -1935,7 +1935,16 @@
                     b64_sha1('converse.roster.groups'+converse.bare_jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 this.contactspanel.$el.append(converse.rosterview.$el);
+                // TODO: 
+                // See if we shouldn't also fetch the roster here... otherwise
+                // the roster is always populated by the rosterHandler method,
+                // which appears to be a less economic way.
+                // i.e. from what it seems, only groups are fetched from
+                // browserStorage, and no contacts.
+                // converse.roster.fetch()
                 converse.rosterview.render().fetch().update();
+                // TODO: See if we can optimize here by not calling this method
+                // on every page load.
                 converse.connection.roster.get(function () {});
                 return this;
             },
@@ -3861,8 +3870,9 @@
                 if (this.$roster.parent().length === 0) {
                     this.$el.append(this.$roster);
                 }
+                console.log('update called');
                 return this.showHideFilter();
-            }, 300),
+            }, 100),
 
             render: function () {
                 this.$el.html(converse.templates.roster({

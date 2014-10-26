@@ -1941,6 +1941,8 @@
                 // which appears to be a less economic way.
                 // i.e. from what it seems, only groups are fetched from
                 // browserStorage, and no contacts.
+                // XXX: Make sure that if fetch is called, we don't sort on
+                // each item add...
                 // converse.roster.fetch()
                 converse.rosterview.render().fetch().update();
                 // TODO: See if we can optimize here by not calling this method
@@ -3858,7 +3860,7 @@
                 converse.roster.on("remove", this.update, this);
                 this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
-                this.$roster = $('<dl class="roster-contacts"></dl>');
+                this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
             },
 
             update: _.debounce(function () {
@@ -3868,7 +3870,7 @@
                     $count.show();
                 }
                 if (this.$roster.parent().length === 0) {
-                    this.$el.append(this.$roster);
+                    this.$el.append(this.$roster.show());
                 }
                 console.log('update called');
                 return this.showHideFilter();

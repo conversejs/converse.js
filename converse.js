@@ -4592,8 +4592,6 @@
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
                     if (rid && jid && sid) {
-                        // We have the necessary tokens for resuming a session
-                        rid += 1;
                         this.session.save({rid: rid}); // The RID needs to be increased with each request.
                         this.connection.attach(jid, sid, rid, this.onConnect);
                     } else if (this.prebind) {

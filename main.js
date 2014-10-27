@@ -17,7 +17,7 @@ config = {
         "strophe":                  "components/strophe/strophe",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.muc":              "components/strophe.muc/index",
-        "strophe.roster":           "components/strophe.roster/index",
+        "strophe.roster":           "src/strophe.roster",
         "strophe.vcard":            "components/strophejs-plugins/vcard/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',

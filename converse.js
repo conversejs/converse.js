@@ -1935,7 +1935,7 @@
                     b64_sha1('converse.roster.groups'+converse.bare_jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 this.contactspanel.$el.append(converse.rosterview.$el);
-                // TODO: 
+                // TODO:
                 // See if we shouldn't also fetch the roster here... otherwise
                 // the roster is always populated by the rosterHandler method,
                 // which appears to be a less economic way.
@@ -3379,15 +3379,13 @@
             },
 
             subscribeToSuggestedItems: function (msg) {
-                $(msg).find('item').each(function () {
+                $(msg).find('item').each(function (i, items) {
                     var $this = $(this),
                         jid = $this.attr('jid'),
                         action = $this.attr('action'),
                         fullname = $this.attr('name');
                     if (action === 'add') {
-                        converse.connection.roster.add(jid, fullname, [], function (iq) {
-                            converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
-                        });
+                        converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                     }
                 });
                 return true;
@@ -3725,7 +3723,7 @@
             show: function () {
                 // FIXME: There's a bug here, if show_only_online_users is true
                 // Possible solution, get the group, call _.each and check
-                // showInRoster 
+                // showInRoster
                 this.$el.nextUntil('dt').addBack().show();
             },
 
@@ -3988,8 +3986,19 @@
             },
 
             registerRosterXHandler: function () {
+                var t = 0;
                 converse.connection.addHandler(
-                    $.proxy(converse.roster.subscribeToSuggestedItems, converse.roster),
+                    function (msg) {
+                        window.setTimeout(
+                            function () {
+                                converse.connection.flush();
+                                $.proxy(converse.roster.subscribeToSuggestedItems, converse.roster)(msg);
+                            },
+                            t
+                        );
+                        t += $(msg).find('item').length*250;
+                        return true;
+                    },
                     'http://jabber.org/protocol/rosterx', 'message', null);
             },
 

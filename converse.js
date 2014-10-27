@@ -3981,8 +3981,8 @@
             registerRosterHandler: function () {
                 // Register handlers that depend on the roster
                 converse.connection.roster.registerCallback(
-                    $.proxy(converse.roster.rosterHandler, converse.roster),
-                    null, 'presence', null);
+                    $.proxy(converse.roster.rosterHandler, converse.roster)
+                );
             },
 
             registerRosterXHandler: function () {
@@ -4086,7 +4086,7 @@
                 /* Place the group's DOM element in the correct alphabetical
                  * position amongst the other groups in the roster.
                  */
-                var $groups = this.$('.roster-group'),
+                var $groups = this.$roster.find('.roster-group'),
                     index = $groups.length ? this.model.indexOf(view.model) : 0;
                 if (index === 0) {
                     this.$roster.prepend(view.$el);
@@ -4101,7 +4101,7 @@
             appendGroup: function (view) {
                 /* Add the group at the bottom of the roster
                  */
-                var $last = this.$('.roster-group').last();
+                var $last = this.$roster.find('.roster-group').last();
                 var $siblings = $last.siblings('dd');
                 if ($siblings.length > 0) {
                     $siblings.last().after(view.$el);

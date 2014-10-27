@@ -14,7 +14,7 @@
             converse.connection._changeConnectStatus(Strophe.Status.CONNECTED);
         });
 
-        it("adds hundreds of contacts to the roster", $.proxy(function() {
+        xit("adds hundreds of contacts to the roster", $.proxy(function() {
             converse.roster_groups = false;
             spyOn(this.roster, 'clearCache').andCallThrough();
             expect(this.roster.pluck('jid').length).toBe(0);
@@ -39,7 +39,7 @@
             expect(this.roster.pluck('jid').length).toBe(400);
         }, converse));
 
-        it("adds hundreds of contacts to the roster, with roster groups", $.proxy(function() {
+        xit("adds hundreds of contacts to the roster, with roster groups", $.proxy(function() {
             // converse.show_only_online_users = true;
             converse.roster_groups = true;
             spyOn(this.roster, 'clearCache').andCallThrough();

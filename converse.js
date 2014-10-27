@@ -3874,7 +3874,7 @@
                 }
                 console.log('update called');
                 return this.showHideFilter();
-            }, 100),
+            }, converse.animate ? 100 : 0),
 
             render: function () {
                 this.$el.html(converse.templates.roster({
@@ -4010,6 +4010,7 @@
             reset: function () {
                 converse.roster.reset();
                 this.removeAll();
+                this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
                 this.render().update();
                 return this;
             },

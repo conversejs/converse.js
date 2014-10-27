@@ -541,6 +541,7 @@
         };
 
         this.clearSession = function () {
+            this.roster.browserStorage._clear();
             this.session.browserStorage._clear();
             // XXX: this should perhaps go into the beforeunload handler
             converse.chatboxes.get('controlbox').save({'connected': false});
@@ -1945,9 +1946,6 @@
                 // each item add...
                 // converse.roster.fetch()
                 converse.rosterview.render().fetch().update();
-                // TODO: See if we can optimize here by not calling this method
-                // on every page load.
-                converse.connection.roster.get(function () {});
                 return this;
             },
 
@@ -3889,10 +3887,47 @@
 
             fetch: function () {
                 this.model.fetch({
-                    silent: true,
-                    success: $.proxy(this.positionFetchedGroups, this)
+                    silent: true, // We use the success handler to handle groups that were added,
+                                  // we need to first have all groups before positionFetchedGroups
+                                  // will work properly.
+                    success: $.proxy(function (collection, resp, options) {
+                        if (collection.length !== 0) {
+                            this.positionFetchedGroups(collection, resp, options);
+                        }
+                        converse.roster.fetch({
+                            add: true,
+                            success: function (collection) {
+                                // XXX: Bit of a hack.
+                                // strophe.roster expects .get to be called for
+                                // every page load so that its "items" attr
+                                // gets populated.
+                                // This is very inefficient for large rosters,
+                                // and we already have the roster cached in
+                                // sessionStorage.
+                                // Therefore we manually populate the "items"
+                                // attr.
+                                // Ideally we should eventually replace
+                                // strophe.roster with something better.
+                                if (collection.length > 0) {
+                                    collection.each(function (item) {
+                                        converse.connection.roster.items.push({
+                                            name         : item.get('fullname'),
+                                            jid          : item.get('jid'),
+                                            subscription : item.get('subscription'),
+                                            ask          : item.get('ask'),
+                                            groups       : item.get('groups'),
+                                            resources    : item.get('resources')
+                                        });
+                                    });
+                                    converse.initial_presence_sent = 1;
+                                    converse.xmppstatus.sendPresence();
+                                } else {
+                                    converse.connection.roster.get();
+                                }
+                            }
+                        });
+                    }, this)
                 });
-                converse.roster.fetch({add: true});
                 return this;
             },
 

@@ -3493,7 +3493,8 @@
             rosterHandler: function (items, item) {
                 converse.emit('roster', items);
                 this.clearCache(items);
-                _.each(items, function (item, index, items) {
+                var new_items = item ? [item] : items;
+                _.each(new_items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
                     var model = this.get(item.jid);
                     if (!model) {

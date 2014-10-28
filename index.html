@@ -13,13 +13,7 @@
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.min.css" />
-    <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
-    <![if gte IE 9]>
-        <script src="builds/converse.website.min.js"></script>
-    <![endif]>
-    <!--[if lt IE 9]>
-        <script src="builds/converse.website-no-otr.min.js"></script>
-    <![endif]-->
+    <script data-main="main" src="components/requirejs/require.js"></script>
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -255,7 +249,8 @@
         })();
 
         converse.initialize({
-            bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
+            auto_subscribe: true,
+            bosh_service_url: 'http://conversejs.containers/http-bind', // Please use this connection manager only for testing purposes
             i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
             keepalive: true,
             play_sounds: true,

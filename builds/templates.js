@@ -42,7 +42,7 @@ __p += '<li>\n    <form class="add-xmpp-contact">\n        <input type="text"\n 
 ((__t = (label_contact_username)) == null ? '' : __t) +
 '"/>\n        <button type="submit">' +
 ((__t = (label_add)) == null ? '' : __t) +
-'</button>\n    </form>\n<li>\n';
+'</button>\n    </form>\n</li>\n';
 
 }
 return __p
@@ -380,7 +380,7 @@ __p += '<form id="converse-login" method="post">\n    <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
 '</label>\n    <input type="password" name="password" placeholder="Password">\n    <input class="login-submit" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
-'">\n    <span class="conn-feedback"></span>\n</form">\n';
+'">\n    <span class="conn-feedback"></span>\n</form>\n';
 
 }
 return __p
@@ -660,13 +660,13 @@ this["JST"]["roster"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<input class="roster-filter" placeholder="' +
+__p += '<input style="display: none;" class="roster-filter" placeholder="' +
 ((__t = (placeholder)) == null ? '' : __t) +
-'">\n<select class="filter-type">\n    <option value="contacts">' +
+'">\n<select style="display: none;" class="filter-type">\n    <option value="contacts">' +
 ((__t = (label_contacts)) == null ? '' : __t) +
 '</option>\n    <option value="groups">' +
 ((__t = (label_groups)) == null ? '' : __t) +
-'</option>\n</select>\n<dl class="roster-contacts"></dl>\n';
+'</option>\n</select>\n';
 
 }
 return __p
@@ -700,7 +700,7 @@ __p += '<li>\n    <form class="search-xmpp-contact">\n        <input type="text"
 ((__t = (label_contact_name)) == null ? '' : __t) +
 '"/>\n        <button type="submit">' +
 ((__t = (label_search)) == null ? '' : __t) +
-'</button>\n    </form>\n<li>\n';
+'</button>\n    </form>\n</li>\n';
 
 }
 return __p

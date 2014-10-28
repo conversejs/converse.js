@@ -1,4 +1,4 @@
-config = {
+require.config({
     baseUrl: '.',
     paths: {
         "backbone":                 "components/backbone/backbone",
@@ -145,11 +145,7 @@ config = {
         'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }
     }
-};
-
-if (typeof(require) !== 'undefined') {
-    require.config(config);
-    require(["jquery", "converse"], function($, converse) {
-        window.converse = converse;
-    });
-}
+});
+require(["converse"], function(converse) {
+    window.converse = converse;
+});

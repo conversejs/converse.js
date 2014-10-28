@@ -3872,7 +3872,6 @@
                 if (this.$roster.parent().length === 0) {
                     this.$el.append(this.$roster.show());
                 }
-                console.log('update called');
                 return this.showHideFilter();
             }, converse.animate ? 100 : 0),
 

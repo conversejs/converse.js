@@ -1,14 +1,22 @@
 Changelog
 =========
 
+
 0.8.4 (Unreleased)
 ------------------
+
+.. note::
+    The current API methods will be deprecated in future bugfix releases and
+    a new API will be made available for the 0.9.0 release.
 
 * Bugfix. Error when trying to use prebind and keepalive together. [heban and jcbrand]
 * Bugfix. Cannot read property "top" of undefined. [jcbrand]
 * Add new event, noResumeableSession, for when keepalive=true and there aren't
   any prebind session tokens. [jcbrand]
-* Add 2 new API methods, getChatBox and openChatBox. [jcbrand]
+* #46 Add 2 new API methods, getChatBox and openChatBox. [jcbrand]
+* #151 Browser locks/freezes with many roster users. [jcbrand]
+* #251 Non-minified builds for debugging. [jcbrand]
+* #264 Remove unnecessary commas for ie8 compatibility. [Deuteu]
 
 0.8.3 (2014-09-22)
 ------------------

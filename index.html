@@ -229,7 +229,6 @@
 <script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
 
 <script>
-    // Configuration loaded, so safe to make other require calls.
     require(['converse'], function (converse) {
         (function () {
             /* XXX: This function initializes jquery.easing for the https://conversejs.org
@@ -255,14 +254,17 @@
         })();
 
         converse.initialize({
+            allow_otr: true,
+            auto_list_rooms: false,
+            auto_subscribe: false,
             bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
-            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+            hide_muc_server: false,
+            i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
             keepalive: true,
             play_sounds: true,
-            prebind: false,
+            roster_groups: true,
             show_controlbox_by_default: true,
-            debug: true,
-            roster_groups: true
+            xhr_user_search: false
         });
     });
 </script>

@@ -541,6 +541,7 @@
         };
 
         this.clearSession = function () {
+            this.roster.browserStorage._clear();
             this.session.browserStorage._clear();
             // XXX: this should perhaps go into the beforeunload handler
             converse.chatboxes.get('controlbox').save({'connected': false});
@@ -1935,8 +1936,16 @@
                     b64_sha1('converse.roster.groups'+converse.bare_jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 this.contactspanel.$el.append(converse.rosterview.$el);
+                // TODO:
+                // See if we shouldn't also fetch the roster here... otherwise
+                // the roster is always populated by the rosterHandler method,
+                // which appears to be a less economic way.
+                // i.e. from what it seems, only groups are fetched from
+                // browserStorage, and no contacts.
+                // XXX: Make sure that if fetch is called, we don't sort on
+                // each item add...
+                // converse.roster.fetch()
                 converse.rosterview.render().fetch().update();
-                converse.connection.roster.get(function () {});
                 return this;
             },
 
@@ -3212,6 +3221,10 @@
                     'status': ''
                 }, attributes);
                 this.set(attrs);
+            },
+
+            showInRoster: function () {
+                return (!converse.show_only_online_users || this.get('chat_status') === 'online');
             }
         });
 
@@ -3226,22 +3239,10 @@
             },
 
             initialize: function () {
-                this.model.on("change", this.onChange, this);
+                this.model.on("change", this.render, this);
                 this.model.on("remove", this.remove, this);
                 this.model.on("destroy", this.remove, this);
                 this.model.on("open", this.openChat, this);
-            },
-
-            onChange: function () {
-                if (converse.show_only_online_users) {
-                    if (this.model.get('chat_status') !== 'online') {
-                        this.$el.hide();
-                    } else {
-                        this.$el.show();
-                    }
-                } else {
-                    this.render();
-                }
             },
 
             openChat: function (ev) {
@@ -3293,6 +3294,12 @@
             },
 
             render: function () {
+                if (!this.model.showInRoster()) {
+                    this.$el.hide();
+                    return this;
+                } else if (this.$el[0].style.display === "none") {
+                    this.$el.show();
+                }
                 var item = this.model,
                     ask = item.get('ask'),
                     chat_status = item.get('chat_status'),
@@ -3356,13 +3363,13 @@
 
         this.RosterContacts = Backbone.Collection.extend({
             model: converse.RosterContact,
-
             comparator: function (contact1, contact2) {
-                var name1 = contact1.get('fullname').toLowerCase();
+                var name1, name2;
                 var status1 = contact1.get('chat_status') || 'offline';
-                var name2 = contact2.get('fullname').toLowerCase();
                 var status2 = contact2.get('chat_status') || 'offline';
                 if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
+                    name1 = contact1.get('fullname').toLowerCase();
+                    name2 = contact2.get('fullname').toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
                     return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
@@ -3370,15 +3377,13 @@
             },
 
             subscribeToSuggestedItems: function (msg) {
-                $(msg).find('item').each(function () {
+                $(msg).find('item').each(function (i, items) {
                     var $this = $(this),
                         jid = $this.attr('jid'),
                         action = $this.attr('action'),
                         fullname = $this.attr('name');
                     if (action === 'add') {
-                        converse.connection.roster.add(jid, fullname, [], function (iq) {
-                            converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
-                        });
+                        converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                     }
                 });
                 return true;
@@ -3486,7 +3491,8 @@
             rosterHandler: function (items, item) {
                 converse.emit('roster', items);
                 this.clearCache(items);
-                _.each(items, function (item, index, items) {
+                var new_items = item ? [item] : items;
+                _.each(new_items, function (item, index, items) {
                     if (this.isSelf(item.jid)) { return; }
                     var model = this.get(item.jid);
                     if (!model) {
@@ -3503,7 +3509,7 @@
                             groups: item.groups,
                             jid: item.jid,
                             subscription: item.subscription
-                        });
+                        }, {sort: false});
                     } else {
                         if ((item.subscription === 'none') && (item.ask === null)) {
                             // This user is no longer in our roster
@@ -3686,11 +3692,13 @@
                 var view = new converse.RosterContactView({model: contact});
                 this.add(contact.get('id'), view);
                 view = this.positionContact(contact).render();
-                if (this.model.get('state') === CLOSED) {
-                    view.$el.hide();
-                    this.$el.show();
-                } else {
-                    this.show();
+                if (contact.showInRoster()) {
+                    if (this.model.get('state') === CLOSED) {
+                        if (view.$el[0].style.display !== "none") { view.$el.hide(); }
+                        if (this.$el[0].style.display === "none") { this.$el.show(); }
+                    } else {
+                        if (this.$el[0].style.display !== "block") { this.show(); }
+                    }
                 }
             },
 
@@ -3712,6 +3720,9 @@
             },
 
             show: function () {
+                // FIXME: There's a bug here, if show_only_online_users is true
+                // Possible solution, get the group, call _.each and check
+                // showInRoster
                 this.$el.nextUntil('dt').addBack().show();
             },
 
@@ -3729,7 +3740,7 @@
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
                         this.model.contacts.each($.proxy(function (item) {
-                            if (!(converse.show_only_online_users && item.get('chat_status') === 'online')) {
+                            if (item.showInRoster()) {
                                 this.get(item.get('id')).$el.show();
                             }
                         }, this));
@@ -3849,16 +3860,20 @@
                 converse.roster.on("remove", this.update, this);
                 this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
+                this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
             },
 
-            update: function () {
+            update: _.debounce(function () {
                 var $count = $('#online-count');
                 $count.text('('+converse.roster.getNumOnlineContacts()+')');
                 if (!$count.is(':visible')) {
                     $count.show();
                 }
+                if (this.$roster.parent().length === 0) {
+                    this.$el.append(this.$roster.show());
+                }
                 return this.showHideFilter();
-            },
+            }, converse.animate ? 100 : 0),
 
             render: function () {
                 this.$el.html(converse.templates.roster({
@@ -3871,10 +3886,47 @@
 
             fetch: function () {
                 this.model.fetch({
-                    silent: true,
-                    success: $.proxy(this.positionFetchedGroups, this)
+                    silent: true, // We use the success handler to handle groups that were added,
+                                  // we need to first have all groups before positionFetchedGroups
+                                  // will work properly.
+                    success: $.proxy(function (collection, resp, options) {
+                        if (collection.length !== 0) {
+                            this.positionFetchedGroups(collection, resp, options);
+                        }
+                        converse.roster.fetch({
+                            add: true,
+                            success: function (collection) {
+                                // XXX: Bit of a hack.
+                                // strophe.roster expects .get to be called for
+                                // every page load so that its "items" attr
+                                // gets populated.
+                                // This is very inefficient for large rosters,
+                                // and we already have the roster cached in
+                                // sessionStorage.
+                                // Therefore we manually populate the "items"
+                                // attr.
+                                // Ideally we should eventually replace
+                                // strophe.roster with something better.
+                                if (collection.length > 0) {
+                                    collection.each(function (item) {
+                                        converse.connection.roster.items.push({
+                                            name         : item.get('fullname'),
+                                            jid          : item.get('jid'),
+                                            subscription : item.get('subscription'),
+                                            ask          : item.get('ask'),
+                                            groups       : item.get('groups'),
+                                            resources    : item.get('resources')
+                                        });
+                                    });
+                                    converse.initial_presence_sent = 1;
+                                    converse.xmppstatus.sendPresence();
+                                } else {
+                                    converse.connection.roster.get();
+                                }
+                            }
+                        });
+                    }, this)
                 });
-                converse.roster.fetch({add: true});
                 return this;
             },
 
@@ -3942,7 +3994,7 @@
                     // Don't hide if user is currently filtering.
                     return;
                 }
-                if (this.$('.roster-contacts').hasScrollBar()) {
+                if (this.$roster.hasScrollBar()) {
                     if (!visible) {
                         $filter.show();
                         $type.show();
@@ -3957,6 +4009,7 @@
             reset: function () {
                 converse.roster.reset();
                 this.removeAll();
+                this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
                 this.render().update();
                 return this;
             },
@@ -3964,13 +4017,24 @@
             registerRosterHandler: function () {
                 // Register handlers that depend on the roster
                 converse.connection.roster.registerCallback(
-                    $.proxy(converse.roster.rosterHandler, converse.roster),
-                    null, 'presence', null);
+                    $.proxy(converse.roster.rosterHandler, converse.roster)
+                );
             },
 
             registerRosterXHandler: function () {
+                var t = 0;
                 converse.connection.addHandler(
-                    $.proxy(converse.roster.subscribeToSuggestedItems, converse.roster),
+                    function (msg) {
+                        window.setTimeout(
+                            function () {
+                                converse.connection.flush();
+                                $.proxy(converse.roster.subscribeToSuggestedItems, converse.roster)(msg);
+                            },
+                            t
+                        );
+                        t += $(msg).find('item').length*250;
+                        return true;
+                    },
                     'http://jabber.org/protocol/rosterx', 'message', null);
             },
 
@@ -4047,7 +4111,7 @@
                         this.add(group.get('name'), view.render());
                     }
                     if (idx === 0) {
-                        this.$('.roster-contacts').append(view.$el);
+                        this.$roster.append(view.$el);
                     } else {
                         this.appendGroup(view);
                     }
@@ -4058,13 +4122,14 @@
                 /* Place the group's DOM element in the correct alphabetical
                  * position amongst the other groups in the roster.
                  */
-                var index = this.model.indexOf(view.model);
+                var $groups = this.$roster.find('.roster-group'),
+                    index = $groups.length ? this.model.indexOf(view.model) : 0;
                 if (index === 0) {
-                    this.$('.roster-contacts').prepend(view.$el);
+                    this.$roster.prepend(view.$el);
                 } else if (index == (this.model.length-1)) {
                     this.appendGroup(view);
                 } else {
-                    $(this.$('.roster-group').eq(index)).before(view.$el);
+                    $($groups.eq(index)).before(view.$el);
                 }
                 return this;
             },
@@ -4072,7 +4137,7 @@
             appendGroup: function (view) {
                 /* Add the group at the bottom of the roster
                  */
-                var $last = this.$('.roster-group').last();
+                var $last = this.$roster.find('.roster-group').last();
                 var $siblings = $last.siblings('dd');
                 if ($siblings.length > 0) {
                     $siblings.last().after(view.$el);
@@ -4563,8 +4628,6 @@
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
                     if (rid && jid && sid) {
-                        // We have the necessary tokens for resuming a session
-                        rid += 1;
                         this.session.save({rid: rid}); // The RID needs to be increased with each request.
                         this.connection.attach(jid, sid, rid, this.onConnect);
                     } else if (this.prebind) {

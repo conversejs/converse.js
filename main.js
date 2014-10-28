@@ -1,4 +1,4 @@
-config = {
+require.config({
     baseUrl: '.',
     paths: {
         "backbone":                 "components/backbone/backbone",
@@ -17,7 +17,7 @@ config = {
         "strophe":                  "components/strophe/strophe",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.muc":              "components/strophe.muc/index",
-        "strophe.roster":           "components/strophe.roster/index",
+        "strophe.roster":           "src/strophe.roster",
         "strophe.vcard":            "components/strophejs-plugins/vcard/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
@@ -139,16 +139,13 @@ config = {
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
+        'strophe':              { exports: 'Strophe' },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }
     }
-};
-
-if (typeof(require) !== 'undefined') {
-    require.config(config);
-    require(["jquery", "converse"], function($, converse) {
-        window.converse = converse;
-    });
-}
+});
+require(["converse"], function(converse) {
+    window.converse = converse;
+});

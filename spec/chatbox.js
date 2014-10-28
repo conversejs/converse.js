@@ -57,23 +57,26 @@
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
                 // Test that they can be trimmed
-                var online_contacts = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
-                for (i=0; i<online_contacts.length; i++) {
-                    $el = $(online_contacts[i]);
-                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                    $el.click();
-                    expect(this.chatboxviews.trimChats).toHaveBeenCalled();
-
-                    chatboxview = this.chatboxviews.get(jid);
-                    spyOn(chatboxview, 'hide').andCallThrough();
-                    chatboxview.model.set({'minimized': true});
-                    expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
-                    expect(chatboxview.hide).toHaveBeenCalled();
-                    trimmedview = trimmed_chatboxes.get(jid);
-                }
-
-                // Test that they can be maximized again
                 runs($.proxy(function () {
+                    converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                }, this));
+                waits(50);
+                runs($.proxy(function () {
+                    // Test that they can be maximized again
+                    var online_contacts = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                    for (i=0; i<online_contacts.length; i++) {
+                        $el = $(online_contacts[i]);
+                        jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
+                        $el.click();
+                        expect(this.chatboxviews.trimChats).toHaveBeenCalled();
+
+                        chatboxview = this.chatboxviews.get(jid);
+                        spyOn(chatboxview, 'hide').andCallThrough();
+                        chatboxview.model.set({'minimized': true});
+                        expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
+                        expect(chatboxview.hide).toHaveBeenCalled();
+                        trimmedview = trimmed_chatboxes.get(jid);
+                    }
                     var key = this.chatboxviews.keys()[1];
                     trimmedview = trimmed_chatboxes.get(key);
                     chatbox = trimmedview.model;
@@ -99,11 +102,19 @@
                 chatbox = test_utils.openChatBoxFor(contact_jid);
                 chatboxview = this.chatboxviews.get(contact_jid);
                 spyOn(chatboxview, 'focus');
-                $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
-                jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
-                $el.click();
-                expect(this.chatboxes.length).toEqual(2);
-                expect(chatboxview.focus).toHaveBeenCalled();
+
+                // Test that they can be trimmed
+                runs($.proxy(function () {
+                    converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                }, this));
+                waits(50);
+                runs($.proxy(function () {
+                    $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                    jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
+                    $el.click();
+                    expect(this.chatboxes.length).toEqual(2);
+                    expect(chatboxview.focus).toHaveBeenCalled();
+                }, this));
             }, converse));
 
             it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {

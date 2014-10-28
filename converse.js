@@ -1599,7 +1599,7 @@
                     label_away: __('Away'),
                     label_offline: __('Offline'),
                     label_logout: __('Log out'),
-                    allow_logout: converse.allow_logout,
+                    allow_logout: converse.allow_logout
                 });
                 this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
                 if (converse.xhr_user_search) {
@@ -2081,7 +2081,7 @@
             initialize: function (options) {
                 this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.occupants'+converse.bare_jid+options.nick));
-            },
+            }
         });
 
         this.ChatRoomOccupantsView = Backbone.Overview.extend({
@@ -2171,7 +2171,7 @@
                     $(ev.target).typeahead('val', '');
                 }, this));
                 return this;
-            },
+            }
 
         });
 
@@ -2212,7 +2212,7 @@
                 this);
 
                 this.occupantsview = new converse.ChatRoomOccupantsView({
-                    model: new converse.ChatRoomOccupants({nick: this.model.get('nick')}),
+                    model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
                 });
                 this.occupantsview.chatroomview = this;
                 this.render();
@@ -2245,7 +2245,7 @@
                         .append(
                             converse.templates.chatarea({
                                 'show_toolbar': converse.show_toolbar,
-                                'label_message': __('Message'),
+                                'label_message': __('Message')
                             }))
                         .append(this.occupantsview.render().$el);
                     this.renderToolbar();
@@ -2558,7 +2558,7 @@
                 172: __('This room is now non-anonymous'),
                 173: __('This room is now semi-anonymous'),
                 174: __('This room is now fully-anonymous'),
-                201: __('A new room has been created'),
+                201: __('A new room has been created')
             },
 
             disconnectMessages: {
@@ -3170,7 +3170,7 @@
                 this.set({
                     'collapsed': this.get('collapsed') || false,
                     'num_minimized': this.get('num_minimized') || 0,
-                    'num_unread':  this.get('num_unread') || 0,
+                    'num_unread':  this.get('num_unread') || 0
                 });
             }
         });
@@ -3196,7 +3196,7 @@
                     this.$flyout.show();
                 }
                 return this.$el;
-            },
+            }
         });
 
         this.RosterContact = Backbone.Model.extend({
@@ -3336,7 +3336,7 @@
                     this.$el.html(converse.templates.requesting_contact(
                         _.extend(item.toJSON(), {
                             'desc_accept': __("Click to accept this contact request"),
-                            'desc_decline': __("Click to decline this contact request"),
+                            'desc_decline': __("Click to decline this contact request")
                         })
                     ));
                     converse.controlboxtoggle.showControlBox();
@@ -4681,6 +4681,6 @@
         },
         'registerPlugin': function (name, callback) {
             converse.plugins[name] = callback;
-        },
+        }
     };
 }));

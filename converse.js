@@ -300,7 +300,7 @@
 
         // Translation machinery
         // ---------------------
-        var __ = utils.__;
+        var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
         // Translation aware constants
         // ---------------------------

@@ -909,6 +909,9 @@
 
                 if (!body) {
                     if (composing.length || paused.length) {
+                        // FIXME: use one attribute for chat states (e.g.
+                        // chatstate) instead of saving 'paused' and
+                        // 'composing' separately.
                         this.messages.add({
                             fullname: fullname,
                             sender: 'them',
@@ -3043,12 +3046,14 @@
             },
 
             initialize: function () {
-                this.model.messages.on('add', function(msg) {
-                        if (!msg.attributes.composing) {this.updateUnreadMessagesCounter();}
-                    } , this);
-                this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
-                this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
+                this.model.messages.on('add', function (m) {
+                    if (!(m.get('composing') || m.get('paused'))) {
+                        this.updateUnreadMessagesCounter();
+                    }
+                }, this);
                 this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
+                this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
+                this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
             },
 
             render: function () {

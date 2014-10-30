@@ -425,8 +425,7 @@ define("components/almond/almond.js", function(){});
 define('jquery', [], function () {
     return jQuery;
 });
-
-define('jquery-private',['jquery'], function (jq) {
+define('jquery-private', ['jquery'], function(jq) {
     return jq;
 });
 

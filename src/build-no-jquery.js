@@ -13,6 +13,7 @@
     mainConfigFile: '../main.js',
     paths: {
         "converse-dependencies":    "src/deps-full",
-        "jquery":                   "src/jquery-external"
+        "jquery":                   "src/jquery-external",
+        "jquery-private":           "src/jquery-external"
     }
 })

@@ -100,6 +100,8 @@ module.exports = function(grunt) {
         };
         exec('./node_modules/requirejs/bin/r.js -o src/build.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build.js optimize=none out=builds/converse.js && ' +
+             './node_modules/requirejs/bin/r.js -o src/build-no-jquery.js &&' +
+             './node_modules/requirejs/bin/r.js -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js && ' +
              './node_modules/requirejs/bin/r.js -o src/build-no-otr.js &&' +

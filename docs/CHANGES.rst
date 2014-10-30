@@ -18,6 +18,8 @@ Changelog
 * #251 Non-minified builds for debugging. [jcbrand]
 * #264 Remove unnecessary commas for ie8 compatibility. [Deuteu]
 * #267 Unread messages counter wrongly gets incremented by chat state notifications. [Deuteu]
+* #268 Fix locale set during initialize not being used in utils.translation. [gbonvehi]
+* #269 Add new build that does not include jQuery. [gbonvehi]
 
 0.8.3 (2014-09-22)
 ------------------

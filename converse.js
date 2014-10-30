@@ -3043,7 +3043,9 @@
             },
 
             initialize: function () {
-                this.model.messages.on('add', this.updateUnreadMessagesCounter, this);
+                this.model.messages.on('add', function(msg) {
+                        if (!msg.attributes.composing) {this.updateUnreadMessagesCounter();}
+                    } , this);
                 this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
                 this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
                 this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);

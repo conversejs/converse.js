@@ -10796,7 +10796,7 @@ define('utils',["jquery"], function ($) {
     var utils = {
         // Translation machinery
         // ---------------------
-        __: $.proxy(function (str) {
+        __: function (str) {
             // Translation factory
             if (this.i18n === undefined) {
                 this.i18n = locales.en;
@@ -10807,7 +10807,7 @@ define('utils',["jquery"], function ($) {
             } else {
                 return t.fetch();
             }
-        }, this),
+        },
 
         ___: function (str) {
             /* XXX: This is part of a hack to get gettext to scan strings to be
@@ -27689,7 +27689,7 @@ define("converse-templates", [
 
         // Translation machinery
         // ---------------------
-        var __ = utils.__;
+        var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
         // Translation aware constants
         // ---------------------------
@@ -28298,6 +28298,9 @@ define("converse-templates", [
 
                 if (!body) {
                     if (composing.length || paused.length) {
+                        // FIXME: use one attribute for chat states (e.g.
+                        // chatstate) instead of saving 'paused' and
+                        // 'composing' separately.
                         this.messages.add({
                             fullname: fullname,
                             sender: 'them',
@@ -30432,10 +30435,14 @@ define("converse-templates", [
             },
 
             initialize: function () {
-                this.model.messages.on('add', this.updateUnreadMessagesCounter, this);
-                this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
-                this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
+                this.model.messages.on('add', function (m) {
+                    if (!(m.get('composing') || m.get('paused'))) {
+                        this.updateUnreadMessagesCounter();
+                    }
+                }, this);
                 this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
+                this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
+                this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
             },
 
             render: function () {

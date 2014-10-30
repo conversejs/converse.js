@@ -422,10343 +422,9 @@ var requirejs, require, define;
 
 define("components/almond/almond.js", function(){});
 
-/*!
- * jQuery JavaScript Library v1.11.0
- * http://jquery.com/
- *
- * Includes Sizzle.js
- * http://sizzlejs.com/
- *
- * Copyright 2005, 2014 jQuery Foundation, Inc. and other contributors
- * Released under the MIT license
- * http://jquery.org/license
- *
- * Date: 2014-01-23T21:02Z
- */
-
-(function( global, factory ) {
-
-	if ( typeof module === "object" && typeof module.exports === "object" ) {
-		// For CommonJS and CommonJS-like environments where a proper window is present,
-		// execute the factory and get jQuery
-		// For environments that do not inherently posses a window with a document
-		// (such as Node.js), expose a jQuery-making factory as module.exports
-		// This accentuates the need for the creation of a real window
-		// e.g. var jQuery = require("jquery")(window);
-		// See ticket #14549 for more info
-		module.exports = global.document ?
-			factory( global, true ) :
-			function( w ) {
-				if ( !w.document ) {
-					throw new Error( "jQuery requires a window with a document" );
-				}
-				return factory( w );
-			};
-	} else {
-		factory( global );
-	}
-
-// Pass this if window is not defined yet
-}(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
-
-// Can't do this because several apps including ASP.NET trace
-// the stack via arguments.caller.callee and Firefox dies if
-// you try to trace through "use strict" call chains. (#13335)
-// Support: Firefox 18+
-//
-
-var deletedIds = [];
-
-var slice = deletedIds.slice;
-
-var concat = deletedIds.concat;
-
-var push = deletedIds.push;
-
-var indexOf = deletedIds.indexOf;
-
-var class2type = {};
-
-var toString = class2type.toString;
-
-var hasOwn = class2type.hasOwnProperty;
-
-var trim = "".trim;
-
-var support = {};
-
-
-
-var
-	version = "1.11.0",
-
-	// Define a local copy of jQuery
-	jQuery = function( selector, context ) {
-		// The jQuery object is actually just the init constructor 'enhanced'
-		// Need init if jQuery is called (just allow error to be thrown if not included)
-		return new jQuery.fn.init( selector, context );
-	},
-
-	// Make sure we trim BOM and NBSP (here's looking at you, Safari 5.0 and IE)
-	rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
-
-	// Matches dashed string for camelizing
-	rmsPrefix = /^-ms-/,
-	rdashAlpha = /-([\da-z])/gi,
-
-	// Used by jQuery.camelCase as callback to replace()
-	fcamelCase = function( all, letter ) {
-		return letter.toUpperCase();
-	};
-
-jQuery.fn = jQuery.prototype = {
-	// The current version of jQuery being used
-	jquery: version,
-
-	constructor: jQuery,
-
-	// Start with an empty selector
-	selector: "",
-
-	// The default length of a jQuery object is 0
-	length: 0,
-
-	toArray: function() {
-		return slice.call( this );
-	},
-
-	// Get the Nth element in the matched element set OR
-	// Get the whole matched element set as a clean array
-	get: function( num ) {
-		return num != null ?
-
-			// Return a 'clean' array
-			( num < 0 ? this[ num + this.length ] : this[ num ] ) :
-
-			// Return just the object
-			slice.call( this );
-	},
-
-	// Take an array of elements and push it onto the stack
-	// (returning the new matched element set)
-	pushStack: function( elems ) {
-
-		// Build a new jQuery matched element set
-		var ret = jQuery.merge( this.constructor(), elems );
-
-		// Add the old object onto the stack (as a reference)
-		ret.prevObject = this;
-		ret.context = this.context;
-
-		// Return the newly-formed element set
-		return ret;
-	},
-
-	// Execute a callback for every element in the matched set.
-	// (You can seed the arguments with an array of args, but this is
-	// only used internally.)
-	each: function( callback, args ) {
-		return jQuery.each( this, callback, args );
-	},
-
-	map: function( callback ) {
-		return this.pushStack( jQuery.map(this, function( elem, i ) {
-			return callback.call( elem, i, elem );
-		}));
-	},
-
-	slice: function() {
-		return this.pushStack( slice.apply( this, arguments ) );
-	},
-
-	first: function() {
-		return this.eq( 0 );
-	},
-
-	last: function() {
-		return this.eq( -1 );
-	},
-
-	eq: function( i ) {
-		var len = this.length,
-			j = +i + ( i < 0 ? len : 0 );
-		return this.pushStack( j >= 0 && j < len ? [ this[j] ] : [] );
-	},
-
-	end: function() {
-		return this.prevObject || this.constructor(null);
-	},
-
-	// For internal use only.
-	// Behaves like an Array's method, not like a jQuery method.
-	push: push,
-	sort: deletedIds.sort,
-	splice: deletedIds.splice
-};
-
-jQuery.extend = jQuery.fn.extend = function() {
-	var src, copyIsArray, copy, name, options, clone,
-		target = arguments[0] || {},
-		i = 1,
-		length = arguments.length,
-		deep = false;
-
-	// Handle a deep copy situation
-	if ( typeof target === "boolean" ) {
-		deep = target;
-
-		// skip the boolean and the target
-		target = arguments[ i ] || {};
-		i++;
-	}
-
-	// Handle case when target is a string or something (possible in deep copy)
-	if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
-		target = {};
-	}
-
-	// extend jQuery itself if only one argument is passed
-	if ( i === length ) {
-		target = this;
-		i--;
-	}
-
-	for ( ; i < length; i++ ) {
-		// Only deal with non-null/undefined values
-		if ( (options = arguments[ i ]) != null ) {
-			// Extend the base object
-			for ( name in options ) {
-				src = target[ name ];
-				copy = options[ name ];
-
-				// Prevent never-ending loop
-				if ( target === copy ) {
-					continue;
-				}
-
-				// Recurse if we're merging plain objects or arrays
-				if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
-					if ( copyIsArray ) {
-						copyIsArray = false;
-						clone = src && jQuery.isArray(src) ? src : [];
-
-					} else {
-						clone = src && jQuery.isPlainObject(src) ? src : {};
-					}
-
-					// Never move original objects, clone them
-					target[ name ] = jQuery.extend( deep, clone, copy );
-
-				// Don't bring in undefined values
-				} else if ( copy !== undefined ) {
-					target[ name ] = copy;
-				}
-			}
-		}
-	}
-
-	// Return the modified object
-	return target;
-};
-
-jQuery.extend({
-	// Unique for each copy of jQuery on the page
-	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
-
-	// Assume jQuery is ready without the ready module
-	isReady: true,
-
-	error: function( msg ) {
-		throw new Error( msg );
-	},
-
-	noop: function() {},
-
-	// See test/unit/core.js for details concerning isFunction.
-	// Since version 1.3, DOM methods and functions like alert
-	// aren't supported. They return false on IE (#2968).
-	isFunction: function( obj ) {
-		return jQuery.type(obj) === "function";
-	},
-
-	isArray: Array.isArray || function( obj ) {
-		return jQuery.type(obj) === "array";
-	},
-
-	isWindow: function( obj ) {
-		/* jshint eqeqeq: false */
-		return obj != null && obj == obj.window;
-	},
-
-	isNumeric: function( obj ) {
-		// parseFloat NaNs numeric-cast false positives (null|true|false|"")
-		// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-		// subtraction forces infinities to NaN
-		return obj - parseFloat( obj ) >= 0;
-	},
-
-	isEmptyObject: function( obj ) {
-		var name;
-		for ( name in obj ) {
-			return false;
-		}
-		return true;
-	},
-
-	isPlainObject: function( obj ) {
-		var key;
-
-		// Must be an Object.
-		// Because of IE, we also have to check the presence of the constructor property.
-		// Make sure that DOM nodes and window objects don't pass through, as well
-		if ( !obj || jQuery.type(obj) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
-			return false;
-		}
-
-		try {
-			// Not own constructor property must be Object
-			if ( obj.constructor &&
-				!hasOwn.call(obj, "constructor") &&
-				!hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
-				return false;
-			}
-		} catch ( e ) {
-			// IE8,9 Will throw exceptions on certain host objects #9897
-			return false;
-		}
-
-		// Support: IE<9
-		// Handle iteration over inherited properties before own properties.
-		if ( support.ownLast ) {
-			for ( key in obj ) {
-				return hasOwn.call( obj, key );
-			}
-		}
-
-		// Own properties are enumerated firstly, so to speed up,
-		// if last one is own, then all properties are own.
-		for ( key in obj ) {}
-
-		return key === undefined || hasOwn.call( obj, key );
-	},
-
-	type: function( obj ) {
-		if ( obj == null ) {
-			return obj + "";
-		}
-		return typeof obj === "object" || typeof obj === "function" ?
-			class2type[ toString.call(obj) ] || "object" :
-			typeof obj;
-	},
-
-	// Evaluates a script in a global context
-	// Workarounds based on findings by Jim Driscoll
-	// http://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context
-	globalEval: function( data ) {
-		if ( data && jQuery.trim( data ) ) {
-			// We use execScript on Internet Explorer
-			// We use an anonymous function so that context is window
-			// rather than jQuery in Firefox
-			( window.execScript || function( data ) {
-				window[ "eval" ].call( window, data );
-			} )( data );
-		}
-	},
-
-	// Convert dashed to camelCase; used by the css and data modules
-	// Microsoft forgot to hump their vendor prefix (#9572)
-	camelCase: function( string ) {
-		return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
-	},
-
-	nodeName: function( elem, name ) {
-		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
-	},
-
-	// args is for internal usage only
-	each: function( obj, callback, args ) {
-		var value,
-			i = 0,
-			length = obj.length,
-			isArray = isArraylike( obj );
-
-		if ( args ) {
-			if ( isArray ) {
-				for ( ; i < length; i++ ) {
-					value = callback.apply( obj[ i ], args );
-
-					if ( value === false ) {
-						break;
-					}
-				}
-			} else {
-				for ( i in obj ) {
-					value = callback.apply( obj[ i ], args );
-
-					if ( value === false ) {
-						break;
-					}
-				}
-			}
-
-		// A special, fast, case for the most common use of each
-		} else {
-			if ( isArray ) {
-				for ( ; i < length; i++ ) {
-					value = callback.call( obj[ i ], i, obj[ i ] );
-
-					if ( value === false ) {
-						break;
-					}
-				}
-			} else {
-				for ( i in obj ) {
-					value = callback.call( obj[ i ], i, obj[ i ] );
-
-					if ( value === false ) {
-						break;
-					}
-				}
-			}
-		}
-
-		return obj;
-	},
-
-	// Use native String.trim function wherever possible
-	trim: trim && !trim.call("\uFEFF\xA0") ?
-		function( text ) {
-			return text == null ?
-				"" :
-				trim.call( text );
-		} :
-
-		// Otherwise use our own trimming functionality
-		function( text ) {
-			return text == null ?
-				"" :
-				( text + "" ).replace( rtrim, "" );
-		},
-
-	// results is for internal usage only
-	makeArray: function( arr, results ) {
-		var ret = results || [];
-
-		if ( arr != null ) {
-			if ( isArraylike( Object(arr) ) ) {
-				jQuery.merge( ret,
-					typeof arr === "string" ?
-					[ arr ] : arr
-				);
-			} else {
-				push.call( ret, arr );
-			}
-		}
-
-		return ret;
-	},
-
-	inArray: function( elem, arr, i ) {
-		var len;
-
-		if ( arr ) {
-			if ( indexOf ) {
-				return indexOf.call( arr, elem, i );
-			}
-
-			len = arr.length;
-			i = i ? i < 0 ? Math.max( 0, len + i ) : i : 0;
-
-			for ( ; i < len; i++ ) {
-				// Skip accessing in sparse arrays
-				if ( i in arr && arr[ i ] === elem ) {
-					return i;
-				}
-			}
-		}
-
-		return -1;
-	},
-
-	merge: function( first, second ) {
-		var len = +second.length,
-			j = 0,
-			i = first.length;
-
-		while ( j < len ) {
-			first[ i++ ] = second[ j++ ];
-		}
-
-		// Support: IE<9
-		// Workaround casting of .length to NaN on otherwise arraylike objects (e.g., NodeLists)
-		if ( len !== len ) {
-			while ( second[j] !== undefined ) {
-				first[ i++ ] = second[ j++ ];
-			}
-		}
-
-		first.length = i;
-
-		return first;
-	},
-
-	grep: function( elems, callback, invert ) {
-		var callbackInverse,
-			matches = [],
-			i = 0,
-			length = elems.length,
-			callbackExpect = !invert;
-
-		// Go through the array, only saving the items
-		// that pass the validator function
-		for ( ; i < length; i++ ) {
-			callbackInverse = !callback( elems[ i ], i );
-			if ( callbackInverse !== callbackExpect ) {
-				matches.push( elems[ i ] );
-			}
-		}
-
-		return matches;
-	},
-
-	// arg is for internal usage only
-	map: function( elems, callback, arg ) {
-		var value,
-			i = 0,
-			length = elems.length,
-			isArray = isArraylike( elems ),
-			ret = [];
-
-		// Go through the array, translating each of the items to their new values
-		if ( isArray ) {
-			for ( ; i < length; i++ ) {
-				value = callback( elems[ i ], i, arg );
-
-				if ( value != null ) {
-					ret.push( value );
-				}
-			}
-
-		// Go through every key on the object,
-		} else {
-			for ( i in elems ) {
-				value = callback( elems[ i ], i, arg );
-
-				if ( value != null ) {
-					ret.push( value );
-				}
-			}
-		}
-
-		// Flatten any nested arrays
-		return concat.apply( [], ret );
-	},
-
-	// A global GUID counter for objects
-	guid: 1,
-
-	// Bind a function to a context, optionally partially applying any
-	// arguments.
-	proxy: function( fn, context ) {
-		var args, proxy, tmp;
-
-		if ( typeof context === "string" ) {
-			tmp = fn[ context ];
-			context = fn;
-			fn = tmp;
-		}
-
-		// Quick check to determine if target is callable, in the spec
-		// this throws a TypeError, but we will just return undefined.
-		if ( !jQuery.isFunction( fn ) ) {
-			return undefined;
-		}
-
-		// Simulated bind
-		args = slice.call( arguments, 2 );
-		proxy = function() {
-			return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
-		};
-
-		// Set the guid of unique handler to the same of original handler, so it can be removed
-		proxy.guid = fn.guid = fn.guid || jQuery.guid++;
-
-		return proxy;
-	},
-
-	now: function() {
-		return +( new Date() );
-	},
-
-	// jQuery.support is not used in Core but other projects attach their
-	// properties to it so it needs to exist.
-	support: support
+define('jquery', [], function () {
+    return jQuery;
 });
-
-// Populate the class2type map
-jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
-	class2type[ "[object " + name + "]" ] = name.toLowerCase();
-});
-
-function isArraylike( obj ) {
-	var length = obj.length,
-		type = jQuery.type( obj );
-
-	if ( type === "function" || jQuery.isWindow( obj ) ) {
-		return false;
-	}
-
-	if ( obj.nodeType === 1 && length ) {
-		return true;
-	}
-
-	return type === "array" || length === 0 ||
-		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
-}
-var Sizzle =
-/*!
- * Sizzle CSS Selector Engine v1.10.16
- * http://sizzlejs.com/
- *
- * Copyright 2013 jQuery Foundation, Inc. and other contributors
- * Released under the MIT license
- * http://jquery.org/license
- *
- * Date: 2014-01-13
- */
-(function( window ) {
-
-var i,
-	support,
-	Expr,
-	getText,
-	isXML,
-	compile,
-	outermostContext,
-	sortInput,
-	hasDuplicate,
-
-	// Local document vars
-	setDocument,
-	document,
-	docElem,
-	documentIsHTML,
-	rbuggyQSA,
-	rbuggyMatches,
-	matches,
-	contains,
-
-	// Instance-specific data
-	expando = "sizzle" + -(new Date()),
-	preferredDoc = window.document,
-	dirruns = 0,
-	done = 0,
-	classCache = createCache(),
-	tokenCache = createCache(),
-	compilerCache = createCache(),
-	sortOrder = function( a, b ) {
-		if ( a === b ) {
-			hasDuplicate = true;
-		}
-		return 0;
-	},
-
-	// General-purpose constants
-	strundefined = typeof undefined,
-	MAX_NEGATIVE = 1 << 31,
-
-	// Instance methods
-	hasOwn = ({}).hasOwnProperty,
-	arr = [],
-	pop = arr.pop,
-	push_native = arr.push,
-	push = arr.push,
-	slice = arr.slice,
-	// Use a stripped-down indexOf if we can't use a native one
-	indexOf = arr.indexOf || function( elem ) {
-		var i = 0,
-			len = this.length;
-		for ( ; i < len; i++ ) {
-			if ( this[i] === elem ) {
-				return i;
-			}
-		}
-		return -1;
-	},
-
-	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
-
-	// Regular expressions
-
-	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
-	whitespace = "[\\x20\\t\\r\\n\\f]",
-	// http://www.w3.org/TR/css3-syntax/#characters
-	characterEncoding = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
-
-	// Loosely modeled on CSS identifier characters
-	// An unquoted value should be a CSS identifier http://www.w3.org/TR/css3-selectors/#attribute-selectors
-	// Proper syntax: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
-	identifier = characterEncoding.replace( "w", "w#" ),
-
-	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
-	attributes = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
-		"*(?:([*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
-
-	// Prefer arguments quoted,
-	//   then not containing pseudos/brackets,
-	//   then attribute selectors/non-parenthetical expressions,
-	//   then anything else
-	// These preferences are here to reduce the number of selectors
-	//   needing tokenize in the PSEUDO preFilter
-	pseudos = ":(" + characterEncoding + ")(?:\\(((['\"])((?:\\\\.|[^\\\\])*?)\\3|((?:\\\\.|[^\\\\()[\\]]|" + attributes.replace( 3, 8 ) + ")*)|.*)\\)|)",
-
-	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
-	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
-
-	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
-	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
-
-	rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
-
-	rpseudo = new RegExp( pseudos ),
-	ridentifier = new RegExp( "^" + identifier + "$" ),
-
-	matchExpr = {
-		"ID": new RegExp( "^#(" + characterEncoding + ")" ),
-		"CLASS": new RegExp( "^\\.(" + characterEncoding + ")" ),
-		"TAG": new RegExp( "^(" + characterEncoding.replace( "w", "w*" ) + ")" ),
-		"ATTR": new RegExp( "^" + attributes ),
-		"PSEUDO": new RegExp( "^" + pseudos ),
-		"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
-			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
-			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
-		"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
-		// For use in libraries implementing .is()
-		// We use this for POS matching in `select`
-		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
-			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
-	},
-
-	rinputs = /^(?:input|select|textarea|button)$/i,
-	rheader = /^h\d$/i,
-
-	rnative = /^[^{]+\{\s*\[native \w/,
-
-	// Easily-parseable/retrievable ID or TAG or CLASS selectors
-	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
-
-	rsibling = /[+~]/,
-	rescape = /'|\\/g,
-
-	// CSS escapes http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
-	runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
-	funescape = function( _, escaped, escapedWhitespace ) {
-		var high = "0x" + escaped - 0x10000;
-		// NaN means non-codepoint
-		// Support: Firefox
-		// Workaround erroneous numeric interpretation of +"0x"
-		return high !== high || escapedWhitespace ?
-			escaped :
-			high < 0 ?
-				// BMP codepoint
-				String.fromCharCode( high + 0x10000 ) :
-				// Supplemental Plane codepoint (surrogate pair)
-				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
-	};
-
-// Optimize for push.apply( _, NodeList )
-try {
-	push.apply(
-		(arr = slice.call( preferredDoc.childNodes )),
-		preferredDoc.childNodes
-	);
-	// Support: Android<4.0
-	// Detect silently failing push.apply
-	arr[ preferredDoc.childNodes.length ].nodeType;
-} catch ( e ) {
-	push = { apply: arr.length ?
-
-		// Leverage slice if possible
-		function( target, els ) {
-			push_native.apply( target, slice.call(els) );
-		} :
-
-		// Support: IE<9
-		// Otherwise append directly
-		function( target, els ) {
-			var j = target.length,
-				i = 0;
-			// Can't trust NodeList.length
-			while ( (target[j++] = els[i++]) ) {}
-			target.length = j - 1;
-		}
-	};
-}
-
-function Sizzle( selector, context, results, seed ) {
-	var match, elem, m, nodeType,
-		// QSA vars
-		i, groups, old, nid, newContext, newSelector;
-
-	if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
-		setDocument( context );
-	}
-
-	context = context || document;
-	results = results || [];
-
-	if ( !selector || typeof selector !== "string" ) {
-		return results;
-	}
-
-	if ( (nodeType = context.nodeType) !== 1 && nodeType !== 9 ) {
-		return [];
-	}
-
-	if ( documentIsHTML && !seed ) {
-
-		// Shortcuts
-		if ( (match = rquickExpr.exec( selector )) ) {
-			// Speed-up: Sizzle("#ID")
-			if ( (m = match[1]) ) {
-				if ( nodeType === 9 ) {
-					elem = context.getElementById( m );
-					// Check parentNode to catch when Blackberry 4.6 returns
-					// nodes that are no longer in the document (jQuery #6963)
-					if ( elem && elem.parentNode ) {
-						// Handle the case where IE, Opera, and Webkit return items
-						// by name instead of ID
-						if ( elem.id === m ) {
-							results.push( elem );
-							return results;
-						}
-					} else {
-						return results;
-					}
-				} else {
-					// Context is not a document
-					if ( context.ownerDocument && (elem = context.ownerDocument.getElementById( m )) &&
-						contains( context, elem ) && elem.id === m ) {
-						results.push( elem );
-						return results;
-					}
-				}
-
-			// Speed-up: Sizzle("TAG")
-			} else if ( match[2] ) {
-				push.apply( results, context.getElementsByTagName( selector ) );
-				return results;
-
-			// Speed-up: Sizzle(".CLASS")
-			} else if ( (m = match[3]) && support.getElementsByClassName && context.getElementsByClassName ) {
-				push.apply( results, context.getElementsByClassName( m ) );
-				return results;
-			}
-		}
-
-		// QSA path
-		if ( support.qsa && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
-			nid = old = expando;
-			newContext = context;
-			newSelector = nodeType === 9 && selector;
-
-			// qSA works strangely on Element-rooted queries
-			// We can work around this by specifying an extra ID on the root
-			// and working up from there (Thanks to Andrew Dupont for the technique)
-			// IE 8 doesn't work on object elements
-			if ( nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
-				groups = tokenize( selector );
-
-				if ( (old = context.getAttribute("id")) ) {
-					nid = old.replace( rescape, "\\$&" );
-				} else {
-					context.setAttribute( "id", nid );
-				}
-				nid = "[id='" + nid + "'] ";
-
-				i = groups.length;
-				while ( i-- ) {
-					groups[i] = nid + toSelector( groups[i] );
-				}
-				newContext = rsibling.test( selector ) && testContext( context.parentNode ) || context;
-				newSelector = groups.join(",");
-			}
-
-			if ( newSelector ) {
-				try {
-					push.apply( results,
-						newContext.querySelectorAll( newSelector )
-					);
-					return results;
-				} catch(qsaError) {
-				} finally {
-					if ( !old ) {
-						context.removeAttribute("id");
-					}
-				}
-			}
-		}
-	}
-
-	// All others
-	return select( selector.replace( rtrim, "$1" ), context, results, seed );
-}
-
-/**
- * Create key-value caches of limited size
- * @returns {Function(string, Object)} Returns the Object data after storing it on itself with
- *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
- *	deleting the oldest entry
- */
-function createCache() {
-	var keys = [];
-
-	function cache( key, value ) {
-		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
-		if ( keys.push( key + " " ) > Expr.cacheLength ) {
-			// Only keep the most recent entries
-			delete cache[ keys.shift() ];
-		}
-		return (cache[ key + " " ] = value);
-	}
-	return cache;
-}
-
-/**
- * Mark a function for special use by Sizzle
- * @param {Function} fn The function to mark
- */
-function markFunction( fn ) {
-	fn[ expando ] = true;
-	return fn;
-}
-
-/**
- * Support testing using an element
- * @param {Function} fn Passed the created div and expects a boolean result
- */
-function assert( fn ) {
-	var div = document.createElement("div");
-
-	try {
-		return !!fn( div );
-	} catch (e) {
-		return false;
-	} finally {
-		// Remove from its parent by default
-		if ( div.parentNode ) {
-			div.parentNode.removeChild( div );
-		}
-		// release memory in IE
-		div = null;
-	}
-}
-
-/**
- * Adds the same handler for all of the specified attrs
- * @param {String} attrs Pipe-separated list of attributes
- * @param {Function} handler The method that will be applied
- */
-function addHandle( attrs, handler ) {
-	var arr = attrs.split("|"),
-		i = attrs.length;
-
-	while ( i-- ) {
-		Expr.attrHandle[ arr[i] ] = handler;
-	}
-}
-
-/**
- * Checks document order of two siblings
- * @param {Element} a
- * @param {Element} b
- * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
- */
-function siblingCheck( a, b ) {
-	var cur = b && a,
-		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
-			( ~b.sourceIndex || MAX_NEGATIVE ) -
-			( ~a.sourceIndex || MAX_NEGATIVE );
-
-	// Use IE sourceIndex if available on both nodes
-	if ( diff ) {
-		return diff;
-	}
-
-	// Check if b follows a
-	if ( cur ) {
-		while ( (cur = cur.nextSibling) ) {
-			if ( cur === b ) {
-				return -1;
-			}
-		}
-	}
-
-	return a ? 1 : -1;
-}
-
-/**
- * Returns a function to use in pseudos for input types
- * @param {String} type
- */
-function createInputPseudo( type ) {
-	return function( elem ) {
-		var name = elem.nodeName.toLowerCase();
-		return name === "input" && elem.type === type;
-	};
-}
-
-/**
- * Returns a function to use in pseudos for buttons
- * @param {String} type
- */
-function createButtonPseudo( type ) {
-	return function( elem ) {
-		var name = elem.nodeName.toLowerCase();
-		return (name === "input" || name === "button") && elem.type === type;
-	};
-}
-
-/**
- * Returns a function to use in pseudos for positionals
- * @param {Function} fn
- */
-function createPositionalPseudo( fn ) {
-	return markFunction(function( argument ) {
-		argument = +argument;
-		return markFunction(function( seed, matches ) {
-			var j,
-				matchIndexes = fn( [], seed.length, argument ),
-				i = matchIndexes.length;
-
-			// Match elements found at the specified indexes
-			while ( i-- ) {
-				if ( seed[ (j = matchIndexes[i]) ] ) {
-					seed[j] = !(matches[j] = seed[j]);
-				}
-			}
-		});
-	});
-}
-
-/**
- * Checks a node for validity as a Sizzle context
- * @param {Element|Object=} context
- * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
- */
-function testContext( context ) {
-	return context && typeof context.getElementsByTagName !== strundefined && context;
-}
-
-// Expose support vars for convenience
-support = Sizzle.support = {};
-
-/**
- * Detects XML nodes
- * @param {Element|Object} elem An element or a document
- * @returns {Boolean} True iff elem is a non-HTML XML node
- */
-isXML = Sizzle.isXML = function( elem ) {
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833)
-	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
-};
-
-/**
- * Sets document-related variables once based on the current document
- * @param {Element|Object} [doc] An element or document object to use to set the document
- * @returns {Object} Returns the current document
- */
-setDocument = Sizzle.setDocument = function( node ) {
-	var hasCompare,
-		doc = node ? node.ownerDocument || node : preferredDoc,
-		parent = doc.defaultView;
-
-	// If no document and documentElement is available, return
-	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
-		return document;
-	}
-
-	// Set our document
-	document = doc;
-	docElem = doc.documentElement;
-
-	// Support tests
-	documentIsHTML = !isXML( doc );
-
-	// Support: IE>8
-	// If iframe document is assigned to "document" variable and if iframe has been reloaded,
-	// IE will throw "permission denied" error when accessing "document" variable, see jQuery #13936
-	// IE6-8 do not support the defaultView property so parent will be undefined
-	if ( parent && parent !== parent.top ) {
-		// IE11 does not have attachEvent, so all must suffer
-		if ( parent.addEventListener ) {
-			parent.addEventListener( "unload", function() {
-				setDocument();
-			}, false );
-		} else if ( parent.attachEvent ) {
-			parent.attachEvent( "onunload", function() {
-				setDocument();
-			});
-		}
-	}
-
-	/* Attributes
-	---------------------------------------------------------------------- */
-
-	// Support: IE<8
-	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
-	support.attributes = assert(function( div ) {
-		div.className = "i";
-		return !div.getAttribute("className");
-	});
-
-	/* getElement(s)By*
-	---------------------------------------------------------------------- */
-
-	// Check if getElementsByTagName("*") returns only elements
-	support.getElementsByTagName = assert(function( div ) {
-		div.appendChild( doc.createComment("") );
-		return !div.getElementsByTagName("*").length;
-	});
-
-	// Check if getElementsByClassName can be trusted
-	support.getElementsByClassName = rnative.test( doc.getElementsByClassName ) && assert(function( div ) {
-		div.innerHTML = "<div class='a'></div><div class='a i'></div>";
-
-		// Support: Safari<4
-		// Catch class over-caching
-		div.firstChild.className = "i";
-		// Support: Opera<10
-		// Catch gEBCN failure to find non-leading classes
-		return div.getElementsByClassName("i").length === 2;
-	});
-
-	// Support: IE<10
-	// Check if getElementById returns elements by name
-	// The broken getElementById methods don't pick up programatically-set names,
-	// so use a roundabout getElementsByName test
-	support.getById = assert(function( div ) {
-		docElem.appendChild( div ).id = expando;
-		return !doc.getElementsByName || !doc.getElementsByName( expando ).length;
-	});
-
-	// ID find and filter
-	if ( support.getById ) {
-		Expr.find["ID"] = function( id, context ) {
-			if ( typeof context.getElementById !== strundefined && documentIsHTML ) {
-				var m = context.getElementById( id );
-				// Check parentNode to catch when Blackberry 4.6 returns
-				// nodes that are no longer in the document #6963
-				return m && m.parentNode ? [m] : [];
-			}
-		};
-		Expr.filter["ID"] = function( id ) {
-			var attrId = id.replace( runescape, funescape );
-			return function( elem ) {
-				return elem.getAttribute("id") === attrId;
-			};
-		};
-	} else {
-		// Support: IE6/7
-		// getElementById is not reliable as a find shortcut
-		delete Expr.find["ID"];
-
-		Expr.filter["ID"] =  function( id ) {
-			var attrId = id.replace( runescape, funescape );
-			return function( elem ) {
-				var node = typeof elem.getAttributeNode !== strundefined && elem.getAttributeNode("id");
-				return node && node.value === attrId;
-			};
-		};
-	}
-
-	// Tag
-	Expr.find["TAG"] = support.getElementsByTagName ?
-		function( tag, context ) {
-			if ( typeof context.getElementsByTagName !== strundefined ) {
-				return context.getElementsByTagName( tag );
-			}
-		} :
-		function( tag, context ) {
-			var elem,
-				tmp = [],
-				i = 0,
-				results = context.getElementsByTagName( tag );
-
-			// Filter out possible comments
-			if ( tag === "*" ) {
-				while ( (elem = results[i++]) ) {
-					if ( elem.nodeType === 1 ) {
-						tmp.push( elem );
-					}
-				}
-
-				return tmp;
-			}
-			return results;
-		};
-
-	// Class
-	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
-		if ( typeof context.getElementsByClassName !== strundefined && documentIsHTML ) {
-			return context.getElementsByClassName( className );
-		}
-	};
-
-	/* QSA/matchesSelector
-	---------------------------------------------------------------------- */
-
-	// QSA and matchesSelector support
-
-	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
-	rbuggyMatches = [];
-
-	// qSa(:focus) reports false when true (Chrome 21)
-	// We allow this because of a bug in IE8/9 that throws an error
-	// whenever `document.activeElement` is accessed on an iframe
-	// So, we allow :focus to pass through QSA all the time to avoid the IE error
-	// See http://bugs.jquery.com/ticket/13378
-	rbuggyQSA = [];
-
-	if ( (support.qsa = rnative.test( doc.querySelectorAll )) ) {
-		// Build QSA regex
-		// Regex strategy adopted from Diego Perini
-		assert(function( div ) {
-			// Select is set to empty string on purpose
-			// This is to test IE's treatment of not explicitly
-			// setting a boolean content attribute,
-			// since its presence should be enough
-			// http://bugs.jquery.com/ticket/12359
-			div.innerHTML = "<select t=''><option selected=''></option></select>";
-
-			// Support: IE8, Opera 10-12
-			// Nothing should be selected when empty strings follow ^= or $= or *=
-			if ( div.querySelectorAll("[t^='']").length ) {
-				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
-			}
-
-			// Support: IE8
-			// Boolean attributes and "value" are not treated correctly
-			if ( !div.querySelectorAll("[selected]").length ) {
-				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
-			}
-
-			// Webkit/Opera - :checked should return selected option elements
-			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":checked").length ) {
-				rbuggyQSA.push(":checked");
-			}
-		});
-
-		assert(function( div ) {
-			// Support: Windows 8 Native Apps
-			// The type and name attributes are restricted during .innerHTML assignment
-			var input = doc.createElement("input");
-			input.setAttribute( "type", "hidden" );
-			div.appendChild( input ).setAttribute( "name", "D" );
-
-			// Support: IE8
-			// Enforce case-sensitivity of name attribute
-			if ( div.querySelectorAll("[name=d]").length ) {
-				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
-			}
-
-			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
-			// IE8 throws error here and will not see later tests
-			if ( !div.querySelectorAll(":enabled").length ) {
-				rbuggyQSA.push( ":enabled", ":disabled" );
-			}
-
-			// Opera 10-11 does not throw on post-comma invalid pseudos
-			div.querySelectorAll("*,:x");
-			rbuggyQSA.push(",.*:");
-		});
-	}
-
-	if ( (support.matchesSelector = rnative.test( (matches = docElem.webkitMatchesSelector ||
-		docElem.mozMatchesSelector ||
-		docElem.oMatchesSelector ||
-		docElem.msMatchesSelector) )) ) {
-
-		assert(function( div ) {
-			// Check to see if it's possible to do matchesSelector
-			// on a disconnected node (IE 9)
-			support.disconnectedMatch = matches.call( div, "div" );
-
-			// This should fail with an exception
-			// Gecko does not error, returns false instead
-			matches.call( div, "[s!='']:x" );
-			rbuggyMatches.push( "!=", pseudos );
-		});
-	}
-
-	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
-	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
-
-	/* Contains
-	---------------------------------------------------------------------- */
-	hasCompare = rnative.test( docElem.compareDocumentPosition );
-
-	// Element contains another
-	// Purposefully does not implement inclusive descendent
-	// As in, an element does not contain itself
-	contains = hasCompare || rnative.test( docElem.contains ) ?
-		function( a, b ) {
-			var adown = a.nodeType === 9 ? a.documentElement : a,
-				bup = b && b.parentNode;
-			return a === bup || !!( bup && bup.nodeType === 1 && (
-				adown.contains ?
-					adown.contains( bup ) :
-					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
-			));
-		} :
-		function( a, b ) {
-			if ( b ) {
-				while ( (b = b.parentNode) ) {
-					if ( b === a ) {
-						return true;
-					}
-				}
-			}
-			return false;
-		};
-
-	/* Sorting
-	---------------------------------------------------------------------- */
-
-	// Document order sorting
-	sortOrder = hasCompare ?
-	function( a, b ) {
-
-		// Flag for duplicate removal
-		if ( a === b ) {
-			hasDuplicate = true;
-			return 0;
-		}
-
-		// Sort on method existence if only one input has compareDocumentPosition
-		var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
-		if ( compare ) {
-			return compare;
-		}
-
-		// Calculate position if both inputs belong to the same document
-		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
-			a.compareDocumentPosition( b ) :
-
-			// Otherwise we know they are disconnected
-			1;
-
-		// Disconnected nodes
-		if ( compare & 1 ||
-			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
-
-			// Choose the first element that is related to our preferred document
-			if ( a === doc || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
-				return -1;
-			}
-			if ( b === doc || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
-				return 1;
-			}
-
-			// Maintain original order
-			return sortInput ?
-				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
-				0;
-		}
-
-		return compare & 4 ? -1 : 1;
-	} :
-	function( a, b ) {
-		// Exit early if the nodes are identical
-		if ( a === b ) {
-			hasDuplicate = true;
-			return 0;
-		}
-
-		var cur,
-			i = 0,
-			aup = a.parentNode,
-			bup = b.parentNode,
-			ap = [ a ],
-			bp = [ b ];
-
-		// Parentless nodes are either documents or disconnected
-		if ( !aup || !bup ) {
-			return a === doc ? -1 :
-				b === doc ? 1 :
-				aup ? -1 :
-				bup ? 1 :
-				sortInput ?
-				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
-				0;
-
-		// If the nodes are siblings, we can do a quick check
-		} else if ( aup === bup ) {
-			return siblingCheck( a, b );
-		}
-
-		// Otherwise we need full lists of their ancestors for comparison
-		cur = a;
-		while ( (cur = cur.parentNode) ) {
-			ap.unshift( cur );
-		}
-		cur = b;
-		while ( (cur = cur.parentNode) ) {
-			bp.unshift( cur );
-		}
-
-		// Walk down the tree looking for a discrepancy
-		while ( ap[i] === bp[i] ) {
-			i++;
-		}
-
-		return i ?
-			// Do a sibling check if the nodes have a common ancestor
-			siblingCheck( ap[i], bp[i] ) :
-
-			// Otherwise nodes in our document sort first
-			ap[i] === preferredDoc ? -1 :
-			bp[i] === preferredDoc ? 1 :
-			0;
-	};
-
-	return doc;
-};
-
-Sizzle.matches = function( expr, elements ) {
-	return Sizzle( expr, null, null, elements );
-};
-
-Sizzle.matchesSelector = function( elem, expr ) {
-	// Set document vars if needed
-	if ( ( elem.ownerDocument || elem ) !== document ) {
-		setDocument( elem );
-	}
-
-	// Make sure that attribute selectors are quoted
-	expr = expr.replace( rattributeQuotes, "='$1']" );
-
-	if ( support.matchesSelector && documentIsHTML &&
-		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
-		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
-
-		try {
-			var ret = matches.call( elem, expr );
-
-			// IE 9's matchesSelector returns false on disconnected nodes
-			if ( ret || support.disconnectedMatch ||
-					// As well, disconnected nodes are said to be in a document
-					// fragment in IE 9
-					elem.document && elem.document.nodeType !== 11 ) {
-				return ret;
-			}
-		} catch(e) {}
-	}
-
-	return Sizzle( expr, document, null, [elem] ).length > 0;
-};
-
-Sizzle.contains = function( context, elem ) {
-	// Set document vars if needed
-	if ( ( context.ownerDocument || context ) !== document ) {
-		setDocument( context );
-	}
-	return contains( context, elem );
-};
-
-Sizzle.attr = function( elem, name ) {
-	// Set document vars if needed
-	if ( ( elem.ownerDocument || elem ) !== document ) {
-		setDocument( elem );
-	}
-
-	var fn = Expr.attrHandle[ name.toLowerCase() ],
-		// Don't get fooled by Object.prototype properties (jQuery #13807)
-		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
-			fn( elem, name, !documentIsHTML ) :
-			undefined;
-
-	return val !== undefined ?
-		val :
-		support.attributes || !documentIsHTML ?
-			elem.getAttribute( name ) :
-			(val = elem.getAttributeNode(name)) && val.specified ?
-				val.value :
-				null;
-};
-
-Sizzle.error = function( msg ) {
-	throw new Error( "Syntax error, unrecognized expression: " + msg );
-};
-
-/**
- * Document sorting and removing duplicates
- * @param {ArrayLike} results
- */
-Sizzle.uniqueSort = function( results ) {
-	var elem,
-		duplicates = [],
-		j = 0,
-		i = 0;
-
-	// Unless we *know* we can detect duplicates, assume their presence
-	hasDuplicate = !support.detectDuplicates;
-	sortInput = !support.sortStable && results.slice( 0 );
-	results.sort( sortOrder );
-
-	if ( hasDuplicate ) {
-		while ( (elem = results[i++]) ) {
-			if ( elem === results[ i ] ) {
-				j = duplicates.push( i );
-			}
-		}
-		while ( j-- ) {
-			results.splice( duplicates[ j ], 1 );
-		}
-	}
-
-	// Clear input after sorting to release objects
-	// See https://github.com/jquery/sizzle/pull/225
-	sortInput = null;
-
-	return results;
-};
-
-/**
- * Utility function for retrieving the text value of an array of DOM nodes
- * @param {Array|Element} elem
- */
-getText = Sizzle.getText = function( elem ) {
-	var node,
-		ret = "",
-		i = 0,
-		nodeType = elem.nodeType;
-
-	if ( !nodeType ) {
-		// If no nodeType, this is expected to be an array
-		while ( (node = elem[i++]) ) {
-			// Do not traverse comment nodes
-			ret += getText( node );
-		}
-	} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
-		// Use textContent for elements
-		// innerText usage removed for consistency of new lines (jQuery #11153)
-		if ( typeof elem.textContent === "string" ) {
-			return elem.textContent;
-		} else {
-			// Traverse its children
-			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
-				ret += getText( elem );
-			}
-		}
-	} else if ( nodeType === 3 || nodeType === 4 ) {
-		return elem.nodeValue;
-	}
-	// Do not include comment or processing instruction nodes
-
-	return ret;
-};
-
-Expr = Sizzle.selectors = {
-
-	// Can be adjusted by the user
-	cacheLength: 50,
-
-	createPseudo: markFunction,
-
-	match: matchExpr,
-
-	attrHandle: {},
-
-	find: {},
-
-	relative: {
-		">": { dir: "parentNode", first: true },
-		" ": { dir: "parentNode" },
-		"+": { dir: "previousSibling", first: true },
-		"~": { dir: "previousSibling" }
-	},
-
-	preFilter: {
-		"ATTR": function( match ) {
-			match[1] = match[1].replace( runescape, funescape );
-
-			// Move the given value to match[3] whether quoted or unquoted
-			match[3] = ( match[4] || match[5] || "" ).replace( runescape, funescape );
-
-			if ( match[2] === "~=" ) {
-				match[3] = " " + match[3] + " ";
-			}
-
-			return match.slice( 0, 4 );
-		},
-
-		"CHILD": function( match ) {
-			/* matches from matchExpr["CHILD"]
-				1 type (only|nth|...)
-				2 what (child|of-type)
-				3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
-				4 xn-component of xn+y argument ([+-]?\d*n|)
-				5 sign of xn-component
-				6 x of xn-component
-				7 sign of y-component
-				8 y of y-component
-			*/
-			match[1] = match[1].toLowerCase();
-
-			if ( match[1].slice( 0, 3 ) === "nth" ) {
-				// nth-* requires argument
-				if ( !match[3] ) {
-					Sizzle.error( match[0] );
-				}
-
-				// numeric x and y parameters for Expr.filter.CHILD
-				// remember that false/true cast respectively to 0/1
-				match[4] = +( match[4] ? match[5] + (match[6] || 1) : 2 * ( match[3] === "even" || match[3] === "odd" ) );
-				match[5] = +( ( match[7] + match[8] ) || match[3] === "odd" );
-
-			// other types prohibit arguments
-			} else if ( match[3] ) {
-				Sizzle.error( match[0] );
-			}
-
-			return match;
-		},
-
-		"PSEUDO": function( match ) {
-			var excess,
-				unquoted = !match[5] && match[2];
-
-			if ( matchExpr["CHILD"].test( match[0] ) ) {
-				return null;
-			}
-
-			// Accept quoted arguments as-is
-			if ( match[3] && match[4] !== undefined ) {
-				match[2] = match[4];
-
-			// Strip excess characters from unquoted arguments
-			} else if ( unquoted && rpseudo.test( unquoted ) &&
-				// Get excess from tokenize (recursively)
-				(excess = tokenize( unquoted, true )) &&
-				// advance to the next closing parenthesis
-				(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
-
-				// excess is a negative index
-				match[0] = match[0].slice( 0, excess );
-				match[2] = unquoted.slice( 0, excess );
-			}
-
-			// Return only captures needed by the pseudo filter method (type and argument)
-			return match.slice( 0, 3 );
-		}
-	},
-
-	filter: {
-
-		"TAG": function( nodeNameSelector ) {
-			var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
-			return nodeNameSelector === "*" ?
-				function() { return true; } :
-				function( elem ) {
-					return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
-				};
-		},
-
-		"CLASS": function( className ) {
-			var pattern = classCache[ className + " " ];
-
-			return pattern ||
-				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
-				classCache( className, function( elem ) {
-					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== strundefined && elem.getAttribute("class") || "" );
-				});
-		},
-
-		"ATTR": function( name, operator, check ) {
-			return function( elem ) {
-				var result = Sizzle.attr( elem, name );
-
-				if ( result == null ) {
-					return operator === "!=";
-				}
-				if ( !operator ) {
-					return true;
-				}
-
-				result += "";
-
-				return operator === "=" ? result === check :
-					operator === "!=" ? result !== check :
-					operator === "^=" ? check && result.indexOf( check ) === 0 :
-					operator === "*=" ? check && result.indexOf( check ) > -1 :
-					operator === "$=" ? check && result.slice( -check.length ) === check :
-					operator === "~=" ? ( " " + result + " " ).indexOf( check ) > -1 :
-					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
-					false;
-			};
-		},
-
-		"CHILD": function( type, what, argument, first, last ) {
-			var simple = type.slice( 0, 3 ) !== "nth",
-				forward = type.slice( -4 ) !== "last",
-				ofType = what === "of-type";
-
-			return first === 1 && last === 0 ?
-
-				// Shortcut for :nth-*(n)
-				function( elem ) {
-					return !!elem.parentNode;
-				} :
-
-				function( elem, context, xml ) {
-					var cache, outerCache, node, diff, nodeIndex, start,
-						dir = simple !== forward ? "nextSibling" : "previousSibling",
-						parent = elem.parentNode,
-						name = ofType && elem.nodeName.toLowerCase(),
-						useCache = !xml && !ofType;
-
-					if ( parent ) {
-
-						// :(first|last|only)-(child|of-type)
-						if ( simple ) {
-							while ( dir ) {
-								node = elem;
-								while ( (node = node[ dir ]) ) {
-									if ( ofType ? node.nodeName.toLowerCase() === name : node.nodeType === 1 ) {
-										return false;
-									}
-								}
-								// Reverse direction for :only-* (if we haven't yet done so)
-								start = dir = type === "only" && !start && "nextSibling";
-							}
-							return true;
-						}
-
-						start = [ forward ? parent.firstChild : parent.lastChild ];
-
-						// non-xml :nth-child(...) stores cache data on `parent`
-						if ( forward && useCache ) {
-							// Seek `elem` from a previously-cached index
-							outerCache = parent[ expando ] || (parent[ expando ] = {});
-							cache = outerCache[ type ] || [];
-							nodeIndex = cache[0] === dirruns && cache[1];
-							diff = cache[0] === dirruns && cache[2];
-							node = nodeIndex && parent.childNodes[ nodeIndex ];
-
-							while ( (node = ++nodeIndex && node && node[ dir ] ||
-
-								// Fallback to seeking `elem` from the start
-								(diff = nodeIndex = 0) || start.pop()) ) {
-
-								// When found, cache indexes on `parent` and break
-								if ( node.nodeType === 1 && ++diff && node === elem ) {
-									outerCache[ type ] = [ dirruns, nodeIndex, diff ];
-									break;
-								}
-							}
-
-						// Use previously-cached element index if available
-						} else if ( useCache && (cache = (elem[ expando ] || (elem[ expando ] = {}))[ type ]) && cache[0] === dirruns ) {
-							diff = cache[1];
-
-						// xml :nth-child(...) or :nth-last-child(...) or :nth(-last)?-of-type(...)
-						} else {
-							// Use the same loop as above to seek `elem` from the start
-							while ( (node = ++nodeIndex && node && node[ dir ] ||
-								(diff = nodeIndex = 0) || start.pop()) ) {
-
-								if ( ( ofType ? node.nodeName.toLowerCase() === name : node.nodeType === 1 ) && ++diff ) {
-									// Cache the index of each encountered element
-									if ( useCache ) {
-										(node[ expando ] || (node[ expando ] = {}))[ type ] = [ dirruns, diff ];
-									}
-
-									if ( node === elem ) {
-										break;
-									}
-								}
-							}
-						}
-
-						// Incorporate the offset, then check against cycle size
-						diff -= last;
-						return diff === first || ( diff % first === 0 && diff / first >= 0 );
-					}
-				};
-		},
-
-		"PSEUDO": function( pseudo, argument ) {
-			// pseudo-class names are case-insensitive
-			// http://www.w3.org/TR/selectors/#pseudo-classes
-			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
-			// Remember that setFilters inherits from pseudos
-			var args,
-				fn = Expr.pseudos[ pseudo ] || Expr.setFilters[ pseudo.toLowerCase() ] ||
-					Sizzle.error( "unsupported pseudo: " + pseudo );
-
-			// The user may use createPseudo to indicate that
-			// arguments are needed to create the filter function
-			// just as Sizzle does
-			if ( fn[ expando ] ) {
-				return fn( argument );
-			}
-
-			// But maintain support for old signatures
-			if ( fn.length > 1 ) {
-				args = [ pseudo, pseudo, "", argument ];
-				return Expr.setFilters.hasOwnProperty( pseudo.toLowerCase() ) ?
-					markFunction(function( seed, matches ) {
-						var idx,
-							matched = fn( seed, argument ),
-							i = matched.length;
-						while ( i-- ) {
-							idx = indexOf.call( seed, matched[i] );
-							seed[ idx ] = !( matches[ idx ] = matched[i] );
-						}
-					}) :
-					function( elem ) {
-						return fn( elem, 0, args );
-					};
-			}
-
-			return fn;
-		}
-	},
-
-	pseudos: {
-		// Potentially complex pseudos
-		"not": markFunction(function( selector ) {
-			// Trim the selector passed to compile
-			// to avoid treating leading and trailing
-			// spaces as combinators
-			var input = [],
-				results = [],
-				matcher = compile( selector.replace( rtrim, "$1" ) );
-
-			return matcher[ expando ] ?
-				markFunction(function( seed, matches, context, xml ) {
-					var elem,
-						unmatched = matcher( seed, null, xml, [] ),
-						i = seed.length;
-
-					// Match elements unmatched by `matcher`
-					while ( i-- ) {
-						if ( (elem = unmatched[i]) ) {
-							seed[i] = !(matches[i] = elem);
-						}
-					}
-				}) :
-				function( elem, context, xml ) {
-					input[0] = elem;
-					matcher( input, null, xml, results );
-					return !results.pop();
-				};
-		}),
-
-		"has": markFunction(function( selector ) {
-			return function( elem ) {
-				return Sizzle( selector, elem ).length > 0;
-			};
-		}),
-
-		"contains": markFunction(function( text ) {
-			return function( elem ) {
-				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
-			};
-		}),
-
-		// "Whether an element is represented by a :lang() selector
-		// is based solely on the element's language value
-		// being equal to the identifier C,
-		// or beginning with the identifier C immediately followed by "-".
-		// The matching of C against the element's language value is performed case-insensitively.
-		// The identifier C does not have to be a valid language name."
-		// http://www.w3.org/TR/selectors/#lang-pseudo
-		"lang": markFunction( function( lang ) {
-			// lang value must be a valid identifier
-			if ( !ridentifier.test(lang || "") ) {
-				Sizzle.error( "unsupported lang: " + lang );
-			}
-			lang = lang.replace( runescape, funescape ).toLowerCase();
-			return function( elem ) {
-				var elemLang;
-				do {
-					if ( (elemLang = documentIsHTML ?
-						elem.lang :
-						elem.getAttribute("xml:lang") || elem.getAttribute("lang")) ) {
-
-						elemLang = elemLang.toLowerCase();
-						return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
-					}
-				} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
-				return false;
-			};
-		}),
-
-		// Miscellaneous
-		"target": function( elem ) {
-			var hash = window.location && window.location.hash;
-			return hash && hash.slice( 1 ) === elem.id;
-		},
-
-		"root": function( elem ) {
-			return elem === docElem;
-		},
-
-		"focus": function( elem ) {
-			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
-		},
-
-		// Boolean properties
-		"enabled": function( elem ) {
-			return elem.disabled === false;
-		},
-
-		"disabled": function( elem ) {
-			return elem.disabled === true;
-		},
-
-		"checked": function( elem ) {
-			// In CSS3, :checked should return both checked and selected elements
-			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
-			var nodeName = elem.nodeName.toLowerCase();
-			return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
-		},
-
-		"selected": function( elem ) {
-			// Accessing this property makes selected-by-default
-			// options in Safari work properly
-			if ( elem.parentNode ) {
-				elem.parentNode.selectedIndex;
-			}
-
-			return elem.selected === true;
-		},
-
-		// Contents
-		"empty": function( elem ) {
-			// http://www.w3.org/TR/selectors/#empty-pseudo
-			// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
-			//   but not by others (comment: 8; processing instruction: 7; etc.)
-			// nodeType < 6 works because attributes (2) do not appear as children
-			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
-				if ( elem.nodeType < 6 ) {
-					return false;
-				}
-			}
-			return true;
-		},
-
-		"parent": function( elem ) {
-			return !Expr.pseudos["empty"]( elem );
-		},
-
-		// Element/input types
-		"header": function( elem ) {
-			return rheader.test( elem.nodeName );
-		},
-
-		"input": function( elem ) {
-			return rinputs.test( elem.nodeName );
-		},
-
-		"button": function( elem ) {
-			var name = elem.nodeName.toLowerCase();
-			return name === "input" && elem.type === "button" || name === "button";
-		},
-
-		"text": function( elem ) {
-			var attr;
-			return elem.nodeName.toLowerCase() === "input" &&
-				elem.type === "text" &&
-
-				// Support: IE<8
-				// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
-				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
-		},
-
-		// Position-in-collection
-		"first": createPositionalPseudo(function() {
-			return [ 0 ];
-		}),
-
-		"last": createPositionalPseudo(function( matchIndexes, length ) {
-			return [ length - 1 ];
-		}),
-
-		"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			return [ argument < 0 ? argument + length : argument ];
-		}),
-
-		"even": createPositionalPseudo(function( matchIndexes, length ) {
-			var i = 0;
-			for ( ; i < length; i += 2 ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		}),
-
-		"odd": createPositionalPseudo(function( matchIndexes, length ) {
-			var i = 1;
-			for ( ; i < length; i += 2 ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		}),
-
-		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
-			for ( ; --i >= 0; ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		}),
-
-		"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
-			var i = argument < 0 ? argument + length : argument;
-			for ( ; ++i < length; ) {
-				matchIndexes.push( i );
-			}
-			return matchIndexes;
-		})
-	}
-};
-
-Expr.pseudos["nth"] = Expr.pseudos["eq"];
-
-// Add button/input type pseudos
-for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
-	Expr.pseudos[ i ] = createInputPseudo( i );
-}
-for ( i in { submit: true, reset: true } ) {
-	Expr.pseudos[ i ] = createButtonPseudo( i );
-}
-
-// Easy API for creating new setFilters
-function setFilters() {}
-setFilters.prototype = Expr.filters = Expr.pseudos;
-Expr.setFilters = new setFilters();
-
-function tokenize( selector, parseOnly ) {
-	var matched, match, tokens, type,
-		soFar, groups, preFilters,
-		cached = tokenCache[ selector + " " ];
-
-	if ( cached ) {
-		return parseOnly ? 0 : cached.slice( 0 );
-	}
-
-	soFar = selector;
-	groups = [];
-	preFilters = Expr.preFilter;
-
-	while ( soFar ) {
-
-		// Comma and first run
-		if ( !matched || (match = rcomma.exec( soFar )) ) {
-			if ( match ) {
-				// Don't consume trailing commas as valid
-				soFar = soFar.slice( match[0].length ) || soFar;
-			}
-			groups.push( (tokens = []) );
-		}
-
-		matched = false;
-
-		// Combinators
-		if ( (match = rcombinators.exec( soFar )) ) {
-			matched = match.shift();
-			tokens.push({
-				value: matched,
-				// Cast descendant combinators to space
-				type: match[0].replace( rtrim, " " )
-			});
-			soFar = soFar.slice( matched.length );
-		}
-
-		// Filters
-		for ( type in Expr.filter ) {
-			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-				(match = preFilters[ type ]( match ))) ) {
-				matched = match.shift();
-				tokens.push({
-					value: matched,
-					type: type,
-					matches: match
-				});
-				soFar = soFar.slice( matched.length );
-			}
-		}
-
-		if ( !matched ) {
-			break;
-		}
-	}
-
-	// Return the length of the invalid excess
-	// if we're just parsing
-	// Otherwise, throw an error or return tokens
-	return parseOnly ?
-		soFar.length :
-		soFar ?
-			Sizzle.error( selector ) :
-			// Cache the tokens
-			tokenCache( selector, groups ).slice( 0 );
-}
-
-function toSelector( tokens ) {
-	var i = 0,
-		len = tokens.length,
-		selector = "";
-	for ( ; i < len; i++ ) {
-		selector += tokens[i].value;
-	}
-	return selector;
-}
-
-function addCombinator( matcher, combinator, base ) {
-	var dir = combinator.dir,
-		checkNonElements = base && dir === "parentNode",
-		doneName = done++;
-
-	return combinator.first ?
-		// Check against closest ancestor/preceding element
-		function( elem, context, xml ) {
-			while ( (elem = elem[ dir ]) ) {
-				if ( elem.nodeType === 1 || checkNonElements ) {
-					return matcher( elem, context, xml );
-				}
-			}
-		} :
-
-		// Check against all ancestor/preceding elements
-		function( elem, context, xml ) {
-			var oldCache, outerCache,
-				newCache = [ dirruns, doneName ];
-
-			// We can't set arbitrary data on XML nodes, so they don't benefit from dir caching
-			if ( xml ) {
-				while ( (elem = elem[ dir ]) ) {
-					if ( elem.nodeType === 1 || checkNonElements ) {
-						if ( matcher( elem, context, xml ) ) {
-							return true;
-						}
-					}
-				}
-			} else {
-				while ( (elem = elem[ dir ]) ) {
-					if ( elem.nodeType === 1 || checkNonElements ) {
-						outerCache = elem[ expando ] || (elem[ expando ] = {});
-						if ( (oldCache = outerCache[ dir ]) &&
-							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
-
-							// Assign to newCache so results back-propagate to previous elements
-							return (newCache[ 2 ] = oldCache[ 2 ]);
-						} else {
-							// Reuse newcache so results back-propagate to previous elements
-							outerCache[ dir ] = newCache;
-
-							// A match means we're done; a fail means we have to keep checking
-							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		};
-}
-
-function elementMatcher( matchers ) {
-	return matchers.length > 1 ?
-		function( elem, context, xml ) {
-			var i = matchers.length;
-			while ( i-- ) {
-				if ( !matchers[i]( elem, context, xml ) ) {
-					return false;
-				}
-			}
-			return true;
-		} :
-		matchers[0];
-}
-
-function condense( unmatched, map, filter, context, xml ) {
-	var elem,
-		newUnmatched = [],
-		i = 0,
-		len = unmatched.length,
-		mapped = map != null;
-
-	for ( ; i < len; i++ ) {
-		if ( (elem = unmatched[i]) ) {
-			if ( !filter || filter( elem, context, xml ) ) {
-				newUnmatched.push( elem );
-				if ( mapped ) {
-					map.push( i );
-				}
-			}
-		}
-	}
-
-	return newUnmatched;
-}
-
-function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postSelector ) {
-	if ( postFilter && !postFilter[ expando ] ) {
-		postFilter = setMatcher( postFilter );
-	}
-	if ( postFinder && !postFinder[ expando ] ) {
-		postFinder = setMatcher( postFinder, postSelector );
-	}
-	return markFunction(function( seed, results, context, xml ) {
-		var temp, i, elem,
-			preMap = [],
-			postMap = [],
-			preexisting = results.length,
-
-			// Get initial elements from seed or context
-			elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
-
-			// Prefilter to get matcher input, preserving a map for seed-results synchronization
-			matcherIn = preFilter && ( seed || !selector ) ?
-				condense( elems, preMap, preFilter, context, xml ) :
-				elems,
-
-			matcherOut = matcher ?
-				// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
-				postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
-
-					// ...intermediate processing is necessary
-					[] :
-
-					// ...otherwise use results directly
-					results :
-				matcherIn;
-
-		// Find primary matches
-		if ( matcher ) {
-			matcher( matcherIn, matcherOut, context, xml );
-		}
-
-		// Apply postFilter
-		if ( postFilter ) {
-			temp = condense( matcherOut, postMap );
-			postFilter( temp, [], context, xml );
-
-			// Un-match failing elements by moving them back to matcherIn
-			i = temp.length;
-			while ( i-- ) {
-				if ( (elem = temp[i]) ) {
-					matcherOut[ postMap[i] ] = !(matcherIn[ postMap[i] ] = elem);
-				}
-			}
-		}
-
-		if ( seed ) {
-			if ( postFinder || preFilter ) {
-				if ( postFinder ) {
-					// Get the final matcherOut by condensing this intermediate into postFinder contexts
-					temp = [];
-					i = matcherOut.length;
-					while ( i-- ) {
-						if ( (elem = matcherOut[i]) ) {
-							// Restore matcherIn since elem is not yet a final match
-							temp.push( (matcherIn[i] = elem) );
-						}
-					}
-					postFinder( null, (matcherOut = []), temp, xml );
-				}
-
-				// Move matched elements from seed to results to keep them synchronized
-				i = matcherOut.length;
-				while ( i-- ) {
-					if ( (elem = matcherOut[i]) &&
-						(temp = postFinder ? indexOf.call( seed, elem ) : preMap[i]) > -1 ) {
-
-						seed[temp] = !(results[temp] = elem);
-					}
-				}
-			}
-
-		// Add elements to results, through postFinder if defined
-		} else {
-			matcherOut = condense(
-				matcherOut === results ?
-					matcherOut.splice( preexisting, matcherOut.length ) :
-					matcherOut
-			);
-			if ( postFinder ) {
-				postFinder( null, results, matcherOut, xml );
-			} else {
-				push.apply( results, matcherOut );
-			}
-		}
-	});
-}
-
-function matcherFromTokens( tokens ) {
-	var checkContext, matcher, j,
-		len = tokens.length,
-		leadingRelative = Expr.relative[ tokens[0].type ],
-		implicitRelative = leadingRelative || Expr.relative[" "],
-		i = leadingRelative ? 1 : 0,
-
-		// The foundational matcher ensures that elements are reachable from top-level context(s)
-		matchContext = addCombinator( function( elem ) {
-			return elem === checkContext;
-		}, implicitRelative, true ),
-		matchAnyContext = addCombinator( function( elem ) {
-			return indexOf.call( checkContext, elem ) > -1;
-		}, implicitRelative, true ),
-		matchers = [ function( elem, context, xml ) {
-			return ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
-				(checkContext = context).nodeType ?
-					matchContext( elem, context, xml ) :
-					matchAnyContext( elem, context, xml ) );
-		} ];
-
-	for ( ; i < len; i++ ) {
-		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
-			matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
-		} else {
-			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
-
-			// Return special upon seeing a positional matcher
-			if ( matcher[ expando ] ) {
-				// Find the next relative operator (if any) for proper handling
-				j = ++i;
-				for ( ; j < len; j++ ) {
-					if ( Expr.relative[ tokens[j].type ] ) {
-						break;
-					}
-				}
-				return setMatcher(
-					i > 1 && elementMatcher( matchers ),
-					i > 1 && toSelector(
-						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
-						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
-					).replace( rtrim, "$1" ),
-					matcher,
-					i < j && matcherFromTokens( tokens.slice( i, j ) ),
-					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
-					j < len && toSelector( tokens )
-				);
-			}
-			matchers.push( matcher );
-		}
-	}
-
-	return elementMatcher( matchers );
-}
-
-function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
-	var bySet = setMatchers.length > 0,
-		byElement = elementMatchers.length > 0,
-		superMatcher = function( seed, context, xml, results, outermost ) {
-			var elem, j, matcher,
-				matchedCount = 0,
-				i = "0",
-				unmatched = seed && [],
-				setMatched = [],
-				contextBackup = outermostContext,
-				// We must always have either seed elements or outermost context
-				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
-				// Use integer dirruns iff this is the outermost matcher
-				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
-				len = elems.length;
-
-			if ( outermost ) {
-				outermostContext = context !== document && context;
-			}
-
-			// Add elements passing elementMatchers directly to results
-			// Keep `i` a string if there are no elements so `matchedCount` will be "00" below
-			// Support: IE<9, Safari
-			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
-			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
-				if ( byElement && elem ) {
-					j = 0;
-					while ( (matcher = elementMatchers[j++]) ) {
-						if ( matcher( elem, context, xml ) ) {
-							results.push( elem );
-							break;
-						}
-					}
-					if ( outermost ) {
-						dirruns = dirrunsUnique;
-					}
-				}
-
-				// Track unmatched elements for set filters
-				if ( bySet ) {
-					// They will have gone through all possible matchers
-					if ( (elem = !matcher && elem) ) {
-						matchedCount--;
-					}
-
-					// Lengthen the array for every element, matched or not
-					if ( seed ) {
-						unmatched.push( elem );
-					}
-				}
-			}
-
-			// Apply set filters to unmatched elements
-			matchedCount += i;
-			if ( bySet && i !== matchedCount ) {
-				j = 0;
-				while ( (matcher = setMatchers[j++]) ) {
-					matcher( unmatched, setMatched, context, xml );
-				}
-
-				if ( seed ) {
-					// Reintegrate element matches to eliminate the need for sorting
-					if ( matchedCount > 0 ) {
-						while ( i-- ) {
-							if ( !(unmatched[i] || setMatched[i]) ) {
-								setMatched[i] = pop.call( results );
-							}
-						}
-					}
-
-					// Discard index placeholder values to get only actual matches
-					setMatched = condense( setMatched );
-				}
-
-				// Add matches to results
-				push.apply( results, setMatched );
-
-				// Seedless set matches succeeding multiple successful matchers stipulate sorting
-				if ( outermost && !seed && setMatched.length > 0 &&
-					( matchedCount + setMatchers.length ) > 1 ) {
-
-					Sizzle.uniqueSort( results );
-				}
-			}
-
-			// Override manipulation of globals by nested matchers
-			if ( outermost ) {
-				dirruns = dirrunsUnique;
-				outermostContext = contextBackup;
-			}
-
-			return unmatched;
-		};
-
-	return bySet ?
-		markFunction( superMatcher ) :
-		superMatcher;
-}
-
-compile = Sizzle.compile = function( selector, group /* Internal Use Only */ ) {
-	var i,
-		setMatchers = [],
-		elementMatchers = [],
-		cached = compilerCache[ selector + " " ];
-
-	if ( !cached ) {
-		// Generate a function of recursive functions that can be used to check each element
-		if ( !group ) {
-			group = tokenize( selector );
-		}
-		i = group.length;
-		while ( i-- ) {
-			cached = matcherFromTokens( group[i] );
-			if ( cached[ expando ] ) {
-				setMatchers.push( cached );
-			} else {
-				elementMatchers.push( cached );
-			}
-		}
-
-		// Cache the compiled function
-		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
-	}
-	return cached;
-};
-
-function multipleContexts( selector, contexts, results ) {
-	var i = 0,
-		len = contexts.length;
-	for ( ; i < len; i++ ) {
-		Sizzle( selector, contexts[i], results );
-	}
-	return results;
-}
-
-function select( selector, context, results, seed ) {
-	var i, tokens, token, type, find,
-		match = tokenize( selector );
-
-	if ( !seed ) {
-		// Try to minimize operations if there is only one group
-		if ( match.length === 1 ) {
-
-			// Take a shortcut and set the context if the root selector is an ID
-			tokens = match[0] = match[0].slice( 0 );
-			if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
-					support.getById && context.nodeType === 9 && documentIsHTML &&
-					Expr.relative[ tokens[1].type ] ) {
-
-				context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
-				if ( !context ) {
-					return results;
-				}
-				selector = selector.slice( tokens.shift().value.length );
-			}
-
-			// Fetch a seed set for right-to-left matching
-			i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
-			while ( i-- ) {
-				token = tokens[i];
-
-				// Abort if we hit a combinator
-				if ( Expr.relative[ (type = token.type) ] ) {
-					break;
-				}
-				if ( (find = Expr.find[ type ]) ) {
-					// Search, expanding context for leading sibling combinators
-					if ( (seed = find(
-						token.matches[0].replace( runescape, funescape ),
-						rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
-					)) ) {
-
-						// If seed is empty or no tokens remain, we can return early
-						tokens.splice( i, 1 );
-						selector = seed.length && toSelector( tokens );
-						if ( !selector ) {
-							push.apply( results, seed );
-							return results;
-						}
-
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	// Compile and execute a filtering function
-	// Provide `match` to avoid retokenization if we modified the selector above
-	compile( selector, match )(
-		seed,
-		context,
-		!documentIsHTML,
-		results,
-		rsibling.test( selector ) && testContext( context.parentNode ) || context
-	);
-	return results;
-}
-
-// One-time assignments
-
-// Sort stability
-support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
-
-// Support: Chrome<14
-// Always assume duplicates if they aren't passed to the comparison function
-support.detectDuplicates = !!hasDuplicate;
-
-// Initialize against the default document
-setDocument();
-
-// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
-// Detached nodes confoundingly follow *each other*
-support.sortDetached = assert(function( div1 ) {
-	// Should return 1, but returns 4 (following)
-	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
-});
-
-// Support: IE<8
-// Prevent attribute/property "interpolation"
-// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
-if ( !assert(function( div ) {
-	div.innerHTML = "<a href='#'></a>";
-	return div.firstChild.getAttribute("href") === "#" ;
-}) ) {
-	addHandle( "type|href|height|width", function( elem, name, isXML ) {
-		if ( !isXML ) {
-			return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
-		}
-	});
-}
-
-// Support: IE<9
-// Use defaultValue in place of getAttribute("value")
-if ( !support.attributes || !assert(function( div ) {
-	div.innerHTML = "<input/>";
-	div.firstChild.setAttribute( "value", "" );
-	return div.firstChild.getAttribute( "value" ) === "";
-}) ) {
-	addHandle( "value", function( elem, name, isXML ) {
-		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
-			return elem.defaultValue;
-		}
-	});
-}
-
-// Support: IE<9
-// Use getAttributeNode to fetch booleans when getAttribute lies
-if ( !assert(function( div ) {
-	return div.getAttribute("disabled") == null;
-}) ) {
-	addHandle( booleans, function( elem, name, isXML ) {
-		var val;
-		if ( !isXML ) {
-			return elem[ name ] === true ? name.toLowerCase() :
-					(val = elem.getAttributeNode( name )) && val.specified ?
-					val.value :
-				null;
-		}
-	});
-}
-
-return Sizzle;
-
-})( window );
-
-
-
-jQuery.find = Sizzle;
-jQuery.expr = Sizzle.selectors;
-jQuery.expr[":"] = jQuery.expr.pseudos;
-jQuery.unique = Sizzle.uniqueSort;
-jQuery.text = Sizzle.getText;
-jQuery.isXMLDoc = Sizzle.isXML;
-jQuery.contains = Sizzle.contains;
-
-
-
-var rneedsContext = jQuery.expr.match.needsContext;
-
-var rsingleTag = (/^<(\w+)\s*\/?>(?:<\/\1>|)$/);
-
-
-
-var risSimple = /^.[^:#\[\.,]*$/;
-
-// Implement the identical functionality for filter and not
-function winnow( elements, qualifier, not ) {
-	if ( jQuery.isFunction( qualifier ) ) {
-		return jQuery.grep( elements, function( elem, i ) {
-			/* jshint -W018 */
-			return !!qualifier.call( elem, i, elem ) !== not;
-		});
-
-	}
-
-	if ( qualifier.nodeType ) {
-		return jQuery.grep( elements, function( elem ) {
-			return ( elem === qualifier ) !== not;
-		});
-
-	}
-
-	if ( typeof qualifier === "string" ) {
-		if ( risSimple.test( qualifier ) ) {
-			return jQuery.filter( qualifier, elements, not );
-		}
-
-		qualifier = jQuery.filter( qualifier, elements );
-	}
-
-	return jQuery.grep( elements, function( elem ) {
-		return ( jQuery.inArray( elem, qualifier ) >= 0 ) !== not;
-	});
-}
-
-jQuery.filter = function( expr, elems, not ) {
-	var elem = elems[ 0 ];
-
-	if ( not ) {
-		expr = ":not(" + expr + ")";
-	}
-
-	return elems.length === 1 && elem.nodeType === 1 ?
-		jQuery.find.matchesSelector( elem, expr ) ? [ elem ] : [] :
-		jQuery.find.matches( expr, jQuery.grep( elems, function( elem ) {
-			return elem.nodeType === 1;
-		}));
-};
-
-jQuery.fn.extend({
-	find: function( selector ) {
-		var i,
-			ret = [],
-			self = this,
-			len = self.length;
-
-		if ( typeof selector !== "string" ) {
-			return this.pushStack( jQuery( selector ).filter(function() {
-				for ( i = 0; i < len; i++ ) {
-					if ( jQuery.contains( self[ i ], this ) ) {
-						return true;
-					}
-				}
-			}) );
-		}
-
-		for ( i = 0; i < len; i++ ) {
-			jQuery.find( selector, self[ i ], ret );
-		}
-
-		// Needed because $( selector, context ) becomes $( context ).find( selector )
-		ret = this.pushStack( len > 1 ? jQuery.unique( ret ) : ret );
-		ret.selector = this.selector ? this.selector + " " + selector : selector;
-		return ret;
-	},
-	filter: function( selector ) {
-		return this.pushStack( winnow(this, selector || [], false) );
-	},
-	not: function( selector ) {
-		return this.pushStack( winnow(this, selector || [], true) );
-	},
-	is: function( selector ) {
-		return !!winnow(
-			this,
-
-			// If this is a positional/relative selector, check membership in the returned set
-			// so $("p:first").is("p:last") won't return true for a doc with two "p".
-			typeof selector === "string" && rneedsContext.test( selector ) ?
-				jQuery( selector ) :
-				selector || [],
-			false
-		).length;
-	}
-});
-
-
-// Initialize a jQuery object
-
-
-// A central reference to the root jQuery(document)
-var rootjQuery,
-
-	// Use the correct document accordingly with window argument (sandbox)
-	document = window.document,
-
-	// A simple way to check for HTML strings
-	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
-	// Strict HTML recognition (#11290: must start with <)
-	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
-
-	init = jQuery.fn.init = function( selector, context ) {
-		var match, elem;
-
-		// HANDLE: $(""), $(null), $(undefined), $(false)
-		if ( !selector ) {
-			return this;
-		}
-
-		// Handle HTML strings
-		if ( typeof selector === "string" ) {
-			if ( selector.charAt(0) === "<" && selector.charAt( selector.length - 1 ) === ">" && selector.length >= 3 ) {
-				// Assume that strings that start and end with <> are HTML and skip the regex check
-				match = [ null, selector, null ];
-
-			} else {
-				match = rquickExpr.exec( selector );
-			}
-
-			// Match html or make sure no context is specified for #id
-			if ( match && (match[1] || !context) ) {
-
-				// HANDLE: $(html) -> $(array)
-				if ( match[1] ) {
-					context = context instanceof jQuery ? context[0] : context;
-
-					// scripts is true for back-compat
-					// Intentionally let the error be thrown if parseHTML is not present
-					jQuery.merge( this, jQuery.parseHTML(
-						match[1],
-						context && context.nodeType ? context.ownerDocument || context : document,
-						true
-					) );
-
-					// HANDLE: $(html, props)
-					if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
-						for ( match in context ) {
-							// Properties of context are called as methods if possible
-							if ( jQuery.isFunction( this[ match ] ) ) {
-								this[ match ]( context[ match ] );
-
-							// ...and otherwise set as attributes
-							} else {
-								this.attr( match, context[ match ] );
-							}
-						}
-					}
-
-					return this;
-
-				// HANDLE: $(#id)
-				} else {
-					elem = document.getElementById( match[2] );
-
-					// Check parentNode to catch when Blackberry 4.6 returns
-					// nodes that are no longer in the document #6963
-					if ( elem && elem.parentNode ) {
-						// Handle the case where IE and Opera return items
-						// by name instead of ID
-						if ( elem.id !== match[2] ) {
-							return rootjQuery.find( selector );
-						}
-
-						// Otherwise, we inject the element directly into the jQuery object
-						this.length = 1;
-						this[0] = elem;
-					}
-
-					this.context = document;
-					this.selector = selector;
-					return this;
-				}
-
-			// HANDLE: $(expr, $(...))
-			} else if ( !context || context.jquery ) {
-				return ( context || rootjQuery ).find( selector );
-
-			// HANDLE: $(expr, context)
-			// (which is just equivalent to: $(context).find(expr)
-			} else {
-				return this.constructor( context ).find( selector );
-			}
-
-		// HANDLE: $(DOMElement)
-		} else if ( selector.nodeType ) {
-			this.context = this[0] = selector;
-			this.length = 1;
-			return this;
-
-		// HANDLE: $(function)
-		// Shortcut for document ready
-		} else if ( jQuery.isFunction( selector ) ) {
-			return typeof rootjQuery.ready !== "undefined" ?
-				rootjQuery.ready( selector ) :
-				// Execute immediately if ready is not present
-				selector( jQuery );
-		}
-
-		if ( selector.selector !== undefined ) {
-			this.selector = selector.selector;
-			this.context = selector.context;
-		}
-
-		return jQuery.makeArray( selector, this );
-	};
-
-// Give the init function the jQuery prototype for later instantiation
-init.prototype = jQuery.fn;
-
-// Initialize central reference
-rootjQuery = jQuery( document );
-
-
-var rparentsprev = /^(?:parents|prev(?:Until|All))/,
-	// methods guaranteed to produce a unique set when starting from a unique set
-	guaranteedUnique = {
-		children: true,
-		contents: true,
-		next: true,
-		prev: true
-	};
-
-jQuery.extend({
-	dir: function( elem, dir, until ) {
-		var matched = [],
-			cur = elem[ dir ];
-
-		while ( cur && cur.nodeType !== 9 && (until === undefined || cur.nodeType !== 1 || !jQuery( cur ).is( until )) ) {
-			if ( cur.nodeType === 1 ) {
-				matched.push( cur );
-			}
-			cur = cur[dir];
-		}
-		return matched;
-	},
-
-	sibling: function( n, elem ) {
-		var r = [];
-
-		for ( ; n; n = n.nextSibling ) {
-			if ( n.nodeType === 1 && n !== elem ) {
-				r.push( n );
-			}
-		}
-
-		return r;
-	}
-});
-
-jQuery.fn.extend({
-	has: function( target ) {
-		var i,
-			targets = jQuery( target, this ),
-			len = targets.length;
-
-		return this.filter(function() {
-			for ( i = 0; i < len; i++ ) {
-				if ( jQuery.contains( this, targets[i] ) ) {
-					return true;
-				}
-			}
-		});
-	},
-
-	closest: function( selectors, context ) {
-		var cur,
-			i = 0,
-			l = this.length,
-			matched = [],
-			pos = rneedsContext.test( selectors ) || typeof selectors !== "string" ?
-				jQuery( selectors, context || this.context ) :
-				0;
-
-		for ( ; i < l; i++ ) {
-			for ( cur = this[i]; cur && cur !== context; cur = cur.parentNode ) {
-				// Always skip document fragments
-				if ( cur.nodeType < 11 && (pos ?
-					pos.index(cur) > -1 :
-
-					// Don't pass non-elements to Sizzle
-					cur.nodeType === 1 &&
-						jQuery.find.matchesSelector(cur, selectors)) ) {
-
-					matched.push( cur );
-					break;
-				}
-			}
-		}
-
-		return this.pushStack( matched.length > 1 ? jQuery.unique( matched ) : matched );
-	},
-
-	// Determine the position of an element within
-	// the matched set of elements
-	index: function( elem ) {
-
-		// No argument, return index in parent
-		if ( !elem ) {
-			return ( this[0] && this[0].parentNode ) ? this.first().prevAll().length : -1;
-		}
-
-		// index in selector
-		if ( typeof elem === "string" ) {
-			return jQuery.inArray( this[0], jQuery( elem ) );
-		}
-
-		// Locate the position of the desired element
-		return jQuery.inArray(
-			// If it receives a jQuery object, the first element is used
-			elem.jquery ? elem[0] : elem, this );
-	},
-
-	add: function( selector, context ) {
-		return this.pushStack(
-			jQuery.unique(
-				jQuery.merge( this.get(), jQuery( selector, context ) )
-			)
-		);
-	},
-
-	addBack: function( selector ) {
-		return this.add( selector == null ?
-			this.prevObject : this.prevObject.filter(selector)
-		);
-	}
-});
-
-function sibling( cur, dir ) {
-	do {
-		cur = cur[ dir ];
-	} while ( cur && cur.nodeType !== 1 );
-
-	return cur;
-}
-
-jQuery.each({
-	parent: function( elem ) {
-		var parent = elem.parentNode;
-		return parent && parent.nodeType !== 11 ? parent : null;
-	},
-	parents: function( elem ) {
-		return jQuery.dir( elem, "parentNode" );
-	},
-	parentsUntil: function( elem, i, until ) {
-		return jQuery.dir( elem, "parentNode", until );
-	},
-	next: function( elem ) {
-		return sibling( elem, "nextSibling" );
-	},
-	prev: function( elem ) {
-		return sibling( elem, "previousSibling" );
-	},
-	nextAll: function( elem ) {
-		return jQuery.dir( elem, "nextSibling" );
-	},
-	prevAll: function( elem ) {
-		return jQuery.dir( elem, "previousSibling" );
-	},
-	nextUntil: function( elem, i, until ) {
-		return jQuery.dir( elem, "nextSibling", until );
-	},
-	prevUntil: function( elem, i, until ) {
-		return jQuery.dir( elem, "previousSibling", until );
-	},
-	siblings: function( elem ) {
-		return jQuery.sibling( ( elem.parentNode || {} ).firstChild, elem );
-	},
-	children: function( elem ) {
-		return jQuery.sibling( elem.firstChild );
-	},
-	contents: function( elem ) {
-		return jQuery.nodeName( elem, "iframe" ) ?
-			elem.contentDocument || elem.contentWindow.document :
-			jQuery.merge( [], elem.childNodes );
-	}
-}, function( name, fn ) {
-	jQuery.fn[ name ] = function( until, selector ) {
-		var ret = jQuery.map( this, fn, until );
-
-		if ( name.slice( -5 ) !== "Until" ) {
-			selector = until;
-		}
-
-		if ( selector && typeof selector === "string" ) {
-			ret = jQuery.filter( selector, ret );
-		}
-
-		if ( this.length > 1 ) {
-			// Remove duplicates
-			if ( !guaranteedUnique[ name ] ) {
-				ret = jQuery.unique( ret );
-			}
-
-			// Reverse order for parents* and prev-derivatives
-			if ( rparentsprev.test( name ) ) {
-				ret = ret.reverse();
-			}
-		}
-
-		return this.pushStack( ret );
-	};
-});
-var rnotwhite = (/\S+/g);
-
-
-
-// String to Object options format cache
-var optionsCache = {};
-
-// Convert String-formatted options into Object-formatted ones and store in cache
-function createOptions( options ) {
-	var object = optionsCache[ options ] = {};
-	jQuery.each( options.match( rnotwhite ) || [], function( _, flag ) {
-		object[ flag ] = true;
-	});
-	return object;
-}
-
-/*
- * Create a callback list using the following parameters:
- *
- *	options: an optional list of space-separated options that will change how
- *			the callback list behaves or a more traditional option object
- *
- * By default a callback list will act like an event callback list and can be
- * "fired" multiple times.
- *
- * Possible options:
- *
- *	once:			will ensure the callback list can only be fired once (like a Deferred)
- *
- *	memory:			will keep track of previous values and will call any callback added
- *					after the list has been fired right away with the latest "memorized"
- *					values (like a Deferred)
- *
- *	unique:			will ensure a callback can only be added once (no duplicate in the list)
- *
- *	stopOnFalse:	interrupt callings when a callback returns false
- *
- */
-jQuery.Callbacks = function( options ) {
-
-	// Convert options from String-formatted to Object-formatted if needed
-	// (we check in cache first)
-	options = typeof options === "string" ?
-		( optionsCache[ options ] || createOptions( options ) ) :
-		jQuery.extend( {}, options );
-
-	var // Flag to know if list is currently firing
-		firing,
-		// Last fire value (for non-forgettable lists)
-		memory,
-		// Flag to know if list was already fired
-		fired,
-		// End of the loop when firing
-		firingLength,
-		// Index of currently firing callback (modified by remove if needed)
-		firingIndex,
-		// First callback to fire (used internally by add and fireWith)
-		firingStart,
-		// Actual callback list
-		list = [],
-		// Stack of fire calls for repeatable lists
-		stack = !options.once && [],
-		// Fire callbacks
-		fire = function( data ) {
-			memory = options.memory && data;
-			fired = true;
-			firingIndex = firingStart || 0;
-			firingStart = 0;
-			firingLength = list.length;
-			firing = true;
-			for ( ; list && firingIndex < firingLength; firingIndex++ ) {
-				if ( list[ firingIndex ].apply( data[ 0 ], data[ 1 ] ) === false && options.stopOnFalse ) {
-					memory = false; // To prevent further calls using add
-					break;
-				}
-			}
-			firing = false;
-			if ( list ) {
-				if ( stack ) {
-					if ( stack.length ) {
-						fire( stack.shift() );
-					}
-				} else if ( memory ) {
-					list = [];
-				} else {
-					self.disable();
-				}
-			}
-		},
-		// Actual Callbacks object
-		self = {
-			// Add a callback or a collection of callbacks to the list
-			add: function() {
-				if ( list ) {
-					// First, we save the current length
-					var start = list.length;
-					(function add( args ) {
-						jQuery.each( args, function( _, arg ) {
-							var type = jQuery.type( arg );
-							if ( type === "function" ) {
-								if ( !options.unique || !self.has( arg ) ) {
-									list.push( arg );
-								}
-							} else if ( arg && arg.length && type !== "string" ) {
-								// Inspect recursively
-								add( arg );
-							}
-						});
-					})( arguments );
-					// Do we need to add the callbacks to the
-					// current firing batch?
-					if ( firing ) {
-						firingLength = list.length;
-					// With memory, if we're not firing then
-					// we should call right away
-					} else if ( memory ) {
-						firingStart = start;
-						fire( memory );
-					}
-				}
-				return this;
-			},
-			// Remove a callback from the list
-			remove: function() {
-				if ( list ) {
-					jQuery.each( arguments, function( _, arg ) {
-						var index;
-						while ( ( index = jQuery.inArray( arg, list, index ) ) > -1 ) {
-							list.splice( index, 1 );
-							// Handle firing indexes
-							if ( firing ) {
-								if ( index <= firingLength ) {
-									firingLength--;
-								}
-								if ( index <= firingIndex ) {
-									firingIndex--;
-								}
-							}
-						}
-					});
-				}
-				return this;
-			},
-			// Check if a given callback is in the list.
-			// If no argument is given, return whether or not list has callbacks attached.
-			has: function( fn ) {
-				return fn ? jQuery.inArray( fn, list ) > -1 : !!( list && list.length );
-			},
-			// Remove all callbacks from the list
-			empty: function() {
-				list = [];
-				firingLength = 0;
-				return this;
-			},
-			// Have the list do nothing anymore
-			disable: function() {
-				list = stack = memory = undefined;
-				return this;
-			},
-			// Is it disabled?
-			disabled: function() {
-				return !list;
-			},
-			// Lock the list in its current state
-			lock: function() {
-				stack = undefined;
-				if ( !memory ) {
-					self.disable();
-				}
-				return this;
-			},
-			// Is it locked?
-			locked: function() {
-				return !stack;
-			},
-			// Call all callbacks with the given context and arguments
-			fireWith: function( context, args ) {
-				if ( list && ( !fired || stack ) ) {
-					args = args || [];
-					args = [ context, args.slice ? args.slice() : args ];
-					if ( firing ) {
-						stack.push( args );
-					} else {
-						fire( args );
-					}
-				}
-				return this;
-			},
-			// Call all the callbacks with the given arguments
-			fire: function() {
-				self.fireWith( this, arguments );
-				return this;
-			},
-			// To know if the callbacks have already been called at least once
-			fired: function() {
-				return !!fired;
-			}
-		};
-
-	return self;
-};
-
-
-jQuery.extend({
-
-	Deferred: function( func ) {
-		var tuples = [
-				// action, add listener, listener list, final state
-				[ "resolve", "done", jQuery.Callbacks("once memory"), "resolved" ],
-				[ "reject", "fail", jQuery.Callbacks("once memory"), "rejected" ],
-				[ "notify", "progress", jQuery.Callbacks("memory") ]
-			],
-			state = "pending",
-			promise = {
-				state: function() {
-					return state;
-				},
-				always: function() {
-					deferred.done( arguments ).fail( arguments );
-					return this;
-				},
-				then: function( /* fnDone, fnFail, fnProgress */ ) {
-					var fns = arguments;
-					return jQuery.Deferred(function( newDefer ) {
-						jQuery.each( tuples, function( i, tuple ) {
-							var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
-							// deferred[ done | fail | progress ] for forwarding actions to newDefer
-							deferred[ tuple[1] ](function() {
-								var returned = fn && fn.apply( this, arguments );
-								if ( returned && jQuery.isFunction( returned.promise ) ) {
-									returned.promise()
-										.done( newDefer.resolve )
-										.fail( newDefer.reject )
-										.progress( newDefer.notify );
-								} else {
-									newDefer[ tuple[ 0 ] + "With" ]( this === promise ? newDefer.promise() : this, fn ? [ returned ] : arguments );
-								}
-							});
-						});
-						fns = null;
-					}).promise();
-				},
-				// Get a promise for this deferred
-				// If obj is provided, the promise aspect is added to the object
-				promise: function( obj ) {
-					return obj != null ? jQuery.extend( obj, promise ) : promise;
-				}
-			},
-			deferred = {};
-
-		// Keep pipe for back-compat
-		promise.pipe = promise.then;
-
-		// Add list-specific methods
-		jQuery.each( tuples, function( i, tuple ) {
-			var list = tuple[ 2 ],
-				stateString = tuple[ 3 ];
-
-			// promise[ done | fail | progress ] = list.add
-			promise[ tuple[1] ] = list.add;
-
-			// Handle state
-			if ( stateString ) {
-				list.add(function() {
-					// state = [ resolved | rejected ]
-					state = stateString;
-
-				// [ reject_list | resolve_list ].disable; progress_list.lock
-				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
-			}
-
-			// deferred[ resolve | reject | notify ]
-			deferred[ tuple[0] ] = function() {
-				deferred[ tuple[0] + "With" ]( this === deferred ? promise : this, arguments );
-				return this;
-			};
-			deferred[ tuple[0] + "With" ] = list.fireWith;
-		});
-
-		// Make the deferred a promise
-		promise.promise( deferred );
-
-		// Call given func if any
-		if ( func ) {
-			func.call( deferred, deferred );
-		}
-
-		// All done!
-		return deferred;
-	},
-
-	// Deferred helper
-	when: function( subordinate /* , ..., subordinateN */ ) {
-		var i = 0,
-			resolveValues = slice.call( arguments ),
-			length = resolveValues.length,
-
-			// the count of uncompleted subordinates
-			remaining = length !== 1 || ( subordinate && jQuery.isFunction( subordinate.promise ) ) ? length : 0,
-
-			// the master Deferred. If resolveValues consist of only a single Deferred, just use that.
-			deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
-
-			// Update function for both resolve and progress values
-			updateFunc = function( i, contexts, values ) {
-				return function( value ) {
-					contexts[ i ] = this;
-					values[ i ] = arguments.length > 1 ? slice.call( arguments ) : value;
-					if ( values === progressValues ) {
-						deferred.notifyWith( contexts, values );
-
-					} else if ( !(--remaining) ) {
-						deferred.resolveWith( contexts, values );
-					}
-				};
-			},
-
-			progressValues, progressContexts, resolveContexts;
-
-		// add listeners to Deferred subordinates; treat others as resolved
-		if ( length > 1 ) {
-			progressValues = new Array( length );
-			progressContexts = new Array( length );
-			resolveContexts = new Array( length );
-			for ( ; i < length; i++ ) {
-				if ( resolveValues[ i ] && jQuery.isFunction( resolveValues[ i ].promise ) ) {
-					resolveValues[ i ].promise()
-						.done( updateFunc( i, resolveContexts, resolveValues ) )
-						.fail( deferred.reject )
-						.progress( updateFunc( i, progressContexts, progressValues ) );
-				} else {
-					--remaining;
-				}
-			}
-		}
-
-		// if we're not waiting on anything, resolve the master
-		if ( !remaining ) {
-			deferred.resolveWith( resolveContexts, resolveValues );
-		}
-
-		return deferred.promise();
-	}
-});
-
-
-// The deferred used on DOM ready
-var readyList;
-
-jQuery.fn.ready = function( fn ) {
-	// Add the callback
-	jQuery.ready.promise().done( fn );
-
-	return this;
-};
-
-jQuery.extend({
-	// Is the DOM ready to be used? Set to true once it occurs.
-	isReady: false,
-
-	// A counter to track how many items to wait for before
-	// the ready event fires. See #6781
-	readyWait: 1,
-
-	// Hold (or release) the ready event
-	holdReady: function( hold ) {
-		if ( hold ) {
-			jQuery.readyWait++;
-		} else {
-			jQuery.ready( true );
-		}
-	},
-
-	// Handle when the DOM is ready
-	ready: function( wait ) {
-
-		// Abort if there are pending holds or we're already ready
-		if ( wait === true ? --jQuery.readyWait : jQuery.isReady ) {
-			return;
-		}
-
-		// Make sure body exists, at least, in case IE gets a little overzealous (ticket #5443).
-		if ( !document.body ) {
-			return setTimeout( jQuery.ready );
-		}
-
-		// Remember that the DOM is ready
-		jQuery.isReady = true;
-
-		// If a normal DOM Ready event fired, decrement, and wait if need be
-		if ( wait !== true && --jQuery.readyWait > 0 ) {
-			return;
-		}
-
-		// If there are functions bound, to execute
-		readyList.resolveWith( document, [ jQuery ] );
-
-		// Trigger any bound ready events
-		if ( jQuery.fn.trigger ) {
-			jQuery( document ).trigger("ready").off("ready");
-		}
-	}
-});
-
-/**
- * Clean-up method for dom ready events
- */
-function detach() {
-	if ( document.addEventListener ) {
-		document.removeEventListener( "DOMContentLoaded", completed, false );
-		window.removeEventListener( "load", completed, false );
-
-	} else {
-		document.detachEvent( "onreadystatechange", completed );
-		window.detachEvent( "onload", completed );
-	}
-}
-
-/**
- * The ready event handler and self cleanup method
- */
-function completed() {
-	// readyState === "complete" is good enough for us to call the dom ready in oldIE
-	if ( document.addEventListener || event.type === "load" || document.readyState === "complete" ) {
-		detach();
-		jQuery.ready();
-	}
-}
-
-jQuery.ready.promise = function( obj ) {
-	if ( !readyList ) {
-
-		readyList = jQuery.Deferred();
-
-		// Catch cases where $(document).ready() is called after the browser event has already occurred.
-		// we once tried to use readyState "interactive" here, but it caused issues like the one
-		// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-		if ( document.readyState === "complete" ) {
-			// Handle it asynchronously to allow scripts the opportunity to delay ready
-			setTimeout( jQuery.ready );
-
-		// Standards-based browsers support DOMContentLoaded
-		} else if ( document.addEventListener ) {
-			// Use the handy event callback
-			document.addEventListener( "DOMContentLoaded", completed, false );
-
-			// A fallback to window.onload, that will always work
-			window.addEventListener( "load", completed, false );
-
-		// If IE event model is used
-		} else {
-			// Ensure firing before onload, maybe late but safe also for iframes
-			document.attachEvent( "onreadystatechange", completed );
-
-			// A fallback to window.onload, that will always work
-			window.attachEvent( "onload", completed );
-
-			// If IE and not a frame
-			// continually check to see if the document is ready
-			var top = false;
-
-			try {
-				top = window.frameElement == null && document.documentElement;
-			} catch(e) {}
-
-			if ( top && top.doScroll ) {
-				(function doScrollCheck() {
-					if ( !jQuery.isReady ) {
-
-						try {
-							// Use the trick by Diego Perini
-							// http://javascript.nwbox.com/IEContentLoaded/
-							top.doScroll("left");
-						} catch(e) {
-							return setTimeout( doScrollCheck, 50 );
-						}
-
-						// detach all dom ready events
-						detach();
-
-						// and execute any waiting functions
-						jQuery.ready();
-					}
-				})();
-			}
-		}
-	}
-	return readyList.promise( obj );
-};
-
-
-var strundefined = typeof undefined;
-
-
-
-// Support: IE<9
-// Iteration over object's inherited properties before its own
-var i;
-for ( i in jQuery( support ) ) {
-	break;
-}
-support.ownLast = i !== "0";
-
-// Note: most support tests are defined in their respective modules.
-// false until the test is run
-support.inlineBlockNeedsLayout = false;
-
-jQuery(function() {
-	// We need to execute this one support test ASAP because we need to know
-	// if body.style.zoom needs to be set.
-
-	var container, div,
-		body = document.getElementsByTagName("body")[0];
-
-	if ( !body ) {
-		// Return for frameset docs that don't have a body
-		return;
-	}
-
-	// Setup
-	container = document.createElement( "div" );
-	container.style.cssText = "border:0;width:0;height:0;position:absolute;top:0;left:-9999px;margin-top:1px";
-
-	div = document.createElement( "div" );
-	body.appendChild( container ).appendChild( div );
-
-	if ( typeof div.style.zoom !== strundefined ) {
-		// Support: IE<8
-		// Check if natively block-level elements act like inline-block
-		// elements when setting their display to 'inline' and giving
-		// them layout
-		div.style.cssText = "border:0;margin:0;width:1px;padding:1px;display:inline;zoom:1";
-
-		if ( (support.inlineBlockNeedsLayout = ( div.offsetWidth === 3 )) ) {
-			// Prevent IE 6 from affecting layout for positioned elements #11048
-			// Prevent IE from shrinking the body in IE 7 mode #12869
-			// Support: IE<8
-			body.style.zoom = 1;
-		}
-	}
-
-	body.removeChild( container );
-
-	// Null elements to avoid leaks in IE
-	container = div = null;
-});
-
-
-
-
-(function() {
-	var div = document.createElement( "div" );
-
-	// Execute the test only if not already executed in another module.
-	if (support.deleteExpando == null) {
-		// Support: IE<9
-		support.deleteExpando = true;
-		try {
-			delete div.test;
-		} catch( e ) {
-			support.deleteExpando = false;
-		}
-	}
-
-	// Null elements to avoid leaks in IE.
-	div = null;
-})();
-
-
-/**
- * Determines whether an object can have data
- */
-jQuery.acceptData = function( elem ) {
-	var noData = jQuery.noData[ (elem.nodeName + " ").toLowerCase() ],
-		nodeType = +elem.nodeType || 1;
-
-	// Do not set data on non-element DOM nodes because it will not be cleared (#8335).
-	return nodeType !== 1 && nodeType !== 9 ?
-		false :
-
-		// Nodes accept data unless otherwise specified; rejection can be conditional
-		!noData || noData !== true && elem.getAttribute("classid") === noData;
-};
-
-
-var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,
-	rmultiDash = /([A-Z])/g;
-
-function dataAttr( elem, key, data ) {
-	// If nothing was found internally, try to fetch any
-	// data from the HTML5 data-* attribute
-	if ( data === undefined && elem.nodeType === 1 ) {
-
-		var name = "data-" + key.replace( rmultiDash, "-$1" ).toLowerCase();
-
-		data = elem.getAttribute( name );
-
-		if ( typeof data === "string" ) {
-			try {
-				data = data === "true" ? true :
-					data === "false" ? false :
-					data === "null" ? null :
-					// Only convert to a number if it doesn't change the string
-					+data + "" === data ? +data :
-					rbrace.test( data ) ? jQuery.parseJSON( data ) :
-					data;
-			} catch( e ) {}
-
-			// Make sure we set the data so it isn't changed later
-			jQuery.data( elem, key, data );
-
-		} else {
-			data = undefined;
-		}
-	}
-
-	return data;
-}
-
-// checks a cache object for emptiness
-function isEmptyDataObject( obj ) {
-	var name;
-	for ( name in obj ) {
-
-		// if the public data object is empty, the private is still empty
-		if ( name === "data" && jQuery.isEmptyObject( obj[name] ) ) {
-			continue;
-		}
-		if ( name !== "toJSON" ) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-function internalData( elem, name, data, pvt /* Internal Use Only */ ) {
-	if ( !jQuery.acceptData( elem ) ) {
-		return;
-	}
-
-	var ret, thisCache,
-		internalKey = jQuery.expando,
-
-		// We have to handle DOM nodes and JS objects differently because IE6-7
-		// can't GC object references properly across the DOM-JS boundary
-		isNode = elem.nodeType,
-
-		// Only DOM nodes need the global jQuery cache; JS object data is
-		// attached directly to the object so GC can occur automatically
-		cache = isNode ? jQuery.cache : elem,
-
-		// Only defining an ID for JS objects if its cache already exists allows
-		// the code to shortcut on the same path as a DOM node with no cache
-		id = isNode ? elem[ internalKey ] : elem[ internalKey ] && internalKey;
-
-	// Avoid doing any more work than we need to when trying to get data on an
-	// object that has no data at all
-	if ( (!id || !cache[id] || (!pvt && !cache[id].data)) && data === undefined && typeof name === "string" ) {
-		return;
-	}
-
-	if ( !id ) {
-		// Only DOM nodes need a new unique ID for each element since their data
-		// ends up in the global cache
-		if ( isNode ) {
-			id = elem[ internalKey ] = deletedIds.pop() || jQuery.guid++;
-		} else {
-			id = internalKey;
-		}
-	}
-
-	if ( !cache[ id ] ) {
-		// Avoid exposing jQuery metadata on plain JS objects when the object
-		// is serialized using JSON.stringify
-		cache[ id ] = isNode ? {} : { toJSON: jQuery.noop };
-	}
-
-	// An object can be passed to jQuery.data instead of a key/value pair; this gets
-	// shallow copied over onto the existing cache
-	if ( typeof name === "object" || typeof name === "function" ) {
-		if ( pvt ) {
-			cache[ id ] = jQuery.extend( cache[ id ], name );
-		} else {
-			cache[ id ].data = jQuery.extend( cache[ id ].data, name );
-		}
-	}
-
-	thisCache = cache[ id ];
-
-	// jQuery data() is stored in a separate object inside the object's internal data
-	// cache in order to avoid key collisions between internal data and user-defined
-	// data.
-	if ( !pvt ) {
-		if ( !thisCache.data ) {
-			thisCache.data = {};
-		}
-
-		thisCache = thisCache.data;
-	}
-
-	if ( data !== undefined ) {
-		thisCache[ jQuery.camelCase( name ) ] = data;
-	}
-
-	// Check for both converted-to-camel and non-converted data property names
-	// If a data property was specified
-	if ( typeof name === "string" ) {
-
-		// First Try to find as-is property data
-		ret = thisCache[ name ];
-
-		// Test for null|undefined property data
-		if ( ret == null ) {
-
-			// Try to find the camelCased property
-			ret = thisCache[ jQuery.camelCase( name ) ];
-		}
-	} else {
-		ret = thisCache;
-	}
-
-	return ret;
-}
-
-function internalRemoveData( elem, name, pvt ) {
-	if ( !jQuery.acceptData( elem ) ) {
-		return;
-	}
-
-	var thisCache, i,
-		isNode = elem.nodeType,
-
-		// See jQuery.data for more information
-		cache = isNode ? jQuery.cache : elem,
-		id = isNode ? elem[ jQuery.expando ] : jQuery.expando;
-
-	// If there is already no cache entry for this object, there is no
-	// purpose in continuing
-	if ( !cache[ id ] ) {
-		return;
-	}
-
-	if ( name ) {
-
-		thisCache = pvt ? cache[ id ] : cache[ id ].data;
-
-		if ( thisCache ) {
-
-			// Support array or space separated string names for data keys
-			if ( !jQuery.isArray( name ) ) {
-
-				// try the string as a key before any manipulation
-				if ( name in thisCache ) {
-					name = [ name ];
-				} else {
-
-					// split the camel cased version by spaces unless a key with the spaces exists
-					name = jQuery.camelCase( name );
-					if ( name in thisCache ) {
-						name = [ name ];
-					} else {
-						name = name.split(" ");
-					}
-				}
-			} else {
-				// If "name" is an array of keys...
-				// When data is initially created, via ("key", "val") signature,
-				// keys will be converted to camelCase.
-				// Since there is no way to tell _how_ a key was added, remove
-				// both plain key and camelCase key. #12786
-				// This will only penalize the array argument path.
-				name = name.concat( jQuery.map( name, jQuery.camelCase ) );
-			}
-
-			i = name.length;
-			while ( i-- ) {
-				delete thisCache[ name[i] ];
-			}
-
-			// If there is no data left in the cache, we want to continue
-			// and let the cache object itself get destroyed
-			if ( pvt ? !isEmptyDataObject(thisCache) : !jQuery.isEmptyObject(thisCache) ) {
-				return;
-			}
-		}
-	}
-
-	// See jQuery.data for more information
-	if ( !pvt ) {
-		delete cache[ id ].data;
-
-		// Don't destroy the parent cache unless the internal data object
-		// had been the only thing left in it
-		if ( !isEmptyDataObject( cache[ id ] ) ) {
-			return;
-		}
-	}
-
-	// Destroy the cache
-	if ( isNode ) {
-		jQuery.cleanData( [ elem ], true );
-
-	// Use delete when supported for expandos or `cache` is not a window per isWindow (#10080)
-	/* jshint eqeqeq: false */
-	} else if ( support.deleteExpando || cache != cache.window ) {
-		/* jshint eqeqeq: true */
-		delete cache[ id ];
-
-	// When all else fails, null
-	} else {
-		cache[ id ] = null;
-	}
-}
-
-jQuery.extend({
-	cache: {},
-
-	// The following elements (space-suffixed to avoid Object.prototype collisions)
-	// throw uncatchable exceptions if you attempt to set expando properties
-	noData: {
-		"applet ": true,
-		"embed ": true,
-		// ...but Flash objects (which have this classid) *can* handle expandos
-		"object ": "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-	},
-
-	hasData: function( elem ) {
-		elem = elem.nodeType ? jQuery.cache[ elem[jQuery.expando] ] : elem[ jQuery.expando ];
-		return !!elem && !isEmptyDataObject( elem );
-	},
-
-	data: function( elem, name, data ) {
-		return internalData( elem, name, data );
-	},
-
-	removeData: function( elem, name ) {
-		return internalRemoveData( elem, name );
-	},
-
-	// For internal use only.
-	_data: function( elem, name, data ) {
-		return internalData( elem, name, data, true );
-	},
-
-	_removeData: function( elem, name ) {
-		return internalRemoveData( elem, name, true );
-	}
-});
-
-jQuery.fn.extend({
-	data: function( key, value ) {
-		var i, name, data,
-			elem = this[0],
-			attrs = elem && elem.attributes;
-
-		// Special expections of .data basically thwart jQuery.access,
-		// so implement the relevant behavior ourselves
-
-		// Gets all values
-		if ( key === undefined ) {
-			if ( this.length ) {
-				data = jQuery.data( elem );
-
-				if ( elem.nodeType === 1 && !jQuery._data( elem, "parsedAttrs" ) ) {
-					i = attrs.length;
-					while ( i-- ) {
-						name = attrs[i].name;
-
-						if ( name.indexOf("data-") === 0 ) {
-							name = jQuery.camelCase( name.slice(5) );
-
-							dataAttr( elem, name, data[ name ] );
-						}
-					}
-					jQuery._data( elem, "parsedAttrs", true );
-				}
-			}
-
-			return data;
-		}
-
-		// Sets multiple values
-		if ( typeof key === "object" ) {
-			return this.each(function() {
-				jQuery.data( this, key );
-			});
-		}
-
-		return arguments.length > 1 ?
-
-			// Sets one value
-			this.each(function() {
-				jQuery.data( this, key, value );
-			}) :
-
-			// Gets one value
-			// Try to fetch any internally stored data first
-			elem ? dataAttr( elem, key, jQuery.data( elem, key ) ) : undefined;
-	},
-
-	removeData: function( key ) {
-		return this.each(function() {
-			jQuery.removeData( this, key );
-		});
-	}
-});
-
-
-jQuery.extend({
-	queue: function( elem, type, data ) {
-		var queue;
-
-		if ( elem ) {
-			type = ( type || "fx" ) + "queue";
-			queue = jQuery._data( elem, type );
-
-			// Speed up dequeue by getting out quickly if this is just a lookup
-			if ( data ) {
-				if ( !queue || jQuery.isArray(data) ) {
-					queue = jQuery._data( elem, type, jQuery.makeArray(data) );
-				} else {
-					queue.push( data );
-				}
-			}
-			return queue || [];
-		}
-	},
-
-	dequeue: function( elem, type ) {
-		type = type || "fx";
-
-		var queue = jQuery.queue( elem, type ),
-			startLength = queue.length,
-			fn = queue.shift(),
-			hooks = jQuery._queueHooks( elem, type ),
-			next = function() {
-				jQuery.dequeue( elem, type );
-			};
-
-		// If the fx queue is dequeued, always remove the progress sentinel
-		if ( fn === "inprogress" ) {
-			fn = queue.shift();
-			startLength--;
-		}
-
-		if ( fn ) {
-
-			// Add a progress sentinel to prevent the fx queue from being
-			// automatically dequeued
-			if ( type === "fx" ) {
-				queue.unshift( "inprogress" );
-			}
-
-			// clear up the last queue stop function
-			delete hooks.stop;
-			fn.call( elem, next, hooks );
-		}
-
-		if ( !startLength && hooks ) {
-			hooks.empty.fire();
-		}
-	},
-
-	// not intended for public consumption - generates a queueHooks object, or returns the current one
-	_queueHooks: function( elem, type ) {
-		var key = type + "queueHooks";
-		return jQuery._data( elem, key ) || jQuery._data( elem, key, {
-			empty: jQuery.Callbacks("once memory").add(function() {
-				jQuery._removeData( elem, type + "queue" );
-				jQuery._removeData( elem, key );
-			})
-		});
-	}
-});
-
-jQuery.fn.extend({
-	queue: function( type, data ) {
-		var setter = 2;
-
-		if ( typeof type !== "string" ) {
-			data = type;
-			type = "fx";
-			setter--;
-		}
-
-		if ( arguments.length < setter ) {
-			return jQuery.queue( this[0], type );
-		}
-
-		return data === undefined ?
-			this :
-			this.each(function() {
-				var queue = jQuery.queue( this, type, data );
-
-				// ensure a hooks for this queue
-				jQuery._queueHooks( this, type );
-
-				if ( type === "fx" && queue[0] !== "inprogress" ) {
-					jQuery.dequeue( this, type );
-				}
-			});
-	},
-	dequeue: function( type ) {
-		return this.each(function() {
-			jQuery.dequeue( this, type );
-		});
-	},
-	clearQueue: function( type ) {
-		return this.queue( type || "fx", [] );
-	},
-	// Get a promise resolved when queues of a certain type
-	// are emptied (fx is the type by default)
-	promise: function( type, obj ) {
-		var tmp,
-			count = 1,
-			defer = jQuery.Deferred(),
-			elements = this,
-			i = this.length,
-			resolve = function() {
-				if ( !( --count ) ) {
-					defer.resolveWith( elements, [ elements ] );
-				}
-			};
-
-		if ( typeof type !== "string" ) {
-			obj = type;
-			type = undefined;
-		}
-		type = type || "fx";
-
-		while ( i-- ) {
-			tmp = jQuery._data( elements[ i ], type + "queueHooks" );
-			if ( tmp && tmp.empty ) {
-				count++;
-				tmp.empty.add( resolve );
-			}
-		}
-		resolve();
-		return defer.promise( obj );
-	}
-});
-var pnum = (/[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/).source;
-
-var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
-
-var isHidden = function( elem, el ) {
-		// isHidden might be called from jQuery#filter function;
-		// in that case, element will be second argument
-		elem = el || elem;
-		return jQuery.css( elem, "display" ) === "none" || !jQuery.contains( elem.ownerDocument, elem );
-	};
-
-
-
-// Multifunctional method to get and set values of a collection
-// The value/s can optionally be executed if it's a function
-var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
-	var i = 0,
-		length = elems.length,
-		bulk = key == null;
-
-	// Sets many values
-	if ( jQuery.type( key ) === "object" ) {
-		chainable = true;
-		for ( i in key ) {
-			jQuery.access( elems, fn, i, key[i], true, emptyGet, raw );
-		}
-
-	// Sets one value
-	} else if ( value !== undefined ) {
-		chainable = true;
-
-		if ( !jQuery.isFunction( value ) ) {
-			raw = true;
-		}
-
-		if ( bulk ) {
-			// Bulk operations run against the entire set
-			if ( raw ) {
-				fn.call( elems, value );
-				fn = null;
-
-			// ...except when executing function values
-			} else {
-				bulk = fn;
-				fn = function( elem, key, value ) {
-					return bulk.call( jQuery( elem ), value );
-				};
-			}
-		}
-
-		if ( fn ) {
-			for ( ; i < length; i++ ) {
-				fn( elems[i], key, raw ? value : value.call( elems[i], i, fn( elems[i], key ) ) );
-			}
-		}
-	}
-
-	return chainable ?
-		elems :
-
-		// Gets
-		bulk ?
-			fn.call( elems ) :
-			length ? fn( elems[0], key ) : emptyGet;
-};
-var rcheckableType = (/^(?:checkbox|radio)$/i);
-
-
-
-(function() {
-	var fragment = document.createDocumentFragment(),
-		div = document.createElement("div"),
-		input = document.createElement("input");
-
-	// Setup
-	div.setAttribute( "className", "t" );
-	div.innerHTML = "  <link/><table></table><a href='/a'>a</a>";
-
-	// IE strips leading whitespace when .innerHTML is used
-	support.leadingWhitespace = div.firstChild.nodeType === 3;
-
-	// Make sure that tbody elements aren't automatically inserted
-	// IE will insert them into empty tables
-	support.tbody = !div.getElementsByTagName( "tbody" ).length;
-
-	// Make sure that link elements get serialized correctly by innerHTML
-	// This requires a wrapper element in IE
-	support.htmlSerialize = !!div.getElementsByTagName( "link" ).length;
-
-	// Makes sure cloning an html5 element does not cause problems
-	// Where outerHTML is undefined, this still works
-	support.html5Clone =
-		document.createElement( "nav" ).cloneNode( true ).outerHTML !== "<:nav></:nav>";
-
-	// Check if a disconnected checkbox will retain its checked
-	// value of true after appended to the DOM (IE6/7)
-	input.type = "checkbox";
-	input.checked = true;
-	fragment.appendChild( input );
-	support.appendChecked = input.checked;
-
-	// Make sure textarea (and checkbox) defaultValue is properly cloned
-	// Support: IE6-IE11+
-	div.innerHTML = "<textarea>x</textarea>";
-	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
-
-	// #11217 - WebKit loses check when the name is after the checked attribute
-	fragment.appendChild( div );
-	div.innerHTML = "<input type='radio' checked='checked' name='t'/>";
-
-	// Support: Safari 5.1, iOS 5.1, Android 4.x, Android 2.3
-	// old WebKit doesn't clone checked state correctly in fragments
-	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
-
-	// Support: IE<9
-	// Opera does not clone events (and typeof div.attachEvent === undefined).
-	// IE9-10 clones events bound via attachEvent, but they don't trigger with .click()
-	support.noCloneEvent = true;
-	if ( div.attachEvent ) {
-		div.attachEvent( "onclick", function() {
-			support.noCloneEvent = false;
-		});
-
-		div.cloneNode( true ).click();
-	}
-
-	// Execute the test only if not already executed in another module.
-	if (support.deleteExpando == null) {
-		// Support: IE<9
-		support.deleteExpando = true;
-		try {
-			delete div.test;
-		} catch( e ) {
-			support.deleteExpando = false;
-		}
-	}
-
-	// Null elements to avoid leaks in IE.
-	fragment = div = input = null;
-})();
-
-
-(function() {
-	var i, eventName,
-		div = document.createElement( "div" );
-
-	// Support: IE<9 (lack submit/change bubble), Firefox 23+ (lack focusin event)
-	for ( i in { submit: true, change: true, focusin: true }) {
-		eventName = "on" + i;
-
-		if ( !(support[ i + "Bubbles" ] = eventName in window) ) {
-			// Beware of CSP restrictions (https://developer.mozilla.org/en/Security/CSP)
-			div.setAttribute( eventName, "t" );
-			support[ i + "Bubbles" ] = div.attributes[ eventName ].expando === false;
-		}
-	}
-
-	// Null elements to avoid leaks in IE.
-	div = null;
-})();
-
-
-var rformElems = /^(?:input|select|textarea)$/i,
-	rkeyEvent = /^key/,
-	rmouseEvent = /^(?:mouse|contextmenu)|click/,
-	rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
-	rtypenamespace = /^([^.]*)(?:\.(.+)|)$/;
-
-function returnTrue() {
-	return true;
-}
-
-function returnFalse() {
-	return false;
-}
-
-function safeActiveElement() {
-	try {
-		return document.activeElement;
-	} catch ( err ) { }
-}
-
-/*
- * Helper functions for managing events -- not part of the public interface.
- * Props to Dean Edwards' addEvent library for many of the ideas.
- */
-jQuery.event = {
-
-	global: {},
-
-	add: function( elem, types, handler, data, selector ) {
-		var tmp, events, t, handleObjIn,
-			special, eventHandle, handleObj,
-			handlers, type, namespaces, origType,
-			elemData = jQuery._data( elem );
-
-		// Don't attach events to noData or text/comment nodes (but allow plain objects)
-		if ( !elemData ) {
-			return;
-		}
-
-		// Caller can pass in an object of custom data in lieu of the handler
-		if ( handler.handler ) {
-			handleObjIn = handler;
-			handler = handleObjIn.handler;
-			selector = handleObjIn.selector;
-		}
-
-		// Make sure that the handler has a unique ID, used to find/remove it later
-		if ( !handler.guid ) {
-			handler.guid = jQuery.guid++;
-		}
-
-		// Init the element's event structure and main handler, if this is the first
-		if ( !(events = elemData.events) ) {
-			events = elemData.events = {};
-		}
-		if ( !(eventHandle = elemData.handle) ) {
-			eventHandle = elemData.handle = function( e ) {
-				// Discard the second event of a jQuery.event.trigger() and
-				// when an event is called after a page has unloaded
-				return typeof jQuery !== strundefined && (!e || jQuery.event.triggered !== e.type) ?
-					jQuery.event.dispatch.apply( eventHandle.elem, arguments ) :
-					undefined;
-			};
-			// Add elem as a property of the handle fn to prevent a memory leak with IE non-native events
-			eventHandle.elem = elem;
-		}
-
-		// Handle multiple events separated by a space
-		types = ( types || "" ).match( rnotwhite ) || [ "" ];
-		t = types.length;
-		while ( t-- ) {
-			tmp = rtypenamespace.exec( types[t] ) || [];
-			type = origType = tmp[1];
-			namespaces = ( tmp[2] || "" ).split( "." ).sort();
-
-			// There *must* be a type, no attaching namespace-only handlers
-			if ( !type ) {
-				continue;
-			}
-
-			// If event changes its type, use the special event handlers for the changed type
-			special = jQuery.event.special[ type ] || {};
-
-			// If selector defined, determine special event api type, otherwise given type
-			type = ( selector ? special.delegateType : special.bindType ) || type;
-
-			// Update special based on newly reset type
-			special = jQuery.event.special[ type ] || {};
-
-			// handleObj is passed to all event handlers
-			handleObj = jQuery.extend({
-				type: type,
-				origType: origType,
-				data: data,
-				handler: handler,
-				guid: handler.guid,
-				selector: selector,
-				needsContext: selector && jQuery.expr.match.needsContext.test( selector ),
-				namespace: namespaces.join(".")
-			}, handleObjIn );
-
-			// Init the event handler queue if we're the first
-			if ( !(handlers = events[ type ]) ) {
-				handlers = events[ type ] = [];
-				handlers.delegateCount = 0;
-
-				// Only use addEventListener/attachEvent if the special events handler returns false
-				if ( !special.setup || special.setup.call( elem, data, namespaces, eventHandle ) === false ) {
-					// Bind the global event handler to the element
-					if ( elem.addEventListener ) {
-						elem.addEventListener( type, eventHandle, false );
-
-					} else if ( elem.attachEvent ) {
-						elem.attachEvent( "on" + type, eventHandle );
-					}
-				}
-			}
-
-			if ( special.add ) {
-				special.add.call( elem, handleObj );
-
-				if ( !handleObj.handler.guid ) {
-					handleObj.handler.guid = handler.guid;
-				}
-			}
-
-			// Add to the element's handler list, delegates in front
-			if ( selector ) {
-				handlers.splice( handlers.delegateCount++, 0, handleObj );
-			} else {
-				handlers.push( handleObj );
-			}
-
-			// Keep track of which events have ever been used, for event optimization
-			jQuery.event.global[ type ] = true;
-		}
-
-		// Nullify elem to prevent memory leaks in IE
-		elem = null;
-	},
-
-	// Detach an event or set of events from an element
-	remove: function( elem, types, handler, selector, mappedTypes ) {
-		var j, handleObj, tmp,
-			origCount, t, events,
-			special, handlers, type,
-			namespaces, origType,
-			elemData = jQuery.hasData( elem ) && jQuery._data( elem );
-
-		if ( !elemData || !(events = elemData.events) ) {
-			return;
-		}
-
-		// Once for each type.namespace in types; type may be omitted
-		types = ( types || "" ).match( rnotwhite ) || [ "" ];
-		t = types.length;
-		while ( t-- ) {
-			tmp = rtypenamespace.exec( types[t] ) || [];
-			type = origType = tmp[1];
-			namespaces = ( tmp[2] || "" ).split( "." ).sort();
-
-			// Unbind all events (on this namespace, if provided) for the element
-			if ( !type ) {
-				for ( type in events ) {
-					jQuery.event.remove( elem, type + types[ t ], handler, selector, true );
-				}
-				continue;
-			}
-
-			special = jQuery.event.special[ type ] || {};
-			type = ( selector ? special.delegateType : special.bindType ) || type;
-			handlers = events[ type ] || [];
-			tmp = tmp[2] && new RegExp( "(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)" );
-
-			// Remove matching events
-			origCount = j = handlers.length;
-			while ( j-- ) {
-				handleObj = handlers[ j ];
-
-				if ( ( mappedTypes || origType === handleObj.origType ) &&
-					( !handler || handler.guid === handleObj.guid ) &&
-					( !tmp || tmp.test( handleObj.namespace ) ) &&
-					( !selector || selector === handleObj.selector || selector === "**" && handleObj.selector ) ) {
-					handlers.splice( j, 1 );
-
-					if ( handleObj.selector ) {
-						handlers.delegateCount--;
-					}
-					if ( special.remove ) {
-						special.remove.call( elem, handleObj );
-					}
-				}
-			}
-
-			// Remove generic event handler if we removed something and no more handlers exist
-			// (avoids potential for endless recursion during removal of special event handlers)
-			if ( origCount && !handlers.length ) {
-				if ( !special.teardown || special.teardown.call( elem, namespaces, elemData.handle ) === false ) {
-					jQuery.removeEvent( elem, type, elemData.handle );
-				}
-
-				delete events[ type ];
-			}
-		}
-
-		// Remove the expando if it's no longer used
-		if ( jQuery.isEmptyObject( events ) ) {
-			delete elemData.handle;
-
-			// removeData also checks for emptiness and clears the expando if empty
-			// so use it instead of delete
-			jQuery._removeData( elem, "events" );
-		}
-	},
-
-	trigger: function( event, data, elem, onlyHandlers ) {
-		var handle, ontype, cur,
-			bubbleType, special, tmp, i,
-			eventPath = [ elem || document ],
-			type = hasOwn.call( event, "type" ) ? event.type : event,
-			namespaces = hasOwn.call( event, "namespace" ) ? event.namespace.split(".") : [];
-
-		cur = tmp = elem = elem || document;
-
-		// Don't do events on text and comment nodes
-		if ( elem.nodeType === 3 || elem.nodeType === 8 ) {
-			return;
-		}
-
-		// focus/blur morphs to focusin/out; ensure we're not firing them right now
-		if ( rfocusMorph.test( type + jQuery.event.triggered ) ) {
-			return;
-		}
-
-		if ( type.indexOf(".") >= 0 ) {
-			// Namespaced trigger; create a regexp to match event type in handle()
-			namespaces = type.split(".");
-			type = namespaces.shift();
-			namespaces.sort();
-		}
-		ontype = type.indexOf(":") < 0 && "on" + type;
-
-		// Caller can pass in a jQuery.Event object, Object, or just an event type string
-		event = event[ jQuery.expando ] ?
-			event :
-			new jQuery.Event( type, typeof event === "object" && event );
-
-		// Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
-		event.isTrigger = onlyHandlers ? 2 : 3;
-		event.namespace = namespaces.join(".");
-		event.namespace_re = event.namespace ?
-			new RegExp( "(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)" ) :
-			null;
-
-		// Clean up the event in case it is being reused
-		event.result = undefined;
-		if ( !event.target ) {
-			event.target = elem;
-		}
-
-		// Clone any incoming data and prepend the event, creating the handler arg list
-		data = data == null ?
-			[ event ] :
-			jQuery.makeArray( data, [ event ] );
-
-		// Allow special events to draw outside the lines
-		special = jQuery.event.special[ type ] || {};
-		if ( !onlyHandlers && special.trigger && special.trigger.apply( elem, data ) === false ) {
-			return;
-		}
-
-		// Determine event propagation path in advance, per W3C events spec (#9951)
-		// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
-		if ( !onlyHandlers && !special.noBubble && !jQuery.isWindow( elem ) ) {
-
-			bubbleType = special.delegateType || type;
-			if ( !rfocusMorph.test( bubbleType + type ) ) {
-				cur = cur.parentNode;
-			}
-			for ( ; cur; cur = cur.parentNode ) {
-				eventPath.push( cur );
-				tmp = cur;
-			}
-
-			// Only add window if we got to document (e.g., not plain obj or detached DOM)
-			if ( tmp === (elem.ownerDocument || document) ) {
-				eventPath.push( tmp.defaultView || tmp.parentWindow || window );
-			}
-		}
-
-		// Fire handlers on the event path
-		i = 0;
-		while ( (cur = eventPath[i++]) && !event.isPropagationStopped() ) {
-
-			event.type = i > 1 ?
-				bubbleType :
-				special.bindType || type;
-
-			// jQuery handler
-			handle = ( jQuery._data( cur, "events" ) || {} )[ event.type ] && jQuery._data( cur, "handle" );
-			if ( handle ) {
-				handle.apply( cur, data );
-			}
-
-			// Native handler
-			handle = ontype && cur[ ontype ];
-			if ( handle && handle.apply && jQuery.acceptData( cur ) ) {
-				event.result = handle.apply( cur, data );
-				if ( event.result === false ) {
-					event.preventDefault();
-				}
-			}
-		}
-		event.type = type;
-
-		// If nobody prevented the default action, do it now
-		if ( !onlyHandlers && !event.isDefaultPrevented() ) {
-
-			if ( (!special._default || special._default.apply( eventPath.pop(), data ) === false) &&
-				jQuery.acceptData( elem ) ) {
-
-				// Call a native DOM method on the target with the same name name as the event.
-				// Can't use an .isFunction() check here because IE6/7 fails that test.
-				// Don't do default actions on window, that's where global variables be (#6170)
-				if ( ontype && elem[ type ] && !jQuery.isWindow( elem ) ) {
-
-					// Don't re-trigger an onFOO event when we call its FOO() method
-					tmp = elem[ ontype ];
-
-					if ( tmp ) {
-						elem[ ontype ] = null;
-					}
-
-					// Prevent re-triggering of the same event, since we already bubbled it above
-					jQuery.event.triggered = type;
-					try {
-						elem[ type ]();
-					} catch ( e ) {
-						// IE<9 dies on focus/blur to hidden element (#1486,#12518)
-						// only reproducible on winXP IE8 native, not IE9 in IE8 mode
-					}
-					jQuery.event.triggered = undefined;
-
-					if ( tmp ) {
-						elem[ ontype ] = tmp;
-					}
-				}
-			}
-		}
-
-		return event.result;
-	},
-
-	dispatch: function( event ) {
-
-		// Make a writable jQuery.Event from the native event object
-		event = jQuery.event.fix( event );
-
-		var i, ret, handleObj, matched, j,
-			handlerQueue = [],
-			args = slice.call( arguments ),
-			handlers = ( jQuery._data( this, "events" ) || {} )[ event.type ] || [],
-			special = jQuery.event.special[ event.type ] || {};
-
-		// Use the fix-ed jQuery.Event rather than the (read-only) native event
-		args[0] = event;
-		event.delegateTarget = this;
-
-		// Call the preDispatch hook for the mapped type, and let it bail if desired
-		if ( special.preDispatch && special.preDispatch.call( this, event ) === false ) {
-			return;
-		}
-
-		// Determine handlers
-		handlerQueue = jQuery.event.handlers.call( this, event, handlers );
-
-		// Run delegates first; they may want to stop propagation beneath us
-		i = 0;
-		while ( (matched = handlerQueue[ i++ ]) && !event.isPropagationStopped() ) {
-			event.currentTarget = matched.elem;
-
-			j = 0;
-			while ( (handleObj = matched.handlers[ j++ ]) && !event.isImmediatePropagationStopped() ) {
-
-				// Triggered event must either 1) have no namespace, or
-				// 2) have namespace(s) a subset or equal to those in the bound event (both can have no namespace).
-				if ( !event.namespace_re || event.namespace_re.test( handleObj.namespace ) ) {
-
-					event.handleObj = handleObj;
-					event.data = handleObj.data;
-
-					ret = ( (jQuery.event.special[ handleObj.origType ] || {}).handle || handleObj.handler )
-							.apply( matched.elem, args );
-
-					if ( ret !== undefined ) {
-						if ( (event.result = ret) === false ) {
-							event.preventDefault();
-							event.stopPropagation();
-						}
-					}
-				}
-			}
-		}
-
-		// Call the postDispatch hook for the mapped type
-		if ( special.postDispatch ) {
-			special.postDispatch.call( this, event );
-		}
-
-		return event.result;
-	},
-
-	handlers: function( event, handlers ) {
-		var sel, handleObj, matches, i,
-			handlerQueue = [],
-			delegateCount = handlers.delegateCount,
-			cur = event.target;
-
-		// Find delegate handlers
-		// Black-hole SVG <use> instance trees (#13180)
-		// Avoid non-left-click bubbling in Firefox (#3861)
-		if ( delegateCount && cur.nodeType && (!event.button || event.type !== "click") ) {
-
-			/* jshint eqeqeq: false */
-			for ( ; cur != this; cur = cur.parentNode || this ) {
-				/* jshint eqeqeq: true */
-
-				// Don't check non-elements (#13208)
-				// Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
-				if ( cur.nodeType === 1 && (cur.disabled !== true || event.type !== "click") ) {
-					matches = [];
-					for ( i = 0; i < delegateCount; i++ ) {
-						handleObj = handlers[ i ];
-
-						// Don't conflict with Object.prototype properties (#13203)
-						sel = handleObj.selector + " ";
-
-						if ( matches[ sel ] === undefined ) {
-							matches[ sel ] = handleObj.needsContext ?
-								jQuery( sel, this ).index( cur ) >= 0 :
-								jQuery.find( sel, this, null, [ cur ] ).length;
-						}
-						if ( matches[ sel ] ) {
-							matches.push( handleObj );
-						}
-					}
-					if ( matches.length ) {
-						handlerQueue.push({ elem: cur, handlers: matches });
-					}
-				}
-			}
-		}
-
-		// Add the remaining (directly-bound) handlers
-		if ( delegateCount < handlers.length ) {
-			handlerQueue.push({ elem: this, handlers: handlers.slice( delegateCount ) });
-		}
-
-		return handlerQueue;
-	},
-
-	fix: function( event ) {
-		if ( event[ jQuery.expando ] ) {
-			return event;
-		}
-
-		// Create a writable copy of the event object and normalize some properties
-		var i, prop, copy,
-			type = event.type,
-			originalEvent = event,
-			fixHook = this.fixHooks[ type ];
-
-		if ( !fixHook ) {
-			this.fixHooks[ type ] = fixHook =
-				rmouseEvent.test( type ) ? this.mouseHooks :
-				rkeyEvent.test( type ) ? this.keyHooks :
-				{};
-		}
-		copy = fixHook.props ? this.props.concat( fixHook.props ) : this.props;
-
-		event = new jQuery.Event( originalEvent );
-
-		i = copy.length;
-		while ( i-- ) {
-			prop = copy[ i ];
-			event[ prop ] = originalEvent[ prop ];
-		}
-
-		// Support: IE<9
-		// Fix target property (#1925)
-		if ( !event.target ) {
-			event.target = originalEvent.srcElement || document;
-		}
-
-		// Support: Chrome 23+, Safari?
-		// Target should not be a text node (#504, #13143)
-		if ( event.target.nodeType === 3 ) {
-			event.target = event.target.parentNode;
-		}
-
-		// Support: IE<9
-		// For mouse/key events, metaKey==false if it's undefined (#3368, #11328)
-		event.metaKey = !!event.metaKey;
-
-		return fixHook.filter ? fixHook.filter( event, originalEvent ) : event;
-	},
-
-	// Includes some event props shared by KeyEvent and MouseEvent
-	props: "altKey bubbles cancelable ctrlKey currentTarget eventPhase metaKey relatedTarget shiftKey target timeStamp view which".split(" "),
-
-	fixHooks: {},
-
-	keyHooks: {
-		props: "char charCode key keyCode".split(" "),
-		filter: function( event, original ) {
-
-			// Add which for key events
-			if ( event.which == null ) {
-				event.which = original.charCode != null ? original.charCode : original.keyCode;
-			}
-
-			return event;
-		}
-	},
-
-	mouseHooks: {
-		props: "button buttons clientX clientY fromElement offsetX offsetY pageX pageY screenX screenY toElement".split(" "),
-		filter: function( event, original ) {
-			var body, eventDoc, doc,
-				button = original.button,
-				fromElement = original.fromElement;
-
-			// Calculate pageX/Y if missing and clientX/Y available
-			if ( event.pageX == null && original.clientX != null ) {
-				eventDoc = event.target.ownerDocument || document;
-				doc = eventDoc.documentElement;
-				body = eventDoc.body;
-
-				event.pageX = original.clientX + ( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) - ( doc && doc.clientLeft || body && body.clientLeft || 0 );
-				event.pageY = original.clientY + ( doc && doc.scrollTop  || body && body.scrollTop  || 0 ) - ( doc && doc.clientTop  || body && body.clientTop  || 0 );
-			}
-
-			// Add relatedTarget, if necessary
-			if ( !event.relatedTarget && fromElement ) {
-				event.relatedTarget = fromElement === event.target ? original.toElement : fromElement;
-			}
-
-			// Add which for click: 1 === left; 2 === middle; 3 === right
-			// Note: button is not normalized, so don't use it
-			if ( !event.which && button !== undefined ) {
-				event.which = ( button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) ) );
-			}
-
-			return event;
-		}
-	},
-
-	special: {
-		load: {
-			// Prevent triggered image.load events from bubbling to window.load
-			noBubble: true
-		},
-		focus: {
-			// Fire native event if possible so blur/focus sequence is correct
-			trigger: function() {
-				if ( this !== safeActiveElement() && this.focus ) {
-					try {
-						this.focus();
-						return false;
-					} catch ( e ) {
-						// Support: IE<9
-						// If we error on focus to hidden element (#1486, #12518),
-						// let .trigger() run the handlers
-					}
-				}
-			},
-			delegateType: "focusin"
-		},
-		blur: {
-			trigger: function() {
-				if ( this === safeActiveElement() && this.blur ) {
-					this.blur();
-					return false;
-				}
-			},
-			delegateType: "focusout"
-		},
-		click: {
-			// For checkbox, fire native event so checked state will be right
-			trigger: function() {
-				if ( jQuery.nodeName( this, "input" ) && this.type === "checkbox" && this.click ) {
-					this.click();
-					return false;
-				}
-			},
-
-			// For cross-browser consistency, don't fire native .click() on links
-			_default: function( event ) {
-				return jQuery.nodeName( event.target, "a" );
-			}
-		},
-
-		beforeunload: {
-			postDispatch: function( event ) {
-
-				// Even when returnValue equals to undefined Firefox will still show alert
-				if ( event.result !== undefined ) {
-					event.originalEvent.returnValue = event.result;
-				}
-			}
-		}
-	},
-
-	simulate: function( type, elem, event, bubble ) {
-		// Piggyback on a donor event to simulate a different one.
-		// Fake originalEvent to avoid donor's stopPropagation, but if the
-		// simulated event prevents default then we do the same on the donor.
-		var e = jQuery.extend(
-			new jQuery.Event(),
-			event,
-			{
-				type: type,
-				isSimulated: true,
-				originalEvent: {}
-			}
-		);
-		if ( bubble ) {
-			jQuery.event.trigger( e, null, elem );
-		} else {
-			jQuery.event.dispatch.call( elem, e );
-		}
-		if ( e.isDefaultPrevented() ) {
-			event.preventDefault();
-		}
-	}
-};
-
-jQuery.removeEvent = document.removeEventListener ?
-	function( elem, type, handle ) {
-		if ( elem.removeEventListener ) {
-			elem.removeEventListener( type, handle, false );
-		}
-	} :
-	function( elem, type, handle ) {
-		var name = "on" + type;
-
-		if ( elem.detachEvent ) {
-
-			// #8545, #7054, preventing memory leaks for custom events in IE6-8
-			// detachEvent needed property on element, by name of that event, to properly expose it to GC
-			if ( typeof elem[ name ] === strundefined ) {
-				elem[ name ] = null;
-			}
-
-			elem.detachEvent( name, handle );
-		}
-	};
-
-jQuery.Event = function( src, props ) {
-	// Allow instantiation without the 'new' keyword
-	if ( !(this instanceof jQuery.Event) ) {
-		return new jQuery.Event( src, props );
-	}
-
-	// Event object
-	if ( src && src.type ) {
-		this.originalEvent = src;
-		this.type = src.type;
-
-		// Events bubbling up the document may have been marked as prevented
-		// by a handler lower down the tree; reflect the correct value.
-		this.isDefaultPrevented = src.defaultPrevented ||
-				src.defaultPrevented === undefined && (
-				// Support: IE < 9
-				src.returnValue === false ||
-				// Support: Android < 4.0
-				src.getPreventDefault && src.getPreventDefault() ) ?
-			returnTrue :
-			returnFalse;
-
-	// Event type
-	} else {
-		this.type = src;
-	}
-
-	// Put explicitly provided properties onto the event object
-	if ( props ) {
-		jQuery.extend( this, props );
-	}
-
-	// Create a timestamp if incoming event doesn't have one
-	this.timeStamp = src && src.timeStamp || jQuery.now();
-
-	// Mark it as fixed
-	this[ jQuery.expando ] = true;
-};
-
-// jQuery.Event is based on DOM3 Events as specified by the ECMAScript Language Binding
-// http://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
-jQuery.Event.prototype = {
-	isDefaultPrevented: returnFalse,
-	isPropagationStopped: returnFalse,
-	isImmediatePropagationStopped: returnFalse,
-
-	preventDefault: function() {
-		var e = this.originalEvent;
-
-		this.isDefaultPrevented = returnTrue;
-		if ( !e ) {
-			return;
-		}
-
-		// If preventDefault exists, run it on the original event
-		if ( e.preventDefault ) {
-			e.preventDefault();
-
-		// Support: IE
-		// Otherwise set the returnValue property of the original event to false
-		} else {
-			e.returnValue = false;
-		}
-	},
-	stopPropagation: function() {
-		var e = this.originalEvent;
-
-		this.isPropagationStopped = returnTrue;
-		if ( !e ) {
-			return;
-		}
-		// If stopPropagation exists, run it on the original event
-		if ( e.stopPropagation ) {
-			e.stopPropagation();
-		}
-
-		// Support: IE
-		// Set the cancelBubble property of the original event to true
-		e.cancelBubble = true;
-	},
-	stopImmediatePropagation: function() {
-		this.isImmediatePropagationStopped = returnTrue;
-		this.stopPropagation();
-	}
-};
-
-// Create mouseenter/leave events using mouseover/out and event-time checks
-jQuery.each({
-	mouseenter: "mouseover",
-	mouseleave: "mouseout"
-}, function( orig, fix ) {
-	jQuery.event.special[ orig ] = {
-		delegateType: fix,
-		bindType: fix,
-
-		handle: function( event ) {
-			var ret,
-				target = this,
-				related = event.relatedTarget,
-				handleObj = event.handleObj;
-
-			// For mousenter/leave call the handler if related is outside the target.
-			// NB: No relatedTarget if the mouse left/entered the browser window
-			if ( !related || (related !== target && !jQuery.contains( target, related )) ) {
-				event.type = handleObj.origType;
-				ret = handleObj.handler.apply( this, arguments );
-				event.type = fix;
-			}
-			return ret;
-		}
-	};
-});
-
-// IE submit delegation
-if ( !support.submitBubbles ) {
-
-	jQuery.event.special.submit = {
-		setup: function() {
-			// Only need this for delegated form submit events
-			if ( jQuery.nodeName( this, "form" ) ) {
-				return false;
-			}
-
-			// Lazy-add a submit handler when a descendant form may potentially be submitted
-			jQuery.event.add( this, "click._submit keypress._submit", function( e ) {
-				// Node name check avoids a VML-related crash in IE (#9807)
-				var elem = e.target,
-					form = jQuery.nodeName( elem, "input" ) || jQuery.nodeName( elem, "button" ) ? elem.form : undefined;
-				if ( form && !jQuery._data( form, "submitBubbles" ) ) {
-					jQuery.event.add( form, "submit._submit", function( event ) {
-						event._submit_bubble = true;
-					});
-					jQuery._data( form, "submitBubbles", true );
-				}
-			});
-			// return undefined since we don't need an event listener
-		},
-
-		postDispatch: function( event ) {
-			// If form was submitted by the user, bubble the event up the tree
-			if ( event._submit_bubble ) {
-				delete event._submit_bubble;
-				if ( this.parentNode && !event.isTrigger ) {
-					jQuery.event.simulate( "submit", this.parentNode, event, true );
-				}
-			}
-		},
-
-		teardown: function() {
-			// Only need this for delegated form submit events
-			if ( jQuery.nodeName( this, "form" ) ) {
-				return false;
-			}
-
-			// Remove delegated handlers; cleanData eventually reaps submit handlers attached above
-			jQuery.event.remove( this, "._submit" );
-		}
-	};
-}
-
-// IE change delegation and checkbox/radio fix
-if ( !support.changeBubbles ) {
-
-	jQuery.event.special.change = {
-
-		setup: function() {
-
-			if ( rformElems.test( this.nodeName ) ) {
-				// IE doesn't fire change on a check/radio until blur; trigger it on click
-				// after a propertychange. Eat the blur-change in special.change.handle.
-				// This still fires onchange a second time for check/radio after blur.
-				if ( this.type === "checkbox" || this.type === "radio" ) {
-					jQuery.event.add( this, "propertychange._change", function( event ) {
-						if ( event.originalEvent.propertyName === "checked" ) {
-							this._just_changed = true;
-						}
-					});
-					jQuery.event.add( this, "click._change", function( event ) {
-						if ( this._just_changed && !event.isTrigger ) {
-							this._just_changed = false;
-						}
-						// Allow triggered, simulated change events (#11500)
-						jQuery.event.simulate( "change", this, event, true );
-					});
-				}
-				return false;
-			}
-			// Delegated event; lazy-add a change handler on descendant inputs
-			jQuery.event.add( this, "beforeactivate._change", function( e ) {
-				var elem = e.target;
-
-				if ( rformElems.test( elem.nodeName ) && !jQuery._data( elem, "changeBubbles" ) ) {
-					jQuery.event.add( elem, "change._change", function( event ) {
-						if ( this.parentNode && !event.isSimulated && !event.isTrigger ) {
-							jQuery.event.simulate( "change", this.parentNode, event, true );
-						}
-					});
-					jQuery._data( elem, "changeBubbles", true );
-				}
-			});
-		},
-
-		handle: function( event ) {
-			var elem = event.target;
-
-			// Swallow native change events from checkbox/radio, we already triggered them above
-			if ( this !== elem || event.isSimulated || event.isTrigger || (elem.type !== "radio" && elem.type !== "checkbox") ) {
-				return event.handleObj.handler.apply( this, arguments );
-			}
-		},
-
-		teardown: function() {
-			jQuery.event.remove( this, "._change" );
-
-			return !rformElems.test( this.nodeName );
-		}
-	};
-}
-
-// Create "bubbling" focus and blur events
-if ( !support.focusinBubbles ) {
-	jQuery.each({ focus: "focusin", blur: "focusout" }, function( orig, fix ) {
-
-		// Attach a single capturing handler on the document while someone wants focusin/focusout
-		var handler = function( event ) {
-				jQuery.event.simulate( fix, event.target, jQuery.event.fix( event ), true );
-			};
-
-		jQuery.event.special[ fix ] = {
-			setup: function() {
-				var doc = this.ownerDocument || this,
-					attaches = jQuery._data( doc, fix );
-
-				if ( !attaches ) {
-					doc.addEventListener( orig, handler, true );
-				}
-				jQuery._data( doc, fix, ( attaches || 0 ) + 1 );
-			},
-			teardown: function() {
-				var doc = this.ownerDocument || this,
-					attaches = jQuery._data( doc, fix ) - 1;
-
-				if ( !attaches ) {
-					doc.removeEventListener( orig, handler, true );
-					jQuery._removeData( doc, fix );
-				} else {
-					jQuery._data( doc, fix, attaches );
-				}
-			}
-		};
-	});
-}
-
-jQuery.fn.extend({
-
-	on: function( types, selector, data, fn, /*INTERNAL*/ one ) {
-		var type, origFn;
-
-		// Types can be a map of types/handlers
-		if ( typeof types === "object" ) {
-			// ( types-Object, selector, data )
-			if ( typeof selector !== "string" ) {
-				// ( types-Object, data )
-				data = data || selector;
-				selector = undefined;
-			}
-			for ( type in types ) {
-				this.on( type, selector, data, types[ type ], one );
-			}
-			return this;
-		}
-
-		if ( data == null && fn == null ) {
-			// ( types, fn )
-			fn = selector;
-			data = selector = undefined;
-		} else if ( fn == null ) {
-			if ( typeof selector === "string" ) {
-				// ( types, selector, fn )
-				fn = data;
-				data = undefined;
-			} else {
-				// ( types, data, fn )
-				fn = data;
-				data = selector;
-				selector = undefined;
-			}
-		}
-		if ( fn === false ) {
-			fn = returnFalse;
-		} else if ( !fn ) {
-			return this;
-		}
-
-		if ( one === 1 ) {
-			origFn = fn;
-			fn = function( event ) {
-				// Can use an empty set, since event contains the info
-				jQuery().off( event );
-				return origFn.apply( this, arguments );
-			};
-			// Use same guid so caller can remove using origFn
-			fn.guid = origFn.guid || ( origFn.guid = jQuery.guid++ );
-		}
-		return this.each( function() {
-			jQuery.event.add( this, types, fn, data, selector );
-		});
-	},
-	one: function( types, selector, data, fn ) {
-		return this.on( types, selector, data, fn, 1 );
-	},
-	off: function( types, selector, fn ) {
-		var handleObj, type;
-		if ( types && types.preventDefault && types.handleObj ) {
-			// ( event )  dispatched jQuery.Event
-			handleObj = types.handleObj;
-			jQuery( types.delegateTarget ).off(
-				handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType,
-				handleObj.selector,
-				handleObj.handler
-			);
-			return this;
-		}
-		if ( typeof types === "object" ) {
-			// ( types-object [, selector] )
-			for ( type in types ) {
-				this.off( type, selector, types[ type ] );
-			}
-			return this;
-		}
-		if ( selector === false || typeof selector === "function" ) {
-			// ( types [, fn] )
-			fn = selector;
-			selector = undefined;
-		}
-		if ( fn === false ) {
-			fn = returnFalse;
-		}
-		return this.each(function() {
-			jQuery.event.remove( this, types, fn, selector );
-		});
-	},
-
-	trigger: function( type, data ) {
-		return this.each(function() {
-			jQuery.event.trigger( type, data, this );
-		});
-	},
-	triggerHandler: function( type, data ) {
-		var elem = this[0];
-		if ( elem ) {
-			return jQuery.event.trigger( type, data, elem, true );
-		}
-	}
-});
-
-
-function createSafeFragment( document ) {
-	var list = nodeNames.split( "|" ),
-		safeFrag = document.createDocumentFragment();
-
-	if ( safeFrag.createElement ) {
-		while ( list.length ) {
-			safeFrag.createElement(
-				list.pop()
-			);
-		}
-	}
-	return safeFrag;
-}
-
-var nodeNames = "abbr|article|aside|audio|bdi|canvas|data|datalist|details|figcaption|figure|footer|" +
-		"header|hgroup|mark|meter|nav|output|progress|section|summary|time|video",
-	rinlinejQuery = / jQuery\d+="(?:null|\d+)"/g,
-	rnoshimcache = new RegExp("<(?:" + nodeNames + ")[\\s/>]", "i"),
-	rleadingWhitespace = /^\s+/,
-	rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi,
-	rtagName = /<([\w:]+)/,
-	rtbody = /<tbody/i,
-	rhtml = /<|&#?\w+;/,
-	rnoInnerhtml = /<(?:script|style|link)/i,
-	// checked="checked" or checked
-	rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
-	rscriptType = /^$|\/(?:java|ecma)script/i,
-	rscriptTypeMasked = /^true\/(.*)/,
-	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g,
-
-	// We have to close these tags to support XHTML (#13200)
-	wrapMap = {
-		option: [ 1, "<select multiple='multiple'>", "</select>" ],
-		legend: [ 1, "<fieldset>", "</fieldset>" ],
-		area: [ 1, "<map>", "</map>" ],
-		param: [ 1, "<object>", "</object>" ],
-		thead: [ 1, "<table>", "</table>" ],
-		tr: [ 2, "<table><tbody>", "</tbody></table>" ],
-		col: [ 2, "<table><tbody></tbody><colgroup>", "</colgroup></table>" ],
-		td: [ 3, "<table><tbody><tr>", "</tr></tbody></table>" ],
-
-		// IE6-8 can't serialize link, script, style, or any html5 (NoScope) tags,
-		// unless wrapped in a div with non-breaking characters in front of it.
-		_default: support.htmlSerialize ? [ 0, "", "" ] : [ 1, "X<div>", "</div>"  ]
-	},
-	safeFragment = createSafeFragment( document ),
-	fragmentDiv = safeFragment.appendChild( document.createElement("div") );
-
-wrapMap.optgroup = wrapMap.option;
-wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
-wrapMap.th = wrapMap.td;
-
-function getAll( context, tag ) {
-	var elems, elem,
-		i = 0,
-		found = typeof context.getElementsByTagName !== strundefined ? context.getElementsByTagName( tag || "*" ) :
-			typeof context.querySelectorAll !== strundefined ? context.querySelectorAll( tag || "*" ) :
-			undefined;
-
-	if ( !found ) {
-		for ( found = [], elems = context.childNodes || context; (elem = elems[i]) != null; i++ ) {
-			if ( !tag || jQuery.nodeName( elem, tag ) ) {
-				found.push( elem );
-			} else {
-				jQuery.merge( found, getAll( elem, tag ) );
-			}
-		}
-	}
-
-	return tag === undefined || tag && jQuery.nodeName( context, tag ) ?
-		jQuery.merge( [ context ], found ) :
-		found;
-}
-
-// Used in buildFragment, fixes the defaultChecked property
-function fixDefaultChecked( elem ) {
-	if ( rcheckableType.test( elem.type ) ) {
-		elem.defaultChecked = elem.checked;
-	}
-}
-
-// Support: IE<8
-// Manipulating tables requires a tbody
-function manipulationTarget( elem, content ) {
-	return jQuery.nodeName( elem, "table" ) &&
-		jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ?
-
-		elem.getElementsByTagName("tbody")[0] ||
-			elem.appendChild( elem.ownerDocument.createElement("tbody") ) :
-		elem;
-}
-
-// Replace/restore the type attribute of script elements for safe DOM manipulation
-function disableScript( elem ) {
-	elem.type = (jQuery.find.attr( elem, "type" ) !== null) + "/" + elem.type;
-	return elem;
-}
-function restoreScript( elem ) {
-	var match = rscriptTypeMasked.exec( elem.type );
-	if ( match ) {
-		elem.type = match[1];
-	} else {
-		elem.removeAttribute("type");
-	}
-	return elem;
-}
-
-// Mark scripts as having already been evaluated
-function setGlobalEval( elems, refElements ) {
-	var elem,
-		i = 0;
-	for ( ; (elem = elems[i]) != null; i++ ) {
-		jQuery._data( elem, "globalEval", !refElements || jQuery._data( refElements[i], "globalEval" ) );
-	}
-}
-
-function cloneCopyEvent( src, dest ) {
-
-	if ( dest.nodeType !== 1 || !jQuery.hasData( src ) ) {
-		return;
-	}
-
-	var type, i, l,
-		oldData = jQuery._data( src ),
-		curData = jQuery._data( dest, oldData ),
-		events = oldData.events;
-
-	if ( events ) {
-		delete curData.handle;
-		curData.events = {};
-
-		for ( type in events ) {
-			for ( i = 0, l = events[ type ].length; i < l; i++ ) {
-				jQuery.event.add( dest, type, events[ type ][ i ] );
-			}
-		}
-	}
-
-	// make the cloned public data object a copy from the original
-	if ( curData.data ) {
-		curData.data = jQuery.extend( {}, curData.data );
-	}
-}
-
-function fixCloneNodeIssues( src, dest ) {
-	var nodeName, e, data;
-
-	// We do not need to do anything for non-Elements
-	if ( dest.nodeType !== 1 ) {
-		return;
-	}
-
-	nodeName = dest.nodeName.toLowerCase();
-
-	// IE6-8 copies events bound via attachEvent when using cloneNode.
-	if ( !support.noCloneEvent && dest[ jQuery.expando ] ) {
-		data = jQuery._data( dest );
-
-		for ( e in data.events ) {
-			jQuery.removeEvent( dest, e, data.handle );
-		}
-
-		// Event data gets referenced instead of copied if the expando gets copied too
-		dest.removeAttribute( jQuery.expando );
-	}
-
-	// IE blanks contents when cloning scripts, and tries to evaluate newly-set text
-	if ( nodeName === "script" && dest.text !== src.text ) {
-		disableScript( dest ).text = src.text;
-		restoreScript( dest );
-
-	// IE6-10 improperly clones children of object elements using classid.
-	// IE10 throws NoModificationAllowedError if parent is null, #12132.
-	} else if ( nodeName === "object" ) {
-		if ( dest.parentNode ) {
-			dest.outerHTML = src.outerHTML;
-		}
-
-		// This path appears unavoidable for IE9. When cloning an object
-		// element in IE9, the outerHTML strategy above is not sufficient.
-		// If the src has innerHTML and the destination does not,
-		// copy the src.innerHTML into the dest.innerHTML. #10324
-		if ( support.html5Clone && ( src.innerHTML && !jQuery.trim(dest.innerHTML) ) ) {
-			dest.innerHTML = src.innerHTML;
-		}
-
-	} else if ( nodeName === "input" && rcheckableType.test( src.type ) ) {
-		// IE6-8 fails to persist the checked state of a cloned checkbox
-		// or radio button. Worse, IE6-7 fail to give the cloned element
-		// a checked appearance if the defaultChecked value isn't also set
-
-		dest.defaultChecked = dest.checked = src.checked;
-
-		// IE6-7 get confused and end up setting the value of a cloned
-		// checkbox/radio button to an empty string instead of "on"
-		if ( dest.value !== src.value ) {
-			dest.value = src.value;
-		}
-
-	// IE6-8 fails to return the selected option to the default selected
-	// state when cloning options
-	} else if ( nodeName === "option" ) {
-		dest.defaultSelected = dest.selected = src.defaultSelected;
-
-	// IE6-8 fails to set the defaultValue to the correct value when
-	// cloning other types of input fields
-	} else if ( nodeName === "input" || nodeName === "textarea" ) {
-		dest.defaultValue = src.defaultValue;
-	}
-}
-
-jQuery.extend({
-	clone: function( elem, dataAndEvents, deepDataAndEvents ) {
-		var destElements, node, clone, i, srcElements,
-			inPage = jQuery.contains( elem.ownerDocument, elem );
-
-		if ( support.html5Clone || jQuery.isXMLDoc(elem) || !rnoshimcache.test( "<" + elem.nodeName + ">" ) ) {
-			clone = elem.cloneNode( true );
-
-		// IE<=8 does not properly clone detached, unknown element nodes
-		} else {
-			fragmentDiv.innerHTML = elem.outerHTML;
-			fragmentDiv.removeChild( clone = fragmentDiv.firstChild );
-		}
-
-		if ( (!support.noCloneEvent || !support.noCloneChecked) &&
-				(elem.nodeType === 1 || elem.nodeType === 11) && !jQuery.isXMLDoc(elem) ) {
-
-			// We eschew Sizzle here for performance reasons: http://jsperf.com/getall-vs-sizzle/2
-			destElements = getAll( clone );
-			srcElements = getAll( elem );
-
-			// Fix all IE cloning issues
-			for ( i = 0; (node = srcElements[i]) != null; ++i ) {
-				// Ensure that the destination node is not null; Fixes #9587
-				if ( destElements[i] ) {
-					fixCloneNodeIssues( node, destElements[i] );
-				}
-			}
-		}
-
-		// Copy the events from the original to the clone
-		if ( dataAndEvents ) {
-			if ( deepDataAndEvents ) {
-				srcElements = srcElements || getAll( elem );
-				destElements = destElements || getAll( clone );
-
-				for ( i = 0; (node = srcElements[i]) != null; i++ ) {
-					cloneCopyEvent( node, destElements[i] );
-				}
-			} else {
-				cloneCopyEvent( elem, clone );
-			}
-		}
-
-		// Preserve script evaluation history
-		destElements = getAll( clone, "script" );
-		if ( destElements.length > 0 ) {
-			setGlobalEval( destElements, !inPage && getAll( elem, "script" ) );
-		}
-
-		destElements = srcElements = node = null;
-
-		// Return the cloned set
-		return clone;
-	},
-
-	buildFragment: function( elems, context, scripts, selection ) {
-		var j, elem, contains,
-			tmp, tag, tbody, wrap,
-			l = elems.length,
-
-			// Ensure a safe fragment
-			safe = createSafeFragment( context ),
-
-			nodes = [],
-			i = 0;
-
-		for ( ; i < l; i++ ) {
-			elem = elems[ i ];
-
-			if ( elem || elem === 0 ) {
-
-				// Add nodes directly
-				if ( jQuery.type( elem ) === "object" ) {
-					jQuery.merge( nodes, elem.nodeType ? [ elem ] : elem );
-
-				// Convert non-html into a text node
-				} else if ( !rhtml.test( elem ) ) {
-					nodes.push( context.createTextNode( elem ) );
-
-				// Convert html into DOM nodes
-				} else {
-					tmp = tmp || safe.appendChild( context.createElement("div") );
-
-					// Deserialize a standard representation
-					tag = (rtagName.exec( elem ) || [ "", "" ])[ 1 ].toLowerCase();
-					wrap = wrapMap[ tag ] || wrapMap._default;
-
-					tmp.innerHTML = wrap[1] + elem.replace( rxhtmlTag, "<$1></$2>" ) + wrap[2];
-
-					// Descend through wrappers to the right content
-					j = wrap[0];
-					while ( j-- ) {
-						tmp = tmp.lastChild;
-					}
-
-					// Manually add leading whitespace removed by IE
-					if ( !support.leadingWhitespace && rleadingWhitespace.test( elem ) ) {
-						nodes.push( context.createTextNode( rleadingWhitespace.exec( elem )[0] ) );
-					}
-
-					// Remove IE's autoinserted <tbody> from table fragments
-					if ( !support.tbody ) {
-
-						// String was a <table>, *may* have spurious <tbody>
-						elem = tag === "table" && !rtbody.test( elem ) ?
-							tmp.firstChild :
-
-							// String was a bare <thead> or <tfoot>
-							wrap[1] === "<table>" && !rtbody.test( elem ) ?
-								tmp :
-								0;
-
-						j = elem && elem.childNodes.length;
-						while ( j-- ) {
-							if ( jQuery.nodeName( (tbody = elem.childNodes[j]), "tbody" ) && !tbody.childNodes.length ) {
-								elem.removeChild( tbody );
-							}
-						}
-					}
-
-					jQuery.merge( nodes, tmp.childNodes );
-
-					// Fix #12392 for WebKit and IE > 9
-					tmp.textContent = "";
-
-					// Fix #12392 for oldIE
-					while ( tmp.firstChild ) {
-						tmp.removeChild( tmp.firstChild );
-					}
-
-					// Remember the top-level container for proper cleanup
-					tmp = safe.lastChild;
-				}
-			}
-		}
-
-		// Fix #11356: Clear elements from fragment
-		if ( tmp ) {
-			safe.removeChild( tmp );
-		}
-
-		// Reset defaultChecked for any radios and checkboxes
-		// about to be appended to the DOM in IE 6/7 (#8060)
-		if ( !support.appendChecked ) {
-			jQuery.grep( getAll( nodes, "input" ), fixDefaultChecked );
-		}
-
-		i = 0;
-		while ( (elem = nodes[ i++ ]) ) {
-
-			// #4087 - If origin and destination elements are the same, and this is
-			// that element, do not do anything
-			if ( selection && jQuery.inArray( elem, selection ) !== -1 ) {
-				continue;
-			}
-
-			contains = jQuery.contains( elem.ownerDocument, elem );
-
-			// Append to fragment
-			tmp = getAll( safe.appendChild( elem ), "script" );
-
-			// Preserve script evaluation history
-			if ( contains ) {
-				setGlobalEval( tmp );
-			}
-
-			// Capture executables
-			if ( scripts ) {
-				j = 0;
-				while ( (elem = tmp[ j++ ]) ) {
-					if ( rscriptType.test( elem.type || "" ) ) {
-						scripts.push( elem );
-					}
-				}
-			}
-		}
-
-		tmp = null;
-
-		return safe;
-	},
-
-	cleanData: function( elems, /* internal */ acceptData ) {
-		var elem, type, id, data,
-			i = 0,
-			internalKey = jQuery.expando,
-			cache = jQuery.cache,
-			deleteExpando = support.deleteExpando,
-			special = jQuery.event.special;
-
-		for ( ; (elem = elems[i]) != null; i++ ) {
-			if ( acceptData || jQuery.acceptData( elem ) ) {
-
-				id = elem[ internalKey ];
-				data = id && cache[ id ];
-
-				if ( data ) {
-					if ( data.events ) {
-						for ( type in data.events ) {
-							if ( special[ type ] ) {
-								jQuery.event.remove( elem, type );
-
-							// This is a shortcut to avoid jQuery.event.remove's overhead
-							} else {
-								jQuery.removeEvent( elem, type, data.handle );
-							}
-						}
-					}
-
-					// Remove cache only if it was not already removed by jQuery.event.remove
-					if ( cache[ id ] ) {
-
-						delete cache[ id ];
-
-						// IE does not allow us to delete expando properties from nodes,
-						// nor does it have a removeAttribute function on Document nodes;
-						// we must handle all of these cases
-						if ( deleteExpando ) {
-							delete elem[ internalKey ];
-
-						} else if ( typeof elem.removeAttribute !== strundefined ) {
-							elem.removeAttribute( internalKey );
-
-						} else {
-							elem[ internalKey ] = null;
-						}
-
-						deletedIds.push( id );
-					}
-				}
-			}
-		}
-	}
-});
-
-jQuery.fn.extend({
-	text: function( value ) {
-		return access( this, function( value ) {
-			return value === undefined ?
-				jQuery.text( this ) :
-				this.empty().append( ( this[0] && this[0].ownerDocument || document ).createTextNode( value ) );
-		}, null, value, arguments.length );
-	},
-
-	append: function() {
-		return this.domManip( arguments, function( elem ) {
-			if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
-				var target = manipulationTarget( this, elem );
-				target.appendChild( elem );
-			}
-		});
-	},
-
-	prepend: function() {
-		return this.domManip( arguments, function( elem ) {
-			if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
-				var target = manipulationTarget( this, elem );
-				target.insertBefore( elem, target.firstChild );
-			}
-		});
-	},
-
-	before: function() {
-		return this.domManip( arguments, function( elem ) {
-			if ( this.parentNode ) {
-				this.parentNode.insertBefore( elem, this );
-			}
-		});
-	},
-
-	after: function() {
-		return this.domManip( arguments, function( elem ) {
-			if ( this.parentNode ) {
-				this.parentNode.insertBefore( elem, this.nextSibling );
-			}
-		});
-	},
-
-	remove: function( selector, keepData /* Internal Use Only */ ) {
-		var elem,
-			elems = selector ? jQuery.filter( selector, this ) : this,
-			i = 0;
-
-		for ( ; (elem = elems[i]) != null; i++ ) {
-
-			if ( !keepData && elem.nodeType === 1 ) {
-				jQuery.cleanData( getAll( elem ) );
-			}
-
-			if ( elem.parentNode ) {
-				if ( keepData && jQuery.contains( elem.ownerDocument, elem ) ) {
-					setGlobalEval( getAll( elem, "script" ) );
-				}
-				elem.parentNode.removeChild( elem );
-			}
-		}
-
-		return this;
-	},
-
-	empty: function() {
-		var elem,
-			i = 0;
-
-		for ( ; (elem = this[i]) != null; i++ ) {
-			// Remove element nodes and prevent memory leaks
-			if ( elem.nodeType === 1 ) {
-				jQuery.cleanData( getAll( elem, false ) );
-			}
-
-			// Remove any remaining nodes
-			while ( elem.firstChild ) {
-				elem.removeChild( elem.firstChild );
-			}
-
-			// If this is a select, ensure that it displays empty (#12336)
-			// Support: IE<9
-			if ( elem.options && jQuery.nodeName( elem, "select" ) ) {
-				elem.options.length = 0;
-			}
-		}
-
-		return this;
-	},
-
-	clone: function( dataAndEvents, deepDataAndEvents ) {
-		dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
-		deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
-
-		return this.map(function() {
-			return jQuery.clone( this, dataAndEvents, deepDataAndEvents );
-		});
-	},
-
-	html: function( value ) {
-		return access( this, function( value ) {
-			var elem = this[ 0 ] || {},
-				i = 0,
-				l = this.length;
-
-			if ( value === undefined ) {
-				return elem.nodeType === 1 ?
-					elem.innerHTML.replace( rinlinejQuery, "" ) :
-					undefined;
-			}
-
-			// See if we can take a shortcut and just use innerHTML
-			if ( typeof value === "string" && !rnoInnerhtml.test( value ) &&
-				( support.htmlSerialize || !rnoshimcache.test( value )  ) &&
-				( support.leadingWhitespace || !rleadingWhitespace.test( value ) ) &&
-				!wrapMap[ (rtagName.exec( value ) || [ "", "" ])[ 1 ].toLowerCase() ] ) {
-
-				value = value.replace( rxhtmlTag, "<$1></$2>" );
-
-				try {
-					for (; i < l; i++ ) {
-						// Remove element nodes and prevent memory leaks
-						elem = this[i] || {};
-						if ( elem.nodeType === 1 ) {
-							jQuery.cleanData( getAll( elem, false ) );
-							elem.innerHTML = value;
-						}
-					}
-
-					elem = 0;
-
-				// If using innerHTML throws an exception, use the fallback method
-				} catch(e) {}
-			}
-
-			if ( elem ) {
-				this.empty().append( value );
-			}
-		}, null, value, arguments.length );
-	},
-
-	replaceWith: function() {
-		var arg = arguments[ 0 ];
-
-		// Make the changes, replacing each context element with the new content
-		this.domManip( arguments, function( elem ) {
-			arg = this.parentNode;
-
-			jQuery.cleanData( getAll( this ) );
-
-			if ( arg ) {
-				arg.replaceChild( elem, this );
-			}
-		});
-
-		// Force removal if there was no new content (e.g., from empty arguments)
-		return arg && (arg.length || arg.nodeType) ? this : this.remove();
-	},
-
-	detach: function( selector ) {
-		return this.remove( selector, true );
-	},
-
-	domManip: function( args, callback ) {
-
-		// Flatten any nested arrays
-		args = concat.apply( [], args );
-
-		var first, node, hasScripts,
-			scripts, doc, fragment,
-			i = 0,
-			l = this.length,
-			set = this,
-			iNoClone = l - 1,
-			value = args[0],
-			isFunction = jQuery.isFunction( value );
-
-		// We can't cloneNode fragments that contain checked, in WebKit
-		if ( isFunction ||
-				( l > 1 && typeof value === "string" &&
-					!support.checkClone && rchecked.test( value ) ) ) {
-			return this.each(function( index ) {
-				var self = set.eq( index );
-				if ( isFunction ) {
-					args[0] = value.call( this, index, self.html() );
-				}
-				self.domManip( args, callback );
-			});
-		}
-
-		if ( l ) {
-			fragment = jQuery.buildFragment( args, this[ 0 ].ownerDocument, false, this );
-			first = fragment.firstChild;
-
-			if ( fragment.childNodes.length === 1 ) {
-				fragment = first;
-			}
-
-			if ( first ) {
-				scripts = jQuery.map( getAll( fragment, "script" ), disableScript );
-				hasScripts = scripts.length;
-
-				// Use the original fragment for the last item instead of the first because it can end up
-				// being emptied incorrectly in certain situations (#8070).
-				for ( ; i < l; i++ ) {
-					node = fragment;
-
-					if ( i !== iNoClone ) {
-						node = jQuery.clone( node, true, true );
-
-						// Keep references to cloned scripts for later restoration
-						if ( hasScripts ) {
-							jQuery.merge( scripts, getAll( node, "script" ) );
-						}
-					}
-
-					callback.call( this[i], node, i );
-				}
-
-				if ( hasScripts ) {
-					doc = scripts[ scripts.length - 1 ].ownerDocument;
-
-					// Reenable scripts
-					jQuery.map( scripts, restoreScript );
-
-					// Evaluate executable scripts on first document insertion
-					for ( i = 0; i < hasScripts; i++ ) {
-						node = scripts[ i ];
-						if ( rscriptType.test( node.type || "" ) &&
-							!jQuery._data( node, "globalEval" ) && jQuery.contains( doc, node ) ) {
-
-							if ( node.src ) {
-								// Optional AJAX dependency, but won't run scripts if not present
-								if ( jQuery._evalUrl ) {
-									jQuery._evalUrl( node.src );
-								}
-							} else {
-								jQuery.globalEval( ( node.text || node.textContent || node.innerHTML || "" ).replace( rcleanScript, "" ) );
-							}
-						}
-					}
-				}
-
-				// Fix #11809: Avoid leaking memory
-				fragment = first = null;
-			}
-		}
-
-		return this;
-	}
-});
-
-jQuery.each({
-	appendTo: "append",
-	prependTo: "prepend",
-	insertBefore: "before",
-	insertAfter: "after",
-	replaceAll: "replaceWith"
-}, function( name, original ) {
-	jQuery.fn[ name ] = function( selector ) {
-		var elems,
-			i = 0,
-			ret = [],
-			insert = jQuery( selector ),
-			last = insert.length - 1;
-
-		for ( ; i <= last; i++ ) {
-			elems = i === last ? this : this.clone(true);
-			jQuery( insert[i] )[ original ]( elems );
-
-			// Modern browsers can apply jQuery collections as arrays, but oldIE needs a .get()
-			push.apply( ret, elems.get() );
-		}
-
-		return this.pushStack( ret );
-	};
-});
-
-
-var iframe,
-	elemdisplay = {};
-
-/**
- * Retrieve the actual display of a element
- * @param {String} name nodeName of the element
- * @param {Object} doc Document object
- */
-// Called only from within defaultDisplay
-function actualDisplay( name, doc ) {
-	var elem = jQuery( doc.createElement( name ) ).appendTo( doc.body ),
-
-		// getDefaultComputedStyle might be reliably used only on attached element
-		display = window.getDefaultComputedStyle ?
-
-			// Use of this method is a temporary fix (more like optmization) until something better comes along,
-			// since it was removed from specification and supported only in FF
-			window.getDefaultComputedStyle( elem[ 0 ] ).display : jQuery.css( elem[ 0 ], "display" );
-
-	// We don't have any data stored on the element,
-	// so use "detach" method as fast way to get rid of the element
-	elem.detach();
-
-	return display;
-}
-
-/**
- * Try to determine the default display value of an element
- * @param {String} nodeName
- */
-function defaultDisplay( nodeName ) {
-	var doc = document,
-		display = elemdisplay[ nodeName ];
-
-	if ( !display ) {
-		display = actualDisplay( nodeName, doc );
-
-		// If the simple way fails, read from inside an iframe
-		if ( display === "none" || !display ) {
-
-			// Use the already-created iframe if possible
-			iframe = (iframe || jQuery( "<iframe frameborder='0' width='0' height='0'/>" )).appendTo( doc.documentElement );
-
-			// Always write a new HTML skeleton so Webkit and Firefox don't choke on reuse
-			doc = ( iframe[ 0 ].contentWindow || iframe[ 0 ].contentDocument ).document;
-
-			// Support: IE
-			doc.write();
-			doc.close();
-
-			display = actualDisplay( nodeName, doc );
-			iframe.detach();
-		}
-
-		// Store the correct default display
-		elemdisplay[ nodeName ] = display;
-	}
-
-	return display;
-}
-
-
-(function() {
-	var a, shrinkWrapBlocksVal,
-		div = document.createElement( "div" ),
-		divReset =
-			"-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;" +
-			"display:block;padding:0;margin:0;border:0";
-
-	// Setup
-	div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
-	a = div.getElementsByTagName( "a" )[ 0 ];
-
-	a.style.cssText = "float:left;opacity:.5";
-
-	// Make sure that element opacity exists
-	// (IE uses filter instead)
-	// Use a regex to work around a WebKit issue. See #5145
-	support.opacity = /^0.5/.test( a.style.opacity );
-
-	// Verify style float existence
-	// (IE uses styleFloat instead of cssFloat)
-	support.cssFloat = !!a.style.cssFloat;
-
-	div.style.backgroundClip = "content-box";
-	div.cloneNode( true ).style.backgroundClip = "";
-	support.clearCloneStyle = div.style.backgroundClip === "content-box";
-
-	// Null elements to avoid leaks in IE.
-	a = div = null;
-
-	support.shrinkWrapBlocks = function() {
-		var body, container, div, containerStyles;
-
-		if ( shrinkWrapBlocksVal == null ) {
-			body = document.getElementsByTagName( "body" )[ 0 ];
-			if ( !body ) {
-				// Test fired too early or in an unsupported environment, exit.
-				return;
-			}
-
-			containerStyles = "border:0;width:0;height:0;position:absolute;top:0;left:-9999px";
-			container = document.createElement( "div" );
-			div = document.createElement( "div" );
-
-			body.appendChild( container ).appendChild( div );
-
-			// Will be changed later if needed.
-			shrinkWrapBlocksVal = false;
-
-			if ( typeof div.style.zoom !== strundefined ) {
-				// Support: IE6
-				// Check if elements with layout shrink-wrap their children
-				div.style.cssText = divReset + ";width:1px;padding:1px;zoom:1";
-				div.innerHTML = "<div></div>";
-				div.firstChild.style.width = "5px";
-				shrinkWrapBlocksVal = div.offsetWidth !== 3;
-			}
-
-			body.removeChild( container );
-
-			// Null elements to avoid leaks in IE.
-			body = container = div = null;
-		}
-
-		return shrinkWrapBlocksVal;
-	};
-
-})();
-var rmargin = (/^margin/);
-
-var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
-
-
-
-var getStyles, curCSS,
-	rposition = /^(top|right|bottom|left)$/;
-
-if ( window.getComputedStyle ) {
-	getStyles = function( elem ) {
-		return elem.ownerDocument.defaultView.getComputedStyle( elem, null );
-	};
-
-	curCSS = function( elem, name, computed ) {
-		var width, minWidth, maxWidth, ret,
-			style = elem.style;
-
-		computed = computed || getStyles( elem );
-
-		// getPropertyValue is only needed for .css('filter') in IE9, see #12537
-		ret = computed ? computed.getPropertyValue( name ) || computed[ name ] : undefined;
-
-		if ( computed ) {
-
-			if ( ret === "" && !jQuery.contains( elem.ownerDocument, elem ) ) {
-				ret = jQuery.style( elem, name );
-			}
-
-			// A tribute to the "awesome hack by Dean Edwards"
-			// Chrome < 17 and Safari 5.0 uses "computed value" instead of "used value" for margin-right
-			// Safari 5.1.7 (at least) returns percentage for a larger set of values, but width seems to be reliably pixels
-			// this is against the CSSOM draft spec: http://dev.w3.org/csswg/cssom/#resolved-values
-			if ( rnumnonpx.test( ret ) && rmargin.test( name ) ) {
-
-				// Remember the original values
-				width = style.width;
-				minWidth = style.minWidth;
-				maxWidth = style.maxWidth;
-
-				// Put in the new values to get a computed value out
-				style.minWidth = style.maxWidth = style.width = ret;
-				ret = computed.width;
-
-				// Revert the changed values
-				style.width = width;
-				style.minWidth = minWidth;
-				style.maxWidth = maxWidth;
-			}
-		}
-
-		// Support: IE
-		// IE returns zIndex value as an integer.
-		return ret === undefined ?
-			ret :
-			ret + "";
-	};
-} else if ( document.documentElement.currentStyle ) {
-	getStyles = function( elem ) {
-		return elem.currentStyle;
-	};
-
-	curCSS = function( elem, name, computed ) {
-		var left, rs, rsLeft, ret,
-			style = elem.style;
-
-		computed = computed || getStyles( elem );
-		ret = computed ? computed[ name ] : undefined;
-
-		// Avoid setting ret to empty string here
-		// so we don't default to auto
-		if ( ret == null && style && style[ name ] ) {
-			ret = style[ name ];
-		}
-
-		// From the awesome hack by Dean Edwards
-		// http://erik.eae.net/archives/2007/07/27/18.54.15/#comment-102291
-
-		// If we're not dealing with a regular pixel number
-		// but a number that has a weird ending, we need to convert it to pixels
-		// but not position css attributes, as those are proportional to the parent element instead
-		// and we can't measure the parent instead because it might trigger a "stacking dolls" problem
-		if ( rnumnonpx.test( ret ) && !rposition.test( name ) ) {
-
-			// Remember the original values
-			left = style.left;
-			rs = elem.runtimeStyle;
-			rsLeft = rs && rs.left;
-
-			// Put in the new values to get a computed value out
-			if ( rsLeft ) {
-				rs.left = elem.currentStyle.left;
-			}
-			style.left = name === "fontSize" ? "1em" : ret;
-			ret = style.pixelLeft + "px";
-
-			// Revert the changed values
-			style.left = left;
-			if ( rsLeft ) {
-				rs.left = rsLeft;
-			}
-		}
-
-		// Support: IE
-		// IE returns zIndex value as an integer.
-		return ret === undefined ?
-			ret :
-			ret + "" || "auto";
-	};
-}
-
-
-
-
-function addGetHookIf( conditionFn, hookFn ) {
-	// Define the hook, we'll check on the first run if it's really needed.
-	return {
-		get: function() {
-			var condition = conditionFn();
-
-			if ( condition == null ) {
-				// The test was not ready at this point; screw the hook this time
-				// but check again when needed next time.
-				return;
-			}
-
-			if ( condition ) {
-				// Hook not needed (or it's not possible to use it due to missing dependency),
-				// remove it.
-				// Since there are no other hooks for marginRight, remove the whole object.
-				delete this.get;
-				return;
-			}
-
-			// Hook needed; redefine it so that the support test is not executed again.
-
-			return (this.get = hookFn).apply( this, arguments );
-		}
-	};
-}
-
-
-(function() {
-	var a, reliableHiddenOffsetsVal, boxSizingVal, boxSizingReliableVal,
-		pixelPositionVal, reliableMarginRightVal,
-		div = document.createElement( "div" ),
-		containerStyles = "border:0;width:0;height:0;position:absolute;top:0;left:-9999px",
-		divReset =
-			"-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;" +
-			"display:block;padding:0;margin:0;border:0";
-
-	// Setup
-	div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
-	a = div.getElementsByTagName( "a" )[ 0 ];
-
-	a.style.cssText = "float:left;opacity:.5";
-
-	// Make sure that element opacity exists
-	// (IE uses filter instead)
-	// Use a regex to work around a WebKit issue. See #5145
-	support.opacity = /^0.5/.test( a.style.opacity );
-
-	// Verify style float existence
-	// (IE uses styleFloat instead of cssFloat)
-	support.cssFloat = !!a.style.cssFloat;
-
-	div.style.backgroundClip = "content-box";
-	div.cloneNode( true ).style.backgroundClip = "";
-	support.clearCloneStyle = div.style.backgroundClip === "content-box";
-
-	// Null elements to avoid leaks in IE.
-	a = div = null;
-
-	jQuery.extend(support, {
-		reliableHiddenOffsets: function() {
-			if ( reliableHiddenOffsetsVal != null ) {
-				return reliableHiddenOffsetsVal;
-			}
-
-			var container, tds, isSupported,
-				div = document.createElement( "div" ),
-				body = document.getElementsByTagName( "body" )[ 0 ];
-
-			if ( !body ) {
-				// Return for frameset docs that don't have a body
-				return;
-			}
-
-			// Setup
-			div.setAttribute( "className", "t" );
-			div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
-
-			container = document.createElement( "div" );
-			container.style.cssText = containerStyles;
-
-			body.appendChild( container ).appendChild( div );
-
-			// Support: IE8
-			// Check if table cells still have offsetWidth/Height when they are set
-			// to display:none and there are still other visible table cells in a
-			// table row; if so, offsetWidth/Height are not reliable for use when
-			// determining if an element has been hidden directly using
-			// display:none (it is still safe to use offsets if a parent element is
-			// hidden; don safety goggles and see bug #4512 for more information).
-			div.innerHTML = "<table><tr><td></td><td>t</td></tr></table>";
-			tds = div.getElementsByTagName( "td" );
-			tds[ 0 ].style.cssText = "padding:0;margin:0;border:0;display:none";
-			isSupported = ( tds[ 0 ].offsetHeight === 0 );
-
-			tds[ 0 ].style.display = "";
-			tds[ 1 ].style.display = "none";
-
-			// Support: IE8
-			// Check if empty table cells still have offsetWidth/Height
-			reliableHiddenOffsetsVal = isSupported && ( tds[ 0 ].offsetHeight === 0 );
-
-			body.removeChild( container );
-
-			// Null elements to avoid leaks in IE.
-			div = body = null;
-
-			return reliableHiddenOffsetsVal;
-		},
-
-		boxSizing: function() {
-			if ( boxSizingVal == null ) {
-				computeStyleTests();
-			}
-			return boxSizingVal;
-		},
-
-		boxSizingReliable: function() {
-			if ( boxSizingReliableVal == null ) {
-				computeStyleTests();
-			}
-			return boxSizingReliableVal;
-		},
-
-		pixelPosition: function() {
-			if ( pixelPositionVal == null ) {
-				computeStyleTests();
-			}
-			return pixelPositionVal;
-		},
-
-		reliableMarginRight: function() {
-			var body, container, div, marginDiv;
-
-			// Use window.getComputedStyle because jsdom on node.js will break without it.
-			if ( reliableMarginRightVal == null && window.getComputedStyle ) {
-				body = document.getElementsByTagName( "body" )[ 0 ];
-				if ( !body ) {
-					// Test fired too early or in an unsupported environment, exit.
-					return;
-				}
-
-				container = document.createElement( "div" );
-				div = document.createElement( "div" );
-				container.style.cssText = containerStyles;
-
-				body.appendChild( container ).appendChild( div );
-
-				// Check if div with explicit width and no margin-right incorrectly
-				// gets computed margin-right based on width of container. (#3333)
-				// Fails in WebKit before Feb 2011 nightlies
-				// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
-				marginDiv = div.appendChild( document.createElement( "div" ) );
-				marginDiv.style.cssText = div.style.cssText = divReset;
-				marginDiv.style.marginRight = marginDiv.style.width = "0";
-				div.style.width = "1px";
-
-				reliableMarginRightVal =
-					!parseFloat( ( window.getComputedStyle( marginDiv, null ) || {} ).marginRight );
-
-				body.removeChild( container );
-			}
-
-			return reliableMarginRightVal;
-		}
-	});
-
-	function computeStyleTests() {
-		var container, div,
-			body = document.getElementsByTagName( "body" )[ 0 ];
-
-		if ( !body ) {
-			// Test fired too early or in an unsupported environment, exit.
-			return;
-		}
-
-		container = document.createElement( "div" );
-		div = document.createElement( "div" );
-		container.style.cssText = containerStyles;
-
-		body.appendChild( container ).appendChild( div );
-
-		div.style.cssText =
-			"-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;" +
-				"position:absolute;display:block;padding:1px;border:1px;width:4px;" +
-				"margin-top:1%;top:1%";
-
-		// Workaround failing boxSizing test due to offsetWidth returning wrong value
-		// with some non-1 values of body zoom, ticket #13543
-		jQuery.swap( body, body.style.zoom != null ? { zoom: 1 } : {}, function() {
-			boxSizingVal = div.offsetWidth === 4;
-		});
-
-		// Will be changed later if needed.
-		boxSizingReliableVal = true;
-		pixelPositionVal = false;
-		reliableMarginRightVal = true;
-
-		// Use window.getComputedStyle because jsdom on node.js will break without it.
-		if ( window.getComputedStyle ) {
-			pixelPositionVal = ( window.getComputedStyle( div, null ) || {} ).top !== "1%";
-			boxSizingReliableVal =
-				( window.getComputedStyle( div, null ) || { width: "4px" } ).width === "4px";
-		}
-
-		body.removeChild( container );
-
-		// Null elements to avoid leaks in IE.
-		div = body = null;
-	}
-
-})();
-
-
-// A method for quickly swapping in/out CSS properties to get correct calculations.
-jQuery.swap = function( elem, options, callback, args ) {
-	var ret, name,
-		old = {};
-
-	// Remember the old values, and insert the new ones
-	for ( name in options ) {
-		old[ name ] = elem.style[ name ];
-		elem.style[ name ] = options[ name ];
-	}
-
-	ret = callback.apply( elem, args || [] );
-
-	// Revert the old values
-	for ( name in options ) {
-		elem.style[ name ] = old[ name ];
-	}
-
-	return ret;
-};
-
-
-var
-		ralpha = /alpha\([^)]*\)/i,
-	ropacity = /opacity\s*=\s*([^)]*)/,
-
-	// swappable if display is none or starts with table except "table", "table-cell", or "table-caption"
-	// see here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-	rnumsplit = new RegExp( "^(" + pnum + ")(.*)$", "i" ),
-	rrelNum = new RegExp( "^([+-])=(" + pnum + ")", "i" ),
-
-	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
-	cssNormalTransform = {
-		letterSpacing: 0,
-		fontWeight: 400
-	},
-
-	cssPrefixes = [ "Webkit", "O", "Moz", "ms" ];
-
-
-// return a css property mapped to a potentially vendor prefixed property
-function vendorPropName( style, name ) {
-
-	// shortcut for names that are not vendor prefixed
-	if ( name in style ) {
-		return name;
-	}
-
-	// check for vendor prefixed names
-	var capName = name.charAt(0).toUpperCase() + name.slice(1),
-		origName = name,
-		i = cssPrefixes.length;
-
-	while ( i-- ) {
-		name = cssPrefixes[ i ] + capName;
-		if ( name in style ) {
-			return name;
-		}
-	}
-
-	return origName;
-}
-
-function showHide( elements, show ) {
-	var display, elem, hidden,
-		values = [],
-		index = 0,
-		length = elements.length;
-
-	for ( ; index < length; index++ ) {
-		elem = elements[ index ];
-		if ( !elem.style ) {
-			continue;
-		}
-
-		values[ index ] = jQuery._data( elem, "olddisplay" );
-		display = elem.style.display;
-		if ( show ) {
-			// Reset the inline display of this element to learn if it is
-			// being hidden by cascaded rules or not
-			if ( !values[ index ] && display === "none" ) {
-				elem.style.display = "";
-			}
-
-			// Set elements which have been overridden with display: none
-			// in a stylesheet to whatever the default browser style is
-			// for such an element
-			if ( elem.style.display === "" && isHidden( elem ) ) {
-				values[ index ] = jQuery._data( elem, "olddisplay", defaultDisplay(elem.nodeName) );
-			}
-		} else {
-
-			if ( !values[ index ] ) {
-				hidden = isHidden( elem );
-
-				if ( display && display !== "none" || !hidden ) {
-					jQuery._data( elem, "olddisplay", hidden ? display : jQuery.css( elem, "display" ) );
-				}
-			}
-		}
-	}
-
-	// Set the display of most of the elements in a second loop
-	// to avoid the constant reflow
-	for ( index = 0; index < length; index++ ) {
-		elem = elements[ index ];
-		if ( !elem.style ) {
-			continue;
-		}
-		if ( !show || elem.style.display === "none" || elem.style.display === "" ) {
-			elem.style.display = show ? values[ index ] || "" : "none";
-		}
-	}
-
-	return elements;
-}
-
-function setPositiveNumber( elem, value, subtract ) {
-	var matches = rnumsplit.exec( value );
-	return matches ?
-		// Guard against undefined "subtract", e.g., when used as in cssHooks
-		Math.max( 0, matches[ 1 ] - ( subtract || 0 ) ) + ( matches[ 2 ] || "px" ) :
-		value;
-}
-
-function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
-	var i = extra === ( isBorderBox ? "border" : "content" ) ?
-		// If we already have the right measurement, avoid augmentation
-		4 :
-		// Otherwise initialize for horizontal or vertical properties
-		name === "width" ? 1 : 0,
-
-		val = 0;
-
-	for ( ; i < 4; i += 2 ) {
-		// both box models exclude margin, so add it if we want it
-		if ( extra === "margin" ) {
-			val += jQuery.css( elem, extra + cssExpand[ i ], true, styles );
-		}
-
-		if ( isBorderBox ) {
-			// border-box includes padding, so remove it if we want content
-			if ( extra === "content" ) {
-				val -= jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
-			}
-
-			// at this point, extra isn't border nor margin, so remove border
-			if ( extra !== "margin" ) {
-				val -= jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
-			}
-		} else {
-			// at this point, extra isn't content, so add padding
-			val += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
-
-			// at this point, extra isn't content nor padding, so add border
-			if ( extra !== "padding" ) {
-				val += jQuery.css( elem, "border" + cssExpand[ i ] + "Width", true, styles );
-			}
-		}
-	}
-
-	return val;
-}
-
-function getWidthOrHeight( elem, name, extra ) {
-
-	// Start with offset property, which is equivalent to the border-box value
-	var valueIsBorderBox = true,
-		val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
-		styles = getStyles( elem ),
-		isBorderBox = support.boxSizing() && jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-	// some non-html elements return undefined for offsetWidth, so check for null/undefined
-	// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
-	// MathML - https://bugzilla.mozilla.org/show_bug.cgi?id=491668
-	if ( val <= 0 || val == null ) {
-		// Fall back to computed then uncomputed css if necessary
-		val = curCSS( elem, name, styles );
-		if ( val < 0 || val == null ) {
-			val = elem.style[ name ];
-		}
-
-		// Computed unit is not pixels. Stop here and return.
-		if ( rnumnonpx.test(val) ) {
-			return val;
-		}
-
-		// we need the check for style in case a browser which returns unreliable values
-		// for getComputedStyle silently falls back to the reliable elem.style
-		valueIsBorderBox = isBorderBox && ( support.boxSizingReliable() || val === elem.style[ name ] );
-
-		// Normalize "", auto, and prepare for extra
-		val = parseFloat( val ) || 0;
-	}
-
-	// use the active box-sizing model to add/subtract irrelevant styles
-	return ( val +
-		augmentWidthOrHeight(
-			elem,
-			name,
-			extra || ( isBorderBox ? "border" : "content" ),
-			valueIsBorderBox,
-			styles
-		)
-	) + "px";
-}
-
-jQuery.extend({
-	// Add in style property hooks for overriding the default
-	// behavior of getting and setting a style property
-	cssHooks: {
-		opacity: {
-			get: function( elem, computed ) {
-				if ( computed ) {
-					// We should always get a number back from opacity
-					var ret = curCSS( elem, "opacity" );
-					return ret === "" ? "1" : ret;
-				}
-			}
-		}
-	},
-
-	// Don't automatically add "px" to these possibly-unitless properties
-	cssNumber: {
-		"columnCount": true,
-		"fillOpacity": true,
-		"fontWeight": true,
-		"lineHeight": true,
-		"opacity": true,
-		"order": true,
-		"orphans": true,
-		"widows": true,
-		"zIndex": true,
-		"zoom": true
-	},
-
-	// Add in properties whose names you wish to fix before
-	// setting or getting the value
-	cssProps: {
-		// normalize float css property
-		"float": support.cssFloat ? "cssFloat" : "styleFloat"
-	},
-
-	// Get and set the style property on a DOM Node
-	style: function( elem, name, value, extra ) {
-		// Don't set styles on text and comment nodes
-		if ( !elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style ) {
-			return;
-		}
-
-		// Make sure that we're working with the right name
-		var ret, type, hooks,
-			origName = jQuery.camelCase( name ),
-			style = elem.style;
-
-		name = jQuery.cssProps[ origName ] || ( jQuery.cssProps[ origName ] = vendorPropName( style, origName ) );
-
-		// gets hook for the prefixed version
-		// followed by the unprefixed version
-		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
-
-		// Check if we're setting a value
-		if ( value !== undefined ) {
-			type = typeof value;
-
-			// convert relative number strings (+= or -=) to relative numbers. #7345
-			if ( type === "string" && (ret = rrelNum.exec( value )) ) {
-				value = ( ret[1] + 1 ) * ret[2] + parseFloat( jQuery.css( elem, name ) );
-				// Fixes bug #9237
-				type = "number";
-			}
-
-			// Make sure that null and NaN values aren't set. See: #7116
-			if ( value == null || value !== value ) {
-				return;
-			}
-
-			// If a number was passed in, add 'px' to the (except for certain CSS properties)
-			if ( type === "number" && !jQuery.cssNumber[ origName ] ) {
-				value += "px";
-			}
-
-			// Fixes #8908, it can be done more correctly by specifing setters in cssHooks,
-			// but it would mean to define eight (for every problematic property) identical functions
-			if ( !support.clearCloneStyle && value === "" && name.indexOf("background") === 0 ) {
-				style[ name ] = "inherit";
-			}
-
-			// If a hook was provided, use that value, otherwise just set the specified value
-			if ( !hooks || !("set" in hooks) || (value = hooks.set( elem, value, extra )) !== undefined ) {
-
-				// Support: IE
-				// Swallow errors from 'invalid' CSS values (#5509)
-				try {
-					// Support: Chrome, Safari
-					// Setting style to blank string required to delete "style: x !important;"
-					style[ name ] = "";
-					style[ name ] = value;
-				} catch(e) {}
-			}
-
-		} else {
-			// If a hook was provided get the non-computed value from there
-			if ( hooks && "get" in hooks && (ret = hooks.get( elem, false, extra )) !== undefined ) {
-				return ret;
-			}
-
-			// Otherwise just get the value from the style object
-			return style[ name ];
-		}
-	},
-
-	css: function( elem, name, extra, styles ) {
-		var num, val, hooks,
-			origName = jQuery.camelCase( name );
-
-		// Make sure that we're working with the right name
-		name = jQuery.cssProps[ origName ] || ( jQuery.cssProps[ origName ] = vendorPropName( elem.style, origName ) );
-
-		// gets hook for the prefixed version
-		// followed by the unprefixed version
-		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
-
-		// If a hook was provided get the computed value from there
-		if ( hooks && "get" in hooks ) {
-			val = hooks.get( elem, true, extra );
-		}
-
-		// Otherwise, if a way to get the computed value exists, use that
-		if ( val === undefined ) {
-			val = curCSS( elem, name, styles );
-		}
-
-		//convert "normal" to computed value
-		if ( val === "normal" && name in cssNormalTransform ) {
-			val = cssNormalTransform[ name ];
-		}
-
-		// Return, converting to number if forced or a qualifier was provided and val looks numeric
-		if ( extra === "" || extra ) {
-			num = parseFloat( val );
-			return extra === true || jQuery.isNumeric( num ) ? num || 0 : val;
-		}
-		return val;
-	}
-});
-
-jQuery.each([ "height", "width" ], function( i, name ) {
-	jQuery.cssHooks[ name ] = {
-		get: function( elem, computed, extra ) {
-			if ( computed ) {
-				// certain elements can have dimension info if we invisibly show them
-				// however, it must have a current display style that would benefit from this
-				return elem.offsetWidth === 0 && rdisplayswap.test( jQuery.css( elem, "display" ) ) ?
-					jQuery.swap( elem, cssShow, function() {
-						return getWidthOrHeight( elem, name, extra );
-					}) :
-					getWidthOrHeight( elem, name, extra );
-			}
-		},
-
-		set: function( elem, value, extra ) {
-			var styles = extra && getStyles( elem );
-			return setPositiveNumber( elem, value, extra ?
-				augmentWidthOrHeight(
-					elem,
-					name,
-					extra,
-					support.boxSizing() && jQuery.css( elem, "boxSizing", false, styles ) === "border-box",
-					styles
-				) : 0
-			);
-		}
-	};
-});
-
-if ( !support.opacity ) {
-	jQuery.cssHooks.opacity = {
-		get: function( elem, computed ) {
-			// IE uses filters for opacity
-			return ropacity.test( (computed && elem.currentStyle ? elem.currentStyle.filter : elem.style.filter) || "" ) ?
-				( 0.01 * parseFloat( RegExp.$1 ) ) + "" :
-				computed ? "1" : "";
-		},
-
-		set: function( elem, value ) {
-			var style = elem.style,
-				currentStyle = elem.currentStyle,
-				opacity = jQuery.isNumeric( value ) ? "alpha(opacity=" + value * 100 + ")" : "",
-				filter = currentStyle && currentStyle.filter || style.filter || "";
-
-			// IE has trouble with opacity if it does not have layout
-			// Force it by setting the zoom level
-			style.zoom = 1;
-
-			// if setting opacity to 1, and no other filters exist - attempt to remove filter attribute #6652
-			// if value === "", then remove inline opacity #12685
-			if ( ( value >= 1 || value === "" ) &&
-					jQuery.trim( filter.replace( ralpha, "" ) ) === "" &&
-					style.removeAttribute ) {
-
-				// Setting style.filter to null, "" & " " still leave "filter:" in the cssText
-				// if "filter:" is present at all, clearType is disabled, we want to avoid this
-				// style.removeAttribute is IE Only, but so apparently is this code path...
-				style.removeAttribute( "filter" );
-
-				// if there is no filter style applied in a css rule or unset inline opacity, we are done
-				if ( value === "" || currentStyle && !currentStyle.filter ) {
-					return;
-				}
-			}
-
-			// otherwise, set new filter values
-			style.filter = ralpha.test( filter ) ?
-				filter.replace( ralpha, opacity ) :
-				filter + " " + opacity;
-		}
-	};
-}
-
-jQuery.cssHooks.marginRight = addGetHookIf( support.reliableMarginRight,
-	function( elem, computed ) {
-		if ( computed ) {
-			// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
-			// Work around by temporarily setting element display to inline-block
-			return jQuery.swap( elem, { "display": "inline-block" },
-				curCSS, [ elem, "marginRight" ] );
-		}
-	}
-);
-
-// These hooks are used by animate to expand properties
-jQuery.each({
-	margin: "",
-	padding: "",
-	border: "Width"
-}, function( prefix, suffix ) {
-	jQuery.cssHooks[ prefix + suffix ] = {
-		expand: function( value ) {
-			var i = 0,
-				expanded = {},
-
-				// assumes a single number if not a string
-				parts = typeof value === "string" ? value.split(" ") : [ value ];
-
-			for ( ; i < 4; i++ ) {
-				expanded[ prefix + cssExpand[ i ] + suffix ] =
-					parts[ i ] || parts[ i - 2 ] || parts[ 0 ];
-			}
-
-			return expanded;
-		}
-	};
-
-	if ( !rmargin.test( prefix ) ) {
-		jQuery.cssHooks[ prefix + suffix ].set = setPositiveNumber;
-	}
-});
-
-jQuery.fn.extend({
-	css: function( name, value ) {
-		return access( this, function( elem, name, value ) {
-			var styles, len,
-				map = {},
-				i = 0;
-
-			if ( jQuery.isArray( name ) ) {
-				styles = getStyles( elem );
-				len = name.length;
-
-				for ( ; i < len; i++ ) {
-					map[ name[ i ] ] = jQuery.css( elem, name[ i ], false, styles );
-				}
-
-				return map;
-			}
-
-			return value !== undefined ?
-				jQuery.style( elem, name, value ) :
-				jQuery.css( elem, name );
-		}, name, value, arguments.length > 1 );
-	},
-	show: function() {
-		return showHide( this, true );
-	},
-	hide: function() {
-		return showHide( this );
-	},
-	toggle: function( state ) {
-		if ( typeof state === "boolean" ) {
-			return state ? this.show() : this.hide();
-		}
-
-		return this.each(function() {
-			if ( isHidden( this ) ) {
-				jQuery( this ).show();
-			} else {
-				jQuery( this ).hide();
-			}
-		});
-	}
-});
-
-
-function Tween( elem, options, prop, end, easing ) {
-	return new Tween.prototype.init( elem, options, prop, end, easing );
-}
-jQuery.Tween = Tween;
-
-Tween.prototype = {
-	constructor: Tween,
-	init: function( elem, options, prop, end, easing, unit ) {
-		this.elem = elem;
-		this.prop = prop;
-		this.easing = easing || "swing";
-		this.options = options;
-		this.start = this.now = this.cur();
-		this.end = end;
-		this.unit = unit || ( jQuery.cssNumber[ prop ] ? "" : "px" );
-	},
-	cur: function() {
-		var hooks = Tween.propHooks[ this.prop ];
-
-		return hooks && hooks.get ?
-			hooks.get( this ) :
-			Tween.propHooks._default.get( this );
-	},
-	run: function( percent ) {
-		var eased,
-			hooks = Tween.propHooks[ this.prop ];
-
-		if ( this.options.duration ) {
-			this.pos = eased = jQuery.easing[ this.easing ](
-				percent, this.options.duration * percent, 0, 1, this.options.duration
-			);
-		} else {
-			this.pos = eased = percent;
-		}
-		this.now = ( this.end - this.start ) * eased + this.start;
-
-		if ( this.options.step ) {
-			this.options.step.call( this.elem, this.now, this );
-		}
-
-		if ( hooks && hooks.set ) {
-			hooks.set( this );
-		} else {
-			Tween.propHooks._default.set( this );
-		}
-		return this;
-	}
-};
-
-Tween.prototype.init.prototype = Tween.prototype;
-
-Tween.propHooks = {
-	_default: {
-		get: function( tween ) {
-			var result;
-
-			if ( tween.elem[ tween.prop ] != null &&
-				(!tween.elem.style || tween.elem.style[ tween.prop ] == null) ) {
-				return tween.elem[ tween.prop ];
-			}
-
-			// passing an empty string as a 3rd parameter to .css will automatically
-			// attempt a parseFloat and fallback to a string if the parse fails
-			// so, simple values such as "10px" are parsed to Float.
-			// complex values such as "rotate(1rad)" are returned as is.
-			result = jQuery.css( tween.elem, tween.prop, "" );
-			// Empty strings, null, undefined and "auto" are converted to 0.
-			return !result || result === "auto" ? 0 : result;
-		},
-		set: function( tween ) {
-			// use step hook for back compat - use cssHook if its there - use .style if its
-			// available and use plain properties where available
-			if ( jQuery.fx.step[ tween.prop ] ) {
-				jQuery.fx.step[ tween.prop ]( tween );
-			} else if ( tween.elem.style && ( tween.elem.style[ jQuery.cssProps[ tween.prop ] ] != null || jQuery.cssHooks[ tween.prop ] ) ) {
-				jQuery.style( tween.elem, tween.prop, tween.now + tween.unit );
-			} else {
-				tween.elem[ tween.prop ] = tween.now;
-			}
-		}
-	}
-};
-
-// Support: IE <=9
-// Panic based approach to setting things on disconnected nodes
-
-Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
-	set: function( tween ) {
-		if ( tween.elem.nodeType && tween.elem.parentNode ) {
-			tween.elem[ tween.prop ] = tween.now;
-		}
-	}
-};
-
-jQuery.easing = {
-	linear: function( p ) {
-		return p;
-	},
-	swing: function( p ) {
-		return 0.5 - Math.cos( p * Math.PI ) / 2;
-	}
-};
-
-jQuery.fx = Tween.prototype.init;
-
-// Back Compat <1.8 extension point
-jQuery.fx.step = {};
-
-
-
-
-var
-	fxNow, timerId,
-	rfxtypes = /^(?:toggle|show|hide)$/,
-	rfxnum = new RegExp( "^(?:([+-])=|)(" + pnum + ")([a-z%]*)$", "i" ),
-	rrun = /queueHooks$/,
-	animationPrefilters = [ defaultPrefilter ],
-	tweeners = {
-		"*": [ function( prop, value ) {
-			var tween = this.createTween( prop, value ),
-				target = tween.cur(),
-				parts = rfxnum.exec( value ),
-				unit = parts && parts[ 3 ] || ( jQuery.cssNumber[ prop ] ? "" : "px" ),
-
-				// Starting value computation is required for potential unit mismatches
-				start = ( jQuery.cssNumber[ prop ] || unit !== "px" && +target ) &&
-					rfxnum.exec( jQuery.css( tween.elem, prop ) ),
-				scale = 1,
-				maxIterations = 20;
-
-			if ( start && start[ 3 ] !== unit ) {
-				// Trust units reported by jQuery.css
-				unit = unit || start[ 3 ];
-
-				// Make sure we update the tween properties later on
-				parts = parts || [];
-
-				// Iteratively approximate from a nonzero starting point
-				start = +target || 1;
-
-				do {
-					// If previous iteration zeroed out, double until we get *something*
-					// Use a string for doubling factor so we don't accidentally see scale as unchanged below
-					scale = scale || ".5";
-
-					// Adjust and apply
-					start = start / scale;
-					jQuery.style( tween.elem, prop, start + unit );
-
-				// Update scale, tolerating zero or NaN from tween.cur()
-				// And breaking the loop if scale is unchanged or perfect, or if we've just had enough
-				} while ( scale !== (scale = tween.cur() / target) && scale !== 1 && --maxIterations );
-			}
-
-			// Update tween properties
-			if ( parts ) {
-				start = tween.start = +start || +target || 0;
-				tween.unit = unit;
-				// If a +=/-= token was provided, we're doing a relative animation
-				tween.end = parts[ 1 ] ?
-					start + ( parts[ 1 ] + 1 ) * parts[ 2 ] :
-					+parts[ 2 ];
-			}
-
-			return tween;
-		} ]
-	};
-
-// Animations created synchronously will run synchronously
-function createFxNow() {
-	setTimeout(function() {
-		fxNow = undefined;
-	});
-	return ( fxNow = jQuery.now() );
-}
-
-// Generate parameters to create a standard animation
-function genFx( type, includeWidth ) {
-	var which,
-		attrs = { height: type },
-		i = 0;
-
-	// if we include width, step value is 1 to do all cssExpand values,
-	// if we don't include width, step value is 2 to skip over Left and Right
-	includeWidth = includeWidth ? 1 : 0;
-	for ( ; i < 4 ; i += 2 - includeWidth ) {
-		which = cssExpand[ i ];
-		attrs[ "margin" + which ] = attrs[ "padding" + which ] = type;
-	}
-
-	if ( includeWidth ) {
-		attrs.opacity = attrs.width = type;
-	}
-
-	return attrs;
-}
-
-function createTween( value, prop, animation ) {
-	var tween,
-		collection = ( tweeners[ prop ] || [] ).concat( tweeners[ "*" ] ),
-		index = 0,
-		length = collection.length;
-	for ( ; index < length; index++ ) {
-		if ( (tween = collection[ index ].call( animation, prop, value )) ) {
-
-			// we're done with this property
-			return tween;
-		}
-	}
-}
-
-function defaultPrefilter( elem, props, opts ) {
-	/* jshint validthis: true */
-	var prop, value, toggle, tween, hooks, oldfire, display, dDisplay,
-		anim = this,
-		orig = {},
-		style = elem.style,
-		hidden = elem.nodeType && isHidden( elem ),
-		dataShow = jQuery._data( elem, "fxshow" );
-
-	// handle queue: false promises
-	if ( !opts.queue ) {
-		hooks = jQuery._queueHooks( elem, "fx" );
-		if ( hooks.unqueued == null ) {
-			hooks.unqueued = 0;
-			oldfire = hooks.empty.fire;
-			hooks.empty.fire = function() {
-				if ( !hooks.unqueued ) {
-					oldfire();
-				}
-			};
-		}
-		hooks.unqueued++;
-
-		anim.always(function() {
-			// doing this makes sure that the complete handler will be called
-			// before this completes
-			anim.always(function() {
-				hooks.unqueued--;
-				if ( !jQuery.queue( elem, "fx" ).length ) {
-					hooks.empty.fire();
-				}
-			});
-		});
-	}
-
-	// height/width overflow pass
-	if ( elem.nodeType === 1 && ( "height" in props || "width" in props ) ) {
-		// Make sure that nothing sneaks out
-		// Record all 3 overflow attributes because IE does not
-		// change the overflow attribute when overflowX and
-		// overflowY are set to the same value
-		opts.overflow = [ style.overflow, style.overflowX, style.overflowY ];
-
-		// Set display property to inline-block for height/width
-		// animations on inline elements that are having width/height animated
-		display = jQuery.css( elem, "display" );
-		dDisplay = defaultDisplay( elem.nodeName );
-		if ( display === "none" ) {
-			display = dDisplay;
-		}
-		if ( display === "inline" &&
-				jQuery.css( elem, "float" ) === "none" ) {
-
-			// inline-level elements accept inline-block;
-			// block-level elements need to be inline with layout
-			if ( !support.inlineBlockNeedsLayout || dDisplay === "inline" ) {
-				style.display = "inline-block";
-			} else {
-				style.zoom = 1;
-			}
-		}
-	}
-
-	if ( opts.overflow ) {
-		style.overflow = "hidden";
-		if ( !support.shrinkWrapBlocks() ) {
-			anim.always(function() {
-				style.overflow = opts.overflow[ 0 ];
-				style.overflowX = opts.overflow[ 1 ];
-				style.overflowY = opts.overflow[ 2 ];
-			});
-		}
-	}
-
-	// show/hide pass
-	for ( prop in props ) {
-		value = props[ prop ];
-		if ( rfxtypes.exec( value ) ) {
-			delete props[ prop ];
-			toggle = toggle || value === "toggle";
-			if ( value === ( hidden ? "hide" : "show" ) ) {
-
-				// If there is dataShow left over from a stopped hide or show and we are going to proceed with show, we should pretend to be hidden
-				if ( value === "show" && dataShow && dataShow[ prop ] !== undefined ) {
-					hidden = true;
-				} else {
-					continue;
-				}
-			}
-			orig[ prop ] = dataShow && dataShow[ prop ] || jQuery.style( elem, prop );
-		}
-	}
-
-	if ( !jQuery.isEmptyObject( orig ) ) {
-		if ( dataShow ) {
-			if ( "hidden" in dataShow ) {
-				hidden = dataShow.hidden;
-			}
-		} else {
-			dataShow = jQuery._data( elem, "fxshow", {} );
-		}
-
-		// store state if its toggle - enables .stop().toggle() to "reverse"
-		if ( toggle ) {
-			dataShow.hidden = !hidden;
-		}
-		if ( hidden ) {
-			jQuery( elem ).show();
-		} else {
-			anim.done(function() {
-				jQuery( elem ).hide();
-			});
-		}
-		anim.done(function() {
-			var prop;
-			jQuery._removeData( elem, "fxshow" );
-			for ( prop in orig ) {
-				jQuery.style( elem, prop, orig[ prop ] );
-			}
-		});
-		for ( prop in orig ) {
-			tween = createTween( hidden ? dataShow[ prop ] : 0, prop, anim );
-
-			if ( !( prop in dataShow ) ) {
-				dataShow[ prop ] = tween.start;
-				if ( hidden ) {
-					tween.end = tween.start;
-					tween.start = prop === "width" || prop === "height" ? 1 : 0;
-				}
-			}
-		}
-	}
-}
-
-function propFilter( props, specialEasing ) {
-	var index, name, easing, value, hooks;
-
-	// camelCase, specialEasing and expand cssHook pass
-	for ( index in props ) {
-		name = jQuery.camelCase( index );
-		easing = specialEasing[ name ];
-		value = props[ index ];
-		if ( jQuery.isArray( value ) ) {
-			easing = value[ 1 ];
-			value = props[ index ] = value[ 0 ];
-		}
-
-		if ( index !== name ) {
-			props[ name ] = value;
-			delete props[ index ];
-		}
-
-		hooks = jQuery.cssHooks[ name ];
-		if ( hooks && "expand" in hooks ) {
-			value = hooks.expand( value );
-			delete props[ name ];
-
-			// not quite $.extend, this wont overwrite keys already present.
-			// also - reusing 'index' from above because we have the correct "name"
-			for ( index in value ) {
-				if ( !( index in props ) ) {
-					props[ index ] = value[ index ];
-					specialEasing[ index ] = easing;
-				}
-			}
-		} else {
-			specialEasing[ name ] = easing;
-		}
-	}
-}
-
-function Animation( elem, properties, options ) {
-	var result,
-		stopped,
-		index = 0,
-		length = animationPrefilters.length,
-		deferred = jQuery.Deferred().always( function() {
-			// don't match elem in the :animated selector
-			delete tick.elem;
-		}),
-		tick = function() {
-			if ( stopped ) {
-				return false;
-			}
-			var currentTime = fxNow || createFxNow(),
-				remaining = Math.max( 0, animation.startTime + animation.duration - currentTime ),
-				// archaic crash bug won't allow us to use 1 - ( 0.5 || 0 ) (#12497)
-				temp = remaining / animation.duration || 0,
-				percent = 1 - temp,
-				index = 0,
-				length = animation.tweens.length;
-
-			for ( ; index < length ; index++ ) {
-				animation.tweens[ index ].run( percent );
-			}
-
-			deferred.notifyWith( elem, [ animation, percent, remaining ]);
-
-			if ( percent < 1 && length ) {
-				return remaining;
-			} else {
-				deferred.resolveWith( elem, [ animation ] );
-				return false;
-			}
-		},
-		animation = deferred.promise({
-			elem: elem,
-			props: jQuery.extend( {}, properties ),
-			opts: jQuery.extend( true, { specialEasing: {} }, options ),
-			originalProperties: properties,
-			originalOptions: options,
-			startTime: fxNow || createFxNow(),
-			duration: options.duration,
-			tweens: [],
-			createTween: function( prop, end ) {
-				var tween = jQuery.Tween( elem, animation.opts, prop, end,
-						animation.opts.specialEasing[ prop ] || animation.opts.easing );
-				animation.tweens.push( tween );
-				return tween;
-			},
-			stop: function( gotoEnd ) {
-				var index = 0,
-					// if we are going to the end, we want to run all the tweens
-					// otherwise we skip this part
-					length = gotoEnd ? animation.tweens.length : 0;
-				if ( stopped ) {
-					return this;
-				}
-				stopped = true;
-				for ( ; index < length ; index++ ) {
-					animation.tweens[ index ].run( 1 );
-				}
-
-				// resolve when we played the last frame
-				// otherwise, reject
-				if ( gotoEnd ) {
-					deferred.resolveWith( elem, [ animation, gotoEnd ] );
-				} else {
-					deferred.rejectWith( elem, [ animation, gotoEnd ] );
-				}
-				return this;
-			}
-		}),
-		props = animation.props;
-
-	propFilter( props, animation.opts.specialEasing );
-
-	for ( ; index < length ; index++ ) {
-		result = animationPrefilters[ index ].call( animation, elem, props, animation.opts );
-		if ( result ) {
-			return result;
-		}
-	}
-
-	jQuery.map( props, createTween, animation );
-
-	if ( jQuery.isFunction( animation.opts.start ) ) {
-		animation.opts.start.call( elem, animation );
-	}
-
-	jQuery.fx.timer(
-		jQuery.extend( tick, {
-			elem: elem,
-			anim: animation,
-			queue: animation.opts.queue
-		})
-	);
-
-	// attach callbacks from options
-	return animation.progress( animation.opts.progress )
-		.done( animation.opts.done, animation.opts.complete )
-		.fail( animation.opts.fail )
-		.always( animation.opts.always );
-}
-
-jQuery.Animation = jQuery.extend( Animation, {
-	tweener: function( props, callback ) {
-		if ( jQuery.isFunction( props ) ) {
-			callback = props;
-			props = [ "*" ];
-		} else {
-			props = props.split(" ");
-		}
-
-		var prop,
-			index = 0,
-			length = props.length;
-
-		for ( ; index < length ; index++ ) {
-			prop = props[ index ];
-			tweeners[ prop ] = tweeners[ prop ] || [];
-			tweeners[ prop ].unshift( callback );
-		}
-	},
-
-	prefilter: function( callback, prepend ) {
-		if ( prepend ) {
-			animationPrefilters.unshift( callback );
-		} else {
-			animationPrefilters.push( callback );
-		}
-	}
-});
-
-jQuery.speed = function( speed, easing, fn ) {
-	var opt = speed && typeof speed === "object" ? jQuery.extend( {}, speed ) : {
-		complete: fn || !fn && easing ||
-			jQuery.isFunction( speed ) && speed,
-		duration: speed,
-		easing: fn && easing || easing && !jQuery.isFunction( easing ) && easing
-	};
-
-	opt.duration = jQuery.fx.off ? 0 : typeof opt.duration === "number" ? opt.duration :
-		opt.duration in jQuery.fx.speeds ? jQuery.fx.speeds[ opt.duration ] : jQuery.fx.speeds._default;
-
-	// normalize opt.queue - true/undefined/null -> "fx"
-	if ( opt.queue == null || opt.queue === true ) {
-		opt.queue = "fx";
-	}
-
-	// Queueing
-	opt.old = opt.complete;
-
-	opt.complete = function() {
-		if ( jQuery.isFunction( opt.old ) ) {
-			opt.old.call( this );
-		}
-
-		if ( opt.queue ) {
-			jQuery.dequeue( this, opt.queue );
-		}
-	};
-
-	return opt;
-};
-
-jQuery.fn.extend({
-	fadeTo: function( speed, to, easing, callback ) {
-
-		// show any hidden elements after setting opacity to 0
-		return this.filter( isHidden ).css( "opacity", 0 ).show()
-
-			// animate to the value specified
-			.end().animate({ opacity: to }, speed, easing, callback );
-	},
-	animate: function( prop, speed, easing, callback ) {
-		var empty = jQuery.isEmptyObject( prop ),
-			optall = jQuery.speed( speed, easing, callback ),
-			doAnimation = function() {
-				// Operate on a copy of prop so per-property easing won't be lost
-				var anim = Animation( this, jQuery.extend( {}, prop ), optall );
-
-				// Empty animations, or finishing resolves immediately
-				if ( empty || jQuery._data( this, "finish" ) ) {
-					anim.stop( true );
-				}
-			};
-			doAnimation.finish = doAnimation;
-
-		return empty || optall.queue === false ?
-			this.each( doAnimation ) :
-			this.queue( optall.queue, doAnimation );
-	},
-	stop: function( type, clearQueue, gotoEnd ) {
-		var stopQueue = function( hooks ) {
-			var stop = hooks.stop;
-			delete hooks.stop;
-			stop( gotoEnd );
-		};
-
-		if ( typeof type !== "string" ) {
-			gotoEnd = clearQueue;
-			clearQueue = type;
-			type = undefined;
-		}
-		if ( clearQueue && type !== false ) {
-			this.queue( type || "fx", [] );
-		}
-
-		return this.each(function() {
-			var dequeue = true,
-				index = type != null && type + "queueHooks",
-				timers = jQuery.timers,
-				data = jQuery._data( this );
-
-			if ( index ) {
-				if ( data[ index ] && data[ index ].stop ) {
-					stopQueue( data[ index ] );
-				}
-			} else {
-				for ( index in data ) {
-					if ( data[ index ] && data[ index ].stop && rrun.test( index ) ) {
-						stopQueue( data[ index ] );
-					}
-				}
-			}
-
-			for ( index = timers.length; index--; ) {
-				if ( timers[ index ].elem === this && (type == null || timers[ index ].queue === type) ) {
-					timers[ index ].anim.stop( gotoEnd );
-					dequeue = false;
-					timers.splice( index, 1 );
-				}
-			}
-
-			// start the next in the queue if the last step wasn't forced
-			// timers currently will call their complete callbacks, which will dequeue
-			// but only if they were gotoEnd
-			if ( dequeue || !gotoEnd ) {
-				jQuery.dequeue( this, type );
-			}
-		});
-	},
-	finish: function( type ) {
-		if ( type !== false ) {
-			type = type || "fx";
-		}
-		return this.each(function() {
-			var index,
-				data = jQuery._data( this ),
-				queue = data[ type + "queue" ],
-				hooks = data[ type + "queueHooks" ],
-				timers = jQuery.timers,
-				length = queue ? queue.length : 0;
-
-			// enable finishing flag on private data
-			data.finish = true;
-
-			// empty the queue first
-			jQuery.queue( this, type, [] );
-
-			if ( hooks && hooks.stop ) {
-				hooks.stop.call( this, true );
-			}
-
-			// look for any active animations, and finish them
-			for ( index = timers.length; index--; ) {
-				if ( timers[ index ].elem === this && timers[ index ].queue === type ) {
-					timers[ index ].anim.stop( true );
-					timers.splice( index, 1 );
-				}
-			}
-
-			// look for any animations in the old queue and finish them
-			for ( index = 0; index < length; index++ ) {
-				if ( queue[ index ] && queue[ index ].finish ) {
-					queue[ index ].finish.call( this );
-				}
-			}
-
-			// turn off finishing flag
-			delete data.finish;
-		});
-	}
-});
-
-jQuery.each([ "toggle", "show", "hide" ], function( i, name ) {
-	var cssFn = jQuery.fn[ name ];
-	jQuery.fn[ name ] = function( speed, easing, callback ) {
-		return speed == null || typeof speed === "boolean" ?
-			cssFn.apply( this, arguments ) :
-			this.animate( genFx( name, true ), speed, easing, callback );
-	};
-});
-
-// Generate shortcuts for custom animations
-jQuery.each({
-	slideDown: genFx("show"),
-	slideUp: genFx("hide"),
-	slideToggle: genFx("toggle"),
-	fadeIn: { opacity: "show" },
-	fadeOut: { opacity: "hide" },
-	fadeToggle: { opacity: "toggle" }
-}, function( name, props ) {
-	jQuery.fn[ name ] = function( speed, easing, callback ) {
-		return this.animate( props, speed, easing, callback );
-	};
-});
-
-jQuery.timers = [];
-jQuery.fx.tick = function() {
-	var timer,
-		timers = jQuery.timers,
-		i = 0;
-
-	fxNow = jQuery.now();
-
-	for ( ; i < timers.length; i++ ) {
-		timer = timers[ i ];
-		// Checks the timer has not already been removed
-		if ( !timer() && timers[ i ] === timer ) {
-			timers.splice( i--, 1 );
-		}
-	}
-
-	if ( !timers.length ) {
-		jQuery.fx.stop();
-	}
-	fxNow = undefined;
-};
-
-jQuery.fx.timer = function( timer ) {
-	jQuery.timers.push( timer );
-	if ( timer() ) {
-		jQuery.fx.start();
-	} else {
-		jQuery.timers.pop();
-	}
-};
-
-jQuery.fx.interval = 13;
-
-jQuery.fx.start = function() {
-	if ( !timerId ) {
-		timerId = setInterval( jQuery.fx.tick, jQuery.fx.interval );
-	}
-};
-
-jQuery.fx.stop = function() {
-	clearInterval( timerId );
-	timerId = null;
-};
-
-jQuery.fx.speeds = {
-	slow: 600,
-	fast: 200,
-	// Default speed
-	_default: 400
-};
-
-
-// Based off of the plugin by Clint Helfers, with permission.
-// http://blindsignals.com/index.php/2009/07/jquery-delay/
-jQuery.fn.delay = function( time, type ) {
-	time = jQuery.fx ? jQuery.fx.speeds[ time ] || time : time;
-	type = type || "fx";
-
-	return this.queue( type, function( next, hooks ) {
-		var timeout = setTimeout( next, time );
-		hooks.stop = function() {
-			clearTimeout( timeout );
-		};
-	});
-};
-
-
-(function() {
-	var a, input, select, opt,
-		div = document.createElement("div" );
-
-	// Setup
-	div.setAttribute( "className", "t" );
-	div.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
-	a = div.getElementsByTagName("a")[ 0 ];
-
-	// First batch of tests.
-	select = document.createElement("select");
-	opt = select.appendChild( document.createElement("option") );
-	input = div.getElementsByTagName("input")[ 0 ];
-
-	a.style.cssText = "top:1px";
-
-	// Test setAttribute on camelCase class. If it works, we need attrFixes when doing get/setAttribute (ie6/7)
-	support.getSetAttribute = div.className !== "t";
-
-	// Get the style information from getAttribute
-	// (IE uses .cssText instead)
-	support.style = /top/.test( a.getAttribute("style") );
-
-	// Make sure that URLs aren't manipulated
-	// (IE normalizes it by default)
-	support.hrefNormalized = a.getAttribute("href") === "/a";
-
-	// Check the default checkbox/radio value ("" on WebKit; "on" elsewhere)
-	support.checkOn = !!input.value;
-
-	// Make sure that a selected-by-default option has a working selected property.
-	// (WebKit defaults to false instead of true, IE too, if it's in an optgroup)
-	support.optSelected = opt.selected;
-
-	// Tests for enctype support on a form (#6743)
-	support.enctype = !!document.createElement("form").enctype;
-
-	// Make sure that the options inside disabled selects aren't marked as disabled
-	// (WebKit marks them as disabled)
-	select.disabled = true;
-	support.optDisabled = !opt.disabled;
-
-	// Support: IE8 only
-	// Check if we can trust getAttribute("value")
-	input = document.createElement( "input" );
-	input.setAttribute( "value", "" );
-	support.input = input.getAttribute( "value" ) === "";
-
-	// Check if an input maintains its value after becoming a radio
-	input.value = "t";
-	input.setAttribute( "type", "radio" );
-	support.radioValue = input.value === "t";
-
-	// Null elements to avoid leaks in IE.
-	a = input = select = opt = div = null;
-})();
-
-
-var rreturn = /\r/g;
-
-jQuery.fn.extend({
-	val: function( value ) {
-		var hooks, ret, isFunction,
-			elem = this[0];
-
-		if ( !arguments.length ) {
-			if ( elem ) {
-				hooks = jQuery.valHooks[ elem.type ] || jQuery.valHooks[ elem.nodeName.toLowerCase() ];
-
-				if ( hooks && "get" in hooks && (ret = hooks.get( elem, "value" )) !== undefined ) {
-					return ret;
-				}
-
-				ret = elem.value;
-
-				return typeof ret === "string" ?
-					// handle most common string cases
-					ret.replace(rreturn, "") :
-					// handle cases where value is null/undef or number
-					ret == null ? "" : ret;
-			}
-
-			return;
-		}
-
-		isFunction = jQuery.isFunction( value );
-
-		return this.each(function( i ) {
-			var val;
-
-			if ( this.nodeType !== 1 ) {
-				return;
-			}
-
-			if ( isFunction ) {
-				val = value.call( this, i, jQuery( this ).val() );
-			} else {
-				val = value;
-			}
-
-			// Treat null/undefined as ""; convert numbers to string
-			if ( val == null ) {
-				val = "";
-			} else if ( typeof val === "number" ) {
-				val += "";
-			} else if ( jQuery.isArray( val ) ) {
-				val = jQuery.map( val, function( value ) {
-					return value == null ? "" : value + "";
-				});
-			}
-
-			hooks = jQuery.valHooks[ this.type ] || jQuery.valHooks[ this.nodeName.toLowerCase() ];
-
-			// If set returns undefined, fall back to normal setting
-			if ( !hooks || !("set" in hooks) || hooks.set( this, val, "value" ) === undefined ) {
-				this.value = val;
-			}
-		});
-	}
-});
-
-jQuery.extend({
-	valHooks: {
-		option: {
-			get: function( elem ) {
-				var val = jQuery.find.attr( elem, "value" );
-				return val != null ?
-					val :
-					jQuery.text( elem );
-			}
-		},
-		select: {
-			get: function( elem ) {
-				var value, option,
-					options = elem.options,
-					index = elem.selectedIndex,
-					one = elem.type === "select-one" || index < 0,
-					values = one ? null : [],
-					max = one ? index + 1 : options.length,
-					i = index < 0 ?
-						max :
-						one ? index : 0;
-
-				// Loop through all the selected options
-				for ( ; i < max; i++ ) {
-					option = options[ i ];
-
-					// oldIE doesn't update selected after form reset (#2551)
-					if ( ( option.selected || i === index ) &&
-							// Don't return options that are disabled or in a disabled optgroup
-							( support.optDisabled ? !option.disabled : option.getAttribute("disabled") === null ) &&
-							( !option.parentNode.disabled || !jQuery.nodeName( option.parentNode, "optgroup" ) ) ) {
-
-						// Get the specific value for the option
-						value = jQuery( option ).val();
-
-						// We don't need an array for one selects
-						if ( one ) {
-							return value;
-						}
-
-						// Multi-Selects return an array
-						values.push( value );
-					}
-				}
-
-				return values;
-			},
-
-			set: function( elem, value ) {
-				var optionSet, option,
-					options = elem.options,
-					values = jQuery.makeArray( value ),
-					i = options.length;
-
-				while ( i-- ) {
-					option = options[ i ];
-
-					if ( jQuery.inArray( jQuery.valHooks.option.get( option ), values ) >= 0 ) {
-
-						// Support: IE6
-						// When new option element is added to select box we need to
-						// force reflow of newly added node in order to workaround delay
-						// of initialization properties
-						try {
-							option.selected = optionSet = true;
-
-						} catch ( _ ) {
-
-							// Will be executed only in IE6
-							option.scrollHeight;
-						}
-
-					} else {
-						option.selected = false;
-					}
-				}
-
-				// Force browsers to behave consistently when non-matching value is set
-				if ( !optionSet ) {
-					elem.selectedIndex = -1;
-				}
-
-				return options;
-			}
-		}
-	}
-});
-
-// Radios and checkboxes getter/setter
-jQuery.each([ "radio", "checkbox" ], function() {
-	jQuery.valHooks[ this ] = {
-		set: function( elem, value ) {
-			if ( jQuery.isArray( value ) ) {
-				return ( elem.checked = jQuery.inArray( jQuery(elem).val(), value ) >= 0 );
-			}
-		}
-	};
-	if ( !support.checkOn ) {
-		jQuery.valHooks[ this ].get = function( elem ) {
-			// Support: Webkit
-			// "" is returned instead of "on" if a value isn't specified
-			return elem.getAttribute("value") === null ? "on" : elem.value;
-		};
-	}
-});
-
-
-
-
-var nodeHook, boolHook,
-	attrHandle = jQuery.expr.attrHandle,
-	ruseDefault = /^(?:checked|selected)$/i,
-	getSetAttribute = support.getSetAttribute,
-	getSetInput = support.input;
-
-jQuery.fn.extend({
-	attr: function( name, value ) {
-		return access( this, jQuery.attr, name, value, arguments.length > 1 );
-	},
-
-	removeAttr: function( name ) {
-		return this.each(function() {
-			jQuery.removeAttr( this, name );
-		});
-	}
-});
-
-jQuery.extend({
-	attr: function( elem, name, value ) {
-		var hooks, ret,
-			nType = elem.nodeType;
-
-		// don't get/set attributes on text, comment and attribute nodes
-		if ( !elem || nType === 3 || nType === 8 || nType === 2 ) {
-			return;
-		}
-
-		// Fallback to prop when attributes are not supported
-		if ( typeof elem.getAttribute === strundefined ) {
-			return jQuery.prop( elem, name, value );
-		}
-
-		// All attributes are lowercase
-		// Grab necessary hook if one is defined
-		if ( nType !== 1 || !jQuery.isXMLDoc( elem ) ) {
-			name = name.toLowerCase();
-			hooks = jQuery.attrHooks[ name ] ||
-				( jQuery.expr.match.bool.test( name ) ? boolHook : nodeHook );
-		}
-
-		if ( value !== undefined ) {
-
-			if ( value === null ) {
-				jQuery.removeAttr( elem, name );
-
-			} else if ( hooks && "set" in hooks && (ret = hooks.set( elem, value, name )) !== undefined ) {
-				return ret;
-
-			} else {
-				elem.setAttribute( name, value + "" );
-				return value;
-			}
-
-		} else if ( hooks && "get" in hooks && (ret = hooks.get( elem, name )) !== null ) {
-			return ret;
-
-		} else {
-			ret = jQuery.find.attr( elem, name );
-
-			// Non-existent attributes return null, we normalize to undefined
-			return ret == null ?
-				undefined :
-				ret;
-		}
-	},
-
-	removeAttr: function( elem, value ) {
-		var name, propName,
-			i = 0,
-			attrNames = value && value.match( rnotwhite );
-
-		if ( attrNames && elem.nodeType === 1 ) {
-			while ( (name = attrNames[i++]) ) {
-				propName = jQuery.propFix[ name ] || name;
-
-				// Boolean attributes get special treatment (#10870)
-				if ( jQuery.expr.match.bool.test( name ) ) {
-					// Set corresponding property to false
-					if ( getSetInput && getSetAttribute || !ruseDefault.test( name ) ) {
-						elem[ propName ] = false;
-					// Support: IE<9
-					// Also clear defaultChecked/defaultSelected (if appropriate)
-					} else {
-						elem[ jQuery.camelCase( "default-" + name ) ] =
-							elem[ propName ] = false;
-					}
-
-				// See #9699 for explanation of this approach (setting first, then removal)
-				} else {
-					jQuery.attr( elem, name, "" );
-				}
-
-				elem.removeAttribute( getSetAttribute ? name : propName );
-			}
-		}
-	},
-
-	attrHooks: {
-		type: {
-			set: function( elem, value ) {
-				if ( !support.radioValue && value === "radio" && jQuery.nodeName(elem, "input") ) {
-					// Setting the type on a radio button after the value resets the value in IE6-9
-					// Reset value to default in case type is set after value during creation
-					var val = elem.value;
-					elem.setAttribute( "type", value );
-					if ( val ) {
-						elem.value = val;
-					}
-					return value;
-				}
-			}
-		}
-	}
-});
-
-// Hook for boolean attributes
-boolHook = {
-	set: function( elem, value, name ) {
-		if ( value === false ) {
-			// Remove boolean attributes when set to false
-			jQuery.removeAttr( elem, name );
-		} else if ( getSetInput && getSetAttribute || !ruseDefault.test( name ) ) {
-			// IE<8 needs the *property* name
-			elem.setAttribute( !getSetAttribute && jQuery.propFix[ name ] || name, name );
-
-		// Use defaultChecked and defaultSelected for oldIE
-		} else {
-			elem[ jQuery.camelCase( "default-" + name ) ] = elem[ name ] = true;
-		}
-
-		return name;
-	}
-};
-
-// Retrieve booleans specially
-jQuery.each( jQuery.expr.match.bool.source.match( /\w+/g ), function( i, name ) {
-
-	var getter = attrHandle[ name ] || jQuery.find.attr;
-
-	attrHandle[ name ] = getSetInput && getSetAttribute || !ruseDefault.test( name ) ?
-		function( elem, name, isXML ) {
-			var ret, handle;
-			if ( !isXML ) {
-				// Avoid an infinite loop by temporarily removing this function from the getter
-				handle = attrHandle[ name ];
-				attrHandle[ name ] = ret;
-				ret = getter( elem, name, isXML ) != null ?
-					name.toLowerCase() :
-					null;
-				attrHandle[ name ] = handle;
-			}
-			return ret;
-		} :
-		function( elem, name, isXML ) {
-			if ( !isXML ) {
-				return elem[ jQuery.camelCase( "default-" + name ) ] ?
-					name.toLowerCase() :
-					null;
-			}
-		};
-});
-
-// fix oldIE attroperties
-if ( !getSetInput || !getSetAttribute ) {
-	jQuery.attrHooks.value = {
-		set: function( elem, value, name ) {
-			if ( jQuery.nodeName( elem, "input" ) ) {
-				// Does not return so that setAttribute is also used
-				elem.defaultValue = value;
-			} else {
-				// Use nodeHook if defined (#1954); otherwise setAttribute is fine
-				return nodeHook && nodeHook.set( elem, value, name );
-			}
-		}
-	};
-}
-
-// IE6/7 do not support getting/setting some attributes with get/setAttribute
-if ( !getSetAttribute ) {
-
-	// Use this for any attribute in IE6/7
-	// This fixes almost every IE6/7 issue
-	nodeHook = {
-		set: function( elem, value, name ) {
-			// Set the existing or create a new attribute node
-			var ret = elem.getAttributeNode( name );
-			if ( !ret ) {
-				elem.setAttributeNode(
-					(ret = elem.ownerDocument.createAttribute( name ))
-				);
-			}
-
-			ret.value = value += "";
-
-			// Break association with cloned elements by also using setAttribute (#9646)
-			if ( name === "value" || value === elem.getAttribute( name ) ) {
-				return value;
-			}
-		}
-	};
-
-	// Some attributes are constructed with empty-string values when not defined
-	attrHandle.id = attrHandle.name = attrHandle.coords =
-		function( elem, name, isXML ) {
-			var ret;
-			if ( !isXML ) {
-				return (ret = elem.getAttributeNode( name )) && ret.value !== "" ?
-					ret.value :
-					null;
-			}
-		};
-
-	// Fixing value retrieval on a button requires this module
-	jQuery.valHooks.button = {
-		get: function( elem, name ) {
-			var ret = elem.getAttributeNode( name );
-			if ( ret && ret.specified ) {
-				return ret.value;
-			}
-		},
-		set: nodeHook.set
-	};
-
-	// Set contenteditable to false on removals(#10429)
-	// Setting to empty string throws an error as an invalid value
-	jQuery.attrHooks.contenteditable = {
-		set: function( elem, value, name ) {
-			nodeHook.set( elem, value === "" ? false : value, name );
-		}
-	};
-
-	// Set width and height to auto instead of 0 on empty string( Bug #8150 )
-	// This is for removals
-	jQuery.each([ "width", "height" ], function( i, name ) {
-		jQuery.attrHooks[ name ] = {
-			set: function( elem, value ) {
-				if ( value === "" ) {
-					elem.setAttribute( name, "auto" );
-					return value;
-				}
-			}
-		};
-	});
-}
-
-if ( !support.style ) {
-	jQuery.attrHooks.style = {
-		get: function( elem ) {
-			// Return undefined in the case of empty string
-			// Note: IE uppercases css property names, but if we were to .toLowerCase()
-			// .cssText, that would destroy case senstitivity in URL's, like in "background"
-			return elem.style.cssText || undefined;
-		},
-		set: function( elem, value ) {
-			return ( elem.style.cssText = value + "" );
-		}
-	};
-}
-
-
-
-
-var rfocusable = /^(?:input|select|textarea|button|object)$/i,
-	rclickable = /^(?:a|area)$/i;
-
-jQuery.fn.extend({
-	prop: function( name, value ) {
-		return access( this, jQuery.prop, name, value, arguments.length > 1 );
-	},
-
-	removeProp: function( name ) {
-		name = jQuery.propFix[ name ] || name;
-		return this.each(function() {
-			// try/catch handles cases where IE balks (such as removing a property on window)
-			try {
-				this[ name ] = undefined;
-				delete this[ name ];
-			} catch( e ) {}
-		});
-	}
-});
-
-jQuery.extend({
-	propFix: {
-		"for": "htmlFor",
-		"class": "className"
-	},
-
-	prop: function( elem, name, value ) {
-		var ret, hooks, notxml,
-			nType = elem.nodeType;
-
-		// don't get/set properties on text, comment and attribute nodes
-		if ( !elem || nType === 3 || nType === 8 || nType === 2 ) {
-			return;
-		}
-
-		notxml = nType !== 1 || !jQuery.isXMLDoc( elem );
-
-		if ( notxml ) {
-			// Fix name and attach hooks
-			name = jQuery.propFix[ name ] || name;
-			hooks = jQuery.propHooks[ name ];
-		}
-
-		if ( value !== undefined ) {
-			return hooks && "set" in hooks && (ret = hooks.set( elem, value, name )) !== undefined ?
-				ret :
-				( elem[ name ] = value );
-
-		} else {
-			return hooks && "get" in hooks && (ret = hooks.get( elem, name )) !== null ?
-				ret :
-				elem[ name ];
-		}
-	},
-
-	propHooks: {
-		tabIndex: {
-			get: function( elem ) {
-				// elem.tabIndex doesn't always return the correct value when it hasn't been explicitly set
-				// http://fluidproject.org/blog/2008/01/09/getting-setting-and-removing-tabindex-values-with-javascript/
-				// Use proper attribute retrieval(#12072)
-				var tabindex = jQuery.find.attr( elem, "tabindex" );
-
-				return tabindex ?
-					parseInt( tabindex, 10 ) :
-					rfocusable.test( elem.nodeName ) || rclickable.test( elem.nodeName ) && elem.href ?
-						0 :
-						-1;
-			}
-		}
-	}
-});
-
-// Some attributes require a special call on IE
-// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
-if ( !support.hrefNormalized ) {
-	// href/src property should get the full normalized URL (#10299/#12915)
-	jQuery.each([ "href", "src" ], function( i, name ) {
-		jQuery.propHooks[ name ] = {
-			get: function( elem ) {
-				return elem.getAttribute( name, 4 );
-			}
-		};
-	});
-}
-
-// Support: Safari, IE9+
-// mis-reports the default selected property of an option
-// Accessing the parent's selectedIndex property fixes it
-if ( !support.optSelected ) {
-	jQuery.propHooks.selected = {
-		get: function( elem ) {
-			var parent = elem.parentNode;
-
-			if ( parent ) {
-				parent.selectedIndex;
-
-				// Make sure that it also works with optgroups, see #5701
-				if ( parent.parentNode ) {
-					parent.parentNode.selectedIndex;
-				}
-			}
-			return null;
-		}
-	};
-}
-
-jQuery.each([
-	"tabIndex",
-	"readOnly",
-	"maxLength",
-	"cellSpacing",
-	"cellPadding",
-	"rowSpan",
-	"colSpan",
-	"useMap",
-	"frameBorder",
-	"contentEditable"
-], function() {
-	jQuery.propFix[ this.toLowerCase() ] = this;
-});
-
-// IE6/7 call enctype encoding
-if ( !support.enctype ) {
-	jQuery.propFix.enctype = "encoding";
-}
-
-
-
-
-var rclass = /[\t\r\n\f]/g;
-
-jQuery.fn.extend({
-	addClass: function( value ) {
-		var classes, elem, cur, clazz, j, finalValue,
-			i = 0,
-			len = this.length,
-			proceed = typeof value === "string" && value;
-
-		if ( jQuery.isFunction( value ) ) {
-			return this.each(function( j ) {
-				jQuery( this ).addClass( value.call( this, j, this.className ) );
-			});
-		}
-
-		if ( proceed ) {
-			// The disjunction here is for better compressibility (see removeClass)
-			classes = ( value || "" ).match( rnotwhite ) || [];
-
-			for ( ; i < len; i++ ) {
-				elem = this[ i ];
-				cur = elem.nodeType === 1 && ( elem.className ?
-					( " " + elem.className + " " ).replace( rclass, " " ) :
-					" "
-				);
-
-				if ( cur ) {
-					j = 0;
-					while ( (clazz = classes[j++]) ) {
-						if ( cur.indexOf( " " + clazz + " " ) < 0 ) {
-							cur += clazz + " ";
-						}
-					}
-
-					// only assign if different to avoid unneeded rendering.
-					finalValue = jQuery.trim( cur );
-					if ( elem.className !== finalValue ) {
-						elem.className = finalValue;
-					}
-				}
-			}
-		}
-
-		return this;
-	},
-
-	removeClass: function( value ) {
-		var classes, elem, cur, clazz, j, finalValue,
-			i = 0,
-			len = this.length,
-			proceed = arguments.length === 0 || typeof value === "string" && value;
-
-		if ( jQuery.isFunction( value ) ) {
-			return this.each(function( j ) {
-				jQuery( this ).removeClass( value.call( this, j, this.className ) );
-			});
-		}
-		if ( proceed ) {
-			classes = ( value || "" ).match( rnotwhite ) || [];
-
-			for ( ; i < len; i++ ) {
-				elem = this[ i ];
-				// This expression is here for better compressibility (see addClass)
-				cur = elem.nodeType === 1 && ( elem.className ?
-					( " " + elem.className + " " ).replace( rclass, " " ) :
-					""
-				);
-
-				if ( cur ) {
-					j = 0;
-					while ( (clazz = classes[j++]) ) {
-						// Remove *all* instances
-						while ( cur.indexOf( " " + clazz + " " ) >= 0 ) {
-							cur = cur.replace( " " + clazz + " ", " " );
-						}
-					}
-
-					// only assign if different to avoid unneeded rendering.
-					finalValue = value ? jQuery.trim( cur ) : "";
-					if ( elem.className !== finalValue ) {
-						elem.className = finalValue;
-					}
-				}
-			}
-		}
-
-		return this;
-	},
-
-	toggleClass: function( value, stateVal ) {
-		var type = typeof value;
-
-		if ( typeof stateVal === "boolean" && type === "string" ) {
-			return stateVal ? this.addClass( value ) : this.removeClass( value );
-		}
-
-		if ( jQuery.isFunction( value ) ) {
-			return this.each(function( i ) {
-				jQuery( this ).toggleClass( value.call(this, i, this.className, stateVal), stateVal );
-			});
-		}
-
-		return this.each(function() {
-			if ( type === "string" ) {
-				// toggle individual class names
-				var className,
-					i = 0,
-					self = jQuery( this ),
-					classNames = value.match( rnotwhite ) || [];
-
-				while ( (className = classNames[ i++ ]) ) {
-					// check each className given, space separated list
-					if ( self.hasClass( className ) ) {
-						self.removeClass( className );
-					} else {
-						self.addClass( className );
-					}
-				}
-
-			// Toggle whole class name
-			} else if ( type === strundefined || type === "boolean" ) {
-				if ( this.className ) {
-					// store className if set
-					jQuery._data( this, "__className__", this.className );
-				}
-
-				// If the element has a class name or if we're passed "false",
-				// then remove the whole classname (if there was one, the above saved it).
-				// Otherwise bring back whatever was previously saved (if anything),
-				// falling back to the empty string if nothing was stored.
-				this.className = this.className || value === false ? "" : jQuery._data( this, "__className__" ) || "";
-			}
-		});
-	},
-
-	hasClass: function( selector ) {
-		var className = " " + selector + " ",
-			i = 0,
-			l = this.length;
-		for ( ; i < l; i++ ) {
-			if ( this[i].nodeType === 1 && (" " + this[i].className + " ").replace(rclass, " ").indexOf( className ) >= 0 ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-});
-
-
-
-
-// Return jQuery for attributes-only inclusion
-
-
-jQuery.each( ("blur focus focusin focusout load resize scroll unload click dblclick " +
-	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
-	"change select submit keydown keypress keyup error contextmenu").split(" "), function( i, name ) {
-
-	// Handle event binding
-	jQuery.fn[ name ] = function( data, fn ) {
-		return arguments.length > 0 ?
-			this.on( name, null, data, fn ) :
-			this.trigger( name );
-	};
-});
-
-jQuery.fn.extend({
-	hover: function( fnOver, fnOut ) {
-		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
-	},
-
-	bind: function( types, data, fn ) {
-		return this.on( types, null, data, fn );
-	},
-	unbind: function( types, fn ) {
-		return this.off( types, null, fn );
-	},
-
-	delegate: function( selector, types, data, fn ) {
-		return this.on( types, selector, data, fn );
-	},
-	undelegate: function( selector, types, fn ) {
-		// ( namespace ) or ( selector, types [, fn] )
-		return arguments.length === 1 ? this.off( selector, "**" ) : this.off( types, selector || "**", fn );
-	}
-});
-
-
-var nonce = jQuery.now();
-
-var rquery = (/\?/);
-
-
-
-var rvalidtokens = /(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g;
-
-jQuery.parseJSON = function( data ) {
-	// Attempt to parse using the native JSON parser first
-	if ( window.JSON && window.JSON.parse ) {
-		// Support: Android 2.3
-		// Workaround failure to string-cast null input
-		return window.JSON.parse( data + "" );
-	}
-
-	var requireNonComma,
-		depth = null,
-		str = jQuery.trim( data + "" );
-
-	// Guard against invalid (and possibly dangerous) input by ensuring that nothing remains
-	// after removing valid tokens
-	return str && !jQuery.trim( str.replace( rvalidtokens, function( token, comma, open, close ) {
-
-		// Force termination if we see a misplaced comma
-		if ( requireNonComma && comma ) {
-			depth = 0;
-		}
-
-		// Perform no more replacements after returning to outermost depth
-		if ( depth === 0 ) {
-			return token;
-		}
-
-		// Commas must not follow "[", "{", or ","
-		requireNonComma = open || comma;
-
-		// Determine new depth
-		// array/object open ("[" or "{"): depth += true - false (increment)
-		// array/object close ("]" or "}"): depth += false - true (decrement)
-		// other cases ("," or primitive): depth += true - true (numeric cast)
-		depth += !close - !open;
-
-		// Remove this token
-		return "";
-	}) ) ?
-		( Function( "return " + str ) )() :
-		jQuery.error( "Invalid JSON: " + data );
-};
-
-
-// Cross-browser xml parsing
-jQuery.parseXML = function( data ) {
-	var xml, tmp;
-	if ( !data || typeof data !== "string" ) {
-		return null;
-	}
-	try {
-		if ( window.DOMParser ) { // Standard
-			tmp = new DOMParser();
-			xml = tmp.parseFromString( data, "text/xml" );
-		} else { // IE
-			xml = new ActiveXObject( "Microsoft.XMLDOM" );
-			xml.async = "false";
-			xml.loadXML( data );
-		}
-	} catch( e ) {
-		xml = undefined;
-	}
-	if ( !xml || !xml.documentElement || xml.getElementsByTagName( "parsererror" ).length ) {
-		jQuery.error( "Invalid XML: " + data );
-	}
-	return xml;
-};
-
-
-var
-	// Document location
-	ajaxLocParts,
-	ajaxLocation,
-
-	rhash = /#.*$/,
-	rts = /([?&])_=[^&]*/,
-	rheaders = /^(.*?):[ \t]*([^\r\n]*)\r?$/mg, // IE leaves an \r character at EOL
-	// #7653, #8125, #8152: local protocol detection
-	rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
-	rnoContent = /^(?:GET|HEAD)$/,
-	rprotocol = /^\/\//,
-	rurl = /^([\w.+-]+:)(?:\/\/(?:[^\/?#]*@|)([^\/?#:]*)(?::(\d+)|)|)/,
-
-	/* Prefilters
-	 * 1) They are useful to introduce custom dataTypes (see ajax/jsonp.js for an example)
-	 * 2) These are called:
-	 *    - BEFORE asking for a transport
-	 *    - AFTER param serialization (s.data is a string if s.processData is true)
-	 * 3) key is the dataType
-	 * 4) the catchall symbol "*" can be used
-	 * 5) execution will start with transport dataType and THEN continue down to "*" if needed
-	 */
-	prefilters = {},
-
-	/* Transports bindings
-	 * 1) key is the dataType
-	 * 2) the catchall symbol "*" can be used
-	 * 3) selection will start with transport dataType and THEN go to "*" if needed
-	 */
-	transports = {},
-
-	// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
-	allTypes = "*/".concat("*");
-
-// #8138, IE may throw an exception when accessing
-// a field from window.location if document.domain has been set
-try {
-	ajaxLocation = location.href;
-} catch( e ) {
-	// Use the href attribute of an A element
-	// since IE will modify it given document.location
-	ajaxLocation = document.createElement( "a" );
-	ajaxLocation.href = "";
-	ajaxLocation = ajaxLocation.href;
-}
-
-// Segment location into parts
-ajaxLocParts = rurl.exec( ajaxLocation.toLowerCase() ) || [];
-
-// Base "constructor" for jQuery.ajaxPrefilter and jQuery.ajaxTransport
-function addToPrefiltersOrTransports( structure ) {
-
-	// dataTypeExpression is optional and defaults to "*"
-	return function( dataTypeExpression, func ) {
-
-		if ( typeof dataTypeExpression !== "string" ) {
-			func = dataTypeExpression;
-			dataTypeExpression = "*";
-		}
-
-		var dataType,
-			i = 0,
-			dataTypes = dataTypeExpression.toLowerCase().match( rnotwhite ) || [];
-
-		if ( jQuery.isFunction( func ) ) {
-			// For each dataType in the dataTypeExpression
-			while ( (dataType = dataTypes[i++]) ) {
-				// Prepend if requested
-				if ( dataType.charAt( 0 ) === "+" ) {
-					dataType = dataType.slice( 1 ) || "*";
-					(structure[ dataType ] = structure[ dataType ] || []).unshift( func );
-
-				// Otherwise append
-				} else {
-					(structure[ dataType ] = structure[ dataType ] || []).push( func );
-				}
-			}
-		}
-	};
-}
-
-// Base inspection function for prefilters and transports
-function inspectPrefiltersOrTransports( structure, options, originalOptions, jqXHR ) {
-
-	var inspected = {},
-		seekingTransport = ( structure === transports );
-
-	function inspect( dataType ) {
-		var selected;
-		inspected[ dataType ] = true;
-		jQuery.each( structure[ dataType ] || [], function( _, prefilterOrFactory ) {
-			var dataTypeOrTransport = prefilterOrFactory( options, originalOptions, jqXHR );
-			if ( typeof dataTypeOrTransport === "string" && !seekingTransport && !inspected[ dataTypeOrTransport ] ) {
-				options.dataTypes.unshift( dataTypeOrTransport );
-				inspect( dataTypeOrTransport );
-				return false;
-			} else if ( seekingTransport ) {
-				return !( selected = dataTypeOrTransport );
-			}
-		});
-		return selected;
-	}
-
-	return inspect( options.dataTypes[ 0 ] ) || !inspected[ "*" ] && inspect( "*" );
-}
-
-// A special extend for ajax options
-// that takes "flat" options (not to be deep extended)
-// Fixes #9887
-function ajaxExtend( target, src ) {
-	var deep, key,
-		flatOptions = jQuery.ajaxSettings.flatOptions || {};
-
-	for ( key in src ) {
-		if ( src[ key ] !== undefined ) {
-			( flatOptions[ key ] ? target : ( deep || (deep = {}) ) )[ key ] = src[ key ];
-		}
-	}
-	if ( deep ) {
-		jQuery.extend( true, target, deep );
-	}
-
-	return target;
-}
-
-/* Handles responses to an ajax request:
- * - finds the right dataType (mediates between content-type and expected dataType)
- * - returns the corresponding response
- */
-function ajaxHandleResponses( s, jqXHR, responses ) {
-	var firstDataType, ct, finalDataType, type,
-		contents = s.contents,
-		dataTypes = s.dataTypes;
-
-	// Remove auto dataType and get content-type in the process
-	while ( dataTypes[ 0 ] === "*" ) {
-		dataTypes.shift();
-		if ( ct === undefined ) {
-			ct = s.mimeType || jqXHR.getResponseHeader("Content-Type");
-		}
-	}
-
-	// Check if we're dealing with a known content-type
-	if ( ct ) {
-		for ( type in contents ) {
-			if ( contents[ type ] && contents[ type ].test( ct ) ) {
-				dataTypes.unshift( type );
-				break;
-			}
-		}
-	}
-
-	// Check to see if we have a response for the expected dataType
-	if ( dataTypes[ 0 ] in responses ) {
-		finalDataType = dataTypes[ 0 ];
-	} else {
-		// Try convertible dataTypes
-		for ( type in responses ) {
-			if ( !dataTypes[ 0 ] || s.converters[ type + " " + dataTypes[0] ] ) {
-				finalDataType = type;
-				break;
-			}
-			if ( !firstDataType ) {
-				firstDataType = type;
-			}
-		}
-		// Or just use first one
-		finalDataType = finalDataType || firstDataType;
-	}
-
-	// If we found a dataType
-	// We add the dataType to the list if needed
-	// and return the corresponding response
-	if ( finalDataType ) {
-		if ( finalDataType !== dataTypes[ 0 ] ) {
-			dataTypes.unshift( finalDataType );
-		}
-		return responses[ finalDataType ];
-	}
-}
-
-/* Chain conversions given the request and the original response
- * Also sets the responseXXX fields on the jqXHR instance
- */
-function ajaxConvert( s, response, jqXHR, isSuccess ) {
-	var conv2, current, conv, tmp, prev,
-		converters = {},
-		// Work with a copy of dataTypes in case we need to modify it for conversion
-		dataTypes = s.dataTypes.slice();
-
-	// Create converters map with lowercased keys
-	if ( dataTypes[ 1 ] ) {
-		for ( conv in s.converters ) {
-			converters[ conv.toLowerCase() ] = s.converters[ conv ];
-		}
-	}
-
-	current = dataTypes.shift();
-
-	// Convert to each sequential dataType
-	while ( current ) {
-
-		if ( s.responseFields[ current ] ) {
-			jqXHR[ s.responseFields[ current ] ] = response;
-		}
-
-		// Apply the dataFilter if provided
-		if ( !prev && isSuccess && s.dataFilter ) {
-			response = s.dataFilter( response, s.dataType );
-		}
-
-		prev = current;
-		current = dataTypes.shift();
-
-		if ( current ) {
-
-			// There's only work to do if current dataType is non-auto
-			if ( current === "*" ) {
-
-				current = prev;
-
-			// Convert response if prev dataType is non-auto and differs from current
-			} else if ( prev !== "*" && prev !== current ) {
-
-				// Seek a direct converter
-				conv = converters[ prev + " " + current ] || converters[ "* " + current ];
-
-				// If none found, seek a pair
-				if ( !conv ) {
-					for ( conv2 in converters ) {
-
-						// If conv2 outputs current
-						tmp = conv2.split( " " );
-						if ( tmp[ 1 ] === current ) {
-
-							// If prev can be converted to accepted input
-							conv = converters[ prev + " " + tmp[ 0 ] ] ||
-								converters[ "* " + tmp[ 0 ] ];
-							if ( conv ) {
-								// Condense equivalence converters
-								if ( conv === true ) {
-									conv = converters[ conv2 ];
-
-								// Otherwise, insert the intermediate dataType
-								} else if ( converters[ conv2 ] !== true ) {
-									current = tmp[ 0 ];
-									dataTypes.unshift( tmp[ 1 ] );
-								}
-								break;
-							}
-						}
-					}
-				}
-
-				// Apply converter (if not an equivalence)
-				if ( conv !== true ) {
-
-					// Unless errors are allowed to bubble, catch and return them
-					if ( conv && s[ "throws" ] ) {
-						response = conv( response );
-					} else {
-						try {
-							response = conv( response );
-						} catch ( e ) {
-							return { state: "parsererror", error: conv ? e : "No conversion from " + prev + " to " + current };
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return { state: "success", data: response };
-}
-
-jQuery.extend({
-
-	// Counter for holding the number of active queries
-	active: 0,
-
-	// Last-Modified header cache for next request
-	lastModified: {},
-	etag: {},
-
-	ajaxSettings: {
-		url: ajaxLocation,
-		type: "GET",
-		isLocal: rlocalProtocol.test( ajaxLocParts[ 1 ] ),
-		global: true,
-		processData: true,
-		async: true,
-		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-		/*
-		timeout: 0,
-		data: null,
-		dataType: null,
-		username: null,
-		password: null,
-		cache: null,
-		throws: false,
-		traditional: false,
-		headers: {},
-		*/
-
-		accepts: {
-			"*": allTypes,
-			text: "text/plain",
-			html: "text/html",
-			xml: "application/xml, text/xml",
-			json: "application/json, text/javascript"
-		},
-
-		contents: {
-			xml: /xml/,
-			html: /html/,
-			json: /json/
-		},
-
-		responseFields: {
-			xml: "responseXML",
-			text: "responseText",
-			json: "responseJSON"
-		},
-
-		// Data converters
-		// Keys separate source (or catchall "*") and destination types with a single space
-		converters: {
-
-			// Convert anything to text
-			"* text": String,
-
-			// Text to html (true = no transformation)
-			"text html": true,
-
-			// Evaluate text as a json expression
-			"text json": jQuery.parseJSON,
-
-			// Parse text as xml
-			"text xml": jQuery.parseXML
-		},
-
-		// For options that shouldn't be deep extended:
-		// you can add your own custom options here if
-		// and when you create one that shouldn't be
-		// deep extended (see ajaxExtend)
-		flatOptions: {
-			url: true,
-			context: true
-		}
-	},
-
-	// Creates a full fledged settings object into target
-	// with both ajaxSettings and settings fields.
-	// If target is omitted, writes into ajaxSettings.
-	ajaxSetup: function( target, settings ) {
-		return settings ?
-
-			// Building a settings object
-			ajaxExtend( ajaxExtend( target, jQuery.ajaxSettings ), settings ) :
-
-			// Extending ajaxSettings
-			ajaxExtend( jQuery.ajaxSettings, target );
-	},
-
-	ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
-	ajaxTransport: addToPrefiltersOrTransports( transports ),
-
-	// Main method
-	ajax: function( url, options ) {
-
-		// If url is an object, simulate pre-1.5 signature
-		if ( typeof url === "object" ) {
-			options = url;
-			url = undefined;
-		}
-
-		// Force options to be an object
-		options = options || {};
-
-		var // Cross-domain detection vars
-			parts,
-			// Loop variable
-			i,
-			// URL without anti-cache param
-			cacheURL,
-			// Response headers as string
-			responseHeadersString,
-			// timeout handle
-			timeoutTimer,
-
-			// To know if global events are to be dispatched
-			fireGlobals,
-
-			transport,
-			// Response headers
-			responseHeaders,
-			// Create the final options object
-			s = jQuery.ajaxSetup( {}, options ),
-			// Callbacks context
-			callbackContext = s.context || s,
-			// Context for global events is callbackContext if it is a DOM node or jQuery collection
-			globalEventContext = s.context && ( callbackContext.nodeType || callbackContext.jquery ) ?
-				jQuery( callbackContext ) :
-				jQuery.event,
-			// Deferreds
-			deferred = jQuery.Deferred(),
-			completeDeferred = jQuery.Callbacks("once memory"),
-			// Status-dependent callbacks
-			statusCode = s.statusCode || {},
-			// Headers (they are sent all at once)
-			requestHeaders = {},
-			requestHeadersNames = {},
-			// The jqXHR state
-			state = 0,
-			// Default abort message
-			strAbort = "canceled",
-			// Fake xhr
-			jqXHR = {
-				readyState: 0,
-
-				// Builds headers hashtable if needed
-				getResponseHeader: function( key ) {
-					var match;
-					if ( state === 2 ) {
-						if ( !responseHeaders ) {
-							responseHeaders = {};
-							while ( (match = rheaders.exec( responseHeadersString )) ) {
-								responseHeaders[ match[1].toLowerCase() ] = match[ 2 ];
-							}
-						}
-						match = responseHeaders[ key.toLowerCase() ];
-					}
-					return match == null ? null : match;
-				},
-
-				// Raw string
-				getAllResponseHeaders: function() {
-					return state === 2 ? responseHeadersString : null;
-				},
-
-				// Caches the header
-				setRequestHeader: function( name, value ) {
-					var lname = name.toLowerCase();
-					if ( !state ) {
-						name = requestHeadersNames[ lname ] = requestHeadersNames[ lname ] || name;
-						requestHeaders[ name ] = value;
-					}
-					return this;
-				},
-
-				// Overrides response content-type header
-				overrideMimeType: function( type ) {
-					if ( !state ) {
-						s.mimeType = type;
-					}
-					return this;
-				},
-
-				// Status-dependent callbacks
-				statusCode: function( map ) {
-					var code;
-					if ( map ) {
-						if ( state < 2 ) {
-							for ( code in map ) {
-								// Lazy-add the new callback in a way that preserves old ones
-								statusCode[ code ] = [ statusCode[ code ], map[ code ] ];
-							}
-						} else {
-							// Execute the appropriate callbacks
-							jqXHR.always( map[ jqXHR.status ] );
-						}
-					}
-					return this;
-				},
-
-				// Cancel the request
-				abort: function( statusText ) {
-					var finalText = statusText || strAbort;
-					if ( transport ) {
-						transport.abort( finalText );
-					}
-					done( 0, finalText );
-					return this;
-				}
-			};
-
-		// Attach deferreds
-		deferred.promise( jqXHR ).complete = completeDeferred.add;
-		jqXHR.success = jqXHR.done;
-		jqXHR.error = jqXHR.fail;
-
-		// Remove hash character (#7531: and string promotion)
-		// Add protocol if not provided (#5866: IE7 issue with protocol-less urls)
-		// Handle falsy url in the settings object (#10093: consistency with old signature)
-		// We also use the url parameter if available
-		s.url = ( ( url || s.url || ajaxLocation ) + "" ).replace( rhash, "" ).replace( rprotocol, ajaxLocParts[ 1 ] + "//" );
-
-		// Alias method option to type as per ticket #12004
-		s.type = options.method || options.type || s.method || s.type;
-
-		// Extract dataTypes list
-		s.dataTypes = jQuery.trim( s.dataType || "*" ).toLowerCase().match( rnotwhite ) || [ "" ];
-
-		// A cross-domain request is in order when we have a protocol:host:port mismatch
-		if ( s.crossDomain == null ) {
-			parts = rurl.exec( s.url.toLowerCase() );
-			s.crossDomain = !!( parts &&
-				( parts[ 1 ] !== ajaxLocParts[ 1 ] || parts[ 2 ] !== ajaxLocParts[ 2 ] ||
-					( parts[ 3 ] || ( parts[ 1 ] === "http:" ? "80" : "443" ) ) !==
-						( ajaxLocParts[ 3 ] || ( ajaxLocParts[ 1 ] === "http:" ? "80" : "443" ) ) )
-			);
-		}
-
-		// Convert data if not already a string
-		if ( s.data && s.processData && typeof s.data !== "string" ) {
-			s.data = jQuery.param( s.data, s.traditional );
-		}
-
-		// Apply prefilters
-		inspectPrefiltersOrTransports( prefilters, s, options, jqXHR );
-
-		// If request was aborted inside a prefilter, stop there
-		if ( state === 2 ) {
-			return jqXHR;
-		}
-
-		// We can fire global events as of now if asked to
-		fireGlobals = s.global;
-
-		// Watch for a new set of requests
-		if ( fireGlobals && jQuery.active++ === 0 ) {
-			jQuery.event.trigger("ajaxStart");
-		}
-
-		// Uppercase the type
-		s.type = s.type.toUpperCase();
-
-		// Determine if request has content
-		s.hasContent = !rnoContent.test( s.type );
-
-		// Save the URL in case we're toying with the If-Modified-Since
-		// and/or If-None-Match header later on
-		cacheURL = s.url;
-
-		// More options handling for requests with no content
-		if ( !s.hasContent ) {
-
-			// If data is available, append data to url
-			if ( s.data ) {
-				cacheURL = ( s.url += ( rquery.test( cacheURL ) ? "&" : "?" ) + s.data );
-				// #9682: remove data so that it's not used in an eventual retry
-				delete s.data;
-			}
-
-			// Add anti-cache in url if needed
-			if ( s.cache === false ) {
-				s.url = rts.test( cacheURL ) ?
-
-					// If there is already a '_' parameter, set its value
-					cacheURL.replace( rts, "$1_=" + nonce++ ) :
-
-					// Otherwise add one to the end
-					cacheURL + ( rquery.test( cacheURL ) ? "&" : "?" ) + "_=" + nonce++;
-			}
-		}
-
-		// Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
-		if ( s.ifModified ) {
-			if ( jQuery.lastModified[ cacheURL ] ) {
-				jqXHR.setRequestHeader( "If-Modified-Since", jQuery.lastModified[ cacheURL ] );
-			}
-			if ( jQuery.etag[ cacheURL ] ) {
-				jqXHR.setRequestHeader( "If-None-Match", jQuery.etag[ cacheURL ] );
-			}
-		}
-
-		// Set the correct header, if data is being sent
-		if ( s.data && s.hasContent && s.contentType !== false || options.contentType ) {
-			jqXHR.setRequestHeader( "Content-Type", s.contentType );
-		}
-
-		// Set the Accepts header for the server, depending on the dataType
-		jqXHR.setRequestHeader(
-			"Accept",
-			s.dataTypes[ 0 ] && s.accepts[ s.dataTypes[0] ] ?
-				s.accepts[ s.dataTypes[0] ] + ( s.dataTypes[ 0 ] !== "*" ? ", " + allTypes + "; q=0.01" : "" ) :
-				s.accepts[ "*" ]
-		);
-
-		// Check for headers option
-		for ( i in s.headers ) {
-			jqXHR.setRequestHeader( i, s.headers[ i ] );
-		}
-
-		// Allow custom headers/mimetypes and early abort
-		if ( s.beforeSend && ( s.beforeSend.call( callbackContext, jqXHR, s ) === false || state === 2 ) ) {
-			// Abort if not done already and return
-			return jqXHR.abort();
-		}
-
-		// aborting is no longer a cancellation
-		strAbort = "abort";
-
-		// Install callbacks on deferreds
-		for ( i in { success: 1, error: 1, complete: 1 } ) {
-			jqXHR[ i ]( s[ i ] );
-		}
-
-		// Get transport
-		transport = inspectPrefiltersOrTransports( transports, s, options, jqXHR );
-
-		// If no transport, we auto-abort
-		if ( !transport ) {
-			done( -1, "No Transport" );
-		} else {
-			jqXHR.readyState = 1;
-
-			// Send global event
-			if ( fireGlobals ) {
-				globalEventContext.trigger( "ajaxSend", [ jqXHR, s ] );
-			}
-			// Timeout
-			if ( s.async && s.timeout > 0 ) {
-				timeoutTimer = setTimeout(function() {
-					jqXHR.abort("timeout");
-				}, s.timeout );
-			}
-
-			try {
-				state = 1;
-				transport.send( requestHeaders, done );
-			} catch ( e ) {
-				// Propagate exception as error if not done
-				if ( state < 2 ) {
-					done( -1, e );
-				// Simply rethrow otherwise
-				} else {
-					throw e;
-				}
-			}
-		}
-
-		// Callback for when everything is done
-		function done( status, nativeStatusText, responses, headers ) {
-			var isSuccess, success, error, response, modified,
-				statusText = nativeStatusText;
-
-			// Called once
-			if ( state === 2 ) {
-				return;
-			}
-
-			// State is "done" now
-			state = 2;
-
-			// Clear timeout if it exists
-			if ( timeoutTimer ) {
-				clearTimeout( timeoutTimer );
-			}
-
-			// Dereference transport for early garbage collection
-			// (no matter how long the jqXHR object will be used)
-			transport = undefined;
-
-			// Cache response headers
-			responseHeadersString = headers || "";
-
-			// Set readyState
-			jqXHR.readyState = status > 0 ? 4 : 0;
-
-			// Determine if successful
-			isSuccess = status >= 200 && status < 300 || status === 304;
-
-			// Get response data
-			if ( responses ) {
-				response = ajaxHandleResponses( s, jqXHR, responses );
-			}
-
-			// Convert no matter what (that way responseXXX fields are always set)
-			response = ajaxConvert( s, response, jqXHR, isSuccess );
-
-			// If successful, handle type chaining
-			if ( isSuccess ) {
-
-				// Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
-				if ( s.ifModified ) {
-					modified = jqXHR.getResponseHeader("Last-Modified");
-					if ( modified ) {
-						jQuery.lastModified[ cacheURL ] = modified;
-					}
-					modified = jqXHR.getResponseHeader("etag");
-					if ( modified ) {
-						jQuery.etag[ cacheURL ] = modified;
-					}
-				}
-
-				// if no content
-				if ( status === 204 || s.type === "HEAD" ) {
-					statusText = "nocontent";
-
-				// if not modified
-				} else if ( status === 304 ) {
-					statusText = "notmodified";
-
-				// If we have data, let's convert it
-				} else {
-					statusText = response.state;
-					success = response.data;
-					error = response.error;
-					isSuccess = !error;
-				}
-			} else {
-				// We extract error from statusText
-				// then normalize statusText and status for non-aborts
-				error = statusText;
-				if ( status || !statusText ) {
-					statusText = "error";
-					if ( status < 0 ) {
-						status = 0;
-					}
-				}
-			}
-
-			// Set data for the fake xhr object
-			jqXHR.status = status;
-			jqXHR.statusText = ( nativeStatusText || statusText ) + "";
-
-			// Success/Error
-			if ( isSuccess ) {
-				deferred.resolveWith( callbackContext, [ success, statusText, jqXHR ] );
-			} else {
-				deferred.rejectWith( callbackContext, [ jqXHR, statusText, error ] );
-			}
-
-			// Status-dependent callbacks
-			jqXHR.statusCode( statusCode );
-			statusCode = undefined;
-
-			if ( fireGlobals ) {
-				globalEventContext.trigger( isSuccess ? "ajaxSuccess" : "ajaxError",
-					[ jqXHR, s, isSuccess ? success : error ] );
-			}
-
-			// Complete
-			completeDeferred.fireWith( callbackContext, [ jqXHR, statusText ] );
-
-			if ( fireGlobals ) {
-				globalEventContext.trigger( "ajaxComplete", [ jqXHR, s ] );
-				// Handle the global AJAX counter
-				if ( !( --jQuery.active ) ) {
-					jQuery.event.trigger("ajaxStop");
-				}
-			}
-		}
-
-		return jqXHR;
-	},
-
-	getJSON: function( url, data, callback ) {
-		return jQuery.get( url, data, callback, "json" );
-	},
-
-	getScript: function( url, callback ) {
-		return jQuery.get( url, undefined, callback, "script" );
-	}
-});
-
-jQuery.each( [ "get", "post" ], function( i, method ) {
-	jQuery[ method ] = function( url, data, callback, type ) {
-		// shift arguments if data argument was omitted
-		if ( jQuery.isFunction( data ) ) {
-			type = type || callback;
-			callback = data;
-			data = undefined;
-		}
-
-		return jQuery.ajax({
-			url: url,
-			type: method,
-			dataType: type,
-			data: data,
-			success: callback
-		});
-	};
-});
-
-// Attach a bunch of functions for handling common AJAX events
-jQuery.each( [ "ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend" ], function( i, type ) {
-	jQuery.fn[ type ] = function( fn ) {
-		return this.on( type, fn );
-	};
-});
-
-
-jQuery._evalUrl = function( url ) {
-	return jQuery.ajax({
-		url: url,
-		type: "GET",
-		dataType: "script",
-		async: false,
-		global: false,
-		"throws": true
-	});
-};
-
-
-jQuery.fn.extend({
-	wrapAll: function( html ) {
-		if ( jQuery.isFunction( html ) ) {
-			return this.each(function(i) {
-				jQuery(this).wrapAll( html.call(this, i) );
-			});
-		}
-
-		if ( this[0] ) {
-			// The elements to wrap the target around
-			var wrap = jQuery( html, this[0].ownerDocument ).eq(0).clone(true);
-
-			if ( this[0].parentNode ) {
-				wrap.insertBefore( this[0] );
-			}
-
-			wrap.map(function() {
-				var elem = this;
-
-				while ( elem.firstChild && elem.firstChild.nodeType === 1 ) {
-					elem = elem.firstChild;
-				}
-
-				return elem;
-			}).append( this );
-		}
-
-		return this;
-	},
-
-	wrapInner: function( html ) {
-		if ( jQuery.isFunction( html ) ) {
-			return this.each(function(i) {
-				jQuery(this).wrapInner( html.call(this, i) );
-			});
-		}
-
-		return this.each(function() {
-			var self = jQuery( this ),
-				contents = self.contents();
-
-			if ( contents.length ) {
-				contents.wrapAll( html );
-
-			} else {
-				self.append( html );
-			}
-		});
-	},
-
-	wrap: function( html ) {
-		var isFunction = jQuery.isFunction( html );
-
-		return this.each(function(i) {
-			jQuery( this ).wrapAll( isFunction ? html.call(this, i) : html );
-		});
-	},
-
-	unwrap: function() {
-		return this.parent().each(function() {
-			if ( !jQuery.nodeName( this, "body" ) ) {
-				jQuery( this ).replaceWith( this.childNodes );
-			}
-		}).end();
-	}
-});
-
-
-jQuery.expr.filters.hidden = function( elem ) {
-	// Support: Opera <= 12.12
-	// Opera reports offsetWidths and offsetHeights less than zero on some elements
-	return elem.offsetWidth <= 0 && elem.offsetHeight <= 0 ||
-		(!support.reliableHiddenOffsets() &&
-			((elem.style && elem.style.display) || jQuery.css( elem, "display" )) === "none");
-};
-
-jQuery.expr.filters.visible = function( elem ) {
-	return !jQuery.expr.filters.hidden( elem );
-};
-
-
-
-
-var r20 = /%20/g,
-	rbracket = /\[\]$/,
-	rCRLF = /\r?\n/g,
-	rsubmitterTypes = /^(?:submit|button|image|reset|file)$/i,
-	rsubmittable = /^(?:input|select|textarea|keygen)/i;
-
-function buildParams( prefix, obj, traditional, add ) {
-	var name;
-
-	if ( jQuery.isArray( obj ) ) {
-		// Serialize array item.
-		jQuery.each( obj, function( i, v ) {
-			if ( traditional || rbracket.test( prefix ) ) {
-				// Treat each array item as a scalar.
-				add( prefix, v );
-
-			} else {
-				// Item is non-scalar (array or object), encode its numeric index.
-				buildParams( prefix + "[" + ( typeof v === "object" ? i : "" ) + "]", v, traditional, add );
-			}
-		});
-
-	} else if ( !traditional && jQuery.type( obj ) === "object" ) {
-		// Serialize object item.
-		for ( name in obj ) {
-			buildParams( prefix + "[" + name + "]", obj[ name ], traditional, add );
-		}
-
-	} else {
-		// Serialize scalar item.
-		add( prefix, obj );
-	}
-}
-
-// Serialize an array of form elements or a set of
-// key/values into a query string
-jQuery.param = function( a, traditional ) {
-	var prefix,
-		s = [],
-		add = function( key, value ) {
-			// If value is a function, invoke it and return its value
-			value = jQuery.isFunction( value ) ? value() : ( value == null ? "" : value );
-			s[ s.length ] = encodeURIComponent( key ) + "=" + encodeURIComponent( value );
-		};
-
-	// Set traditional to true for jQuery <= 1.3.2 behavior.
-	if ( traditional === undefined ) {
-		traditional = jQuery.ajaxSettings && jQuery.ajaxSettings.traditional;
-	}
-
-	// If an array was passed in, assume that it is an array of form elements.
-	if ( jQuery.isArray( a ) || ( a.jquery && !jQuery.isPlainObject( a ) ) ) {
-		// Serialize the form elements
-		jQuery.each( a, function() {
-			add( this.name, this.value );
-		});
-
-	} else {
-		// If traditional, encode the "old" way (the way 1.3.2 or older
-		// did it), otherwise encode params recursively.
-		for ( prefix in a ) {
-			buildParams( prefix, a[ prefix ], traditional, add );
-		}
-	}
-
-	// Return the resulting serialization
-	return s.join( "&" ).replace( r20, "+" );
-};
-
-jQuery.fn.extend({
-	serialize: function() {
-		return jQuery.param( this.serializeArray() );
-	},
-	serializeArray: function() {
-		return this.map(function() {
-			// Can add propHook for "elements" to filter or add form elements
-			var elements = jQuery.prop( this, "elements" );
-			return elements ? jQuery.makeArray( elements ) : this;
-		})
-		.filter(function() {
-			var type = this.type;
-			// Use .is(":disabled") so that fieldset[disabled] works
-			return this.name && !jQuery( this ).is( ":disabled" ) &&
-				rsubmittable.test( this.nodeName ) && !rsubmitterTypes.test( type ) &&
-				( this.checked || !rcheckableType.test( type ) );
-		})
-		.map(function( i, elem ) {
-			var val = jQuery( this ).val();
-
-			return val == null ?
-				null :
-				jQuery.isArray( val ) ?
-					jQuery.map( val, function( val ) {
-						return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
-					}) :
-					{ name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
-		}).get();
-	}
-});
-
-
-// Create the request object
-// (This is still attached to ajaxSettings for backward compatibility)
-jQuery.ajaxSettings.xhr = window.ActiveXObject !== undefined ?
-	// Support: IE6+
-	function() {
-
-		// XHR cannot access local files, always use ActiveX for that case
-		return !this.isLocal &&
-
-			// Support: IE7-8
-			// oldIE XHR does not support non-RFC2616 methods (#13240)
-			// See http://msdn.microsoft.com/en-us/library/ie/ms536648(v=vs.85).aspx
-			// and http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9
-			// Although this check for six methods instead of eight
-			// since IE also does not support "trace" and "connect"
-			/^(get|post|head|put|delete|options)$/i.test( this.type ) &&
-
-			createStandardXHR() || createActiveXHR();
-	} :
-	// For all other browsers, use the standard XMLHttpRequest object
-	createStandardXHR;
-
-var xhrId = 0,
-	xhrCallbacks = {},
-	xhrSupported = jQuery.ajaxSettings.xhr();
-
-// Support: IE<10
-// Open requests must be manually aborted on unload (#5280)
-if ( window.ActiveXObject ) {
-	jQuery( window ).on( "unload", function() {
-		for ( var key in xhrCallbacks ) {
-			xhrCallbacks[ key ]( undefined, true );
-		}
-	});
-}
-
-// Determine support properties
-support.cors = !!xhrSupported && ( "withCredentials" in xhrSupported );
-xhrSupported = support.ajax = !!xhrSupported;
-
-// Create transport if the browser can provide an xhr
-if ( xhrSupported ) {
-
-	jQuery.ajaxTransport(function( options ) {
-		// Cross domain only allowed if supported through XMLHttpRequest
-		if ( !options.crossDomain || support.cors ) {
-
-			var callback;
-
-			return {
-				send: function( headers, complete ) {
-					var i,
-						xhr = options.xhr(),
-						id = ++xhrId;
-
-					// Open the socket
-					xhr.open( options.type, options.url, options.async, options.username, options.password );
-
-					// Apply custom fields if provided
-					if ( options.xhrFields ) {
-						for ( i in options.xhrFields ) {
-							xhr[ i ] = options.xhrFields[ i ];
-						}
-					}
-
-					// Override mime type if needed
-					if ( options.mimeType && xhr.overrideMimeType ) {
-						xhr.overrideMimeType( options.mimeType );
-					}
-
-					// X-Requested-With header
-					// For cross-domain requests, seeing as conditions for a preflight are
-					// akin to a jigsaw puzzle, we simply never set it to be sure.
-					// (it can always be set on a per-request basis or even using ajaxSetup)
-					// For same-domain requests, won't change header if already provided.
-					if ( !options.crossDomain && !headers["X-Requested-With"] ) {
-						headers["X-Requested-With"] = "XMLHttpRequest";
-					}
-
-					// Set headers
-					for ( i in headers ) {
-						// Support: IE<9
-						// IE's ActiveXObject throws a 'Type Mismatch' exception when setting
-						// request header to a null-value.
-						//
-						// To keep consistent with other XHR implementations, cast the value
-						// to string and ignore `undefined`.
-						if ( headers[ i ] !== undefined ) {
-							xhr.setRequestHeader( i, headers[ i ] + "" );
-						}
-					}
-
-					// Do send the request
-					// This may raise an exception which is actually
-					// handled in jQuery.ajax (so no try/catch here)
-					xhr.send( ( options.hasContent && options.data ) || null );
-
-					// Listener
-					callback = function( _, isAbort ) {
-						var status, statusText, responses;
-
-						// Was never called and is aborted or complete
-						if ( callback && ( isAbort || xhr.readyState === 4 ) ) {
-							// Clean up
-							delete xhrCallbacks[ id ];
-							callback = undefined;
-							xhr.onreadystatechange = jQuery.noop;
-
-							// Abort manually if needed
-							if ( isAbort ) {
-								if ( xhr.readyState !== 4 ) {
-									xhr.abort();
-								}
-							} else {
-								responses = {};
-								status = xhr.status;
-
-								// Support: IE<10
-								// Accessing binary-data responseText throws an exception
-								// (#11426)
-								if ( typeof xhr.responseText === "string" ) {
-									responses.text = xhr.responseText;
-								}
-
-								// Firefox throws an exception when accessing
-								// statusText for faulty cross-domain requests
-								try {
-									statusText = xhr.statusText;
-								} catch( e ) {
-									// We normalize with Webkit giving an empty statusText
-									statusText = "";
-								}
-
-								// Filter status for non standard behaviors
-
-								// If the request is local and we have data: assume a success
-								// (success with no data won't get notified, that's the best we
-								// can do given current implementations)
-								if ( !status && options.isLocal && !options.crossDomain ) {
-									status = responses.text ? 200 : 404;
-								// IE - #1450: sometimes returns 1223 when it should be 204
-								} else if ( status === 1223 ) {
-									status = 204;
-								}
-							}
-						}
-
-						// Call complete if needed
-						if ( responses ) {
-							complete( status, statusText, responses, xhr.getAllResponseHeaders() );
-						}
-					};
-
-					if ( !options.async ) {
-						// if we're in sync mode we fire the callback
-						callback();
-					} else if ( xhr.readyState === 4 ) {
-						// (IE6 & IE7) if it's in cache and has been
-						// retrieved directly we need to fire the callback
-						setTimeout( callback );
-					} else {
-						// Add to the list of active xhr callbacks
-						xhr.onreadystatechange = xhrCallbacks[ id ] = callback;
-					}
-				},
-
-				abort: function() {
-					if ( callback ) {
-						callback( undefined, true );
-					}
-				}
-			};
-		}
-	});
-}
-
-// Functions to create xhrs
-function createStandardXHR() {
-	try {
-		return new window.XMLHttpRequest();
-	} catch( e ) {}
-}
-
-function createActiveXHR() {
-	try {
-		return new window.ActiveXObject( "Microsoft.XMLHTTP" );
-	} catch( e ) {}
-}
-
-
-
-
-// Install script dataType
-jQuery.ajaxSetup({
-	accepts: {
-		script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
-	},
-	contents: {
-		script: /(?:java|ecma)script/
-	},
-	converters: {
-		"text script": function( text ) {
-			jQuery.globalEval( text );
-			return text;
-		}
-	}
-});
-
-// Handle cache's special case and global
-jQuery.ajaxPrefilter( "script", function( s ) {
-	if ( s.cache === undefined ) {
-		s.cache = false;
-	}
-	if ( s.crossDomain ) {
-		s.type = "GET";
-		s.global = false;
-	}
-});
-
-// Bind script tag hack transport
-jQuery.ajaxTransport( "script", function(s) {
-
-	// This transport only deals with cross domain requests
-	if ( s.crossDomain ) {
-
-		var script,
-			head = document.head || jQuery("head")[0] || document.documentElement;
-
-		return {
-
-			send: function( _, callback ) {
-
-				script = document.createElement("script");
-
-				script.async = true;
-
-				if ( s.scriptCharset ) {
-					script.charset = s.scriptCharset;
-				}
-
-				script.src = s.url;
-
-				// Attach handlers for all browsers
-				script.onload = script.onreadystatechange = function( _, isAbort ) {
-
-					if ( isAbort || !script.readyState || /loaded|complete/.test( script.readyState ) ) {
-
-						// Handle memory leak in IE
-						script.onload = script.onreadystatechange = null;
-
-						// Remove the script
-						if ( script.parentNode ) {
-							script.parentNode.removeChild( script );
-						}
-
-						// Dereference the script
-						script = null;
-
-						// Callback if not abort
-						if ( !isAbort ) {
-							callback( 200, "success" );
-						}
-					}
-				};
-
-				// Circumvent IE6 bugs with base elements (#2709 and #4378) by prepending
-				// Use native DOM manipulation to avoid our domManip AJAX trickery
-				head.insertBefore( script, head.firstChild );
-			},
-
-			abort: function() {
-				if ( script ) {
-					script.onload( undefined, true );
-				}
-			}
-		};
-	}
-});
-
-
-
-
-var oldCallbacks = [],
-	rjsonp = /(=)\?(?=&|$)|\?\?/;
-
-// Default jsonp settings
-jQuery.ajaxSetup({
-	jsonp: "callback",
-	jsonpCallback: function() {
-		var callback = oldCallbacks.pop() || ( jQuery.expando + "_" + ( nonce++ ) );
-		this[ callback ] = true;
-		return callback;
-	}
-});
-
-// Detect, normalize options and install callbacks for jsonp requests
-jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
-
-	var callbackName, overwritten, responseContainer,
-		jsonProp = s.jsonp !== false && ( rjsonp.test( s.url ) ?
-			"url" :
-			typeof s.data === "string" && !( s.contentType || "" ).indexOf("application/x-www-form-urlencoded") && rjsonp.test( s.data ) && "data"
-		);
-
-	// Handle iff the expected data type is "jsonp" or we have a parameter to set
-	if ( jsonProp || s.dataTypes[ 0 ] === "jsonp" ) {
-
-		// Get callback name, remembering preexisting value associated with it
-		callbackName = s.jsonpCallback = jQuery.isFunction( s.jsonpCallback ) ?
-			s.jsonpCallback() :
-			s.jsonpCallback;
-
-		// Insert callback into url or form data
-		if ( jsonProp ) {
-			s[ jsonProp ] = s[ jsonProp ].replace( rjsonp, "$1" + callbackName );
-		} else if ( s.jsonp !== false ) {
-			s.url += ( rquery.test( s.url ) ? "&" : "?" ) + s.jsonp + "=" + callbackName;
-		}
-
-		// Use data converter to retrieve json after script execution
-		s.converters["script json"] = function() {
-			if ( !responseContainer ) {
-				jQuery.error( callbackName + " was not called" );
-			}
-			return responseContainer[ 0 ];
-		};
-
-		// force json dataType
-		s.dataTypes[ 0 ] = "json";
-
-		// Install callback
-		overwritten = window[ callbackName ];
-		window[ callbackName ] = function() {
-			responseContainer = arguments;
-		};
-
-		// Clean-up function (fires after converters)
-		jqXHR.always(function() {
-			// Restore preexisting value
-			window[ callbackName ] = overwritten;
-
-			// Save back as free
-			if ( s[ callbackName ] ) {
-				// make sure that re-using the options doesn't screw things around
-				s.jsonpCallback = originalSettings.jsonpCallback;
-
-				// save the callback name for future use
-				oldCallbacks.push( callbackName );
-			}
-
-			// Call if it was a function and we have a response
-			if ( responseContainer && jQuery.isFunction( overwritten ) ) {
-				overwritten( responseContainer[ 0 ] );
-			}
-
-			responseContainer = overwritten = undefined;
-		});
-
-		// Delegate to script
-		return "script";
-	}
-});
-
-
-
-
-// data: string of html
-// context (optional): If specified, the fragment will be created in this context, defaults to document
-// keepScripts (optional): If true, will include scripts passed in the html string
-jQuery.parseHTML = function( data, context, keepScripts ) {
-	if ( !data || typeof data !== "string" ) {
-		return null;
-	}
-	if ( typeof context === "boolean" ) {
-		keepScripts = context;
-		context = false;
-	}
-	context = context || document;
-
-	var parsed = rsingleTag.exec( data ),
-		scripts = !keepScripts && [];
-
-	// Single tag
-	if ( parsed ) {
-		return [ context.createElement( parsed[1] ) ];
-	}
-
-	parsed = jQuery.buildFragment( [ data ], context, scripts );
-
-	if ( scripts && scripts.length ) {
-		jQuery( scripts ).remove();
-	}
-
-	return jQuery.merge( [], parsed.childNodes );
-};
-
-
-// Keep a copy of the old load method
-var _load = jQuery.fn.load;
-
-/**
- * Load a url into a page
- */
-jQuery.fn.load = function( url, params, callback ) {
-	if ( typeof url !== "string" && _load ) {
-		return _load.apply( this, arguments );
-	}
-
-	var selector, response, type,
-		self = this,
-		off = url.indexOf(" ");
-
-	if ( off >= 0 ) {
-		selector = url.slice( off, url.length );
-		url = url.slice( 0, off );
-	}
-
-	// If it's a function
-	if ( jQuery.isFunction( params ) ) {
-
-		// We assume that it's the callback
-		callback = params;
-		params = undefined;
-
-	// Otherwise, build a param string
-	} else if ( params && typeof params === "object" ) {
-		type = "POST";
-	}
-
-	// If we have elements to modify, make the request
-	if ( self.length > 0 ) {
-		jQuery.ajax({
-			url: url,
-
-			// if "type" variable is undefined, then "GET" method will be used
-			type: type,
-			dataType: "html",
-			data: params
-		}).done(function( responseText ) {
-
-			// Save response for use in complete callback
-			response = arguments;
-
-			self.html( selector ?
-
-				// If a selector was specified, locate the right elements in a dummy div
-				// Exclude scripts to avoid IE 'Permission Denied' errors
-				jQuery("<div>").append( jQuery.parseHTML( responseText ) ).find( selector ) :
-
-				// Otherwise use the full result
-				responseText );
-
-		}).complete( callback && function( jqXHR, status ) {
-			self.each( callback, response || [ jqXHR.responseText, status, jqXHR ] );
-		});
-	}
-
-	return this;
-};
-
-
-
-
-jQuery.expr.filters.animated = function( elem ) {
-	return jQuery.grep(jQuery.timers, function( fn ) {
-		return elem === fn.elem;
-	}).length;
-};
-
-
-
-
-
-var docElem = window.document.documentElement;
-
-/**
- * Gets a window from an element
- */
-function getWindow( elem ) {
-	return jQuery.isWindow( elem ) ?
-		elem :
-		elem.nodeType === 9 ?
-			elem.defaultView || elem.parentWindow :
-			false;
-}
-
-jQuery.offset = {
-	setOffset: function( elem, options, i ) {
-		var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
-			position = jQuery.css( elem, "position" ),
-			curElem = jQuery( elem ),
-			props = {};
-
-		// set position first, in-case top/left are set even on static elem
-		if ( position === "static" ) {
-			elem.style.position = "relative";
-		}
-
-		curOffset = curElem.offset();
-		curCSSTop = jQuery.css( elem, "top" );
-		curCSSLeft = jQuery.css( elem, "left" );
-		calculatePosition = ( position === "absolute" || position === "fixed" ) &&
-			jQuery.inArray("auto", [ curCSSTop, curCSSLeft ] ) > -1;
-
-		// need to be able to calculate position if either top or left is auto and position is either absolute or fixed
-		if ( calculatePosition ) {
-			curPosition = curElem.position();
-			curTop = curPosition.top;
-			curLeft = curPosition.left;
-		} else {
-			curTop = parseFloat( curCSSTop ) || 0;
-			curLeft = parseFloat( curCSSLeft ) || 0;
-		}
-
-		if ( jQuery.isFunction( options ) ) {
-			options = options.call( elem, i, curOffset );
-		}
-
-		if ( options.top != null ) {
-			props.top = ( options.top - curOffset.top ) + curTop;
-		}
-		if ( options.left != null ) {
-			props.left = ( options.left - curOffset.left ) + curLeft;
-		}
-
-		if ( "using" in options ) {
-			options.using.call( elem, props );
-		} else {
-			curElem.css( props );
-		}
-	}
-};
-
-jQuery.fn.extend({
-	offset: function( options ) {
-		if ( arguments.length ) {
-			return options === undefined ?
-				this :
-				this.each(function( i ) {
-					jQuery.offset.setOffset( this, options, i );
-				});
-		}
-
-		var docElem, win,
-			box = { top: 0, left: 0 },
-			elem = this[ 0 ],
-			doc = elem && elem.ownerDocument;
-
-		if ( !doc ) {
-			return;
-		}
-
-		docElem = doc.documentElement;
-
-		// Make sure it's not a disconnected DOM node
-		if ( !jQuery.contains( docElem, elem ) ) {
-			return box;
-		}
-
-		// If we don't have gBCR, just use 0,0 rather than error
-		// BlackBerry 5, iOS 3 (original iPhone)
-		if ( typeof elem.getBoundingClientRect !== strundefined ) {
-			box = elem.getBoundingClientRect();
-		}
-		win = getWindow( doc );
-		return {
-			top: box.top  + ( win.pageYOffset || docElem.scrollTop )  - ( docElem.clientTop  || 0 ),
-			left: box.left + ( win.pageXOffset || docElem.scrollLeft ) - ( docElem.clientLeft || 0 )
-		};
-	},
-
-	position: function() {
-		if ( !this[ 0 ] ) {
-			return;
-		}
-
-		var offsetParent, offset,
-			parentOffset = { top: 0, left: 0 },
-			elem = this[ 0 ];
-
-		// fixed elements are offset from window (parentOffset = {top:0, left: 0}, because it is its only offset parent
-		if ( jQuery.css( elem, "position" ) === "fixed" ) {
-			// we assume that getBoundingClientRect is available when computed position is fixed
-			offset = elem.getBoundingClientRect();
-		} else {
-			// Get *real* offsetParent
-			offsetParent = this.offsetParent();
-
-			// Get correct offsets
-			offset = this.offset();
-			if ( !jQuery.nodeName( offsetParent[ 0 ], "html" ) ) {
-				parentOffset = offsetParent.offset();
-			}
-
-			// Add offsetParent borders
-			parentOffset.top  += jQuery.css( offsetParent[ 0 ], "borderTopWidth", true );
-			parentOffset.left += jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true );
-		}
-
-		// Subtract parent offsets and element margins
-		// note: when an element has margin: auto the offsetLeft and marginLeft
-		// are the same in Safari causing offset.left to incorrectly be 0
-		return {
-			top:  offset.top  - parentOffset.top - jQuery.css( elem, "marginTop", true ),
-			left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true)
-		};
-	},
-
-	offsetParent: function() {
-		return this.map(function() {
-			var offsetParent = this.offsetParent || docElem;
-
-			while ( offsetParent && ( !jQuery.nodeName( offsetParent, "html" ) && jQuery.css( offsetParent, "position" ) === "static" ) ) {
-				offsetParent = offsetParent.offsetParent;
-			}
-			return offsetParent || docElem;
-		});
-	}
-});
-
-// Create scrollLeft and scrollTop methods
-jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( method, prop ) {
-	var top = /Y/.test( prop );
-
-	jQuery.fn[ method ] = function( val ) {
-		return access( this, function( elem, method, val ) {
-			var win = getWindow( elem );
-
-			if ( val === undefined ) {
-				return win ? (prop in win) ? win[ prop ] :
-					win.document.documentElement[ method ] :
-					elem[ method ];
-			}
-
-			if ( win ) {
-				win.scrollTo(
-					!top ? val : jQuery( win ).scrollLeft(),
-					top ? val : jQuery( win ).scrollTop()
-				);
-
-			} else {
-				elem[ method ] = val;
-			}
-		}, method, val, arguments.length, null );
-	};
-});
-
-// Add the top/left cssHooks using jQuery.fn.position
-// Webkit bug: https://bugs.webkit.org/show_bug.cgi?id=29084
-// getComputedStyle returns percent when specified for top/left/bottom/right
-// rather than make the css module depend on the offset module, we just check for it here
-jQuery.each( [ "top", "left" ], function( i, prop ) {
-	jQuery.cssHooks[ prop ] = addGetHookIf( support.pixelPosition,
-		function( elem, computed ) {
-			if ( computed ) {
-				computed = curCSS( elem, prop );
-				// if curCSS returns percentage, fallback to offset
-				return rnumnonpx.test( computed ) ?
-					jQuery( elem ).position()[ prop ] + "px" :
-					computed;
-			}
-		}
-	);
-});
-
-
-// Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
-jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
-	jQuery.each( { padding: "inner" + name, content: type, "": "outer" + name }, function( defaultExtra, funcName ) {
-		// margin is only for outerHeight, outerWidth
-		jQuery.fn[ funcName ] = function( margin, value ) {
-			var chainable = arguments.length && ( defaultExtra || typeof margin !== "boolean" ),
-				extra = defaultExtra || ( margin === true || value === true ? "margin" : "border" );
-
-			return access( this, function( elem, type, value ) {
-				var doc;
-
-				if ( jQuery.isWindow( elem ) ) {
-					// As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
-					// isn't a whole lot we can do. See pull request at this URL for discussion:
-					// https://github.com/jquery/jquery/pull/764
-					return elem.document.documentElement[ "client" + name ];
-				}
-
-				// Get document width or height
-				if ( elem.nodeType === 9 ) {
-					doc = elem.documentElement;
-
-					// Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height], whichever is greatest
-					// unfortunately, this causes bug #3838 in IE6/8 only, but there is currently no good, small way to fix it.
-					return Math.max(
-						elem.body[ "scroll" + name ], doc[ "scroll" + name ],
-						elem.body[ "offset" + name ], doc[ "offset" + name ],
-						doc[ "client" + name ]
-					);
-				}
-
-				return value === undefined ?
-					// Get width or height on the element, requesting but not forcing parseFloat
-					jQuery.css( elem, type, extra ) :
-
-					// Set width or height on the element
-					jQuery.style( elem, type, value, extra );
-			}, type, chainable ? margin : undefined, chainable, null );
-		};
-	});
-});
-
-
-// The number of elements contained in the matched element set
-jQuery.fn.size = function() {
-	return this.length;
-};
-
-jQuery.fn.andSelf = jQuery.fn.addBack;
-
-
-
-
-// Register as a named AMD module, since jQuery can be concatenated with other
-// files that may use define, but not via a proper concatenation script that
-// understands anonymous AMD modules. A named AMD is safest and most robust
-// way to register. Lowercase jquery is used because AMD module names are
-// derived from file names, and jQuery is normally delivered in a lowercase
-// file name. Do this after creating the global so that if an AMD module wants
-// to call noConflict to hide this version of jQuery, it will work.
-if ( typeof define === "function" && define.amd ) {
-	define( "jquery", [], function() {
-		return jQuery;
-	});
-}
-
-
-
-
-var
-	// Map over jQuery in case of overwrite
-	_jQuery = window.jQuery,
-
-	// Map over the $ in case of overwrite
-	_$ = window.$;
-
-jQuery.noConflict = function( deep ) {
-	if ( window.$ === jQuery ) {
-		window.$ = _$;
-	}
-
-	if ( deep && window.jQuery === jQuery ) {
-		window.jQuery = _jQuery;
-	}
-
-	return jQuery;
-};
-
-// Expose jQuery and $ identifiers, even in
-// AMD (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
-// and CommonJS for browser emulators (#13566)
-if ( typeof noGlobal === strundefined ) {
-	window.jQuery = window.$ = jQuery;
-}
-
-
-
-
-return jQuery;
-
-}));
 
 define('jquery-private',['jquery'], function (jq) {
     return jq.noConflict( true );
@@ -10823,6 +489,7725 @@ define('utils',["jquery"], function ($) {
     return utils;
 });
 
+/*!
+ * jQuery Browser Plugin v0.0.6
+ * https://github.com/gabceb/jquery-browser-plugin
+ *
+ * Original jquery-browser code Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
+ * http://jquery.org/license
+ *
+ * Modifications Copyright 2013 Gabriel Cebrian
+ * https://github.com/gabceb
+ *
+ * Released under the MIT license
+ *
+ * Date: 2013-07-29T17:23:27-07:00
+ */
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define('jquery.browser',['jquery'], function ($) {
+            factory($, root);
+        });
+    } else {
+        // Browser globals
+        factory(jQuery, root);
+    }
+}(this, function(jQuery, window) {
+  
+
+  var matched, browser;
+
+  jQuery.uaMatch = function( ua ) {
+    ua = ua.toLowerCase();
+
+  	var match = /(opr)[\/]([\w.]+)/.exec( ua ) ||
+  		/(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+  		/(version)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
+  		/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+  		/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+  		/(msie) ([\w.]+)/.exec( ua ) ||
+  		ua.indexOf("trident") >= 0 && /(rv)(?::| )([\w.]+)/.exec( ua ) ||
+  		ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+  		[];
+
+  	var platform_match = /(ipad)/.exec( ua ) ||
+  		/(iphone)/.exec( ua ) ||
+  		/(android)/.exec( ua ) ||
+  		/(windows phone)/.exec( ua ) ||
+  		/(win)/.exec( ua ) ||
+  		/(mac)/.exec( ua ) ||
+  		/(linux)/.exec( ua ) ||
+  		/(cros)/i.exec( ua ) ||
+  		[];
+
+  	return {
+  		browser: match[ 3 ] || match[ 1 ] || "",
+  		version: match[ 2 ] || "0",
+  		platform: platform_match[ 0 ] || ""
+  	};
+  };
+
+  matched = jQuery.uaMatch( window.navigator.userAgent );
+  browser = {};
+
+  if ( matched.browser ) {
+  	browser[ matched.browser ] = true;
+  	browser.version = matched.version;
+  	browser.versionNumber = parseInt(matched.version);
+  }
+
+  if ( matched.platform ) {
+  	browser[ matched.platform ] = true;
+  }
+
+  // These are all considered mobile platforms, meaning they run a mobile browser
+  if ( browser.android || browser.ipad || browser.iphone || browser[ "windows phone" ] ) {
+  	browser.mobile = true;
+  }
+
+  // These are all considered desktop platforms, meaning they run a desktop browser
+  if ( browser.cros || browser.mac || browser.linux || browser.win ) {
+  	browser.desktop = true;
+  }
+
+  // Chrome, Opera 15+ and Safari are webkit based browsers
+  if ( browser.chrome || browser.opr || browser.safari ) {
+  	browser.webkit = true;
+  }
+
+  // IE11 has a new token so we will assign it msie to avoid breaking changes
+  if ( browser.rv )
+  {
+  	var ie = "msie";
+
+  	matched.browser = ie;
+  	browser[ie] = true;
+  }
+
+  // Opera 15+ are identified as opr
+  if ( browser.opr )
+  {
+  	var opera = "opera";
+
+  	matched.browser = opera;
+  	browser[opera] = true;
+  }
+
+  // Stock Android browsers are marked as Safari on Android.
+  if ( browser.safari && browser.android )
+  {
+  	var android = "android";
+
+  	matched.browser = android;
+  	browser[android] = true;
+  }
+
+  // Assign the name and platform variable
+  browser.name = matched.browser;
+  browser.platform = matched.platform;
+
+  jQuery.browser = browser;
+  return browser;
+}));
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+/**
+ * CryptoJS core components.
+ */
+var CryptoJS = CryptoJS || (function (Math, undefined) {
+    /**
+     * CryptoJS namespace.
+     */
+    var C = {};
+
+    /**
+     * Library namespace.
+     */
+    var C_lib = C.lib = {};
+
+    /**
+     * Base object for prototypal inheritance.
+     */
+    var Base = C_lib.Base = (function () {
+        function F() {}
+
+        return {
+            /**
+             * Creates a new object that inherits from this object.
+             *
+             * @param {Object} overrides Properties to copy into the new object.
+             *
+             * @return {Object} The new object.
+             *
+             * @static
+             *
+             * @example
+             *
+             *     var MyType = CryptoJS.lib.Base.extend({
+             *         field: 'value',
+             *
+             *         method: function () {
+             *         }
+             *     });
+             */
+            extend: function (overrides) {
+                // Spawn
+                F.prototype = this;
+                var subtype = new F();
+
+                // Augment
+                if (overrides) {
+                    subtype.mixIn(overrides);
+                }
+
+                // Create default initializer
+                if (!subtype.hasOwnProperty('init')) {
+                    subtype.init = function () {
+                        subtype.$super.init.apply(this, arguments);
+                    };
+                }
+
+                // Initializer's prototype is the subtype object
+                subtype.init.prototype = subtype;
+
+                // Reference supertype
+                subtype.$super = this;
+
+                return subtype;
+            },
+
+            /**
+             * Extends this object and runs the init method.
+             * Arguments to create() will be passed to init().
+             *
+             * @return {Object} The new object.
+             *
+             * @static
+             *
+             * @example
+             *
+             *     var instance = MyType.create();
+             */
+            create: function () {
+                var instance = this.extend();
+                instance.init.apply(instance, arguments);
+
+                return instance;
+            },
+
+            /**
+             * Initializes a newly created object.
+             * Override this method to add some logic when your objects are created.
+             *
+             * @example
+             *
+             *     var MyType = CryptoJS.lib.Base.extend({
+             *         init: function () {
+             *             // ...
+             *         }
+             *     });
+             */
+            init: function () {
+            },
+
+            /**
+             * Copies properties into this object.
+             *
+             * @param {Object} properties The properties to mix in.
+             *
+             * @example
+             *
+             *     MyType.mixIn({
+             *         field: 'value'
+             *     });
+             */
+            mixIn: function (properties) {
+                for (var propertyName in properties) {
+                    if (properties.hasOwnProperty(propertyName)) {
+                        this[propertyName] = properties[propertyName];
+                    }
+                }
+
+                // IE won't copy toString using the loop above
+                if (properties.hasOwnProperty('toString')) {
+                    this.toString = properties.toString;
+                }
+            },
+
+            /**
+             * Creates a copy of this object.
+             *
+             * @return {Object} The clone.
+             *
+             * @example
+             *
+             *     var clone = instance.clone();
+             */
+            clone: function () {
+                return this.init.prototype.extend(this);
+            }
+        };
+    }());
+
+    /**
+     * An array of 32-bit words.
+     *
+     * @property {Array} words The array of 32-bit words.
+     * @property {number} sigBytes The number of significant bytes in this word array.
+     */
+    var WordArray = C_lib.WordArray = Base.extend({
+        /**
+         * Initializes a newly created word array.
+         *
+         * @param {Array} words (Optional) An array of 32-bit words.
+         * @param {number} sigBytes (Optional) The number of significant bytes in the words.
+         *
+         * @example
+         *
+         *     var wordArray = CryptoJS.lib.WordArray.create();
+         *     var wordArray = CryptoJS.lib.WordArray.create([0x00010203, 0x04050607]);
+         *     var wordArray = CryptoJS.lib.WordArray.create([0x00010203, 0x04050607], 6);
+         */
+        init: function (words, sigBytes) {
+            words = this.words = words || [];
+
+            if (sigBytes != undefined) {
+                this.sigBytes = sigBytes;
+            } else {
+                this.sigBytes = words.length * 4;
+            }
+        },
+
+        /**
+         * Converts this word array to a string.
+         *
+         * @param {Encoder} encoder (Optional) The encoding strategy to use. Default: CryptoJS.enc.Hex
+         *
+         * @return {string} The stringified word array.
+         *
+         * @example
+         *
+         *     var string = wordArray + '';
+         *     var string = wordArray.toString();
+         *     var string = wordArray.toString(CryptoJS.enc.Utf8);
+         */
+        toString: function (encoder) {
+            return (encoder || Hex).stringify(this);
+        },
+
+        /**
+         * Concatenates a word array to this word array.
+         *
+         * @param {WordArray} wordArray The word array to append.
+         *
+         * @return {WordArray} This word array.
+         *
+         * @example
+         *
+         *     wordArray1.concat(wordArray2);
+         */
+        concat: function (wordArray) {
+            // Shortcuts
+            var thisWords = this.words;
+            var thatWords = wordArray.words;
+            var thisSigBytes = this.sigBytes;
+            var thatSigBytes = wordArray.sigBytes;
+
+            // Clamp excess bits
+            this.clamp();
+
+            // Concat
+            if (thisSigBytes % 4) {
+                // Copy one byte at a time
+                for (var i = 0; i < thatSigBytes; i++) {
+                    var thatByte = (thatWords[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+                    thisWords[(thisSigBytes + i) >>> 2] |= thatByte << (24 - ((thisSigBytes + i) % 4) * 8);
+                }
+            } else if (thatWords.length > 0xffff) {
+                // Copy one word at a time
+                for (var i = 0; i < thatSigBytes; i += 4) {
+                    thisWords[(thisSigBytes + i) >>> 2] = thatWords[i >>> 2];
+                }
+            } else {
+                // Copy all words at once
+                thisWords.push.apply(thisWords, thatWords);
+            }
+            this.sigBytes += thatSigBytes;
+
+            // Chainable
+            return this;
+        },
+
+        /**
+         * Removes insignificant bits.
+         *
+         * @example
+         *
+         *     wordArray.clamp();
+         */
+        clamp: function () {
+            // Shortcuts
+            var words = this.words;
+            var sigBytes = this.sigBytes;
+
+            // Clamp
+            words[sigBytes >>> 2] &= 0xffffffff << (32 - (sigBytes % 4) * 8);
+            words.length = Math.ceil(sigBytes / 4);
+        },
+
+        /**
+         * Creates a copy of this word array.
+         *
+         * @return {WordArray} The clone.
+         *
+         * @example
+         *
+         *     var clone = wordArray.clone();
+         */
+        clone: function () {
+            var clone = Base.clone.call(this);
+            clone.words = this.words.slice(0);
+
+            return clone;
+        },
+
+        /**
+         * Creates a word array filled with random bytes.
+         *
+         * @param {number} nBytes The number of random bytes to generate.
+         *
+         * @return {WordArray} The random word array.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var wordArray = CryptoJS.lib.WordArray.random(16);
+         */
+        random: function (nBytes) {
+            var words = [];
+            for (var i = 0; i < nBytes; i += 4) {
+                words.push((Math.random() * 0x100000000) | 0);
+            }
+
+            return new WordArray.init(words, nBytes);
+        }
+    });
+
+    /**
+     * Encoder namespace.
+     */
+    var C_enc = C.enc = {};
+
+    /**
+     * Hex encoding strategy.
+     */
+    var Hex = C_enc.Hex = {
+        /**
+         * Converts a word array to a hex string.
+         *
+         * @param {WordArray} wordArray The word array.
+         *
+         * @return {string} The hex string.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var hexString = CryptoJS.enc.Hex.stringify(wordArray);
+         */
+        stringify: function (wordArray) {
+            // Shortcuts
+            var words = wordArray.words;
+            var sigBytes = wordArray.sigBytes;
+
+            // Convert
+            var hexChars = [];
+            for (var i = 0; i < sigBytes; i++) {
+                var bite = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+                hexChars.push((bite >>> 4).toString(16));
+                hexChars.push((bite & 0x0f).toString(16));
+            }
+
+            return hexChars.join('');
+        },
+
+        /**
+         * Converts a hex string to a word array.
+         *
+         * @param {string} hexStr The hex string.
+         *
+         * @return {WordArray} The word array.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var wordArray = CryptoJS.enc.Hex.parse(hexString);
+         */
+        parse: function (hexStr) {
+            // Shortcut
+            var hexStrLength = hexStr.length;
+
+            // Convert
+            var words = [];
+            for (var i = 0; i < hexStrLength; i += 2) {
+                words[i >>> 3] |= parseInt(hexStr.substr(i, 2), 16) << (24 - (i % 8) * 4);
+            }
+
+            return new WordArray.init(words, hexStrLength / 2);
+        }
+    };
+
+    /**
+     * Latin1 encoding strategy.
+     */
+    var Latin1 = C_enc.Latin1 = {
+        /**
+         * Converts a word array to a Latin1 string.
+         *
+         * @param {WordArray} wordArray The word array.
+         *
+         * @return {string} The Latin1 string.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var latin1String = CryptoJS.enc.Latin1.stringify(wordArray);
+         */
+        stringify: function (wordArray) {
+            // Shortcuts
+            var words = wordArray.words;
+            var sigBytes = wordArray.sigBytes;
+
+            // Convert
+            var latin1Chars = [];
+            for (var i = 0; i < sigBytes; i++) {
+                var bite = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+                latin1Chars.push(String.fromCharCode(bite));
+            }
+
+            return latin1Chars.join('');
+        },
+
+        /**
+         * Converts a Latin1 string to a word array.
+         *
+         * @param {string} latin1Str The Latin1 string.
+         *
+         * @return {WordArray} The word array.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var wordArray = CryptoJS.enc.Latin1.parse(latin1String);
+         */
+        parse: function (latin1Str) {
+            // Shortcut
+            var latin1StrLength = latin1Str.length;
+
+            // Convert
+            var words = [];
+            for (var i = 0; i < latin1StrLength; i++) {
+                words[i >>> 2] |= (latin1Str.charCodeAt(i) & 0xff) << (24 - (i % 4) * 8);
+            }
+
+            return new WordArray.init(words, latin1StrLength);
+        }
+    };
+
+    /**
+     * UTF-8 encoding strategy.
+     */
+    var Utf8 = C_enc.Utf8 = {
+        /**
+         * Converts a word array to a UTF-8 string.
+         *
+         * @param {WordArray} wordArray The word array.
+         *
+         * @return {string} The UTF-8 string.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var utf8String = CryptoJS.enc.Utf8.stringify(wordArray);
+         */
+        stringify: function (wordArray) {
+            try {
+                return decodeURIComponent(escape(Latin1.stringify(wordArray)));
+            } catch (e) {
+                throw new Error('Malformed UTF-8 data');
+            }
+        },
+
+        /**
+         * Converts a UTF-8 string to a word array.
+         *
+         * @param {string} utf8Str The UTF-8 string.
+         *
+         * @return {WordArray} The word array.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var wordArray = CryptoJS.enc.Utf8.parse(utf8String);
+         */
+        parse: function (utf8Str) {
+            return Latin1.parse(unescape(encodeURIComponent(utf8Str)));
+        }
+    };
+
+    /**
+     * Abstract buffered block algorithm template.
+     *
+     * The property blockSize must be implemented in a concrete subtype.
+     *
+     * @property {number} _minBufferSize The number of blocks that should be kept unprocessed in the buffer. Default: 0
+     */
+    var BufferedBlockAlgorithm = C_lib.BufferedBlockAlgorithm = Base.extend({
+        /**
+         * Resets this block algorithm's data buffer to its initial state.
+         *
+         * @example
+         *
+         *     bufferedBlockAlgorithm.reset();
+         */
+        reset: function () {
+            // Initial values
+            this._data = new WordArray.init();
+            this._nDataBytes = 0;
+        },
+
+        /**
+         * Adds new data to this block algorithm's buffer.
+         *
+         * @param {WordArray|string} data The data to append. Strings are converted to a WordArray using UTF-8.
+         *
+         * @example
+         *
+         *     bufferedBlockAlgorithm._append('data');
+         *     bufferedBlockAlgorithm._append(wordArray);
+         */
+        _append: function (data) {
+            // Convert string to WordArray, else assume WordArray already
+            if (typeof data == 'string') {
+                data = Utf8.parse(data);
+            }
+
+            // Append
+            this._data.concat(data);
+            this._nDataBytes += data.sigBytes;
+        },
+
+        /**
+         * Processes available data blocks.
+         *
+         * This method invokes _doProcessBlock(offset), which must be implemented by a concrete subtype.
+         *
+         * @param {boolean} doFlush Whether all blocks and partial blocks should be processed.
+         *
+         * @return {WordArray} The processed data.
+         *
+         * @example
+         *
+         *     var processedData = bufferedBlockAlgorithm._process();
+         *     var processedData = bufferedBlockAlgorithm._process(!!'flush');
+         */
+        _process: function (doFlush) {
+            // Shortcuts
+            var data = this._data;
+            var dataWords = data.words;
+            var dataSigBytes = data.sigBytes;
+            var blockSize = this.blockSize;
+            var blockSizeBytes = blockSize * 4;
+
+            // Count blocks ready
+            var nBlocksReady = dataSigBytes / blockSizeBytes;
+            if (doFlush) {
+                // Round up to include partial blocks
+                nBlocksReady = Math.ceil(nBlocksReady);
+            } else {
+                // Round down to include only full blocks,
+                // less the number of blocks that must remain in the buffer
+                nBlocksReady = Math.max((nBlocksReady | 0) - this._minBufferSize, 0);
+            }
+
+            // Count words ready
+            var nWordsReady = nBlocksReady * blockSize;
+
+            // Count bytes ready
+            var nBytesReady = Math.min(nWordsReady * 4, dataSigBytes);
+
+            // Process blocks
+            if (nWordsReady) {
+                for (var offset = 0; offset < nWordsReady; offset += blockSize) {
+                    // Perform concrete-algorithm logic
+                    this._doProcessBlock(dataWords, offset);
+                }
+
+                // Remove processed words
+                var processedWords = dataWords.splice(0, nWordsReady);
+                data.sigBytes -= nBytesReady;
+            }
+
+            // Return processed words
+            return new WordArray.init(processedWords, nBytesReady);
+        },
+
+        /**
+         * Creates a copy of this object.
+         *
+         * @return {Object} The clone.
+         *
+         * @example
+         *
+         *     var clone = bufferedBlockAlgorithm.clone();
+         */
+        clone: function () {
+            var clone = Base.clone.call(this);
+            clone._data = this._data.clone();
+
+            return clone;
+        },
+
+        _minBufferSize: 0
+    });
+
+    /**
+     * Abstract hasher template.
+     *
+     * @property {number} blockSize The number of 32-bit words this hasher operates on. Default: 16 (512 bits)
+     */
+    var Hasher = C_lib.Hasher = BufferedBlockAlgorithm.extend({
+        /**
+         * Configuration options.
+         */
+        cfg: Base.extend(),
+
+        /**
+         * Initializes a newly created hasher.
+         *
+         * @param {Object} cfg (Optional) The configuration options to use for this hash computation.
+         *
+         * @example
+         *
+         *     var hasher = CryptoJS.algo.SHA256.create();
+         */
+        init: function (cfg) {
+            // Apply config defaults
+            this.cfg = this.cfg.extend(cfg);
+
+            // Set initial values
+            this.reset();
+        },
+
+        /**
+         * Resets this hasher to its initial state.
+         *
+         * @example
+         *
+         *     hasher.reset();
+         */
+        reset: function () {
+            // Reset data buffer
+            BufferedBlockAlgorithm.reset.call(this);
+
+            // Perform concrete-hasher logic
+            this._doReset();
+        },
+
+        /**
+         * Updates this hasher with a message.
+         *
+         * @param {WordArray|string} messageUpdate The message to append.
+         *
+         * @return {Hasher} This hasher.
+         *
+         * @example
+         *
+         *     hasher.update('message');
+         *     hasher.update(wordArray);
+         */
+        update: function (messageUpdate) {
+            // Append
+            this._append(messageUpdate);
+
+            // Update the hash
+            this._process();
+
+            // Chainable
+            return this;
+        },
+
+        /**
+         * Finalizes the hash computation.
+         * Note that the finalize operation is effectively a destructive, read-once operation.
+         *
+         * @param {WordArray|string} messageUpdate (Optional) A final message update.
+         *
+         * @return {WordArray} The hash.
+         *
+         * @example
+         *
+         *     var hash = hasher.finalize();
+         *     var hash = hasher.finalize('message');
+         *     var hash = hasher.finalize(wordArray);
+         */
+        finalize: function (messageUpdate) {
+            // Final message update
+            if (messageUpdate) {
+                this._append(messageUpdate);
+            }
+
+            // Perform concrete-hasher logic
+            var hash = this._doFinalize();
+
+            return hash;
+        },
+
+        blockSize: 512/32,
+
+        /**
+         * Creates a shortcut function to a hasher's object interface.
+         *
+         * @param {Hasher} hasher The hasher to create a helper for.
+         *
+         * @return {Function} The shortcut function.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var SHA256 = CryptoJS.lib.Hasher._createHelper(CryptoJS.algo.SHA256);
+         */
+        _createHelper: function (hasher) {
+            return function (message, cfg) {
+                return new hasher.init(cfg).finalize(message);
+            };
+        },
+
+        /**
+         * Creates a shortcut function to the HMAC's object interface.
+         *
+         * @param {Hasher} hasher The hasher to use in this HMAC helper.
+         *
+         * @return {Function} The shortcut function.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var HmacSHA256 = CryptoJS.lib.Hasher._createHmacHelper(CryptoJS.algo.SHA256);
+         */
+        _createHmacHelper: function (hasher) {
+            return function (message, key) {
+                return new C_algo.HMAC.init(hasher, key).finalize(message);
+            };
+        }
+    });
+
+    /**
+     * Algorithm namespace.
+     */
+    var C_algo = C.algo = {};
+
+    return C;
+}(Math));
+
+define("crypto.core", function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+(function () {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var WordArray = C_lib.WordArray;
+    var C_enc = C.enc;
+
+    /**
+     * Base64 encoding strategy.
+     */
+    var Base64 = C_enc.Base64 = {
+        /**
+         * Converts a word array to a Base64 string.
+         *
+         * @param {WordArray} wordArray The word array.
+         *
+         * @return {string} The Base64 string.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var base64String = CryptoJS.enc.Base64.stringify(wordArray);
+         */
+        stringify: function (wordArray) {
+            // Shortcuts
+            var words = wordArray.words;
+            var sigBytes = wordArray.sigBytes;
+            var map = this._map;
+
+            // Clamp excess bits
+            wordArray.clamp();
+
+            // Convert
+            var base64Chars = [];
+            for (var i = 0; i < sigBytes; i += 3) {
+                var byte1 = (words[i >>> 2]       >>> (24 - (i % 4) * 8))       & 0xff;
+                var byte2 = (words[(i + 1) >>> 2] >>> (24 - ((i + 1) % 4) * 8)) & 0xff;
+                var byte3 = (words[(i + 2) >>> 2] >>> (24 - ((i + 2) % 4) * 8)) & 0xff;
+
+                var triplet = (byte1 << 16) | (byte2 << 8) | byte3;
+
+                for (var j = 0; (j < 4) && (i + j * 0.75 < sigBytes); j++) {
+                    base64Chars.push(map.charAt((triplet >>> (6 * (3 - j))) & 0x3f));
+                }
+            }
+
+            // Add padding
+            var paddingChar = map.charAt(64);
+            if (paddingChar) {
+                while (base64Chars.length % 4) {
+                    base64Chars.push(paddingChar);
+                }
+            }
+
+            return base64Chars.join('');
+        },
+
+        /**
+         * Converts a Base64 string to a word array.
+         *
+         * @param {string} base64Str The Base64 string.
+         *
+         * @return {WordArray} The word array.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var wordArray = CryptoJS.enc.Base64.parse(base64String);
+         */
+        parse: function (base64Str) {
+            // Shortcuts
+            var base64StrLength = base64Str.length;
+            var map = this._map;
+
+            // Ignore padding
+            var paddingChar = map.charAt(64);
+            if (paddingChar) {
+                var paddingIndex = base64Str.indexOf(paddingChar);
+                if (paddingIndex != -1) {
+                    base64StrLength = paddingIndex;
+                }
+            }
+
+            // Convert
+            var words = [];
+            var nBytes = 0;
+            for (var i = 0; i < base64StrLength; i++) {
+                if (i % 4) {
+                    var bits1 = map.indexOf(base64Str.charAt(i - 1)) << ((i % 4) * 2);
+                    var bits2 = map.indexOf(base64Str.charAt(i)) >>> (6 - (i % 4) * 2);
+                    words[nBytes >>> 2] |= (bits1 | bits2) << (24 - (nBytes % 4) * 8);
+                    nBytes++;
+                }
+            }
+
+            return WordArray.create(words, nBytes);
+        },
+
+        _map: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+    };
+}());
+
+define("crypto.enc-base64", ["crypto.core"], function(){});
+
+(function (Math) {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var WordArray = C_lib.WordArray;
+    var Hasher = C_lib.Hasher;
+    var C_algo = C.algo;
+
+    // Constants table
+    var T = [];
+
+    // Compute constants
+    (function () {
+        for (var i = 0; i < 64; i++) {
+            T[i] = (Math.abs(Math.sin(i + 1)) * 0x100000000) | 0;
+        }
+    }());
+
+    /**
+     * MD5 hash algorithm.
+     */
+    var MD5 = C_algo.MD5 = Hasher.extend({
+        _doReset: function () {
+            this._hash = new WordArray.init([
+                0x67452301, 0xefcdab89,
+                0x98badcfe, 0x10325476
+            ]);
+        },
+
+        _doProcessBlock: function (M, offset) {
+            // Swap endian
+            for (var i = 0; i < 16; i++) {
+                // Shortcuts
+                var offset_i = offset + i;
+                var M_offset_i = M[offset_i];
+
+                M[offset_i] = (
+                    (((M_offset_i << 8)  | (M_offset_i >>> 24)) & 0x00ff00ff) |
+                    (((M_offset_i << 24) | (M_offset_i >>> 8))  & 0xff00ff00)
+                );
+            }
+
+            // Shortcuts
+            var H = this._hash.words;
+
+            var M_offset_0  = M[offset + 0];
+            var M_offset_1  = M[offset + 1];
+            var M_offset_2  = M[offset + 2];
+            var M_offset_3  = M[offset + 3];
+            var M_offset_4  = M[offset + 4];
+            var M_offset_5  = M[offset + 5];
+            var M_offset_6  = M[offset + 6];
+            var M_offset_7  = M[offset + 7];
+            var M_offset_8  = M[offset + 8];
+            var M_offset_9  = M[offset + 9];
+            var M_offset_10 = M[offset + 10];
+            var M_offset_11 = M[offset + 11];
+            var M_offset_12 = M[offset + 12];
+            var M_offset_13 = M[offset + 13];
+            var M_offset_14 = M[offset + 14];
+            var M_offset_15 = M[offset + 15];
+
+            // Working varialbes
+            var a = H[0];
+            var b = H[1];
+            var c = H[2];
+            var d = H[3];
+
+            // Computation
+            a = FF(a, b, c, d, M_offset_0,  7,  T[0]);
+            d = FF(d, a, b, c, M_offset_1,  12, T[1]);
+            c = FF(c, d, a, b, M_offset_2,  17, T[2]);
+            b = FF(b, c, d, a, M_offset_3,  22, T[3]);
+            a = FF(a, b, c, d, M_offset_4,  7,  T[4]);
+            d = FF(d, a, b, c, M_offset_5,  12, T[5]);
+            c = FF(c, d, a, b, M_offset_6,  17, T[6]);
+            b = FF(b, c, d, a, M_offset_7,  22, T[7]);
+            a = FF(a, b, c, d, M_offset_8,  7,  T[8]);
+            d = FF(d, a, b, c, M_offset_9,  12, T[9]);
+            c = FF(c, d, a, b, M_offset_10, 17, T[10]);
+            b = FF(b, c, d, a, M_offset_11, 22, T[11]);
+            a = FF(a, b, c, d, M_offset_12, 7,  T[12]);
+            d = FF(d, a, b, c, M_offset_13, 12, T[13]);
+            c = FF(c, d, a, b, M_offset_14, 17, T[14]);
+            b = FF(b, c, d, a, M_offset_15, 22, T[15]);
+
+            a = GG(a, b, c, d, M_offset_1,  5,  T[16]);
+            d = GG(d, a, b, c, M_offset_6,  9,  T[17]);
+            c = GG(c, d, a, b, M_offset_11, 14, T[18]);
+            b = GG(b, c, d, a, M_offset_0,  20, T[19]);
+            a = GG(a, b, c, d, M_offset_5,  5,  T[20]);
+            d = GG(d, a, b, c, M_offset_10, 9,  T[21]);
+            c = GG(c, d, a, b, M_offset_15, 14, T[22]);
+            b = GG(b, c, d, a, M_offset_4,  20, T[23]);
+            a = GG(a, b, c, d, M_offset_9,  5,  T[24]);
+            d = GG(d, a, b, c, M_offset_14, 9,  T[25]);
+            c = GG(c, d, a, b, M_offset_3,  14, T[26]);
+            b = GG(b, c, d, a, M_offset_8,  20, T[27]);
+            a = GG(a, b, c, d, M_offset_13, 5,  T[28]);
+            d = GG(d, a, b, c, M_offset_2,  9,  T[29]);
+            c = GG(c, d, a, b, M_offset_7,  14, T[30]);
+            b = GG(b, c, d, a, M_offset_12, 20, T[31]);
+
+            a = HH(a, b, c, d, M_offset_5,  4,  T[32]);
+            d = HH(d, a, b, c, M_offset_8,  11, T[33]);
+            c = HH(c, d, a, b, M_offset_11, 16, T[34]);
+            b = HH(b, c, d, a, M_offset_14, 23, T[35]);
+            a = HH(a, b, c, d, M_offset_1,  4,  T[36]);
+            d = HH(d, a, b, c, M_offset_4,  11, T[37]);
+            c = HH(c, d, a, b, M_offset_7,  16, T[38]);
+            b = HH(b, c, d, a, M_offset_10, 23, T[39]);
+            a = HH(a, b, c, d, M_offset_13, 4,  T[40]);
+            d = HH(d, a, b, c, M_offset_0,  11, T[41]);
+            c = HH(c, d, a, b, M_offset_3,  16, T[42]);
+            b = HH(b, c, d, a, M_offset_6,  23, T[43]);
+            a = HH(a, b, c, d, M_offset_9,  4,  T[44]);
+            d = HH(d, a, b, c, M_offset_12, 11, T[45]);
+            c = HH(c, d, a, b, M_offset_15, 16, T[46]);
+            b = HH(b, c, d, a, M_offset_2,  23, T[47]);
+
+            a = II(a, b, c, d, M_offset_0,  6,  T[48]);
+            d = II(d, a, b, c, M_offset_7,  10, T[49]);
+            c = II(c, d, a, b, M_offset_14, 15, T[50]);
+            b = II(b, c, d, a, M_offset_5,  21, T[51]);
+            a = II(a, b, c, d, M_offset_12, 6,  T[52]);
+            d = II(d, a, b, c, M_offset_3,  10, T[53]);
+            c = II(c, d, a, b, M_offset_10, 15, T[54]);
+            b = II(b, c, d, a, M_offset_1,  21, T[55]);
+            a = II(a, b, c, d, M_offset_8,  6,  T[56]);
+            d = II(d, a, b, c, M_offset_15, 10, T[57]);
+            c = II(c, d, a, b, M_offset_6,  15, T[58]);
+            b = II(b, c, d, a, M_offset_13, 21, T[59]);
+            a = II(a, b, c, d, M_offset_4,  6,  T[60]);
+            d = II(d, a, b, c, M_offset_11, 10, T[61]);
+            c = II(c, d, a, b, M_offset_2,  15, T[62]);
+            b = II(b, c, d, a, M_offset_9,  21, T[63]);
+
+            // Intermediate hash value
+            H[0] = (H[0] + a) | 0;
+            H[1] = (H[1] + b) | 0;
+            H[2] = (H[2] + c) | 0;
+            H[3] = (H[3] + d) | 0;
+        },
+
+        _doFinalize: function () {
+            // Shortcuts
+            var data = this._data;
+            var dataWords = data.words;
+
+            var nBitsTotal = this._nDataBytes * 8;
+            var nBitsLeft = data.sigBytes * 8;
+
+            // Add padding
+            dataWords[nBitsLeft >>> 5] |= 0x80 << (24 - nBitsLeft % 32);
+
+            var nBitsTotalH = Math.floor(nBitsTotal / 0x100000000);
+            var nBitsTotalL = nBitsTotal;
+            dataWords[(((nBitsLeft + 64) >>> 9) << 4) + 15] = (
+                (((nBitsTotalH << 8)  | (nBitsTotalH >>> 24)) & 0x00ff00ff) |
+                (((nBitsTotalH << 24) | (nBitsTotalH >>> 8))  & 0xff00ff00)
+            );
+            dataWords[(((nBitsLeft + 64) >>> 9) << 4) + 14] = (
+                (((nBitsTotalL << 8)  | (nBitsTotalL >>> 24)) & 0x00ff00ff) |
+                (((nBitsTotalL << 24) | (nBitsTotalL >>> 8))  & 0xff00ff00)
+            );
+
+            data.sigBytes = (dataWords.length + 1) * 4;
+
+            // Hash final blocks
+            this._process();
+
+            // Shortcuts
+            var hash = this._hash;
+            var H = hash.words;
+
+            // Swap endian
+            for (var i = 0; i < 4; i++) {
+                // Shortcut
+                var H_i = H[i];
+
+                H[i] = (((H_i << 8)  | (H_i >>> 24)) & 0x00ff00ff) |
+                       (((H_i << 24) | (H_i >>> 8))  & 0xff00ff00);
+            }
+
+            // Return final computed hash
+            return hash;
+        },
+
+        clone: function () {
+            var clone = Hasher.clone.call(this);
+            clone._hash = this._hash.clone();
+
+            return clone;
+        }
+    });
+
+    function FF(a, b, c, d, x, s, t) {
+        var n = a + ((b & c) | (~b & d)) + x + t;
+        return ((n << s) | (n >>> (32 - s))) + b;
+    }
+
+    function GG(a, b, c, d, x, s, t) {
+        var n = a + ((b & d) | (c & ~d)) + x + t;
+        return ((n << s) | (n >>> (32 - s))) + b;
+    }
+
+    function HH(a, b, c, d, x, s, t) {
+        var n = a + (b ^ c ^ d) + x + t;
+        return ((n << s) | (n >>> (32 - s))) + b;
+    }
+
+    function II(a, b, c, d, x, s, t) {
+        var n = a + (c ^ (b | ~d)) + x + t;
+        return ((n << s) | (n >>> (32 - s))) + b;
+    }
+
+    /**
+     * Shortcut function to the hasher's object interface.
+     *
+     * @param {WordArray|string} message The message to hash.
+     *
+     * @return {WordArray} The hash.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var hash = CryptoJS.MD5('message');
+     *     var hash = CryptoJS.MD5(wordArray);
+     */
+    C.MD5 = Hasher._createHelper(MD5);
+
+    /**
+     * Shortcut function to the HMAC's object interface.
+     *
+     * @param {WordArray|string} message The message to hash.
+     * @param {WordArray|string} key The secret key.
+     *
+     * @return {WordArray} The HMAC.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var hmac = CryptoJS.HmacMD5(message, key);
+     */
+    C.HmacMD5 = Hasher._createHmacHelper(MD5);
+}(Math));
+
+define("crypto.md5", ["crypto.core"], function(){});
+
+(function () {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var Base = C_lib.Base;
+    var WordArray = C_lib.WordArray;
+    var C_algo = C.algo;
+    var MD5 = C_algo.MD5;
+
+    /**
+     * This key derivation function is meant to conform with EVP_BytesToKey.
+     * www.openssl.org/docs/crypto/EVP_BytesToKey.html
+     */
+    var EvpKDF = C_algo.EvpKDF = Base.extend({
+        /**
+         * Configuration options.
+         *
+         * @property {number} keySize The key size in words to generate. Default: 4 (128 bits)
+         * @property {Hasher} hasher The hash algorithm to use. Default: MD5
+         * @property {number} iterations The number of iterations to perform. Default: 1
+         */
+        cfg: Base.extend({
+            keySize: 128/32,
+            hasher: MD5,
+            iterations: 1
+        }),
+
+        /**
+         * Initializes a newly created key derivation function.
+         *
+         * @param {Object} cfg (Optional) The configuration options to use for the derivation.
+         *
+         * @example
+         *
+         *     var kdf = CryptoJS.algo.EvpKDF.create();
+         *     var kdf = CryptoJS.algo.EvpKDF.create({ keySize: 8 });
+         *     var kdf = CryptoJS.algo.EvpKDF.create({ keySize: 8, iterations: 1000 });
+         */
+        init: function (cfg) {
+            this.cfg = this.cfg.extend(cfg);
+        },
+
+        /**
+         * Derives a key from a password.
+         *
+         * @param {WordArray|string} password The password.
+         * @param {WordArray|string} salt A salt.
+         *
+         * @return {WordArray} The derived key.
+         *
+         * @example
+         *
+         *     var key = kdf.compute(password, salt);
+         */
+        compute: function (password, salt) {
+            // Shortcut
+            var cfg = this.cfg;
+
+            // Init hasher
+            var hasher = cfg.hasher.create();
+
+            // Initial values
+            var derivedKey = WordArray.create();
+
+            // Shortcuts
+            var derivedKeyWords = derivedKey.words;
+            var keySize = cfg.keySize;
+            var iterations = cfg.iterations;
+
+            // Generate key
+            while (derivedKeyWords.length < keySize) {
+                if (block) {
+                    hasher.update(block);
+                }
+                var block = hasher.update(password).finalize(salt);
+                hasher.reset();
+
+                // Iterations
+                for (var i = 1; i < iterations; i++) {
+                    block = hasher.finalize(block);
+                    hasher.reset();
+                }
+
+                derivedKey.concat(block);
+            }
+            derivedKey.sigBytes = keySize * 4;
+
+            return derivedKey;
+        }
+    });
+
+    /**
+     * Derives a key from a password.
+     *
+     * @param {WordArray|string} password The password.
+     * @param {WordArray|string} salt A salt.
+     * @param {Object} cfg (Optional) The configuration options to use for this computation.
+     *
+     * @return {WordArray} The derived key.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var key = CryptoJS.EvpKDF(password, salt);
+     *     var key = CryptoJS.EvpKDF(password, salt, { keySize: 8 });
+     *     var key = CryptoJS.EvpKDF(password, salt, { keySize: 8, iterations: 1000 });
+     */
+    C.EvpKDF = function (password, salt, cfg) {
+        return EvpKDF.create(cfg).compute(password, salt);
+    };
+}());
+
+define("crypto.evpkdf", ["crypto.md5"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+/**
+ * Cipher core components.
+ */
+CryptoJS.lib.Cipher || (function (undefined) {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var Base = C_lib.Base;
+    var WordArray = C_lib.WordArray;
+    var BufferedBlockAlgorithm = C_lib.BufferedBlockAlgorithm;
+    var C_enc = C.enc;
+    var Utf8 = C_enc.Utf8;
+    var Base64 = C_enc.Base64;
+    var C_algo = C.algo;
+    var EvpKDF = C_algo.EvpKDF;
+
+    /**
+     * Abstract base cipher template.
+     *
+     * @property {number} keySize This cipher's key size. Default: 4 (128 bits)
+     * @property {number} ivSize This cipher's IV size. Default: 4 (128 bits)
+     * @property {number} _ENC_XFORM_MODE A constant representing encryption mode.
+     * @property {number} _DEC_XFORM_MODE A constant representing decryption mode.
+     */
+    var Cipher = C_lib.Cipher = BufferedBlockAlgorithm.extend({
+        /**
+         * Configuration options.
+         *
+         * @property {WordArray} iv The IV to use for this operation.
+         */
+        cfg: Base.extend(),
+
+        /**
+         * Creates this cipher in encryption mode.
+         *
+         * @param {WordArray} key The key.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @return {Cipher} A cipher instance.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var cipher = CryptoJS.algo.AES.createEncryptor(keyWordArray, { iv: ivWordArray });
+         */
+        createEncryptor: function (key, cfg) {
+            return this.create(this._ENC_XFORM_MODE, key, cfg);
+        },
+
+        /**
+         * Creates this cipher in decryption mode.
+         *
+         * @param {WordArray} key The key.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @return {Cipher} A cipher instance.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var cipher = CryptoJS.algo.AES.createDecryptor(keyWordArray, { iv: ivWordArray });
+         */
+        createDecryptor: function (key, cfg) {
+            return this.create(this._DEC_XFORM_MODE, key, cfg);
+        },
+
+        /**
+         * Initializes a newly created cipher.
+         *
+         * @param {number} xformMode Either the encryption or decryption transormation mode constant.
+         * @param {WordArray} key The key.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @example
+         *
+         *     var cipher = CryptoJS.algo.AES.create(CryptoJS.algo.AES._ENC_XFORM_MODE, keyWordArray, { iv: ivWordArray });
+         */
+        init: function (xformMode, key, cfg) {
+            // Apply config defaults
+            this.cfg = this.cfg.extend(cfg);
+
+            // Store transform mode and key
+            this._xformMode = xformMode;
+            this._key = key;
+
+            // Set initial values
+            this.reset();
+        },
+
+        /**
+         * Resets this cipher to its initial state.
+         *
+         * @example
+         *
+         *     cipher.reset();
+         */
+        reset: function () {
+            // Reset data buffer
+            BufferedBlockAlgorithm.reset.call(this);
+
+            // Perform concrete-cipher logic
+            this._doReset();
+        },
+
+        /**
+         * Adds data to be encrypted or decrypted.
+         *
+         * @param {WordArray|string} dataUpdate The data to encrypt or decrypt.
+         *
+         * @return {WordArray} The data after processing.
+         *
+         * @example
+         *
+         *     var encrypted = cipher.process('data');
+         *     var encrypted = cipher.process(wordArray);
+         */
+        process: function (dataUpdate) {
+            // Append
+            this._append(dataUpdate);
+
+            // Process available blocks
+            return this._process();
+        },
+
+        /**
+         * Finalizes the encryption or decryption process.
+         * Note that the finalize operation is effectively a destructive, read-once operation.
+         *
+         * @param {WordArray|string} dataUpdate The final data to encrypt or decrypt.
+         *
+         * @return {WordArray} The data after final processing.
+         *
+         * @example
+         *
+         *     var encrypted = cipher.finalize();
+         *     var encrypted = cipher.finalize('data');
+         *     var encrypted = cipher.finalize(wordArray);
+         */
+        finalize: function (dataUpdate) {
+            // Final data update
+            if (dataUpdate) {
+                this._append(dataUpdate);
+            }
+
+            // Perform concrete-cipher logic
+            var finalProcessedData = this._doFinalize();
+
+            return finalProcessedData;
+        },
+
+        keySize: 128/32,
+
+        ivSize: 128/32,
+
+        _ENC_XFORM_MODE: 1,
+
+        _DEC_XFORM_MODE: 2,
+
+        /**
+         * Creates shortcut functions to a cipher's object interface.
+         *
+         * @param {Cipher} cipher The cipher to create a helper for.
+         *
+         * @return {Object} An object with encrypt and decrypt shortcut functions.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var AES = CryptoJS.lib.Cipher._createHelper(CryptoJS.algo.AES);
+         */
+        _createHelper: (function () {
+            function selectCipherStrategy(key) {
+                if (typeof key == 'string') {
+                    return PasswordBasedCipher;
+                } else {
+                    return SerializableCipher;
+                }
+            }
+
+            return function (cipher) {
+                return {
+                    encrypt: function (message, key, cfg) {
+                        return selectCipherStrategy(key).encrypt(cipher, message, key, cfg);
+                    },
+
+                    decrypt: function (ciphertext, key, cfg) {
+                        return selectCipherStrategy(key).decrypt(cipher, ciphertext, key, cfg);
+                    }
+                };
+            };
+        }())
+    });
+
+    /**
+     * Abstract base stream cipher template.
+     *
+     * @property {number} blockSize The number of 32-bit words this cipher operates on. Default: 1 (32 bits)
+     */
+    var StreamCipher = C_lib.StreamCipher = Cipher.extend({
+        _doFinalize: function () {
+            // Process partial blocks
+            var finalProcessedBlocks = this._process(!!'flush');
+
+            return finalProcessedBlocks;
+        },
+
+        blockSize: 1
+    });
+
+    /**
+     * Mode namespace.
+     */
+    var C_mode = C.mode = {};
+
+    /**
+     * Abstract base block cipher mode template.
+     */
+    var BlockCipherMode = C_lib.BlockCipherMode = Base.extend({
+        /**
+         * Creates this mode for encryption.
+         *
+         * @param {Cipher} cipher A block cipher instance.
+         * @param {Array} iv The IV words.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var mode = CryptoJS.mode.CBC.createEncryptor(cipher, iv.words);
+         */
+        createEncryptor: function (cipher, iv) {
+            return this.Encryptor.create(cipher, iv);
+        },
+
+        /**
+         * Creates this mode for decryption.
+         *
+         * @param {Cipher} cipher A block cipher instance.
+         * @param {Array} iv The IV words.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var mode = CryptoJS.mode.CBC.createDecryptor(cipher, iv.words);
+         */
+        createDecryptor: function (cipher, iv) {
+            return this.Decryptor.create(cipher, iv);
+        },
+
+        /**
+         * Initializes a newly created mode.
+         *
+         * @param {Cipher} cipher A block cipher instance.
+         * @param {Array} iv The IV words.
+         *
+         * @example
+         *
+         *     var mode = CryptoJS.mode.CBC.Encryptor.create(cipher, iv.words);
+         */
+        init: function (cipher, iv) {
+            this._cipher = cipher;
+            this._iv = iv;
+        }
+    });
+
+    /**
+     * Cipher Block Chaining mode.
+     */
+    var CBC = C_mode.CBC = (function () {
+        /**
+         * Abstract base CBC mode.
+         */
+        var CBC = BlockCipherMode.extend();
+
+        /**
+         * CBC encryptor.
+         */
+        CBC.Encryptor = CBC.extend({
+            /**
+             * Processes the data block at offset.
+             *
+             * @param {Array} words The data words to operate on.
+             * @param {number} offset The offset where the block starts.
+             *
+             * @example
+             *
+             *     mode.processBlock(data.words, offset);
+             */
+            processBlock: function (words, offset) {
+                // Shortcuts
+                var cipher = this._cipher;
+                var blockSize = cipher.blockSize;
+
+                // XOR and encrypt
+                xorBlock.call(this, words, offset, blockSize);
+                cipher.encryptBlock(words, offset);
+
+                // Remember this block to use with next block
+                this._prevBlock = words.slice(offset, offset + blockSize);
+            }
+        });
+
+        /**
+         * CBC decryptor.
+         */
+        CBC.Decryptor = CBC.extend({
+            /**
+             * Processes the data block at offset.
+             *
+             * @param {Array} words The data words to operate on.
+             * @param {number} offset The offset where the block starts.
+             *
+             * @example
+             *
+             *     mode.processBlock(data.words, offset);
+             */
+            processBlock: function (words, offset) {
+                // Shortcuts
+                var cipher = this._cipher;
+                var blockSize = cipher.blockSize;
+
+                // Remember this block to use with next block
+                var thisBlock = words.slice(offset, offset + blockSize);
+
+                // Decrypt and XOR
+                cipher.decryptBlock(words, offset);
+                xorBlock.call(this, words, offset, blockSize);
+
+                // This block becomes the previous block
+                this._prevBlock = thisBlock;
+            }
+        });
+
+        function xorBlock(words, offset, blockSize) {
+            // Shortcut
+            var iv = this._iv;
+
+            // Choose mixing block
+            if (iv) {
+                var block = iv;
+
+                // Remove IV for subsequent blocks
+                this._iv = undefined;
+            } else {
+                var block = this._prevBlock;
+            }
+
+            // XOR blocks
+            for (var i = 0; i < blockSize; i++) {
+                words[offset + i] ^= block[i];
+            }
+        }
+
+        return CBC;
+    }());
+
+    /**
+     * Padding namespace.
+     */
+    var C_pad = C.pad = {};
+
+    /**
+     * PKCS #5/7 padding strategy.
+     */
+    var Pkcs7 = C_pad.Pkcs7 = {
+        /**
+         * Pads data using the algorithm defined in PKCS #5/7.
+         *
+         * @param {WordArray} data The data to pad.
+         * @param {number} blockSize The multiple that the data should be padded to.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     CryptoJS.pad.Pkcs7.pad(wordArray, 4);
+         */
+        pad: function (data, blockSize) {
+            // Shortcut
+            var blockSizeBytes = blockSize * 4;
+
+            // Count padding bytes
+            var nPaddingBytes = blockSizeBytes - data.sigBytes % blockSizeBytes;
+
+            // Create padding word
+            var paddingWord = (nPaddingBytes << 24) | (nPaddingBytes << 16) | (nPaddingBytes << 8) | nPaddingBytes;
+
+            // Create padding
+            var paddingWords = [];
+            for (var i = 0; i < nPaddingBytes; i += 4) {
+                paddingWords.push(paddingWord);
+            }
+            var padding = WordArray.create(paddingWords, nPaddingBytes);
+
+            // Add padding
+            data.concat(padding);
+        },
+
+        /**
+         * Unpads data that had been padded using the algorithm defined in PKCS #5/7.
+         *
+         * @param {WordArray} data The data to unpad.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     CryptoJS.pad.Pkcs7.unpad(wordArray);
+         */
+        unpad: function (data) {
+            // Get number of padding bytes from last byte
+            var nPaddingBytes = data.words[(data.sigBytes - 1) >>> 2] & 0xff;
+
+            // Remove padding
+            data.sigBytes -= nPaddingBytes;
+        }
+    };
+
+    /**
+     * Abstract base block cipher template.
+     *
+     * @property {number} blockSize The number of 32-bit words this cipher operates on. Default: 4 (128 bits)
+     */
+    var BlockCipher = C_lib.BlockCipher = Cipher.extend({
+        /**
+         * Configuration options.
+         *
+         * @property {Mode} mode The block mode to use. Default: CBC
+         * @property {Padding} padding The padding strategy to use. Default: Pkcs7
+         */
+        cfg: Cipher.cfg.extend({
+            mode: CBC,
+            padding: Pkcs7
+        }),
+
+        reset: function () {
+            // Reset cipher
+            Cipher.reset.call(this);
+
+            // Shortcuts
+            var cfg = this.cfg;
+            var iv = cfg.iv;
+            var mode = cfg.mode;
+
+            // Reset block mode
+            if (this._xformMode == this._ENC_XFORM_MODE) {
+                var modeCreator = mode.createEncryptor;
+            } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
+                var modeCreator = mode.createDecryptor;
+
+                // Keep at least one block in the buffer for unpadding
+                this._minBufferSize = 1;
+            }
+            this._mode = modeCreator.call(mode, this, iv && iv.words);
+        },
+
+        _doProcessBlock: function (words, offset) {
+            this._mode.processBlock(words, offset);
+        },
+
+        _doFinalize: function () {
+            // Shortcut
+            var padding = this.cfg.padding;
+
+            // Finalize
+            if (this._xformMode == this._ENC_XFORM_MODE) {
+                // Pad data
+                padding.pad(this._data, this.blockSize);
+
+                // Process final blocks
+                var finalProcessedBlocks = this._process(!!'flush');
+            } else /* if (this._xformMode == this._DEC_XFORM_MODE) */ {
+                // Process final blocks
+                var finalProcessedBlocks = this._process(!!'flush');
+
+                // Unpad data
+                padding.unpad(finalProcessedBlocks);
+            }
+
+            return finalProcessedBlocks;
+        },
+
+        blockSize: 128/32
+    });
+
+    /**
+     * A collection of cipher parameters.
+     *
+     * @property {WordArray} ciphertext The raw ciphertext.
+     * @property {WordArray} key The key to this ciphertext.
+     * @property {WordArray} iv The IV used in the ciphering operation.
+     * @property {WordArray} salt The salt used with a key derivation function.
+     * @property {Cipher} algorithm The cipher algorithm.
+     * @property {Mode} mode The block mode used in the ciphering operation.
+     * @property {Padding} padding The padding scheme used in the ciphering operation.
+     * @property {number} blockSize The block size of the cipher.
+     * @property {Format} formatter The default formatting strategy to convert this cipher params object to a string.
+     */
+    var CipherParams = C_lib.CipherParams = Base.extend({
+        /**
+         * Initializes a newly created cipher params object.
+         *
+         * @param {Object} cipherParams An object with any of the possible cipher parameters.
+         *
+         * @example
+         *
+         *     var cipherParams = CryptoJS.lib.CipherParams.create({
+         *         ciphertext: ciphertextWordArray,
+         *         key: keyWordArray,
+         *         iv: ivWordArray,
+         *         salt: saltWordArray,
+         *         algorithm: CryptoJS.algo.AES,
+         *         mode: CryptoJS.mode.CBC,
+         *         padding: CryptoJS.pad.PKCS7,
+         *         blockSize: 4,
+         *         formatter: CryptoJS.format.OpenSSL
+         *     });
+         */
+        init: function (cipherParams) {
+            this.mixIn(cipherParams);
+        },
+
+        /**
+         * Converts this cipher params object to a string.
+         *
+         * @param {Format} formatter (Optional) The formatting strategy to use.
+         *
+         * @return {string} The stringified cipher params.
+         *
+         * @throws Error If neither the formatter nor the default formatter is set.
+         *
+         * @example
+         *
+         *     var string = cipherParams + '';
+         *     var string = cipherParams.toString();
+         *     var string = cipherParams.toString(CryptoJS.format.OpenSSL);
+         */
+        toString: function (formatter) {
+            return (formatter || this.formatter).stringify(this);
+        }
+    });
+
+    /**
+     * Format namespace.
+     */
+    var C_format = C.format = {};
+
+    /**
+     * OpenSSL formatting strategy.
+     */
+    var OpenSSLFormatter = C_format.OpenSSL = {
+        /**
+         * Converts a cipher params object to an OpenSSL-compatible string.
+         *
+         * @param {CipherParams} cipherParams The cipher params object.
+         *
+         * @return {string} The OpenSSL-compatible string.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var openSSLString = CryptoJS.format.OpenSSL.stringify(cipherParams);
+         */
+        stringify: function (cipherParams) {
+            // Shortcuts
+            var ciphertext = cipherParams.ciphertext;
+            var salt = cipherParams.salt;
+
+            // Format
+            if (salt) {
+                var wordArray = WordArray.create([0x53616c74, 0x65645f5f]).concat(salt).concat(ciphertext);
+            } else {
+                var wordArray = ciphertext;
+            }
+
+            return wordArray.toString(Base64);
+        },
+
+        /**
+         * Converts an OpenSSL-compatible string to a cipher params object.
+         *
+         * @param {string} openSSLStr The OpenSSL-compatible string.
+         *
+         * @return {CipherParams} The cipher params object.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var cipherParams = CryptoJS.format.OpenSSL.parse(openSSLString);
+         */
+        parse: function (openSSLStr) {
+            // Parse base64
+            var ciphertext = Base64.parse(openSSLStr);
+
+            // Shortcut
+            var ciphertextWords = ciphertext.words;
+
+            // Test for salt
+            if (ciphertextWords[0] == 0x53616c74 && ciphertextWords[1] == 0x65645f5f) {
+                // Extract salt
+                var salt = WordArray.create(ciphertextWords.slice(2, 4));
+
+                // Remove salt from ciphertext
+                ciphertextWords.splice(0, 4);
+                ciphertext.sigBytes -= 16;
+            }
+
+            return CipherParams.create({ ciphertext: ciphertext, salt: salt });
+        }
+    };
+
+    /**
+     * A cipher wrapper that returns ciphertext as a serializable cipher params object.
+     */
+    var SerializableCipher = C_lib.SerializableCipher = Base.extend({
+        /**
+         * Configuration options.
+         *
+         * @property {Formatter} format The formatting strategy to convert cipher param objects to and from a string. Default: OpenSSL
+         */
+        cfg: Base.extend({
+            format: OpenSSLFormatter
+        }),
+
+        /**
+         * Encrypts a message.
+         *
+         * @param {Cipher} cipher The cipher algorithm to use.
+         * @param {WordArray|string} message The message to encrypt.
+         * @param {WordArray} key The key.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @return {CipherParams} A cipher params object.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var ciphertextParams = CryptoJS.lib.SerializableCipher.encrypt(CryptoJS.algo.AES, message, key);
+         *     var ciphertextParams = CryptoJS.lib.SerializableCipher.encrypt(CryptoJS.algo.AES, message, key, { iv: iv });
+         *     var ciphertextParams = CryptoJS.lib.SerializableCipher.encrypt(CryptoJS.algo.AES, message, key, { iv: iv, format: CryptoJS.format.OpenSSL });
+         */
+        encrypt: function (cipher, message, key, cfg) {
+            // Apply config defaults
+            cfg = this.cfg.extend(cfg);
+
+            // Encrypt
+            var encryptor = cipher.createEncryptor(key, cfg);
+            var ciphertext = encryptor.finalize(message);
+
+            // Shortcut
+            var cipherCfg = encryptor.cfg;
+
+            // Create and return serializable cipher params
+            return CipherParams.create({
+                ciphertext: ciphertext,
+                key: key,
+                iv: cipherCfg.iv,
+                algorithm: cipher,
+                mode: cipherCfg.mode,
+                padding: cipherCfg.padding,
+                blockSize: cipher.blockSize,
+                formatter: cfg.format
+            });
+        },
+
+        /**
+         * Decrypts serialized ciphertext.
+         *
+         * @param {Cipher} cipher The cipher algorithm to use.
+         * @param {CipherParams|string} ciphertext The ciphertext to decrypt.
+         * @param {WordArray} key The key.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @return {WordArray} The plaintext.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var plaintext = CryptoJS.lib.SerializableCipher.decrypt(CryptoJS.algo.AES, formattedCiphertext, key, { iv: iv, format: CryptoJS.format.OpenSSL });
+         *     var plaintext = CryptoJS.lib.SerializableCipher.decrypt(CryptoJS.algo.AES, ciphertextParams, key, { iv: iv, format: CryptoJS.format.OpenSSL });
+         */
+        decrypt: function (cipher, ciphertext, key, cfg) {
+            // Apply config defaults
+            cfg = this.cfg.extend(cfg);
+
+            // Convert string to CipherParams
+            ciphertext = this._parse(ciphertext, cfg.format);
+
+            // Decrypt
+            var plaintext = cipher.createDecryptor(key, cfg).finalize(ciphertext.ciphertext);
+
+            return plaintext;
+        },
+
+        /**
+         * Converts serialized ciphertext to CipherParams,
+         * else assumed CipherParams already and returns ciphertext unchanged.
+         *
+         * @param {CipherParams|string} ciphertext The ciphertext.
+         * @param {Formatter} format The formatting strategy to use to parse serialized ciphertext.
+         *
+         * @return {CipherParams} The unserialized ciphertext.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var ciphertextParams = CryptoJS.lib.SerializableCipher._parse(ciphertextStringOrParams, format);
+         */
+        _parse: function (ciphertext, format) {
+            if (typeof ciphertext == 'string') {
+                return format.parse(ciphertext, this);
+            } else {
+                return ciphertext;
+            }
+        }
+    });
+
+    /**
+     * Key derivation function namespace.
+     */
+    var C_kdf = C.kdf = {};
+
+    /**
+     * OpenSSL key derivation function.
+     */
+    var OpenSSLKdf = C_kdf.OpenSSL = {
+        /**
+         * Derives a key and IV from a password.
+         *
+         * @param {string} password The password to derive from.
+         * @param {number} keySize The size in words of the key to generate.
+         * @param {number} ivSize The size in words of the IV to generate.
+         * @param {WordArray|string} salt (Optional) A 64-bit salt to use. If omitted, a salt will be generated randomly.
+         *
+         * @return {CipherParams} A cipher params object with the key, IV, and salt.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32);
+         *     var derivedParams = CryptoJS.kdf.OpenSSL.execute('Password', 256/32, 128/32, 'saltsalt');
+         */
+        execute: function (password, keySize, ivSize, salt) {
+            // Generate random salt
+            if (!salt) {
+                salt = WordArray.random(64/8);
+            }
+
+            // Derive key and IV
+            var key = EvpKDF.create({ keySize: keySize + ivSize }).compute(password, salt);
+
+            // Separate key and IV
+            var iv = WordArray.create(key.words.slice(keySize), ivSize * 4);
+            key.sigBytes = keySize * 4;
+
+            // Return params
+            return CipherParams.create({ key: key, iv: iv, salt: salt });
+        }
+    };
+
+    /**
+     * A serializable cipher wrapper that derives the key from a password,
+     * and returns ciphertext as a serializable cipher params object.
+     */
+    var PasswordBasedCipher = C_lib.PasswordBasedCipher = SerializableCipher.extend({
+        /**
+         * Configuration options.
+         *
+         * @property {KDF} kdf The key derivation function to use to generate a key and IV from a password. Default: OpenSSL
+         */
+        cfg: SerializableCipher.cfg.extend({
+            kdf: OpenSSLKdf
+        }),
+
+        /**
+         * Encrypts a message using a password.
+         *
+         * @param {Cipher} cipher The cipher algorithm to use.
+         * @param {WordArray|string} message The message to encrypt.
+         * @param {string} password The password.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @return {CipherParams} A cipher params object.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var ciphertextParams = CryptoJS.lib.PasswordBasedCipher.encrypt(CryptoJS.algo.AES, message, 'password');
+         *     var ciphertextParams = CryptoJS.lib.PasswordBasedCipher.encrypt(CryptoJS.algo.AES, message, 'password', { format: CryptoJS.format.OpenSSL });
+         */
+        encrypt: function (cipher, message, password, cfg) {
+            // Apply config defaults
+            cfg = this.cfg.extend(cfg);
+
+            // Derive key and other params
+            var derivedParams = cfg.kdf.execute(password, cipher.keySize, cipher.ivSize);
+
+            // Add IV to config
+            cfg.iv = derivedParams.iv;
+
+            // Encrypt
+            var ciphertext = SerializableCipher.encrypt.call(this, cipher, message, derivedParams.key, cfg);
+
+            // Mix in derived params
+            ciphertext.mixIn(derivedParams);
+
+            return ciphertext;
+        },
+
+        /**
+         * Decrypts serialized ciphertext using a password.
+         *
+         * @param {Cipher} cipher The cipher algorithm to use.
+         * @param {CipherParams|string} ciphertext The ciphertext to decrypt.
+         * @param {string} password The password.
+         * @param {Object} cfg (Optional) The configuration options to use for this operation.
+         *
+         * @return {WordArray} The plaintext.
+         *
+         * @static
+         *
+         * @example
+         *
+         *     var plaintext = CryptoJS.lib.PasswordBasedCipher.decrypt(CryptoJS.algo.AES, formattedCiphertext, 'password', { format: CryptoJS.format.OpenSSL });
+         *     var plaintext = CryptoJS.lib.PasswordBasedCipher.decrypt(CryptoJS.algo.AES, ciphertextParams, 'password', { format: CryptoJS.format.OpenSSL });
+         */
+        decrypt: function (cipher, ciphertext, password, cfg) {
+            // Apply config defaults
+            cfg = this.cfg.extend(cfg);
+
+            // Convert string to CipherParams
+            ciphertext = this._parse(ciphertext, cfg.format);
+
+            // Derive key and other params
+            var derivedParams = cfg.kdf.execute(password, cipher.keySize, cipher.ivSize, ciphertext.salt);
+
+            // Add IV to config
+            cfg.iv = derivedParams.iv;
+
+            // Decrypt
+            var plaintext = SerializableCipher.decrypt.call(this, cipher, ciphertext, derivedParams.key, cfg);
+
+            return plaintext;
+        }
+    });
+}());
+
+define("crypto.cipher-core", ["crypto.enc-base64","crypto.evpkdf"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+(function () {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var BlockCipher = C_lib.BlockCipher;
+    var C_algo = C.algo;
+
+    // Lookup tables
+    var SBOX = [];
+    var INV_SBOX = [];
+    var SUB_MIX_0 = [];
+    var SUB_MIX_1 = [];
+    var SUB_MIX_2 = [];
+    var SUB_MIX_3 = [];
+    var INV_SUB_MIX_0 = [];
+    var INV_SUB_MIX_1 = [];
+    var INV_SUB_MIX_2 = [];
+    var INV_SUB_MIX_3 = [];
+
+    // Compute lookup tables
+    (function () {
+        // Compute double table
+        var d = [];
+        for (var i = 0; i < 256; i++) {
+            if (i < 128) {
+                d[i] = i << 1;
+            } else {
+                d[i] = (i << 1) ^ 0x11b;
+            }
+        }
+
+        // Walk GF(2^8)
+        var x = 0;
+        var xi = 0;
+        for (var i = 0; i < 256; i++) {
+            // Compute sbox
+            var sx = xi ^ (xi << 1) ^ (xi << 2) ^ (xi << 3) ^ (xi << 4);
+            sx = (sx >>> 8) ^ (sx & 0xff) ^ 0x63;
+            SBOX[x] = sx;
+            INV_SBOX[sx] = x;
+
+            // Compute multiplication
+            var x2 = d[x];
+            var x4 = d[x2];
+            var x8 = d[x4];
+
+            // Compute sub bytes, mix columns tables
+            var t = (d[sx] * 0x101) ^ (sx * 0x1010100);
+            SUB_MIX_0[x] = (t << 24) | (t >>> 8);
+            SUB_MIX_1[x] = (t << 16) | (t >>> 16);
+            SUB_MIX_2[x] = (t << 8)  | (t >>> 24);
+            SUB_MIX_3[x] = t;
+
+            // Compute inv sub bytes, inv mix columns tables
+            var t = (x8 * 0x1010101) ^ (x4 * 0x10001) ^ (x2 * 0x101) ^ (x * 0x1010100);
+            INV_SUB_MIX_0[sx] = (t << 24) | (t >>> 8);
+            INV_SUB_MIX_1[sx] = (t << 16) | (t >>> 16);
+            INV_SUB_MIX_2[sx] = (t << 8)  | (t >>> 24);
+            INV_SUB_MIX_3[sx] = t;
+
+            // Compute next counter
+            if (!x) {
+                x = xi = 1;
+            } else {
+                x = x2 ^ d[d[d[x8 ^ x2]]];
+                xi ^= d[d[xi]];
+            }
+        }
+    }());
+
+    // Precomputed Rcon lookup
+    var RCON = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36];
+
+    /**
+     * AES block cipher algorithm.
+     */
+    var AES = C_algo.AES = BlockCipher.extend({
+        _doReset: function () {
+            // Shortcuts
+            var key = this._key;
+            var keyWords = key.words;
+            var keySize = key.sigBytes / 4;
+
+            // Compute number of rounds
+            var nRounds = this._nRounds = keySize + 6
+
+            // Compute number of key schedule rows
+            var ksRows = (nRounds + 1) * 4;
+
+            // Compute key schedule
+            var keySchedule = this._keySchedule = [];
+            for (var ksRow = 0; ksRow < ksRows; ksRow++) {
+                if (ksRow < keySize) {
+                    keySchedule[ksRow] = keyWords[ksRow];
+                } else {
+                    var t = keySchedule[ksRow - 1];
+
+                    if (!(ksRow % keySize)) {
+                        // Rot word
+                        t = (t << 8) | (t >>> 24);
+
+                        // Sub word
+                        t = (SBOX[t >>> 24] << 24) | (SBOX[(t >>> 16) & 0xff] << 16) | (SBOX[(t >>> 8) & 0xff] << 8) | SBOX[t & 0xff];
+
+                        // Mix Rcon
+                        t ^= RCON[(ksRow / keySize) | 0] << 24;
+                    } else if (keySize > 6 && ksRow % keySize == 4) {
+                        // Sub word
+                        t = (SBOX[t >>> 24] << 24) | (SBOX[(t >>> 16) & 0xff] << 16) | (SBOX[(t >>> 8) & 0xff] << 8) | SBOX[t & 0xff];
+                    }
+
+                    keySchedule[ksRow] = keySchedule[ksRow - keySize] ^ t;
+                }
+            }
+
+            // Compute inv key schedule
+            var invKeySchedule = this._invKeySchedule = [];
+            for (var invKsRow = 0; invKsRow < ksRows; invKsRow++) {
+                var ksRow = ksRows - invKsRow;
+
+                if (invKsRow % 4) {
+                    var t = keySchedule[ksRow];
+                } else {
+                    var t = keySchedule[ksRow - 4];
+                }
+
+                if (invKsRow < 4 || ksRow <= 4) {
+                    invKeySchedule[invKsRow] = t;
+                } else {
+                    invKeySchedule[invKsRow] = INV_SUB_MIX_0[SBOX[t >>> 24]] ^ INV_SUB_MIX_1[SBOX[(t >>> 16) & 0xff]] ^
+                                               INV_SUB_MIX_2[SBOX[(t >>> 8) & 0xff]] ^ INV_SUB_MIX_3[SBOX[t & 0xff]];
+                }
+            }
+        },
+
+        encryptBlock: function (M, offset) {
+            this._doCryptBlock(M, offset, this._keySchedule, SUB_MIX_0, SUB_MIX_1, SUB_MIX_2, SUB_MIX_3, SBOX);
+        },
+
+        decryptBlock: function (M, offset) {
+            // Swap 2nd and 4th rows
+            var t = M[offset + 1];
+            M[offset + 1] = M[offset + 3];
+            M[offset + 3] = t;
+
+            this._doCryptBlock(M, offset, this._invKeySchedule, INV_SUB_MIX_0, INV_SUB_MIX_1, INV_SUB_MIX_2, INV_SUB_MIX_3, INV_SBOX);
+
+            // Inv swap 2nd and 4th rows
+            var t = M[offset + 1];
+            M[offset + 1] = M[offset + 3];
+            M[offset + 3] = t;
+        },
+
+        _doCryptBlock: function (M, offset, keySchedule, SUB_MIX_0, SUB_MIX_1, SUB_MIX_2, SUB_MIX_3, SBOX) {
+            // Shortcut
+            var nRounds = this._nRounds;
+
+            // Get input, add round key
+            var s0 = M[offset]     ^ keySchedule[0];
+            var s1 = M[offset + 1] ^ keySchedule[1];
+            var s2 = M[offset + 2] ^ keySchedule[2];
+            var s3 = M[offset + 3] ^ keySchedule[3];
+
+            // Key schedule row counter
+            var ksRow = 4;
+
+            // Rounds
+            for (var round = 1; round < nRounds; round++) {
+                // Shift rows, sub bytes, mix columns, add round key
+                var t0 = SUB_MIX_0[s0 >>> 24] ^ SUB_MIX_1[(s1 >>> 16) & 0xff] ^ SUB_MIX_2[(s2 >>> 8) & 0xff] ^ SUB_MIX_3[s3 & 0xff] ^ keySchedule[ksRow++];
+                var t1 = SUB_MIX_0[s1 >>> 24] ^ SUB_MIX_1[(s2 >>> 16) & 0xff] ^ SUB_MIX_2[(s3 >>> 8) & 0xff] ^ SUB_MIX_3[s0 & 0xff] ^ keySchedule[ksRow++];
+                var t2 = SUB_MIX_0[s2 >>> 24] ^ SUB_MIX_1[(s3 >>> 16) & 0xff] ^ SUB_MIX_2[(s0 >>> 8) & 0xff] ^ SUB_MIX_3[s1 & 0xff] ^ keySchedule[ksRow++];
+                var t3 = SUB_MIX_0[s3 >>> 24] ^ SUB_MIX_1[(s0 >>> 16) & 0xff] ^ SUB_MIX_2[(s1 >>> 8) & 0xff] ^ SUB_MIX_3[s2 & 0xff] ^ keySchedule[ksRow++];
+
+                // Update state
+                s0 = t0;
+                s1 = t1;
+                s2 = t2;
+                s3 = t3;
+            }
+
+            // Shift rows, sub bytes, add round key
+            var t0 = ((SBOX[s0 >>> 24] << 24) | (SBOX[(s1 >>> 16) & 0xff] << 16) | (SBOX[(s2 >>> 8) & 0xff] << 8) | SBOX[s3 & 0xff]) ^ keySchedule[ksRow++];
+            var t1 = ((SBOX[s1 >>> 24] << 24) | (SBOX[(s2 >>> 16) & 0xff] << 16) | (SBOX[(s3 >>> 8) & 0xff] << 8) | SBOX[s0 & 0xff]) ^ keySchedule[ksRow++];
+            var t2 = ((SBOX[s2 >>> 24] << 24) | (SBOX[(s3 >>> 16) & 0xff] << 16) | (SBOX[(s0 >>> 8) & 0xff] << 8) | SBOX[s1 & 0xff]) ^ keySchedule[ksRow++];
+            var t3 = ((SBOX[s3 >>> 24] << 24) | (SBOX[(s0 >>> 16) & 0xff] << 16) | (SBOX[(s1 >>> 8) & 0xff] << 8) | SBOX[s2 & 0xff]) ^ keySchedule[ksRow++];
+
+            // Set output
+            M[offset]     = t0;
+            M[offset + 1] = t1;
+            M[offset + 2] = t2;
+            M[offset + 3] = t3;
+        },
+
+        keySize: 256/32
+    });
+
+    /**
+     * Shortcut functions to the cipher's object interface.
+     *
+     * @example
+     *
+     *     var ciphertext = CryptoJS.AES.encrypt(message, key, cfg);
+     *     var plaintext  = CryptoJS.AES.decrypt(ciphertext, key, cfg);
+     */
+    C.AES = BlockCipher._createHelper(AES);
+}());
+
+define("crypto.aes", ["crypto.cipher-core"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+(function () {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var WordArray = C_lib.WordArray;
+    var Hasher = C_lib.Hasher;
+    var C_algo = C.algo;
+
+    // Reusable object
+    var W = [];
+
+    /**
+     * SHA-1 hash algorithm.
+     */
+    var SHA1 = C_algo.SHA1 = Hasher.extend({
+        _doReset: function () {
+            this._hash = new WordArray.init([
+                0x67452301, 0xefcdab89,
+                0x98badcfe, 0x10325476,
+                0xc3d2e1f0
+            ]);
+        },
+
+        _doProcessBlock: function (M, offset) {
+            // Shortcut
+            var H = this._hash.words;
+
+            // Working variables
+            var a = H[0];
+            var b = H[1];
+            var c = H[2];
+            var d = H[3];
+            var e = H[4];
+
+            // Computation
+            for (var i = 0; i < 80; i++) {
+                if (i < 16) {
+                    W[i] = M[offset + i] | 0;
+                } else {
+                    var n = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+                    W[i] = (n << 1) | (n >>> 31);
+                }
+
+                var t = ((a << 5) | (a >>> 27)) + e + W[i];
+                if (i < 20) {
+                    t += ((b & c) | (~b & d)) + 0x5a827999;
+                } else if (i < 40) {
+                    t += (b ^ c ^ d) + 0x6ed9eba1;
+                } else if (i < 60) {
+                    t += ((b & c) | (b & d) | (c & d)) - 0x70e44324;
+                } else /* if (i < 80) */ {
+                    t += (b ^ c ^ d) - 0x359d3e2a;
+                }
+
+                e = d;
+                d = c;
+                c = (b << 30) | (b >>> 2);
+                b = a;
+                a = t;
+            }
+
+            // Intermediate hash value
+            H[0] = (H[0] + a) | 0;
+            H[1] = (H[1] + b) | 0;
+            H[2] = (H[2] + c) | 0;
+            H[3] = (H[3] + d) | 0;
+            H[4] = (H[4] + e) | 0;
+        },
+
+        _doFinalize: function () {
+            // Shortcuts
+            var data = this._data;
+            var dataWords = data.words;
+
+            var nBitsTotal = this._nDataBytes * 8;
+            var nBitsLeft = data.sigBytes * 8;
+
+            // Add padding
+            dataWords[nBitsLeft >>> 5] |= 0x80 << (24 - nBitsLeft % 32);
+            dataWords[(((nBitsLeft + 64) >>> 9) << 4) + 14] = Math.floor(nBitsTotal / 0x100000000);
+            dataWords[(((nBitsLeft + 64) >>> 9) << 4) + 15] = nBitsTotal;
+            data.sigBytes = dataWords.length * 4;
+
+            // Hash final blocks
+            this._process();
+
+            // Return final computed hash
+            return this._hash;
+        },
+
+        clone: function () {
+            var clone = Hasher.clone.call(this);
+            clone._hash = this._hash.clone();
+
+            return clone;
+        }
+    });
+
+    /**
+     * Shortcut function to the hasher's object interface.
+     *
+     * @param {WordArray|string} message The message to hash.
+     *
+     * @return {WordArray} The hash.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var hash = CryptoJS.SHA1('message');
+     *     var hash = CryptoJS.SHA1(wordArray);
+     */
+    C.SHA1 = Hasher._createHelper(SHA1);
+
+    /**
+     * Shortcut function to the HMAC's object interface.
+     *
+     * @param {WordArray|string} message The message to hash.
+     * @param {WordArray|string} key The secret key.
+     *
+     * @return {WordArray} The HMAC.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var hmac = CryptoJS.HmacSHA1(message, key);
+     */
+    C.HmacSHA1 = Hasher._createHmacHelper(SHA1);
+}());
+
+define("crypto.sha1", ["crypto.core"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+(function (Math) {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var WordArray = C_lib.WordArray;
+    var Hasher = C_lib.Hasher;
+    var C_algo = C.algo;
+
+    // Initialization and round constants tables
+    var H = [];
+    var K = [];
+
+    // Compute constants
+    (function () {
+        function isPrime(n) {
+            var sqrtN = Math.sqrt(n);
+            for (var factor = 2; factor <= sqrtN; factor++) {
+                if (!(n % factor)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function getFractionalBits(n) {
+            return ((n - (n | 0)) * 0x100000000) | 0;
+        }
+
+        var n = 2;
+        var nPrime = 0;
+        while (nPrime < 64) {
+            if (isPrime(n)) {
+                if (nPrime < 8) {
+                    H[nPrime] = getFractionalBits(Math.pow(n, 1 / 2));
+                }
+                K[nPrime] = getFractionalBits(Math.pow(n, 1 / 3));
+
+                nPrime++;
+            }
+
+            n++;
+        }
+    }());
+
+    // Reusable object
+    var W = [];
+
+    /**
+     * SHA-256 hash algorithm.
+     */
+    var SHA256 = C_algo.SHA256 = Hasher.extend({
+        _doReset: function () {
+            this._hash = new WordArray.init(H.slice(0));
+        },
+
+        _doProcessBlock: function (M, offset) {
+            // Shortcut
+            var H = this._hash.words;
+
+            // Working variables
+            var a = H[0];
+            var b = H[1];
+            var c = H[2];
+            var d = H[3];
+            var e = H[4];
+            var f = H[5];
+            var g = H[6];
+            var h = H[7];
+
+            // Computation
+            for (var i = 0; i < 64; i++) {
+                if (i < 16) {
+                    W[i] = M[offset + i] | 0;
+                } else {
+                    var gamma0x = W[i - 15];
+                    var gamma0  = ((gamma0x << 25) | (gamma0x >>> 7))  ^
+                                  ((gamma0x << 14) | (gamma0x >>> 18)) ^
+                                   (gamma0x >>> 3);
+
+                    var gamma1x = W[i - 2];
+                    var gamma1  = ((gamma1x << 15) | (gamma1x >>> 17)) ^
+                                  ((gamma1x << 13) | (gamma1x >>> 19)) ^
+                                   (gamma1x >>> 10);
+
+                    W[i] = gamma0 + W[i - 7] + gamma1 + W[i - 16];
+                }
+
+                var ch  = (e & f) ^ (~e & g);
+                var maj = (a & b) ^ (a & c) ^ (b & c);
+
+                var sigma0 = ((a << 30) | (a >>> 2)) ^ ((a << 19) | (a >>> 13)) ^ ((a << 10) | (a >>> 22));
+                var sigma1 = ((e << 26) | (e >>> 6)) ^ ((e << 21) | (e >>> 11)) ^ ((e << 7)  | (e >>> 25));
+
+                var t1 = h + sigma1 + ch + K[i] + W[i];
+                var t2 = sigma0 + maj;
+
+                h = g;
+                g = f;
+                f = e;
+                e = (d + t1) | 0;
+                d = c;
+                c = b;
+                b = a;
+                a = (t1 + t2) | 0;
+            }
+
+            // Intermediate hash value
+            H[0] = (H[0] + a) | 0;
+            H[1] = (H[1] + b) | 0;
+            H[2] = (H[2] + c) | 0;
+            H[3] = (H[3] + d) | 0;
+            H[4] = (H[4] + e) | 0;
+            H[5] = (H[5] + f) | 0;
+            H[6] = (H[6] + g) | 0;
+            H[7] = (H[7] + h) | 0;
+        },
+
+        _doFinalize: function () {
+            // Shortcuts
+            var data = this._data;
+            var dataWords = data.words;
+
+            var nBitsTotal = this._nDataBytes * 8;
+            var nBitsLeft = data.sigBytes * 8;
+
+            // Add padding
+            dataWords[nBitsLeft >>> 5] |= 0x80 << (24 - nBitsLeft % 32);
+            dataWords[(((nBitsLeft + 64) >>> 9) << 4) + 14] = Math.floor(nBitsTotal / 0x100000000);
+            dataWords[(((nBitsLeft + 64) >>> 9) << 4) + 15] = nBitsTotal;
+            data.sigBytes = dataWords.length * 4;
+
+            // Hash final blocks
+            this._process();
+
+            // Return final computed hash
+            return this._hash;
+        },
+
+        clone: function () {
+            var clone = Hasher.clone.call(this);
+            clone._hash = this._hash.clone();
+
+            return clone;
+        }
+    });
+
+    /**
+     * Shortcut function to the hasher's object interface.
+     *
+     * @param {WordArray|string} message The message to hash.
+     *
+     * @return {WordArray} The hash.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var hash = CryptoJS.SHA256('message');
+     *     var hash = CryptoJS.SHA256(wordArray);
+     */
+    C.SHA256 = Hasher._createHelper(SHA256);
+
+    /**
+     * Shortcut function to the HMAC's object interface.
+     *
+     * @param {WordArray|string} message The message to hash.
+     * @param {WordArray|string} key The secret key.
+     *
+     * @return {WordArray} The HMAC.
+     *
+     * @static
+     *
+     * @example
+     *
+     *     var hmac = CryptoJS.HmacSHA256(message, key);
+     */
+    C.HmacSHA256 = Hasher._createHmacHelper(SHA256);
+}(Math));
+
+define("crypto.sha256", ["crypto.core"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+(function () {
+    // Shortcuts
+    var C = CryptoJS;
+    var C_lib = C.lib;
+    var Base = C_lib.Base;
+    var C_enc = C.enc;
+    var Utf8 = C_enc.Utf8;
+    var C_algo = C.algo;
+
+    /**
+     * HMAC algorithm.
+     */
+    var HMAC = C_algo.HMAC = Base.extend({
+        /**
+         * Initializes a newly created HMAC.
+         *
+         * @param {Hasher} hasher The hash algorithm to use.
+         * @param {WordArray|string} key The secret key.
+         *
+         * @example
+         *
+         *     var hmacHasher = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, key);
+         */
+        init: function (hasher, key) {
+            // Init hasher
+            hasher = this._hasher = new hasher.init();
+
+            // Convert string to WordArray, else assume WordArray already
+            if (typeof key == 'string') {
+                key = Utf8.parse(key);
+            }
+
+            // Shortcuts
+            var hasherBlockSize = hasher.blockSize;
+            var hasherBlockSizeBytes = hasherBlockSize * 4;
+
+            // Allow arbitrary length keys
+            if (key.sigBytes > hasherBlockSizeBytes) {
+                key = hasher.finalize(key);
+            }
+
+            // Clamp excess bits
+            key.clamp();
+
+            // Clone key for inner and outer pads
+            var oKey = this._oKey = key.clone();
+            var iKey = this._iKey = key.clone();
+
+            // Shortcuts
+            var oKeyWords = oKey.words;
+            var iKeyWords = iKey.words;
+
+            // XOR keys with pad constants
+            for (var i = 0; i < hasherBlockSize; i++) {
+                oKeyWords[i] ^= 0x5c5c5c5c;
+                iKeyWords[i] ^= 0x36363636;
+            }
+            oKey.sigBytes = iKey.sigBytes = hasherBlockSizeBytes;
+
+            // Set initial values
+            this.reset();
+        },
+
+        /**
+         * Resets this HMAC to its initial state.
+         *
+         * @example
+         *
+         *     hmacHasher.reset();
+         */
+        reset: function () {
+            // Shortcut
+            var hasher = this._hasher;
+
+            // Reset
+            hasher.reset();
+            hasher.update(this._iKey);
+        },
+
+        /**
+         * Updates this HMAC with a message.
+         *
+         * @param {WordArray|string} messageUpdate The message to append.
+         *
+         * @return {HMAC} This HMAC instance.
+         *
+         * @example
+         *
+         *     hmacHasher.update('message');
+         *     hmacHasher.update(wordArray);
+         */
+        update: function (messageUpdate) {
+            this._hasher.update(messageUpdate);
+
+            // Chainable
+            return this;
+        },
+
+        /**
+         * Finalizes the HMAC computation.
+         * Note that the finalize operation is effectively a destructive, read-once operation.
+         *
+         * @param {WordArray|string} messageUpdate (Optional) A final message update.
+         *
+         * @return {WordArray} The HMAC.
+         *
+         * @example
+         *
+         *     var hmac = hmacHasher.finalize();
+         *     var hmac = hmacHasher.finalize('message');
+         *     var hmac = hmacHasher.finalize(wordArray);
+         */
+        finalize: function (messageUpdate) {
+            // Shortcut
+            var hasher = this._hasher;
+
+            // Compute HMAC
+            var innerHash = hasher.finalize(messageUpdate);
+            hasher.reset();
+            var hmac = hasher.finalize(this._oKey.clone().concat(innerHash));
+
+            return hmac;
+        }
+    });
+}());
+
+define("crypto.hmac", ["crypto.core"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+/**
+ * A noop padding strategy.
+ */
+CryptoJS.pad.NoPadding = {
+    pad: function () {
+    },
+
+    unpad: function () {
+    }
+};
+
+define("crypto.pad-nopadding", ["crypto.cipher-core"], function(){});
+
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+/**
+ * Counter block mode.
+ */
+CryptoJS.mode.CTR = (function () {
+    var CTR = CryptoJS.lib.BlockCipherMode.extend();
+
+    var Encryptor = CTR.Encryptor = CTR.extend({
+        processBlock: function (words, offset) {
+            // Shortcuts
+            var cipher = this._cipher
+            var blockSize = cipher.blockSize;
+            var iv = this._iv;
+            var counter = this._counter;
+
+            // Generate keystream
+            if (iv) {
+                counter = this._counter = iv.slice(0);
+
+                // Remove IV for subsequent blocks
+                this._iv = undefined;
+            }
+            var keystream = counter.slice(0);
+            cipher.encryptBlock(keystream, 0);
+
+            // Increment counter
+            counter[blockSize - 1] = (counter[blockSize - 1] + 1) | 0
+
+            // Encrypt
+            for (var i = 0; i < blockSize; i++) {
+                words[offset + i] ^= keystream[i];
+            }
+        }
+    });
+
+    CTR.Decryptor = Encryptor;
+
+    return CTR;
+}());
+
+define("crypto.mode-ctr", ["crypto.cipher-core"], function(){});
+
+;(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        define('crypto',[
+            "crypto.core",
+            "crypto.enc-base64",
+            "crypto.md5",
+            "crypto.evpkdf",
+            "crypto.cipher-core",
+            "crypto.aes",
+            "crypto.sha1",
+            "crypto.sha256",
+            "crypto.hmac",
+            "crypto.pad-nopadding",
+            "crypto.mode-ctr"
+            ], function() {
+                return CryptoJS;
+            }
+        );
+    } else {
+        root.CryptoJS = factory();
+    }
+}(this));
+
+;(function (root, factory) {
+
+  if (typeof define === 'function' && define.amd) {
+    define('bigint',[], factory.bind(root, root.crypto || root.msCrypto))
+  } else if (typeof module !== 'undefined' && module.exports) {
+    module.exports = factory(require('crypto'))
+  } else {
+    root.BigInt = factory(root.crypto || root.msCrypto)
+  }
+
+}(this, function (crypto) {
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // Big Integer Library v. 5.5
+  // Created 2000, last modified 2013
+  // Leemon Baird
+  // www.leemon.com
+  //
+  // Version history:
+  // v 5.5  17 Mar 2013
+  //   - two lines of a form like "if (x<0) x+=n" had the "if" changed to "while" to
+  //     handle the case when x<-n. (Thanks to James Ansell for finding that bug)
+  // v 5.4  3 Oct 2009
+  //   - added "var i" to greaterShift() so i is not global. (Thanks to Péter Szabó for finding that bug)
+  //
+  // v 5.3  21 Sep 2009
+  //   - added randProbPrime(k) for probable primes
+  //   - unrolled loop in mont_ (slightly faster)
+  //   - millerRabin now takes a bigInt parameter rather than an int
+  //
+  // v 5.2  15 Sep 2009
+  //   - fixed capitalization in call to int2bigInt in randBigInt
+  //     (thanks to Emili Evripidou, Reinhold Behringer, and Samuel Macaleese for finding that bug)
+  //
+  // v 5.1  8 Oct 2007 
+  //   - renamed inverseModInt_ to inverseModInt since it doesn't change its parameters
+  //   - added functions GCD and randBigInt, which call GCD_ and randBigInt_
+  //   - fixed a bug found by Rob Visser (see comment with his name below)
+  //   - improved comments
+  //
+  // This file is public domain.   You can use it for any purpose without restriction.
+  // I do not guarantee that it is correct, so use it at your own risk.  If you use 
+  // it for something interesting, I'd appreciate hearing about it.  If you find 
+  // any bugs or make any improvements, I'd appreciate hearing about those too.
+  // It would also be nice if my name and URL were left in the comments.  But none 
+  // of that is required.
+  //
+  // This code defines a bigInt library for arbitrary-precision integers.
+  // A bigInt is an array of integers storing the value in chunks of bpe bits, 
+  // little endian (buff[0] is the least significant word).
+  // Negative bigInts are stored two's complement.  Almost all the functions treat
+  // bigInts as nonnegative.  The few that view them as two's complement say so
+  // in their comments.  Some functions assume their parameters have at least one 
+  // leading zero element. Functions with an underscore at the end of the name put
+  // their answer into one of the arrays passed in, and have unpredictable behavior 
+  // in case of overflow, so the caller must make sure the arrays are big enough to 
+  // hold the answer.  But the average user should never have to call any of the 
+  // underscored functions.  Each important underscored function has a wrapper function 
+  // of the same name without the underscore that takes care of the details for you.  
+  // For each underscored function where a parameter is modified, that same variable 
+  // must not be used as another argument too.  So, you cannot square x by doing 
+  // multMod_(x,x,n).  You must use squareMod_(x,n) instead, or do y=dup(x); multMod_(x,y,n).
+  // Or simply use the multMod(x,x,n) function without the underscore, where
+  // such issues never arise, because non-underscored functions never change
+  // their parameters; they always allocate new memory for the answer that is returned.
+  //
+  // These functions are designed to avoid frequent dynamic memory allocation in the inner loop.
+  // For most functions, if it needs a BigInt as a local variable it will actually use
+  // a global, and will only allocate to it only when it's not the right size.  This ensures
+  // that when a function is called repeatedly with same-sized parameters, it only allocates
+  // memory on the first call.
+  //
+  // Note that for cryptographic purposes, the calls to Math.random() must 
+  // be replaced with calls to a better pseudorandom number generator.
+  //
+  // In the following, "bigInt" means a bigInt with at least one leading zero element,
+  // and "integer" means a nonnegative integer less than radix.  In some cases, integer 
+  // can be negative.  Negative bigInts are 2s complement.
+  // 
+  // The following functions do not modify their inputs.
+  // Those returning a bigInt, string, or Array will dynamically allocate memory for that value.
+  // Those returning a boolean will return the integer 0 (false) or 1 (true).
+  // Those returning boolean or int will not allocate memory except possibly on the first 
+  // time they're called with a given parameter size.
+  // 
+  // bigInt  add(x,y)               //return (x+y) for bigInts x and y.  
+  // bigInt  addInt(x,n)            //return (x+n) where x is a bigInt and n is an integer.
+  // string  bigInt2str(x,base)     //return a string form of bigInt x in a given base, with 2 <= base <= 95
+  // int     bitSize(x)             //return how many bits long the bigInt x is, not counting leading zeros
+  // bigInt  dup(x)                 //return a copy of bigInt x
+  // boolean equals(x,y)            //is the bigInt x equal to the bigint y?
+  // boolean equalsInt(x,y)         //is bigint x equal to integer y?
+  // bigInt  expand(x,n)            //return a copy of x with at least n elements, adding leading zeros if needed
+  // Array   findPrimes(n)          //return array of all primes less than integer n
+  // bigInt  GCD(x,y)               //return greatest common divisor of bigInts x and y (each with same number of elements).
+  // boolean greater(x,y)           //is x>y?  (x and y are nonnegative bigInts)
+  // boolean greaterShift(x,y,shift)//is (x <<(shift*bpe)) > y?
+  // bigInt  int2bigInt(t,n,m)      //return a bigInt equal to integer t, with at least n bits and m array elements
+  // bigInt  inverseMod(x,n)        //return (x**(-1) mod n) for bigInts x and n.  If no inverse exists, it returns null
+  // int     inverseModInt(x,n)     //return x**(-1) mod n, for integers x and n.  Return 0 if there is no inverse
+  // boolean isZero(x)              //is the bigInt x equal to zero?
+  // boolean millerRabin(x,b)       //does one round of Miller-Rabin base integer b say that bigInt x is possibly prime? (b is bigInt, 1<b<x)
+  // boolean millerRabinInt(x,b)    //does one round of Miller-Rabin base integer b say that bigInt x is possibly prime? (b is int,    1<b<x)
+  // bigInt  mod(x,n)               //return a new bigInt equal to (x mod n) for bigInts x and n.
+  // int     modInt(x,n)            //return x mod n for bigInt x and integer n.
+  // bigInt  mult(x,y)              //return x*y for bigInts x and y. This is faster when y<x.
+  // bigInt  multMod(x,y,n)         //return (x*y mod n) for bigInts x,y,n.  For greater speed, let y<x.
+  // boolean negative(x)            //is bigInt x negative?
+  // bigInt  powMod(x,y,n)          //return (x**y mod n) where x,y,n are bigInts and ** is exponentiation.  0**0=1. Faster for odd n.
+  // bigInt  randBigInt(n,s)        //return an n-bit random BigInt (n>=1).  If s=1, then the most significant of those n bits is set to 1.
+  // bigInt  randTruePrime(k)       //return a new, random, k-bit, true prime bigInt using Maurer's algorithm.
+  // bigInt  randProbPrime(k)       //return a new, random, k-bit, probable prime bigInt (probability it's composite less than 2^-80).
+  // bigInt  str2bigInt(s,b,n,m)    //return a bigInt for number represented in string s in base b with at least n bits and m array elements
+  // bigInt  sub(x,y)               //return (x-y) for bigInts x and y.  Negative answers will be 2s complement
+  // bigInt  trim(x,k)              //return a copy of x with exactly k leading zero elements
+  //
+  //
+  // The following functions each have a non-underscored version, which most users should call instead.
+  // These functions each write to a single parameter, and the caller is responsible for ensuring the array 
+  // passed in is large enough to hold the result. 
+  //
+  // void    addInt_(x,n)          //do x=x+n where x is a bigInt and n is an integer
+  // void    add_(x,y)             //do x=x+y for bigInts x and y
+  // void    copy_(x,y)            //do x=y on bigInts x and y
+  // void    copyInt_(x,n)         //do x=n on bigInt x and integer n
+  // void    GCD_(x,y)             //set x to the greatest common divisor of bigInts x and y, (y is destroyed).  (This never overflows its array).
+  // boolean inverseMod_(x,n)      //do x=x**(-1) mod n, for bigInts x and n. Returns 1 (0) if inverse does (doesn't) exist
+  // void    mod_(x,n)             //do x=x mod n for bigInts x and n. (This never overflows its array).
+  // void    mult_(x,y)            //do x=x*y for bigInts x and y.
+  // void    multMod_(x,y,n)       //do x=x*y  mod n for bigInts x,y,n.
+  // void    powMod_(x,y,n)        //do x=x**y mod n, where x,y,n are bigInts (n is odd) and ** is exponentiation.  0**0=1.
+  // void    randBigInt_(b,n,s)    //do b = an n-bit random BigInt. if s=1, then nth bit (most significant bit) is set to 1. n>=1.
+  // void    randTruePrime_(ans,k) //do ans = a random k-bit true random prime (not just probable prime) with 1 in the msb.
+  // void    sub_(x,y)             //do x=x-y for bigInts x and y. Negative answers will be 2s complement.
+  //
+  // The following functions do NOT have a non-underscored version. 
+  // They each write a bigInt result to one or more parameters.  The caller is responsible for
+  // ensuring the arrays passed in are large enough to hold the results. 
+  //
+  // void addShift_(x,y,ys)       //do x=x+(y<<(ys*bpe))
+  // void carry_(x)               //do carries and borrows so each element of the bigInt x fits in bpe bits.
+  // void divide_(x,y,q,r)        //divide x by y giving quotient q and remainder r
+  // int  divInt_(x,n)            //do x=floor(x/n) for bigInt x and integer n, and return the remainder. (This never overflows its array).
+  // int  eGCD_(x,y,d,a,b)        //sets a,b,d to positive bigInts such that d = GCD_(x,y) = a*x-b*y
+  // void halve_(x)               //do x=floor(|x|/2)*sgn(x) for bigInt x in 2's complement.  (This never overflows its array).
+  // void leftShift_(x,n)         //left shift bigInt x by n bits.  n<bpe.
+  // void linComb_(x,y,a,b)       //do x=a*x+b*y for bigInts x and y and integers a and b
+  // void linCombShift_(x,y,b,ys) //do x=x+b*(y<<(ys*bpe)) for bigInts x and y, and integers b and ys
+  // void mont_(x,y,n,np)         //Montgomery multiplication (see comments where the function is defined)
+  // void multInt_(x,n)           //do x=x*n where x is a bigInt and n is an integer.
+  // void rightShift_(x,n)        //right shift bigInt x by n bits. (This never overflows its array).
+  // void squareMod_(x,n)         //do x=x*x  mod n for bigInts x,n
+  // void subShift_(x,y,ys)       //do x=x-(y<<(ys*bpe)). Negative answers will be 2s complement.
+  //
+  // The following functions are based on algorithms from the _Handbook of Applied Cryptography_
+  //    powMod_()           = algorithm 14.94, Montgomery exponentiation
+  //    eGCD_,inverseMod_() = algorithm 14.61, Binary extended GCD_
+  //    GCD_()              = algorothm 14.57, Lehmer's algorithm
+  //    mont_()             = algorithm 14.36, Montgomery multiplication
+  //    divide_()           = algorithm 14.20  Multiple-precision division
+  //    squareMod_()        = algorithm 14.16  Multiple-precision squaring
+  //    randTruePrime_()    = algorithm  4.62, Maurer's algorithm
+  //    millerRabin()       = algorithm  4.24, Miller-Rabin algorithm
+  //
+  // Profiling shows:
+  //     randTruePrime_() spends:
+  //         10% of its time in calls to powMod_()
+  //         85% of its time in calls to millerRabin()
+  //     millerRabin() spends:
+  //         99% of its time in calls to powMod_()   (always with a base of 2)
+  //     powMod_() spends:
+  //         94% of its time in calls to mont_()  (almost always with x==y)
+  //
+  // This suggests there are several ways to speed up this library slightly:
+  //     - convert powMod_ to use a Montgomery form of k-ary window (or maybe a Montgomery form of sliding window)
+  //         -- this should especially focus on being fast when raising 2 to a power mod n
+  //     - convert randTruePrime_() to use a minimum r of 1/3 instead of 1/2 with the appropriate change to the test
+  //     - tune the parameters in randTruePrime_(), including c, m, and recLimit
+  //     - speed up the single loop in mont_() that takes 95% of the runtime, perhaps by reducing checking
+  //       within the loop when all the parameters are the same length.
+  //
+  // There are several ideas that look like they wouldn't help much at all:
+  //     - replacing trial division in randTruePrime_() with a sieve (that speeds up something taking almost no time anyway)
+  //     - increase bpe from 15 to 30 (that would help if we had a 32*32->64 multiplier, but not with JavaScript's 32*32->32)
+  //     - speeding up mont_(x,y,n,np) when x==y by doing a non-modular, non-Montgomery square
+  //       followed by a Montgomery reduction.  The intermediate answer will be twice as long as x, so that
+  //       method would be slower.  This is unfortunate because the code currently spends almost all of its time
+  //       doing mont_(x,x,...), both for randTruePrime_() and powMod_().  A faster method for Montgomery squaring
+  //       would have a large impact on the speed of randTruePrime_() and powMod_().  HAC has a couple of poorly-worded
+  //       sentences that seem to imply it's faster to do a non-modular square followed by a single
+  //       Montgomery reduction, but that's obviously wrong.
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  //globals
+
+  // The number of significant bits in the fraction of a JavaScript
+  // floating-point number is 52, independent of platform.
+  // See: https://github.com/arlolra/otr/issues/41
+
+  var bpe = 26;          // bits stored per array element
+  var radix = 1 << bpe;  // equals 2^bpe
+  var mask = radix - 1;  // AND this with an array element to chop it down to bpe bits
+
+  //the digits for converting to different bases
+  var digitsStr='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_=!@#$%^&*()[]{}|;:,.<>/?`~ \\\'\"+-';
+
+  var one=int2bigInt(1,1,1);     //constant used in powMod_()
+
+  //the following global variables are scratchpad memory to 
+  //reduce dynamic memory allocation in the inner loop
+  var t=new Array(0);
+  var ss=t;       //used in mult_()
+  var s0=t;       //used in multMod_(), squareMod_()
+  var s1=t;       //used in powMod_(), multMod_(), squareMod_()
+  var s2=t;       //used in powMod_(), multMod_()
+  var s3=t;       //used in powMod_()
+  var s4=t, s5=t; //used in mod_()
+  var s6=t;       //used in bigInt2str()
+  var s7=t;       //used in powMod_()
+  var T=t;        //used in GCD_()
+  var sa=t;       //used in mont_()
+  var mr_x1=t, mr_r=t, mr_a=t;                                      //used in millerRabin()
+  var eg_v=t, eg_u=t, eg_A=t, eg_B=t, eg_C=t, eg_D=t;               //used in eGCD_(), inverseMod_()
+  var md_q1=t, md_q2=t, md_q3=t, md_r=t, md_r1=t, md_r2=t, md_tt=t; //used in mod_()
+
+  var primes=t, pows=t, s_i=t, s_i2=t, s_R=t, s_rm=t, s_q=t, s_n1=t;
+  var s_a=t, s_r2=t, s_n=t, s_b=t, s_d=t, s_x1=t, s_x2=t, s_aa=t; //used in randTruePrime_()
+    
+  var rpprb=t; //used in randProbPrimeRounds() (which also uses "primes")
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+
+  //return array of all primes less than integer n
+  function findPrimes(n) {
+    var i,s,p,ans;
+    s=new Array(n);
+    for (i=0;i<n;i++)
+      s[i]=0;
+    s[0]=2;
+    p=0;    //first p elements of s are primes, the rest are a sieve
+    for(;s[p]<n;) {                  //s[p] is the pth prime
+      for(i=s[p]*s[p]; i<n; i+=s[p]) //mark multiples of s[p]
+        s[i]=1;
+      p++;
+      s[p]=s[p-1]+1;
+      for(; s[p]<n && s[s[p]]; s[p]++); //find next prime (where s[p]==0)
+    }
+    ans=new Array(p);
+    for(i=0;i<p;i++)
+      ans[i]=s[i];
+    return ans;
+  }
+
+
+  //does a single round of Miller-Rabin base b consider x to be a possible prime?
+  //x is a bigInt, and b is an integer, with b<x
+  function millerRabinInt(x,b) {
+    if (mr_x1.length!=x.length) {
+      mr_x1=dup(x);
+      mr_r=dup(x);
+      mr_a=dup(x);
+    }
+
+    copyInt_(mr_a,b);
+    return millerRabin(x,mr_a);
+  }
+
+  //does a single round of Miller-Rabin base b consider x to be a possible prime?
+  //x and b are bigInts with b<x
+  function millerRabin(x,b) {
+    var i,j,k,s;
+
+    if (mr_x1.length!=x.length) {
+      mr_x1=dup(x);
+      mr_r=dup(x);
+      mr_a=dup(x);
+    }
+
+    copy_(mr_a,b);
+    copy_(mr_r,x);
+    copy_(mr_x1,x);
+
+    addInt_(mr_r,-1);
+    addInt_(mr_x1,-1);
+
+    //s=the highest power of two that divides mr_r
+
+    /*
+    k=0;
+    for (i=0;i<mr_r.length;i++)
+      for (j=1;j<mask;j<<=1)
+        if (x[i] & j) {
+          s=(k<mr_r.length+bpe ? k : 0); 
+           i=mr_r.length;
+           j=mask;
+        } else
+          k++;
+    */
+
+    /* http://www.javascripter.net/math/primes/millerrabinbug-bigint54.htm */
+    if (isZero(mr_r)) return 0;
+    for (k=0; mr_r[k]==0; k++);
+    for (i=1,j=2; mr_r[k]%j==0; j*=2,i++ );
+    s = k*bpe + i - 1;
+    /* end */
+
+    if (s)                
+      rightShift_(mr_r,s);
+
+    powMod_(mr_a,mr_r,x);
+
+    if (!equalsInt(mr_a,1) && !equals(mr_a,mr_x1)) {
+      j=1;
+      while (j<=s-1 && !equals(mr_a,mr_x1)) {
+        squareMod_(mr_a,x);
+        if (equalsInt(mr_a,1)) {
+          return 0;
+        }
+        j++;
+      }
+      if (!equals(mr_a,mr_x1)) {
+        return 0;
+      }
+    }
+    return 1;  
+  }
+
+  //returns how many bits long the bigInt is, not counting leading zeros.
+  function bitSize(x) {
+    var j,z,w;
+    for (j=x.length-1; (x[j]==0) && (j>0); j--);
+    for (z=0,w=x[j]; w; (w>>=1),z++);
+    z+=bpe*j;
+    return z;
+  }
+
+  //return a copy of x with at least n elements, adding leading zeros if needed
+  function expand(x,n) {
+    var ans=int2bigInt(0,(x.length>n ? x.length : n)*bpe,0);
+    copy_(ans,x);
+    return ans;
+  }
+
+  //return a k-bit true random prime using Maurer's algorithm.
+  function randTruePrime(k) {
+    var ans=int2bigInt(0,k,0);
+    randTruePrime_(ans,k);
+    return trim(ans,1);
+  }
+
+  //return a k-bit random probable prime with probability of error < 2^-80
+  function randProbPrime(k) {
+    if (k>=600) return randProbPrimeRounds(k,2); //numbers from HAC table 4.3
+    if (k>=550) return randProbPrimeRounds(k,4);
+    if (k>=500) return randProbPrimeRounds(k,5);
+    if (k>=400) return randProbPrimeRounds(k,6);
+    if (k>=350) return randProbPrimeRounds(k,7);
+    if (k>=300) return randProbPrimeRounds(k,9);
+    if (k>=250) return randProbPrimeRounds(k,12); //numbers from HAC table 4.4
+    if (k>=200) return randProbPrimeRounds(k,15);
+    if (k>=150) return randProbPrimeRounds(k,18);
+    if (k>=100) return randProbPrimeRounds(k,27);
+                return randProbPrimeRounds(k,40); //number from HAC remark 4.26 (only an estimate)
+  }
+
+  //return a k-bit probable random prime using n rounds of Miller Rabin (after trial division with small primes)
+  function randProbPrimeRounds(k,n) {
+    var ans, i, divisible, B; 
+    B=30000;  //B is largest prime to use in trial division
+    ans=int2bigInt(0,k,0);
+    
+    //optimization: try larger and smaller B to find the best limit.
+    
+    if (primes.length==0)
+      primes=findPrimes(30000);  //check for divisibility by primes <=30000
+
+    if (rpprb.length!=ans.length)
+      rpprb=dup(ans);
+
+    for (;;) { //keep trying random values for ans until one appears to be prime
+      //optimization: pick a random number times L=2*3*5*...*p, plus a 
+      //   random element of the list of all numbers in [0,L) not divisible by any prime up to p.
+      //   This can reduce the amount of random number generation.
+      
+      randBigInt_(ans,k,0); //ans = a random odd number to check
+      ans[0] |= 1; 
+      divisible=0;
+    
+      //check ans for divisibility by small primes up to B
+      for (i=0; (i<primes.length) && (primes[i]<=B); i++)
+        if (modInt(ans,primes[i])==0 && !equalsInt(ans,primes[i])) {
+          divisible=1;
+          break;
+        }      
+      
+      //optimization: change millerRabin so the base can be bigger than the number being checked, then eliminate the while here.
+      
+      //do n rounds of Miller Rabin, with random bases less than ans
+      for (i=0; i<n && !divisible; i++) {
+        randBigInt_(rpprb,k,0);
+        while(!greater(ans,rpprb)) //pick a random rpprb that's < ans
+          randBigInt_(rpprb,k,0);
+        if (!millerRabin(ans,rpprb))
+          divisible=1;
+      }
+      
+      if(!divisible)
+        return ans;
+    }  
+  }
+
+  //return a new bigInt equal to (x mod n) for bigInts x and n.
+  function mod(x,n) {
+    var ans=dup(x);
+    mod_(ans,n);
+    return trim(ans,1);
+  }
+
+  //return (x+n) where x is a bigInt and n is an integer.
+  function addInt(x,n) {
+    var ans=expand(x,x.length+1);
+    addInt_(ans,n);
+    return trim(ans,1);
+  }
+
+  //return x*y for bigInts x and y. This is faster when y<x.
+  function mult(x,y) {
+    var ans=expand(x,x.length+y.length);
+    mult_(ans,y);
+    return trim(ans,1);
+  }
+
+  //return (x**y mod n) where x,y,n are bigInts and ** is exponentiation.  0**0=1. Faster for odd n.
+  function powMod(x,y,n) {
+    var ans=expand(x,n.length);  
+    powMod_(ans,trim(y,2),trim(n,2),0);  //this should work without the trim, but doesn't
+    return trim(ans,1);
+  }
+
+  //return (x-y) for bigInts x and y.  Negative answers will be 2s complement
+  function sub(x,y) {
+    var ans=expand(x,(x.length>y.length ? x.length+1 : y.length+1)); 
+    sub_(ans,y);
+    return trim(ans,1);
+  }
+
+  //return (x+y) for bigInts x and y.  
+  function add(x,y) {
+    var ans=expand(x,(x.length>y.length ? x.length+1 : y.length+1)); 
+    add_(ans,y);
+    return trim(ans,1);
+  }
+
+  //return (x**(-1) mod n) for bigInts x and n.  If no inverse exists, it returns null
+  function inverseMod(x,n) {
+    var ans=expand(x,n.length); 
+    var s;
+    s=inverseMod_(ans,n);
+    return s ? trim(ans,1) : null;
+  }
+
+  //return (x*y mod n) for bigInts x,y,n.  For greater speed, let y<x.
+  function multMod(x,y,n) {
+    var ans=expand(x,n.length);
+    multMod_(ans,y,n);
+    return trim(ans,1);
+  }
+
+  //generate a k-bit true random prime using Maurer's algorithm,
+  //and put it into ans.  The bigInt ans must be large enough to hold it.
+  function randTruePrime_(ans,k) {
+    var c,w,m,pm,dd,j,r,B,divisible,z,zz,recSize,recLimit;
+
+    if (primes.length==0)
+      primes=findPrimes(30000);  //check for divisibility by primes <=30000
+
+    if (pows.length==0) {
+      pows=new Array(512);
+      for (j=0;j<512;j++) {
+        pows[j]=Math.pow(2,j/511.0-1.0);
+      }
+    }
+
+    //c and m should be tuned for a particular machine and value of k, to maximize speed
+    c=0.1;  //c=0.1 in HAC
+    m=20;   //generate this k-bit number by first recursively generating a number that has between k/2 and k-m bits
+    recLimit=20; //stop recursion when k <=recLimit.  Must have recLimit >= 2
+
+    if (s_i2.length!=ans.length) {
+      s_i2=dup(ans);
+      s_R =dup(ans);
+      s_n1=dup(ans);
+      s_r2=dup(ans);
+      s_d =dup(ans);
+      s_x1=dup(ans);
+      s_x2=dup(ans);
+      s_b =dup(ans);
+      s_n =dup(ans);
+      s_i =dup(ans);
+      s_rm=dup(ans);
+      s_q =dup(ans);
+      s_a =dup(ans);
+      s_aa=dup(ans);
+    }
+
+    if (k <= recLimit) {  //generate small random primes by trial division up to its square root
+      pm=(1<<((k+2)>>1))-1; //pm is binary number with all ones, just over sqrt(2^k)
+      copyInt_(ans,0);
+      for (dd=1;dd;) {
+        dd=0;
+        ans[0]= 1 | (1<<(k-1)) | randomBitInt(k);  //random, k-bit, odd integer, with msb 1
+        for (j=1;(j<primes.length) && ((primes[j]&pm)==primes[j]);j++) { //trial division by all primes 3...sqrt(2^k)
+          if (0==(ans[0]%primes[j])) {
+            dd=1;
+            break;
+          }
+        }
+      }
+      carry_(ans);
+      return;
+    }
+
+    B=c*k*k;    //try small primes up to B (or all the primes[] array if the largest is less than B).
+    if (k>2*m)  //generate this k-bit number by first recursively generating a number that has between k/2 and k-m bits
+      for (r=1; k-k*r<=m; )
+        r=pows[randomBitInt(9)];   //r=Math.pow(2,Math.random()-1);
+    else
+      r=0.5;
+
+    //simulation suggests the more complex algorithm using r=.333 is only slightly faster.
+
+    recSize=Math.floor(r*k)+1;
+
+    randTruePrime_(s_q,recSize);
+    copyInt_(s_i2,0);
+    s_i2[Math.floor((k-2)/bpe)] |= (1<<((k-2)%bpe));   //s_i2=2^(k-2)
+    divide_(s_i2,s_q,s_i,s_rm);                        //s_i=floor((2^(k-1))/(2q))
+
+    z=bitSize(s_i);
+
+    for (;;) {
+      for (;;) {  //generate z-bit numbers until one falls in the range [0,s_i-1]
+        randBigInt_(s_R,z,0);
+        if (greater(s_i,s_R))
+          break;
+      }                //now s_R is in the range [0,s_i-1]
+      addInt_(s_R,1);  //now s_R is in the range [1,s_i]
+      add_(s_R,s_i);   //now s_R is in the range [s_i+1,2*s_i]
+
+      copy_(s_n,s_q);
+      mult_(s_n,s_R); 
+      multInt_(s_n,2);
+      addInt_(s_n,1);    //s_n=2*s_R*s_q+1
+      
+      copy_(s_r2,s_R);
+      multInt_(s_r2,2);  //s_r2=2*s_R
+
+      //check s_n for divisibility by small primes up to B
+      for (divisible=0,j=0; (j<primes.length) && (primes[j]<B); j++)
+        if (modInt(s_n,primes[j])==0 && !equalsInt(s_n,primes[j])) {
+          divisible=1;
+          break;
+        }      
+
+      if (!divisible)    //if it passes small primes check, then try a single Miller-Rabin base 2
+        if (!millerRabinInt(s_n,2)) //this line represents 75% of the total runtime for randTruePrime_ 
+          divisible=1;
+
+      if (!divisible) {  //if it passes that test, continue checking s_n
+        addInt_(s_n,-3);
+        for (j=s_n.length-1;(s_n[j]==0) && (j>0); j--);  //strip leading zeros
+        for (zz=0,w=s_n[j]; w; (w>>=1),zz++);
+        zz+=bpe*j;                             //zz=number of bits in s_n, ignoring leading zeros
+        for (;;) {  //generate z-bit numbers until one falls in the range [0,s_n-1]
+          randBigInt_(s_a,zz,0);
+          if (greater(s_n,s_a))
+            break;
+        }                //now s_a is in the range [0,s_n-1]
+        addInt_(s_n,3);  //now s_a is in the range [0,s_n-4]
+        addInt_(s_a,2);  //now s_a is in the range [2,s_n-2]
+        copy_(s_b,s_a);
+        copy_(s_n1,s_n);
+        addInt_(s_n1,-1);
+        powMod_(s_b,s_n1,s_n);   //s_b=s_a^(s_n-1) modulo s_n
+        addInt_(s_b,-1);
+        if (isZero(s_b)) {
+          copy_(s_b,s_a);
+          powMod_(s_b,s_r2,s_n);
+          addInt_(s_b,-1);
+          copy_(s_aa,s_n);
+          copy_(s_d,s_b);
+          GCD_(s_d,s_n);  //if s_b and s_n are relatively prime, then s_n is a prime
+          if (equalsInt(s_d,1)) {
+            copy_(ans,s_aa);
+            return;     //if we've made it this far, then s_n is absolutely guaranteed to be prime
+          }
+        }
+      }
+    }
+  }
+
+  //Return an n-bit random BigInt (n>=1).  If s=1, then the most significant of those n bits is set to 1.
+  function randBigInt(n,s) {
+    var a,b;
+    a=Math.floor((n-1)/bpe)+2; //# array elements to hold the BigInt with a leading 0 element
+    b=int2bigInt(0,0,a);
+    randBigInt_(b,n,s);
+    return b;
+  }
+
+  //Set b to an n-bit random BigInt.  If s=1, then the most significant of those n bits is set to 1.
+  //Array b must be big enough to hold the result. Must have n>=1
+  function randBigInt_(b,n,s) {
+    var i,a;
+    for (i=0;i<b.length;i++)
+      b[i]=0;
+    a=Math.floor((n-1)/bpe)+1; //# array elements to hold the BigInt
+    for (i=0;i<a;i++) {
+      b[i]=randomBitInt(bpe);
+    }
+    b[a-1] &= (2<<((n-1)%bpe))-1;
+    if (s==1)
+      b[a-1] |= (1<<((n-1)%bpe));
+  }
+
+  //Return the greatest common divisor of bigInts x and y (each with same number of elements).
+  function GCD(x,y) {
+    var xc,yc;
+    xc=dup(x);
+    yc=dup(y);
+    GCD_(xc,yc);
+    return xc;
+  }
+
+  //set x to the greatest common divisor of bigInts x and y (each with same number of elements).
+  //y is destroyed.
+  function GCD_(x,y) {
+    var i,xp,yp,A,B,C,D,q,sing,qp;
+    if (T.length!=x.length)
+      T=dup(x);
+
+    sing=1;
+    while (sing) { //while y has nonzero elements other than y[0]
+      sing=0;
+      for (i=1;i<y.length;i++) //check if y has nonzero elements other than 0
+        if (y[i]) {
+          sing=1;
+          break;
+        }
+      if (!sing) break; //quit when y all zero elements except possibly y[0]
+
+      for (i=x.length;!x[i] && i>=0;i--);  //find most significant element of x
+      xp=x[i];
+      yp=y[i];
+      A=1; B=0; C=0; D=1;
+      while ((yp+C) && (yp+D)) {
+        q =Math.floor((xp+A)/(yp+C));
+        qp=Math.floor((xp+B)/(yp+D));
+        if (q!=qp)
+          break;
+        t= A-q*C;   A=C;   C=t;    //  do (A,B,xp, C,D,yp) = (C,D,yp, A,B,xp) - q*(0,0,0, C,D,yp)      
+        t= B-q*D;   B=D;   D=t;
+        t=xp-q*yp; xp=yp; yp=t;
+      }
+      if (B) {
+        copy_(T,x);
+        linComb_(x,y,A,B); //x=A*x+B*y
+        linComb_(y,T,D,C); //y=D*y+C*T
+      } else {
+        mod_(x,y);
+        copy_(T,x);
+        copy_(x,y);
+        copy_(y,T);
+      } 
+    }
+    if (y[0]==0)
+      return;
+    t=modInt(x,y[0]);
+    copyInt_(x,y[0]);
+    y[0]=t;
+    while (y[0]) {
+      x[0]%=y[0];
+      t=x[0]; x[0]=y[0]; y[0]=t;
+    }
+  }
+
+  //do x=x**(-1) mod n, for bigInts x and n.
+  //If no inverse exists, it sets x to zero and returns 0, else it returns 1.
+  //The x array must be at least as large as the n array.
+  function inverseMod_(x,n) {
+    var k=1+2*Math.max(x.length,n.length);
+
+    if(!(x[0]&1)  && !(n[0]&1)) {  //if both inputs are even, then inverse doesn't exist
+      copyInt_(x,0);
+      return 0;
+    }
+
+    if (eg_u.length!=k) {
+      eg_u=new Array(k);
+      eg_v=new Array(k);
+      eg_A=new Array(k);
+      eg_B=new Array(k);
+      eg_C=new Array(k);
+      eg_D=new Array(k);
+    }
+
+    copy_(eg_u,x);
+    copy_(eg_v,n);
+    copyInt_(eg_A,1);
+    copyInt_(eg_B,0);
+    copyInt_(eg_C,0);
+    copyInt_(eg_D,1);
+    for (;;) {
+      while(!(eg_u[0]&1)) {  //while eg_u is even
+        halve_(eg_u);
+        if (!(eg_A[0]&1) && !(eg_B[0]&1)) { //if eg_A==eg_B==0 mod 2
+          halve_(eg_A);
+          halve_(eg_B);      
+        } else {
+          add_(eg_A,n);  halve_(eg_A);
+          sub_(eg_B,x);  halve_(eg_B);
+        }
+      }
+
+      while (!(eg_v[0]&1)) {  //while eg_v is even
+        halve_(eg_v);
+        if (!(eg_C[0]&1) && !(eg_D[0]&1)) { //if eg_C==eg_D==0 mod 2
+          halve_(eg_C);
+          halve_(eg_D);      
+        } else {
+          add_(eg_C,n);  halve_(eg_C);
+          sub_(eg_D,x);  halve_(eg_D);
+        }
+      }
+
+      if (!greater(eg_v,eg_u)) { //eg_v <= eg_u
+        sub_(eg_u,eg_v);
+        sub_(eg_A,eg_C);
+        sub_(eg_B,eg_D);
+      } else {                   //eg_v > eg_u
+        sub_(eg_v,eg_u);
+        sub_(eg_C,eg_A);
+        sub_(eg_D,eg_B);
+      }
+
+      if (equalsInt(eg_u,0)) {
+        while (negative(eg_C)) //make sure answer is nonnegative
+          add_(eg_C,n);
+        copy_(x,eg_C);
+
+        if (!equalsInt(eg_v,1)) { //if GCD_(x,n)!=1, then there is no inverse
+          copyInt_(x,0);
+          return 0;
+        }
+        return 1;
+      }
+    }
+  }
+
+  //return x**(-1) mod n, for integers x and n.  Return 0 if there is no inverse
+  function inverseModInt(x,n) {
+    var a=1,b=0,t;
+    for (;;) {
+      if (x==1) return a;
+      if (x==0) return 0;
+      b-=a*Math.floor(n/x);
+      n%=x;
+
+      if (n==1) return b; //to avoid negatives, change this b to n-b, and each -= to +=
+      if (n==0) return 0;
+      a-=b*Math.floor(x/n);
+      x%=n;
+    }
+  }
+
+  //this deprecated function is for backward compatibility only. 
+  function inverseModInt_(x,n) {
+     return inverseModInt(x,n);
+  }
+
+
+  //Given positive bigInts x and y, change the bigints v, a, and b to positive bigInts such that:
+  //     v = GCD_(x,y) = a*x-b*y
+  //The bigInts v, a, b, must have exactly as many elements as the larger of x and y.
+  function eGCD_(x,y,v,a,b) {
+    var g=0;
+    var k=Math.max(x.length,y.length);
+    if (eg_u.length!=k) {
+      eg_u=new Array(k);
+      eg_A=new Array(k);
+      eg_B=new Array(k);
+      eg_C=new Array(k);
+      eg_D=new Array(k);
+    }
+    while(!(x[0]&1)  && !(y[0]&1)) {  //while x and y both even
+      halve_(x);
+      halve_(y);
+      g++;
+    }
+    copy_(eg_u,x);
+    copy_(v,y);
+    copyInt_(eg_A,1);
+    copyInt_(eg_B,0);
+    copyInt_(eg_C,0);
+    copyInt_(eg_D,1);
+    for (;;) {
+      while(!(eg_u[0]&1)) {  //while u is even
+        halve_(eg_u);
+        if (!(eg_A[0]&1) && !(eg_B[0]&1)) { //if A==B==0 mod 2
+          halve_(eg_A);
+          halve_(eg_B);      
+        } else {
+          add_(eg_A,y);  halve_(eg_A);
+          sub_(eg_B,x);  halve_(eg_B);
+        }
+      }
+
+      while (!(v[0]&1)) {  //while v is even
+        halve_(v);
+        if (!(eg_C[0]&1) && !(eg_D[0]&1)) { //if C==D==0 mod 2
+          halve_(eg_C);
+          halve_(eg_D);      
+        } else {
+          add_(eg_C,y);  halve_(eg_C);
+          sub_(eg_D,x);  halve_(eg_D);
+        }
+      }
+
+      if (!greater(v,eg_u)) { //v<=u
+        sub_(eg_u,v);
+        sub_(eg_A,eg_C);
+        sub_(eg_B,eg_D);
+      } else {                //v>u
+        sub_(v,eg_u);
+        sub_(eg_C,eg_A);
+        sub_(eg_D,eg_B);
+      }
+      if (equalsInt(eg_u,0)) {
+        while (negative(eg_C)) {   //make sure a (C) is nonnegative
+          add_(eg_C,y);
+          sub_(eg_D,x);
+        }
+        multInt_(eg_D,-1);  ///make sure b (D) is nonnegative
+        copy_(a,eg_C);
+        copy_(b,eg_D);
+        leftShift_(v,g);
+        return;
+      }
+    }
+  }
+
+
+  //is bigInt x negative?
+  function negative(x) {
+    return ((x[x.length-1]>>(bpe-1))&1);
+  }
+
+
+  //is (x << (shift*bpe)) > y?
+  //x and y are nonnegative bigInts
+  //shift is a nonnegative integer
+  function greaterShift(x,y,shift) {
+    var i, kx=x.length, ky=y.length;
+    var k=((kx+shift)<ky) ? (kx+shift) : ky;
+    for (i=ky-1-shift; i<kx && i>=0; i++) 
+      if (x[i]>0)
+        return 1; //if there are nonzeros in x to the left of the first column of y, then x is bigger
+    for (i=kx-1+shift; i<ky; i++)
+      if (y[i]>0)
+        return 0; //if there are nonzeros in y to the left of the first column of x, then x is not bigger
+    for (i=k-1; i>=shift; i--)
+      if      (x[i-shift]>y[i]) return 1;
+      else if (x[i-shift]<y[i]) return 0;
+    return 0;
+  }
+
+  //is x > y? (x and y both nonnegative)
+  function greater(x,y) {
+    var i;
+    var k=(x.length<y.length) ? x.length : y.length;
+
+    for (i=x.length;i<y.length;i++)
+      if (y[i])
+        return 0;  //y has more digits
+
+    for (i=y.length;i<x.length;i++)
+      if (x[i])
+        return 1;  //x has more digits
+
+    for (i=k-1;i>=0;i--)
+      if (x[i]>y[i])
+        return 1;
+      else if (x[i]<y[i])
+        return 0;
+    return 0;
+  }
+
+  //divide x by y giving quotient q and remainder r.  (q=floor(x/y),  r=x mod y).  All 4 are bigints.
+  //x must have at least one leading zero element.
+  //y must be nonzero.
+  //q and r must be arrays that are exactly the same length as x. (Or q can have more).
+  //Must have x.length >= y.length >= 2.
+  function divide_(x,y,q,r) {
+    var kx, ky;
+    var i,j,y1,y2,c,a,b;
+    copy_(r,x);
+    for (ky=y.length;y[ky-1]==0;ky--); //ky is number of elements in y, not including leading zeros
+
+    //normalize: ensure the most significant element of y has its highest bit set  
+    b=y[ky-1];
+    for (a=0; b; a++)
+      b>>=1;  
+    a=bpe-a;  //a is how many bits to shift so that the high order bit of y is leftmost in its array element
+    leftShift_(y,a);  //multiply both by 1<<a now, then divide both by that at the end
+    leftShift_(r,a);
+
+    //Rob Visser discovered a bug: the following line was originally just before the normalization.
+    for (kx=r.length;r[kx-1]==0 && kx>ky;kx--); //kx is number of elements in normalized x, not including leading zeros
+
+    copyInt_(q,0);                      // q=0
+    while (!greaterShift(y,r,kx-ky)) {  // while (leftShift_(y,kx-ky) <= r) {
+      subShift_(r,y,kx-ky);             //   r=r-leftShift_(y,kx-ky)
+      q[kx-ky]++;                       //   q[kx-ky]++;
+    }                                   // }
+
+    for (i=kx-1; i>=ky; i--) {
+      if (r[i]==y[ky-1])
+        q[i-ky]=mask;
+      else
+        q[i-ky]=Math.floor((r[i]*radix+r[i-1])/y[ky-1]);
+
+      //The following for(;;) loop is equivalent to the commented while loop, 
+      //except that the uncommented version avoids overflow.
+      //The commented loop comes from HAC, which assumes r[-1]==y[-1]==0
+      //  while (q[i-ky]*(y[ky-1]*radix+y[ky-2]) > r[i]*radix*radix+r[i-1]*radix+r[i-2])
+      //    q[i-ky]--;    
+      for (;;) {
+        y2=(ky>1 ? y[ky-2] : 0)*q[i-ky];
+        c=y2;
+        y2=y2 & mask;
+        c = (c - y2) / radix;
+        y1=c+q[i-ky]*y[ky-1];
+        c=y1;
+        y1=y1 & mask;
+        c = (c - y1) / radix;
+
+        if (c==r[i] ? y1==r[i-1] ? y2>(i>1 ? r[i-2] : 0) : y1>r[i-1] : c>r[i]) 
+          q[i-ky]--;
+        else
+          break;
+      }
+
+      linCombShift_(r,y,-q[i-ky],i-ky);    //r=r-q[i-ky]*leftShift_(y,i-ky)
+      if (negative(r)) {
+        addShift_(r,y,i-ky);         //r=r+leftShift_(y,i-ky)
+        q[i-ky]--;
+      }
+    }
+
+    rightShift_(y,a);  //undo the normalization step
+    rightShift_(r,a);  //undo the normalization step
+  }
+
+  //do carries and borrows so each element of the bigInt x fits in bpe bits.
+  function carry_(x) {
+    var i,k,c,b;
+    k=x.length;
+    c=0;
+    for (i=0;i<k;i++) {
+      c+=x[i];
+      b=0;
+      if (c<0) {
+        b = c & mask;
+        b = -((c - b) / radix);
+        c+=b*radix;
+      }
+      x[i]=c & mask;
+      c = ((c - x[i]) / radix) - b;
+    }
+  }
+
+  //return x mod n for bigInt x and integer n.
+  function modInt(x,n) {
+    var i,c=0;
+    for (i=x.length-1; i>=0; i--)
+      c=(c*radix+x[i])%n;
+    return c;
+  }
+
+  //convert the integer t into a bigInt with at least the given number of bits.
+  //the returned array stores the bigInt in bpe-bit chunks, little endian (buff[0] is least significant word)
+  //Pad the array with leading zeros so that it has at least minSize elements.
+  //There will always be at least one leading 0 element.
+  function int2bigInt(t,bits,minSize) {   
+    var i,k, buff;
+    k=Math.ceil(bits/bpe)+1;
+    k=minSize>k ? minSize : k;
+    buff=new Array(k);
+    copyInt_(buff,t);
+    return buff;
+  }
+
+  //return the bigInt given a string representation in a given base.  
+  //Pad the array with leading zeros so that it has at least minSize elements.
+  //If base=-1, then it reads in a space-separated list of array elements in decimal.
+  //The array will always have at least one leading zero, unless base=-1.
+  function str2bigInt(s,base,minSize) {
+    var d, i, j, x, y, kk;
+    var k=s.length;
+    if (base==-1) { //comma-separated list of array elements in decimal
+      x=new Array(0);
+      for (;;) {
+        y=new Array(x.length+1);
+        for (i=0;i<x.length;i++)
+          y[i+1]=x[i];
+        y[0]=parseInt(s,10);
+        x=y;
+        d=s.indexOf(',',0);
+        if (d<1) 
+          break;
+        s=s.substring(d+1);
+        if (s.length==0)
+          break;
+      }
+      if (x.length<minSize) {
+        y=new Array(minSize);
+        copy_(y,x);
+        return y;
+      }
+      return x;
+    }
+
+    // log2(base)*k
+    var bb = base, p = 0;
+    var b = base == 1 ? k : 0;
+    while (bb > 1) {
+      if (bb & 1) p = 1;
+      b += k;
+      bb >>= 1;
+    }
+    b += p*k;
+
+    x=int2bigInt(0,b,0);
+    for (i=0;i<k;i++) {
+      d=digitsStr.indexOf(s.substring(i,i+1),0);
+      if (base<=36 && d>=36)  //convert lowercase to uppercase if base<=36
+        d-=26;
+      if (d>=base || d<0) {   //stop at first illegal character
+        break;
+      }
+      multInt_(x,base);
+      addInt_(x,d);
+    }
+
+    for (k=x.length;k>0 && !x[k-1];k--); //strip off leading zeros
+    k=minSize>k+1 ? minSize : k+1;
+    y=new Array(k);
+    kk=k<x.length ? k : x.length;
+    for (i=0;i<kk;i++)
+      y[i]=x[i];
+    for (;i<k;i++)
+      y[i]=0;
+    return y;
+  }
+
+  //is bigint x equal to integer y?
+  //y must have less than bpe bits
+  function equalsInt(x,y) {
+    var i;
+    if (x[0]!=y)
+      return 0;
+    for (i=1;i<x.length;i++)
+      if (x[i])
+        return 0;
+    return 1;
+  }
+
+  //are bigints x and y equal?
+  //this works even if x and y are different lengths and have arbitrarily many leading zeros
+  function equals(x,y) {
+    var i;
+    var k=x.length<y.length ? x.length : y.length;
+    for (i=0;i<k;i++)
+      if (x[i]!=y[i])
+        return 0;
+    if (x.length>y.length) {
+      for (;i<x.length;i++)
+        if (x[i])
+          return 0;
+    } else {
+      for (;i<y.length;i++)
+        if (y[i])
+          return 0;
+    }
+    return 1;
+  }
+
+  //is the bigInt x equal to zero?
+  function isZero(x) {
+    var i;
+    for (i=0;i<x.length;i++)
+      if (x[i])
+        return 0;
+    return 1;
+  }
+
+  //convert a bigInt into a string in a given base, from base 2 up to base 95.
+  //Base -1 prints the contents of the array representing the number.
+  function bigInt2str(x,base) {
+    var i,t,s="";
+
+    if (s6.length!=x.length) 
+      s6=dup(x);
+    else
+      copy_(s6,x);
+
+    if (base==-1) { //return the list of array contents
+      for (i=x.length-1;i>0;i--)
+        s+=x[i]+',';
+      s+=x[0];
+    }
+    else { //return it in the given base
+      while (!isZero(s6)) {
+        t=divInt_(s6,base);  //t=s6 % base; s6=floor(s6/base);
+        s=digitsStr.substring(t,t+1)+s;
+      }
+    }
+    if (s.length==0)
+      s="0";
+    return s;
+  }
+
+  //returns a duplicate of bigInt x
+  function dup(x) {
+    var i, buff;
+    buff=new Array(x.length);
+    copy_(buff,x);
+    return buff;
+  }
+
+  //do x=y on bigInts x and y.  x must be an array at least as big as y (not counting the leading zeros in y).
+  function copy_(x,y) {
+    var i;
+    var k=x.length<y.length ? x.length : y.length;
+    for (i=0;i<k;i++)
+      x[i]=y[i];
+    for (i=k;i<x.length;i++)
+      x[i]=0;
+  }
+
+  //do x=y on bigInt x and integer y.  
+  function copyInt_(x,n) {
+    var i,c;
+    for (c=n,i=0;i<x.length;i++) {
+      x[i]=c & mask;
+      c>>=bpe;
+    }
+  }
+
+  //do x=x+n where x is a bigInt and n is an integer.
+  //x must be large enough to hold the result.
+  function addInt_(x,n) {
+    var i,k,c,b;
+    x[0]+=n;
+    k=x.length;
+    c=0;
+    for (i=0;i<k;i++) {
+      c+=x[i];
+      b=0;
+      if (c<0) {
+        b = c & mask;
+        b = -((c - b) / radix);
+        c+=b*radix;
+      }
+      x[i]=c & mask;
+      c = ((c - x[i]) / radix) - b;
+      if (!c) return; //stop carrying as soon as the carry is zero
+    }
+  }
+
+  //right shift bigInt x by n bits.
+  function rightShift_(x,n) {
+    var i;
+    var k=Math.floor(n/bpe);
+    if (k) {
+      for (i=0;i<x.length-k;i++) //right shift x by k elements
+        x[i]=x[i+k];
+      for (;i<x.length;i++)
+        x[i]=0;
+      n%=bpe;
+    }
+    for (i=0;i<x.length-1;i++) {
+      x[i]=mask & ((x[i+1]<<(bpe-n)) | (x[i]>>n));
+    }
+    x[i]>>=n;
+  }
+
+  //do x=floor(|x|/2)*sgn(x) for bigInt x in 2's complement
+  function halve_(x) {
+    var i;
+    for (i=0;i<x.length-1;i++) {
+      x[i]=mask & ((x[i+1]<<(bpe-1)) | (x[i]>>1));
+    }
+    x[i]=(x[i]>>1) | (x[i] & (radix>>1));  //most significant bit stays the same
+  }
+
+  //left shift bigInt x by n bits.
+  function leftShift_(x,n) {
+    var i;
+    var k=Math.floor(n/bpe);
+    if (k) {
+      for (i=x.length; i>=k; i--) //left shift x by k elements
+        x[i]=x[i-k];
+      for (;i>=0;i--)
+        x[i]=0;  
+      n%=bpe;
+    }
+    if (!n)
+      return;
+    for (i=x.length-1;i>0;i--) {
+      x[i]=mask & ((x[i]<<n) | (x[i-1]>>(bpe-n)));
+    }
+    x[i]=mask & (x[i]<<n);
+  }
+
+  //do x=x*n where x is a bigInt and n is an integer.
+  //x must be large enough to hold the result.
+  function multInt_(x,n) {
+    var i,k,c,b;
+    if (!n)
+      return;
+    k=x.length;
+    c=0;
+    for (i=0;i<k;i++) {
+      c+=x[i]*n;
+      b=0;
+      if (c<0) {
+        b = c & mask;
+        b = -((c - b) / radix);
+        c+=b*radix;
+      }
+      x[i]=c & mask;
+      c = ((c - x[i]) / radix) - b;
+    }
+  }
+
+  //do x=floor(x/n) for bigInt x and integer n, and return the remainder
+  function divInt_(x,n) {
+    var i,r=0,s;
+    for (i=x.length-1;i>=0;i--) {
+      s=r*radix+x[i];
+      x[i]=Math.floor(s/n);
+      r=s%n;
+    }
+    return r;
+  }
+
+  //do the linear combination x=a*x+b*y for bigInts x and y, and integers a and b.
+  //x must be large enough to hold the answer.
+  function linComb_(x,y,a,b) {
+    var i,c,k,kk;
+    k=x.length<y.length ? x.length : y.length;
+    kk=x.length;
+    for (c=0,i=0;i<k;i++) {
+      c+=a*x[i]+b*y[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+    for (i=k;i<kk;i++) {
+      c+=a*x[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+  }
+
+  //do the linear combination x=a*x+b*(y<<(ys*bpe)) for bigInts x and y, and integers a, b and ys.
+  //x must be large enough to hold the answer.
+  function linCombShift_(x,y,b,ys) {
+    var i,c,k,kk;
+    k=x.length<ys+y.length ? x.length : ys+y.length;
+    kk=x.length;
+    for (c=0,i=ys;i<k;i++) {
+      c+=x[i]+b*y[i-ys];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+    for (i=k;c && i<kk;i++) {
+      c+=x[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+  }
+
+  //do x=x+(y<<(ys*bpe)) for bigInts x and y, and integers a,b and ys.
+  //x must be large enough to hold the answer.
+  function addShift_(x,y,ys) {
+    var i,c,k,kk;
+    k=x.length<ys+y.length ? x.length : ys+y.length;
+    kk=x.length;
+    for (c=0,i=ys;i<k;i++) {
+      c+=x[i]+y[i-ys];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+    for (i=k;c && i<kk;i++) {
+      c+=x[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+  }
+
+  //do x=x-(y<<(ys*bpe)) for bigInts x and y, and integers a,b and ys.
+  //x must be large enough to hold the answer.
+  function subShift_(x,y,ys) {
+    var i,c,k,kk;
+    k=x.length<ys+y.length ? x.length : ys+y.length;
+    kk=x.length;
+    for (c=0,i=ys;i<k;i++) {
+      c+=x[i]-y[i-ys];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+    for (i=k;c && i<kk;i++) {
+      c+=x[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+  }
+
+  //do x=x-y for bigInts x and y.
+  //x must be large enough to hold the answer.
+  //negative answers will be 2s complement
+  function sub_(x,y) {
+    var i,c,k,kk;
+    k=x.length<y.length ? x.length : y.length;
+    for (c=0,i=0;i<k;i++) {
+      c+=x[i]-y[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+    for (i=k;c && i<x.length;i++) {
+      c+=x[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+  }
+
+  //do x=x+y for bigInts x and y.
+  //x must be large enough to hold the answer.
+  function add_(x,y) {
+    var i,c,k,kk;
+    k=x.length<y.length ? x.length : y.length;
+    for (c=0,i=0;i<k;i++) {
+      c+=x[i]+y[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+    for (i=k;c && i<x.length;i++) {
+      c+=x[i];
+      x[i]=c & mask;
+      c = (c - x[i]) / radix;
+    }
+  }
+
+  //do x=x*y for bigInts x and y.  This is faster when y<x.
+  function mult_(x,y) {
+    var i;
+    if (ss.length!=2*x.length)
+      ss=new Array(2*x.length);
+    copyInt_(ss,0);
+    for (i=0;i<y.length;i++)
+      if (y[i])
+        linCombShift_(ss,x,y[i],i);   //ss=1*ss+y[i]*(x<<(i*bpe))
+    copy_(x,ss);
+  }
+
+  //do x=x mod n for bigInts x and n.
+  function mod_(x,n) {
+    if (s4.length!=x.length)
+      s4=dup(x);
+    else
+      copy_(s4,x);
+    if (s5.length!=x.length)
+      s5=dup(x);  
+    divide_(s4,n,s5,x);  //x = remainder of s4 / n
+  }
+
+  //do x=x*y mod n for bigInts x,y,n.
+  //for greater speed, let y<x.
+  function multMod_(x,y,n) {
+    var i;
+    if (s0.length!=2*x.length)
+      s0=new Array(2*x.length);
+    copyInt_(s0,0);
+    for (i=0;i<y.length;i++)
+      if (y[i])
+        linCombShift_(s0,x,y[i],i);   //s0=1*s0+y[i]*(x<<(i*bpe))
+    mod_(s0,n);
+    copy_(x,s0);
+  }
+
+  //do x=x*x mod n for bigInts x,n.
+  function squareMod_(x,n) {
+    var i,j,d,c,kx,kn,k;
+    for (kx=x.length; kx>0 && !x[kx-1]; kx--);  //ignore leading zeros in x
+    k=kx>n.length ? 2*kx : 2*n.length; //k=# elements in the product, which is twice the elements in the larger of x and n
+    if (s0.length!=k) 
+      s0=new Array(k);
+    copyInt_(s0,0);
+    for (i=0;i<kx;i++) {
+      c=s0[2*i]+x[i]*x[i];
+      s0[2*i]=c & mask;
+      c = (c - s0[2*i]) / radix;
+      for (j=i+1;j<kx;j++) {
+        c=s0[i+j]+2*x[i]*x[j]+c;
+        s0[i+j]=(c & mask);
+        c = (c - s0[i+j]) / radix;
+      }
+      s0[i+kx]=c;
+    }
+    mod_(s0,n);
+    copy_(x,s0);
+  }
+
+  //return x with exactly k leading zero elements
+  function trim(x,k) {
+    var i,y;
+    for (i=x.length; i>0 && !x[i-1]; i--);
+    y=new Array(i+k);
+    copy_(y,x);
+    return y;
+  }
+
+  //do x=x**y mod n, where x,y,n are bigInts and ** is exponentiation.  0**0=1.
+  //this is faster when n is odd.  x usually needs to have as many elements as n.
+  function powMod_(x,y,n) {
+    var k1,k2,kn,np;
+    if(s7.length!=n.length)
+      s7=dup(n);
+
+    //for even modulus, use a simple square-and-multiply algorithm,
+    //rather than using the more complex Montgomery algorithm.
+    if ((n[0]&1)==0) {
+      copy_(s7,x);
+      copyInt_(x,1);
+      while(!equalsInt(y,0)) {
+        if (y[0]&1)
+          multMod_(x,s7,n);
+        divInt_(y,2);
+        squareMod_(s7,n); 
+      }
+      return;
+    }
+
+    //calculate np from n for the Montgomery multiplications
+    copyInt_(s7,0);
+    for (kn=n.length;kn>0 && !n[kn-1];kn--);
+    np=radix-inverseModInt(modInt(n,radix),radix);
+    s7[kn]=1;
+    multMod_(x ,s7,n);   // x = x * 2**(kn*bp) mod n
+
+    if (s3.length!=x.length)
+      s3=dup(x);
+    else
+      copy_(s3,x);
+
+    for (k1=y.length-1;k1>0 & !y[k1]; k1--);  //k1=first nonzero element of y
+    if (y[k1]==0) {  //anything to the 0th power is 1
+      copyInt_(x,1);
+      return;
+    }
+    for (k2=1<<(bpe-1);k2 && !(y[k1] & k2); k2>>=1);  //k2=position of first 1 bit in y[k1]
+    for (;;) {
+      if (!(k2>>=1)) {  //look at next bit of y
+        k1--;
+        if (k1<0) {
+          mont_(x,one,n,np);
+          return;
+        }
+        k2=1<<(bpe-1);
+      }    
+      mont_(x,x,n,np);
+
+      if (k2 & y[k1]) //if next bit is a 1
+        mont_(x,s3,n,np);
+    }
+  }
+
+
+  //do x=x*y*Ri mod n for bigInts x,y,n, 
+  //  where Ri = 2**(-kn*bpe) mod n, and kn is the 
+  //  number of elements in the n array, not 
+  //  counting leading zeros.  
+  //x array must have at least as many elemnts as the n array
+  //It's OK if x and y are the same variable.
+  //must have:
+  //  x,y < n
+  //  n is odd
+  //  np = -(n^(-1)) mod radix
+  function mont_(x,y,n,np) {
+    var i,j,c,ui,t,t2,ks;
+    var kn=n.length;
+    var ky=y.length;
+
+    if (sa.length!=kn)
+      sa=new Array(kn);
+      
+    copyInt_(sa,0);
+
+    for (;kn>0 && n[kn-1]==0;kn--); //ignore leading zeros of n
+    for (;ky>0 && y[ky-1]==0;ky--); //ignore leading zeros of y
+    ks=sa.length-1; //sa will never have more than this many nonzero elements.  
+
+    //the following loop consumes 95% of the runtime for randTruePrime_() and powMod_() for large numbers
+    for (i=0; i<kn; i++) {
+      t=sa[0]+x[i]*y[0];
+      ui=((t & mask) * np) & mask;  //the inner "& mask" was needed on Safari (but not MSIE) at one time
+      c=(t+ui*n[0]);
+      c = (c - (c & mask)) / radix;
+      t=x[i];
+      
+      //do sa=(sa+x[i]*y+ui*n)/b   where b=2**bpe.  Loop is unrolled 5-fold for speed
+      j=1;
+      for (;j<ky-4;) {
+        c+=sa[j]+ui*n[j]+t*y[j]; t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j]+t*y[j]; t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j]+t*y[j]; t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j]+t*y[j]; t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j]+t*y[j]; t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+      }
+      for (;j<ky;)   {
+        c+=sa[j]+ui*n[j]+t*y[j]; t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+      }
+      for (;j<kn-4;) {
+        c+=sa[j]+ui*n[j];        t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j];        t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j];        t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j];        t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+        c+=sa[j]+ui*n[j];        t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+      }
+      for (;j<kn;)   {
+        c+=sa[j]+ui*n[j];        t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+      }
+      for (;j<ks;)   {
+        c+=sa[j];                t2=sa[j-1]=c & mask; c=(c-t2)/radix; j++;
+      }
+      sa[j-1]=c & mask;
+    }
+
+    if (!greater(n,sa))
+      sub_(sa,n);
+    copy_(x,sa);
+  }
+
+
+  // otr.js additions
+
+
+  // computes num / den mod n
+  function divMod(num, den, n) {
+    return multMod(num, inverseMod(den, n), n)
+  }
+
+  // computes one - two mod n
+  function subMod(one, two, n) {
+    one = mod(one, n)
+    two = mod(two, n)
+    if (greater(two, one)) one = add(one, n)
+    return sub(one, two)
+  }
+
+  // computes 2^m as a bigInt
+  function twoToThe(m) {
+    var b = Math.floor(m / bpe) + 2
+    var t = new Array(b)
+    for (var i = 0; i < b; i++) t[i] = 0
+    t[b - 2] = 1 << (m % bpe)
+    return t
+  }
+
+  // cache these results for faster lookup
+  var _num2bin = (function () {
+    var i = 0, _num2bin= {}
+    for (; i < 0x100; ++i) {
+      _num2bin[i] = String.fromCharCode(i)  // 0 -> "\00"
+    }
+    return _num2bin
+  }())
+
+  // serialize a bigInt to an ascii string
+  // padded up to pad length
+  function bigInt2bits(bi, pad) {
+    pad || (pad = 0)
+    bi = dup(bi)
+    var ba = ''
+    while (!isZero(bi)) {
+      ba = _num2bin[bi[0] & 0xff] + ba
+      rightShift_(bi, 8)
+    }
+    while (ba.length < pad) {
+      ba = '\x00' + ba
+    }
+    return ba
+  }
+
+  // converts a byte array to a bigInt
+  function ba2bigInt(data) {
+    var mpi = str2bigInt('0', 10, data.length)
+    data.forEach(function (d, i) {
+      if (i) leftShift_(mpi, 8)
+      mpi[0] |= d
+    })
+    return mpi
+  }
+
+  // returns a function that returns an array of n bytes
+  var randomBytes = (function () {
+
+    // in node
+    if ( typeof crypto !== 'undefined' &&
+      typeof crypto.randomBytes === 'function' ) {
+      return function (n) {
+        try {
+          var buf = crypto.randomBytes(n)
+        } catch (e) { throw e }
+        return Array.prototype.slice.call(buf, 0)
+      }
+    }
+
+    // in browser
+    else if ( typeof crypto !== 'undefined' &&
+      typeof crypto.getRandomValues === 'function' ) {
+      return function (n) {
+        var buf = new Uint8Array(n)
+        crypto.getRandomValues(buf)
+        return Array.prototype.slice.call(buf, 0)
+      }
+    }
+
+    // err
+    else {
+      console.log('Keys should not be generated without CSPRNG.');
+      return;
+      // throw new Error('Keys should not be generated without CSPRNG.')
+    }
+
+  }())
+
+  // Salsa 20 in webworker needs a 40 byte seed
+  function getSeed() {
+    return randomBytes(40)
+  }
+
+  // returns a single random byte
+  function randomByte() {
+    return randomBytes(1)[0]
+  }
+
+  // returns a k-bit random integer
+  function randomBitInt(k) {
+    if (k > 31) throw new Error("Too many bits.")
+    var i = 0, r = 0
+    var b = Math.floor(k / 8)
+    var mask = (1 << (k % 8)) - 1
+    if (mask) r = randomByte() & mask
+    for (; i < b; i++)
+      r = (256 * r) + randomByte()
+    return r
+  }
+
+  return {
+      str2bigInt    : str2bigInt
+    , bigInt2str    : bigInt2str
+    , int2bigInt    : int2bigInt
+    , multMod       : multMod
+    , powMod        : powMod
+    , inverseMod    : inverseMod
+    , randBigInt    : randBigInt
+    , randBigInt_   : randBigInt_
+    , equals        : equals
+    , equalsInt     : equalsInt
+    , sub           : sub
+    , mod           : mod
+    , modInt        : modInt
+    , mult          : mult
+    , divInt_       : divInt_
+    , rightShift_   : rightShift_
+    , dup           : dup
+    , greater       : greater
+    , add           : add
+    , isZero        : isZero
+    , bitSize       : bitSize
+    , millerRabin   : millerRabin
+    , divide_       : divide_
+    , trim          : trim
+    , primes        : primes
+    , findPrimes    : findPrimes
+    , getSeed       : getSeed
+    , divMod        : divMod
+    , subMod        : subMod
+    , twoToThe      : twoToThe
+    , bigInt2bits   : bigInt2bits
+    , ba2bigInt     : ba2bigInt
+  }
+
+}))
+;
+/*!
+ * EventEmitter v4.2.3 - git.io/ee
+ * Oliver Caldwell
+ * MIT license
+ * @preserve
+ */
+
+(function () {
+	
+
+	/**
+	 * Class for managing events.
+	 * Can be extended to provide event functionality in other classes.
+	 *
+	 * @class EventEmitter Manages event registering and emitting.
+	 */
+	function EventEmitter() {}
+
+	// Shortcuts to improve speed and size
+
+	// Easy access to the prototype
+	var proto = EventEmitter.prototype;
+
+	/**
+	 * Finds the index of the listener for the event in it's storage array.
+	 *
+	 * @param {Function[]} listeners Array of listeners to search through.
+	 * @param {Function} listener Method to look for.
+	 * @return {Number} Index of the specified listener, -1 if not found
+	 * @api private
+	 */
+	function indexOfListener(listeners, listener) {
+		var i = listeners.length;
+		while (i--) {
+			if (listeners[i].listener === listener) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Alias a method while keeping the context correct, to allow for overwriting of target method.
+	 *
+	 * @param {String} name The name of the target method.
+	 * @return {Function} The aliased method
+	 * @api private
+	 */
+	function alias(name) {
+		return function aliasClosure() {
+			return this[name].apply(this, arguments);
+		};
+	}
+
+	/**
+	 * Returns the listener array for the specified event.
+	 * Will initialise the event object and listener arrays if required.
+	 * Will return an object if you use a regex search. The object contains keys for each matched event. So /ba[rz]/ might return an object containing bar and baz. But only if you have either defined them with defineEvent or added some listeners to them.
+	 * Each property in the object response is an array of listener functions.
+	 *
+	 * @param {String|RegExp} evt Name of the event to return the listeners from.
+	 * @return {Function[]|Object} All listener functions for the event.
+	 */
+	proto.getListeners = function getListeners(evt) {
+		var events = this._getEvents();
+		var response;
+		var key;
+
+		// Return a concatenated array of all matching events if
+		// the selector is a regular expression.
+		if (typeof evt === 'object') {
+			response = {};
+			for (key in events) {
+				if (events.hasOwnProperty(key) && evt.test(key)) {
+					response[key] = events[key];
+				}
+			}
+		}
+		else {
+			response = events[evt] || (events[evt] = []);
+		}
+
+		return response;
+	};
+
+	/**
+	 * Takes a list of listener objects and flattens it into a list of listener functions.
+	 *
+	 * @param {Object[]} listeners Raw listener objects.
+	 * @return {Function[]} Just the listener functions.
+	 */
+	proto.flattenListeners = function flattenListeners(listeners) {
+		var flatListeners = [];
+		var i;
+
+		for (i = 0; i < listeners.length; i += 1) {
+			flatListeners.push(listeners[i].listener);
+		}
+
+		return flatListeners;
+	};
+
+	/**
+	 * Fetches the requested listeners via getListeners but will always return the results inside an object. This is mainly for internal use but others may find it useful.
+	 *
+	 * @param {String|RegExp} evt Name of the event to return the listeners from.
+	 * @return {Object} All listener functions for an event in an object.
+	 */
+	proto.getListenersAsObject = function getListenersAsObject(evt) {
+		var listeners = this.getListeners(evt);
+		var response;
+
+		if (listeners instanceof Array) {
+			response = {};
+			response[evt] = listeners;
+		}
+
+		return response || listeners;
+	};
+
+	/**
+	 * Adds a listener function to the specified event.
+	 * The listener will not be added if it is a duplicate.
+	 * If the listener returns true then it will be removed after it is called.
+	 * If you pass a regular expression as the event name then the listener will be added to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to attach the listener to.
+	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.addListener = function addListener(evt, listener) {
+		var listeners = this.getListenersAsObject(evt);
+		var listenerIsWrapped = typeof listener === 'object';
+		var key;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key) && indexOfListener(listeners[key], listener) === -1) {
+				listeners[key].push(listenerIsWrapped ? listener : {
+					listener: listener,
+					once: false
+				});
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of addListener
+	 */
+	proto.on = alias('addListener');
+
+	/**
+	 * Semi-alias of addListener. It will add a listener that will be
+	 * automatically removed after it's first execution.
+	 *
+	 * @param {String|RegExp} evt Name of the event to attach the listener to.
+	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.addOnceListener = function addOnceListener(evt, listener) {
+		return this.addListener(evt, {
+			listener: listener,
+			once: true
+		});
+	};
+
+	/**
+	 * Alias of addOnceListener.
+	 */
+	proto.once = alias('addOnceListener');
+
+	/**
+	 * Defines an event name. This is required if you want to use a regex to add a listener to multiple events at once. If you don't do this then how do you expect it to know what event to add to? Should it just add to every possible match for a regex? No. That is scary and bad.
+	 * You need to tell it what event names should be matched by a regex.
+	 *
+	 * @param {String} evt Name of the event to create.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.defineEvent = function defineEvent(evt) {
+		this.getListeners(evt);
+		return this;
+	};
+
+	/**
+	 * Uses defineEvent to define multiple events.
+	 *
+	 * @param {String[]} evts An array of event names to define.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.defineEvents = function defineEvents(evts) {
+		for (var i = 0; i < evts.length; i += 1) {
+			this.defineEvent(evts[i]);
+		}
+		return this;
+	};
+
+	/**
+	 * Removes a listener function from the specified event.
+	 * When passed a regular expression as the event name, it will remove the listener from all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to remove the listener from.
+	 * @param {Function} listener Method to remove from the event.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.removeListener = function removeListener(evt, listener) {
+		var listeners = this.getListenersAsObject(evt);
+		var index;
+		var key;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key)) {
+				index = indexOfListener(listeners[key], listener);
+
+				if (index !== -1) {
+					listeners[key].splice(index, 1);
+				}
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of removeListener
+	 */
+	proto.off = alias('removeListener');
+
+	/**
+	 * Adds listeners in bulk using the manipulateListeners method.
+	 * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or listener arrays. You can also pass it an event name and an array of listeners to be added.
+	 * You can also pass it a regular expression to add the array of listeners to all events that match it.
+	 * Yeah, this function does quite a bit. That's probably a bad thing.
+	 *
+	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add to multiple events at once.
+	 * @param {Function[]} [listeners] An optional array of listener functions to add.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.addListeners = function addListeners(evt, listeners) {
+		// Pass through to manipulateListeners
+		return this.manipulateListeners(false, evt, listeners);
+	};
+
+	/**
+	 * Removes listeners in bulk using the manipulateListeners method.
+	 * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+	 * You can also pass it an event name and an array of listeners to be removed.
+	 * You can also pass it a regular expression to remove the listeners from all events that match it.
+	 *
+	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to remove from multiple events at once.
+	 * @param {Function[]} [listeners] An optional array of listener functions to remove.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.removeListeners = function removeListeners(evt, listeners) {
+		// Pass through to manipulateListeners
+		return this.manipulateListeners(true, evt, listeners);
+	};
+
+	/**
+	 * Edits listeners in bulk. The addListeners and removeListeners methods both use this to do their job. You should really use those instead, this is a little lower level.
+	 * The first argument will determine if the listeners are removed (true) or added (false).
+	 * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+	 * You can also pass it an event name and an array of listeners to be added/removed.
+	 * You can also pass it a regular expression to manipulate the listeners of all events that match it.
+	 *
+	 * @param {Boolean} remove True if you want to remove listeners, false if you want to add.
+	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add/remove from multiple events at once.
+	 * @param {Function[]} [listeners] An optional array of listener functions to add/remove.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.manipulateListeners = function manipulateListeners(remove, evt, listeners) {
+		var i;
+		var value;
+		var single = remove ? this.removeListener : this.addListener;
+		var multiple = remove ? this.removeListeners : this.addListeners;
+
+		// If evt is an object then pass each of it's properties to this method
+		if (typeof evt === 'object' && !(evt instanceof RegExp)) {
+			for (i in evt) {
+				if (evt.hasOwnProperty(i) && (value = evt[i])) {
+					// Pass the single listener straight through to the singular method
+					if (typeof value === 'function') {
+						single.call(this, i, value);
+					}
+					else {
+						// Otherwise pass back to the multiple function
+						multiple.call(this, i, value);
+					}
+				}
+			}
+		}
+		else {
+			// So evt must be a string
+			// And listeners must be an array of listeners
+			// Loop over it and pass each one to the multiple method
+			i = listeners.length;
+			while (i--) {
+				single.call(this, evt, listeners[i]);
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Removes all listeners from a specified event.
+	 * If you do not specify an event then all listeners will be removed.
+	 * That means every event will be emptied.
+	 * You can also pass a regex to remove all events that match it.
+	 *
+	 * @param {String|RegExp} [evt] Optional name of the event to remove all listeners for. Will remove from every event if not passed.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.removeEvent = function removeEvent(evt) {
+		var type = typeof evt;
+		var events = this._getEvents();
+		var key;
+
+		// Remove different things depending on the state of evt
+		if (type === 'string') {
+			// Remove all listeners for the specified event
+			delete events[evt];
+		}
+		else if (type === 'object') {
+			// Remove all events matching the regex.
+			for (key in events) {
+				if (events.hasOwnProperty(key) && evt.test(key)) {
+					delete events[key];
+				}
+			}
+		}
+		else {
+			// Remove all listeners in all events
+			delete this._events;
+		}
+
+		return this;
+	};
+
+	/**
+	 * Emits an event of your choice.
+	 * When emitted, every listener attached to that event will be executed.
+	 * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
+	 * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
+	 * So they will not arrive within the array on the other side, they will be separate.
+	 * You can also pass a regular expression to emit to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+	 * @param {Array} [args] Optional array of arguments to be passed to each listener.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.emitEvent = function emitEvent(evt, args) {
+		var listeners = this.getListenersAsObject(evt);
+		var listener;
+		var i;
+		var key;
+		var response;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key)) {
+				i = listeners[key].length;
+
+				while (i--) {
+					// If the listener returns true then it shall be removed from the event
+					// The function is executed either with a basic call or an apply if there is an args array
+					listener = listeners[key][i];
+
+					if (listener.once === true) {
+						this.removeListener(evt, listener.listener);
+					}
+
+					response = listener.listener.apply(this, args || []);
+
+					if (response === this._getOnceReturnValue()) {
+						this.removeListener(evt, listener.listener);
+					}
+				}
+			}
+		}
+
+		return this;
+	};
+
+	/**
+	 * Alias of emitEvent
+	 */
+	proto.trigger = alias('emitEvent');
+
+	/**
+	 * Subtly different from emitEvent in that it will pass its arguments on to the listeners, as opposed to taking a single array of arguments to pass on.
+	 * As with emitEvent, you can pass a regex in place of the event name to emit to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+	 * @param {...*} Optional additional arguments to be passed to each listener.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.emit = function emit(evt) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		return this.emitEvent(evt, args);
+	};
+
+	/**
+	 * Sets the current value to check against when executing listeners. If a
+	 * listeners return value matches the one set here then it will be removed
+	 * after execution. This value defaults to true.
+	 *
+	 * @param {*} value The new value to check for when executing listeners.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.setOnceReturnValue = function setOnceReturnValue(value) {
+		this._onceReturnValue = value;
+		return this;
+	};
+
+	/**
+	 * Fetches the current value to check against when executing listeners. If
+	 * the listeners return value matches this one then it should be removed
+	 * automatically. It will return true by default.
+	 *
+	 * @return {*|Boolean} The current value to check for or the default, true.
+	 * @api private
+	 */
+	proto._getOnceReturnValue = function _getOnceReturnValue() {
+		if (this.hasOwnProperty('_onceReturnValue')) {
+			return this._onceReturnValue;
+		}
+		else {
+			return true;
+		}
+	};
+
+	/**
+	 * Fetches the events object and creates one if required.
+	 *
+	 * @return {Object} The events storage object.
+	 * @api private
+	 */
+	proto._getEvents = function _getEvents() {
+		return this._events || (this._events = {});
+	};
+
+	// Expose the class either via AMD, CommonJS or the global object
+	if (typeof define === 'function' && define.amd) {
+		define('eventemitter',[],function () {
+			return EventEmitter;
+		});
+	}
+	else if (typeof module === 'object' && module.exports){
+		module.exports = EventEmitter;
+	}
+	else {
+		this.EventEmitter = EventEmitter;
+	}
+}.call(this));
+
+/*!
+
+  otr.js v0.2.12 - 2014-04-15
+  (c) 2014 - Arlo Breault <arlolra@gmail.com>
+  Freely distributed under the MPL v2.0 license.
+
+  This file is concatenated for the browser.
+  Please see: https://github.com/arlolra/otr
+
+*/
+
+;(function (root, factory) {
+
+  if (typeof define === 'function' && define.amd) {
+    define('otr',[
+        "jquery",
+        "jquery.browser",
+        "bigint",
+        "crypto",
+        "eventemitter"
+    ], function ($, dummy, BigInt, CryptoJS, EventEmitter) {
+      if ($.browser.msie) {
+          return undefined;
+      }
+      var root = {
+          BigInt: BigInt
+        , CryptoJS: CryptoJS
+        , EventEmitter: EventEmitter
+        , OTR: {}
+        , DSA: {}
+      }
+      return factory.call(root)
+    })
+  } else {
+    root.OTR = {}
+    root.DSA = {}
+    factory.call(root)
+  }
+
+}(this, function () {
+
+;(function () {
+  
+
+  var root = this
+
+  var CONST = {
+
+    // diffie-heilman
+      N : 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA237327FFFFFFFFFFFFFFFF'
+    , G : '2'
+
+    // otr message states
+    , MSGSTATE_PLAINTEXT : 0
+    , MSGSTATE_ENCRYPTED : 1
+    , MSGSTATE_FINISHED  : 2
+
+    // otr auth states
+    , AUTHSTATE_NONE               : 0
+    , AUTHSTATE_AWAITING_DHKEY     : 1
+    , AUTHSTATE_AWAITING_REVEALSIG : 2
+    , AUTHSTATE_AWAITING_SIG       : 3
+
+    // whitespace tags
+    , WHITESPACE_TAG    : '\x20\x09\x20\x20\x09\x09\x09\x09\x20\x09\x20\x09\x20\x09\x20\x20'
+    , WHITESPACE_TAG_V2 : '\x20\x20\x09\x09\x20\x20\x09\x20'
+    , WHITESPACE_TAG_V3 : '\x20\x20\x09\x09\x20\x20\x09\x09'
+
+    // otr tags
+    , OTR_TAG       : '?OTR'
+    , OTR_VERSION_1 : '\x00\x01'
+    , OTR_VERSION_2 : '\x00\x02'
+    , OTR_VERSION_3 : '\x00\x03'
+
+    // smp machine states
+    , SMPSTATE_EXPECT0 : 0
+    , SMPSTATE_EXPECT1 : 1
+    , SMPSTATE_EXPECT2 : 2
+    , SMPSTATE_EXPECT3 : 3
+    , SMPSTATE_EXPECT4 : 4
+
+    // unstandard status codes
+    , STATUS_SEND_QUERY  : 0
+    , STATUS_AKE_INIT    : 1
+    , STATUS_AKE_SUCCESS : 2
+    , STATUS_END_OTR     : 3
+
+  }
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = CONST
+  } else {
+    root.OTR.CONST = CONST
+  }
+
+}).call(this)
+;(function () {
+  
+
+  var root = this
+
+  var HLP = {}, CryptoJS, BigInt
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = HLP = {}
+    CryptoJS = require('../vendor/crypto.js')
+    BigInt = require('../vendor/bigint.js')
+  } else {
+    if (root.OTR) root.OTR.HLP = HLP
+    if (root.DSA) root.DSA.HLP = HLP
+    CryptoJS = root.CryptoJS
+    BigInt = root.BigInt
+  }
+
+  // data types (byte lengths)
+  var DTS = {
+      BYTE  : 1
+    , SHORT : 2
+    , INT   : 4
+    , CTR   : 8
+    , MAC   : 20
+    , SIG   : 40
+  }
+
+  // otr message wrapper begin and end
+  var WRAPPER_BEGIN = "?OTR"
+    , WRAPPER_END   = "."
+
+  var TWO = BigInt.str2bigInt('2', 10)
+
+  HLP.debug = function (msg) {
+    // used as HLP.debug.call(ctx, msg)
+    if ( this.debug &&
+         typeof this.debug !== 'function' &&
+         typeof console !== 'undefined'
+    ) console.log(msg)
+  }
+
+  HLP.extend = function (child, parent) {
+    for (var key in parent) {
+      if (Object.hasOwnProperty.call(parent, key))
+        child[key] = parent[key]
+    }
+    function Ctor() { this.constructor = child }
+    Ctor.prototype = parent.prototype
+    child.prototype = new Ctor()
+    child.__super__ = parent.prototype
+  }
+
+  // constant-time string comparison
+  HLP.compare = function (str1, str2) {
+    if (str1.length !== str2.length)
+      return false
+    var i = 0, result = 0
+    for (; i < str1.length; i++)
+      result |= str1[i].charCodeAt(0) ^ str2[i].charCodeAt(0)
+    return result === 0
+  }
+
+  HLP.randomExponent = function () {
+    return BigInt.randBigInt(1536)
+  }
+
+  HLP.smpHash = function (version, fmpi, smpi) {
+    var sha256 = CryptoJS.algo.SHA256.create()
+    sha256.update(CryptoJS.enc.Latin1.parse(HLP.packBytes(version, DTS.BYTE)))
+    sha256.update(CryptoJS.enc.Latin1.parse(HLP.packMPI(fmpi)))
+    if (smpi) sha256.update(CryptoJS.enc.Latin1.parse(HLP.packMPI(smpi)))
+    var hash = sha256.finalize()
+    return HLP.bits2bigInt(hash.toString(CryptoJS.enc.Latin1))
+  }
+
+  HLP.makeMac = function (aesctr, m) {
+    var pass = CryptoJS.enc.Latin1.parse(m)
+    var mac = CryptoJS.HmacSHA256(CryptoJS.enc.Latin1.parse(aesctr), pass)
+    return HLP.mask(mac.toString(CryptoJS.enc.Latin1), 0, 160)
+  }
+
+  HLP.make1Mac = function (aesctr, m) {
+    var pass = CryptoJS.enc.Latin1.parse(m)
+    var mac = CryptoJS.HmacSHA1(CryptoJS.enc.Latin1.parse(aesctr), pass)
+    return mac.toString(CryptoJS.enc.Latin1)
+  }
+
+  HLP.encryptAes = function (msg, c, iv) {
+    var opts = {
+        mode: CryptoJS.mode.CTR
+      , iv: CryptoJS.enc.Latin1.parse(iv)
+      , padding: CryptoJS.pad.NoPadding
+    }
+    var aesctr = CryptoJS.AES.encrypt(
+        msg
+      , CryptoJS.enc.Latin1.parse(c)
+      , opts
+    )
+    var aesctr_decoded = CryptoJS.enc.Base64.parse(aesctr.toString())
+    return CryptoJS.enc.Latin1.stringify(aesctr_decoded)
+  }
+
+  HLP.decryptAes = function (msg, c, iv) {
+    msg = CryptoJS.enc.Latin1.parse(msg)
+    var opts = {
+        mode: CryptoJS.mode.CTR
+      , iv: CryptoJS.enc.Latin1.parse(iv)
+      , padding: CryptoJS.pad.NoPadding
+    }
+    return CryptoJS.AES.decrypt(
+        CryptoJS.enc.Base64.stringify(msg)
+      , CryptoJS.enc.Latin1.parse(c)
+      , opts
+    )
+  }
+
+  HLP.multPowMod = function (a, b, c, d, e) {
+    return BigInt.multMod(BigInt.powMod(a, b, e), BigInt.powMod(c, d, e), e)
+  }
+
+  HLP.ZKP = function (v, c, d, e) {
+    return BigInt.equals(c, HLP.smpHash(v, d, e))
+  }
+
+  // greater than, or equal
+  HLP.GTOE = function (a, b) {
+    return (BigInt.equals(a, b) || BigInt.greater(a, b))
+  }
+
+  HLP.between = function (x, a, b) {
+    return (BigInt.greater(x, a) && BigInt.greater(b, x))
+  }
+
+  HLP.checkGroup = function (g, N_MINUS_2) {
+    return HLP.GTOE(g, TWO) && HLP.GTOE(N_MINUS_2, g)
+  }
+
+  HLP.h1 = function (b, secbytes) {
+    var sha1 = CryptoJS.algo.SHA1.create()
+    sha1.update(CryptoJS.enc.Latin1.parse(b))
+    sha1.update(CryptoJS.enc.Latin1.parse(secbytes))
+    return (sha1.finalize()).toString(CryptoJS.enc.Latin1)
+  }
+
+  HLP.h2 = function (b, secbytes) {
+    var sha256 = CryptoJS.algo.SHA256.create()
+    sha256.update(CryptoJS.enc.Latin1.parse(b))
+    sha256.update(CryptoJS.enc.Latin1.parse(secbytes))
+    return (sha256.finalize()).toString(CryptoJS.enc.Latin1)
+  }
+
+  HLP.mask = function (bytes, start, n) {
+    return bytes.substr(start / 8, n / 8)
+  }
+
+  var _toString = String.fromCharCode;
+  HLP.packBytes = function (val, bytes) {
+    val = val.toString(16)
+    var nex, res = ''  // big-endian, unsigned long
+    for (; bytes > 0; bytes--) {
+      nex = val.length ? val.substr(-2, 2) : '0'
+      val = val.substr(0, val.length - 2)
+      res = _toString(parseInt(nex, 16)) + res
+    }
+    return res
+  }
+
+  HLP.packINT = function (d) {
+    return HLP.packBytes(d, DTS.INT)
+  }
+
+  HLP.packCtr = function (d) {
+    return HLP.padCtr(HLP.packBytes(d, DTS.CTR))
+  }
+
+  HLP.padCtr = function (ctr) {
+    return ctr + '\x00\x00\x00\x00\x00\x00\x00\x00'
+  }
+
+  HLP.unpackCtr = function (d) {
+    d = HLP.toByteArray(d.substring(0, 8))
+    return HLP.unpack(d)
+  }
+
+  HLP.unpack = function (arr) {
+    var val = 0, i = 0, len = arr.length
+    for (; i < len; i++) {
+      val = (val * 256) + arr[i]
+    }
+    return val
+  }
+
+  HLP.packData = function (d) {
+    return HLP.packINT(d.length) + d
+  }
+
+  HLP.bits2bigInt = function (bits) {
+    bits = HLP.toByteArray(bits)
+    return BigInt.ba2bigInt(bits)
+  }
+
+  HLP.packMPI = function (mpi) {
+    return HLP.packData(BigInt.bigInt2bits(BigInt.trim(mpi, 0)))
+  }
+
+  HLP.packSHORT = function (short) {
+    return HLP.packBytes(short, DTS.SHORT)
+  }
+
+  HLP.unpackSHORT = function (short) {
+    short = HLP.toByteArray(short)
+    return HLP.unpack(short)
+  }
+
+  HLP.packTLV = function (type, value) {
+    return HLP.packSHORT(type) + HLP.packSHORT(value.length) + value
+  }
+
+  HLP.readLen = function (msg) {
+    msg = HLP.toByteArray(msg.substring(0, 4))
+    return HLP.unpack(msg)
+  }
+
+  HLP.readData = function (data) {
+    var n = HLP.unpack(data.splice(0, 4))
+    return [n, data]
+  }
+
+  HLP.readMPI = function (data) {
+    data = HLP.toByteArray(data)
+    data = HLP.readData(data)
+    return BigInt.ba2bigInt(data[1])
+  }
+
+  HLP.packMPIs = function (arr) {
+    return arr.reduce(function (prv, cur) {
+      return prv + HLP.packMPI(cur)
+    }, '')
+  }
+
+  HLP.unpackMPIs = function (num, mpis) {
+    var i = 0, arr = []
+    for (; i < num; i++) arr.push('MPI')
+    return (HLP.splitype(arr, mpis)).map(function (m) {
+      return HLP.readMPI(m)
+    })
+  }
+
+  HLP.wrapMsg = function (msg, fs, v3, our_it, their_it) {
+    msg = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Latin1.parse(msg))
+    msg = WRAPPER_BEGIN + ":" + msg + WRAPPER_END
+
+    var its
+    if (v3) {
+      its = '|'
+      its += (HLP.readLen(our_it)).toString(16)
+      its += '|'
+      its += (HLP.readLen(their_it)).toString(16)
+    }
+
+    if (!fs) return [null, msg]
+
+    var n = Math.ceil(msg.length / fs)
+    if (n > 65535) return ['Too many fragments']
+    if (n == 1) return [null, msg]
+
+    var k, bi, ei, frag, mf, mfs = []
+    for (k = 1; k <= n; k++) {
+      bi = (k - 1) * fs
+      ei = k * fs
+      frag = msg.slice(bi, ei)
+      mf = WRAPPER_BEGIN
+      if (v3) mf += its
+      mf += ',' + k + ','
+      mf += n + ','
+      mf += frag + ','
+      mfs.push(mf)
+    }
+
+    return [null, mfs]
+  }
+
+  HLP.splitype = function splitype(arr, msg) {
+    var data = []
+    arr.forEach(function (a) {
+      var str
+      switch (a) {
+        case 'PUBKEY':
+          str = splitype(['SHORT', 'MPI', 'MPI', 'MPI', 'MPI'], msg).join('')
+          break
+        case 'DATA':  // falls through
+        case 'MPI':
+          str = msg.substring(0, HLP.readLen(msg) + 4)
+          break
+        default:
+          str = msg.substring(0, DTS[a])
+      }
+      data.push(str)
+      msg = msg.substring(str.length)
+    })
+    return data
+  }
+
+  // https://github.com/msgpack/msgpack-javascript/blob/master/msgpack.js
+
+  var _bin2num = (function () {
+    var i = 0, _bin2num = {}
+    for (; i < 0x100; ++i) {
+      _bin2num[String.fromCharCode(i)] = i  // "\00" -> 0x00
+    }
+    for (i = 0x80; i < 0x100; ++i) {  // [Webkit][Gecko]
+      _bin2num[String.fromCharCode(0xf700 + i)] = i  // "\f780" -> 0x80
+    }
+    return _bin2num
+  }())
+
+  HLP.toByteArray = function (data) {
+    var rv = []
+      , ary = data.split("")
+      , i = -1
+      , iz = ary.length
+      , remain = iz % 8
+
+    while (remain--) {
+      ++i
+      rv[i] = _bin2num[ary[i]]
+    }
+    remain = iz >> 3
+    while (remain--) {
+      rv.push(_bin2num[ary[++i]], _bin2num[ary[++i]],
+              _bin2num[ary[++i]], _bin2num[ary[++i]],
+              _bin2num[ary[++i]], _bin2num[ary[++i]],
+              _bin2num[ary[++i]], _bin2num[ary[++i]])
+    }
+    return rv
+  }
+
+}).call(this)
+;(function () {
+  
+
+  var root = this
+
+  var CryptoJS, BigInt, Worker, WWPath, HLP
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = DSA
+    CryptoJS = require('../vendor/crypto.js')
+    BigInt = require('../vendor/bigint.js')
+    WWPath = require('path').join(__dirname, '/dsa-webworker.js')
+    HLP = require('./helpers.js')
+  } else {
+    // copy over and expose internals
+    Object.keys(root.DSA).forEach(function (k) {
+      DSA[k] = root.DSA[k]
+    })
+    root.DSA = DSA
+    CryptoJS = root.CryptoJS
+    BigInt = root.BigInt
+    Worker = root.Worker
+    WWPath = 'dsa-webworker.js'
+    HLP = DSA.HLP
+  }
+
+  var ZERO = BigInt.str2bigInt('0', 10)
+    , ONE = BigInt.str2bigInt('1', 10)
+    , TWO = BigInt.str2bigInt('2', 10)
+    , KEY_TYPE = '\x00\x00'
+
+  var DEBUG = false
+  function timer() {
+    var start = (new Date()).getTime()
+    return function (s) {
+      if (!DEBUG || typeof console === 'undefined') return
+      var t = (new Date()).getTime()
+      console.log(s + ': ' + (t - start))
+      start = t
+    }
+  }
+
+  function makeRandom(min, max) {
+    var c = BigInt.randBigInt(BigInt.bitSize(max))
+    if (!HLP.between(c, min, max)) return makeRandom(min, max)
+    return c
+  }
+
+  // altered BigInt.randProbPrime()
+  // n rounds of Miller Rabin (after trial division with small primes)
+  var rpprb = []
+  function isProbPrime(k, n) {
+    var i, B = 30000, l = BigInt.bitSize(k)
+    var primes = BigInt.primes
+
+    if (primes.length === 0)
+      primes = BigInt.findPrimes(B)
+
+    if (rpprb.length != k.length)
+      rpprb = BigInt.dup(k)
+
+    // check ans for divisibility by small primes up to B
+    for (i = 0; (i < primes.length) && (primes[i] <= B); i++)
+      if (BigInt.modInt(k, primes[i]) === 0 && !BigInt.equalsInt(k, primes[i]))
+        return 0
+
+    // do n rounds of Miller Rabin, with random bases less than k
+    for (i = 0; i < n; i++) {
+      BigInt.randBigInt_(rpprb, l, 0)
+      while(!BigInt.greater(k, rpprb))  // pick a random rpprb that's < k
+        BigInt.randBigInt_(rpprb, l, 0)
+      if (!BigInt.millerRabin(k, rpprb))
+        return 0
+    }
+
+    return 1
+  }
+
+  var bit_lengths = {
+      '1024': { N: 160, repeat: 40 }  // 40x should give 2^-80 confidence
+    , '2048': { N: 224, repeat: 56 }
+  }
+
+  var primes = {}
+
+  // follows go lang http://golang.org/src/pkg/crypto/dsa/dsa.go
+  // fips version was removed in 0c99af0df3e7
+  function generatePrimes(bit_length) {
+
+    var t = timer()  // for debugging
+
+    // number of MR tests to perform
+    var repeat = bit_lengths[bit_length].repeat
+
+    var N = bit_lengths[bit_length].N
+
+    var LM1 = BigInt.twoToThe(bit_length - 1)
+    var bl4 = 4 * bit_length
+    var brk = false
+
+    var q, p, rem, counter
+    for (;;) {
+
+      q = BigInt.randBigInt(N, 1)
+      q[0] |= 1
+
+      if (!isProbPrime(q, repeat)) continue
+      t('q')
+
+      for (counter = 0; counter < bl4; counter++) {
+        p = BigInt.randBigInt(bit_length, 1)
+        p[0] |= 1
+
+        rem = BigInt.mod(p, q)
+        rem = BigInt.sub(rem, ONE)
+        p = BigInt.sub(p, rem)
+
+        if (BigInt.greater(LM1, p)) continue
+        if (!isProbPrime(p, repeat)) continue
+
+        t('p')
+        primes[bit_length] = { p: p, q: q }
+        brk = true
+        break
+      }
+
+      if (brk) break
+    }
+
+    var h = BigInt.dup(TWO)
+    var pm1 = BigInt.sub(p, ONE)
+    var e = BigInt.multMod(pm1, BigInt.inverseMod(q, p), p)
+
+    var g
+    for (;;) {
+      g = BigInt.powMod(h, e, p)
+      if (BigInt.equals(g, ONE)) {
+        h = BigInt.add(h, ONE)
+        continue
+      }
+      primes[bit_length].g = g
+      t('g')
+      return
+    }
+
+    throw new Error('Unreachable!')
+  }
+
+  function DSA(obj, opts) {
+    if (!(this instanceof DSA)) return new DSA(obj, opts)
+
+    // options
+    opts = opts || {}
+
+    // inherit
+    if (obj) {
+      var self = this
+      ;['p', 'q', 'g', 'y', 'x'].forEach(function (prop) {
+        self[prop] = obj[prop]
+      })
+      this.type = obj.type || KEY_TYPE
+      return
+    }
+
+    // default to 1024
+    var bit_length = parseInt(opts.bit_length ? opts.bit_length : 1024, 10)
+
+    if (!bit_lengths[bit_length])
+      throw new Error('Unsupported bit length.')
+
+    // set primes
+    if (!primes[bit_length])
+      generatePrimes(bit_length)
+
+    this.p = primes[bit_length].p
+    this.q = primes[bit_length].q
+    this.g = primes[bit_length].g
+
+    // key type
+    this.type = KEY_TYPE
+
+    // private key
+    this.x = makeRandom(ZERO, this.q)
+
+    // public keys (p, q, g, y)
+    this.y = BigInt.powMod(this.g, this.x, this.p)
+
+    // nocache?
+    if (opts.nocache) primes[bit_length] = null
+  }
+
+  DSA.prototype = {
+
+    constructor: DSA,
+
+    packPublic: function () {
+      var str = this.type
+      str += HLP.packMPI(this.p)
+      str += HLP.packMPI(this.q)
+      str += HLP.packMPI(this.g)
+      str += HLP.packMPI(this.y)
+      return str
+    },
+
+    packPrivate: function () {
+      var str = this.packPublic() + HLP.packMPI(this.x)
+      str = CryptoJS.enc.Latin1.parse(str)
+      return str.toString(CryptoJS.enc.Base64)
+    },
+
+    // http://www.imperialviolet.org/2013/06/15/suddendeathentropy.html
+    generateNonce: function (m) {
+      var priv = BigInt.bigInt2bits(BigInt.trim(this.x, 0))
+      var rand = BigInt.bigInt2bits(BigInt.randBigInt(256))
+
+      var sha256 = CryptoJS.algo.SHA256.create()
+      sha256.update(CryptoJS.enc.Latin1.parse(priv))
+      sha256.update(m)
+      sha256.update(CryptoJS.enc.Latin1.parse(rand))
+
+      var hash = sha256.finalize()
+      hash = HLP.bits2bigInt(hash.toString(CryptoJS.enc.Latin1))
+      BigInt.rightShift_(hash, 256 - BigInt.bitSize(this.q))
+
+      return HLP.between(hash, ZERO, this.q) ? hash : this.generateNonce(m)
+    },
+
+    sign: function (m) {
+      m = CryptoJS.enc.Latin1.parse(m)
+      var b = BigInt.str2bigInt(m.toString(CryptoJS.enc.Hex), 16)
+      var k, r = ZERO, s = ZERO
+      while (BigInt.isZero(s) || BigInt.isZero(r)) {
+        k = this.generateNonce(m)
+        r = BigInt.mod(BigInt.powMod(this.g, k, this.p), this.q)
+        if (BigInt.isZero(r)) continue
+        s = BigInt.inverseMod(k, this.q)
+        s = BigInt.mult(s, BigInt.add(b, BigInt.mult(this.x, r)))
+        s = BigInt.mod(s, this.q)
+      }
+      return [r, s]
+    },
+
+    fingerprint: function () {
+      var pk = this.packPublic()
+      if (this.type === KEY_TYPE) pk = pk.substring(2)
+      pk = CryptoJS.enc.Latin1.parse(pk)
+      return CryptoJS.SHA1(pk).toString(CryptoJS.enc.Hex)
+    }
+
+  }
+
+  DSA.parsePublic = function (str, priv) {
+    var fields = ['SHORT', 'MPI', 'MPI', 'MPI', 'MPI']
+    if (priv) fields.push('MPI')
+    str = HLP.splitype(fields, str)
+    var obj = {
+        type: str[0]
+      , p: HLP.readMPI(str[1])
+      , q: HLP.readMPI(str[2])
+      , g: HLP.readMPI(str[3])
+      , y: HLP.readMPI(str[4])
+    }
+    if (priv) obj.x = HLP.readMPI(str[5])
+    return new DSA(obj)
+  }
+
+  function tokenizeStr(str) {
+    var start, end
+
+    start = str.indexOf("(")
+    end = str.lastIndexOf(")")
+
+    if (start < 0 || end < 0)
+      throw new Error("Malformed S-Expression")
+
+    str = str.substring(start + 1, end)
+
+    var splt = str.search(/\s/)
+    var obj = {
+        type: str.substring(0, splt)
+      , val: []
+    }
+
+    str = str.substring(splt + 1, end)
+    start = str.indexOf("(")
+
+    if (start < 0) obj.val.push(str)
+    else {
+
+      var i, len, ss, es
+      while (start > -1) {
+        i = start + 1
+        len = str.length
+        for (ss = 1, es = 0; i < len && es < ss; i++) {
+          if (str[i] === "(") ss++
+          if (str[i] === ")") es++
+        }
+        obj.val.push(tokenizeStr(str.substring(start, ++i)))
+        str = str.substring(++i)
+        start = str.indexOf("(")
+      }
+
+    }
+    return obj
+  }
+
+  function parseLibotr(obj) {
+    if (!obj.type) throw new Error("Parse error.")
+
+    var o, val
+    if (obj.type === "privkeys") {
+      o = []
+      obj.val.forEach(function (i) {
+        o.push(parseLibotr(i))
+      })
+      return o
+    }
+
+    o = {}
+    obj.val.forEach(function (i) {
+
+      val = i.val[0]
+      if (typeof val === "string") {
+
+        if (val.indexOf("#") === 0) {
+          val = val.substring(1, val.lastIndexOf("#"))
+          val = BigInt.str2bigInt(val, 16)
+        }
+
+      } else {
+        val = parseLibotr(i)
+      }
+
+      o[i.type] = val
+    })
+
+    return o
+  }
+
+  DSA.parsePrivate = function (str, libotr) {
+    if (!libotr) {
+      str = CryptoJS.enc.Base64.parse(str)
+      str = str.toString(CryptoJS.enc.Latin1)
+      return DSA.parsePublic(str, true)
+    }
+    // only returning the first key found
+    return parseLibotr(tokenizeStr(str))[0]["private-key"].dsa
+  }
+
+  DSA.verify = function (key, m, r, s) {
+    if (!HLP.between(r, ZERO, key.q) || !HLP.between(s, ZERO, key.q))
+      return false
+
+    var hm = CryptoJS.enc.Latin1.parse(m)  // CryptoJS.SHA1(m)
+    hm = BigInt.str2bigInt(hm.toString(CryptoJS.enc.Hex), 16)
+
+    var w = BigInt.inverseMod(s, key.q)
+    var u1 = BigInt.multMod(hm, w, key.q)
+    var u2 = BigInt.multMod(r, w, key.q)
+
+    u1 = BigInt.powMod(key.g, u1, key.p)
+    u2 = BigInt.powMod(key.y, u2, key.p)
+
+    var v = BigInt.mod(BigInt.multMod(u1, u2, key.p), key.q)
+
+    return BigInt.equals(v, r)
+  }
+
+  DSA.createInWebWorker = function (options, cb) {
+    var opts = {
+        path: WWPath
+      , seed: BigInt.getSeed
+    }
+    if (options && typeof options === 'object')
+      Object.keys(options).forEach(function (k) {
+        opts[k] = options[k]
+      })
+
+    // load optional dep. in node
+    if (typeof module !== 'undefined' && module.exports)
+      Worker = require('webworker-threads').Worker
+
+    var worker = new Worker(opts.path)
+    worker.onmessage = function (e) {
+      var data = e.data
+      switch (data.type) {
+        case "debug":
+          if (!DEBUG || typeof console === 'undefined') return
+          console.log(data.val)
+          break;
+        case "data":
+          worker.terminate()
+          cb(DSA.parsePrivate(data.val))
+          break;
+        default:
+          throw new Error("Unrecognized type.")
+      }
+    }
+    worker.postMessage({
+        seed: opts.seed()
+      , imports: opts.imports
+      , debug: DEBUG
+    })
+  }
+
+}).call(this)
+;(function () {
+  
+
+  var root = this
+
+  var Parse = {}, CryptoJS, CONST, HLP
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Parse
+    CryptoJS = require('../vendor/crypto.js')
+    CONST = require('./const.js')
+    HLP = require('./helpers.js')
+  } else {
+    root.OTR.Parse = Parse
+    CryptoJS = root.CryptoJS
+    CONST = root.OTR.CONST
+    HLP = root.OTR.HLP
+  }
+
+  // whitespace tags
+  var tags = {}
+  tags[CONST.WHITESPACE_TAG_V2] = CONST.OTR_VERSION_2
+  tags[CONST.WHITESPACE_TAG_V3] = CONST.OTR_VERSION_3
+
+  Parse.parseMsg = function (otr, msg) {
+
+    var ver = []
+
+    // is this otr?
+    var start = msg.indexOf(CONST.OTR_TAG)
+    if (!~start) {
+
+      // restart fragments
+      this.initFragment(otr)
+
+      // whitespace tags
+      ind = msg.indexOf(CONST.WHITESPACE_TAG)
+
+      if (~ind) {
+
+        msg = msg.split('')
+        msg.splice(ind, 16)
+
+        var tag, len = msg.length
+        for (; ind < len;) {
+          tag = msg.slice(ind, ind + 8).join('')
+          if (Object.hasOwnProperty.call(tags, tag)) {
+            msg.splice(ind, 8)
+            ver.push(tags[tag])
+            continue
+          }
+          ind += 8
+        }
+
+        msg = msg.join('')
+
+      }
+
+      return { msg: msg, ver: ver }
+    }
+
+    var ind = start + CONST.OTR_TAG.length
+    var com = msg[ind]
+
+    // message fragment
+    if (com === ',' || com === '|') {
+      return this.msgFragment(otr, msg.substring(ind + 1), (com === '|'))
+    }
+
+    this.initFragment(otr)
+
+    // query message
+    if (~['?', 'v'].indexOf(com)) {
+
+      // version 1
+      if (msg[ind] === '?') {
+        ver.push(CONST.OTR_VERSION_1)
+        ind += 1
+      }
+
+      // other versions
+      var vers = {
+          '2': CONST.OTR_VERSION_2
+        , '3': CONST.OTR_VERSION_3
+      }
+      var qs = msg.substring(ind + 1)
+      var qi = qs.indexOf('?')
+
+      if (qi >= 1) {
+        qs = qs.substring(0, qi).split('')
+        if (msg[ind] === 'v') {
+          qs.forEach(function (q) {
+            if (Object.hasOwnProperty.call(vers, q)) ver.push(vers[q])
+          })
+        }
+      }
+
+      return { cls: 'query', ver: ver }
+    }
+
+    // otr message
+    if (com === ':') {
+
+      ind += 1
+
+      var info = msg.substring(ind, ind + 4)
+      if (info.length < 4) return { msg: msg }
+      info = CryptoJS.enc.Base64.parse(info).toString(CryptoJS.enc.Latin1)
+
+      var version = info.substring(0, 2)
+      var type = info.substring(2)
+
+      // supporting otr versions 2 and 3
+      if (!otr['ALLOW_V' + HLP.unpackSHORT(version)]) return { msg: msg }
+
+      ind += 4
+
+      var end = msg.substring(ind).indexOf('.')
+      if (!~end) return { msg: msg }
+
+      msg = CryptoJS.enc.Base64.parse(msg.substring(ind, ind + end))
+      msg = CryptoJS.enc.Latin1.stringify(msg)
+
+      // instance tags
+      var instance_tags
+      if (version === CONST.OTR_VERSION_3) {
+        instance_tags = msg.substring(0, 8)
+        msg = msg.substring(8)
+      }
+
+      var cls
+      if (~['\x02', '\x0a', '\x11', '\x12'].indexOf(type)) {
+        cls = 'ake'
+      } else if (type === '\x03') {
+        cls = 'data'
+      }
+
+      return {
+          version: version
+        , type: type
+        , msg: msg
+        , cls: cls
+        , instance_tags: instance_tags
+      }
+    }
+
+    // error message
+    if (msg.substring(ind, ind + 7) === ' Error:') {
+      if (otr.ERROR_START_AKE) {
+        otr.sendQueryMsg()
+      }
+      return { msg: msg.substring(ind + 7), cls: 'error' }
+    }
+
+    return { msg: msg }
+  }
+
+  Parse.initFragment = function (otr) {
+    otr.fragment = { s: '', j: 0, k: 0 }
+  }
+
+  Parse.msgFragment = function (otr, msg, v3) {
+
+    msg = msg.split(',')
+
+    // instance tags
+    if (v3) {
+      var its = msg.shift().split('|')
+      var their_it = HLP.packINT(parseInt(its[0], 16))
+      var our_it = HLP.packINT(parseInt(its[1], 16))
+      if (otr.checkInstanceTags(their_it + our_it)) return  // ignore
+    }
+
+    if (msg.length < 4 ||
+      isNaN(parseInt(msg[0], 10)) ||
+      isNaN(parseInt(msg[1], 10))
+    ) return
+
+    var k = parseInt(msg[0], 10)
+    var n = parseInt(msg[1], 10)
+    msg = msg[2]
+
+    if (n < k || n === 0 || k === 0) {
+      this.initFragment(otr)
+      return
+    }
+
+    if (k === 1) {
+      this.initFragment(otr)
+      otr.fragment = { k: 1, n: n, s: msg }
+    } else if (n === otr.fragment.n && k === (otr.fragment.k + 1)) {
+      otr.fragment.s += msg
+      otr.fragment.k += 1
+    } else {
+      this.initFragment(otr)
+    }
+
+    if (n === k) {
+      msg = otr.fragment.s
+      this.initFragment(otr)
+      return this.parseMsg(otr, msg)
+    }
+
+    return
+  }
+
+}).call(this)
+;(function () {
+  
+
+  var root = this
+
+  var CryptoJS, BigInt, CONST, HLP, DSA
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = AKE
+    CryptoJS = require('../vendor/crypto.js')
+    BigInt = require('../vendor/bigint.js')
+    CONST = require('./const.js')
+    HLP = require('./helpers.js')
+    DSA = require('./dsa.js')
+  } else {
+    root.OTR.AKE = AKE
+    CryptoJS = root.CryptoJS
+    BigInt = root.BigInt
+    CONST = root.OTR.CONST
+    HLP = root.OTR.HLP
+    DSA = root.DSA
+  }
+
+  // diffie-hellman modulus
+  // see group 5, RFC 3526
+  var N = BigInt.str2bigInt(CONST.N, 16)
+  var N_MINUS_2 = BigInt.sub(N, BigInt.str2bigInt('2', 10))
+
+  function hMac(gx, gy, pk, kid, m) {
+    var pass = CryptoJS.enc.Latin1.parse(m)
+    var hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, pass)
+    hmac.update(CryptoJS.enc.Latin1.parse(HLP.packMPI(gx)))
+    hmac.update(CryptoJS.enc.Latin1.parse(HLP.packMPI(gy)))
+    hmac.update(CryptoJS.enc.Latin1.parse(pk))
+    hmac.update(CryptoJS.enc.Latin1.parse(kid))
+    return (hmac.finalize()).toString(CryptoJS.enc.Latin1)
+  }
+
+  // AKE constructor
+  function AKE(otr) {
+    if (!(this instanceof AKE)) return new AKE(otr)
+
+    // otr instance
+    this.otr = otr
+
+    // our keys
+    this.our_dh = otr.our_old_dh
+    this.our_keyid = otr.our_keyid - 1
+
+    // their keys
+    this.their_y = null
+    this.their_keyid = null
+    this.their_priv_pk = null
+
+    // state
+    this.ssid = null
+    this.transmittedRS = false
+    this.r = null
+
+    // bind methods
+    var self = this
+    ;['sendMsg'].forEach(function (meth) {
+      self[meth] = self[meth].bind(self)
+    })
+  }
+
+  AKE.prototype = {
+
+    constructor: AKE,
+
+    createKeys: function(g) {
+      var s = BigInt.powMod(g, this.our_dh.privateKey, N)
+      var secbytes = HLP.packMPI(s)
+      this.ssid = HLP.mask(HLP.h2('\x00', secbytes), 0, 64)  // first 64-bits
+      var tmp = HLP.h2('\x01', secbytes)
+      this.c = HLP.mask(tmp, 0, 128)  // first 128-bits
+      this.c_prime = HLP.mask(tmp, 128, 128)  // second 128-bits
+      this.m1 = HLP.h2('\x02', secbytes)
+      this.m2 = HLP.h2('\x03', secbytes)
+      this.m1_prime = HLP.h2('\x04', secbytes)
+      this.m2_prime = HLP.h2('\x05', secbytes)
+    },
+
+    verifySignMac: function (mac, aesctr, m2, c, their_y, our_dh_pk, m1, ctr) {
+      // verify mac
+      var vmac = HLP.makeMac(aesctr, m2)
+      if (!HLP.compare(mac, vmac))
+        return ['MACs do not match.']
+
+      // decrypt x
+      var x = HLP.decryptAes(aesctr.substring(4), c, ctr)
+      x = HLP.splitype(['PUBKEY', 'INT', 'SIG'], x.toString(CryptoJS.enc.Latin1))
+
+      var m = hMac(their_y, our_dh_pk, x[0], x[1], m1)
+      var pub = DSA.parsePublic(x[0])
+
+      var r = HLP.bits2bigInt(x[2].substring(0, 20))
+      var s = HLP.bits2bigInt(x[2].substring(20))
+
+      // verify sign m
+      if (!DSA.verify(pub, m, r, s)) return ['Cannot verify signature of m.']
+
+      return [null, HLP.readLen(x[1]), pub]
+    },
+
+    makeM: function (their_y, m1, c, m2) {
+      var pk = this.otr.priv.packPublic()
+      var kid = HLP.packINT(this.our_keyid)
+      var m = hMac(this.our_dh.publicKey, their_y, pk, kid, m1)
+      m = this.otr.priv.sign(m)
+      var msg = pk + kid
+      msg += BigInt.bigInt2bits(m[0], 20)  // pad to 20 bytes
+      msg += BigInt.bigInt2bits(m[1], 20)
+      msg = CryptoJS.enc.Latin1.parse(msg)
+      var aesctr = HLP.packData(HLP.encryptAes(msg, c, HLP.packCtr(0)))
+      var mac = HLP.makeMac(aesctr, m2)
+      return aesctr + mac
+    },
+
+    akeSuccess: function (version) {
+      HLP.debug.call(this.otr, 'success')
+
+      if (BigInt.equals(this.their_y, this.our_dh.publicKey))
+        return this.otr.error('equal keys - we have a problem.', true)
+
+      this.otr.our_old_dh = this.our_dh
+      this.otr.their_priv_pk = this.their_priv_pk
+
+      if (!(
+        (this.their_keyid === this.otr.their_keyid &&
+         BigInt.equals(this.their_y, this.otr.their_y)) ||
+        (this.their_keyid === (this.otr.their_keyid - 1) &&
+         BigInt.equals(this.their_y, this.otr.their_old_y))
+      )) {
+
+        this.otr.their_y = this.their_y
+        this.otr.their_old_y = null
+        this.otr.their_keyid = this.their_keyid
+
+        // rotate keys
+        this.otr.sessKeys[0] = [ new this.otr.DHSession(
+            this.otr.our_dh
+          , this.otr.their_y
+        ), null ]
+        this.otr.sessKeys[1] = [ new this.otr.DHSession(
+            this.otr.our_old_dh
+          , this.otr.their_y
+        ), null ]
+
+      }
+
+      // ake info
+      this.otr.ssid = this.ssid
+      this.otr.transmittedRS = this.transmittedRS
+      this.otr_version = version
+
+      // go encrypted
+      this.otr.authstate = CONST.AUTHSTATE_NONE
+      this.otr.msgstate = CONST.MSGSTATE_ENCRYPTED
+
+      // null out values
+      this.r = null
+      this.myhashed = null
+      this.dhcommit = null
+      this.encrypted = null
+      this.hashed = null
+
+      this.otr.trigger('status', [CONST.STATUS_AKE_SUCCESS])
+
+      // send stored msgs
+      this.otr.sendStored()
+    },
+
+    handleAKE: function (msg) {
+      var send, vsm, type
+      var version = msg.version
+
+      switch (msg.type) {
+
+        case '\x02':
+          HLP.debug.call(this.otr, 'd-h key message')
+
+          msg = HLP.splitype(['DATA', 'DATA'], msg.msg)
+
+          if (this.otr.authstate === CONST.AUTHSTATE_AWAITING_DHKEY) {
+            var ourHash = HLP.readMPI(this.myhashed)
+            var theirHash = HLP.readMPI(msg[1])
+            if (BigInt.greater(ourHash, theirHash)) {
+              type = '\x02'
+              send = this.dhcommit
+              break  // ignore
+            } else {
+              // forget
+              this.our_dh = this.otr.dh()
+              this.otr.authstate = CONST.AUTHSTATE_NONE
+              this.r = null
+              this.myhashed = null
+            }
+          } else if (
+            this.otr.authstate === CONST.AUTHSTATE_AWAITING_SIG
+          ) this.our_dh = this.otr.dh()
+
+          this.otr.authstate = CONST.AUTHSTATE_AWAITING_REVEALSIG
+
+          this.encrypted = msg[0].substring(4)
+          this.hashed = msg[1].substring(4)
+
+          type = '\x0a'
+          send = HLP.packMPI(this.our_dh.publicKey)
+          break
+
+        case '\x0a':
+          HLP.debug.call(this.otr, 'reveal signature message')
+
+          msg = HLP.splitype(['MPI'], msg.msg)
+
+          if (this.otr.authstate !== CONST.AUTHSTATE_AWAITING_DHKEY) {
+            if (this.otr.authstate === CONST.AUTHSTATE_AWAITING_SIG) {
+              if (!BigInt.equals(this.their_y, HLP.readMPI(msg[0]))) return
+            } else {
+              return  // ignore
+            }
+          }
+
+          this.otr.authstate = CONST.AUTHSTATE_AWAITING_SIG
+
+          this.their_y = HLP.readMPI(msg[0])
+
+          // verify gy is legal 2 <= gy <= N-2
+          if (!HLP.checkGroup(this.their_y, N_MINUS_2))
+            return this.otr.error('Illegal g^y.', true)
+
+          this.createKeys(this.their_y)
+
+          type = '\x11'
+          send = HLP.packMPI(this.r)
+          send += this.makeM(this.their_y, this.m1, this.c, this.m2)
+
+          this.m1 = null
+          this.m2 = null
+          this.c = null
+          break
+
+        case '\x11':
+          HLP.debug.call(this.otr, 'signature message')
+
+          if (this.otr.authstate !== CONST.AUTHSTATE_AWAITING_REVEALSIG)
+            return  // ignore
+
+          msg = HLP.splitype(['DATA', 'DATA', 'MAC'], msg.msg)
+
+          this.r = HLP.readMPI(msg[0])
+
+          // decrypt their_y
+          var key = CryptoJS.enc.Hex.parse(BigInt.bigInt2str(this.r, 16))
+          key = CryptoJS.enc.Latin1.stringify(key)
+
+          var gxmpi = HLP.decryptAes(this.encrypted, key, HLP.packCtr(0))
+          gxmpi = gxmpi.toString(CryptoJS.enc.Latin1)
+
+          this.their_y = HLP.readMPI(gxmpi)
+
+          // verify hash
+          var hash = CryptoJS.SHA256(CryptoJS.enc.Latin1.parse(gxmpi))
+
+          if (!HLP.compare(this.hashed, hash.toString(CryptoJS.enc.Latin1)))
+            return this.otr.error('Hashed g^x does not match.', true)
+
+          // verify gx is legal 2 <= g^x <= N-2
+          if (!HLP.checkGroup(this.their_y, N_MINUS_2))
+            return this.otr.error('Illegal g^x.', true)
+
+          this.createKeys(this.their_y)
+
+          vsm = this.verifySignMac(
+              msg[2]
+            , msg[1]
+            , this.m2
+            , this.c
+            , this.their_y
+            , this.our_dh.publicKey
+            , this.m1
+            , HLP.packCtr(0)
+          )
+          if (vsm[0]) return this.otr.error(vsm[0], true)
+
+          // store their key
+          this.their_keyid = vsm[1]
+          this.their_priv_pk = vsm[2]
+
+          send = this.makeM(
+              this.their_y
+            , this.m1_prime
+            , this.c_prime
+            , this.m2_prime
+          )
+
+          this.m1 = null
+          this.m2 = null
+          this.m1_prime = null
+          this.m2_prime = null
+          this.c = null
+          this.c_prime = null
+
+          this.sendMsg(version, '\x12', send)
+          this.akeSuccess(version)
+          return
+
+        case '\x12':
+          HLP.debug.call(this.otr, 'data message')
+
+          if (this.otr.authstate !== CONST.AUTHSTATE_AWAITING_SIG)
+            return  // ignore
+
+          msg = HLP.splitype(['DATA', 'MAC'], msg.msg)
+
+          vsm = this.verifySignMac(
+              msg[1]
+            , msg[0]
+            , this.m2_prime
+            , this.c_prime
+            , this.their_y
+            , this.our_dh.publicKey
+            , this.m1_prime
+            , HLP.packCtr(0)
+          )
+          if (vsm[0]) return this.otr.error(vsm[0], true)
+
+          // store their key
+          this.their_keyid = vsm[1]
+          this.their_priv_pk = vsm[2]
+
+          this.m1_prime = null
+          this.m2_prime = null
+          this.c_prime = null
+
+          this.transmittedRS = true
+          this.akeSuccess(version)
+          return
+
+        default:
+          return  // ignore
+
+      }
+
+      this.sendMsg(version, type, send)
+    },
+
+    sendMsg: function (version, type, msg) {
+      var send = version + type
+      var v3 = (version === CONST.OTR_VERSION_3)
+
+      // instance tags for v3
+      if (v3) {
+        HLP.debug.call(this.otr, 'instance tags')
+        send += this.otr.our_instance_tag
+        send += this.otr.their_instance_tag
+      }
+
+      send += msg
+
+      // fragment message if necessary
+      send = HLP.wrapMsg(
+          send
+        , this.otr.fragment_size
+        , v3
+        , this.otr.our_instance_tag
+        , this.otr.their_instance_tag
+      )
+      if (send[0]) return this.otr.error(send[0])
+
+      this.otr.io(send[1])
+    },
+
+    initiateAKE: function (version) {
+      HLP.debug.call(this.otr, 'd-h commit message')
+
+      this.otr.trigger('status', [CONST.STATUS_AKE_INIT])
+
+      this.otr.authstate = CONST.AUTHSTATE_AWAITING_DHKEY
+
+      var gxmpi = HLP.packMPI(this.our_dh.publicKey)
+      gxmpi = CryptoJS.enc.Latin1.parse(gxmpi)
+
+      this.r = BigInt.randBigInt(128)
+      var key = CryptoJS.enc.Hex.parse(BigInt.bigInt2str(this.r, 16))
+      key = CryptoJS.enc.Latin1.stringify(key)
+
+      this.myhashed = CryptoJS.SHA256(gxmpi)
+      this.myhashed = HLP.packData(this.myhashed.toString(CryptoJS.enc.Latin1))
+
+      this.dhcommit = HLP.packData(HLP.encryptAes(gxmpi, key, HLP.packCtr(0)))
+      this.dhcommit += this.myhashed
+
+      this.sendMsg(version, '\x02', this.dhcommit)
+    }
+
+  }
+
+}).call(this)
+;(function () {
+  
+
+  var root = this
+
+  var CryptoJS, BigInt,  EventEmitter, CONST, HLP
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = SM
+    CryptoJS = require('../vendor/crypto.js')
+    BigInt = require('../vendor/bigint.js')
+    EventEmitter = require('../vendor/eventemitter.js')
+    CONST = require('./const.js')
+    HLP = require('./helpers.js')
+  } else {
+    root.OTR.SM = SM
+    CryptoJS = root.CryptoJS
+    BigInt = root.BigInt
+    EventEmitter = root.EventEmitter
+    CONST = root.OTR.CONST
+    HLP = root.OTR.HLP
+  }
+
+  // diffie-hellman modulus and generator
+  // see group 5, RFC 3526
+  var G = BigInt.str2bigInt(CONST.G, 10)
+  var N = BigInt.str2bigInt(CONST.N, 16)
+  var N_MINUS_2 = BigInt.sub(N, BigInt.str2bigInt('2', 10))
+
+  // to calculate D's for zero-knowledge proofs
+  var Q = BigInt.sub(N, BigInt.str2bigInt('1', 10))
+  BigInt.divInt_(Q, 2)  // meh
+
+  function SM(reqs) {
+    if (!(this instanceof SM)) return new SM(reqs)
+
+    this.version = 1
+
+    this.our_fp = reqs.our_fp
+    this.their_fp = reqs.their_fp
+    this.ssid = reqs.ssid
+
+    this.debug = !!reqs.debug
+
+    // initial state
+    this.init()
+  }
+
+  // inherit from EE
+  HLP.extend(SM, EventEmitter)
+
+  // set the initial values
+  // also used when aborting
+  SM.prototype.init = function () {
+    this.smpstate = CONST.SMPSTATE_EXPECT1
+    this.secret = null
+  }
+
+  SM.prototype.makeSecret = function (our, secret) {
+    var sha256 = CryptoJS.algo.SHA256.create()
+    sha256.update(CryptoJS.enc.Latin1.parse(HLP.packBytes(this.version, 1)))
+    sha256.update(CryptoJS.enc.Hex.parse(our ? this.our_fp : this.their_fp))
+    sha256.update(CryptoJS.enc.Hex.parse(our ? this.their_fp : this.our_fp))
+    sha256.update(CryptoJS.enc.Latin1.parse(this.ssid))
+    sha256.update(CryptoJS.enc.Latin1.parse(secret))
+    var hash = sha256.finalize()
+    this.secret = HLP.bits2bigInt(hash.toString(CryptoJS.enc.Latin1))
+  }
+
+  SM.prototype.makeG2s = function () {
+    this.a2 = HLP.randomExponent()
+    this.a3 = HLP.randomExponent()
+    this.g2a = BigInt.powMod(G, this.a2, N)
+    this.g3a = BigInt.powMod(G, this.a3, N)
+    if ( !HLP.checkGroup(this.g2a, N_MINUS_2) ||
+         !HLP.checkGroup(this.g3a, N_MINUS_2)
+    ) this.makeG2s()
+  }
+
+  SM.prototype.computeGs = function (g2a, g3a) {
+    this.g2 = BigInt.powMod(g2a, this.a2, N)
+    this.g3 = BigInt.powMod(g3a, this.a3, N)
+  }
+
+  SM.prototype.computePQ = function (r) {
+    this.p = BigInt.powMod(this.g3, r, N)
+    this.q = HLP.multPowMod(G, r, this.g2, this.secret, N)
+  }
+
+  SM.prototype.computeR = function () {
+    this.r = BigInt.powMod(this.QoQ, this.a3, N)
+  }
+
+  SM.prototype.computeRab = function (r) {
+    return BigInt.powMod(r, this.a3, N)
+  }
+
+  SM.prototype.computeC = function (v, r) {
+    return HLP.smpHash(v, BigInt.powMod(G, r, N))
+  }
+
+  SM.prototype.computeD = function (r, a, c) {
+    return BigInt.subMod(r, BigInt.multMod(a, c, Q), Q)
+  }
+
+  // the bulk of the work
+  SM.prototype.handleSM = function (msg) {
+    var send, r2, r3, r7, t1, t2, t3, t4, rab, tmp2, cR, d7, ms, trust
+
+    var expectStates = {
+        2: CONST.SMPSTATE_EXPECT1
+      , 3: CONST.SMPSTATE_EXPECT2
+      , 4: CONST.SMPSTATE_EXPECT3
+      , 5: CONST.SMPSTATE_EXPECT4
+      , 7: CONST.SMPSTATE_EXPECT1
+    }
+
+    if (msg.type === 6) {
+      this.init()
+      this.trigger('abort')
+      return
+    }
+
+    // abort! there was an error
+    if (this.smpstate !== expectStates[msg.type])
+      return this.abort()
+
+    switch (this.smpstate) {
+
+      case CONST.SMPSTATE_EXPECT1:
+        HLP.debug.call(this, 'smp tlv 2')
+
+        // user specified question
+        var ind, question
+        if (msg.type === 7) {
+          ind = msg.msg.indexOf('\x00')
+          question = msg.msg.substring(0, ind)
+          msg.msg = msg.msg.substring(ind + 1)
+        }
+
+        // 0:g2a, 1:c2, 2:d2, 3:g3a, 4:c3, 5:d3
+        ms = HLP.readLen(msg.msg.substr(0, 4))
+        if (ms !== 6) return this.abort()
+        msg = HLP.unpackMPIs(6, msg.msg.substring(4))
+
+        if ( !HLP.checkGroup(msg[0], N_MINUS_2) ||
+             !HLP.checkGroup(msg[3], N_MINUS_2)
+        ) return this.abort()
+
+        // verify znp's
+        if (!HLP.ZKP(1, msg[1], HLP.multPowMod(G, msg[2], msg[0], msg[1], N)))
+          return this.abort()
+
+        if (!HLP.ZKP(2, msg[4], HLP.multPowMod(G, msg[5], msg[3], msg[4], N)))
+          return this.abort()
+
+        this.g3ao = msg[3]  // save for later
+
+        this.makeG2s()
+
+        // zero-knowledge proof that the exponents
+        // associated with g2a & g3a are known
+        r2 = HLP.randomExponent()
+        r3 = HLP.randomExponent()
+        this.c2 = this.computeC(3, r2)
+        this.c3 = this.computeC(4, r3)
+        this.d2 = this.computeD(r2, this.a2, this.c2)
+        this.d3 = this.computeD(r3, this.a3, this.c3)
+
+        this.computeGs(msg[0], msg[3])
+
+        this.smpstate = CONST.SMPSTATE_EXPECT0
+
+        // assume utf8 question
+        question = CryptoJS.enc.Latin1
+          .parse(question)
+          .toString(CryptoJS.enc.Utf8)
+
+        // invoke question
+        this.trigger('question', [question])
+        return
+
+      case CONST.SMPSTATE_EXPECT2:
+        HLP.debug.call(this, 'smp tlv 3')
+
+        // 0:g2a, 1:c2, 2:d2, 3:g3a, 4:c3, 5:d3, 6:p, 7:q, 8:cP, 9:d5, 10:d6
+        ms = HLP.readLen(msg.msg.substr(0, 4))
+        if (ms !== 11) return this.abort()
+        msg = HLP.unpackMPIs(11, msg.msg.substring(4))
+
+        if ( !HLP.checkGroup(msg[0], N_MINUS_2) ||
+             !HLP.checkGroup(msg[3], N_MINUS_2) ||
+             !HLP.checkGroup(msg[6], N_MINUS_2) ||
+             !HLP.checkGroup(msg[7], N_MINUS_2)
+        ) return this.abort()
+
+        // verify znp of c3 / c3
+        if (!HLP.ZKP(3, msg[1], HLP.multPowMod(G, msg[2], msg[0], msg[1], N)))
+          return this.abort()
+
+        if (!HLP.ZKP(4, msg[4], HLP.multPowMod(G, msg[5], msg[3], msg[4], N)))
+          return this.abort()
+
+        this.g3ao = msg[3]  // save for later
+
+        this.computeGs(msg[0], msg[3])
+
+        // verify znp of cP
+        t1 = HLP.multPowMod(this.g3, msg[9], msg[6], msg[8], N)
+        t2 = HLP.multPowMod(G, msg[9], this.g2, msg[10], N)
+        t2 = BigInt.multMod(t2, BigInt.powMod(msg[7], msg[8], N), N)
+
+        if (!HLP.ZKP(5, msg[8], t1, t2))
+          return this.abort()
+
+        var r4 = HLP.randomExponent()
+        this.computePQ(r4)
+
+        // zero-knowledge proof that P & Q
+        // were generated according to the protocol
+        var r5 = HLP.randomExponent()
+        var r6 = HLP.randomExponent()
+        var tmp = HLP.multPowMod(G, r5, this.g2, r6, N)
+        var cP = HLP.smpHash(6, BigInt.powMod(this.g3, r5, N), tmp)
+        var d5 = this.computeD(r5, r4, cP)
+        var d6 = this.computeD(r6, this.secret, cP)
+
+        // store these
+        this.QoQ = BigInt.divMod(this.q, msg[7], N)
+        this.PoP = BigInt.divMod(this.p, msg[6], N)
+
+        this.computeR()
+
+        // zero-knowledge proof that R
+        // was generated according to the protocol
+        r7 = HLP.randomExponent()
+        tmp2 = BigInt.powMod(this.QoQ, r7, N)
+        cR = HLP.smpHash(7, BigInt.powMod(G, r7, N), tmp2)
+        d7 = this.computeD(r7, this.a3, cR)
+
+        this.smpstate = CONST.SMPSTATE_EXPECT4
+
+        send = HLP.packINT(8) + HLP.packMPIs([
+            this.p
+          , this.q
+          , cP
+          , d5
+          , d6
+          , this.r
+          , cR
+          , d7
+        ])
+
+        // TLV
+        send = HLP.packTLV(4, send)
+        break
+
+      case CONST.SMPSTATE_EXPECT3:
+        HLP.debug.call(this, 'smp tlv 4')
+
+        // 0:p, 1:q, 2:cP, 3:d5, 4:d6, 5:r, 6:cR, 7:d7
+        ms = HLP.readLen(msg.msg.substr(0, 4))
+        if (ms !== 8) return this.abort()
+        msg = HLP.unpackMPIs(8, msg.msg.substring(4))
+
+        if ( !HLP.checkGroup(msg[0], N_MINUS_2) ||
+             !HLP.checkGroup(msg[1], N_MINUS_2) ||
+             !HLP.checkGroup(msg[5], N_MINUS_2)
+        ) return this.abort()
+
+        // verify znp of cP
+        t1 = HLP.multPowMod(this.g3, msg[3], msg[0], msg[2], N)
+        t2 = HLP.multPowMod(G, msg[3], this.g2, msg[4], N)
+        t2 = BigInt.multMod(t2, BigInt.powMod(msg[1], msg[2], N), N)
+
+        if (!HLP.ZKP(6, msg[2], t1, t2))
+          return this.abort()
+
+        // verify znp of cR
+        t3 = HLP.multPowMod(G, msg[7], this.g3ao, msg[6], N)
+        this.QoQ = BigInt.divMod(msg[1], this.q, N)  // save Q over Q
+        t4 = HLP.multPowMod(this.QoQ, msg[7], msg[5], msg[6], N)
+
+        if (!HLP.ZKP(7, msg[6], t3, t4))
+          return this.abort()
+
+        this.computeR()
+
+        // zero-knowledge proof that R
+        // was generated according to the protocol
+        r7 = HLP.randomExponent()
+        tmp2 = BigInt.powMod(this.QoQ, r7, N)
+        cR = HLP.smpHash(8, BigInt.powMod(G, r7, N), tmp2)
+        d7 = this.computeD(r7, this.a3, cR)
+
+        send = HLP.packINT(3) + HLP.packMPIs([ this.r, cR, d7 ])
+        send = HLP.packTLV(5, send)
+
+        rab = this.computeRab(msg[5])
+        trust = !!BigInt.equals(rab, BigInt.divMod(msg[0], this.p, N))
+
+        this.trigger('trust', [trust, 'answered'])
+        this.init()
+        break
+
+      case CONST.SMPSTATE_EXPECT4:
+        HLP.debug.call(this, 'smp tlv 5')
+
+        // 0:r, 1:cR, 2:d7
+        ms = HLP.readLen(msg.msg.substr(0, 4))
+        if (ms !== 3) return this.abort()
+        msg = HLP.unpackMPIs(3, msg.msg.substring(4))
+
+        if (!HLP.checkGroup(msg[0], N_MINUS_2)) return this.abort()
+
+        // verify znp of cR
+        t3 = HLP.multPowMod(G, msg[2], this.g3ao, msg[1], N)
+        t4 = HLP.multPowMod(this.QoQ, msg[2], msg[0], msg[1], N)
+        if (!HLP.ZKP(8, msg[1], t3, t4))
+          return this.abort()
+
+        rab = this.computeRab(msg[0])
+        trust = !!BigInt.equals(rab, this.PoP)
+
+        this.trigger('trust', [trust, 'asked'])
+        this.init()
+        return
+
+    }
+
+    this.sendMsg(send)
+  }
+
+  // send a message
+  SM.prototype.sendMsg = function (send) {
+    this.trigger('send', [this.ssid, '\x00' + send])
+  }
+
+  SM.prototype.rcvSecret = function (secret, question) {
+    HLP.debug.call(this, 'receive secret')
+
+    var fn, our = false
+    if (this.smpstate === CONST.SMPSTATE_EXPECT0) {
+      fn = this.answer
+    } else {
+      fn = this.initiate
+      our = true
+    }
+
+    this.makeSecret(our, secret)
+    fn.call(this, question)
+  }
+
+  SM.prototype.answer = function () {
+    HLP.debug.call(this, 'smp answer')
+
+    var r4 = HLP.randomExponent()
+    this.computePQ(r4)
+
+    // zero-knowledge proof that P & Q
+    // were generated according to the protocol
+    var r5 = HLP.randomExponent()
+    var r6 = HLP.randomExponent()
+    var tmp = HLP.multPowMod(G, r5, this.g2, r6, N)
+    var cP = HLP.smpHash(5, BigInt.powMod(this.g3, r5, N), tmp)
+    var d5 = this.computeD(r5, r4, cP)
+    var d6 = this.computeD(r6, this.secret, cP)
+
+    this.smpstate = CONST.SMPSTATE_EXPECT3
+
+    var send = HLP.packINT(11) + HLP.packMPIs([
+        this.g2a
+      , this.c2
+      , this.d2
+      , this.g3a
+      , this.c3
+      , this.d3
+      , this.p
+      , this.q
+      , cP
+      , d5
+      , d6
+    ])
+
+    this.sendMsg(HLP.packTLV(3, send))
+  }
+
+  SM.prototype.initiate = function (question) {
+    HLP.debug.call(this, 'smp initiate')
+
+    if (this.smpstate !== CONST.SMPSTATE_EXPECT1)
+      this.abort()  // abort + restart
+
+    this.makeG2s()
+
+    // zero-knowledge proof that the exponents
+    // associated with g2a & g3a are known
+    var r2 = HLP.randomExponent()
+    var r3 = HLP.randomExponent()
+    this.c2 = this.computeC(1, r2)
+    this.c3 = this.computeC(2, r3)
+    this.d2 = this.computeD(r2, this.a2, this.c2)
+    this.d3 = this.computeD(r3, this.a3, this.c3)
+
+    // set the next expected state
+    this.smpstate = CONST.SMPSTATE_EXPECT2
+
+    var send = ''
+    var type = 2
+
+    if (question) {
+      send += question
+      send += '\x00'
+      type = 7
+    }
+
+    send += HLP.packINT(6) + HLP.packMPIs([
+        this.g2a
+      , this.c2
+      , this.d2
+      , this.g3a
+      , this.c3
+      , this.d3
+    ])
+
+    this.sendMsg(HLP.packTLV(type, send))
+  }
+
+  SM.prototype.abort = function () {
+    this.init()
+    this.sendMsg(HLP.packTLV(6, ''))
+    this.trigger('abort')
+  }
+
+}).call(this)
+;(function () {
+  
+
+  var root = this
+
+  var CryptoJS, BigInt, EventEmitter, Worker, SMWPath
+    , CONST, HLP, Parse, AKE, SM, DSA
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = OTR
+    CryptoJS = require('../vendor/crypto.js')
+    BigInt = require('../vendor/bigint.js')
+    EventEmitter = require('../vendor/eventemitter.js')
+    SMWPath = require('path').join(__dirname, '/sm-webworker.js')
+    CONST = require('./const.js')
+    HLP = require('./helpers.js')
+    Parse = require('./parse.js')
+    AKE = require('./ake.js')
+    SM = require('./sm.js')
+    DSA = require('./dsa.js')
+    // expose CONST for consistency with docs
+    OTR.CONST = CONST
+  } else {
+    // copy over and expose internals
+    Object.keys(root.OTR).forEach(function (k) {
+      OTR[k] = root.OTR[k]
+    })
+    root.OTR = OTR
+    CryptoJS = root.CryptoJS
+    BigInt = root.BigInt
+    EventEmitter = root.EventEmitter
+    Worker = root.Worker
+    SMWPath = 'sm-webworker.js'
+    CONST = OTR.CONST
+    HLP = OTR.HLP
+    Parse = OTR.Parse
+    AKE = OTR.AKE
+    SM = OTR.SM
+    DSA = root.DSA
+  }
+
+  // diffie-hellman modulus and generator
+  // see group 5, RFC 3526
+  var G = BigInt.str2bigInt(CONST.G, 10)
+  var N = BigInt.str2bigInt(CONST.N, 16)
+
+  // JavaScript integers
+  var MAX_INT = Math.pow(2, 53) - 1  // doubles
+  var MAX_UINT = Math.pow(2, 31) - 1  // bitwise operators
+
+  // OTR contructor
+  function OTR(options) {
+    if (!(this instanceof OTR)) return new OTR(options)
+
+    // options
+    options = options || {}
+
+    // private keys
+    if (options.priv && !(options.priv instanceof DSA))
+      throw new Error('Requires long-lived DSA key.')
+
+    this.priv = options.priv ? options.priv : new DSA()
+
+    this.fragment_size = options.fragment_size || 0
+    if (this.fragment_size < 0)
+      throw new Error('Fragment size must be a positive integer.')
+
+    this.send_interval = options.send_interval || 0
+    if (this.send_interval < 0)
+      throw new Error('Send interval must be a positive integer.')
+
+    this.outgoing = []
+
+    // instance tag
+    this.our_instance_tag = options.instance_tag || OTR.makeInstanceTag()
+
+    // debug
+    this.debug = !!options.debug
+
+    // smp in webworker options
+    // this is still experimental and undocumented
+    this.smw = options.smw
+
+    // init vals
+    this.init()
+
+    // bind methods
+    var self = this
+    ;['sendMsg', 'receiveMsg'].forEach(function (meth) {
+      self[meth] = self[meth].bind(self)
+    })
+
+    EventEmitter.call(this)
+  }
+
+  // inherit from EE
+  HLP.extend(OTR, EventEmitter)
+
+  // add to prototype
+  OTR.prototype.init = function () {
+
+    this.msgstate = CONST.MSGSTATE_PLAINTEXT
+    this.authstate = CONST.AUTHSTATE_NONE
+
+    this.ALLOW_V2 = true
+    this.ALLOW_V3 = true
+
+    this.REQUIRE_ENCRYPTION = false
+    this.SEND_WHITESPACE_TAG = false
+    this.WHITESPACE_START_AKE = false
+    this.ERROR_START_AKE = false
+
+    Parse.initFragment(this)
+
+    // their keys
+    this.their_y = null
+    this.their_old_y = null
+    this.their_keyid = 0
+    this.their_priv_pk = null
+    this.their_instance_tag = '\x00\x00\x00\x00'
+
+    // our keys
+    this.our_dh = this.dh()
+    this.our_old_dh = this.dh()
+    this.our_keyid = 2
+
+    // session keys
+    this.sessKeys = [ new Array(2), new Array(2) ]
+
+    // saved
+    this.storedMgs = []
+    this.oldMacKeys = []
+
+    // smp
+    this.sm = null  // initialized after AKE
+
+    // when ake is complete
+    // save their keys and the session
+    this._akeInit()
+
+    // receive plaintext message since switching to plaintext
+    // used to decide when to stop sending pt tags when SEND_WHITESPACE_TAG
+    this.receivedPlaintext = false
+
+  }
+
+  OTR.prototype._akeInit = function () {
+    this.ake = new AKE(this)
+    this.transmittedRS = false
+    this.ssid = null
+  }
+
+  // smp over webworker
+  OTR.prototype._SMW = function (otr, reqs) {
+    this.otr = otr
+    var opts = {
+        path: SMWPath
+      , seed: BigInt.getSeed
+    }
+    if (typeof otr.smw === 'object')
+      Object.keys(otr.smw).forEach(function (k) {
+        opts[k] = otr.smw[k]
+      })
+
+    // load optional dep. in node
+    if (typeof module !== 'undefined' && module.exports)
+      Worker = require('webworker-threads').Worker
+
+    this.worker = new Worker(opts.path)
+    var self = this
+    this.worker.onmessage = function (e) {
+      var d = e.data
+      if (!d) return
+      self.trigger(d.method, d.args)
+    }
+    this.worker.postMessage({
+        type: 'seed'
+      , seed: opts.seed()
+      , imports: opts.imports
+    })
+    this.worker.postMessage({
+        type: 'init'
+      , reqs: reqs
+    })
+  }
+
+  // inherit from EE
+  HLP.extend(OTR.prototype._SMW, EventEmitter)
+
+  // shim sm methods
+  ;['handleSM', 'rcvSecret', 'abort'].forEach(function (m) {
+    OTR.prototype._SMW.prototype[m] = function () {
+      this.worker.postMessage({
+          type: 'method'
+        , method: m
+        , args: Array.prototype.slice.call(arguments, 0)
+      })
+    }
+  })
+
+  OTR.prototype._smInit = function () {
+    var reqs = {
+        ssid: this.ssid
+      , our_fp: this.priv.fingerprint()
+      , their_fp: this.their_priv_pk.fingerprint()
+      , debug: this.debug
+    }
+    if (this.smw) {
+      if (this.sm) this.sm.worker.terminate()  // destroy prev webworker
+      this.sm = new this._SMW(this, reqs)
+    } else {
+      this.sm = new SM(reqs)
+    }
+    var self = this
+    ;['trust', 'abort', 'question'].forEach(function (e) {
+      self.sm.on(e, function () {
+        self.trigger('smp', [e].concat(Array.prototype.slice.call(arguments)))
+      })
+    })
+    this.sm.on('send', function (ssid, send) {
+      if (self.ssid === ssid) {
+        send = self.prepareMsg(send)
+        self.io(send)
+      }
+    })
+  }
+
+  OTR.prototype.io = function (msg, meta) {
+
+    // buffer
+    msg = ([].concat(msg)).map(function(m){
+       return { msg: m, meta: meta }
+    })
+    this.outgoing = this.outgoing.concat(msg)
+
+    var self = this
+    ;(function send(first) {
+      if (!first) {
+        if (!self.outgoing.length) return
+        var elem = self.outgoing.shift()
+        self.trigger('io', [elem.msg, elem.meta])
+      }
+      setTimeout(send, first ? 0 : self.send_interval)
+    }(true))
+
+  }
+
+  OTR.prototype.dh = function dh() {
+    var keys = { privateKey: BigInt.randBigInt(320) }
+    keys.publicKey = BigInt.powMod(G, keys.privateKey, N)
+    return keys
+  }
+
+  // session constructor
+  OTR.prototype.DHSession = function DHSession(our_dh, their_y) {
+    if (!(this instanceof DHSession)) return new DHSession(our_dh, their_y)
+
+    // shared secret
+    var s = BigInt.powMod(their_y, our_dh.privateKey, N)
+    var secbytes = HLP.packMPI(s)
+
+    // session id
+    this.id = HLP.mask(HLP.h2('\x00', secbytes), 0, 64)  // first 64-bits
+
+    // are we the high or low end of the connection?
+    var sq = BigInt.greater(our_dh.publicKey, their_y)
+    var sendbyte = sq ? '\x01' : '\x02'
+    var rcvbyte  = sq ? '\x02' : '\x01'
+
+    // sending and receiving keys
+    this.sendenc = HLP.mask(HLP.h1(sendbyte, secbytes), 0, 128)  // f16 bytes
+    this.sendmac = CryptoJS.SHA1(CryptoJS.enc.Latin1.parse(this.sendenc))
+    this.sendmac = this.sendmac.toString(CryptoJS.enc.Latin1)
+
+    this.rcvenc = HLP.mask(HLP.h1(rcvbyte, secbytes), 0, 128)
+    this.rcvmac = CryptoJS.SHA1(CryptoJS.enc.Latin1.parse(this.rcvenc))
+    this.rcvmac = this.rcvmac.toString(CryptoJS.enc.Latin1)
+    this.rcvmacused = false
+
+    // extra symmetric key
+    this.extra_symkey = HLP.h2('\xff', secbytes)
+
+    // counters
+    this.send_counter = 0
+    this.rcv_counter = 0
+  }
+
+  OTR.prototype.rotateOurKeys = function () {
+
+    // reveal old mac keys
+    var self = this
+    this.sessKeys[1].forEach(function (sk) {
+      if (sk && sk.rcvmacused) self.oldMacKeys.push(sk.rcvmac)
+    })
+
+    // rotate our keys
+    this.our_old_dh = this.our_dh
+    this.our_dh = this.dh()
+    this.our_keyid += 1
+
+    this.sessKeys[1][0] = this.sessKeys[0][0]
+    this.sessKeys[1][1] = this.sessKeys[0][1]
+    this.sessKeys[0] = [
+        this.their_y ?
+            new this.DHSession(this.our_dh, this.their_y) : null
+      , this.their_old_y ?
+            new this.DHSession(this.our_dh, this.their_old_y) : null
+    ]
+
+  }
+
+  OTR.prototype.rotateTheirKeys = function (their_y) {
+
+    // increment their keyid
+    this.their_keyid += 1
+
+    // reveal old mac keys
+    var self = this
+    this.sessKeys.forEach(function (sk) {
+      if (sk[1] && sk[1].rcvmacused) self.oldMacKeys.push(sk[1].rcvmac)
+    })
+
+    // rotate their keys / session
+    this.their_old_y = this.their_y
+    this.sessKeys[0][1] = this.sessKeys[0][0]
+    this.sessKeys[1][1] = this.sessKeys[1][0]
+
+    // new keys / sessions
+    this.their_y = their_y
+    this.sessKeys[0][0] = new this.DHSession(this.our_dh, this.their_y)
+    this.sessKeys[1][0] = new this.DHSession(this.our_old_dh, this.their_y)
+
+  }
+
+  OTR.prototype.prepareMsg = function (msg, esk) {
+    if (this.msgstate !== CONST.MSGSTATE_ENCRYPTED || this.their_keyid === 0)
+      return this.error('Not ready to encrypt.')
+
+    var sessKeys = this.sessKeys[1][0]
+
+    if (sessKeys.send_counter >= MAX_INT)
+      return this.error('Should have rekeyed by now.')
+
+    sessKeys.send_counter += 1
+
+    var ctr = HLP.packCtr(sessKeys.send_counter)
+
+    var send = this.ake.otr_version + '\x03'  // version and type
+    var v3 = (this.ake.otr_version === CONST.OTR_VERSION_3)
+
+    if (v3) {
+      send += this.our_instance_tag
+      send += this.their_instance_tag
+    }
+
+    send += '\x00'  // flag
+    send += HLP.packINT(this.our_keyid - 1)
+    send += HLP.packINT(this.their_keyid)
+    send += HLP.packMPI(this.our_dh.publicKey)
+    send += ctr.substring(0, 8)
+
+    if (Math.ceil(msg.length / 8) >= MAX_UINT)  // * 16 / 128
+      return this.error('Message is too long.')
+
+    var aes = HLP.encryptAes(
+        CryptoJS.enc.Latin1.parse(msg)
+      , sessKeys.sendenc
+      , ctr
+    )
+
+    send += HLP.packData(aes)
+    send += HLP.make1Mac(send, sessKeys.sendmac)
+    send += HLP.packData(this.oldMacKeys.splice(0).join(''))
+
+    send = HLP.wrapMsg(
+        send
+      , this.fragment_size
+      , v3
+      , this.our_instance_tag
+      , this.their_instance_tag
+    )
+    if (send[0]) return this.error(send[0])
+
+    // emit extra symmetric key
+    if (esk) this.trigger('file', ['send', sessKeys.extra_symkey, esk])
+
+    return send[1]
+  }
+
+  OTR.prototype.handleDataMsg = function (msg) {
+    var vt = msg.version + msg.type
+
+    if (this.ake.otr_version === CONST.OTR_VERSION_3)
+      vt += msg.instance_tags
+
+    var types = ['BYTE', 'INT', 'INT', 'MPI', 'CTR', 'DATA', 'MAC', 'DATA']
+    msg = HLP.splitype(types, msg.msg)
+
+    // ignore flag
+    var ign = (msg[0] === '\x01')
+
+    if (this.msgstate !== CONST.MSGSTATE_ENCRYPTED || msg.length !== 8) {
+      if (!ign) this.error('Received an unreadable encrypted message.', true)
+      return
+    }
+
+    var our_keyid = this.our_keyid - HLP.readLen(msg[2])
+    var their_keyid = this.their_keyid - HLP.readLen(msg[1])
+
+    if (our_keyid < 0 || our_keyid > 1) {
+      if (!ign) this.error('Not of our latest keys.', true)
+      return
+    }
+
+    if (their_keyid < 0 || their_keyid > 1) {
+      if (!ign) this.error('Not of your latest keys.', true)
+      return
+    }
+
+    var their_y = their_keyid ? this.their_old_y : this.their_y
+
+    if (their_keyid === 1 && !their_y) {
+      if (!ign) this.error('Do not have that key.')
+      return
+    }
+
+    var sessKeys = this.sessKeys[our_keyid][their_keyid]
+
+    var ctr = HLP.unpackCtr(msg[4])
+    if (ctr <= sessKeys.rcv_counter) {
+      if (!ign) this.error('Counter in message is not larger.')
+      return
+    }
+    sessKeys.rcv_counter = ctr
+
+    // verify mac
+    vt += msg.slice(0, 6).join('')
+    var vmac = HLP.make1Mac(vt, sessKeys.rcvmac)
+
+    if (!HLP.compare(msg[6], vmac)) {
+      if (!ign) this.error('MACs do not match.')
+      return
+    }
+    sessKeys.rcvmacused = true
+
+    var out = HLP.decryptAes(
+        msg[5].substring(4)
+      , sessKeys.rcvenc
+      , HLP.padCtr(msg[4])
+    )
+    out = out.toString(CryptoJS.enc.Latin1)
+
+    if (!our_keyid) this.rotateOurKeys()
+    if (!their_keyid) this.rotateTheirKeys(HLP.readMPI(msg[3]))
+
+    // parse TLVs
+    var ind = out.indexOf('\x00')
+    if (~ind) {
+      this.handleTLVs(out.substring(ind + 1), sessKeys)
+      out = out.substring(0, ind)
+    }
+
+    out = CryptoJS.enc.Latin1.parse(out)
+    return out.toString(CryptoJS.enc.Utf8)
+  }
+
+  OTR.prototype.handleTLVs = function (tlvs, sessKeys) {
+    var type, len, msg
+    for (; tlvs.length; ) {
+      type = HLP.unpackSHORT(tlvs.substr(0, 2))
+      len = HLP.unpackSHORT(tlvs.substr(2, 2))
+
+      msg = tlvs.substr(4, len)
+
+      // TODO: handle pathological cases better
+      if (msg.length < len) break
+
+      switch (type) {
+        case 1:
+          // Disconnected
+          this.msgstate = CONST.MSGSTATE_FINISHED
+          this.trigger('status', [CONST.STATUS_END_OTR])
+          break
+        case 2: case 3: case 4:
+        case 5: case 6: case 7:
+          // SMP
+          if (this.msgstate !== CONST.MSGSTATE_ENCRYPTED) {
+            if (this.sm) this.sm.abort()
+            return
+          }
+          if (!this.sm) this._smInit()
+          this.sm.handleSM({ msg: msg, type: type })
+          break
+        case 8:
+          // utf8 filenames
+          msg = msg.substring(4) // remove 4-byte indication
+          msg = CryptoJS.enc.Latin1.parse(msg)
+          msg = msg.toString(CryptoJS.enc.Utf8)
+
+          // Extra Symkey
+          this.trigger('file', ['receive', sessKeys.extra_symkey, msg])
+          break
+      }
+
+      tlvs = tlvs.substring(4 + len)
+    }
+  }
+
+  OTR.prototype.smpSecret = function (secret, question) {
+    if (this.msgstate !== CONST.MSGSTATE_ENCRYPTED)
+      return this.error('Must be encrypted for SMP.')
+
+    if (typeof secret !== 'string' || secret.length < 1)
+      return this.error('Secret is required.')
+
+    if (!this.sm) this._smInit()
+
+    // utf8 inputs
+    secret = CryptoJS.enc.Utf8.parse(secret).toString(CryptoJS.enc.Latin1)
+    question = CryptoJS.enc.Utf8.parse(question).toString(CryptoJS.enc.Latin1)
+
+    this.sm.rcvSecret(secret, question)
+  }
+
+  OTR.prototype.sendQueryMsg = function () {
+    var versions = {}
+      , msg = CONST.OTR_TAG
+
+    if (this.ALLOW_V2) versions['2'] = true
+    if (this.ALLOW_V3) versions['3'] = true
+
+    // but we don't allow v1
+    // if (versions['1']) msg += '?'
+
+    var vs = Object.keys(versions)
+    if (vs.length) {
+      msg += 'v'
+      vs.forEach(function (v) {
+        if (v !== '1') msg += v
+      })
+      msg += '?'
+    }
+
+    this.io(msg)
+    this.trigger('status', [CONST.STATUS_SEND_QUERY])
+  }
+
+  OTR.prototype.sendMsg = function (msg, meta) {
+    if ( this.REQUIRE_ENCRYPTION ||
+         this.msgstate !== CONST.MSGSTATE_PLAINTEXT
+    ) {
+      msg = CryptoJS.enc.Utf8.parse(msg)
+      msg = msg.toString(CryptoJS.enc.Latin1)
+    }
+
+    switch (this.msgstate) {
+      case CONST.MSGSTATE_PLAINTEXT:
+        if (this.REQUIRE_ENCRYPTION) {
+          this.storedMgs.push({msg: msg, meta: meta})
+          this.sendQueryMsg()
+          return
+        }
+        if (this.SEND_WHITESPACE_TAG && !this.receivedPlaintext) {
+          msg += CONST.WHITESPACE_TAG  // 16 byte tag
+          if (this.ALLOW_V3) msg += CONST.WHITESPACE_TAG_V3
+          if (this.ALLOW_V2) msg += CONST.WHITESPACE_TAG_V2
+        }
+        break
+      case CONST.MSGSTATE_FINISHED:
+        this.storedMgs.push({msg: msg, meta: meta})
+        this.error('Message cannot be sent at this time.')
+        return
+      case CONST.MSGSTATE_ENCRYPTED:
+        msg = this.prepareMsg(msg)
+        break
+      default:
+        throw new Error('Unknown message state.')
+    }
+
+    if (msg) this.io(msg, meta)
+  }
+
+  OTR.prototype.receiveMsg = function (msg) {
+
+    // parse type
+    msg = Parse.parseMsg(this, msg)
+
+    if (!msg) return
+
+    switch (msg.cls) {
+      case 'error':
+        this.error(msg.msg)
+        return
+      case 'ake':
+        if ( msg.version === CONST.OTR_VERSION_3 &&
+          this.checkInstanceTags(msg.instance_tags)
+        ) return  // ignore
+        this.ake.handleAKE(msg)
+        return
+      case 'data':
+        if ( msg.version === CONST.OTR_VERSION_3 &&
+          this.checkInstanceTags(msg.instance_tags)
+        ) return  // ignore
+        msg.msg = this.handleDataMsg(msg)
+        msg.encrypted = true
+        break
+      case 'query':
+        if (this.msgstate === CONST.MSGSTATE_ENCRYPTED) this._akeInit()
+        this.doAKE(msg)
+        break
+      default:
+        // check for encrypted
+        if ( this.REQUIRE_ENCRYPTION ||
+             this.msgstate !== CONST.MSGSTATE_PLAINTEXT
+        ) this.error('Received an unencrypted message.')
+
+        // received a plaintext message
+        // stop sending the whitespace tag
+        this.receivedPlaintext = true
+
+        // received a whitespace tag
+        if (this.WHITESPACE_START_AKE && msg.ver.length > 0)
+          this.doAKE(msg)
+    }
+
+    if (msg.msg) this.trigger('ui', [msg.msg, !!msg.encrypted])
+  }
+
+  OTR.prototype.checkInstanceTags = function (it) {
+    var their_it = HLP.readLen(it.substr(0, 4))
+    var our_it = HLP.readLen(it.substr(4, 4))
+
+    if (our_it && our_it !== HLP.readLen(this.our_instance_tag))
+      return true
+
+    if (HLP.readLen(this.their_instance_tag)) {
+      if (HLP.readLen(this.their_instance_tag) !== their_it) return true
+    } else {
+      if (their_it < 100) return true
+      this.their_instance_tag = HLP.packINT(their_it)
+    }
+  }
+
+  OTR.prototype.doAKE = function (msg) {
+    if (this.ALLOW_V3 && ~msg.ver.indexOf(CONST.OTR_VERSION_3)) {
+      this.ake.initiateAKE(CONST.OTR_VERSION_3)
+    } else if (this.ALLOW_V2 && ~msg.ver.indexOf(CONST.OTR_VERSION_2)) {
+      this.ake.initiateAKE(CONST.OTR_VERSION_2)
+    } else {
+      // is this an error?
+      this.error('OTR conversation requested, ' +
+        'but no compatible protocol version found.')
+    }
+  }
+
+  OTR.prototype.error = function (err, send) {
+    if (send) {
+      if (!this.debug) err = "An OTR error has occurred."
+      err = '?OTR Error:' + err
+      this.io(err)
+      return
+    }
+    this.trigger('error', [err])
+  }
+
+  OTR.prototype.sendStored = function () {
+    var self = this
+    ;(this.storedMgs.splice(0)).forEach(function (elem) {
+      var msg = self.prepareMsg(elem.msg)
+      self.io(msg, elem.meta)
+    })
+  }
+
+  OTR.prototype.sendFile = function (filename) {
+    if (this.msgstate !== CONST.MSGSTATE_ENCRYPTED)
+      return this.error('Not ready to encrypt.')
+
+    if (this.ake.otr_version !== CONST.OTR_VERSION_3)
+      return this.error('Protocol v3 required.')
+
+    if (!filename) return this.error('Please specify a filename.')
+
+    // utf8 filenames
+    var l1name = CryptoJS.enc.Utf8.parse(filename)
+    l1name = l1name.toString(CryptoJS.enc.Latin1)
+
+    if (l1name.length >= 65532) return this.error('filename is too long.')
+
+    var msg = '\x00'  // null byte
+    msg += '\x00\x08'  // type 8 tlv
+    msg += HLP.packSHORT(4 + l1name.length)  // length of value
+    msg += '\x00\x00\x00\x01'  // four bytes indicating file
+    msg += l1name
+
+    msg = this.prepareMsg(msg, filename)
+    this.io(msg)
+  }
+
+  OTR.prototype.endOtr = function () {
+    if (this.msgstate === CONST.MSGSTATE_ENCRYPTED) {
+      this.sendMsg('\x00\x00\x01\x00\x00')
+      if (this.sm) {
+        if (this.smw) this.sm.worker.terminate()  // destroy webworker
+        this.sm = null
+      }
+    }
+    this.msgstate = CONST.MSGSTATE_PLAINTEXT
+    this.receivedPlaintext = false
+    this.trigger('status', [CONST.STATUS_END_OTR])
+  }
+
+  // attach methods
+
+  OTR.makeInstanceTag = function () {
+    var num = BigInt.randBigInt(32)
+    if (BigInt.greater(BigInt.str2bigInt('100', 16), num))
+      return OTR.makeInstanceTag()
+    return HLP.packINT(parseInt(BigInt.bigInt2str(num, 10), 10))
+  }
+
+}).call(this)
+
+
+  return {
+      OTR: this.OTR
+    , DSA: this.DSA
+  }
+
+}))
+;
 //! moment.js
 //! version : 2.6.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -24381,129 +21766,6 @@ return Backbone.BrowserStorage;
 }));
 
 /*!
- * jQuery Browser Plugin v0.0.6
- * https://github.com/gabceb/jquery-browser-plugin
- *
- * Original jquery-browser code Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
- * http://jquery.org/license
- *
- * Modifications Copyright 2013 Gabriel Cebrian
- * https://github.com/gabceb
- *
- * Released under the MIT license
- *
- * Date: 2013-07-29T17:23:27-07:00
- */
-
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define('jquery.browser',['jquery'], function ($) {
-            factory($, root);
-        });
-    } else {
-        // Browser globals
-        factory(jQuery, root);
-    }
-}(this, function(jQuery, window) {
-  
-
-  var matched, browser;
-
-  jQuery.uaMatch = function( ua ) {
-    ua = ua.toLowerCase();
-
-  	var match = /(opr)[\/]([\w.]+)/.exec( ua ) ||
-  		/(chrome)[ \/]([\w.]+)/.exec( ua ) ||
-  		/(version)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
-  		/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
-  		/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
-  		/(msie) ([\w.]+)/.exec( ua ) ||
-  		ua.indexOf("trident") >= 0 && /(rv)(?::| )([\w.]+)/.exec( ua ) ||
-  		ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
-  		[];
-
-  	var platform_match = /(ipad)/.exec( ua ) ||
-  		/(iphone)/.exec( ua ) ||
-  		/(android)/.exec( ua ) ||
-  		/(windows phone)/.exec( ua ) ||
-  		/(win)/.exec( ua ) ||
-  		/(mac)/.exec( ua ) ||
-  		/(linux)/.exec( ua ) ||
-  		/(cros)/i.exec( ua ) ||
-  		[];
-
-  	return {
-  		browser: match[ 3 ] || match[ 1 ] || "",
-  		version: match[ 2 ] || "0",
-  		platform: platform_match[ 0 ] || ""
-  	};
-  };
-
-  matched = jQuery.uaMatch( window.navigator.userAgent );
-  browser = {};
-
-  if ( matched.browser ) {
-  	browser[ matched.browser ] = true;
-  	browser.version = matched.version;
-  	browser.versionNumber = parseInt(matched.version);
-  }
-
-  if ( matched.platform ) {
-  	browser[ matched.platform ] = true;
-  }
-
-  // These are all considered mobile platforms, meaning they run a mobile browser
-  if ( browser.android || browser.ipad || browser.iphone || browser[ "windows phone" ] ) {
-  	browser.mobile = true;
-  }
-
-  // These are all considered desktop platforms, meaning they run a desktop browser
-  if ( browser.cros || browser.mac || browser.linux || browser.win ) {
-  	browser.desktop = true;
-  }
-
-  // Chrome, Opera 15+ and Safari are webkit based browsers
-  if ( browser.chrome || browser.opr || browser.safari ) {
-  	browser.webkit = true;
-  }
-
-  // IE11 has a new token so we will assign it msie to avoid breaking changes
-  if ( browser.rv )
-  {
-  	var ie = "msie";
-
-  	matched.browser = ie;
-  	browser[ie] = true;
-  }
-
-  // Opera 15+ are identified as opr
-  if ( browser.opr )
-  {
-  	var opera = "opera";
-
-  	matched.browser = opera;
-  	browser[opera] = true;
-  }
-
-  // Stock Android browsers are marked as Safari on Android.
-  if ( browser.safari && browser.android )
-  {
-  	var android = "android";
-
-  	matched.browser = android;
-  	browser[android] = true;
-  }
-
-  // Assign the name and platform variable
-  browser.name = matched.browser;
-  browser.platform = matched.platform;
-
-  jQuery.browser = browser;
-  return browser;
-}));
-
-/*!
  * typeahead.js 0.10.5
  * https://github.com/twitter/typeahead.js
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
@@ -32755,6 +30017,7 @@ define("strophe.disco", ["strophe"], function(){});
 define("converse-dependencies", [
     "jquery",
     "utils",
+    "otr",
     "moment",
     "locales",
     "backbone.browserStorage",
@@ -32766,11 +30029,11 @@ define("converse-dependencies", [
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"
-], function($, utils, moment) {
+], function($, utils, otr, moment) {
     return {
         'jQuery': $,
-        'otr': undefined,
         'moment': moment,
+        'otr': otr,
         'utils': utils
     };
 });

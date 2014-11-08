@@ -4426,7 +4426,7 @@
                  converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
                  converse.connection.disco.addFeature('jabber:x:conference');
                  converse.connection.disco.addFeature('urn:xmpp:carbons:2');
-                 converse.connection.disco.addFeature('vcard-temp');
+                 converse.connection.disco.addFeature(Strophe.NS.VCARD);
                  converse.connection.disco.addFeature(Strophe.NS.BOSH);
                  converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
                  converse.connection.disco.addFeature(Strophe.NS.MUC);

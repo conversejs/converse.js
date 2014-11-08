@@ -84,6 +84,42 @@
                 expect(this.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
                 expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i+1).toString());
             }
+            // Chat state notifications don't increment the unread messages counter
+            // <composing> state
+            this.chatboxes.onMessage($msg({
+                from: contact_jid,
+                to: this.connection.jid,
+                type: 'chat',
+                id: (new Date()).getTime()
+            }).c('composing', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i).toString());
+
+            // <paused> state
+            this.chatboxes.onMessage($msg({
+                from: contact_jid,
+                to: this.connection.jid,
+                type: 'chat',
+                id: (new Date()).getTime()
+            }).c('paused', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i).toString());
+
+            // <gone> state
+            this.chatboxes.onMessage($msg({
+                from: contact_jid,
+                to: this.connection.jid,
+                type: 'chat',
+                id: (new Date()).getTime()
+            }).c('gone', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i).toString());
+
+            // <inactive> state
+            this.chatboxes.onMessage($msg({
+                from: contact_jid,
+                to: this.connection.jid,
+                type: 'chat',
+                id: (new Date()).getTime()
+            }).c('inactive', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            expect(this.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i).toString());
         }, converse));
 
     }, converse, mock, test_utils));

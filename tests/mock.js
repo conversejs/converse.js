@@ -36,11 +36,37 @@
         'preventDefault': function () {}
     };
 
-    mock.mock_connection = {
-        '_proto': {},
-        'connected': true,
-        'authenticated': true,
-        'mock': true,
+    mock.mock_connection = function ()  {
+        Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
+        var c = new Strophe.Connection('jasmine tests');
+        c.authenticated = true;
+        c.connected = true;
+        c.mock = true;
+        c.jid = 'dummy@localhost/resource';
+        c.vcard = {
+            'get': function (callback, jid) {
+                var fullname;
+                if (!jid) {
+                    jid = 'dummy@localhost';
+                    fullname = 'Max Mustermann' ;
+                } else {
+                    var name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
+                    var last = name.length-1;
+                    name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
+                    name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
+                    fullname = name.join(' ');
+                }
+                var vcard = $iq().c('vCard').c('FN').t(fullname);
+                callback(vcard.tree());
+            }
+        };
+        c._changeConnectStatus(Strophe.Status.CONNECTED);
+        c.attach(c.jid);
+        return c;
+    }();
+
+    /*
+    {
         'muc': {
             'listRooms': function () {},
             'join': function () {},
@@ -49,7 +75,6 @@
             'groupchat': function () {return String((new Date()).getTime()); }
         },
         'service': 'jasmine tests',
-        'jid': 'dummy@localhost',
         'addHandler': function (handler, ns, name, type, id, from, options) {
             return function () {};
         },
@@ -87,5 +112,6 @@
             'items': function () {}
         }
     };
+    */
     return mock;
 }));

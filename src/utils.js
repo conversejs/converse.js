@@ -30,7 +30,7 @@ define(["jquery"], function ($) {
     var utils = {
         // Translation machinery
         // ---------------------
-        __: $.proxy(function (str) {
+        __: function (str) {
             // Translation factory
             if (this.i18n === undefined) {
                 this.i18n = locales.en;
@@ -41,7 +41,7 @@ define(["jquery"], function ($) {
             } else {
                 return t.fetch();
             }
-        }, this),
+        },
 
         ___: function (str) {
             /* XXX: This is part of a hack to get gettext to scan strings to be

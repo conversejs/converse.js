@@ -808,7 +808,19 @@ After adding the string, you'll need to regenerate the POT file, like so:
 
     make pot
 
+To create a new PO file for a language in which converse.js is not yet
+translated into, do the following
+
+.. note:: In this example we use Polish (pl), you need to substitute 'pl' to your own language's code.
+
+::
+
+    mkdir -p ./locale/pl/LC_MESSAGES
+    msginit -i ./locale/converse.pot -o ./locale/pl/LC_MESSAGES/converse.po -l pl
+
 You can then create or update the PO file for a specific language by doing the following:
+
+.. note:: In this example we use German (de), you need to substitute 'de' to your own language's code.
 
 ::
 

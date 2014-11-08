@@ -2844,6 +2844,7 @@
                 var $message = $(message);
                 var buddy_jid, $forwarded, $received,
                     msgid = $message.attr('id'),
+                    chatbox, resource, roster_item,
                     message_from = $message.attr('from');
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
@@ -2859,8 +2860,7 @@
                     message_from = $message.attr('from');
                 }
                 var from = Strophe.getBareJidFromJid(message_from),
-                    to = Strophe.getBareJidFromJid($message.attr('to')),
-                    resource, chatbox, roster_item;
+                    to = Strophe.getBareJidFromJid($message.attr('to'));
                 if (from == converse.bare_jid) {
                     // I am the sender, so this must be a forwarded message...
                     buddy_jid = to;
@@ -2868,10 +2868,6 @@
                 } else {
                     buddy_jid = from;
                     resource = Strophe.getResourceFromJid(message_from);
-                }
-                chatbox = this.get(buddy_jid);
-                if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
-                    return true; // We already have this message stored.
                 }
 
                 roster_item = converse.roster.get(buddy_jid);
@@ -2881,6 +2877,7 @@
                     return true;
                 }
 
+                chatbox = this.get(buddy_jid);
                 if (!chatbox) {
                     var fullname = roster_item.get('fullname');
                     fullname = _.isEmpty(fullname)? buddy_jid: fullname;
@@ -2892,6 +2889,16 @@
                         'image': roster_item.get('image'),
                         'url': roster_item.get('url')
                     });
+                }
+                if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
+                    // FIXME: There's still a bug here..
+                    // If a duplicate message is received just after the chat
+                    // box was closed, then it'll open again (due to it being
+                    // created here above), with now new messages.
+                    // The solution is mostly likely to not let chat boxes show
+                    // automatically when they are created, but to require
+                    // "show" to be called explicitly.
+                    return true; // We already have this message stored.
                 }
                 if (!this.isOnlyChatStateNotification($message) && from !== converse.bare_jid) {
                     playNotification();

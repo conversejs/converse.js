@@ -2724,7 +2724,7 @@
                     delayed = $message.find('delay').length > 0,
                     subject = $message.children('subject').text();
 
-                if (this.model.messages.findWhere({msgid: msgid})) {
+                if (msgid && this.model.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
                 this.showStatusMessages($message);
@@ -2843,6 +2843,7 @@
             onMessage: function (message) {
                 var $message = $(message);
                 var buddy_jid, $forwarded, $received,
+                    msgid = $message.attr('id'),
                     message_from = $message.attr('from');
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
@@ -2869,8 +2870,11 @@
                     resource = Strophe.getResourceFromJid(message_from);
                 }
                 chatbox = this.get(buddy_jid);
-                roster_item = converse.roster.get(buddy_jid);
+                if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
+                    return true; // We already have this message stored.
+                }
 
+                roster_item = converse.roster.get(buddy_jid);
                 if (roster_item === undefined) {
                     // The buddy was likely removed
                     converse.log('Could not get roster item for JID '+buddy_jid, 'error');

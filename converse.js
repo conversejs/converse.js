@@ -826,7 +826,7 @@
                 switch (type) {
                     case 'question':
                         this.otr.smpSecret(prompt(__(
-                            'Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s',
+                            'Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s',
                             [this.get('fullname'), data])));
                         break;
                     case 'trust':
@@ -850,7 +850,7 @@
                 // encrypted messages.
                 //
                 // If 'query_msg' is passed in, it means there is an alread incoming
-                // query message from our buddy. Otherwise, it is us who will
+                // query message from our contact. Otherwise, it is us who will
                 // send the query message to them.
                 this.save({'otr_status': UNENCRYPTED});
                 var session = this.getSession($.proxy(function (session) {
@@ -874,7 +874,7 @@
                         this.trigger('showOTRError', msg);
                     }, this));
 
-                    this.trigger('showHelpMessages', [__('Exchanging private key with buddy.')]);
+                    this.trigger('showHelpMessages', [__('Exchanging private key with contact.')]);
                     if (query_msg) {
                         this.otr.receiveMsg(query_msg);
                     } else {
@@ -998,6 +998,7 @@
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change', this.onChange, this);
                 this.model.on('showOTRError', this.showOTRError, this);
+                // XXX: doesn't look like this event is being used?
                 this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.model.on('sendMessageStanza', this.sendMessageStanza, this);
@@ -1350,7 +1351,7 @@
                         this.model.save({'otr_status': UNVERIFIED});
                     }
                 } else if (scheme === 'smp') {
-                    alert(__('You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.'));
+                    alert(__('You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.'));
                     question = prompt(__('What is your security question?'));
                     if (question) {
                         answer = prompt(__('What is the answer to the security question?'));
@@ -1385,10 +1386,14 @@
                             this.$el.find('div.chat-event').remove();
                         }
                     }
+                    converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
+                    // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
                     converse.emit('buddyStatusChanged', item.attributes, item.get('chat_status'));
                 }
                 if (_.has(item.changed, 'status')) {
                     this.showStatusMessage();
+                    converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
+                    // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
                     converse.emit('buddyStatusMessageChanged', item.attributes, item.get('status'));
                 }
                 if (_.has(item.changed, 'image')) {
@@ -1470,11 +1475,11 @@
                 if (data.otr_status == UNENCRYPTED) {
                     msgs.push(__("Your messages are not encrypted anymore"));
                 } else if (data.otr_status == UNVERIFIED){
-                    msgs.push(__("Your messages are now encrypted but your buddy's identity has not been verified."));
+                    msgs.push(__("Your messages are now encrypted but your contact's identity has not been verified."));
                 } else if (data.otr_status == VERIFIED){
-                    msgs.push(__("Your buddy's identify has been verified."));
+                    msgs.push(__("Your contact's identify has been verified."));
                 } else if (data.otr_status == FINISHED){
-                    msgs.push(__("Your buddy has ended encryption on their end, you should do the same."));
+                    msgs.push(__("Your contact has ended encryption on their end, you should do the same."));
                 }
                 return this.showHelpMessages(msgs, 'info', false);
             },
@@ -1485,11 +1490,11 @@
                     if (data.otr_status == UNENCRYPTED) {
                         data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
                     } else if (data.otr_status == UNVERIFIED){
-                        data.otr_tooltip = __('Your messages are encrypted, but your buddy has not been verified.');
+                        data.otr_tooltip = __('Your messages are encrypted, but your contact has not been verified.');
                     } else if (data.otr_status == VERIFIED){
-                        data.otr_tooltip = __('Your messages are encrypted and your buddy verified.');
+                        data.otr_tooltip = __('Your messages are encrypted and your contact verified.');
                     } else if (data.otr_status == FINISHED){
-                        data.otr_tooltip = __('Your buddy has closed their end of the private session, you should do the same');
+                        data.otr_tooltip = __('Your contact has closed their end of the private session, you should do the same');
                     }
                     this.$el.find('.chat-toolbar').html(
                         converse.templates.toolbar(
@@ -2842,7 +2847,7 @@
 
             onMessage: function (message) {
                 var $message = $(message);
-                var buddy_jid, $forwarded, $received,
+                var contact_jid, $forwarded, $received,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
                     message_from = $message.attr('from');
@@ -2863,27 +2868,27 @@
                     to = Strophe.getBareJidFromJid($message.attr('to'));
                 if (from == converse.bare_jid) {
                     // I am the sender, so this must be a forwarded message...
-                    buddy_jid = to;
+                    contact_jid = to;
                     resource = Strophe.getResourceFromJid($message.attr('to'));
                 } else {
-                    buddy_jid = from;
+                    contact_jid = from;
                     resource = Strophe.getResourceFromJid(message_from);
                 }
 
-                roster_item = converse.roster.get(buddy_jid);
+                roster_item = converse.roster.get(contact_jid);
                 if (roster_item === undefined) {
-                    // The buddy was likely removed
-                    converse.log('Could not get roster item for JID '+buddy_jid, 'error');
+                    // The contact was likely removed
+                    converse.log('Could not get roster item for JID '+contact_jid, 'error');
                     return true;
                 }
 
-                chatbox = this.get(buddy_jid);
+                chatbox = this.get(contact_jid);
                 if (!chatbox) {
                     var fullname = roster_item.get('fullname');
-                    fullname = _.isEmpty(fullname)? buddy_jid: fullname;
+                    fullname = _.isEmpty(fullname)? contact_jid: fullname;
                     chatbox = this.create({
-                        'id': buddy_jid,
-                        'jid': buddy_jid,
+                        'id': contact_jid,
+                        'jid': contact_jid,
                         'fullname': fullname,
                         'image_type': roster_item.get('image_type'),
                         'image': roster_item.get('image'),
@@ -2904,7 +2909,7 @@
                     playNotification();
                 }
                 chatbox.receiveMessage($message);
-                converse.roster.addResource(buddy_jid, resource);
+                converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;
             }

@@ -769,9 +769,9 @@ Here are the different events that are emitted:
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **statusMessageChanged**       | When own custom status message has changed.                                                       | ``converse.on('statusMessageChanged', function (message) { ... });``                    |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **buddyStatusChanged**         | When a chat buddy's chat status has changed.                                                      | ``converse.on('buddyStatusChanged', function (buddy, status) { ... });``                |
+| **contactStatusChanged**         | When a chat buddy's chat status has changed.                                                      | ``converse.on('contactStatusChanged', function (buddy, status) { ... });``                |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **buddyStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('buddyStatusMessageChanged', function (buddy, messageText) { ... });``    |
+| **contactStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('contactStatusMessageChanged', function (buddy, messageText) { ... });``    |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 
 

@@ -4798,7 +4798,7 @@
             'remove': function (name) {
                 delete converse.plugins[name];
             },
-            'override': function (obj, attributes) {
+            'extend': function (obj, attributes) {
                 /* Helper method for overriding or extending Converse's Backbone Views or Models
                 *
                 * When a method is overriden, the original will still be available

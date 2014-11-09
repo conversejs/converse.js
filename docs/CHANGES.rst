@@ -1,19 +1,18 @@
 Changelog
 =========
 
-
 0.8.4 (Unreleased)
 ------------------
 
 .. note::
-    The current API methods will be deprecated in future bugfix releases and
-    a new API will be made available for the 0.9.0 release.
+    Certain API methods have been deprecated in favor of a new API and will be
+    removed in the 0.9.0 release.
 
 * Bugfix. Error when trying to use prebind and keepalive together. [heban and jcbrand]
 * Bugfix. Cannot read property "top" of undefined. [jcbrand]
 * Add new event, noResumeableSession, for when keepalive=true and there aren't
   any prebind session tokens. [jcbrand]
-* #46 Add 2 new API methods, getChatBox and openChatBox. [jcbrand]
+* #46 Refactor the API and add new methods. [jcbrand]
 * #151 Browser locks/freezes with many roster users. [jcbrand]
 * #251 Non-minified builds for debugging. [jcbrand]
 * #264 Remove unnecessary commas for ie8 compatibility. [Deuteu]
@@ -30,7 +29,7 @@ Changelog
 
 * Converse.js now has the ability to maintain sessions across page loads.
   Previously, the session tokens had to be handled externally and passed in.
-  See the `keepalive <https://conversejs.org/docs/html/index.html#keepalive`_ configuration setting. [jcbrand]
+  See the `keepalive <https://conversejs.org/docs/html/index.html#keepalive>`_ configuration setting. [jcbrand]
 * Allow changing of nickname in a chat room via /nick command. [jcbrand]
 * Allow a chat room user to be muted or unmuted with the /mute and /voice commands. [jcbrand]
 * Add a chat room toolbar button for toggling the list of participants. [jcbrand]

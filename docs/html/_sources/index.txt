@@ -28,7 +28,7 @@ tags:
     <link rel="stylesheet" type="text/css" media="screen" href="css/converse.min.css">
     <script src="builds/converse.min.js"></script>
 
-You need to initialize Converse.js with configuration settings particular to
+You need to initialize Converse.js with configuration settings according to
 your requirements.
 
 Please refer to the `Configuration variables`_ section further below for info on
@@ -56,12 +56,11 @@ The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`
 Converse.js repository may serve as a nice usable example.
 
 These minified files provide the same demo-like functionality as is available
-on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing, but not very
-practical.
+on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing.
 
-You'll most likely want to implement some kind of single-signon solution for
+You'll most likely want to implement some kind of single persistent session solution for
 your website, where users authenticate once in your website and then stay
-logged into their XMPP session upon page reload.
+logged in to their XMPP session upon the next page reload.
 
 For more info on this, read: `Prebinding and Single Session Support`_.
 
@@ -90,19 +89,106 @@ requirement for many sites dealing with sensitive information.
 
 You'll need to set up your own XMPP server and in order to have
 `Session Support`_ (i.e. single-signon functionality whereby users are authenticated once and stay
-logged in to XMPP upon page reload) you will also have to add some server-side
+logged in to XMPP upon page reload) you will likely also have to add some server-side
 code.
 
 The `What you will need`_ section has more information on all these
 requirements.
 
 
+========
+Features
+========
+
+Off-the-record encryption
+=========================
+
+Converse.js supports `Off-the-record (OTR) <https://otr.cypherpunks.ca/>`_
+encrypted messaging.
+
+The OTR protocol not only **encrypts your messages**, it provides ways to
+**verify the identity** of the person you are talking to,
+**plausible deniability** and **perfect forward secrecy** by generating
+new encryption keys for each conversation.
+
+In its current state, Javascript cryptography is fraught with dangers and
+challenges that make it impossible to reach the same standard of security that
+is available with native "desktop" software.
+
+This is due to its runtime malleability, the way it is "installed" (e.g.
+served) and the browser's lack of cryptographic primitives needed to implement
+secure crypto.
+
+For harsh but fairly valid criticism of Javascript cryptography, read:
+`Javascript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
+
+To get an idea on how this applies to OTR support in Converse.js, please read
+`my thoughts on it <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_.
+
+For now, suffice to say that although its useful to have OTR support in
+Converse.js in order to avoid most eavesdroppers, if you need serious
+communications privacy, then you're much better off using native software.
+
+Sound Notifications
+===================
+
+From version 0.8.1 Converse.js can play a sound notification when you receive a
+message.
+
+For more info, please see the `play_sounds`_ configuration setting.
+
+Multilingual Support
+====================
+
+Converse.js is translated into multiple languages. The default build,
+``converse.min.js``, includes all languages.
+
+Languages increase the size of the Converse.js significantly.
+
+If you only need one, or a subset of the available languages, it's better to
+make a custom build which includes only those languages that you need.
+
+Chat Rooms
+==========
+
+Commands
+--------
+
+Here are the different commands that may be used in a chat room:
+
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| Event Type | When is it triggered?                                                                        | Example (substitue $nickname with an actual user's nickname)  |
++============+==============================================================================================+===============================================================+
+| **ban**    | Ban a user from the chat room. They will not be able to join again.                          | /ban $nickname                                                |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **clear**  | Clear the messages shown in the chat room.                                                   | /clear                                                        |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **deop**   | Make a moderator a normal participant.                                                       | /deop $nickname [$reason]                                     |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **help**   | Show the list of available commands.                                                         | /help                                                         |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **kick**   | Kick a user out of a room. They will be able to join again.                                  | /kick $nickname [$reason]                                     |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **me**     | Speak in the 3rd person.                                                                     | /me $message                                                  |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **mute**   | Remove a user's ability to post messages to the room. They will still be able to observe.    | /mute $nickname [$reason]                                     |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **nick**   | Change your nickname.                                                                        | /nick $nickname                                               |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **op**     | Make a normal participant a moderator.                                                       | /op $nickname [$reason]                                       |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **topic**  | Set the topic of the chat room.                                                              | /topic ${topic text}                                          |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+| **voice**  | Allow a muted user to post messages to the room.                                             | /voice $nickname [$reason]                                    |
++------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+
+
 ==================
 What you will need
 ==================
 
-An XMPP/Jabber server
-=====================
+An XMPP server
+==============
 
 *Converse.js* implements `XMPP`_ as its messaging protocol, and therefore needs
 to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).
@@ -288,92 +374,6 @@ Example code for server-side prebinding
     See this `example Django application`_ by Jack Moffitt.
 
 
-========
-Features
-========
-
-Off-the-record encryption
-=========================
-
-Converse.js supports `Off-the-record (OTR) <https://otr.cypherpunks.ca/>`_
-encrypted messaging.
-
-The OTR protocol not only **encrypts your messages**, it provides ways to
-**verify the identity** of the person you are talking to,
-**plausible deniability** and **perfect forward secrecy** by generating
-new encryption keys for each conversation.
-
-In its current state, Javascript cryptography is fraught with dangers and
-challenges that make it impossible to reach the same standard of security that
-is available with native "desktop" software.
-
-This is due to its runtime malleability, the way it is "installed" (e.g.
-served) and the browser's lack of cryptographic primitives needed to implement
-secure crypto.
-
-For harsh but fairly valid criticism of Javascript cryptography, read:
-`Javascript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
-
-To get an idea on how this applies to OTR support in Converse.js, please read
-`my thoughts on it <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_.
-
-For now, suffice to say that although its useful to have OTR support in
-Converse.js in order to avoid most eavesdroppers, if you need serious
-communications privacy, then you're much better off using native software.
-
-Sound Notifications
-===================
-
-From version 0.8.1 Converse.js can play a sound notification when you receive a
-message.
-
-For more info, please see the `play_sounds`_ configuration setting.
-
-Multilingual Support
-====================
-
-Converse.js is translated into multiple languages. The default build,
-``converse.min.js``, includes all languages.
-
-Languages increase the size of the Converse.js significantly.
-
-If you only need one, or a subset of the available languages, it's better to
-make a custom build which includes only those languages that you need.
-
-Chat Rooms
-==========
-
-Commands
---------
-
-Here are the different commands that may be used in a chat room:
-
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| Event Type | When is it triggered?                                                                        | Example (substitue $nickname with an actual user's nickname)  |
-+============+==============================================================================================+===============================================================+
-| **ban**    | Ban a user from the chat room. They will not be able to join again.                          | /ban $nickname                                                |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **clear**  | Clear the messages shown in the chat room.                                                   | /clear                                                        |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **deop**   | Make a moderator a normal participant.                                                       | /deop $nickname [$reason]                                     |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **help**   | Show the list of available commands.                                                         | /help                                                         |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **kick**   | Kick a user out of a room. They will be able to join again.                                  | /kick $nickname [$reason]                                     |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **me**     | Speak in the 3rd person.                                                                     | /me $message                                                  |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **mute**   | Remove a user's ability to post messages to the room. They will still be able to observe.    | /mute $nickname [$reason]                                     |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **nick**   | Change your nickname.                                                                        | /nick $nickname                                               |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **op**     | Make a normal participant a moderator.                                                       | /op $nickname [$reason]                                       |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **topic**  | Set the topic of the chat room.                                                              | /topic ${topic text}                                          |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-| **voice**  | Allow a muted user to post messages to the room.                                             | /voice $nickname [$reason]                                    |
-+------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
-
 ===========
 Development
 ===========
@@ -511,6 +511,270 @@ You can run both the tests and jshint in one go by calling:
 
     grunt check
 
+
+Developer API
+=============
+
+.. note:: The API documented here is available in Converse.js 0.8.4 and higher.
+        Earlier versions of Converse.js might have different API methods or none at all.
+
+In the Converse.js API, you traverse towards a logical grouping, from
+which you can then call certain standardised accessors and mutators, like::
+
+    .get
+    .set
+    .add
+    .all
+    .remove
+
+This is done to increase readability and to allow intuitive method chaining.
+
+For example, to get a contact, you would do the following::
+
+    converse.contacts.get('jid@example.com');
+
+To get multiple contacts, just pass in an array of jids::
+
+    converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
+
+
+**Here follows now a breakdown of all API groupings and methods**:
+
+
+initialize
+----------
+
+.. note:: This method is the one exception of a method which is not logically grouped
+    as explained above.
+
+Initializes converse.js. This method must always be called when using
+converse.js.
+
+The `initialize` method takes a map (also called a hash or dictionary) of
+`configuration variables`_.
+
+Example::
+
+    converse.initialize({
+            allow_otr: true,
+            auto_list_rooms: false,
+            auto_subscribe: false,
+            bosh_service_url: 'https://bind.example.com',
+            hide_muc_server: false,
+            i18n: locales['en'],
+            keepalive: true,
+            play_sounds: true,
+            prebind: false,
+            show_controlbox_by_default: true,
+            debug: false,
+            roster_groups: true
+        });
+
+
+"contacts" grouping
+-------------------
+
+get
+~~~
+
+Returns a map of attributes for a given buddy (i.e. roster contact), specified
+by JID (Jabber ID).
+
+Example::
+
+    converse.contacts.get('buddy@example.com')
+
+The map of attributes:
+
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| Attribute      |                                                                                                                                      |
++================+======================================================================================================================================+
+| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                                         |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| fullname       | The person's full name.                                                                                                              |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| jid            | The person's Jabber/XMPP username.                                                                                                   |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| requesting     | If true, then this person is asking to be our chat buddy.                                                                            |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| subscription   | The subscription state between the current user and this chat buddy. Can be `none`, `to`, `from` or `both`.                          |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| id             | A unique id, same as the jid.                                                                                                        |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| chat_status    | The person's chat status. Can be `online`, `offline`, `busy`, `xa` (extended away) or `away`.                                        |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| user_id        | The user id part of the JID (the part before the `@`).                                                                               |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| resources      | The known resources for this chat buddy. Each resource denotes a separate and connected chat client.                                 |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| groups         | The roster groups in which this chat buddy was placed.                                                                               |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| status         | Their human readable custom status message.                                                                                          |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| image_type     | The image's file type.                                                                                                               |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| image          | The Base64 encoded image data.                                                                                                       |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| url            | The buddy's website URL, as specified in their VCard data.                                                                           |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+| vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
++----------------+--------------------------------------------------------------------------------------------------------------------------------------+
+
+"chats" grouping
+----------------
+
+get
+~~~
+
+Returns an object/map representing a chat box (without opening or affecting that chat box). 
+
+Example::
+
+    converse.chats.get('buddy@example.com')
+
+*The returned chat box contains the following methods:*
+
++-------------+------------------------------------------+
+| Method      | Description                              |
++=============+==========================================+
+| endOTR      | End an OTR (Off-the-record) session.     |
++-------------+------------------------------------------+
+| get         | Get an attribute (i.e. accessor).        |
++-------------+------------------------------------------+
+| initiateOTR | Start an OTR (off-the-record) session.   |
++-------------+------------------------------------------+
+| maximize    | Minimize the chat box.                   |
++-------------+------------------------------------------+
+| minimize    | Maximize the chat box.                   |
++-------------+------------------------------------------+
+| set         | Set an attribute (i.e. mutator).         |
++-------------+------------------------------------------+
+
+*The get and set methods can be used to retrieve and change the following attributes:*
+
++-------------+-----------------------------------------------------+
+| Attribute   | Description                                         |
++=============+=====================================================+
+| height      | The height of the chat box.                         |
++-------------+-----------------------------------------------------+
+| url         | The URL of the chat box heading.                    |
++-------------+-----------------------------------------------------+
+
+"tokens" grouping
+-----------------
+
+get
+~~~
+
+Returns a token, either the RID or SID token depending on what's asked for.
+
+Example::
+
+    converse.tokens.get('rid')
+
+"listen" grouping
+-----------------
+
+Converse.js emits events to which you can subscribe from your own Javascript.
+
+Concerning events, the following methods are available under the "listen"
+grouping:
+
+* **on(eventName, callback)**:
+
+    Calling the ``on`` method allows you to subscribe to an event.
+    Every time the event fires, the callback method specified by ``callback`` will be
+    called.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+
+    For example::
+
+        converse.listen.on('message', function (messageXML) { ... });
+
+* **once(eventName, callback)**:
+
+    Calling the ``once`` method allows you to listen to an event
+    exactly once.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+
+    For example::
+
+        converse.listen.once('message', function (messageXML) { ... });
+
+* **not(eventName, callback)**
+
+    To stop listening to an event, you can use the ``not`` method.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` refers to the function that is to be no longer executed.
+
+    For example::
+
+        converse.listen.not('message', function (messageXML) { ... });
+
+Events
+======
+
+.. note:: see also the `"listen" grouping`_ API section above.
+
+Event Types
+-----------
+
+Here are the different events that are emitted:
+
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| Event Type                     | When is it triggered?                                                                             | Example                                                                                 |
++================================+===================================================================================================+=========================================================================================+
+| **initialized**                | Once converse.js has been initialized.                                                            | ``converse.on('initialized', function () { ... });``                                    |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **ready**                      | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.on('ready', function () { ... });``                                          |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **reconnect**                  | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.on('reconnect', function () { ... });``                                      |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **message**                    | When a message is received.                                                                       | ``converse.on('message', function (messageXML) { ... });``                              |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **messageSend**                | When a message will be sent out.                                                                  | ``converse.on('messageSend', function (messageText) { ... });``                         |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **noResumeableSession**        | When keepalive=true but there aren't any stored prebind tokens.                                   | ``converse.on('noResumeableSession', function () { ... });``                            |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **roster**                     | When the roster is updated.                                                                       | ``converse.on('roster', function (items) { ... });``                                    |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **callButtonClicked**          | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.on('callButtonClicked', function (connection, model) { ... });``             |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **chatBoxOpened**              | When a chat box has been opened.                                                                  | ``converse.on('chatBoxOpened', function (chatbox) { ... });``                           |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **chatRoomOpened**             | When a chat room has been opened.                                                                 | ``converse.on('chatRoomOpened', function (chatbox) { ... });``                          |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **chatBoxClosed**              | When a chat box has been closed.                                                                  | ``converse.on('chatBoxClosed', function (chatbox) { ... });``                           |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **chatBoxFocused**             | When the focus has been moved to a chat box.                                                      | ``converse.on('chatBoxFocused', function (chatbox) { ... });``                          |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **chatBoxToggled**             | When a chat box has been minimized or maximized.                                                  | ``converse.on('chatBoxToggled', function (chatbox) { ... });``                          |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **roomInviteSent**             | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.on('roomInvite', function (roomview, invitee_jid, reason) { ... });``        |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **roomInviteReceived**         | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.on('roomInvite', function (roomview, invitee_jid, reason) { ... });``        |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **statusChanged**              | When own chat status has changed.                                                                 | ``converse.on('statusChanged', function (status) { ... });``                            |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **statusMessageChanged**       | When own custom status message has changed.                                                       | ``converse.on('statusMessageChanged', function (message) { ... });``                    |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **buddyStatusChanged**         | When a chat buddy's chat status has changed.                                                      | ``converse.on('buddyStatusChanged', function (buddy, status) { ... });``                |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+| **buddyStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('buddyStatusMessageChanged', function (buddy, messageText) { ... });``    |
++--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
+
+
 Minification
 ============
 
@@ -568,7 +832,19 @@ After adding the string, you'll need to regenerate the POT file, like so:
 
     make pot
 
+To create a new PO file for a language in which converse.js is not yet
+translated into, do the following
+
+.. note:: In this example we use Polish (pl), you need to substitute 'pl' to your own language's code.
+
+::
+
+    mkdir -p ./locale/pl/LC_MESSAGES
+    msginit -i ./locale/converse.pot -o ./locale/pl/LC_MESSAGES/converse.po -l pl
+
 You can then create or update the PO file for a specific language by doing the following:
+
+.. note:: In this example we use German (de), you need to substitute 'de' to your own language's code.
 
 ::
 
@@ -643,6 +919,7 @@ Congratulations, you've now succesfully added your translations. Sorry for all
 those hoops you had to jump through.
 
 
+
 ===============
 Troubleshooting
 ===============
@@ -713,190 +990,6 @@ your own libraries, making sure that they are loaded in the correct order (e.g.
 jQuery plugins must load after jQuery).
 
 
-======
-Events
-======
-
-Converse.js emits events to which you can subscribe from your own Javascript.
-
-Concerning events, the following methods are available:
-
-Event API Methods
-=================
-
-* **on(eventName, callback)**:
-
-    Calling the ``on`` method allows you to subscribe to an event.
-    Every time the event fires, the callback method specified by ``callback`` will be
-    called.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-
-    For example::
-
-        converse.on('message', function (messageXML) { ... });
-
-* **once(eventName, callback)**:
-
-    Calling the ``once`` method allows you to listen to an event
-    exactly once.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-
-    For example::
-
-        converse.once('message', function (messageXML) { ... });
-
-* **off(eventName, callback)**
-
-    To stop listening to an event, you can use the ``off`` method.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` refers to the function that is to be no longer executed.
-
-
-Event Types
-===========
-
-Here are the different events that are emitted:
-
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| Event Type                       | When is it triggered?                                                                             | Example                                                                                 |
-+==================================+===================================================================================================+=========================================================================================+
-| **initialized**                  | Once converse.js has been initialized.                                                            | ``converse.on('initialized', function () { ... });``                                    |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **ready**                        | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.on('ready', function () { ... });``                                          |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **reconnect**                    | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.on('reconnect', function () { ... });``                                      |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **message**                      | When a message is received.                                                                       | ``converse.on('message', function (messageXML) { ... });``                              |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **messageSend**                  | When a message will be sent out.                                                                  | ``converse.on('messageSend', function (messageText) { ... });``                         |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **roster**                       | When the roster is updated.                                                                       | ``converse.on('roster', function (items) { ... });``                                    |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **callButtonClicked**            | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.on('callButtonClicked', function (connection, model) { ... });``             |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **chatBoxOpened**                | When a chat box has been opened.                                                                  | ``converse.on('chatBoxOpened', function (chatbox) { ... });``                           |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **chatRoomOpened**               | When a chat room has been opened.                                                                 | ``converse.on('chatRoomOpened', function (chatbox) { ... });``                          |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **chatBoxClosed**                | When a chat box has been closed.                                                                  | ``converse.on('chatBoxClosed', function (chatbox) { ... });``                           |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **chatBoxFocused**               | When the focus has been moved to a chat box.                                                      | ``converse.on('chatBoxFocused', function (chatbox) { ... });``                          |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **chatBoxToggled**               | When a chat box has been minimized or maximized.                                                  | ``converse.on('chatBoxToggled', function (chatbox) { ... });``                          |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **roomInviteSent**               | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.on('roomInvite', function (roomview, invitee_jid, reason) { ... });``        |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **roomInviteReceived**           | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.on('roomInvite', function (roomview, invitee_jid, reason) { ... });``        |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **statusChanged**                | When own chat status has changed.                                                                 | ``converse.on('statusChanged', function (status) { ... });``                            |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **statusMessageChanged**         | When own custom status message has changed.                                                       | ``converse.on('statusMessageChanged', function (message) { ... });``                    |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **buddyStatusChanged**           | When a chat buddy's chat status has changed.                                                      | ``converse.on('buddyStatusChanged', function (buddy, status) { ... });``                |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **buddyStatusMessageChanged**    | When a chat buddy's custom status message has changed.                                            | ``converse.on('buddyStatusMessageChanged', function (buddy, messageText) { ... });``    |
-+----------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-
-=============
-Developer API
-=============
-
-.. note:: see also the `event api methods`_, not listed here.
-
-initialize
-==========
-
-Initializes converse.js. This method must always be called when using
-converse.js.
-
-The `initialize` method takes a map (also called a hash or dictionary) of
-`configuration variables`_.
-
-Example::
-
-    converse.initialize({
-            allow_otr: true,
-            auto_list_rooms: false,
-            auto_subscribe: false,
-            bosh_service_url: 'https://bind.example.com',
-            hide_muc_server: false,
-            i18n: locales['en'],
-            keepalive: true,
-            play_sounds: true,
-            prebind: false,
-            show_controlbox_by_default: true,
-            debug: false,
-            roster_groups: true
-        });
-
-
-getBuddy
-========
-
-Returns a map of attributes for a given buddy (i.e. roster contact), specified
-by JID (Jabber ID).
-
-Example::
-
-    converse.getBuddy('buddy@example.com')
-
-The map of attributes:
-
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| Attribute      |                                                                                                                                      |
-+================+======================================================================================================================================+
-| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                                         |          
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| fullname       | The person's full name.                                                                                                              |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| jid            | The person's Jabber/XMPP username.                                                                                                   |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| requesting     | If true, then this person is asking to be our chat buddy.                                                                            |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| subscription   | The subscription state between the current user and this chat buddy. Can be `none`, `to`, `from` or `both`.                          |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| id             | A unique id, same as the jid.                                                                                                        |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| chat_status    | The person's chat status. Can be `online`, `offline`, `busy`, `xa` (extended away) or `away`.                                        |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| user_id        | The user id part of the JID (the part before the `@`).                                                                               |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| resources      | The known resources for this chat buddy. Each resource denotes a separate and connected chat client.                                 |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| groups         | The roster groups in which this chat buddy was placed.                                                                               |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| status         | Their human readable custom status message.                                                                                          |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| image_type     | The image's file type.                                                                                                               |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| image          | The Base64 encoded image data.                                                                                                       |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| url            | The buddy's website URL, as specified in their VCard data.                                                                           |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-
-getRID
-======
-
-Returns the current RID (request ID) value.
-
-getSID
-======
-
-Returns the current SID (Session ID) value.
-
 =============
 Configuration
 =============
@@ -942,7 +1035,7 @@ Default:  ``true``
 Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
 the ``Chatrooms`` tab from the control box.
 
-allow_muc
+allow_otr
 ---------
 
 Default:  ``true``
@@ -1031,8 +1124,10 @@ Default:    ``true``
 Determines whether Converse.js will maintain the chat session across page
 loads.
 
-*Please be aware*: This is a new still relatively experimental feature and there might be some
-unhandled edge-cases.
+See also:
+
+* `Prebinding and Single Session Support`_
+* `Using prebind in connection with keepalive`_
 
 message_carbons
 ---------------
@@ -1129,19 +1224,71 @@ prebind
 
 Default:  ``false``
 
+See also: `Prebinding and Single Session Support`_
+
 Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).
 
 This is useful when you don't want to render the login form on the chat control
 box with each page load.
 
-For prebinding to work, your backend server must authenticate for you, and
-then return a JID (jabber ID), SID (session ID) and RID (Request ID).
+For prebinding to work, you must set up a pre-authenticated BOSH session,
+for which you will receive a JID (jabber ID), SID (session ID) and RID
+(Request ID).
 
-If you set ``prebind`` to ``true``, you have to make sure to also pass in these
-values as ``jid``, ``sid``, ``rid``.
+These values (``rid``, ``sid`` and ``jid``) need to be passed into
+``converse.initialize`` (with the exception of ``keepalive``, see below).
 
-Additionally, you have to specify ``bosh_service_url``.
+Additionally, you also have to specify a ``bosh_service_url``.
+
+Using prebind in connection with keepalive
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``prebind`` and `keepalive`_ options can be used together.
+
+The ``keepalive`` option caches the ``rid``, ``sid`` and ``jid`` values
+(henceforth referred to as *session tokens*) one receives from a prebinded
+BOSH session, in order to re-use them when the page reloads.
+
+However, if besides setting ``keepalive`` to ``true``, you also set ``prebind``
+to ``true``, and you pass in valid session tokens to ``converse.initialize``,
+then those passed in session tokens will be used instead of any tokens cached by
+``keepalive``.
+
+If you set ``prebind`` to ``true``  and don't pass in the session tokens to
+``converse.initialize``, then converse.js will look for tokens cached by
+``keepalive``.
+
+If you've set ``keepalive`` and ``prebind`` to ``true``, don't pass in session
+tokens and converse.js doesn't find any cached session tokens, then
+converse.js will emit an event ``noResumeableSession`` and exit.
+
+This allows you to start a prebinded session with valid tokens, and then fall
+back to ``keepalive`` for maintaining that session across page reloads. When
+for some reason ``keepalive`` doesn't have cached session tokens anymore, you
+can listen for the ``noResumeableSession`` event and take that as a cue that
+you should again prebind in order to get valid session tokens.
+
+Here is a code example::
+
+        converse.on('noResumeableSession', function () {
+            $.getJSON('/prebind', function (data) {
+                converse.initialize({
+                    prebind: true,
+                    keepalive: true,
+                    bosh_service_url: 'https://bind.example.com',
+                    jid: data.jid,
+                    sid: data.sid,
+                    rid: data.rid
+                });
+            });
+        });
+        converse.initialize({
+            prebind: true,
+            keepalive: true,
+            bosh_service_url: 'https://bind.example.com'
+        }));
+
 
 roster_groups
 -------------

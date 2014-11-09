@@ -4713,78 +4713,150 @@
             'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
             'maximize': $.proxy(chatbox.maximize, chatbox),
             'minimize': $.proxy(chatbox.minimize, chatbox),
-            'set': $.proxy(chatbox.set, chatbox)
+            'set': $.proxy(chatbox.set, chatbox),
+            'open': chatbox.trigger.bind(chatbox, 'show')
         };
     };
     return {
-        'getBuddy': function (jid) {
-            var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
-            if (contact) {
-                return contact.attributes;
-            }
-        },
-        'getChatBox': function (jid) {
-            var chatbox = converse.chatboxes.get(jid);
-            if (chatbox) {
-                return wrappedChatBox(chatbox);
-            }
-        },
-        'getRID': function () {
-            if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
-                return converse.connection.rid || converse.connection._proto.rid;
-            }
-            return null;
-        },
-        'getSID': function () {
-            if (converse.expose_rid_and_sid && typeof converse.connection !== "undefined") {
-                return converse.connection.sid || converse.connection._proto.sid;
-            }
-            return null;
-        },
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
-        'jQuery': $,
-        'openChatBox': function (jid) {
-            var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
-            if (contact) {
-                return wrappedChatBox(converse.chatboxviews.showChat(contact.attributes));
+        'contacts': {
+            'get': function (jids) {
+                var _transform = function (jid) {
+                    var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+                    if (contact) {
+                        return contact.attributes;
+                    }
+                    return null;
+                };
+                if (typeof jids === "string") {
+                    return _transform(jids);
+                }
+                return _.map(jids, _transform);
             }
+        },
+        'chats': {
+            'get': function (jids) {
+                var _transform = function (jid) {
+                    var chatbox = converse.chatboxes.get(jid);
+                    if (!chatbox) {
+                        var roster_item = converse.roster.get(jid);
+                        if (roster_item === undefined) {
+                            converse.log('Could not get roster item for JID '+jid, 'error');
+                            return null;
+                        }
+                        chatbox = converse.chatboxes.create({
+                            'id': jid,
+                            'jid': jid,
+                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                            'image_type': roster_item.get('image_type'),
+                            'image': roster_item.get('image'),
+                            'url': roster_item.get('url')
+                        });
+                    }
+                    return wrappedChatBox(chatbox);
+                };
+                if (typeof jids === "string") {
+                    return _transform(jids);
+                }
+                return _.map(jids, _transform);
+            }
+        },
+        'tokens': {
+            'get': function (id) {
+                if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {
+                    return null;
+                }
+                if (id.toLowerCase() === 'rid') {
+                    return converse.connection.rid || converse.connection._proto.rid;
+                } else if (id.toLowerCase() === 'sid') {
+                    return converse.connection.sid || converse.connection._proto.sid;
+                }
+            }
+        },
+        'listen': {
+            'once': function (evt, handler) {
+                converse.once(evt, handler);
+            },
+            'on': function (evt, handler) {
+                converse.on(evt, handler);
+            },
+            'not': function (evt, handler) {
+                converse.off(evt, handler);
+            },
+        },
+        'plugins': {
+            'add': function (name, callback) {
+                converse.plugins[name] = callback;
+            },
+            'remove': function (name) {
+                delete converse.plugins[name];
+            },
+            'override': function (obj, attributes) {
+                /* Helper method for overriding or extending Converse's Backbone Views or Models
+                *
+                * When a method is overriden, the original will still be available
+                * on the _super attribute of the object being overridden.
+                *
+                * obj: The Backbone View or Model
+                * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
+                */
+                if (!obj.prototype._super) {
+                    obj.prototype._super = {};
+                }
+                _.each(attributes, function (value, key) {
+                    if (key === 'events') {
+                        obj.prototype[key] = _.extend(value, obj.prototype[key]);
+                    } else {
+                        if (typeof key === 'function') {
+                            obj.prototype._super[key] = obj.prototype[key];
+                        }
+                        obj.prototype[key] = value;
+                    }
+                });
+            }
+        },
+        'env': {
+            'jQuery': $,
+            'Strophe': Strophe,
+            '_': _
+        },
+
+        // Deprecated API methods
+        'getBuddy': function (jid) {
+            converse.log('WARNING: the "getBuddy" API method has been deprecated. Please use "contacts.get" instead');
+            return this.contacts.get(jid);
+        },
+        'getChatBox': function (jid) {
+            converse.log('WARNING: the "getChatBox" API method has been deprecated. Please use "chats.get" instead');
+            return this.chats.get(jid);
+        },
+        'openChatBox': function (jid) {
+            converse.log('WARNING: the "openChatBox" API method has been deprecated. Please use "chats.get(jid).open()" instead');
+            var chat = this.chats.get(jid);
+            if (chat) { chat.open(); }
+            return chat;
+        },
+        'getRID': function () {
+            converse.log('WARNING: the "getRID" API method has been deprecated. Please use "tokens.get(\'rid\')" instead');
+            return this.tokens.get('rid');
+        },
+        'getSID': function () {
+            converse.log('WARNING: the "getSID" API method has been deprecated. Please use "tokens.get(\'sid\')" instead');
+            return this.tokens.get('sid');
         },
         'once': function (evt, handler) {
-            converse.once(evt, handler);
+            converse.log('WARNING: the "one" API method has been deprecated. Please use "listen.once" instead');
+            return this.listen.once(evt, handler);
         },
         'on': function (evt, handler) {
-            converse.on(evt, handler);
+            converse.log('WARNING: the "on" API method has been deprecated. Please use "listen.on" instead');
+            return this.listen.on(evt, handler);
         },
         'off': function (evt, handler) {
-            converse.off(evt, handler);
-        },
-        'override': function (obj, attributes) {
-            /* Helper method for overriding or extending Converse's Backbone Views or Models
-             *
-             * When a method is overriden, the original will still be available
-             * on the _super attribute of the object being overridden.
-             *
-             * obj: The Backbone View or Model
-             * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
-             */
-            if (!obj.prototype._super) {
-                obj.prototype._super = {};
-            }
-            _.each(attributes, function (value, key) {
-                if (key === 'events') {
-                    obj.prototype[key] = _.extend(value, obj.prototype[key]);
-                } else {
-                    if (typeof key === 'function') {
-                        obj.prototype._super[key] = obj.prototype[key];
-                    }
-                    obj.prototype[key] = value;
-                }
-            });
-        },
-        'registerPlugin': function (name, callback) {
-            converse.plugins[name] = callback;
+            converse.log('WARNING: the "off" API method has been deprecated. Please use "listen.not" instead');
+            return this.listen.not(evt, handler);
         }
     };
 }));

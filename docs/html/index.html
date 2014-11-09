@@ -57,100 +57,100 @@
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#quickstart-to-get-a-demo-up-and-running" id="id7">Quickstart (to get a demo up and running)</a></li>
-<li><a class="reference internal" href="#introduction" id="id8">Introduction</a></li>
-<li><a class="reference internal" href="#what-you-will-need" id="id9">What you will need</a><ul>
-<li><a class="reference internal" href="#an-xmpp-jabber-server" id="id10">An XMPP/Jabber server</a></li>
-<li><a class="reference internal" href="#a-bosh-connection-manager" id="id11">A BOSH Connection Manager</a><ul>
-<li><a class="reference internal" href="#overcoming-cross-domain-request-restrictions" id="id12">Overcoming cross-domain request restrictions</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#server-side-authentication" id="id13">Server-side authentication</a><ul>
-<li><a class="reference internal" href="#prebinding-and-single-session-support" id="id14">Prebinding and Single Session Support</a></li>
-<li><a class="reference internal" href="#example-code-for-server-side-prebinding" id="id15">Example code for server-side prebinding</a></li>
+<li><a class="reference internal" href="#quickstart-to-get-a-demo-up-and-running" id="id8">Quickstart (to get a demo up and running)</a></li>
+<li><a class="reference internal" href="#introduction" id="id9">Introduction</a></li>
+<li><a class="reference internal" href="#features" id="id10">Features</a><ul>
+<li><a class="reference internal" href="#off-the-record-encryption" id="id11">Off-the-record encryption</a></li>
+<li><a class="reference internal" href="#sound-notifications" id="id12">Sound Notifications</a></li>
+<li><a class="reference internal" href="#multilingual-support" id="id13">Multilingual Support</a></li>
+<li><a class="reference internal" href="#chat-rooms" id="id14">Chat Rooms</a><ul>
+<li><a class="reference internal" href="#commands" id="id15">Commands</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#features" id="id16">Features</a><ul>
-<li><a class="reference internal" href="#off-the-record-encryption" id="id17">Off-the-record encryption</a></li>
-<li><a class="reference internal" href="#sound-notifications" id="id18">Sound Notifications</a></li>
-<li><a class="reference internal" href="#multilingual-support" id="id19">Multilingual Support</a></li>
-<li><a class="reference internal" href="#chat-rooms" id="id20">Chat Rooms</a><ul>
-<li><a class="reference internal" href="#commands" id="id21">Commands</a></li>
+<li><a class="reference internal" href="#what-you-will-need" id="id16">What you will need</a><ul>
+<li><a class="reference internal" href="#an-xmpp-server" id="id17">An XMPP server</a></li>
+<li><a class="reference internal" href="#a-bosh-connection-manager" id="id18">A BOSH Connection Manager</a><ul>
+<li><a class="reference internal" href="#overcoming-cross-domain-request-restrictions" id="id19">Overcoming cross-domain request restrictions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#server-side-authentication" id="id20">Server-side authentication</a><ul>
+<li><a class="reference internal" href="#prebinding-and-single-session-support" id="id21">Prebinding and Single Session Support</a></li>
+<li><a class="reference internal" href="#example-code-for-server-side-prebinding" id="id22">Example code for server-side prebinding</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#development" id="id22">Development</a><ul>
-<li><a class="reference internal" href="#install-the-development-and-front-end-dependencies" id="id23">Install the development and front-end dependencies</a></li>
-<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id24">With AMD and require.js (recommended)</a></li>
-<li><a class="reference internal" href="#without-amd-and-require-js" id="id25">Without AMD and require.js</a></li>
-<li><a class="reference internal" href="#before-submitting-a-pull-request" id="id26">Before submitting a pull request</a><ul>
-<li><a class="reference internal" href="#add-tests-for-your-bugfix-or-feature" id="id27">Add tests for your bugfix or feature</a></li>
-<li><a class="reference internal" href="#check-that-the-tests-pass" id="id28">Check that the tests pass</a></li>
-<li><a class="reference internal" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" id="id29">Check your code for errors or bad habits by running JSHint</a></li>
+<li><a class="reference internal" href="#development" id="id23">Development</a><ul>
+<li><a class="reference internal" href="#install-the-development-and-front-end-dependencies" id="id24">Install the development and front-end dependencies</a></li>
+<li><a class="reference internal" href="#with-amd-and-require-js-recommended" id="id25">With AMD and require.js (recommended)</a></li>
+<li><a class="reference internal" href="#without-amd-and-require-js" id="id26">Without AMD and require.js</a></li>
+<li><a class="reference internal" href="#before-submitting-a-pull-request" id="id27">Before submitting a pull request</a><ul>
+<li><a class="reference internal" href="#add-tests-for-your-bugfix-or-feature" id="id28">Add tests for your bugfix or feature</a></li>
+<li><a class="reference internal" href="#check-that-the-tests-pass" id="id29">Check that the tests pass</a></li>
+<li><a class="reference internal" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" id="id30">Check your code for errors or bad habits by running JSHint</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#minification" id="id30">Minification</a><ul>
-<li><a class="reference internal" href="#minifying-javascript-and-css" id="id31">Minifying Javascript and CSS</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#translations" id="id32">Translations</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#troubleshooting" id="id33">Troubleshooting</a><ul>
-<li><a class="reference internal" href="#conflicts-with-other-javascript-libraries" id="id34">Conflicts with other Javascript libraries</a><ul>
-<li><a class="reference internal" href="#problem" id="id35">Problem:</a></li>
-<li><a class="reference internal" href="#solution" id="id36">Solution:</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#developer-api" id="id31">Developer API</a><ul>
+<li><a class="reference internal" href="#initialize" id="id32">initialize</a></li>
+<li><a class="reference internal" href="#contacts-grouping" id="id33">&#8220;contacts&#8221; grouping</a></li>
+<li><a class="reference internal" href="#chats-grouping" id="id34">&#8220;chats&#8221; grouping</a></li>
+<li><a class="reference internal" href="#tokens-grouping" id="id35">&#8220;tokens&#8221; grouping</a></li>
+<li><a class="reference internal" href="#listen-grouping" id="id36">&#8220;listen&#8221; grouping</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#events" id="id37">Events</a><ul>
-<li><a class="reference internal" href="#event-api-methods" id="id38">Event API Methods</a></li>
-<li><a class="reference internal" href="#event-types" id="id39">Event Types</a></li>
+<li><a class="reference internal" href="#event-types" id="id38">Event Types</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#developer-api" id="id40">Developer API</a><ul>
-<li><a class="reference internal" href="#initialize" id="id41">initialize</a></li>
-<li><a class="reference internal" href="#getbuddy" id="id42">getBuddy</a></li>
-<li><a class="reference internal" href="#getrid" id="id43">getRID</a></li>
-<li><a class="reference internal" href="#getsid" id="id44">getSID</a></li>
+<li><a class="reference internal" href="#minification" id="id39">Minification</a><ul>
+<li><a class="reference internal" href="#minifying-javascript-and-css" id="id40">Minifying Javascript and CSS</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuration" id="id45">Configuration</a><ul>
-<li><a class="reference internal" href="#configuration-variables" id="id46">Configuration variables</a><ul>
-<li><a class="reference internal" href="#allow-contact-requests" id="id47">allow_contact_requests</a></li>
-<li><a class="reference internal" href="#allow-muc" id="id48">allow_muc</a></li>
-<li><a class="reference internal" href="#id3" id="id49">allow_muc</a></li>
-<li><a class="reference internal" href="#animate" id="id50">animate</a></li>
-<li><a class="reference internal" href="#auto-list-rooms" id="id51">auto_list_rooms</a></li>
-<li><a class="reference internal" href="#auto-reconnect" id="id52">auto_reconnect</a></li>
-<li><a class="reference internal" href="#auto-subscribe" id="id53">auto_subscribe</a></li>
-<li><a class="reference internal" href="#bosh-service-url" id="id54">bosh_service_url</a></li>
-<li><a class="reference internal" href="#cache-otr-key" id="id55">cache_otr_key</a></li>
-<li><a class="reference internal" href="#debug" id="id56">debug</a></li>
-<li><a class="reference internal" href="#keepalive" id="id57">keepalive</a></li>
-<li><a class="reference internal" href="#message-carbons" id="id58">message_carbons</a></li>
-<li><a class="reference internal" href="#expose-rid-and-sid" id="id59">expose_rid_and_sid</a></li>
-<li><a class="reference internal" href="#forward-messages" id="id60">forward_messages</a></li>
-<li><a class="reference internal" href="#fullname" id="id61">fullname</a></li>
-<li><a class="reference internal" href="#hide-muc-server" id="id62">hide_muc_server</a></li>
-<li><a class="reference internal" href="#i18n" id="id63">i18n</a></li>
-<li><a class="reference internal" href="#play-sounds" id="id64">play_sounds</a></li>
-<li><a class="reference internal" href="#prebind" id="id65">prebind</a></li>
-<li><a class="reference internal" href="#roster-groups" id="id66">roster_groups</a></li>
-<li><a class="reference internal" href="#show-controlbox-by-default" id="id67">show_controlbox_by_default</a></li>
-<li><a class="reference internal" href="#show-only-online-users" id="id68">show_only_online_users</a></li>
-<li><a class="reference internal" href="#storage" id="id69">storage</a></li>
-<li><a class="reference internal" href="#use-otr-by-default" id="id70">use_otr_by_default</a></li>
-<li><a class="reference internal" href="#use-vcards" id="id71">use_vcards</a></li>
-<li><a class="reference internal" href="#visible-toolbar-buttons" id="id72">visible_toolbar_buttons</a></li>
-<li><a class="reference internal" href="#xhr-custom-status" id="id73">xhr_custom_status</a></li>
-<li><a class="reference internal" href="#xhr-custom-status-url" id="id74">xhr_custom_status_url</a></li>
-<li><a class="reference internal" href="#xhr-user-search" id="id75">xhr_user_search</a></li>
-<li><a class="reference internal" href="#xhr-user-search-url" id="id76">xhr_user_search_url</a></li>
+<li><a class="reference internal" href="#translations" id="id41">Translations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#troubleshooting" id="id42">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#conflicts-with-other-javascript-libraries" id="id43">Conflicts with other Javascript libraries</a><ul>
+<li><a class="reference internal" href="#problem" id="id44">Problem:</a></li>
+<li><a class="reference internal" href="#solution" id="id45">Solution:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration" id="id46">Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-variables" id="id47">Configuration variables</a><ul>
+<li><a class="reference internal" href="#allow-contact-requests" id="id48">allow_contact_requests</a></li>
+<li><a class="reference internal" href="#allow-muc" id="id49">allow_muc</a></li>
+<li><a class="reference internal" href="#allow-otr" id="id50">allow_otr</a></li>
+<li><a class="reference internal" href="#animate" id="id51">animate</a></li>
+<li><a class="reference internal" href="#auto-list-rooms" id="id52">auto_list_rooms</a></li>
+<li><a class="reference internal" href="#auto-reconnect" id="id53">auto_reconnect</a></li>
+<li><a class="reference internal" href="#auto-subscribe" id="id54">auto_subscribe</a></li>
+<li><a class="reference internal" href="#bosh-service-url" id="id55">bosh_service_url</a></li>
+<li><a class="reference internal" href="#cache-otr-key" id="id56">cache_otr_key</a></li>
+<li><a class="reference internal" href="#debug" id="id57">debug</a></li>
+<li><a class="reference internal" href="#keepalive" id="id58">keepalive</a></li>
+<li><a class="reference internal" href="#message-carbons" id="id59">message_carbons</a></li>
+<li><a class="reference internal" href="#expose-rid-and-sid" id="id60">expose_rid_and_sid</a></li>
+<li><a class="reference internal" href="#forward-messages" id="id61">forward_messages</a></li>
+<li><a class="reference internal" href="#fullname" id="id62">fullname</a></li>
+<li><a class="reference internal" href="#hide-muc-server" id="id63">hide_muc_server</a></li>
+<li><a class="reference internal" href="#i18n" id="id64">i18n</a></li>
+<li><a class="reference internal" href="#play-sounds" id="id65">play_sounds</a></li>
+<li><a class="reference internal" href="#prebind" id="id66">prebind</a></li>
+<li><a class="reference internal" href="#roster-groups" id="id67">roster_groups</a></li>
+<li><a class="reference internal" href="#show-controlbox-by-default" id="id68">show_controlbox_by_default</a></li>
+<li><a class="reference internal" href="#show-only-online-users" id="id69">show_only_online_users</a></li>
+<li><a class="reference internal" href="#storage" id="id70">storage</a></li>
+<li><a class="reference internal" href="#use-otr-by-default" id="id71">use_otr_by_default</a></li>
+<li><a class="reference internal" href="#use-vcards" id="id72">use_vcards</a></li>
+<li><a class="reference internal" href="#visible-toolbar-buttons" id="id73">visible_toolbar_buttons</a></li>
+<li><a class="reference internal" href="#xhr-custom-status" id="id74">xhr_custom_status</a></li>
+<li><a class="reference internal" href="#xhr-custom-status-url" id="id75">xhr_custom_status_url</a></li>
+<li><a class="reference internal" href="#xhr-user-search" id="id76">xhr_user_search</a></li>
+<li><a class="reference internal" href="#xhr-user-search-url" id="id77">xhr_user_search_url</a></li>
 </ul>
 </li>
 </ul>
@@ -158,7 +158,7 @@
 </ul>
 </div>
 <div class="section" id="quickstart-to-get-a-demo-up-and-running">
-<h1><a class="toc-backref" href="#id7">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id8">Quickstart (to get a demo up and running)</a><a class="headerlink" href="#quickstart-to-get-a-demo-up-and-running" title="Permalink to this headline">¶</a></h1>
 <p>When you download a specific release of <em>Converse.js</em> there will be two minified files inside the zip file.</p>
 <ul class="simple">
 <li>builds/converse.min.js</li>
@@ -170,7 +170,7 @@ tags:</p>
 &lt;script src=&quot;builds/converse.min.js&quot;&gt;&lt;/script&gt;
 </pre></div>
 </div>
-<p>You need to initialize Converse.js with configuration settings particular to
+<p>You need to initialize Converse.js with configuration settings according to
 your requirements.</p>
 <p>Please refer to the <a class="reference internal" href="#configuration-variables">Configuration variables</a> section further below for info on
 all the available configuration settings.</p>
@@ -193,18 +193,17 @@ bottom of your page (after the closing <em>&lt;/body&gt;</em> element).</p>
 <p>The <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/index.html">index.html</a> file inside the
 Converse.js repository may serve as a nice usable example.</p>
 <p>These minified files provide the same demo-like functionality as is available
-on the <a class="reference external" href="http://conversejs.org">conversejs.org</a> website. Useful for testing or demoing, but not very
-practical.</p>
-<p>You&#8217;ll most likely want to implement some kind of single-signon solution for
+on the <a class="reference external" href="http://conversejs.org">conversejs.org</a> website. Useful for testing or demoing.</p>
+<p>You&#8217;ll most likely want to implement some kind of single persistent session solution for
 your website, where users authenticate once in your website and then stay
-logged into their XMPP session upon page reload.</p>
+logged in to their XMPP session upon the next page reload.</p>
 <p>For more info on this, read: <a class="reference internal" href="#prebinding-and-single-session-support">Prebinding and Single Session Support</a>.</p>
 <p>You might also want to have more fine-grained control of what gets included in
 the minified Javascript file. Read <a class="reference internal" href="#configuration">Configuration</a> and <a class="reference internal" href="#minification">Minification</a> for more info on how to do
 that.</p>
 </div>
 <div class="section" id="introduction">
-<h1><a class="toc-backref" href="#id8">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Even though you can connect to public XMPP servers on the <a class="reference external" href="http://conversejs.org">conversejs.org</a>
 website, <em>Converse.js</em> is not really meant to be a &#8220;Software-as-a-service&#8221; (SaaS)
 webchat.</p>
@@ -217,176 +216,15 @@ webchat experience and that you have control over the data. The latter being a
 requirement for many sites dealing with sensitive information.</p>
 <p>You&#8217;ll need to set up your own XMPP server and in order to have
 <a class="reference internal" href="#session-support">Session Support</a> (i.e. single-signon functionality whereby users are authenticated once and stay
-logged in to XMPP upon page reload) you will also have to add some server-side
+logged in to XMPP upon page reload) you will likely also have to add some server-side
 code.</p>
 <p>The <a class="reference internal" href="#what-you-will-need">What you will need</a> section has more information on all these
 requirements.</p>
 </div>
-<div class="section" id="what-you-will-need">
-<h1><a class="toc-backref" href="#id9">What you will need</a><a class="headerlink" href="#what-you-will-need" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="an-xmpp-jabber-server">
-<h2><a class="toc-backref" href="#id10">An XMPP/Jabber server</a><a class="headerlink" href="#an-xmpp-jabber-server" title="Permalink to this headline">¶</a></h2>
-<p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
-to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
-<p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
-have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
-<p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
-servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
-</div>
-<div class="section" id="a-bosh-connection-manager">
-<h2><a class="toc-backref" href="#id11">A BOSH Connection Manager</a><a class="headerlink" href="#a-bosh-connection-manager" title="Permalink to this headline">¶</a></h2>
-<p>Your website and <em>Converse.js</em> use <a class="reference external" href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> as protocol to communicate with
-the webserver. HTTP connections are stateless and usually shortlived.</p>
-<p><a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> on the other hand, is the protocol that enables instant messaging, and
-its connections are stateful and usually longer.</p>
-<p>To enable a web application like <em>Converse.js</em> to communicate with an XMPP
-server, we need a proxy in the middle that can act as a bridge between the two
-protocols.</p>
-<p>The <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/index.html">index.html</a> file inside the</p>
-<p>This is the job of a connection manager. A connection manager can be either a
-standalone application or part of an XMPP server. Popular XMPP servers such as
-<a class="reference external" href="http://www.ejabberd.im">ejabberd</a>, <a class="reference external" href="http://prosody.im/doc/setting_up_bosh">prosody</a> and
-<a class="reference external" href="http://www.igniterealtime.org/projects/openfire/">openfire</a> all include their own connection managers
-(but you usually have to enable them in the configuration).</p>
-<p>Standalone connection managers also exist, see for example <a class="reference external" href="https://github.com/twonds/punjab">Punjab</a>.</p>
-<p>The demo on the <a class="reference external" href="http://conversejs.org">Converse.js homepage</a> uses a connection manager located at <a class="reference external" href="https://bind.conversejs.org">https://bind.conversejs.org</a>.
-This connection manager is available for testing purposes only, please don&#8217;t use it in production.</p>
-<div class="section" id="overcoming-cross-domain-request-restrictions">
-<h3><a class="toc-backref" href="#id12">Overcoming cross-domain request restrictions</a><a class="headerlink" href="#overcoming-cross-domain-request-restrictions" title="Permalink to this headline">¶</a></h3>
-<p>Lets say your domain is <em>example.org</em>, but the domain of your connection
-manager is <em>example.com</em>.</p>
-<p>HTTP requests are made by <em>Converse.js</em> to the connection manager via XmlHttpRequests (XHR).
-Until recently, it was not possible to make such requests to a different domain
-than the one currently being served (to prevent XSS attacks).</p>
-<p>Luckily there is now a standard called <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> (Cross-origin resource sharing), which enables exactly that.
-Modern browsers support CORS, but there are problems with Internet Explorer &lt;
-10.</p>
-<p>IE 8 and 9 partially support CORS via a proprietary implementation called
-XDomainRequest. There is a <a class="reference external" href="https://gist.github.com/1095825/6b4517276f26b66b01fa97b0a78c01275fdc6ff2">Strophe.js plugin</a> which you can use to enable
-support for XDomainRequest when it is present.</p>
-<p>In IE &lt; 8, there is no support for CORS.</p>
-<p>Instead of using CORS, you can add a reverse proxy in
-Apache/Nginx which serves the connection manager under the same domain as your
-website. This will remove the need for any cross-domain XHR support.</p>
-<div class="section" id="for-example">
-<h4>For example:<a class="headerlink" href="#for-example" title="Permalink to this headline">¶</a></h4>
-<p>Assuming your site is accessible on port <tt class="docutils literal"><span class="pre">80</span></tt> for the domain <tt class="docutils literal"><span class="pre">mysite.com</span></tt>
-and your connection manager manager is running at <tt class="docutils literal"><span class="pre">someothersite.com/http-bind</span></tt>.</p>
-<p>The <em>bosh_service_url</em> value you want to give Converse.js to overcome
-the cross-domain restriction is <tt class="docutils literal"><span class="pre">mysite.com/http-bind</span></tt> and not
-<tt class="docutils literal"><span class="pre">someothersite.com/http-bind</span></tt>.</p>
-<p>Your <tt class="docutils literal"><span class="pre">nginx</span></tt> or <tt class="docutils literal"><span class="pre">apache</span></tt> configuration will look as follows:</p>
-</div>
-<div class="section" id="nginx">
-<h4>Nginx<a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-python"><div class="highlight"><pre>http {
-    server {
-        listen       80
-        server_name  mysite.com;
-        location ~ ^/http-bind/ {
-            proxy_pass http://someothersite.com;
-        }
-    }
-}
-</pre></div>
-</div>
-</div>
-<div class="section" id="apache">
-<h4>Apache<a class="headerlink" href="#apache" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
-    ServerName mysite.com
-    RewriteEngine On
-    RewriteRule ^/http-bind(.*) http://someothersite.com/http-bind$1 [P,L]
-&lt;/VirtualHost&gt;
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="section" id="server-side-authentication">
-<h2><a class="toc-backref" href="#id13">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="prebinding-and-single-session-support">
-<span id="session-support"></span><h3><a class="toc-backref" href="#id14">Prebinding and Single Session Support</a><a class="headerlink" href="#prebinding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
-<p>It&#8217;s possible to enable single-site login, whereby users already
-authenticated in your website will also automatically be logged in on the chat server,</p>
-<p>This session should also persist across page loads. In other words, we don&#8217;t
-want the user to have to give their chat credentials every time they reload the
-page.</p>
-<p>To do this you will require a <a class="reference external" href="http://xmpp.org/about-xmpp/technology-overview/bosh/">BOSH server</a>
-for converse.js to connect to (see the <a class="reference internal" href="#bosh-service-url">bosh_service_url</a> under <a class="reference internal" href="#configuration-variables">Configuration variables</a>)
-as well as a BOSH client on your own server (written for example in Python, Ruby or PHP) that will
-do the pre-authentication before the web page loads.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">A BOSH server acts as a bridge between HTTP, the protocol of the web, and
-XMPP, the instant messaging protocol.
-Converse.js can only communicate via HTTP, but we need to communicate with
-an XMPP server in order to chat. So the BOSH server acts as a middle man,
-translating our HTTP requests into XMPP stanzas and vice versa.</p>
-</div>
-<p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
-<p>When you authenticate to the XMPP server on your backend application (for
-example via a BOSH client in Django), you&#8217;ll receive two tokens, RID (request ID) and SID (session ID).</p>
-<p>The <strong>Session ID (SID)</strong> is a unique identifier for the current <em>session</em>. This
-number stays constant for the entire session.</p>
-<p>The <strong>Request ID (RID)</strong> is a unique identifier for the current <em>request</em> (i.e.
-page load). Each page load is a new request which requires a new unique RID.
-The best way to achieve this is to simply increment the RID with each page
-load.</p>
-<p>When you initialize converse.js in your browser, you need to pass it these two
-tokens. Converse.js will then use them to attach to the session you just
-created.</p>
-<p>You can embed the RID and SID tokens in your HTML markup or you can do an
-XMLHttpRequest call to your server and ask it to return them for you.</p>
-<p>Below is one example of how this could work. An Ajax call is made to the
-relative URL <strong>/prebind</strong> and it expects to receive JSON data back.</p>
-<div class="highlight-python"><div class="highlight"><pre>$.getJSON(&#39;/prebind&#39;, function (data) {
-    converse.initialize({
-        prebind: true,
-        bosh_service_url: data.bosh_service_url,
-        jid: data.jid,
-        sid: data.sid,
-        rid: data.rid
-    });
-);
-</pre></div>
-</div>
-<p><strong>Here&#8217;s what&#8217;s happening:</strong></p>
-<p>The JSON data returned from the Ajax call to example.com/prebind contains the user&#8217;s JID (jabber ID), RID, SID and the URL to the
-BOSH server (also called a <em>connection manager</em>).</p>
-<p>These values are then passed to converse.js&#8217;s <tt class="docutils literal"><span class="pre">initialize</span></tt> method.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you want to enable single session support, you need to set <strong>prebind: true</strong>
-when calling <strong>converse.initialize</strong> (see ./index.html).
-Additionally you need to pass in valid <strong>jid</strong>, <strong>sid</strong>, <strong>rid</strong> and
-<strong>bosh_service_url</strong> values.</p>
-</div>
-</div>
-<div class="section" id="example-code-for-server-side-prebinding">
-<h3><a class="toc-backref" href="#id15">Example code for server-side prebinding</a><a class="headerlink" href="#example-code-for-server-side-prebinding" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><dl class="first docutils">
-<dt>PHP:</dt>
-<dd><p class="first last">See <a class="reference external" href="https://github.com/candy-chat/xmpp-prebind-php">xmpp-prebind-php</a> by
-Michael Weibel and the folks from Candy chat.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt>Python:</dt>
-<dd><p class="first last">See this <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> by Jack Moffitt.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div>
-</div>
-</div>
 <div class="section" id="features">
-<h1><a class="toc-backref" href="#id16">Features</a><a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id10">Features</a><a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="off-the-record-encryption">
-<h2><a class="toc-backref" href="#id17">Off-the-record encryption</a><a class="headerlink" href="#off-the-record-encryption" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Off-the-record encryption</a><a class="headerlink" href="#off-the-record-encryption" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js supports <a class="reference external" href="https://otr.cypherpunks.ca/">Off-the-record (OTR)</a>
 encrypted messaging.</p>
 <p>The OTR protocol not only <strong>encrypts your messages</strong>, it provides ways to
@@ -408,13 +246,13 @@ Converse.js in order to avoid most eavesdroppers, if you need serious
 communications privacy, then you&#8217;re much better off using native software.</p>
 </div>
 <div class="section" id="sound-notifications">
-<h2><a class="toc-backref" href="#id18">Sound Notifications</a><a class="headerlink" href="#sound-notifications" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Sound Notifications</a><a class="headerlink" href="#sound-notifications" title="Permalink to this headline">¶</a></h2>
 <p>From version 0.8.1 Converse.js can play a sound notification when you receive a
 message.</p>
 <p>For more info, please see the <a class="reference internal" href="#play-sounds">play_sounds</a> configuration setting.</p>
 </div>
 <div class="section" id="multilingual-support">
-<h2><a class="toc-backref" href="#id19">Multilingual Support</a><a class="headerlink" href="#multilingual-support" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Multilingual Support</a><a class="headerlink" href="#multilingual-support" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js is translated into multiple languages. The default build,
 <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>, includes all languages.</p>
 <p>Languages increase the size of the Converse.js significantly.</p>
@@ -422,9 +260,9 @@ message.</p>
 make a custom build which includes only those languages that you need.</p>
 </div>
 <div class="section" id="chat-rooms">
-<h2><a class="toc-backref" href="#id20">Chat Rooms</a><a class="headerlink" href="#chat-rooms" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Chat Rooms</a><a class="headerlink" href="#chat-rooms" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="commands">
-<h3><a class="toc-backref" href="#id21">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
 <p>Here are the different commands that may be used in a chat room:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -488,8 +326,169 @@ make a custom build which includes only those languages that you need.</p>
 </div>
 </div>
 </div>
+<div class="section" id="what-you-will-need">
+<h1><a class="toc-backref" href="#id16">What you will need</a><a class="headerlink" href="#what-you-will-need" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="an-xmpp-server">
+<h2><a class="toc-backref" href="#id17">An XMPP server</a><a class="headerlink" href="#an-xmpp-server" title="Permalink to this headline">¶</a></h2>
+<p><em>Converse.js</em> implements <a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> as its messaging protocol, and therefore needs
+to connect to an XMPP/Jabber server (Jabber is really just a synonym for XMPP).</p>
+<p>You can connect to public XMPP servers like <tt class="docutils literal"><span class="pre">jabber.org</span></tt> but if you want to
+have <a class="reference internal" href="#session-support">Session Support</a> you&#8217;ll have to set up your own XMPP server.</p>
+<p>You can find a list of public XMPP servers/providers on <a class="reference external" href="http://xmpp.net">xmpp.net</a> and a list of
+servers that you can set up yourself on <a class="reference external" href="http://xmpp.org/xmpp-software/servers/">xmpp.org</a>.</p>
+</div>
+<div class="section" id="a-bosh-connection-manager">
+<h2><a class="toc-backref" href="#id18">A BOSH Connection Manager</a><a class="headerlink" href="#a-bosh-connection-manager" title="Permalink to this headline">¶</a></h2>
+<p>Your website and <em>Converse.js</em> use <a class="reference external" href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">HTTP</a> as protocol to communicate with
+the webserver. HTTP connections are stateless and usually shortlived.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Xmpp">XMPP</a> on the other hand, is the protocol that enables instant messaging, and
+its connections are stateful and usually longer.</p>
+<p>To enable a web application like <em>Converse.js</em> to communicate with an XMPP
+server, we need a proxy in the middle that can act as a bridge between the two
+protocols.</p>
+<p>The <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/index.html">index.html</a> file inside the</p>
+<p>This is the job of a connection manager. A connection manager can be either a
+standalone application or part of an XMPP server. Popular XMPP servers such as
+<a class="reference external" href="http://www.ejabberd.im">ejabberd</a>, <a class="reference external" href="http://prosody.im/doc/setting_up_bosh">prosody</a> and
+<a class="reference external" href="http://www.igniterealtime.org/projects/openfire/">openfire</a> all include their own connection managers
+(but you usually have to enable them in the configuration).</p>
+<p>Standalone connection managers also exist, see for example <a class="reference external" href="https://github.com/twonds/punjab">Punjab</a>.</p>
+<p>The demo on the <a class="reference external" href="http://conversejs.org">Converse.js homepage</a> uses a connection manager located at <a class="reference external" href="https://bind.conversejs.org">https://bind.conversejs.org</a>.
+This connection manager is available for testing purposes only, please don&#8217;t use it in production.</p>
+<div class="section" id="overcoming-cross-domain-request-restrictions">
+<h3><a class="toc-backref" href="#id19">Overcoming cross-domain request restrictions</a><a class="headerlink" href="#overcoming-cross-domain-request-restrictions" title="Permalink to this headline">¶</a></h3>
+<p>Lets say your domain is <em>example.org</em>, but the domain of your connection
+manager is <em>example.com</em>.</p>
+<p>HTTP requests are made by <em>Converse.js</em> to the connection manager via XmlHttpRequests (XHR).
+Until recently, it was not possible to make such requests to a different domain
+than the one currently being served (to prevent XSS attacks).</p>
+<p>Luckily there is now a standard called <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> (Cross-origin resource sharing), which enables exactly that.
+Modern browsers support CORS, but there are problems with Internet Explorer &lt;
+10.</p>
+<p>IE 8 and 9 partially support CORS via a proprietary implementation called
+XDomainRequest. There is a <a class="reference external" href="https://gist.github.com/1095825/6b4517276f26b66b01fa97b0a78c01275fdc6ff2">Strophe.js plugin</a> which you can use to enable
+support for XDomainRequest when it is present.</p>
+<p>In IE &lt; 8, there is no support for CORS.</p>
+<p>Instead of using CORS, you can add a reverse proxy in
+Apache/Nginx which serves the connection manager under the same domain as your
+website. This will remove the need for any cross-domain XHR support.</p>
+<div class="section" id="for-example">
+<h4>For example:<a class="headerlink" href="#for-example" title="Permalink to this headline">¶</a></h4>
+<p>Assuming your site is accessible on port <tt class="docutils literal"><span class="pre">80</span></tt> for the domain <tt class="docutils literal"><span class="pre">mysite.com</span></tt>
+and your connection manager manager is running at <tt class="docutils literal"><span class="pre">someothersite.com/http-bind</span></tt>.</p>
+<p>The <em>bosh_service_url</em> value you want to give Converse.js to overcome
+the cross-domain restriction is <tt class="docutils literal"><span class="pre">mysite.com/http-bind</span></tt> and not
+<tt class="docutils literal"><span class="pre">someothersite.com/http-bind</span></tt>.</p>
+<p>Your <tt class="docutils literal"><span class="pre">nginx</span></tt> or <tt class="docutils literal"><span class="pre">apache</span></tt> configuration will look as follows:</p>
+</div>
+<div class="section" id="nginx">
+<h4>Nginx<a class="headerlink" href="#nginx" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre>http {
+    server {
+        listen       80
+        server_name  mysite.com;
+        location ~ ^/http-bind/ {
+            proxy_pass http://someothersite.com;
+        }
+    }
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="apache">
+<h4>Apache<a class="headerlink" href="#apache" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+    ServerName mysite.com
+    RewriteEngine On
+    RewriteRule ^/http-bind(.*) http://someothersite.com/http-bind$1 [P,L]
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="server-side-authentication">
+<h2><a class="toc-backref" href="#id20">Server-side authentication</a><a class="headerlink" href="#server-side-authentication" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prebinding-and-single-session-support">
+<span id="session-support"></span><h3><a class="toc-backref" href="#id21">Prebinding and Single Session Support</a><a class="headerlink" href="#prebinding-and-single-session-support" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s possible to enable single-site login, whereby users already
+authenticated in your website will also automatically be logged in on the chat server,</p>
+<p>This session should also persist across page loads. In other words, we don&#8217;t
+want the user to have to give their chat credentials every time they reload the
+page.</p>
+<p>To do this you will require a <a class="reference external" href="http://xmpp.org/about-xmpp/technology-overview/bosh/">BOSH server</a>
+for converse.js to connect to (see the <a class="reference internal" href="#bosh-service-url">bosh_service_url</a> under <a class="reference internal" href="#configuration-variables">Configuration variables</a>)
+as well as a BOSH client on your own server (written for example in Python, Ruby or PHP) that will
+do the pre-authentication before the web page loads.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A BOSH server acts as a bridge between HTTP, the protocol of the web, and
+XMPP, the instant messaging protocol.
+Converse.js can only communicate via HTTP, but we need to communicate with
+an XMPP server in order to chat. So the BOSH server acts as a middle man,
+translating our HTTP requests into XMPP stanzas and vice versa.</p>
+</div>
+<p>Jack Moffitt has a great <a class="reference external" href="http://metajack.im/2008/10/03/getting-attached-to-strophe">blogpost</a> about this and even provides an <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> to demonstrate it.</p>
+<p>When you authenticate to the XMPP server on your backend application (for
+example via a BOSH client in Django), you&#8217;ll receive two tokens, RID (request ID) and SID (session ID).</p>
+<p>The <strong>Session ID (SID)</strong> is a unique identifier for the current <em>session</em>. This
+number stays constant for the entire session.</p>
+<p>The <strong>Request ID (RID)</strong> is a unique identifier for the current <em>request</em> (i.e.
+page load). Each page load is a new request which requires a new unique RID.
+The best way to achieve this is to simply increment the RID with each page
+load.</p>
+<p>When you initialize converse.js in your browser, you need to pass it these two
+tokens. Converse.js will then use them to attach to the session you just
+created.</p>
+<p>You can embed the RID and SID tokens in your HTML markup or you can do an
+XMLHttpRequest call to your server and ask it to return them for you.</p>
+<p>Below is one example of how this could work. An Ajax call is made to the
+relative URL <strong>/prebind</strong> and it expects to receive JSON data back.</p>
+<div class="highlight-python"><div class="highlight"><pre>$.getJSON(&#39;/prebind&#39;, function (data) {
+    converse.initialize({
+        prebind: true,
+        bosh_service_url: data.bosh_service_url,
+        jid: data.jid,
+        sid: data.sid,
+        rid: data.rid
+    });
+);
+</pre></div>
+</div>
+<p><strong>Here&#8217;s what&#8217;s happening:</strong></p>
+<p>The JSON data returned from the Ajax call to example.com/prebind contains the user&#8217;s JID (jabber ID), RID, SID and the URL to the
+BOSH server (also called a <em>connection manager</em>).</p>
+<p>These values are then passed to converse.js&#8217;s <tt class="docutils literal"><span class="pre">initialize</span></tt> method.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want to enable single session support, you need to set <strong>prebind: true</strong>
+when calling <strong>converse.initialize</strong> (see ./index.html).
+Additionally you need to pass in valid <strong>jid</strong>, <strong>sid</strong>, <strong>rid</strong> and
+<strong>bosh_service_url</strong> values.</p>
+</div>
+</div>
+<div class="section" id="example-code-for-server-side-prebinding">
+<h3><a class="toc-backref" href="#id22">Example code for server-side prebinding</a><a class="headerlink" href="#example-code-for-server-side-prebinding" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><dl class="first docutils">
+<dt>PHP:</dt>
+<dd><p class="first last">See <a class="reference external" href="https://github.com/candy-chat/xmpp-prebind-php">xmpp-prebind-php</a> by
+Michael Weibel and the folks from Candy chat.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Python:</dt>
+<dd><p class="first last">See this <a class="reference external" href="https://github.com/metajack/strophejs/tree/master/examples/attach">example Django application</a> by Jack Moffitt.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+</div>
 <div class="section" id="development">
-<h1><a class="toc-backref" href="#id22">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id23">Development</a><a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
 <p>If you want to work with the non-minified Javascript and CSS files you&#8217;ll soon
 notice that there are references to a missing <em>components</em> folder. Please
 follow the instructions below to create this folder and fetch Converse&#8217;s
@@ -500,7 +499,7 @@ follow the instructions below to create this folder and fetch Converse&#8217;s
 fix this are welcome.</p>
 </div>
 <div class="section" id="install-the-development-and-front-end-dependencies">
-<h2><a class="toc-backref" href="#id23">Install the development and front-end dependencies</a><a class="headerlink" href="#install-the-development-and-front-end-dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">Install the development and front-end dependencies</a><a class="headerlink" href="#install-the-development-and-front-end-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>We use development tools (<a class="reference external" href="http://gruntjs.com">Grunt</a> and <a class="reference external" href="http://bower.io">Bower</a>)
 which depend on Node.js and npm (the Node package manager).</p>
 <p>If you don&#8217;t have Node.js installed, you can download and install the latest
@@ -547,7 +546,7 @@ listed. For support, you can write to the mailing list: <a class="reference exte
 </div>
 </div>
 <div class="section" id="with-amd-and-require-js-recommended">
-<h2><a class="toc-backref" href="#id24">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">With AMD and require.js (recommended)</a><a class="headerlink" href="#with-amd-and-require-js-recommended" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js uses <a class="reference external" href="http://requirejs.org">require.js</a> to asynchronously load dependencies.</p>
 <p>If you want to develop or customize converse.js, you&#8217;ll want to load the
 non-minified javascript files.</p>
@@ -561,7 +560,7 @@ attribute on the <em>script</em> tag), which will in turn cause converse.js to b
 parsed.</p>
 </div>
 <div class="section" id="without-amd-and-require-js">
-<h2><a class="toc-backref" href="#id25">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">Without AMD and require.js</a><a class="headerlink" href="#without-amd-and-require-js" title="Permalink to this headline">¶</a></h2>
 <p>Converse.js can also be used without require.js. If you for some reason prefer
 to use it this way, please refer to
 <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
@@ -569,9 +568,9 @@ for an example of how and in what order all the Javascript files that converse.j
 depends on need to be loaded.</p>
 </div>
 <div class="section" id="before-submitting-a-pull-request">
-<h2><a class="toc-backref" href="#id26">Before submitting a pull request</a><a class="headerlink" href="#before-submitting-a-pull-request" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Before submitting a pull request</a><a class="headerlink" href="#before-submitting-a-pull-request" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="add-tests-for-your-bugfix-or-feature">
-<h3><a class="toc-backref" href="#id27">Add tests for your bugfix or feature</a><a class="headerlink" href="#add-tests-for-your-bugfix-or-feature" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">Add tests for your bugfix or feature</a><a class="headerlink" href="#add-tests-for-your-bugfix-or-feature" title="Permalink to this headline">¶</a></h3>
 <p>Add a test for any bug fixed or feature added. We use Jasmine
 for testing.</p>
 <p>Take a look at <tt class="docutils literal"><span class="pre">tests.html</span></tt> and <tt class="docutils literal"><span class="pre">spec/MainSpec.js</span></tt> to see how
@@ -580,7 +579,7 @@ the tests are implemented.</p>
 <a class="reference external" href="http://opkode.com/contact">contact me</a> and I&#8217;ll be happy to help.</p>
 </div>
 <div class="section" id="check-that-the-tests-pass">
-<h3><a class="toc-backref" href="#id28">Check that the tests pass</a><a class="headerlink" href="#check-that-the-tests-pass" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">Check that the tests pass</a><a class="headerlink" href="#check-that-the-tests-pass" title="Permalink to this headline">¶</a></h3>
 <p>Check that the Jasmine tests complete sucessfully. Open
 <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/tests.html">tests.html</a>
 in your browser, and the tests will run automatically.</p>
@@ -590,7 +589,7 @@ in your browser, and the tests will run automatically.</p>
 </div>
 </div>
 <div class="section" id="check-your-code-for-errors-or-bad-habits-by-running-jshint">
-<h3><a class="toc-backref" href="#id29">Check your code for errors or bad habits by running JSHint</a><a class="headerlink" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">Check your code for errors or bad habits by running JSHint</a><a class="headerlink" href="#check-your-code-for-errors-or-bad-habits-by-running-jshint" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://jshint.com">JSHint</a> will do a static analysis of your code and hightlight potential errors
 and/or bad habits.</p>
 <div class="highlight-python"><div class="highlight"><pre>grunt jshint
@@ -602,313 +601,39 @@ and/or bad habits.</p>
 </div>
 </div>
 </div>
-<div class="section" id="minification">
-<h2><a class="toc-backref" href="#id30">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="minifying-javascript-and-css">
-<h3><a class="toc-backref" href="#id31">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h3>
-<p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
-all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
-and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
-<p>We  use <a class="reference external" href="http://requirejs.org">require.js</a> to keep track of <em>Converse.js</em> and its dependencies and to
-to bundle them together in a single minified file fit for deployment to a
-production site.</p>
-<p>To minify the Javascript and CSS, run the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>grunt minify
-</pre></div>
-</div>
-<p>Javascript will be bundled and minified with <a class="reference external" href="http://requirejs.org">require.js</a>&#8216;s optimization tool,
-using <a class="reference external" href="https://github.com/jrburke/almond">almond</a>.</p>
-<p>You can <a class="reference external" href="http://requirejs.org/docs/optimization.html">read more about require.js&#8217;s optimizer here</a>.</p>
-<p>CSS is minified via <a class="reference external" href="https://github.com/gruntjs/grunt-contrib-cssmin">cssmin</a>.</p>
-</div>
-</div>
-<div class="section" id="translations">
-<h2><a class="toc-backref" href="#id32">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h2>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Translations take up a lot of space and will bloat your minified file.
-At the time of writing, all the translations add about 50KB of extra data to
-the minified javascript file. Therefore, make sure to only
-include those languages that you intend to support and remove from
-./locale/locales.js those which you don&#8217;t need. Remember to rebuild the
-minified file afterwards.</p>
-</div>
-<p>The gettext POT file located in ./locale/converse.pot is the template
-containing all translations and from which for each language an individual PO
-file is generated.</p>
-<p>The POT file contains all translateable strings extracted from converse.js.</p>
-<p>To make a user facing string translateable, wrap it in the double underscore helper
-function like so:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">__</span><span class="p">(</span><span class="s">&#39;This string will be translated at runtime&#39;</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>After adding the string, you&#8217;ll need to regenerate the POT file, like so:</p>
-<div class="highlight-python"><div class="highlight"><pre>make pot
-</pre></div>
-</div>
-<p>You can then create or update the PO file for a specific language by doing the following:</p>
-<div class="highlight-python"><div class="highlight"><pre>msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
-</pre></div>
-</div>
-<p>To do this for ALL languages, run:</p>
-<div class="highlight-python"><div class="highlight"><pre>make po
-</pre></div>
-</div>
-<p>The resulting PO file is then what gets translated.</p>
-<p>If you&#8217;ve created a new PO file, please make sure to add the following
-attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). They are
-required as configuration settings for Jed, the Javascript translations library
-that we&#8217;re using.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;domain: converse</span><span class="se">\n</span><span class="s">&quot;</span>
-<span class="s">&quot;lang: de</span><span class="se">\n</span><span class="s">&quot;</span>
-<span class="s">&quot;plural_forms: nplurals=2; plural=(n != 1);</span><span class="se">\n</span><span class="s">&quot;</span>
-</pre></div>
-</div>
-<p>Unfortunately <a class="reference external" href="http://slexaxton.github.io/Jed">Jed</a> cannot use the PO files directly. We have to generate from it
-a file in JSON format and then put that in a .js file for the specific
-language.</p>
-<p>To generate JSON from a PO file, you&#8217;ll need po2json for node.js. Run the
-following command to install it (npm being the node.js package manager):</p>
-<div class="highlight-python"><div class="highlight"><pre>npm install po2json
-</pre></div>
-</div>
-<p>You can then convert the translations into JSON format:</p>
-<div class="highlight-python"><div class="highlight"><pre>po2json locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
-</pre></div>
-</div>
-<p>Now from converse.json paste the data as a value for the &#8220;locale_data&#8221; key in the
-object in the language&#8217;s .js file.</p>
-<p>So, if you are for example translating into German (language code &#8216;de&#8217;), you&#8217;ll
-create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p>
-<div class="highlight-python"><div class="highlight"><pre>(function (root, factory) {
-    define(&quot;de&quot;, [&#39;jed&#39;], function () {
-        return factory(new Jed({
-            &quot;domain&quot;: &quot;converse&quot;,
-            &quot;locale_data&quot;: {
-                // Paste the JSON data from converse.json here
-            }
-        })
-    }
-}(this, function (i18n) {
-    return i18n;
-}));
-</pre></div>
-</div>
-<p>making sure to also paste the JSON data as value to the &#8220;locale_data&#8221; key.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you are adding translations for a new language that is not already supported,
-you&#8217;ll have to add the language path in main.js and make one more edit in ./locale/locales.js
-to make sure the language is loaded by require.js.</p>
-</div>
-<p>Congratulations, you&#8217;ve now succesfully added your translations. Sorry for all
-those hoops you had to jump through.</p>
-</div>
-</div>
-<div class="section" id="troubleshooting">
-<h1><a class="toc-backref" href="#id33">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="conflicts-with-other-javascript-libraries">
-<h2><a class="toc-backref" href="#id34">Conflicts with other Javascript libraries</a><a class="headerlink" href="#conflicts-with-other-javascript-libraries" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="problem">
-<h3><a class="toc-backref" href="#id35">Problem:</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h3>
-<p>You are using other Javascript libraries (like JQuery plugins), and
-get errors like these in your browser console:</p>
-<div class="highlight-python"><div class="highlight"><pre>Uncaught TypeError: Object [object Object] has no method &#39;xxx&#39; from example.js
-</pre></div>
-</div>
-</div>
-<div class="section" id="solution">
-<h3><a class="toc-backref" href="#id36">Solution:</a><a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
-<p>First, find out which object is referred to by <tt class="docutils literal"><span class="pre">Object</span> <span class="pre">[object</span> <span class="pre">Object]</span></tt>.</p>
-<p>It will probably be the jQuery object <tt class="docutils literal"><span class="pre">$</span></tt> or perhaps the underscore.js object <tt class="docutils literal"><span class="pre">_</span></tt>.</p>
-<p>For the purpose of demonstration, I&#8217;m going to assume its <tt class="docutils literal"><span class="pre">$</span></tt>, but the same
-rules apply if its something else.</p>
-<p>The bundled and minified default build of converse.js, <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>
-includes within it all of converse.js&#8217;s dependencies, which include for example <em>jQuery</em>.</p>
-<p>If you are having conflicts where attributes or methods aren&#8217;t available
-on the jQuery object, you are probably loading <tt class="docutils literal"><span class="pre">converse.min.js</span></tt> (which
-includes jQuery) as well as your own jQuery version separately.</p>
-<p>What then happens is that there are two <tt class="docutils literal"><span class="pre">$</span></tt> objects (one from
-converse.js and one from the jQuery version you included manually)
-and only one of them has been extended to have the methods or attributes you require.</p>
-<p>Which jQuery object you get depends on the order in which you load the libraries.</p>
-<p>There are multiple ways to solve this issue.</p>
-<p>Firstly, make sure whether you really need to include a separate version of
-jQuery. Chances are that you don&#8217;t. If you can remove the separate
-version, your problem should be solved, as long as your libraries are loaded in
-the right order.</p>
-<p>Either case, whether you need to keep two versions or not, the solution depends
-on whether you&#8217;ll use require.js to manage your libraries or whether you&#8217;ll
-load them manually.</p>
-<div class="section" id="with-require-js">
-<h4>With require.js<a class="headerlink" href="#with-require-js" title="Permalink to this headline">¶</a></h4>
-<p>Instead of using <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>, manage all the libraries in your project
-(i.e. converse.js and its dependencies plus all other libraries you use) as one
-require.js project, making sure everything is loaded in the correct order.</p>
-<p>Then, before deployment, you make your own custom minified build that bundles everything
-you need.</p>
-</div>
-<div class="section" id="with-script-tags">
-<h4>With &lt;script&gt; tags<a class="headerlink" href="#with-script-tags" title="Permalink to this headline">¶</a></h4>
-<p>Take a look at <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
-in the converse.js repo.</p>
-<p>It shows in which order the libraries must be loaded via <tt class="docutils literal"><span class="pre">&lt;script&gt;</span></tt> tags. Add
-your own libraries, making sure that they are loaded in the correct order (e.g.
-jQuery plugins must load after jQuery).</p>
-</div>
-</div>
-</div>
-</div>
-<div class="section" id="events">
-<h1><a class="toc-backref" href="#id37">Events</a><a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
-<p>Converse.js emits events to which you can subscribe from your own Javascript.</p>
-<p>Concerning events, the following methods are available:</p>
-<div class="section" id="event-api-methods">
-<h2><a class="toc-backref" href="#id38">Event API Methods</a><a class="headerlink" href="#event-api-methods" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p class="first"><strong>on(eventName, callback)</strong>:</p>
-<blockquote>
-<div><p>Calling the <tt class="docutils literal"><span class="pre">on</span></tt> method allows you to subscribe to an event.
-Every time the event fires, the callback method specified by <tt class="docutils literal"><span class="pre">callback</span></tt> will be
-called.</p>
-<p>Parameters:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
-<li><tt class="docutils literal"><span class="pre">callback</span></tt> is the callback method to be called when the event is emitted.</li>
-</ul>
-<p>For example:</p>
-<div class="highlight-python"><div class="highlight"><pre>converse.on(&#39;message&#39;, function (messageXML) { ... });
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p class="first"><strong>once(eventName, callback)</strong>:</p>
-<blockquote>
-<div><p>Calling the <tt class="docutils literal"><span class="pre">once</span></tt> method allows you to listen to an event
-exactly once.</p>
-<p>Parameters:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
-<li><tt class="docutils literal"><span class="pre">callback</span></tt> is the callback method to be called when the event is emitted.</li>
-</ul>
-<p>For example:</p>
-<div class="highlight-python"><div class="highlight"><pre>converse.once(&#39;message&#39;, function (messageXML) { ... });
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p class="first"><strong>off(eventName, callback)</strong></p>
-<blockquote>
-<div><p>To stop listening to an event, you can use the <tt class="docutils literal"><span class="pre">off</span></tt> method.</p>
-<p>Parameters:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
-<li><tt class="docutils literal"><span class="pre">callback</span></tt> refers to the function that is to be no longer executed.</li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-</div>
-<div class="section" id="event-types">
-<h2><a class="toc-backref" href="#id39">Event Types</a><a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
-<p>Here are the different events that are emitted:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="15%" />
-<col width="45%" />
-<col width="40%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Event Type</th>
-<th class="head">When is it triggered?</th>
-<th class="head">Example</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><strong>initialized</strong></td>
-<td>Once converse.js has been initialized.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('initialized',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>ready</strong></td>
-<td>After connection has been established and converse.js has got all its ducks in a row.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('ready',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>reconnect</strong></td>
-<td>After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('reconnect',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>message</strong></td>
-<td>When a message is received.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('message',</span> <span class="pre">function</span> <span class="pre">(messageXML)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>messageSend</strong></td>
-<td>When a message will be sent out.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('messageSend',</span> <span class="pre">function</span> <span class="pre">(messageText)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>roster</strong></td>
-<td>When the roster is updated.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('roster',</span> <span class="pre">function</span> <span class="pre">(items)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>callButtonClicked</strong></td>
-<td>When a call button (i.e. with class .toggle-call) on a chat box has been clicked.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('callButtonClicked',</span> <span class="pre">function</span> <span class="pre">(connection,</span> <span class="pre">model)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>chatBoxOpened</strong></td>
-<td>When a chat box has been opened.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxOpened',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>chatRoomOpened</strong></td>
-<td>When a chat room has been opened.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('chatRoomOpened',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>chatBoxClosed</strong></td>
-<td>When a chat box has been closed.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxClosed',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>chatBoxFocused</strong></td>
-<td>When the focus has been moved to a chat box.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxFocused',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>chatBoxToggled</strong></td>
-<td>When a chat box has been minimized or maximized.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxToggled',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>roomInviteSent</strong></td>
-<td>After the user has sent out a direct invitation, to a roster contact, asking them to join a room.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('roomInvite',</span> <span class="pre">function</span> <span class="pre">(roomview,</span> <span class="pre">invitee_jid,</span> <span class="pre">reason)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>roomInviteReceived</strong></td>
-<td>After the user has sent out a direct invitation, to a roster contact, asking them to join a room.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('roomInvite',</span> <span class="pre">function</span> <span class="pre">(roomview,</span> <span class="pre">invitee_jid,</span> <span class="pre">reason)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>statusChanged</strong></td>
-<td>When own chat status has changed.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('statusChanged',</span> <span class="pre">function</span> <span class="pre">(status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>statusMessageChanged</strong></td>
-<td>When own custom status message has changed.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('statusMessageChanged',</span> <span class="pre">function</span> <span class="pre">(message)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-even"><td><strong>buddyStatusChanged</strong></td>
-<td>When a chat buddy&#8217;s chat status has changed.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('buddyStatusChanged',</span> <span class="pre">function</span> <span class="pre">(buddy,</span> <span class="pre">status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-<tr class="row-odd"><td><strong>buddyStatusMessageChanged</strong></td>
-<td>When a chat buddy&#8217;s custom status message has changed.</td>
-<td><tt class="docutils literal"><span class="pre">converse.on('buddyStatusMessageChanged',</span> <span class="pre">function</span> <span class="pre">(buddy,</span> <span class="pre">messageText)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <div class="section" id="developer-api">
-<h1><a class="toc-backref" href="#id40">Developer API</a><a class="headerlink" href="#developer-api" title="Permalink to this headline">¶</a></h1>
+<h2><a class="toc-backref" href="#id31">Developer API</a><a class="headerlink" href="#developer-api" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">see also the <a class="reference internal" href="#event-api-methods">event api methods</a>, not listed here.</p>
+<p class="last">The API documented here is available in Converse.js 0.8.4 and higher.
+Earlier versions of Converse.js might have different API methods or none at all.</p>
 </div>
+<p>In the Converse.js API, you traverse towards a logical grouping, from
+which you can then call certain standardised accessors and mutators, like:</p>
+<div class="highlight-python"><div class="highlight"><pre>.get
+.set
+.add
+.all
+.remove
+</pre></div>
+</div>
+<p>This is done to increase readability and to allow intuitive method chaining.</p>
+<p>For example, to get a contact, you would do the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">converse</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;jid@example.com&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>To get multiple contacts, just pass in an array of jids:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">converse</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="s">&#39;jid1@example.com&#39;</span><span class="p">,</span> <span class="s">&#39;jid2@example.com&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p><strong>Here follows now a breakdown of all API groupings and methods</strong>:</p>
 <div class="section" id="initialize">
-<h2><a class="toc-backref" href="#id41">initialize</a><a class="headerlink" href="#initialize" title="Permalink to this headline">¶</a></h2>
+<h3><a class="toc-backref" href="#id32">initialize</a><a class="headerlink" href="#initialize" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method is the one exception of a method which is not logically grouped
+as explained above.</p>
+</div>
 <p>Initializes converse.js. This method must always be called when using
 converse.js.</p>
 <p>The <cite>initialize</cite> method takes a map (also called a hash or dictionary) of
@@ -931,12 +656,14 @@ converse.js.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="getbuddy">
-<h2><a class="toc-backref" href="#id42">getBuddy</a><a class="headerlink" href="#getbuddy" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="contacts-grouping">
+<h3><a class="toc-backref" href="#id33">&#8220;contacts&#8221; grouping</a><a class="headerlink" href="#contacts-grouping" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="get">
+<h4>get<a class="headerlink" href="#get" title="Permalink to this headline">¶</a></h4>
 <p>Returns a map of attributes for a given buddy (i.e. roster contact), specified
 by JID (Jabber ID).</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">converse</span><span class="o">.</span><span class="n">getBuddy</span><span class="p">(</span><span class="s">&#39;buddy@example.com&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">converse</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;buddy@example.com&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The map of attributes:</p>
@@ -999,17 +726,410 @@ by JID (Jabber ID).</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="getrid">
-<h2><a class="toc-backref" href="#id43">getRID</a><a class="headerlink" href="#getrid" title="Permalink to this headline">¶</a></h2>
-<p>Returns the current RID (request ID) value.</p>
 </div>
-<div class="section" id="getsid">
-<h2><a class="toc-backref" href="#id44">getSID</a><a class="headerlink" href="#getsid" title="Permalink to this headline">¶</a></h2>
-<p>Returns the current SID (Session ID) value.</p>
+<div class="section" id="chats-grouping">
+<h3><a class="toc-backref" href="#id34">&#8220;chats&#8221; grouping</a><a class="headerlink" href="#chats-grouping" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h4>get<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Returns an object/map representing a chat box (without opening or affecting that chat box).</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">converse</span><span class="o">.</span><span class="n">chats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;buddy@example.com&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>The returned chat box contains the following methods:</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Method</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>endOTR</td>
+<td>End an OTR (Off-the-record) session.</td>
+</tr>
+<tr class="row-odd"><td>get</td>
+<td>Get an attribute (i.e. accessor).</td>
+</tr>
+<tr class="row-even"><td>initiateOTR</td>
+<td>Start an OTR (off-the-record) session.</td>
+</tr>
+<tr class="row-odd"><td>maximize</td>
+<td>Minimize the chat box.</td>
+</tr>
+<tr class="row-even"><td>minimize</td>
+<td>Maximize the chat box.</td>
+</tr>
+<tr class="row-odd"><td>set</td>
+<td>Set an attribute (i.e. mutator).</td>
+</tr>
+</tbody>
+</table>
+<p><em>The get and set methods can be used to retrieve and change the following attributes:</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Attribute</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>height</td>
+<td>The height of the chat box.</td>
+</tr>
+<tr class="row-odd"><td>url</td>
+<td>The URL of the chat box heading.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="tokens-grouping">
+<h3><a class="toc-backref" href="#id35">&#8220;tokens&#8221; grouping</a><a class="headerlink" href="#tokens-grouping" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h4>get<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>Returns a token, either the RID or SID token depending on what&#8217;s asked for.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">converse</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;rid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="listen-grouping">
+<h3><a class="toc-backref" href="#id36">&#8220;listen&#8221; grouping</a><a class="headerlink" href="#listen-grouping" title="Permalink to this headline">¶</a></h3>
+<p>Converse.js emits events to which you can subscribe from your own Javascript.</p>
+<p>Concerning events, the following methods are available under the &#8220;listen&#8221;
+grouping:</p>
+<ul>
+<li><p class="first"><strong>on(eventName, callback)</strong>:</p>
+<blockquote>
+<div><p>Calling the <tt class="docutils literal"><span class="pre">on</span></tt> method allows you to subscribe to an event.
+Every time the event fires, the callback method specified by <tt class="docutils literal"><span class="pre">callback</span></tt> will be
+called.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
+<li><tt class="docutils literal"><span class="pre">callback</span></tt> is the callback method to be called when the event is emitted.</li>
+</ul>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre>converse.listen.on(&#39;message&#39;, function (messageXML) { ... });
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>once(eventName, callback)</strong>:</p>
+<blockquote>
+<div><p>Calling the <tt class="docutils literal"><span class="pre">once</span></tt> method allows you to listen to an event
+exactly once.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
+<li><tt class="docutils literal"><span class="pre">callback</span></tt> is the callback method to be called when the event is emitted.</li>
+</ul>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre>converse.listen.once(&#39;message&#39;, function (messageXML) { ... });
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>not(eventName, callback)</strong></p>
+<blockquote>
+<div><p>To stop listening to an event, you can use the <tt class="docutils literal"><span class="pre">not</span></tt> method.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">eventName</span></tt> is the event name as a string.</li>
+<li><tt class="docutils literal"><span class="pre">callback</span></tt> refers to the function that is to be no longer executed.</li>
+</ul>
+<p>For example:</p>
+<div class="highlight-python"><div class="highlight"><pre>converse.listen.not(&#39;message&#39;, function (messageXML) { ... });
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="events">
+<h2><a class="toc-backref" href="#id37">Events</a><a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">see also the <a class="reference internal" href="#listen-grouping">&#8220;listen&#8221; grouping</a> API section above.</p>
+</div>
+<div class="section" id="event-types">
+<h3><a class="toc-backref" href="#id38">Event Types</a><a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h3>
+<p>Here are the different events that are emitted:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="45%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Event Type</th>
+<th class="head">When is it triggered?</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>initialized</strong></td>
+<td>Once converse.js has been initialized.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('initialized',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>ready</strong></td>
+<td>After connection has been established and converse.js has got all its ducks in a row.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('ready',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>reconnect</strong></td>
+<td>After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('reconnect',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>message</strong></td>
+<td>When a message is received.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('message',</span> <span class="pre">function</span> <span class="pre">(messageXML)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>messageSend</strong></td>
+<td>When a message will be sent out.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('messageSend',</span> <span class="pre">function</span> <span class="pre">(messageText)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>noResumeableSession</strong></td>
+<td>When keepalive=true but there aren&#8217;t any stored prebind tokens.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('noResumeableSession',</span> <span class="pre">function</span> <span class="pre">()</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>roster</strong></td>
+<td>When the roster is updated.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('roster',</span> <span class="pre">function</span> <span class="pre">(items)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>callButtonClicked</strong></td>
+<td>When a call button (i.e. with class .toggle-call) on a chat box has been clicked.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('callButtonClicked',</span> <span class="pre">function</span> <span class="pre">(connection,</span> <span class="pre">model)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>chatBoxOpened</strong></td>
+<td>When a chat box has been opened.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxOpened',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>chatRoomOpened</strong></td>
+<td>When a chat room has been opened.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('chatRoomOpened',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>chatBoxClosed</strong></td>
+<td>When a chat box has been closed.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxClosed',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>chatBoxFocused</strong></td>
+<td>When the focus has been moved to a chat box.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxFocused',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>chatBoxToggled</strong></td>
+<td>When a chat box has been minimized or maximized.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('chatBoxToggled',</span> <span class="pre">function</span> <span class="pre">(chatbox)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>roomInviteSent</strong></td>
+<td>After the user has sent out a direct invitation, to a roster contact, asking them to join a room.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('roomInvite',</span> <span class="pre">function</span> <span class="pre">(roomview,</span> <span class="pre">invitee_jid,</span> <span class="pre">reason)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>roomInviteReceived</strong></td>
+<td>After the user has sent out a direct invitation, to a roster contact, asking them to join a room.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('roomInvite',</span> <span class="pre">function</span> <span class="pre">(roomview,</span> <span class="pre">invitee_jid,</span> <span class="pre">reason)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>statusChanged</strong></td>
+<td>When own chat status has changed.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('statusChanged',</span> <span class="pre">function</span> <span class="pre">(status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>statusMessageChanged</strong></td>
+<td>When own custom status message has changed.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('statusMessageChanged',</span> <span class="pre">function</span> <span class="pre">(message)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-odd"><td><strong>buddyStatusChanged</strong></td>
+<td>When a chat buddy&#8217;s chat status has changed.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('buddyStatusChanged',</span> <span class="pre">function</span> <span class="pre">(buddy,</span> <span class="pre">status)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+<tr class="row-even"><td><strong>buddyStatusMessageChanged</strong></td>
+<td>When a chat buddy&#8217;s custom status message has changed.</td>
+<td><tt class="docutils literal"><span class="pre">converse.on('buddyStatusMessageChanged',</span> <span class="pre">function</span> <span class="pre">(buddy,</span> <span class="pre">messageText)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">});</span></tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="minification">
+<h2><a class="toc-backref" href="#id39">Minification</a><a class="headerlink" href="#minification" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="minifying-javascript-and-css">
+<h3><a class="toc-backref" href="#id40">Minifying Javascript and CSS</a><a class="headerlink" href="#minifying-javascript-and-css" title="Permalink to this headline">¶</a></h3>
+<p>Please make sure to read the section <a class="reference internal" href="#development">Development</a> and that you have installed
+all development dependencies (long story short, you can run <tt class="docutils literal"><span class="pre">npm</span> <span class="pre">install</span></tt>
+and then <tt class="docutils literal"><span class="pre">grunt</span> <span class="pre">fetch</span></tt>).</p>
+<p>We  use <a class="reference external" href="http://requirejs.org">require.js</a> to keep track of <em>Converse.js</em> and its dependencies and to
+to bundle them together in a single minified file fit for deployment to a
+production site.</p>
+<p>To minify the Javascript and CSS, run the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>grunt minify
+</pre></div>
+</div>
+<p>Javascript will be bundled and minified with <a class="reference external" href="http://requirejs.org">require.js</a>&#8216;s optimization tool,
+using <a class="reference external" href="https://github.com/jrburke/almond">almond</a>.</p>
+<p>You can <a class="reference external" href="http://requirejs.org/docs/optimization.html">read more about require.js&#8217;s optimizer here</a>.</p>
+<p>CSS is minified via <a class="reference external" href="https://github.com/gruntjs/grunt-contrib-cssmin">cssmin</a>.</p>
+</div>
+</div>
+<div class="section" id="translations">
+<h2><a class="toc-backref" href="#id41">Translations</a><a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Translations take up a lot of space and will bloat your minified file.
+At the time of writing, all the translations add about 50KB of extra data to
+the minified javascript file. Therefore, make sure to only
+include those languages that you intend to support and remove from
+./locale/locales.js those which you don&#8217;t need. Remember to rebuild the
+minified file afterwards.</p>
+</div>
+<p>The gettext POT file located in ./locale/converse.pot is the template
+containing all translations and from which for each language an individual PO
+file is generated.</p>
+<p>The POT file contains all translateable strings extracted from converse.js.</p>
+<p>To make a user facing string translateable, wrap it in the double underscore helper
+function like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">__</span><span class="p">(</span><span class="s">&#39;This string will be translated at runtime&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>After adding the string, you&#8217;ll need to regenerate the POT file, like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>make pot
+</pre></div>
+</div>
+<p>To create a new PO file for a language in which converse.js is not yet
+translated into, do the following</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this example we use Polish (pl), you need to substitute &#8216;pl&#8217; to your own language&#8217;s code.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>mkdir -p ./locale/pl/LC_MESSAGES
+msginit -i ./locale/converse.pot -o ./locale/pl/LC_MESSAGES/converse.po -l pl
+</pre></div>
+</div>
+<p>You can then create or update the PO file for a specific language by doing the following:</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this example we use German (de), you need to substitute &#8216;de&#8217; to your own language&#8217;s code.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>msgmerge ./locale/de/LC_MESSAGES/converse.po ./locale/converse.pot -U
+</pre></div>
+</div>
+<p>To do this for ALL languages, run:</p>
+<div class="highlight-python"><div class="highlight"><pre>make po
+</pre></div>
+</div>
+<p>The resulting PO file is then what gets translated.</p>
+<p>If you&#8217;ve created a new PO file, please make sure to add the following
+attributes at the top of the file (under <em>Content-Transfer-Encoding</em>). They are
+required as configuration settings for Jed, the Javascript translations library
+that we&#8217;re using.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;domain: converse</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="s">&quot;lang: de</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="s">&quot;plural_forms: nplurals=2; plural=(n != 1);</span><span class="se">\n</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>Unfortunately <a class="reference external" href="http://slexaxton.github.io/Jed">Jed</a> cannot use the PO files directly. We have to generate from it
+a file in JSON format and then put that in a .js file for the specific
+language.</p>
+<p>To generate JSON from a PO file, you&#8217;ll need po2json for node.js. Run the
+following command to install it (npm being the node.js package manager):</p>
+<div class="highlight-python"><div class="highlight"><pre>npm install po2json
+</pre></div>
+</div>
+<p>You can then convert the translations into JSON format:</p>
+<div class="highlight-python"><div class="highlight"><pre>po2json locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
+</pre></div>
+</div>
+<p>Now from converse.json paste the data as a value for the &#8220;locale_data&#8221; key in the
+object in the language&#8217;s .js file.</p>
+<p>So, if you are for example translating into German (language code &#8216;de&#8217;), you&#8217;ll
+create or update the file ./locale/LC_MESSAGES/de.js with the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre>(function (root, factory) {
+    define(&quot;de&quot;, [&#39;jed&#39;], function () {
+        return factory(new Jed({
+            &quot;domain&quot;: &quot;converse&quot;,
+            &quot;locale_data&quot;: {
+                // Paste the JSON data from converse.json here
+            }
+        })
+    }
+}(this, function (i18n) {
+    return i18n;
+}));
+</pre></div>
+</div>
+<p>making sure to also paste the JSON data as value to the &#8220;locale_data&#8221; key.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are adding translations for a new language that is not already supported,
+you&#8217;ll have to add the language path in main.js and make one more edit in ./locale/locales.js
+to make sure the language is loaded by require.js.</p>
+</div>
+<p>Congratulations, you&#8217;ve now succesfully added your translations. Sorry for all
+those hoops you had to jump through.</p>
+</div>
+</div>
+<div class="section" id="troubleshooting">
+<h1><a class="toc-backref" href="#id42">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="conflicts-with-other-javascript-libraries">
+<h2><a class="toc-backref" href="#id43">Conflicts with other Javascript libraries</a><a class="headerlink" href="#conflicts-with-other-javascript-libraries" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="problem">
+<h3><a class="toc-backref" href="#id44">Problem:</a><a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h3>
+<p>You are using other Javascript libraries (like JQuery plugins), and
+get errors like these in your browser console:</p>
+<div class="highlight-python"><div class="highlight"><pre>Uncaught TypeError: Object [object Object] has no method &#39;xxx&#39; from example.js
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution">
+<h3><a class="toc-backref" href="#id45">Solution:</a><a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
+<p>First, find out which object is referred to by <tt class="docutils literal"><span class="pre">Object</span> <span class="pre">[object</span> <span class="pre">Object]</span></tt>.</p>
+<p>It will probably be the jQuery object <tt class="docutils literal"><span class="pre">$</span></tt> or perhaps the underscore.js object <tt class="docutils literal"><span class="pre">_</span></tt>.</p>
+<p>For the purpose of demonstration, I&#8217;m going to assume its <tt class="docutils literal"><span class="pre">$</span></tt>, but the same
+rules apply if its something else.</p>
+<p>The bundled and minified default build of converse.js, <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>
+includes within it all of converse.js&#8217;s dependencies, which include for example <em>jQuery</em>.</p>
+<p>If you are having conflicts where attributes or methods aren&#8217;t available
+on the jQuery object, you are probably loading <tt class="docutils literal"><span class="pre">converse.min.js</span></tt> (which
+includes jQuery) as well as your own jQuery version separately.</p>
+<p>What then happens is that there are two <tt class="docutils literal"><span class="pre">$</span></tt> objects (one from
+converse.js and one from the jQuery version you included manually)
+and only one of them has been extended to have the methods or attributes you require.</p>
+<p>Which jQuery object you get depends on the order in which you load the libraries.</p>
+<p>There are multiple ways to solve this issue.</p>
+<p>Firstly, make sure whether you really need to include a separate version of
+jQuery. Chances are that you don&#8217;t. If you can remove the separate
+version, your problem should be solved, as long as your libraries are loaded in
+the right order.</p>
+<p>Either case, whether you need to keep two versions or not, the solution depends
+on whether you&#8217;ll use require.js to manage your libraries or whether you&#8217;ll
+load them manually.</p>
+<div class="section" id="with-require-js">
+<h4>With require.js<a class="headerlink" href="#with-require-js" title="Permalink to this headline">¶</a></h4>
+<p>Instead of using <tt class="docutils literal"><span class="pre">converse.min.js</span></tt>, manage all the libraries in your project
+(i.e. converse.js and its dependencies plus all other libraries you use) as one
+require.js project, making sure everything is loaded in the correct order.</p>
+<p>Then, before deployment, you make your own custom minified build that bundles everything
+you need.</p>
+</div>
+<div class="section" id="with-script-tags">
+<h4>With &lt;script&gt; tags<a class="headerlink" href="#with-script-tags" title="Permalink to this headline">¶</a></h4>
+<p>Take a look at <a class="reference external" href="https://github.com/jcbrand/converse.js/blob/master/non_amd.html">non_amd.html</a>
+in the converse.js repo.</p>
+<p>It shows in which order the libraries must be loaded via <tt class="docutils literal"><span class="pre">&lt;script&gt;</span></tt> tags. Add
+your own libraries, making sure that they are loaded in the correct order (e.g.
+jQuery plugins must load after jQuery).</p>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#id45">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id46">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>The included minified JS and CSS files can be used for demoing or testing, but
 you&#8217;ll want to configure <em>Converse.js</em> to suit your needs before you deploy it
 on your website.</p>
@@ -1023,9 +1143,9 @@ all the available configuration settings.</p>
 JS file so that it will include the new settings. Please refer to the
 <a class="reference internal" href="#minification">Minification</a> section for more info on how to do this.</p>
 <div class="section" id="configuration-variables">
-<h2><a class="toc-backref" href="#id46">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id47">Configuration variables</a><a class="headerlink" href="#configuration-variables" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="allow-contact-requests">
-<h3><a class="toc-backref" href="#id47">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id48">allow_contact_requests</a><a class="headerlink" href="#allow-contact-requests" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow users to add one another as contacts. If this is set to false, the
 <strong>Add a contact</strong> widget, <strong>Contact Requests</strong> and <strong>Pending Contacts</strong> roster
@@ -1033,23 +1153,23 @@ sections will all not appear. Additionally, all incoming contact requests will b
 ignored.</p>
 </div>
 <div class="section" id="allow-muc">
-<h3><a class="toc-backref" href="#id48">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id49">allow_muc</a><a class="headerlink" href="#allow-muc" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow multi-user chat (muc) in chatrooms. Setting this to <tt class="docutils literal"><span class="pre">false</span></tt> will remove
 the <tt class="docutils literal"><span class="pre">Chatrooms</span></tt> tab from the control box.</p>
 </div>
-<div class="section" id="id3">
-<h3><a class="toc-backref" href="#id49">allow_muc</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="allow-otr">
+<h3><a class="toc-backref" href="#id50">allow_otr</a><a class="headerlink" href="#allow-otr" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Allow Off-the-record encryption of single-user chat messages.</p>
 </div>
 <div class="section" id="animate">
-<h3><a class="toc-backref" href="#id50">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id51">animate</a><a class="headerlink" href="#animate" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Show animations, for example when opening and closing chat boxes.</p>
 </div>
 <div class="section" id="auto-list-rooms">
-<h3><a class="toc-backref" href="#id51">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id52">auto_list_rooms</a><a class="headerlink" href="#auto-list-rooms" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, and the XMPP server on which the current user is logged in supports
 multi-user chat, then a list of rooms on that server will be fetched.</p>
@@ -1059,24 +1179,24 @@ features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.</p>
 </div>
 <div class="section" id="auto-reconnect">
-<h3><a class="toc-backref" href="#id52">auto_reconnect</a><a class="headerlink" href="#auto-reconnect" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id53">auto_reconnect</a><a class="headerlink" href="#auto-reconnect" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.</p>
 </div>
 <div class="section" id="auto-subscribe">
-<h3><a class="toc-backref" href="#id53">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id54">auto_subscribe</a><a class="headerlink" href="#auto-subscribe" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If true, the user will automatically subscribe back to any contact requests.</p>
 </div>
 <div class="section" id="bosh-service-url">
-<h3><a class="toc-backref" href="#id54">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id55">bosh_service_url</a><a class="headerlink" href="#bosh-service-url" title="Permalink to this headline">¶</a></h3>
 <p>Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.</p>
 <p>See <a class="reference external" href="http://metajack.im/2008/09/08/which-bosh-server-do-you-need">here</a> for more information.</p>
 </div>
 <div class="section" id="cache-otr-key">
-<h3><a class="toc-backref" href="#id55">cache_otr_key</a><a class="headerlink" href="#cache-otr-key" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id56">cache_otr_key</a><a class="headerlink" href="#cache-otr-key" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Let the <a class="reference external" href="https://otr.cypherpunks.ca">OTR (Off-the-record encryption)</a> private
 key be cached in your browser&#8217;s session storage.</p>
@@ -1095,20 +1215,23 @@ current session. Previous sessions however cannot be decrypted.</p>
 </div>
 </div>
 <div class="section" id="debug">
-<h3><a class="toc-backref" href="#id56">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id57">debug</a><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to true, debugging output will be logged to the browser console.</p>
 </div>
 <div class="section" id="keepalive">
-<h3><a class="toc-backref" href="#id57">keepalive</a><a class="headerlink" href="#keepalive" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id58">keepalive</a><a class="headerlink" href="#keepalive" title="Permalink to this headline">¶</a></h3>
 <p>Default:    <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Determines whether Converse.js will maintain the chat session across page
 loads.</p>
-<p><em>Please be aware</em>: This is a new still relatively experimental feature and there might be some
-unhandled edge-cases.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#prebinding-and-single-session-support">Prebinding and Single Session Support</a></li>
+<li><a class="reference internal" href="#using-prebind-in-connection-with-keepalive">Using prebind in connection with keepalive</a></li>
+</ul>
 </div>
 <div class="section" id="message-carbons">
-<h3><a class="toc-backref" href="#id58">message_carbons</a><a class="headerlink" href="#message-carbons" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id59">message_carbons</a><a class="headerlink" href="#message-carbons" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Support for <a class="reference external" href="https://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a></p>
 <p>In order to keep all IM clients for a user engaged in a conversation,
@@ -1119,11 +1242,11 @@ tab serves as a separate IM client.</p>
 (showing sent messages in all connected chat clients aka resources), but go about it
 in two different ways.</p>
 <p>Message carbons is the XEP (Jabber protocol extension) specifically drafted to
-solve this problem, while <a href="#id77"><span class="problematic" id="id78">`forwarded_messages`_</span></a> uses
+solve this problem, while <a href="#id78"><span class="problematic" id="id79">`forwarded_messages`_</span></a> uses
 <a class="reference external" href="http://www.xmpp.org/extensions/xep-0297.html">stanza forwarding</a></p>
 </div>
 <div class="section" id="expose-rid-and-sid">
-<h3><a class="toc-backref" href="#id59">expose_rid_and_sid</a><a class="headerlink" href="#expose-rid-and-sid" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id60">expose_rid_and_sid</a><a class="headerlink" href="#expose-rid-and-sid" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
 globally via the API. This allows other scripts served on the same page to use
@@ -1132,7 +1255,7 @@ these values.</p>
 and inject fake chat messages.</p>
 </div>
 <div class="section" id="forward-messages">
-<h3><a class="toc-backref" href="#id60">forward_messages</a><a class="headerlink" href="#forward-messages" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id61">forward_messages</a><a class="headerlink" href="#forward-messages" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, sent messages will also be forwarded to the sending user&#8217;s
 bare JID (their Jabber ID independent of any chat clients aka resources).</p>
@@ -1141,27 +1264,27 @@ and not just the one from which it was actually sent.</p>
 <p>This is especially important for web chat, such as converse.js, where each
 browser tab functions as a separate chat client, with its own resource.</p>
 <p>This feature uses Stanza forwarding, see also <a class="reference external" href="http://www.xmpp.org/extensions/xep-0297.html">XEP 0297: Stanza Forwarding</a></p>
-<p>For an alternative approach, see also <a href="#id79"><span class="problematic" id="id80">`message carbons`_</span></a>.</p>
+<p>For an alternative approach, see also <a href="#id80"><span class="problematic" id="id81">`message carbons`_</span></a>.</p>
 </div>
 <div class="section" id="fullname">
-<h3><a class="toc-backref" href="#id61">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id62">fullname</a><a class="headerlink" href="#fullname" title="Permalink to this headline">¶</a></h3>
 <p>If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user&#8217;s vCard will be fetched.</p>
 </div>
 <div class="section" id="hide-muc-server">
-<h3><a class="toc-backref" href="#id62">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id63">hide_muc_server</a><a class="headerlink" href="#hide-muc-server" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Hide the <tt class="docutils literal"><span class="pre">server</span></tt> input field of the form inside the <tt class="docutils literal"><span class="pre">Room</span></tt> panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.</p>
 </div>
 <div class="section" id="i18n">
-<h3><a class="toc-backref" href="#id63">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id64">i18n</a><a class="headerlink" href="#i18n" title="Permalink to this headline">¶</a></h3>
 <p>Specify the locale/language. The language must be in the <tt class="docutils literal"><span class="pre">locales</span></tt> object. Refer to
 <tt class="docutils literal"><span class="pre">./locale/locales.js</span></tt> to see which locales are supported.</p>
 </div>
 <div class="section" id="play-sounds">
-<h3><a class="toc-backref" href="#id64">play_sounds</a><a class="headerlink" href="#play-sounds" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id65">play_sounds</a><a class="headerlink" href="#play-sounds" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>Plays a notification sound when you receive a personal message or when your
 nickname is mentioned in a chat room.</p>
@@ -1174,20 +1297,64 @@ it in both formats as <tt class="docutils literal"><span class="pre">http://your
 <p><tt class="docutils literal"><span class="pre">http://yoursite.com</span></tt> should of course be your site&#8217;s URL.</p>
 </div>
 <div class="section" id="prebind">
-<h3><a class="toc-backref" href="#id65">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id66">prebind</a><a class="headerlink" href="#prebind" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
+<p>See also: <a class="reference internal" href="#prebinding-and-single-session-support">Prebinding and Single Session Support</a></p>
 <p>Use this option when you want to attach to an existing XMPP connection that was
 already authenticated (usually on the backend before page load).</p>
 <p>This is useful when you don&#8217;t want to render the login form on the chat control
 box with each page load.</p>
-<p>For prebinding to work, your backend server must authenticate for you, and
-then return a JID (jabber ID), SID (session ID) and RID (Request ID).</p>
-<p>If you set <tt class="docutils literal"><span class="pre">prebind</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt>, you have to make sure to also pass in these
-values as <tt class="docutils literal"><span class="pre">jid</span></tt>, <tt class="docutils literal"><span class="pre">sid</span></tt>, <tt class="docutils literal"><span class="pre">rid</span></tt>.</p>
-<p>Additionally, you have to specify <tt class="docutils literal"><span class="pre">bosh_service_url</span></tt>.</p>
+<p>For prebinding to work, you must set up a pre-authenticated BOSH session,
+for which you will receive a JID (jabber ID), SID (session ID) and RID
+(Request ID).</p>
+<p>These values (<tt class="docutils literal"><span class="pre">rid</span></tt>, <tt class="docutils literal"><span class="pre">sid</span></tt> and <tt class="docutils literal"><span class="pre">jid</span></tt>) need to be passed into
+<tt class="docutils literal"><span class="pre">converse.initialize</span></tt> (with the exception of <tt class="docutils literal"><span class="pre">keepalive</span></tt>, see below).</p>
+<p>Additionally, you also have to specify a <tt class="docutils literal"><span class="pre">bosh_service_url</span></tt>.</p>
+<div class="section" id="using-prebind-in-connection-with-keepalive">
+<h4>Using prebind in connection with keepalive<a class="headerlink" href="#using-prebind-in-connection-with-keepalive" title="Permalink to this headline">¶</a></h4>
+<p>The <tt class="docutils literal"><span class="pre">prebind</span></tt> and <a class="reference internal" href="#keepalive">keepalive</a> options can be used together.</p>
+<p>The <tt class="docutils literal"><span class="pre">keepalive</span></tt> option caches the <tt class="docutils literal"><span class="pre">rid</span></tt>, <tt class="docutils literal"><span class="pre">sid</span></tt> and <tt class="docutils literal"><span class="pre">jid</span></tt> values
+(henceforth referred to as <em>session tokens</em>) one receives from a prebinded
+BOSH session, in order to re-use them when the page reloads.</p>
+<p>However, if besides setting <tt class="docutils literal"><span class="pre">keepalive</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt>, you also set <tt class="docutils literal"><span class="pre">prebind</span></tt>
+to <tt class="docutils literal"><span class="pre">true</span></tt>, and you pass in valid session tokens to <tt class="docutils literal"><span class="pre">converse.initialize</span></tt>,
+then those passed in session tokens will be used instead of any tokens cached by
+<tt class="docutils literal"><span class="pre">keepalive</span></tt>.</p>
+<p>If you set <tt class="docutils literal"><span class="pre">prebind</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt>  and don&#8217;t pass in the session tokens to
+<tt class="docutils literal"><span class="pre">converse.initialize</span></tt>, then converse.js will look for tokens cached by
+<tt class="docutils literal"><span class="pre">keepalive</span></tt>.</p>
+<p>If you&#8217;ve set <tt class="docutils literal"><span class="pre">keepalive</span></tt> and <tt class="docutils literal"><span class="pre">prebind</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt>, don&#8217;t pass in session
+tokens and converse.js doesn&#8217;t find any cached session tokens, then
+converse.js will emit an event <tt class="docutils literal"><span class="pre">noResumeableSession</span></tt> and exit.</p>
+<p>This allows you to start a prebinded session with valid tokens, and then fall
+back to <tt class="docutils literal"><span class="pre">keepalive</span></tt> for maintaining that session across page reloads. When
+for some reason <tt class="docutils literal"><span class="pre">keepalive</span></tt> doesn&#8217;t have cached session tokens anymore, you
+can listen for the <tt class="docutils literal"><span class="pre">noResumeableSession</span></tt> event and take that as a cue that
+you should again prebind in order to get valid session tokens.</p>
+<p>Here is a code example:</p>
+<div class="highlight-python"><div class="highlight"><pre>converse.on(&#39;noResumeableSession&#39;, function () {
+    $.getJSON(&#39;/prebind&#39;, function (data) {
+        converse.initialize({
+            prebind: true,
+            keepalive: true,
+            bosh_service_url: &#39;https://bind.example.com&#39;,
+            jid: data.jid,
+            sid: data.sid,
+            rid: data.rid
+        });
+    });
+});
+converse.initialize({
+    prebind: true,
+    keepalive: true,
+    bosh_service_url: &#39;https://bind.example.com&#39;
+}));
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="roster-groups">
-<h3><a class="toc-backref" href="#id66">roster_groups</a><a class="headerlink" href="#roster-groups" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id67">roster_groups</a><a class="headerlink" href="#roster-groups" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, converse.js will show any roster groups you might have
 configured.</p>
@@ -1199,7 +1366,7 @@ elsewhere.</p>
 </div>
 </div>
 <div class="section" id="show-controlbox-by-default">
-<h3><a class="toc-backref" href="#id67">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id68">show_controlbox_by_default</a><a class="headerlink" href="#show-controlbox-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>The &#8220;controlbox&#8221; refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.</p>
@@ -1209,13 +1376,13 @@ the page with class <em>toggle-controlbox</em>.</p>
 page load.</p>
 </div>
 <div class="section" id="show-only-online-users">
-<h3><a class="toc-backref" href="#id68">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id69">show_only_online_users</a><a class="headerlink" href="#show-only-online-users" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.</p>
 </div>
 <div class="section" id="storage">
-<h3><a class="toc-backref" href="#id69">storage</a><a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id70">storage</a><a class="headerlink" href="#storage" title="Permalink to this headline">¶</a></h3>
 <p>Default: <tt class="docutils literal"><span class="pre">session</span></tt></p>
 <p>Valid options: <tt class="docutils literal"><span class="pre">session</span></tt>, <tt class="docutils literal"><span class="pre">local</span></tt>.</p>
 <p>This option determines the type of <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage">storage</a>
@@ -1238,20 +1405,20 @@ only across more than one session.</p>
 </div>
 </div>
 <div class="section" id="use-otr-by-default">
-<h3><a class="toc-backref" href="#id70">use_otr_by_default</a><a class="headerlink" href="#use-otr-by-default" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id71">use_otr_by_default</a><a class="headerlink" href="#use-otr-by-default" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, Converse.js will automatically try to initiate an OTR (off-the-record)
 encrypted chat session every time you open a chat box.</p>
 </div>
 <div class="section" id="use-vcards">
-<h3><a class="toc-backref" href="#id71">use_vcards</a><a class="headerlink" href="#use-vcards" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id72">use_vcards</a><a class="headerlink" href="#use-vcards" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">true</span></tt></p>
 <p>Determines whether the XMPP server will be queried for roster contacts&#8217; VCards
 or not. VCards contain extra personal information such as your fullname and
 avatar image.</p>
 </div>
 <div class="section" id="visible-toolbar-buttons">
-<h3><a class="toc-backref" href="#id72">visible_toolbar_buttons</a><a class="headerlink" href="#visible-toolbar-buttons" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id73">visible_toolbar_buttons</a><a class="headerlink" href="#visible-toolbar-buttons" title="Permalink to this headline">¶</a></h3>
 <p>Default:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
     <span class="n">call</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
@@ -1298,7 +1465,7 @@ When the call button is pressed, it will emit an event that can be used by a thi
 </ul>
 </div>
 <div class="section" id="xhr-custom-status">
-<h3><a class="toc-backref" href="#id73">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id74">xhr_custom_status</a><a class="headerlink" href="#xhr-custom-status" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1308,7 +1475,7 @@ When the call button is pressed, it will emit an event that can be used by a thi
 remote server.</p>
 </div>
 <div class="section" id="xhr-custom-status-url">
-<h3><a class="toc-backref" href="#id74">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id75">xhr_custom_status_url</a><a class="headerlink" href="#xhr-custom-status-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>
@@ -1320,7 +1487,7 @@ message will be made.</p>
 <p>The message itself is sent in the request under the key <tt class="docutils literal"><span class="pre">msg</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search">
-<h3><a class="toc-backref" href="#id75">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id76">xhr_user_search</a><a class="headerlink" href="#xhr-user-search" title="Permalink to this headline">¶</a></h3>
 <p>Default:  <tt class="docutils literal"><span class="pre">false</span></tt></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1337,7 +1504,7 @@ message will be made.</p>
 corresponds to a matched user and needs the keys <tt class="docutils literal"><span class="pre">id</span></tt> and <tt class="docutils literal"><span class="pre">fullname</span></tt>.</p>
 </div>
 <div class="section" id="xhr-user-search-url">
-<h3><a class="toc-backref" href="#id76">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id77">xhr_user_search_url</a><a class="headerlink" href="#xhr-user-search-url" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).</p>

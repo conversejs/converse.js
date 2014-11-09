@@ -515,10 +515,37 @@ You can run both the tests and jshint in one go by calling:
 Developer API
 =============
 
-.. note:: see also the `event api methods`_, not listed here.
+.. note:: The API documented here is available in Converse.js 0.8.4 and higher.
+        Earlier versions of Converse.js might have different API methods or none at all.
+
+In the Converse.js API, you traverse towards a logical grouping, from
+which you can then call certain standardised accessors and mutators, like::
+
+    .get
+    .set
+    .add
+    .all
+    .remove
+
+This is done to increase readability and to allow intuitive method chaining.
+
+For example, to get a contact, you would do the following::
+
+    converse.contacts.get('jid@example.com');
+
+To get multiple contacts, just pass in an array of jids::
+
+    converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
+
+
+**Here follows now a breakdown of all API groupings and methods**:
+
 
 initialize
 ----------
+
+.. note:: This method is the one exception of a method which is not logically grouped
+    as explained above.
 
 Initializes converse.js. This method must always be called when using
 converse.js.
@@ -544,15 +571,18 @@ Example::
         });
 
 
-getBuddy
---------
+"contacts" grouping
+-------------------
+
+get
+~~~
 
 Returns a map of attributes for a given buddy (i.e. roster contact), specified
 by JID (Jabber ID).
 
 Example::
 
-    converse.getBuddy('buddy@example.com')
+    converse.contacts.get('buddy@example.com')
 
 The map of attributes:
 
@@ -590,17 +620,19 @@ The map of attributes:
 | vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 
-getChatBox
-----------
+"chats" grouping
+----------------
+
+get
+~~~
 
 Returns an object/map representing a chat box (without opening or affecting that chat box). 
 
 Example::
 
-    converse.getChatBox('buddy@example.com')
+    converse.chats.get('buddy@example.com')
 
-The returned chat box contains the following methods:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*The returned chat box contains the following methods:*
 
 +-------------+------------------------------------------+
 | Method      | Description                              |
@@ -618,8 +650,7 @@ The returned chat box contains the following methods:
 | set         | Set an attribute (i.e. mutator).         |
 +-------------+------------------------------------------+
 
-The get and set methods can be used to retrieve and change the following attributes:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*The get and set methods can be used to retrieve and change the following attributes:*
 
 +-------------+-----------------------------------------------------+
 | Attribute   | Description                                         |
@@ -629,39 +660,25 @@ The get and set methods can be used to retrieve and change the following attribu
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
-getRID
-------
+"tokens" grouping
+-----------------
 
-Returns the current RID (request ID) value.
+get
+~~~
 
-getSID
-------
-
-Returns the current SID (Session ID) value.
-
-openChatBox
------------
-
-Opens a chat box and returns an object/map representating that chat box.
-If the chat box is already open, its text area will be focused.
+Returns a token, either the RID or SID token depending on what's asked for.
 
 Example::
 
-    converse.openChatBox('buddy@example.com')
+    converse.tokens.get('rid')
 
-Refer to `getChatBox`_ for more information on the object returned by this
-method (which is the same for both).
-
-
-Events
-======
+"listen" grouping
+-----------------
 
 Converse.js emits events to which you can subscribe from your own Javascript.
 
-Concerning events, the following methods are available:
-
-Event API Methods
------------------
+Concerning events, the following methods are available under the "listen"
+grouping:
 
 * **on(eventName, callback)**:
 
@@ -676,7 +693,7 @@ Event API Methods
 
     For example::
 
-        converse.on('message', function (messageXML) { ... });
+        converse.listen.on('message', function (messageXML) { ... });
 
 * **once(eventName, callback)**:
 
@@ -690,17 +707,25 @@ Event API Methods
 
     For example::
 
-        converse.once('message', function (messageXML) { ... });
+        converse.listen.once('message', function (messageXML) { ... });
 
-* **off(eventName, callback)**
+* **not(eventName, callback)**
 
-    To stop listening to an event, you can use the ``off`` method.
+    To stop listening to an event, you can use the ``not`` method.
 
     Parameters:
 
     * ``eventName`` is the event name as a string.
     * ``callback`` refers to the function that is to be no longer executed.
 
+    For example::
+
+        converse.listen.not('message', function (messageXML) { ... });
+
+Events
+======
+
+.. note:: see also the `"listen" grouping`_ API section above.
 
 Event Types
 -----------
@@ -748,7 +773,6 @@ Here are the different events that are emitted:
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **buddyStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('buddyStatusMessageChanged', function (buddy, messageText) { ... });``    |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-
 
 
 Minification

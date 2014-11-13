@@ -926,6 +926,9 @@ dl.add-converse-contact {
   display: block;
   clear: both;
 }
+#conversejs .chatroom-form label.label-ta {
+    height: auto;
+}
 #conversejs .chatroom-form label input,
 #conversejs .chatroom-form label select {
   float: right;

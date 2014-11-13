@@ -2394,13 +2394,17 @@
                     $fields = $stanza.find('field'),
                     title = $stanza.find('title').text(),
                     instructions = $stanza.find('instructions').text(),
-                    i, j, options=[], $field, $options;
+                    i, j, options=[], $field, $options,
+					values=[], $values, value;
                 var input_types = {
                     'text-private': 'password',
                     'text-single': 'textline',
+                    'fixed': 'label',
                     'boolean': 'checkbox',
                     'hidden': 'hidden',
-                    'list-single': 'dropdown'
+                    'jid-multi': 'textarea',
+                    'list-single': 'dropdown',
+                    'list-multi': 'dropdown'
                 };
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
@@ -2409,19 +2413,35 @@
                 }
                 for (i=0; i<$fields.length; i++) {
                     $field = $($fields[i]);
-                    if ($field.attr('type') == 'list-single') {
+                    if ($field.attr('type') == 'list-single' || $field.attr('type') == 'list-multi') {
+						values = [];
+                        $values = $field.children('value');
+                        for (j=0; j<$values.length; j++) {
+							values.push($($values[j]).text());
+						}
                         options = [];
-                        $options = $field.find('option');
+                        $options = $field.children('option');
                         for (j=0; j<$options.length; j++) {
+                            value = $($options[j]).find('value').text();
                             options.push(converse.templates.select_option({
-                                value: $($options[j]).find('value').text(),
-                                label: $($options[j]).attr('label')
+                                value: value,
+                                label: $($options[j]).attr('label'),
+								selected: (values.indexOf(value) >= 0)
                             }));
                         }
                         $form.append(converse.templates.form_select({
                             name: $field.attr('var'),
                             label: $field.attr('label'),
-                            options: options.join('')
+                            options: options.join(''),
+                            multiple: ($field.attr('type') == 'list-multi')
+                        }));
+                    } else if ($field.attr('type') == 'fixed') {
+                        $form.append($('<p>').text($field.find('value').text()));
+                    } else if ($field.attr('type') == 'jid-multi') {
+                        $form.append(converse.templates.form_textarea({
+                            name: $field.attr('var'),
+                            label: $field.attr('label') || '',
+                            value: $field.find('value').text()
                         }));
                     } else if ($field.attr('type') == 'boolean') {
                         $form.append(converse.templates.form_checkbox({
@@ -2455,6 +2475,15 @@
                     var $input = $(this), value;
                     if ($input.is('[type=checkbox]')) {
                         value = $input.is(':checked') && 1 || 0;
+                    } else if ($input.is('textarea')) {
+                        value = [];
+                        var lines = $input.val().split('\n');
+                        for( var vk=0; vk<lines.length; vk++) {
+                            var val = $.trim(lines[vk]);
+                            if (val == '')
+                                continue;
+                            value.push(val); 
+                        }
                     } else {
                         value = $input.val();
                     }

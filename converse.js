@@ -3644,7 +3644,7 @@
                             converse.getVCard(
                                 bare_jid,
                                 $.proxy(function (jid, fullname, img, img_type, url) {
-                                    this.add({
+                                    this.create({
                                         jid: bare_jid,
                                         subscription: 'none',
                                         ask: null,
@@ -3658,7 +3658,7 @@
                                 }, this),
                                 $.proxy(function (jid, iq) {
                                     converse.log("Error while retrieving vcard");
-                                    this.add({
+                                    this.create({
                                         jid: bare_jid,
                                         subscription: 'none',
                                         ask: null,

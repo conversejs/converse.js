@@ -226,6 +226,7 @@
         this.roster_groups = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
+        this.hide_offline_users = false;
         this.show_toolbar = true;
         this.storage = 'session';
         this.use_otr_by_default = false;
@@ -272,6 +273,7 @@
             'roster_groups',
             'show_controlbox_by_default',
             'show_only_online_users',
+            'hide_offline_users',
             'show_toolbar',
             'sid',
             'storage',
@@ -3247,7 +3249,12 @@
             },
 
             showInRoster: function () {
-                return (!converse.show_only_online_users || this.get('chat_status') === 'online');
+                var chatStatus = this.get('chat_status');
+                if (converse.show_only_online_users && chatStatus !== 'online')
+                    return false;
+                if (converse.hide_offline_users && chatStatus === 'offline')
+                    return false;
+                return true;
             }
         });
 

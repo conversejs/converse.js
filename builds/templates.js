@@ -278,13 +278,26 @@ return __p
 
 this["JST"]["field"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<field var="' +
 ((__t = (name)) == null ? '' : __t) +
-'"><value>' +
+'">';
+ if (_.isArray(value)) { ;
+__p += '\n    ';
+ _.each(value,function(arrayValue) { ;
+__p += '<value>' +
+((__t = (arrayValue)) == null ? '' : __t) +
+'</value>';
+ }); ;
+__p += '\n';
+ } else { ;
+__p += '\n    <value>' +
 ((__t = (value)) == null ? '' : __t) +
-'</value></field>\n';
+'</value>\n';
+ } ;
+__p += '</field>\n';
 
 }
 return __p
@@ -328,15 +341,36 @@ return __p
 
 this["JST"]["form_select"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<label>' +
 ((__t = (label)) == null ? '' : __t) +
 '<select name="' +
 ((__t = (name)) == null ? '' : __t) +
-'">' +
+'"  ';
+ if (multiple) { ;
+__p += ' multiple="multiple" ';
+ } ;
+__p += '>' +
 ((__t = (options)) == null ? '' : __t) +
 '</select></label>\n';
+
+}
+return __p
+};
+
+this["JST"]["form_textarea"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label class="label-ta">' +
+((__t = (label)) == null ? '' : __t) +
+'<textarea name="' +
+((__t = (name)) == null ? '' : __t) +
+'">' +
+((__t = (value)) == null ? '' : __t) +
+'</textarea></label>\n';
 
 }
 return __p
@@ -708,11 +742,16 @@ return __p
 
 this["JST"]["select_option"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<option value="' +
 ((__t = (value)) == null ? '' : __t) +
-'">' +
+'" ';
+ if (selected) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >' +
 ((__t = (label)) == null ? '' : __t) +
 '</option>\n';
 

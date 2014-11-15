@@ -191,7 +191,7 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <h3>Donate</h3>
                     <p class="bitcoin-header">Most of the work done on <strong>converse.js</strong> is unpaid and a labor of love.</p>
-                    <p>A heartfelt thanks to those have donated already.</p>
+                    <p>Thanks to those have donated already.</p>
                     <p class="bitcoin-header"><strong>Bitcoin</strong></p>
                     <img src="css/images/bitcoin_qr_code.png"/>
                     <p>16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS</p>
@@ -235,7 +235,7 @@
             * website. This code is only useful in the context of the converse.js
             * website and converse.js itself is NOT dependent on it.
             */
-            var $ = converse.jQuery;
+            var $ = converse.env.jQuery;
             $(window).scroll(function() {
                 if ($(".navbar").offset().top > 50) {
                     $(".navbar-fixed-top").addClass("top-nav-collapse");
@@ -254,11 +254,7 @@
         })();
 
         converse.initialize({
-            allow_otr: true,
-            auto_list_rooms: false,
-            auto_subscribe: false,
             bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
-            hide_muc_server: false,
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
             keepalive: true,
             play_sounds: true,

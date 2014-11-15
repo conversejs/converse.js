@@ -1,6 +1,6 @@
 {
   "name": "converse",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "devDependencies": {
     "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
     "otr": "0.2.12",

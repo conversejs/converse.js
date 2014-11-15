@@ -4050,9 +4050,10 @@
 
             liveFilter: _.debounce(function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var q = ev.target.value;
+                var $filter = this.$('.roster-filter');
+                var q = $filter.val();
                 var t = this.$('.filter-type').val();
-                $(ev.target)[this.tog(q)]('x');
+                $filter[this.tog(q)]('x');
                 this.filter(q, t);
             }, 300),
 
@@ -4157,6 +4158,7 @@
                 if (_.has(contact.changed, 'subscription') && contact.changed.requesting == 'true') {
                     this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
                 }
+                this.liveFilter();
             },
 
             updateChatBox: function (contact) {

@@ -14,6 +14,8 @@ Changelog
   any prebind session tokens. [jcbrand]
 * #46 Refactor the API and add new methods. [jcbrand]
 * #151 Browser locks/freezes with many roster users. [jcbrand]
+* #237 Unable to create room when ``hide_muc_server`` is ``true``. [jcbrand]
+* #238 Rooms are not shown when ``hide_offline_users`` is ``true``. [jcbrand]
 * #251 Non-minified builds for debugging. [jcbrand]
 * #264 Remove unnecessary commas for ie8 compatibility. [Deuteu]
 * #267 Unread messages counter wrongly gets incremented by chat state notifications. [Deuteu]

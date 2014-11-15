@@ -1704,11 +1704,19 @@
                 'submit form.add-chatroom': 'createChatRoom',
                 'click input#show-rooms': 'showRooms',
                 'click a.open-room': 'createChatRoom',
-                'click a.room-info': 'showRoomInfo'
+                'click a.room-info': 'showRoomInfo',
+                'change input[name=server]': 'setDomain',
+                'change input[name=nick]': 'setNick'
             },
 
             initialize: function (cfg) {
-                cfg.$parent.append(
+                this.$parent = cfg.$parent;
+                this.model.on('change:muc_domain', this.onDomainChange, this);
+                this.model.on('change:nick', this.onNickChange, this);
+            },
+
+            render: function () {
+                this.$parent.append(
                     this.$el.html(
                         converse.templates.room_panel({
                             'server_input_type': converse.hide_muc_server && 'hidden' || 'text',
@@ -1719,37 +1727,34 @@
                             'label_show_rooms': __('Show rooms')
                         })
                     ).hide());
-                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-
-                this.on('update-rooms-list', function (ev) {
-                    this.updateRoomsList();
-                });
-                converse.xmppstatus.on("change", $.proxy(function (model) {
-                    if (!(_.has(model.changed, 'fullname'))) {
-                        return;
-                    }
-                    var $nick = this.$el.find('input.new-chatroom-nick');
-                    if (! $nick.is(':focus')) {
-                        $nick.val(model.get('fullname'));
-                    }
-                }, this));
-            },
-
-            render: function () {
+                this.$tabs = this.$parent.parent().find('#controlbox-tabs');
                 this.$tabs.append(converse.templates.chatrooms_tab({label_rooms: __('Rooms')}));
                 return this;
+            },
+
+            onDomainChange: function (model) {
+                var $server = this.$el.find('input.new-chatroom-server');
+                $server.val(model.get('muc_domain'));
+                if (converse.auto_list_rooms) {
+                    this.updateRoomsList();
+                }
+            },
+
+            onNickChange: function (model) {
+                var $nick = this.$el.find('input.new-chatroom-nick');
+                $nick.val(model.get('nick'));
             },
 
             informNoRoomsFound: function () {
                 var $available_chatrooms = this.$el.find('#available-chatrooms');
                 // # For translators: %1$s is a variable and will be replaced with the XMPP server name
-                $available_chatrooms.html('<dt>'+__('No rooms on %1$s',this.muc_domain)+'</dt>');
+                $available_chatrooms.html('<dt>'+__('No rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
                 $('input#show-rooms').show().siblings('span.spinner').remove();
             },
 
-            updateRoomsList: function (domain) {
+            updateRoomsList: function () {
                 converse.connection.muc.listRooms(
-                    this.muc_domain,
+                    this.model.get('muc_domain'),
                     $.proxy(function (iq) { // Success
                         var name, jid, i, fragment,
                             that = this,
@@ -1758,7 +1763,7 @@
                         if (this.rooms.length) {
                             // # For translators: %1$s is a variable and will be
                             // # replaced with the XMPP server name
-                            $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.muc_domain)+'</dt>');
+                            $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
                             fragment = document.createDocumentFragment();
                             for (i=0; i<this.rooms.length; i++) {
                                 name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
@@ -1796,7 +1801,7 @@
                 $server.removeClass('error');
                 $available_chatrooms.empty();
                 $('input#show-rooms').hide().after('<span class="spinner"/>');
-                this.muc_domain = server;
+                this.model.save({muc_domain: server});
                 this.updateRoomsList();
             },
 
@@ -1873,7 +1878,7 @@
                         jid = Strophe.escapeNode(name) + '@' + server;
                         $name.removeClass('error');
                         $server.removeClass('error');
-                        this.muc_domain = server;
+                        this.model.save({muc_domain: server});
                     } else {
                         if (!name) { $name.addClass('error'); }
                         if (!server) { $server.addClass('error'); }
@@ -1889,6 +1894,14 @@
                     'chatroom': true,
                     'box_id' : b64_sha1(jid)
                 });
+            },
+
+            setDomain: function (ev) {
+                this.model.save({muc_domain: ev.target.value});
+            },
+
+            setNick: function (ev) {
+                this.model.save({nick: ev.target.value});
             }
         });
 
@@ -1982,14 +1995,25 @@
             },
 
             renderContactsPanel: function () {
+                var model;
                 this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                 this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
                 this.contactspanel.render();
                 converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
                 converse.xmppstatusview.render();
                 if (converse.allow_muc) {
-                    this.roomspanel = new converse.RoomsPanel({'$parent': this.$el.find('.controlbox-panes')});
-                    this.roomspanel.render();
+                    this.roomspanel = new converse.RoomsPanel({
+                        '$parent': this.$el.find('.controlbox-panes'),
+                        'model': new (Backbone.Model.extend({
+                            id: b64_sha1('converse.roomspanel'+converse.bare_jid), // Required by sessionStorage
+                            browserStorage: new Backbone.BrowserStorage[converse.storage](
+                                b64_sha1('converse.roomspanel'+converse.bare_jid))
+                        }))()
+                    });
+                    this.roomspanel.render().model.fetch();
+                    if (!this.roomspanel.model.get('nick')) {
+                        this.roomspanel.model.save({nick: Strophe.getNodeFromJid(converse.bare_jid)});
+                    }
                 }
                 this.initDragResize();
             },
@@ -2041,13 +2065,10 @@
 
             featureAdded: function (feature) {
                 if ((feature.get('var') == 'http://jabber.org/protocol/muc') && (converse.allow_muc)) {
-                    this.roomspanel.muc_domain = feature.get('from');
+                    this.roomspanel.model.save({muc_domain: feature.get('from')});
                     var $server= this.$el.find('input.new-chatroom-server');
                     if (! $server.is(':focus')) {
-                        $server.val(this.roomspanel.muc_domain);
-                    }
-                    if (converse.auto_list_rooms) {
-                        this.roomspanel.trigger('update-rooms-list');
+                        $server.val(this.roomspanel.model.get('muc_domain'));
                     }
                 }
             },
@@ -2484,7 +2505,7 @@
                             var val = $.trim(lines[vk]);
                             if (val === '')
                                 continue;
-                            value.push(val); 
+                            value.push(val);
                         }
                     } else {
                         value = $input.val();

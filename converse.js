@@ -633,7 +633,11 @@
               .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
             this.connection.send(carbons_iq);
             this.connection.addHandler(function (iq) {
-                //TODO: check if carbons was enabled:
+                if ($(iq).find('error').length > 0) {
+                    converse.log('ERROR: An error occured while trying to enable message carbons.');
+                } else {
+                    converse.log('Message carbons appear to have been enabled.');
+                }
             }, null, "iq", null, "enablecarbons");
         };
 
@@ -2899,7 +2903,7 @@
 
             onMessage: function (message) {
                 var $message = $(message);
-                var contact_jid, $forwarded, $received,
+                var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
                     message_from = $message.attr('from');
@@ -2910,12 +2914,18 @@
                 }
                 $forwarded = $message.children('forwarded');
                 $received = $message.children('received[xmlns="urn:xmpp:carbons:2"]');
+                $sent = $message.children('sent[xmlns="urn:xmpp:carbons:2"]');
+
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
                 } else if ($received.length) {
                     $message = $received.children('forwarded').children('message');
                     message_from = $message.attr('from');
+                } else if ($sent.length) {
+                    $message = $sent.children('forwarded').children('message');
+                    message_from = $message.attr('from');
                 }
+
                 var from = Strophe.getBareJidFromJid(message_from),
                     to = Strophe.getBareJidFromJid($message.attr('to'));
                 if (from == converse.bare_jid) {

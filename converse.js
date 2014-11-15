@@ -3326,54 +3326,6 @@
                 this.model.on("open", this.openChat, this);
             },
 
-            openChat: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                // XXX: Can this.model.attributes be used here, instead of
-                // manually specifying all attributes?
-                return converse.chatboxviews.showChat({
-                    'id': this.model.get('jid'),
-                    'jid': this.model.get('jid'),
-                    'fullname': this.model.get('fullname'),
-                    'image_type': this.model.get('image_type'),
-                    'image': this.model.get('image'),
-                    'url': this.model.get('url'),
-                    'status': this.model.get('status')
-                });
-            },
-
-            removeContact: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var result = confirm(__("Are you sure you want to remove this contact?"));
-                if (result === true) {
-                    var bare_jid = this.model.get('jid');
-                    converse.connection.roster.remove(bare_jid, $.proxy(function (iq) {
-                        converse.connection.roster.unauthorize(bare_jid);
-                        converse.rosterview.model.remove(bare_jid);
-                        this.model.destroy();
-                        this.remove();
-                    }, this));
-                }
-            },
-
-            acceptRequest: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var jid = this.model.get('jid');
-                converse.connection.roster.authorize(jid);
-                converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
-                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
-                });
-            },
-
-            declineRequest: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var result = confirm(__("Are you sure you want to decline this contact request?"));
-                if (result === true) {
-                    converse.connection.roster.unauthorize(this.model.get('jid'));
-                    this.model.destroy();
-                }
-                return this;
-            },
-
             render: function () {
                 if (!this.model.showInRoster()) {
                     this.$el.hide();
@@ -3437,6 +3389,54 @@
                             'desc_remove': __('Click to remove this contact')
                         })
                     ));
+                }
+                return this;
+            },
+
+            openChat: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                // XXX: Can this.model.attributes be used here, instead of
+                // manually specifying all attributes?
+                return converse.chatboxviews.showChat({
+                    'id': this.model.get('jid'),
+                    'jid': this.model.get('jid'),
+                    'fullname': this.model.get('fullname'),
+                    'image_type': this.model.get('image_type'),
+                    'image': this.model.get('image'),
+                    'url': this.model.get('url'),
+                    'status': this.model.get('status')
+                });
+            },
+
+            removeContact: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var result = confirm(__("Are you sure you want to remove this contact?"));
+                if (result === true) {
+                    var bare_jid = this.model.get('jid');
+                    converse.connection.roster.remove(bare_jid, $.proxy(function (iq) {
+                        converse.connection.roster.unauthorize(bare_jid);
+                        converse.rosterview.model.remove(bare_jid);
+                        this.model.destroy();
+                        this.remove();
+                    }, this));
+                }
+            },
+
+            acceptRequest: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var jid = this.model.get('jid');
+                converse.connection.roster.authorize(jid);
+                converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
+                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                });
+            },
+
+            declineRequest: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var result = confirm(__("Are you sure you want to decline this contact request?"));
+                if (result === true) {
+                    converse.connection.roster.unauthorize(this.model.get('jid'));
+                    this.model.destroy();
                 }
                 return this;
             }

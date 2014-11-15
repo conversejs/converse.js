@@ -3826,7 +3826,7 @@
                             }
                         }, this));
                     }
-                    this.showIfInvisible();
+                    this.showIfNecessary();
                 } else {
                     q = q.toLowerCase();
                     matches = this.model.contacts.filter(contains.not('fullname', q));
@@ -3839,13 +3839,13 @@
                         _.each(this.model.contacts.reject(contains.not('fullname', q)), $.proxy(function (item) {
                             this.get(item.get('id')).$el.show();
                         }, this));
-                        this.showIfInvisible();
+                        this.showIfNecessary();
                     }
                 }
             },
 
-            showIfInvisible: function () {
-                if (!this.$el.is(':visible')) {
+            showIfNecessary: function () {
+                if (!this.$el.is(':visible') && this.model.contacts.length > 0) {
                     this.$el.show();
                 }
             },

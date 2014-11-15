@@ -3140,6 +3140,7 @@
                 if (ev && ev.preventDefault) {
                     ev.preventDefault();
                 }
+                this.model.messages.off('add',null,this);
                 this.remove();
                 this.model.maximize();
             }, 200)

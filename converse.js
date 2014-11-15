@@ -217,6 +217,7 @@
         this.expose_rid_and_sid = false;
         this.forward_messages = false;
         this.hide_muc_server = false;
+        this.hide_offline_users = false;
         this.i18n = locales.en;
         this.keepalive = false;
         this.message_carbons = false;
@@ -226,7 +227,6 @@
         this.roster_groups = false;
         this.show_controlbox_by_default = false;
         this.show_only_online_users = false;
-        this.hide_offline_users = false;
         this.show_toolbar = true;
         this.storage = 'session';
         this.use_otr_by_default = false;
@@ -258,14 +258,15 @@
             'connection',
             'debug',
             'default_box_height',
-            'keepalive',
-            'message_carbons',
             'expose_rid_and_sid',
             'forward_messages',
             'fullname',
             'hide_muc_server',
+            'hide_offline_users',
             'i18n',
             'jid',
+            'keepalive',
+            'message_carbons',
             'no_trimming',
             'play_sounds',
             'prebind',
@@ -273,7 +274,6 @@
             'roster_groups',
             'show_controlbox_by_default',
             'show_only_online_users',
-            'hide_offline_users',
             'show_toolbar',
             'sid',
             'storage',
@@ -2482,7 +2482,7 @@
                         var lines = $input.val().split('\n');
                         for( var vk=0; vk<lines.length; vk++) {
                             var val = $.trim(lines[vk]);
-                            if (val == '')
+                            if (val === '')
                                 continue;
                             value.push(val); 
                         }

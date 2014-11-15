@@ -1195,6 +1195,13 @@ Hide the ``server`` input field of the form inside the ``Room`` panel of the
 controlbox. Useful if you want to restrict users to a specific XMPP server of
 your choosing.
 
+hide_offline_users
+------------------
+
+Default:  ``false``
+
+If set to ``true``, then don't show offline users.
+
 i18n
 ----
 

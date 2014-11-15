@@ -19,6 +19,7 @@ Changelog
 * #251 Non-minified builds for debugging. [jcbrand]
 * #264 Remove unnecessary commas for ie8 compatibility. [Deuteu]
 * #267 Unread messages counter wrongly gets incremented by chat state notifications. [Deuteu]
+* #275 Custom status message doesn't reset. [jcbrand]
 * #278 Unread messages counter doesn't unbind it's events. [Deuteu]
 * #279 Handle more field types for MUC config forms. [gbonvehi]
 * #280 New config option, ``hide_offline_users`` [gbonvehi]

@@ -1416,7 +1416,7 @@
 
             showStatusMessage: function (msg) {
                 msg = msg || this.model.get('status');
-                if (msg) {
+                if (typeof msg === "string") {
                     this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
                 }
                 return this;

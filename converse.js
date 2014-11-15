@@ -3509,7 +3509,7 @@
                     idx = _.indexOf(resources, resource);
                     if (idx !== -1) {
                         resources.splice(idx, 1);
-                        item.set({'resources': resources});
+                        item.save({'resources': resources});
                         return resources.length;
                     }
                 }
@@ -3721,9 +3721,10 @@
                     this.unsubscribe(bare_jid);
                 } else if (presence_type === 'unavailable') {
                     if (this.removeResource(bare_jid, resource) === 0) {
-                        if (contact) {
-                            contact.save({'chat_status': 'offline'});
-                        }
+                        chat_status = "offline";
+                    }
+                    if (contact && chat_status) {
+                        contact.save({'chat_status': chat_status});
                     }
                 } else if (contact) {
                     // presence_type is undefined
@@ -4322,7 +4323,12 @@
                         (type === 'unsubscribed') ||
                         (type === 'subscribe') ||
                         (type === 'subscribed')) {
-                    presence = $pres({'type':type});
+                    presence = $pres({'type': type});
+                } else if (type === 'offline') {
+                    presence = $pres({'type': 'unavailable'});
+                    if (status_message) {
+                        presence.c('show').t(type);
+                    }
                 } else {
                     if (type === 'online') {
                         presence = $pres();

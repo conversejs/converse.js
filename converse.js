@@ -2906,7 +2906,7 @@
                 var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
-                    message_from = $message.attr('from');
+                    message_from = $message.attr('from').toLowerCase();
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted

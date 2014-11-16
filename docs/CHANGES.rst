@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.8.4 (Unreleased)
+------------------
+
+* #234 Cannot send/receive messages when contact JIDs have mixed case. [jcbrand]
+
 0.8.4 (2014-11-15)
 ------------------
 

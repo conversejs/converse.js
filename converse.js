@@ -179,13 +179,11 @@
             'dnd':          2,
             'online':       1
         };
-
         var INACTIVE = 'inactive';
         var ACTIVE = 'active';
         var COMPOSING = 'composing';
         var PAUSED = 'paused';
         var GONE = 'gone';
-
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -195,7 +193,6 @@
             (typeof OTR !== "undefined") &&
             (typeof DSA !== "undefined")
         );
-
         var OPENED = 'opened';
         var CLOSED = 'closed';
 
@@ -440,7 +437,6 @@
         };
 
         this.onConnect = function (status, condition, reconnect) {
-            var $button, $form;
             if ((status === Strophe.Status.CONNECTED) ||
                 (status === Strophe.Status.ATTACHED)) {
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
@@ -1991,10 +1987,12 @@
                 var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
                 if (!this.loginpanel) {
                     this.loginpanel = new converse.LoginPanel(cfg);
+                    this.registerpanel = new converse.RegisterPanel(cfg);
                 } else {
                     this.loginpanel.delegateEvents().initialize(cfg);
                 }
                 this.loginpanel.render();
+                this.registerpanel.render().$el.hide();
                 this.initDragResize();
             },
 
@@ -2420,72 +2418,15 @@
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
                     title = $stanza.find('title').text(),
-                    instructions = $stanza.find('instructions').text(),
-                    i, j, options=[], $field, $options,
-					values=[], $values, value;
-                var input_types = {
-                    'text-private': 'password',
-                    'text-single': 'textline',
-                    'fixed': 'label',
-                    'boolean': 'checkbox',
-                    'hidden': 'hidden',
-                    'jid-multi': 'textarea',
-                    'list-single': 'dropdown',
-                    'list-multi': 'dropdown'
-                };
+                    instructions = $stanza.find('instructions').text();
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
                 if (instructions != title) {
                     $form.append($('<p>').text(instructions));
                 }
-                for (i=0; i<$fields.length; i++) {
-                    $field = $($fields[i]);
-                    if ($field.attr('type') == 'list-single' || $field.attr('type') == 'list-multi') {
-						values = [];
-                        $values = $field.children('value');
-                        for (j=0; j<$values.length; j++) {
-							values.push($($values[j]).text());
-						}
-                        options = [];
-                        $options = $field.children('option');
-                        for (j=0; j<$options.length; j++) {
-                            value = $($options[j]).find('value').text();
-                            options.push(converse.templates.select_option({
-                                value: value,
-                                label: $($options[j]).attr('label'),
-								selected: (values.indexOf(value) >= 0)
-                            }));
-                        }
-                        $form.append(converse.templates.form_select({
-                            name: $field.attr('var'),
-                            label: $field.attr('label'),
-                            options: options.join(''),
-                            multiple: ($field.attr('type') == 'list-multi')
-                        }));
-                    } else if ($field.attr('type') == 'fixed') {
-                        $form.append($('<p>').text($field.find('value').text()));
-                    } else if ($field.attr('type') == 'jid-multi') {
-                        $form.append(converse.templates.form_textarea({
-                            name: $field.attr('var'),
-                            label: $field.attr('label') || '',
-                            value: $field.find('value').text()
-                        }));
-                    } else if ($field.attr('type') == 'boolean') {
-                        $form.append(converse.templates.form_checkbox({
-                            name: $field.attr('var'),
-                            type: input_types[$field.attr('type')],
-                            label: $field.attr('label') || '',
-                            checked: $field.find('value').text() === "1" && 'checked="1"' || ''
-                        }));
-                    } else {
-                        $form.append(converse.templates.form_input({
-                            name: $field.attr('var'),
-                            type: input_types[$field.attr('type')],
-                            label: $field.attr('label') || '',
-                            value: $field.find('value').text()
-                        }));
-                    }
-                }
+                _.each($fields, function (field) {
+                    $form.append(utils.xForm2webForm(field));
+                });
                 $form.append('<input type="submit" value="'+__('Save')+'"/>');
                 $form.append('<input type="button" value="'+__('Cancel')+'"/>');
                 $form.on('submit', $.proxy(this.saveConfiguration, this));
@@ -3087,7 +3028,9 @@
                 this.model.each($.proxy(function (model) {
                     var id = model.get('id');
                     if (include_controlbox || id !== 'controlbox') {
-                        this.get(id).close();
+                        if (this.get(id)) { // Should always resolve, but shit happens
+                            this.get(id).close();
+                        }
                     }
                 }, this));
                 return this;
@@ -4550,28 +4493,108 @@
             }
         });
 
-        this.LoginPanel = Backbone.View.extend({
+        this.RegisterPanel = Backbone.View.extend({
             tagName: 'div',
-            id: "login-dialog",
+            id: "register",
+            className: 'controlbox-pane',
             events: {
-                'submit form#converse-login': 'authenticate'
+                'submit form#converse-register': 'query'
             },
 
-            connect: function ($form, jid, password) {
+            initialize: function (cfg) {
+                this.$parent = cfg.$parent;
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+            },
+
+            render: function () {
+                this.$parent.append(this.$el.html(
+                    converse.templates.register_panel({
+                        'label_domain': __('XMPP Provider'), // TODO: make this a dropdown of servers...
+                        'label_register': __('Request Registration Form')
+                    })
+                ));
+                this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
+                this.$el.find('input#jid').focus();
+                return this;
+            },
+
+            query: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $form = $(ev.target),
+                    $domain_input = $form.find('input[name=domain]'),
+                    domain = $domain_input.val(),
+                    errors = false;
+                if (!domain) { errors = true; $domain_input.addClass('error'); }
+                if (errors) { return; } // TODO provide error messages
+                this.connect($form, domain);
+                return false;
+            },
+
+            connect: function ($form, domain) {
                 if ($form) {
                     $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                 }
-                var resource = Strophe.getResourceFromJid(jid);
-                if (!resource) {
-                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                converse.connection.register.connect(domain, $.proxy(this.onRegistering, this));
+            },
+
+            giveFeedback: function (message, klass) {
+                $('.conn-feedback').attr('class', 'conn-feedback').text(message);
+                if (klass) {
+                    $('.conn-feedback').addClass(klass);
                 }
-                converse.connection.connect(jid, password, converse.onConnect);
+            },
+
+            onRegistering: function (status) {
+                console.log('onRegistering');
+                if (status === Strophe.Status.CONNECTING) {
+                    converse.giveFeedback(__('Connecting'));
+                } else if (status === Strophe.Status.CONNFAIL) {
+                    converse.renderLoginPanel();
+                    this.giveFeedback(__('Connection Failed'), 'error');
+                } else if (status === Strophe.Status.DISCONNECTING) {
+                    if (!converse.connection.connected) {
+                        converse.renderLoginPanel();
+                    } else {
+                        this.giveFeedback(__('Disconnecting'), 'error');
+                    }
+                } else if (status == Strophe.Status.REGISTER) {
+                    this.renderRegistrationForm();
+                }
+            },
+
+            renderRegistrationForm: function () {
+                var register = converse.connection.register,
+                    $form= this.$el.find('form'),
+                    $stanza = $(register.query),
+                    $fields = $stanza.find('field');
+
+                $form.empty().append($('<p>').text(register.instructions));
+                _.each($fields, function (field) {
+                    $form.append(utils.xForm2webForm(field));
+                });
+                $form.append('<input type="submit" value="'+__('Register')+'"/>');
+                $form.on('submit', $.proxy(this.register, this));
+            },
+
+            remove: function () {
+                // XXX ?
+                this.$tabs.empty();
+                this.$el.parent().empty();
+            }
+        });
+
+        this.LoginPanel = Backbone.View.extend({
+            tagName: 'div',
+            id: "login-dialog",
+            className: 'controlbox-pane',
+            events: {
+                'submit form#converse-login': 'authenticate'
             },
 
             initialize: function (cfg) {
                 cfg.$parent.html(this.$el.html(
                     converse.templates.login_panel({
-                        'label_username': __('XMPP/Jabber Username:'),
+                        'label_username': __('XMPP Username:'),
                         'label_password': __('Password:'),
                         'label_login': __('Log In')
                     })
@@ -4615,6 +4638,18 @@
                 this.connect($form, jid, password);
                 return false;
             },
+
+            connect: function ($form, jid, password) {
+                if ($form) {
+                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
+                }
+                var resource = Strophe.getResourceFromJid(jid);
+                if (!resource) {
+                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                }
+                converse.connection.connect(jid, password, converse.onConnect);
+            },
+
 
             remove: function () {
                 this.$tabs.empty();

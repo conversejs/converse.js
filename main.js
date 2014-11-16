@@ -17,6 +17,7 @@ require.config({
         "strophe":                  "components/strophe/strophe",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.muc":              "components/strophe.muc/index",
+        "strophe.register":         "components/strophejs-plugins/register/strophe.register",
         "strophe.roster":           "src/strophe.roster",
         "strophe.vcard":            "components/strophejs-plugins/vcard/strophe.vcard",
         "text":                     'components/requirejs-text/text',
@@ -93,6 +94,8 @@ require.config({
         "pending_contacts":         "src/templates/pending_contacts",
         "requesting_contact":       "src/templates/requesting_contact",
         "requesting_contacts":      "src/templates/requesting_contacts",
+        "register_panel":           "src/templates/register_panel",
+        "register_tab":             "src/templates/register_tab",
         "room_description":         "src/templates/room_description",
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",
@@ -143,6 +146,7 @@ require.config({
         'strophe':              { exports: 'Strophe' },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.muc':          { deps: ['strophe'] },
+        'strophe.register':     { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }
     }

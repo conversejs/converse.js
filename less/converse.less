@@ -1247,9 +1247,17 @@ dl.add-converse-contact {
 }
 
 #conversejs .controlbox-pane {
-    padding: 0;
-    border-bottom-right-radius: 4px;
+    background-color: white;
     border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border: 0;
+    font-size: 14px;
+    height: 289px;
+    height: ~"calc(100% - 35px)";
+    overflow-y: hidden;
+    padding: 0;
+    position: absolute;
+    width: 100%;
 }
 
 #conversejs .controlbox-pane dd {
@@ -1262,21 +1270,30 @@ dl.add-converse-contact {
     background-color: #DCEAC5;
 }
 
+#conversejs form#converse-register,
 #conversejs form#converse-login {
     background: white;
     padding: 2em 0.5em;
 }
 
+#conversejs form#converse-register input,
 #conversejs form#converse-login input {
-    width: 100%;
+    width: 98%;
+    height: 30px;
 }
 
+#conversejs form#converse-register label,
 #conversejs form#converse-login label {
     margin-top: 0.5em;
 }
 
-#conversejs form#converse-login .login-submit {
+#conversejs form#converse-register .login-submit,
+#conversejs form#converse-login .login-submit,
+#conversejs form#converse-register .submit,
+#conversejs form#converse-login .submit {
+    width: 100%;
     margin-top: 1em;
+    height: 30px;
 }
 
 #conversejs form.set-xmpp-status {
@@ -1355,22 +1372,6 @@ select#select-xmpp-status {
     height: 35px;
     cursor: default;
     color: rgb(102,102,102);
-}
-
-#conversejs div#users,
-#conversejs div#chatrooms,
-#conversejs div#login-dialog,
-#conversejs div#settings {
-    border: 0;
-    font-size: 14px;
-    background-color: white;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    width: 100%;
-    height: 289px;
-    height: ~"calc(100% - 35px)";
-    overflow-y: hidden;
-    position: absolute;
 }
 
 #conversejs div#chatrooms {

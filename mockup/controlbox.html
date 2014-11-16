@@ -31,16 +31,26 @@
             <div class="chat-head controlbox-head">
                 <ul id="controlbox-tabs">
                     <li><a class="current" href="#login">Sign in</a></li>
+                    <li><a href="#register">Register</a></li>
                 </ul>
                 <a class="close-chatbox-button icon-close"></a>
             </div>
-            <div id="login-dialog">
+            <div id="login-dialog" class="controlbox-pane">
                 <form id="converse-login">
-                    <label>XMPP/Jabber Username:</label><input type="text" id="jid">
+                    <label>XMPP Username:</label><input type="text" id="jid" placeholder="name@server">
                     <label>Password:</label><input type="password" id="password">
-                    <input class="login-submit" type="submit" value="Log In">
+                    <input class="submit" type="submit" value="Log In">
+                    <span class="conn-feedback"></span>
                 </form>
-                <span class="conn-feedback"></span>
+            </div>
+            <div id="register" class="controlbox-pane" style="display: none">
+                <form id="converse-register">
+                    <label>XMPP Username:</label><input type="text" id="jid" placeholder="name@server">
+                    <label>Password:</label><input type="password" name="password">
+                    <label>Confirm Password:</label><input type="password" name="password_confirm">
+                    <input class="submit" type="submit" value="Register">
+                    <span class="conn-feedback"></span>
+                </form>
             </div>
         </div>
     </div>
@@ -55,6 +65,7 @@
                 </ul>
                 <a class="close-chatbox-button icon-close"></a>
             </div>
+
             <div id="users" class="controlbox-pane" style="display: block;">
                 <form class="set-xmpp-status" action="" method="post">
                     <span id="xmpp-status-holder">
@@ -227,39 +238,41 @@
                         </dd>
                     </dl>
                 </div>
-                <div id="chatrooms" style="display: none;">
-                    <form class="add-chatroom" action="" method="post">
-                        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
-                        <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
-                        <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
-                        <input type="submit" name="join" value="Join">
-                        <input type="button" name="show" id="show-rooms" value="Show rooms" style="display: inline-block;">
-                    </form>
-                    <dl id="available-chatrooms">
-                        <dt>Rooms on conference.opkode.im</dt>
-                        <dd class="available-chatroom">
-                            <a class="open-room" 
-                                data-room-jid="converse.js@conference.opkode.im"
-                                title="Click to open this room" href="#">Special chatroom with a long name (2)</a>
-                            <a class="room-info icon-room-info" 
-                                data-room-jid="converse.js@conference.opkode.im" 
-                                title="Show more information on this room" href="#">&nbsp;</a>
-                            <div class="room-info">
-                                <p class="room-info"><strong>Description:</strong></p>
-                                <p class="room-info"><strong>Occupants:</strong> 2</p>
-                                <p class="room-info"><strong>Features:</strong> </p>
-                                <ul>
-                                    <li class="room-info">Moderated</li><li class="room-info">Open room</li>
-                                    <li class="room-info">Permanent room</li><li class="room-info">Public</li>
-                                    <li class="room-info">Semi-anonymous</li>
-                                    <li class="room-info">Requires authentication <span class="icon-lock"></span></li>
-                                    <p></p>
-                                </ul>
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
             </div>
+
+            <div id="chatrooms" class="controlbox-pane" style="display: none;">
+                <form class="add-chatroom" action="" method="post">
+                    <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
+                    <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
+                    <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
+                    <input type="submit" name="join" value="Join">
+                    <input type="button" name="show" id="show-rooms" value="Show rooms" style="display: inline-block;">
+                </form>
+                <dl id="available-chatrooms">
+                    <dt>Rooms on conference.opkode.im</dt>
+                    <dd class="available-chatroom">
+                        <a class="open-room" 
+                            data-room-jid="converse.js@conference.opkode.im"
+                            title="Click to open this room" href="#">Special chatroom with a long name (2)</a>
+                        <a class="room-info icon-room-info" 
+                            data-room-jid="converse.js@conference.opkode.im" 
+                            title="Show more information on this room" href="#">&nbsp;</a>
+                        <div class="room-info">
+                            <p class="room-info"><strong>Description:</strong></p>
+                            <p class="room-info"><strong>Occupants:</strong> 2</p>
+                            <p class="room-info"><strong>Features:</strong> </p>
+                            <ul>
+                                <li class="room-info">Moderated</li><li class="room-info">Open room</li>
+                                <li class="room-info">Permanent room</li><li class="room-info">Public</li>
+                                <li class="room-info">Semi-anonymous</li>
+                                <li class="room-info">Requires authentication <span class="icon-lock"></span></li>
+                                <p></p>
+                            </ul>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+
         </div>
     </div>
 </div>
@@ -271,6 +284,12 @@ $(document).ready(function () {
     });
     $('a[href=#users]').click(function (ev) {
         switchTab(ev); 
+    });
+    $('a[href=#register]').click(function (ev) { 
+        switchTab(ev);
+    });
+    $('a[href=#login]').click(function (ev) { 
+        switchTab(ev);
     });
 
     $("a.choose-xmpp-status").click(function (ev) {

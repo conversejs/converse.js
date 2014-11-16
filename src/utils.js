@@ -1,4 +1,17 @@
-define(["jquery"], function ($) {
+define(["jquery", "converse-templates"], function ($, templates) {
+    "use strict";
+
+    var XFORM_TYPE_MAP = {
+        'text-private': 'password',
+        'text-single': 'textline',
+        'fixed': 'label',
+        'boolean': 'checkbox',
+        'hidden': 'hidden',
+        'jid-multi': 'textarea',
+        'list-single': 'dropdown',
+        'list-multi': 'dropdown'
+    };
+
     $.fn.hasScrollBar = function() {
         if (!$.contains(document, this.get(0))) {
             return false;
@@ -52,6 +65,61 @@ define(["jquery"], function ($) {
                 * See actionInfoMessages
                 */
             return str;
+        },
+
+        xForm2webForm: function (field) {
+            /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
+             * and turns it into a HTML DOM field.
+             *
+             *  Parameters:
+             *      (XMLElement) field - the field to convert
+             */
+            var $field = $(field), options = [],
+                j, $options, $values, value, values;
+            if ($field.attr('type') == 'list-single' || $field.attr('type') == 'list-multi') {
+                values = [];
+                $values = $field.children('value');
+                for (j=0; j<$values.length; j++) {
+                    values.push($($values[j]).text());
+                }
+                $options = $field.children('option');
+                for (j=0; j<$options.length; j++) {
+                    value = $($options[j]).find('value').text();
+                    options.push(templates.select_option({
+                        value: value,
+                        label: $($options[j]).attr('label'),
+                        selected: (values.indexOf(value) >= 0)
+                    }));
+                }
+                return templates.form_select({
+                    name: $field.attr('var'),
+                    label: $field.attr('label'),
+                    options: options.join(''),
+                    multiple: ($field.attr('type') == 'list-multi')
+                });
+            } else if ($field.attr('type') == 'fixed') {
+                return $('<p>').text($field.find('value').text());
+            } else if ($field.attr('type') == 'jid-multi') {
+                return templates.form_textarea({
+                    name: $field.attr('var'),
+                    label: $field.attr('label') || '',
+                    value: $field.find('value').text()
+                });
+            } else if ($field.attr('type') == 'boolean') {
+                return templates.form_checkbox({
+                    name: $field.attr('var'),
+                    type: XFORM_TYPE_MAP[$field.attr('type')],
+                    label: $field.attr('label') || '',
+                    checked: $field.find('value').text() === "1" && 'checked="1"' || ''
+                });
+            } else {
+                return templates.form_input({
+                    name: $field.attr('var'),
+                    type: XFORM_TYPE_MAP[$field.attr('type')],
+                    label: $field.attr('label') || '',
+                    value: $field.find('value').text()
+                });
+            }
         }
     };
     return utils;

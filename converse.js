@@ -2440,26 +2440,7 @@
                     count = $inputs.length,
                     configArray = [];
                 $inputs.each(function () {
-                    var $input = $(this), value;
-                    if ($input.is('[type=checkbox]')) {
-                        value = $input.is(':checked') && 1 || 0;
-                    } else if ($input.is('textarea')) {
-                        value = [];
-                        var lines = $input.val().split('\n');
-                        for( var vk=0; vk<lines.length; vk++) {
-                            var val = $.trim(lines[vk]);
-                            if (val === '')
-                                continue;
-                            value.push(val);
-                        }
-                    } else {
-                        value = $input.val();
-                    }
-                    var cnode = $(converse.templates.field({
-                        name: $input.attr('name'),
-                        value: value
-                    }))[0];
-                    configArray.push(cnode);
+                    configArray.push(utils.webForm2xForm(this));
                     if (!--count) {
                         converse.connection.muc.saveConfiguration(
                             that.model.get('jid'),
@@ -2478,7 +2459,7 @@
             },
 
             onConfigSaved: function (stanza) {
-                // XXX
+                // TODO: provide feedback
             },
 
             onErrorConfigSaved: function (stanza) {
@@ -4564,7 +4545,7 @@
 
             renderRegistrationForm: function () {
                 var register = converse.connection.register,
-                    $form= this.$el.find('form'),
+                    $form= this.$('form'),
                     $stanza = $(register.query),
                     $fields = $stanza.find('field');
 
@@ -4573,7 +4554,63 @@
                     $form.append(utils.xForm2webForm(field));
                 });
                 $form.append('<input type="submit" value="'+__('Register')+'"/>');
+                $form.append('<input type="submit" value="'+__('Cancel')+'"/>');
                 $form.on('submit', $.proxy(this.register, this));
+            },
+
+            register: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+                    iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
+
+                $inputs.each(function () {
+                    iq.cnode(utils.webForm2xForm(this)).up();
+                });
+                this.$('form').hide(function () {
+                    $(this).remove(); // TODO
+                });
+                converse.connection._addSysHandler(this._submit_cb.bind(this),
+                                    null, "iq", null, null);
+                converse.connection.send(iq);
+            },
+
+            _submit_cb: function (stanza) {
+                var i, query, field, error = null, conn = this._connection;
+                query = stanza.getElementsByTagName("query");
+                if (query.length > 0) {
+                    query = query[0];
+                    // update fields
+                    for (i = 0; i < query.childNodes.length; i++) {
+                        field = query.childNodes[i];
+                        if (field.tagName.toLowerCase() === 'instructions') {
+                            // this is a special element
+                            // it provides info about given data fields in a textual way
+                            this.instructions = Strophe.getText(field);
+                            continue;
+                        }
+                        this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
+                    }
+                }
+                if (stanza.getAttribute("type") === "error") {
+                    error = stanza.getElementsByTagName("error");
+                    if (error.length !== 1) {
+                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                        return false;
+                    }
+                    Strophe.info("Registration failed.");
+                    // this is either 'conflict' or 'not-acceptable'
+                    error = error[0].firstChild.tagName.toLowerCase();
+                    if (error === 'conflict') {
+                        conn._changeConnectStatus(Strophe.Status.CONFLICT, error);
+                    } else if (error === 'not-acceptable') {
+                        conn._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
+                    } else {
+                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, error);
+                    }
+                }
+                Strophe.info("Registered successfully.");
+                conn._changeConnectStatus(Strophe.Status.REGISTERED, null);
+                return false;
             },
 
             remove: function () {

@@ -67,6 +67,33 @@ define(["jquery", "converse-templates"], function ($, templates) {
             return str;
         },
 
+        webForm2xForm: function (field) {
+            /* Takes an HTML DOM and turns it into an XForm field.
+             *
+             * Parameters:
+             *      (DOMElement) field - the field to convert
+             */
+            var $input = $(field), value;
+            if ($input.is('[type=checkbox]')) {
+                value = $input.is(':checked') && 1 || 0;
+            } else if ($input.is('textarea')) {
+                value = [];
+                var lines = $input.val().split('\n');
+                for( var vk=0; vk<lines.length; vk++) {
+                    var val = $.trim(lines[vk]);
+                    if (val === '')
+                        continue;
+                    value.push(val);
+                }
+            } else {
+                value = $input.val();
+            }
+            return $(templates.field({
+                name: $input.attr('name'),
+                value: value
+            }))[0];
+        },
+
         xForm2webForm: function (field) {
             /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
              * and turns it into a HTML DOM field.

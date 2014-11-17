@@ -212,7 +212,7 @@
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             debug: false,
-            default_box_height: 324, // The default height, in pixels, for the control box, chat boxes and chatrooms.
+            default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,
             hide_muc_server: false,

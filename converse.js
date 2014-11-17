@@ -198,89 +198,53 @@
 
         // Default configuration values
         // ----------------------------
-        this.allow_contact_requests = true;
-        this.allow_dragresize = true;
-        this.allow_logout = true;
-        this.allow_muc = true;
-        this.allow_otr = true;
-        this.animate = true;
-        this.auto_list_rooms = false;
-        this.auto_reconnect = false;
-        this.auto_subscribe = false;
-        this.bosh_service_url = undefined; // The BOSH connection manager URL.
-        this.cache_otr_key = false;
-        this.debug = false;
-        this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
-        this.expose_rid_and_sid = false;
-        this.forward_messages = false;
-        this.hide_muc_server = false;
-        this.hide_offline_users = false;
-        this.i18n = locales.en;
-        this.keepalive = false;
-        this.message_carbons = false;
-        this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
-        this.play_sounds = false;
-        this.prebind = false;
-        this.roster_groups = false;
-        this.show_controlbox_by_default = false;
-        this.show_only_online_users = false;
-        this.show_toolbar = true;
-        this.storage = 'session';
-        this.use_otr_by_default = false;
-        this.use_vcards = true;
-        this.visible_toolbar_buttons = {
-            'emoticons': true,
-            'call': false,
-            'clear': true,
-            'toggle_participants': true
+        var default_settings = {
+            allow_contact_requests: true,
+            allow_dragresize: true,
+            allow_logout: true,
+            allow_muc: true,
+            allow_otr: true,
+            allow_registration: true,
+            animate: true,
+            auto_list_rooms: false,
+            auto_reconnect: false,
+            auto_subscribe: false,
+            bosh_service_url: undefined, // The BOSH connection manager URL.
+            cache_otr_key: false,
+            debug: false,
+            default_box_height: 324, // The default height, in pixels, for the control box, chat boxes and chatrooms.
+            expose_rid_and_sid: false,
+            forward_messages: false,
+            hide_muc_server: false,
+            hide_offline_users: false,
+            i18n: locales.en,
+            keepalive: false,
+            message_carbons: false,
+            no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            play_sounds: false,
+            prebind: false,
+            roster_groups: false,
+            show_controlbox_by_default: false,
+            show_only_online_users: false,
+            show_toolbar: true,
+            storage: 'session',
+            use_otr_by_default: false,
+            use_vcards: true,
+            visible_toolbar_buttons: {
+                'emoticons': true,
+                'call': false,
+                'clear': true,
+                'toggle_participants': true
+            },
+            xhr_custom_status: false,
+            xhr_custom_status_url: '',
+            xhr_user_search: false,
+            xhr_user_search_url: ''
         };
-        this.xhr_custom_status = false;
-        this.xhr_custom_status_url = '';
-        this.xhr_user_search = false;
-        this.xhr_user_search_url = '';
-
+        _.extend(this, default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, [
-            'allow_contact_requests',
-            'allow_dragresize',
-            'allow_logout',
-            'allow_muc',
-            'allow_otr',
-            'animate',
-            'auto_list_rooms',
-            'auto_reconnect',
-            'auto_subscribe',
-            'bosh_service_url',
-            'cache_otr_key',
-            'connection',
-            'debug',
-            'default_box_height',
-            'expose_rid_and_sid',
-            'forward_messages',
-            'fullname',
-            'hide_muc_server',
-            'hide_offline_users',
-            'i18n',
-            'jid',
-            'keepalive',
-            'message_carbons',
-            'no_trimming',
-            'play_sounds',
-            'prebind',
-            'rid',
-            'roster_groups',
-            'show_controlbox_by_default',
-            'show_only_online_users',
-            'show_toolbar',
-            'sid',
-            'storage',
-            'use_otr_by_default',
-            'use_vcards',
-            'xhr_custom_status',
-            'xhr_custom_status_url',
-            'xhr_user_search',
-            'xhr_user_search_url'
-        ]));
+        _.extend(this, _.pick(settings, Object.keys(default_settings)));
+
         if (settings.visible_toolbar_buttons) {
             _.extend(
                 this.visible_toolbar_buttons,

@@ -1897,6 +1897,11 @@
                 }
             },
 
+            giveFeedback: function (message, klass) {
+                // TODO:
+                alert(message);
+            },
+
             onConnected: function () {
                 if (this.model.get('connected')) {
                     this.render().initRoster();
@@ -1951,13 +1956,21 @@
                 var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
                 if (!this.loginpanel) {
                     this.loginpanel = new converse.LoginPanel(cfg);
-                    this.registerpanel = new converse.RegisterPanel(cfg);
+                    if (converse.allow_registration) {
+                        this.registerpanel = new converse.RegisterPanel(cfg);
+                    }
                 } else {
                     this.loginpanel.delegateEvents().initialize(cfg);
+                    if (converse.allow_registration) {
+                        this.registerpanel.delegateEvents().initialize(cfg);
+                    }
                 }
                 this.loginpanel.render();
-                this.registerpanel.render().$el.hide();
+                if (converse.allow_registration) {
+                    this.registerpanel.render().$el.hide();
+                }
                 this.initDragResize();
+                return this;
             },
 
             renderContactsPanel: function () {
@@ -2040,7 +2053,7 @@
             },
 
             switchTab: function (ev) {
-                ev.preventDefault();
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $tab = $(ev.target),
                     $sibling = $tab.parent().siblings('li').children('a'),
                     $tab_panel = $($tab.attr('href'));
@@ -2048,6 +2061,7 @@
                 $sibling.removeClass('current');
                 $tab.addClass('current');
                 $tab_panel.show();
+                return this;
             },
 
             showHelpMessages: function (msgs) {
@@ -4447,6 +4461,7 @@
             },
 
             initialize: function (cfg) {
+                this.fields = {};
                 this.$parent = cfg.$parent;
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
             },
@@ -4471,29 +4486,24 @@
                     errors = false;
                 if (!domain) { errors = true; $domain_input.addClass('error'); }
                 if (errors) { return; } // TODO provide error messages
-                this.connect($form, domain);
+                $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
+                converse.connection.register.connect(domain, $.proxy(this.onRegistering, this));
+                this.domain = domain;
                 return false;
             },
 
-            connect: function ($form, domain) {
-                if ($form) {
-                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                }
-                converse.connection.register.connect(domain, $.proxy(this.onRegistering, this));
-            },
-
             giveFeedback: function (message, klass) {
-                $('.conn-feedback').attr('class', 'conn-feedback').text(message);
+                // TODO: need to add feedback element...
+                this.$('.conn-feedback').attr('class', 'conn-feedback').text(message);
                 if (klass) {
                     $('.conn-feedback').addClass(klass);
                 }
             },
 
             onRegistering: function (status, error) {
+                var that;
                 console.log('onRegistering');
-                if (status === Strophe.Status.CONNECTING) {
-                    converse.giveFeedback(__('Connecting'));
-                } else if (status === Strophe.Status.CONNFAIL) {
+                if (status === Strophe.Status.CONNFAIL) {
                     converse.renderLoginPanel();
                     this.giveFeedback(__('Connection Failed'), 'error');
                 } else if (status === Strophe.Status.DISCONNECTING) {
@@ -4513,6 +4523,29 @@
                 } else if (status == Strophe.Status.NOTACCEPTABLE) {
                     // TODO
                     converse.log('NOTACCEPTABLE');
+                } else if (status == Strophe.Status.REGISTERED) {
+                    converse.log("Registered successfully.");
+                    that = this;
+                    converse.connection.reset();
+                    this.$('form').hide(function () {
+                        $(this).replaceWith('<span class="spinner centered"/>');
+                        if (that.fields.password && that.fields.username) {
+                            // automatically log the user in
+                            converse.connection.connect(
+                                that.fields.username+'@'+that.domain,
+                                that.fields.password,
+                                converse.onConnect
+                            );
+                            converse.chatboxviews.get('controlbox')
+                                .switchTab({target: that.$tabs.find('.current')})
+                                .giveFeedback(__('Now logging you in'));
+                        } else {
+                            converse.chatboxviews.get('controlbox')
+                                .renderLoginPanel()
+                                .giveFeedback(__('Registered successfully'));
+                        }
+                        that.reset();
+                    });
                 }
             },
 
@@ -4528,11 +4561,18 @@
                 });
                 $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
                 $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
-                $form.on('submit', $.proxy(this.register, this));
-                $form.find('input[type=button]').on('click', $.proxy(this.cancel, this));
+                $form.on('submit', $.proxy(this.onRegister, this));
+                $form.find('input[type=button]').on('click', $.proxy(this.onCancel, this));
             },
 
             reportErrors: function (stanza) {
+                /* Report back to the user any error messages received from the
+                 * XMPP server after attempted registration.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - The IQ stanza received from the
+                 *      XMPP server.
+                 */
                 var $form= this.$('form'), flash;
                 var $errmsgs = $(stanza).find('error text');
                 var $flash = $form.find('.form-errors');
@@ -4559,11 +4599,22 @@
             },
 
             cancel: function (ev) {
+                /* Callback method, when the user cancels the registration
+                 * form.
+                 */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                alert('TBD'); // TODO
+                this.render(); // XXX: check if this works.
             },
 
-            register: function (ev) {
+            onRegister: function (ev) {
+                /* Callback method, when the user submits the registration
+                 * form.
+                 * Provides form error feedback or starts the registration
+                 * process.
+                 *
+                 * Parameters:
+                 *      (Event) ev - the submit event.
+                 */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $empty_inputs = this.$('input:emptyVal');
                 if ($empty_inputs.length) {
@@ -4578,13 +4629,39 @@
                 $inputs.each(function () {
                     iq.cnode(utils.webForm2xForm(this)).up();
                 });
-                converse.connection._addSysHandler(this._submit_cb.bind(this),
-                                    null, "iq", null, null);
+                converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                 converse.connection.send(iq);
+                this.setFields(iq.tree());
             },
 
-            _submit_cb: function (stanza) {
-                var i, field, error = null,
+            setFields: function (stanza) {
+                /* Stores the values that will be sent to the XMPP server
+                 * during attempted registration.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
+                 */
+                var query = stanza.getElementsByTagName("query"), field, i;
+                if (query.length > 0) {
+                    query = query[0];
+                    $(query).find('field').each($.proxy(function (idx, field) {
+                        var name = field.getAttribute('var').toLowerCase();
+                        var value = $(field).children('value').text();
+                        this.fields[name] = value;
+                        converse.connection.register.fields[name] = value;
+                    }, this));
+                }
+            },
+
+            _onRegisterIQ: function (stanza) {
+                /* Callback method that gets called when a return IQ stanza
+                 * is received from the XMPP server, after attempting to
+                 * register a new user.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - The IQ stanza.
+                 */
+                var i, field, error = null, that,
                     query = stanza.getElementsByTagName("query");
                 if (query.length > 0) {
                     query = query[0];
@@ -4606,13 +4683,14 @@
                     }
                     this.reportErrors(stanza);
                 } else {
-                    converse.log("Registered successfully.");
-                    this.$('form').hide(function () {
-                        $(this).remove(); // TODO What to render next?
-                    });
                     converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                 }
                 return false;
+            },
+
+            reset: function () {
+                this.fields = {};
+                delete this.domain;
             },
 
             remove: function () {

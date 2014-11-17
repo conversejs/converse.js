@@ -12,6 +12,10 @@ define(["jquery", "converse-templates"], function ($, templates) {
         'list-multi': 'dropdown'
     };
 
+    $.expr[':'].emptyVal = function(obj){
+        return obj.value === '';
+    };
+
     $.fn.hasScrollBar = function() {
         if (!$.contains(document, this.get(0))) {
             return false;

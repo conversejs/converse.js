@@ -2386,7 +2386,7 @@
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
                 if (instructions != title) {
-                    $form.append($('<p>').text(instructions));
+                    $form.append($('<p class="instructions">').text(instructions));
                 }
                 _.each($fields, function (field) {
                     $form.append(utils.xForm2webForm(field));
@@ -4489,7 +4489,7 @@
                 }
             },
 
-            onRegistering: function (status) {
+            onRegistering: function (status, error) {
                 console.log('onRegistering');
                 if (status === Strophe.Status.CONNECTING) {
                     converse.giveFeedback(__('Connecting'));
@@ -4504,6 +4504,15 @@
                     }
                 } else if (status == Strophe.Status.REGISTER) {
                     this.renderRegistrationForm();
+                } else if (status == Strophe.Status.REGIFAIL) {
+                    // TODO
+                    converse.log('REGIFAIL');
+                } else if (status == Strophe.Status.CONFLICT) {
+                    // TODO
+                    converse.log('CONFLICT');
+                } else if (status == Strophe.Status.NOTACCEPTABLE) {
+                    // TODO
+                    converse.log('NOTACCEPTABLE');
                 }
             },
 
@@ -4513,25 +4522,61 @@
                     $stanza = $(register.query),
                     $fields = $stanza.find('field');
 
-                $form.empty().append($('<p>').text(register.instructions));
+                $form.empty().append($('<p class="instructions">').text(register.instructions));
                 _.each($fields, function (field) {
                     $form.append(utils.xForm2webForm(field));
                 });
-                $form.append('<input type="submit" value="'+__('Register')+'"/>');
-                $form.append('<input type="submit" value="'+__('Cancel')+'"/>');
+                $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
+                $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
                 $form.on('submit', $.proxy(this.register, this));
+                $form.find('input[type=button]').on('click', $.proxy(this.cancel, this));
+            },
+
+            reportErrors: function (stanza) {
+                var $form= this.$('form'), flash;
+                var $errmsgs = $(stanza).find('error text');
+                var $flash = $form.find('.form-errors');
+                if (!$flash.length) {
+                   flash = '<legend class="form-errors"></legend>';
+                    if ($form.find('p.instructions').length) {
+                        $form.find('p.instructions').append(flash);
+                    } else {
+                        $form.prepend(flash);
+                    }
+                    $flash = $form.find('.form-errors');
+                } else {
+                    $flash.empty();
+                }
+                $errmsgs.each(function (idx, txt) {
+                    $flash.append($('<p>').text($(txt).text()));
+                });
+                if (!$errmsgs.length) {
+                    $flash.append($('<p>').text(
+                        __('The provider rejected your registration attempt. '+
+                           'Please check the values you entered for correctness.')));
+                }
+                $flash.show();
+            },
+
+            cancel: function (ev) {
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                alert('TBD'); // TODO
             },
 
             register: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $empty_inputs = this.$('input:emptyVal');
+                if ($empty_inputs.length) {
+                    $empty_inputs.addClass('error');
+                    return;
+                }
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
-                    iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
+                    iq = $iq({type: "set"})
+                        .c("query", {xmlns:Strophe.NS.REGISTER})
+                        .c("x", {xmlns: 'jabber:x:data', type: 'submit'});  // TODO: Add Strophe namespace
 
                 $inputs.each(function () {
                     iq.cnode(utils.webForm2xForm(this)).up();
-                });
-                this.$('form').hide(function () {
-                    $(this).remove(); // TODO
                 });
                 converse.connection._addSysHandler(this._submit_cb.bind(this),
                                     null, "iq", null, null);
@@ -4539,41 +4584,34 @@
             },
 
             _submit_cb: function (stanza) {
-                var i, query, field, error = null, conn = this._connection;
-                query = stanza.getElementsByTagName("query");
+                var i, field, error = null,
+                    query = stanza.getElementsByTagName("query");
                 if (query.length > 0) {
                     query = query[0];
-                    // update fields
-                    for (i = 0; i < query.childNodes.length; i++) {
-                        field = query.childNodes[i];
-                        if (field.tagName.toLowerCase() === 'instructions') {
-                            // this is a special element
-                            // it provides info about given data fields in a textual way
-                            this.instructions = Strophe.getText(field);
-                            continue;
-                        }
-                        this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
-                    }
                 }
                 if (stanza.getAttribute("type") === "error") {
+                    converse.log("Registration failed.");
                     error = stanza.getElementsByTagName("error");
                     if (error.length !== 1) {
-                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                        converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
                     }
-                    Strophe.info("Registration failed.");
-                    // this is either 'conflict' or 'not-acceptable'
                     error = error[0].firstChild.tagName.toLowerCase();
                     if (error === 'conflict') {
-                        conn._changeConnectStatus(Strophe.Status.CONFLICT, error);
+                        converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
                     } else if (error === 'not-acceptable') {
-                        conn._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
+                        converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
                     } else {
-                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, error);
+                        converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
                     }
+                    this.reportErrors(stanza);
+                } else {
+                    converse.log("Registered successfully.");
+                    this.$('form').hide(function () {
+                        $(this).remove(); // TODO What to render next?
+                    });
+                    converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                 }
-                Strophe.info("Registered successfully.");
-                conn._changeConnectStatus(Strophe.Status.REGISTERED, null);
                 return false;
             },
 

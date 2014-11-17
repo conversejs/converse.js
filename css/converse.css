@@ -1127,6 +1127,10 @@ dl.add-converse-contact {
 #conversejs .controlbox-pane dd.odd {
   background-color: #DCEAC5;
 }
+#conversejs form#converse-register .form-errors {
+  color: red;
+  display: none;
+}
 #conversejs form#converse-register,
 #conversejs form#converse-login {
   background: white;

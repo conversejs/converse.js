@@ -1114,7 +1114,7 @@ dl.add-converse-contact {
   font-size: 14px;
   height: 289px;
   height: calc(100% - 35px);
-  overflow-y: hidden;
+  overflow-y: scroll;
   padding: 0;
   position: absolute;
   width: 100%;
@@ -1126,6 +1126,13 @@ dl.add-converse-contact {
 }
 #conversejs .controlbox-pane dd.odd {
   background-color: #DCEAC5;
+}
+#conversejs form#converse-register .title {
+  font-weight: bold;
+}
+#conversejs form#converse-register .instructions {
+  font-style: italic;
+  color: gray;
 }
 #conversejs form#converse-register .form-errors {
   color: red;

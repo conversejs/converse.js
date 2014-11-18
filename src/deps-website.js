@@ -12,7 +12,6 @@ define("converse-dependencies", [
     "typeahead",
     "strophe",
     "strophe.muc",
-    "strophe.register",
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"

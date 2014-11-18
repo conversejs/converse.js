@@ -17,7 +17,6 @@ require.config({
         "strophe":                  "components/strophe/strophe",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.muc":              "components/strophe.muc/index",
-        "strophe.register":         "components/strophejs-plugins/register/strophe.register",
         "strophe.roster":           "src/strophe.roster",
         "strophe.vcard":            "components/strophejs-plugins/vcard/strophe.vcard",
         "text":                     'components/requirejs-text/text',

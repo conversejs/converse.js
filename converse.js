@@ -162,6 +162,20 @@
     converse.initialize = function (settings, callback) {
         var converse = this;
 
+        // Add Strophe Namespaces
+        Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+        Strophe.addNamespace('XFORM', 'jabber:x:data');
+
+        // Add Strophe Statuses
+        var i = 0;
+        Object.keys(Strophe.Status).forEach(function (key) {
+            i = Math.max(i, Strophe.Status[key]);
+        });
+        Strophe.Status.REGIFAIL        = i + 1;
+        Strophe.Status.REGISTERED      = i + 2;
+        Strophe.Status.CONFLICT        = i + 3;
+        Strophe.Status.NOTACCEPTABLE   = i + 5;
+
         // Constants
         // ---------
         var UNENCRYPTED = 0;
@@ -2395,12 +2409,11 @@
                 var $form= this.$el.find('form.chatroom-form'),
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
-                    title = $stanza.find('title').text(),
-                    instructions = $stanza.find('instructions').text();
+                    title = $stanza.find('title').text();
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
                 if (instructions != title) {
-                    $form.append($('<p class="instructions">').text(instructions));
+                    $form.append($('<p class="instructions">').text(this.instructions));
                 }
                 _.each($fields, function (field) {
                     $form.append(utils.xForm2webForm(field));
@@ -4457,13 +4470,14 @@
             id: "register",
             className: 'controlbox-pane',
             events: {
-                'submit form#converse-register': 'query'
+                'submit form#converse-register': 'onProviderChosen'
             },
 
             initialize: function (cfg) {
-                this.fields = {};
+                this.reset();
                 this.$parent = cfg.$parent;
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                this.registerHooks();
             },
 
             render: function () {
@@ -4478,17 +4492,108 @@
                 return this;
             },
 
-            query: function (ev) {
+            registerHooks: function () {
+                /* Hook into Strophe's _connect_cb, so that we can send an IQ
+                 * requesting the registration fields.
+                 */
+                var conn = converse.connection;
+                var connect_cb = conn._connect_cb.bind(conn);
+                conn._connect_cb = $.proxy(function (req, callback, raw) {
+                    if (!this._registering) {
+                        connect_cb(req, callback, raw);
+                    } else {
+                        if (this.getRegistrationFields(req, callback, raw)) {
+                            delete this._registering;
+                        }
+                    }
+                }, this);
+            },
+
+            getRegistrationFields: function (req, _callback, raw) {
+                /*  Send an IQ stanza to the XMPP server asking for the
+                 *  registration fields.
+                 *
+                 *  Parameters:
+                 *    (Strophe.Request) req - The current request
+                 *    (Function) callback
+                 */
+                converse.log("sendQueryStanza was called");
+                var conn = converse.connection;
+                conn.connected = true;
+
+                var body = conn._proto._reqToData(req);
+                if (!body) { return; }
+                if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
+                    return false;
+                }
+                var register = body.getElementsByTagName("register");
+                var mechanisms = body.getElementsByTagName("mechanism");
+                if (register.length === 0 && mechanisms.length === 0) {
+                    conn._proto._no_auth_received(_callback);
+                    return false;
+                }
+                if (register.length === 0) {
+                    conn._changeConnectStatus(Strophe.Status.REGIFAIL, null);
+                    return true;
+                }
+                // Send an IQ stanza to get all required data fields
+                conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
+                conn.send($iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree());
+                return true;
+            },
+
+            onRegistrationFields: function (stanza) {
+                /*  Handler for Registration Fields Request.
+                 *
+                 *  Parameters:
+                 *    (XMLElement) elem - The query stanza.
+                 */
+                if (stanza.getElementsByTagName("query").length !== 1) {
+                    converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                    return false;
+                }
+                this.setFields(stanza);
+                this.renderRegistrationForm(stanza);
+                return false;
+            },
+
+            reset: function (settings) {
+                var defaults = {
+                    fields: {},
+                    title: "",
+                    instructions: "",
+                    registered: false,
+                    _registering: false,
+                    domain: null
+                };
+                _.extend(this, defaults);
+                if (settings) {
+                    _.extend(this, _.pick(settings, Object.keys(defaults)));
+                }
+            },
+
+            onProviderChosen: function (ev) {
+                /* Callback method that gets called when the user has chosen an
+                 * XMPP provider.
+                 *
+                 * Parameters:
+                 *      (Submit Event) ev - Form submission event.
+                 */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $form = $(ev.target),
                     $domain_input = $form.find('input[name=domain]'),
                     domain = $domain_input.val(),
                     errors = false;
-                if (!domain) { errors = true; $domain_input.addClass('error'); }
-                if (errors) { return; } // TODO provide error messages
+                if (!domain) {
+                    $domain_input.addClass('error');
+                    return;
+                }
                 $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                converse.connection.register.connect(domain, $.proxy(this.onRegistering, this));
-                this.domain = domain;
+                this.reset({
+                    domain: Strophe.getDomainFromJid(domain),
+                    _registering: true
+                });
+                converse.connection.connect(this.domain, "", $.proxy(this.onRegistering, this));
                 return false;
             },
 
@@ -4512,8 +4617,6 @@
                     } else {
                         this.giveFeedback(__('Disconnecting'), 'error');
                     }
-                } else if (status == Strophe.Status.REGISTER) {
-                    this.renderRegistrationForm();
                 } else if (status == Strophe.Status.REGIFAIL) {
                     // TODO
                     converse.log('REGIFAIL');
@@ -4525,8 +4628,8 @@
                     converse.log('NOTACCEPTABLE');
                 } else if (status == Strophe.Status.REGISTERED) {
                     converse.log("Registered successfully.");
-                    that = this;
                     converse.connection.reset();
+                    that = this;
                     this.$('form').hide(function () {
                         $(this).replaceWith('<span class="spinner centered"/>');
                         if (that.fields.password && that.fields.username) {
@@ -4549,13 +4652,20 @@
                 }
             },
 
-            renderRegistrationForm: function () {
-                var register = converse.connection.register,
-                    $form= this.$('form'),
-                    $stanza = $(register.query),
+            renderRegistrationForm: function (stanza) {
+                /* Renders the registration form based on the XForm fields
+                 * received from the XMPP server.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - The IQ stanza received from the
+                 *      XMPP server.
+                 */
+                var $form= this.$('form'),
+                    $stanza = $(stanza),
                     $fields = $stanza.find('field');
 
-                $form.empty().append($('<p class="instructions">').text(register.instructions));
+                $form.empty().append($('<p class="title">').text(this.title));
+                $form.append($('<p class="instructions">').text(this.instructions));
                 _.each($fields, function (field) {
                     $form.append(utils.xForm2webForm(field));
                 });
@@ -4624,7 +4734,7 @@
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
                     iq = $iq({type: "set"})
                         .c("query", {xmlns:Strophe.NS.REGISTER})
-                        .c("x", {xmlns: 'jabber:x:data', type: 'submit'});  // TODO: Add Strophe namespace
+                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});  // TODO: Add Strophe namespace
 
                 $inputs.each(function () {
                     iq.cnode(utils.webForm2xForm(this)).up();
@@ -4641,14 +4751,14 @@
                  * Parameters:
                  *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                  */
-                var query = stanza.getElementsByTagName("query"), field, i;
-                if (query.length > 0) {
-                    query = query[0];
-                    $(query).find('field').each($.proxy(function (idx, field) {
+                var $query = $(stanza).find('x[xmlns="'+Strophe.NS.XFORM+'"]');
+                if ($query.length > 0) {
+                    this.title = $query.find('title').text();
+                    this.instructions = $query.find('instructions').text();
+                    $query.find('field').each($.proxy(function (idx, field) {
                         var name = field.getAttribute('var').toLowerCase();
                         var value = $(field).children('value').text();
                         this.fields[name] = value;
-                        converse.connection.register.fields[name] = value;
                     }, this));
                 }
             },
@@ -4686,11 +4796,6 @@
                     converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                 }
                 return false;
-            },
-
-            reset: function () {
-                this.fields = {};
-                delete this.domain;
             },
 
             remove: function () {

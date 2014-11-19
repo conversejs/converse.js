@@ -508,7 +508,7 @@
             this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.session.fetch();
             $(window).on('beforeunload', $.proxy(function () {
-                if (converse.connection.connected) {
+                if (converse.connection.authenticated) {
                     this.setSession();
                 } else {
                     this.clearSession();
@@ -4671,8 +4671,8 @@
                 });
                 $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
                 $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
-                $form.on('submit', $.proxy(this.onRegister, this));
-                $form.find('input[type=button]').on('click', $.proxy(this.onCancel, this));
+                $form.on('submit', $.proxy(this.submitRegistrationForm, this));
+                $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
             },
 
             reportErrors: function (stanza) {
@@ -4708,17 +4708,15 @@
                 $flash.show();
             },
 
-            cancel: function (ev) {
-                /* Callback method, when the user cancels the registration
-                 * form.
+            cancelRegistration: function (ev) {
+                /* Handler, when the user cancels the registration form.
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.render(); // XXX: check if this works.
             },
 
-            onRegister: function (ev) {
-                /* Callback method, when the user submits the registration
-                 * form.
+            submitRegistrationForm : function (ev) {
+                /* Handler, when the user submits the registration form.
                  * Provides form error feedback or starts the registration
                  * process.
                  *

@@ -509,13 +509,13 @@
   }
 }
 
-span.spinner:before {
+#conversejs .spinner:before {
   font-size: 24px;
   font-family: 'Converse-js' !important;
   content: "\231b";
 }
 
-span.spinner {
+#conversejs .spinner {
     -webkit-animation: spin 2s infinite linear;
     -moz-animation: spin 2s infinite linear;
     -o-animation: spin 2s infinite linear;
@@ -525,13 +525,16 @@ span.spinner {
     text-align: center;
 }
 
-span.spinner.centered {
+#conversejs .centered {
     text-align: center;
-    padding-top: 5em;
+    display: block;
+    margin: 5em auto;
 }
 
-span.spinner.hor_centered {
+#conversejs .hor_centered {
     text-align: center;
+    display: block;
+    margin: 0 auto;
 }
 
 #conversejs #minimized-chats .box-flyout {
@@ -811,14 +814,35 @@ span.spinner.hor_centered {
     color: #7EABBB;
 }
 
-input.error {
+#conversejs input.error {
     border: 1px solid red;
 }
 
-#conversejs .conn-feedback.error {
+#conversejs .error {
     color: red;
 }
 
+
+#conversejs .form-help {
+    padding-top: 5px;
+    font-size: 85%;
+    color: grey;
+}
+
+#converse-register label {
+    font-weight: bold;
+}
+
+#converse-register .form-help .url {
+    font-weight: bold;
+    color: #2D617A;
+}
+
+#conversejs .reg-feedback {
+    font-size: 85%;
+}
+
+#conversejs .reg-feedback,
 #converse-login .conn-feedback {
     width: 100%;
     text-align: center;
@@ -1273,6 +1297,12 @@ dl.add-converse-contact {
 #conversejs form#converse-register .title {
     font-weight: bold;
     font-size: 110%;
+}
+
+#conversejs form#converse-register .info {
+    font-style: italic;
+    color: green;
+    font-size: 85%;
 }
 
 #conversejs form#converse-register .instructions {

@@ -127,8 +127,8 @@
             } else {
                 audio = new Audio("/sounds/msg_received.mp3");
                 audio.play();
+                }
             }
-        }
     };
 
     var converse = {
@@ -161,6 +161,10 @@
 
     converse.initialize = function (settings, callback) {
         var converse = this;
+
+        // Logging
+        Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -619,12 +623,6 @@
             if (this.debug) {
                 this.connection.xmlInput = function (body) { console.log(body); };
                 this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) {
-                    console.log(level+' '+msg);
-                };
-                Strophe.error = function (msg) {
-                    console.log('ERROR: '+msg);
-                };
             }
             // When reconnecting, there might be some open chat boxes. We don't
             // know whether these boxes are of the same account or not, so we
@@ -4483,12 +4481,11 @@
             render: function () {
                 this.$parent.append(this.$el.html(
                     converse.templates.register_panel({
-                        'label_domain': __('XMPP Provider'), // TODO: make this a dropdown of servers...
-                        'label_register': __('Request Registration Form')
+                        'label_domain': __("Give your XMPP provider's domain:"),
+                        'label_register': __('Request registration form')
                     })
                 ));
                 this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
-                this.$el.find('input#jid').focus();
                 return this;
             },
 
@@ -4533,7 +4530,9 @@
                     return false;
                 }
                 if (register.length === 0) {
-                    conn._changeConnectStatus(Strophe.Status.REGIFAIL, null);
+                    conn._changeConnectStatus(
+                            Strophe.Status.REGIFAIL,
+                            'Sorry, the given provider does not support in band account registration. Please try with a different provider.');
                     return true;
                 }
                 // Send an IQ stanza to get all required data fields
@@ -4564,7 +4563,8 @@
                     instructions: "",
                     registered: false,
                     _registering: false,
-                    domain: null
+                    domain: null,
+                    form_type: null
                 };
                 _.extend(this, defaults);
                 if (settings) {
@@ -4588,7 +4588,11 @@
                     $domain_input.addClass('error');
                     return;
                 }
-                $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
+                $form.find('input[type=submit]').hide()
+                    .after('<button class="cancel hor_centered">Cancel form lookup</button>')
+                    .after('<span class="spinner login-submit"/>')
+                    .after('<p class="info hor_centered">Requesting a registration form from the XMPP server</p>');
+                $form.find('button.cancel').on('click', $.proxy(this.cancelRegistration, this));
                 this.reset({
                     domain: Strophe.getDomainFromJid(domain),
                     _registering: true
@@ -4598,10 +4602,9 @@
             },
 
             giveFeedback: function (message, klass) {
-                // TODO: need to add feedback element...
-                this.$('.conn-feedback').attr('class', 'conn-feedback').text(message);
+                this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
                 if (klass) {
-                    $('.conn-feedback').addClass(klass);
+                    $('.reg-feedback').addClass(klass);
                 }
             },
 
@@ -4618,8 +4621,9 @@
                         this.giveFeedback(__('Disconnecting'), 'error');
                     }
                 } else if (status == Strophe.Status.REGIFAIL) {
-                    // TODO
                     converse.log('REGIFAIL');
+                    this.cancelRegistration();
+                    if (error) this.giveFeedback(error, 'error');
                 } else if (status == Strophe.Status.CONFLICT) {
                     // TODO
                     converse.log('CONFLICT');
@@ -4662,16 +4666,29 @@
                  */
                 var $form= this.$('form'),
                     $stanza = $(stanza),
-                    $fields = $stanza.find('field');
+                    $fields;
 
                 $form.empty().append($('<p class="title">').text(this.title));
                 $form.append($('<p class="instructions">').text(this.instructions));
-                _.each($fields, function (field) {
-                    $form.append(utils.xForm2webForm(field));
-                });
-                $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
+
+                if (this.form_type == 'xform') {
+                    $fields = $stanza.find('field');
+                    _.each($fields, function (field) {
+                        $form.append(utils.xForm2webForm(field));
+                    });
+                } else {
+                    _.each(Object.keys(this.fields), $.proxy(function (key) {
+                        // TODO:
+                        $form.append('<p>'+key+'</p>');
+                        console.log('need to add form input here...');
+                    }, this));
+
+                }
+                if (this.fields.length) {
+                    $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
+                    $form.on('submit', $.proxy(this.submitRegistrationForm, this));
+                }
                 $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
-                $form.on('submit', $.proxy(this.submitRegistrationForm, this));
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
             },
 
@@ -4712,7 +4729,8 @@
                 /* Handler, when the user cancels the registration form.
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                this.render(); // XXX: check if this works.
+                converse.connection.reset();
+                this.render();
             },
 
             submitRegistrationForm : function (ev) {
@@ -4749,16 +4767,40 @@
                  * Parameters:
                  *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                  */
-                var $query = $(stanza).find('x[xmlns="'+Strophe.NS.XFORM+'"]');
+                var $query = $(stanza).find('query'), $xform;
                 if ($query.length > 0) {
-                    this.title = $query.find('title').text();
-                    this.instructions = $query.find('instructions').text();
-                    $query.find('field').each($.proxy(function (idx, field) {
-                        var name = field.getAttribute('var').toLowerCase();
-                        var value = $(field).children('value').text();
-                        this.fields[name] = value;
-                    }, this));
+                    $xform = $query.find('x[xmlns="'+Strophe.NS.XFORM+'"]');
+                    if ($xform.length > 0) {
+                        this._setFieldsFromXForm($xform);
+                    } else {
+                        this._setFieldsFromLegacy($query);
+                    }
                 }
+            },
+
+            _setFieldsFromLegacy: function ($query) {
+                $query.children().each($.proxy(function (idx, field) {
+                    if (field.tagName.toLowerCase() === 'instructions') {
+                        this.instructions = Strophe.getText(field);
+                        return;
+                    } else if (field.tagName.toLowerCase() === 'x') {
+                        // TODO:
+                        return;
+                    }
+                    this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
+                }, this));
+                this.form_type = 'legacy';
+            },
+
+            _setFieldsFromXForm: function ($xform) {
+                this.title = $xform.find('title').text();
+                this.instructions = $xform.find('instructions').text();
+                $xform.find('field').each($.proxy(function (idx, field) {
+                    var name = field.getAttribute('var').toLowerCase();
+                    var value = $(field).children('value').text();
+                    this.fields[name] = value;
+                }, this));
+                this.form_type = 'xform';
             },
 
             _onRegisterIQ: function (stanza) {

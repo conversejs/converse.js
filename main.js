@@ -95,6 +95,7 @@ require.config({
         "requesting_contacts":      "src/templates/requesting_contacts",
         "register_panel":           "src/templates/register_panel",
         "register_tab":             "src/templates/register_tab",
+        "registration_form":        "src/templates/registration_form",
         "room_description":         "src/templates/room_description",
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",

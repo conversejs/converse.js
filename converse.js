@@ -164,7 +164,9 @@
 
         // Logging
         Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+        Strophe.error = function (msg) {
+            console.log('ERROR: '+msg);
+        };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -2065,6 +2067,7 @@
             },
 
             switchTab: function (ev) {
+                // TODO: automatically focus the relevant input
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $tab = $(ev.target),
                     $sibling = $tab.parent().siblings('li').children('a'),
@@ -4481,8 +4484,8 @@
             render: function () {
                 this.$parent.append(this.$el.html(
                     converse.templates.register_panel({
-                        'label_domain': __("Give your XMPP provider's domain:"),
-                        'label_register': __('Request registration form')
+                        'label_domain': __("Your XMPP provider's domain:"),
+                        'label_register': __('Fetch registration form')
                     })
                 ));
                 this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
@@ -4589,9 +4592,9 @@
                     return;
                 }
                 $form.find('input[type=submit]').hide()
-                    .after('<button class="cancel hor_centered">Cancel form lookup</button>')
+                    .after('<button class="cancel hor_centered">Cancel</button>')
                     .after('<span class="spinner login-submit"/>')
-                    .after('<p class="info hor_centered">Requesting a registration form from the XMPP server</p>');
+                    .after('<p class="info">Requesting a registration form from the XMPP server</p>');
                 $form.find('button.cancel').on('click', $.proxy(this.cancelRegistration, this));
                 this.reset({
                     domain: Strophe.getDomainFromJid(domain),
@@ -4611,19 +4614,22 @@
             onRegistering: function (status, error) {
                 var that;
                 console.log('onRegistering');
-                if (status === Strophe.Status.CONNFAIL) {
-                    converse.renderLoginPanel();
-                    this.giveFeedback(__('Connection Failed'), 'error');
-                } else if (status === Strophe.Status.DISCONNECTING) {
-                    if (!converse.connection.connected) {
-                        converse.renderLoginPanel();
-                    } else {
-                        this.giveFeedback(__('Disconnecting'), 'error');
-                    }
-                } else if (status == Strophe.Status.REGIFAIL) {
-                    converse.log('REGIFAIL');
+                if (_.contains([
+                            Strophe.Status.DISCONNECTED,
+                            Strophe.Status.CONNFAIL,
+                            Strophe.Status.REGIFAIL
+                        ], status)) {
+
+                    converse.log('Problem during registration: Strophe.Status is: '+status);
                     this.cancelRegistration();
-                    if (error) this.giveFeedback(error, 'error');
+                    if (error) {
+                        this.giveFeedback(error, 'error');
+                    } else {
+                        this.giveFeedback(__(
+                                'Something went wrong establishing a connection with "%1$s". Are you sure it exists?',
+                                this.domain
+                            ), 'error');
+                    }
                 } else if (status == Strophe.Status.CONFLICT) {
                     // TODO
                     converse.log('CONFLICT');
@@ -4661,16 +4667,16 @@
                  * received from the XMPP server.
                  *
                  * Parameters:
-                 *      (XMLElement) stanza - The IQ stanza received from the
-                 *      XMPP server.
+                 *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
                  */
                 var $form= this.$('form'),
                     $stanza = $(stanza),
                     $fields;
-
-                $form.empty().append($('<p class="title">').text(this.title));
-                $form.append($('<p class="instructions">').text(this.instructions));
-
+                $form.empty().append(converse.templates.registration_form({
+                    'domain': this.domain,
+                    'title': this.title,
+                    'instructions': this.instructions
+                }));
                 if (this.form_type == 'xform') {
                     $fields = $stanza.find('field');
                     _.each($fields, function (field) {
@@ -4679,7 +4685,7 @@
                 } else {
                     _.each(Object.keys(this.fields), $.proxy(function (key) {
                         // TODO:
-                        $form.append('<p>'+key+'</p>');
+                        $form.append('<input placeholder="'+key+'" name="'+key+'"></input>');
                         console.log('need to add form input here...');
                     }, this));
 
@@ -4796,9 +4802,13 @@
                 this.title = $xform.find('title').text();
                 this.instructions = $xform.find('instructions').text();
                 $xform.find('field').each($.proxy(function (idx, field) {
-                    var name = field.getAttribute('var').toLowerCase();
-                    var value = $(field).children('value').text();
-                    this.fields[name] = value;
+                    var _var = field.getAttribute('var');
+                    if (_var) {
+                        this.fields[_var.toLowerCase()] = $(field).children('value').text();
+                    } else {
+                        // TODO: other option seems to be type="fixed"
+                        console.log("WARNING: Found field we couldn't parse");
+                    }
                 }, this));
                 this.form_type = 'xform';
             },

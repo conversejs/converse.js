@@ -756,7 +756,7 @@
   font-size: 115%;
 }
 #converse-register .provider-score {
-  width: 187px;
+  width: 178px;
   margin-bottom: 8px;
 }
 #converse-register .form-help .url {
@@ -1163,7 +1163,7 @@ dl.add-converse-contact {
 #conversejs form#converse-register .instructions {
   font-style: italic;
   color: gray;
-  font-size: 80%;
+  font-size: 85%;
 }
 #conversejs form#converse-register .form-errors {
   color: red;
@@ -1176,7 +1176,7 @@ dl.add-converse-contact {
 }
 #conversejs form#converse-register input,
 #conversejs form#converse-login input {
-  width: 187px;
+  width: 178px;
   height: 30px;
 }
 #conversejs form#converse-register label,

@@ -1942,15 +1942,6 @@
                     b64_sha1('converse.roster.groups'+converse.bare_jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 this.contactspanel.$el.append(converse.rosterview.$el);
-                // TODO:
-                // See if we shouldn't also fetch the roster here... otherwise
-                // the roster is always populated by the rosterHandler method,
-                // which appears to be a less economic way.
-                // i.e. from what it seems, only groups are fetched from
-                // browserStorage, and no contacts.
-                // XXX: Make sure that if fetch is called, we don't sort on
-                // each item add...
-                // converse.roster.fetch()
                 converse.rosterview.render().fetch().update();
                 return this;
             },
@@ -4562,6 +4553,7 @@
             reset: function (settings) {
                 var defaults = {
                     fields: {},
+                    urls: [],
                     title: "",
                     instructions: "",
                     registered: false,
@@ -4683,19 +4675,29 @@
                         $form.append(utils.xForm2webForm(field));
                     });
                 } else {
+                    // Show fields
                     _.each(Object.keys(this.fields), $.proxy(function (key) {
-                        // TODO:
-                        $form.append('<input placeholder="'+key+'" name="'+key+'"></input>');
-                        console.log('need to add form input here...');
+                        $form.append('<label>'+key+'</label>');
+                        var $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
+                        if (key === 'password' || key === 'email') {
+                            $input.attr('type', key);
+                        }
+                        $form.append($input);
                     }, this));
-
+                    // Show urls
+                    _.each(this.urls, $.proxy(function (url) {
+                        $form.append($('<a target="blank"></a>').attr('href', url).text(url));
+                    }, this));
                 }
-                if (this.fields.length) {
+                if (this.fields) {
                     $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
                     $form.on('submit', $.proxy(this.submitRegistrationForm, this));
+                    $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
+                    $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
+                } else {
+                    $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');
+                    $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
                 }
-                $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
-                $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
             },
 
             reportErrors: function (stanza) {
@@ -4756,7 +4758,7 @@
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
                     iq = $iq({type: "set"})
                         .c("query", {xmlns:Strophe.NS.REGISTER})
-                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});  // TODO: Add Strophe namespace
+                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
 
                 $inputs.each(function () {
                     iq.cnode(utils.webForm2xForm(this)).up();
@@ -4786,11 +4788,16 @@
 
             _setFieldsFromLegacy: function ($query) {
                 $query.children().each($.proxy(function (idx, field) {
+                    var $field = $(field);
                     if (field.tagName.toLowerCase() === 'instructions') {
                         this.instructions = Strophe.getText(field);
                         return;
                     } else if (field.tagName.toLowerCase() === 'x') {
-                        // TODO:
+                        if ($field.attr('xmlns') === 'jabber:x:oob') {
+                            $field.find('url').each($.proxy(function (idx, url) {
+                                this.urls.push($(url).text());
+                            }, this));
+                        }
                         return;
                     }
                     this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
@@ -4849,7 +4856,6 @@
             },
 
             remove: function () {
-                // XXX ?
                 this.$tabs.empty();
                 this.$el.parent().empty();
             }

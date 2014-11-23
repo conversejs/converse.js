@@ -1,1 +1,8 @@
-<label>{{label}}<input name="{{name}}" type="{{type}}" value="{{value}}"></label>
+{[ if (label) { ]}
+<label>
+    {{label}}
+{[ } ]}
+    <input name="{{name}}" type="{{type}}" value="{{value}}">
+{[ if (label) { ]}
+</label>
+{[ } ]}

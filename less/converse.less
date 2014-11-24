@@ -822,13 +822,6 @@
     color: red;
 }
 
-
-#conversejs .form-help {
-    padding-top: 5px;
-    font-size: 85%;
-    color: grey;
-}
-
 #converse-register .provider-title {
     font-size: 115%;
 }
@@ -1316,10 +1309,19 @@ dl.add-converse-contact {
     margin: 5px 0;
 }
 
+#conversejs .form-help,
 #conversejs form#converse-register .instructions {
-    font-style: italic;
     color: gray;
     font-size: 85%;
+}
+
+#conversejs .form-help:hover,
+#conversejs form#converse-register .instructions:hover {
+    color: #4f4f4f;
+}
+
+#conversejs .form-help {
+    padding-top: 5px;
 }
 
 #conversejs form#converse-register .form-errors {
@@ -1342,6 +1344,7 @@ dl.add-converse-contact {
 #conversejs form#converse-register label,
 #conversejs form#converse-login label {
     margin-top: 0.5em;
+    font-weight: bold;
 }
 
 #conversejs form#converse-register .login-submit,
@@ -1407,12 +1410,12 @@ select#select-xmpp-status {
     text-decoration: none;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
-    color: #666;
+    color: #888;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
 #conversejs .chat-head #controlbox-tabs li a:hover {
-    color: black;
+    color: #4f4f4f
 }
 
 #conversejs .chat-head #controlbox-tabs li a {

@@ -80,6 +80,7 @@ require.config({
         "controlbox_toggle":        "src/templates/controlbox_toggle",
         "field":                    "src/templates/field",
         "form_checkbox":            "src/templates/form_checkbox",
+        "form_captcha":             "src/templates/form_captcha",
         "form_input":               "src/templates/form_input",
         "form_select":              "src/templates/form_select",
         "group_header":             "src/templates/group_header",

@@ -98,15 +98,17 @@ define(["jquery", "converse-templates"], function ($, templates) {
             }))[0];
         },
 
-        xForm2webForm: function (field) {
+        xForm2webForm: function ($field, $stanza) {
             /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
              * and turns it into a HTML DOM field.
              *
              *  Parameters:
              *      (XMLElement) field - the field to convert
              */
-            var $field = $(field), options = [],
-                j, $options, $values, value, values;
+
+            // FIXME: take <required> into consideration
+            var options = [], j, $options, $values, value, values;
+
             if ($field.attr('type') == 'list-single' || $field.attr('type') == 'list-multi') {
                 values = [];
                 $values = $field.children('value');
@@ -119,37 +121,58 @@ define(["jquery", "converse-templates"], function ($, templates) {
                     options.push(templates.select_option({
                         value: value,
                         label: $($options[j]).attr('label'),
-                        selected: (values.indexOf(value) >= 0)
+                        selected: (values.indexOf(value) >= 0),
+                        required: $field.find('required').length
                     }));
                 }
                 return templates.form_select({
                     name: $field.attr('var'),
                     label: $field.attr('label'),
                     options: options.join(''),
-                    multiple: ($field.attr('type') == 'list-multi')
+                    multiple: ($field.attr('type') == 'list-multi'),
+                    required: $field.find('required').length
                 });
             } else if ($field.attr('type') == 'fixed') {
-                return $('<p>').text($field.find('value').text());
+                return $('<p class="form-help">').text($field.find('value').text());
             } else if ($field.attr('type') == 'jid-multi') {
                 return templates.form_textarea({
                     name: $field.attr('var'),
                     label: $field.attr('label') || '',
-                    value: $field.find('value').text()
+                    value: $field.find('value').text(),
+                    required: $field.find('required').length
                 });
             } else if ($field.attr('type') == 'boolean') {
                 return templates.form_checkbox({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
                     label: $field.attr('label') || '',
-                    checked: $field.find('value').text() === "1" && 'checked="1"' || ''
+                    checked: $field.find('value').text() === "1" && 'checked="1"' || '',
+                    required: $field.find('required').length
                 });
-            } else {
+            } else if ($field.attr('type')) {
                 return templates.form_input({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
                     label: $field.attr('label') || '',
-                    value: $field.find('value').text()
+                    value: $field.find('value').text(),
+                    required: $field.find('required').length
                 });
+            } else {
+                if ($field.attr('var') === 'ocr') { // Captcha
+                    return _.reduce(_.map($field.find('uri'),
+                            $.proxy(function (uri) {
+                                return templates.form_captcha({
+                                    label: this.$field.attr('label'),
+                                    name: this.$field.attr('var'),
+                                    data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
+                                    type: uri.getAttribute('type'),
+                                    required: this.$field.find('required').length
+                                });
+                            }, {'$stanza': $stanza, '$field': $field})
+                        ),
+                        function (memo, num) { return memo + num; }, ''
+                    );
+                }
             }
         }
     };

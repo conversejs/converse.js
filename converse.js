@@ -4673,7 +4673,7 @@
                 if (this.form_type == 'xform') {
                     $fields = $stanza.find('field');
                     _.each($fields, function (field) {
-                        $form.append(utils.xForm2webForm(field));
+                        $form.append(utils.xForm2webForm($(field), $stanza));
                     });
                 } else {
                     // Show fields
@@ -4751,7 +4751,7 @@
                  *      (Event) ev - the submit event.
                  */
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $empty_inputs = this.$('input:emptyVal');
+                var $empty_inputs = this.$('input.required:emptyVal');
                 if ($empty_inputs.length) {
                     $empty_inputs.addClass('error');
                     return;

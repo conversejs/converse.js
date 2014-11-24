@@ -1677,6 +1677,7 @@
 
         this.RoomsPanel = Backbone.View.extend({
             tagName: 'div',
+            className: 'controlbox-pane',
             id: 'chatrooms',
             events: {
                 'submit form.add-chatroom': 'createChatRoom',

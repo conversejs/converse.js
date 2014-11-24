@@ -332,10 +332,15 @@
         // Module-level functions
         // ----------------------
         this.giveFeedback = function (message, klass) {
-            $('.conn-feedback').attr('class', 'conn-feedback').text(message);
-            if (klass) {
-                $('.conn-feedback').addClass(klass);
-            }
+            $('.conn-feedback').each(function (idx, el) {
+                var $el = $(el);
+                $el.addClass('conn-feedback').text(message);
+                if (klass) {
+                    $el.addClass(klass);
+                } else {
+                    $el.removeClass('error');
+                }
+            });
         };
 
         this.log = function (txt, level) {
@@ -431,30 +436,26 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                converse.giveFeedback(__('Disconnected'), 'error');
                 if (converse.auto_reconnect) {
                     converse.reconnect();
                 } else {
                     converse.renderLoginPanel();
                 }
             } else if (status === Strophe.Status.Error) {
-                converse.renderLoginPanel();
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
-            } else if (status === Strophe.Status.CONNFAIL) {
-                converse.renderLoginPanel();
-                converse.giveFeedback(__('Connection Failed'), 'error');
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.renderLoginPanel();
                 converse.giveFeedback(__('Authentication Failed'), 'error');
+                converse.connection.disconnect(__('Authentication Failed'));
             } else if (status === Strophe.Status.DISCONNECTING) {
                 if (!converse.connection.connected) {
                     converse.renderLoginPanel();
-                } else {
-                    converse.giveFeedback(__('Disconnecting'), 'error');
+                }
+                if (condition) {
+                    converse.giveFeedback(condition, 'error');
                 }
             }
         };
@@ -543,7 +544,6 @@
             converse.chatboxviews.closeAllChatBoxes(false);
             converse.clearSession();
             converse.connection.disconnect();
-            converse.connection.reset();
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -622,10 +622,6 @@
         };
 
         this.onConnected = function () {
-            if (this.debug) {
-                this.connection.xmlInput = function (body) { console.log(body); };
-                this.connection.xmlOutput = function (body) { console.log(body); };
-            }
             // When reconnecting, there might be some open chat boxes. We don't
             // know whether these boxes are of the same account or not, so we
             // close them now.
@@ -1913,8 +1909,11 @@
             },
 
             giveFeedback: function (message, klass) {
-                // TODO:
-                alert(message);
+                var $el = this.$('.conn-feedback');
+                $el.addClass('conn-feedback').text(message);
+                if (klass) {
+                    $el.addClass(klass);
+                }
             },
 
             onConnected: function () {
@@ -1958,6 +1957,7 @@
             },
 
             renderLoginPanel: function () {
+                var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
                 this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                 var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
                 if (!this.loginpanel) {
@@ -1976,6 +1976,9 @@
                     this.registerpanel.render().$el.hide();
                 }
                 this.initDragResize();
+                if ($feedback.length) {
+                    this.$('.conn-feedback').replaceWith($feedback);
+                }
                 return this;
             },
 
@@ -5009,9 +5012,17 @@
             });
         };
 
+        this.setUpXMLLogging = function () {
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+            }
+        };
+
         this.initConnection = function () {
             var rid, sid, jid;
             if (this.connection && this.connection.connected) {
+                this.setUpXMLLogging();
                 this.onConnected();
             } else {
                 // XXX: it's not yet clear what the order of preference should
@@ -5026,6 +5037,7 @@
                     throw("Error: you must supply a value for the bosh_service_url");
                 }
                 this.connection = new Strophe.Connection(this.bosh_service_url);
+                this.setUpXMLLogging();
 
                 if (this.prebind) {
                     if (this.jid && this.sid && this.rid) {
@@ -5056,10 +5068,14 @@
              * connection.
              */
             this.initial_presence_sent = false;
-            this.roster.off().reset(); // Removes roster contacts
+            if (this.roster) {
+                this.roster.off().reset(); // Removes roster contacts
+            }
             this.connection.roster._callbacks = []; // Remove all Roster handlers (e.g. rosterHandler)
-            this.rosterview.model.off().reset(); // Removes roster groups
-            this.rosterview.undelegateEvents().remove();
+            if (this.rosterview) {
+                this.rosterview.model.off().reset(); // Removes roster groups
+                this.rosterview.undelegateEvents().remove();
+            }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             if (this.features) {
                 this.features.reset();

@@ -2906,7 +2906,7 @@
                 var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
-                    message_from = $message.attr('from').toLowerCase();
+                    message_from = $message.attr('from');
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted
@@ -2933,7 +2933,7 @@
                     contact_jid = to;
                     resource = Strophe.getResourceFromJid($message.attr('to'));
                 } else {
-                    contact_jid = from;
+                    contact_jid = from; // XXX: Should we add toLowerCase here? See ticket #234
                     resource = Strophe.getResourceFromJid(message_from);
                 }
 

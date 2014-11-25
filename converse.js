@@ -1077,7 +1077,7 @@
                     msg_time = moment(msg_dict.time) || moment,
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
-                    fullname = this.model.get('fullname'), // XXX Perhaps always use model's?
+                    fullname = this.model.get('fullname') || msg_dict.fullname,
                     extra_classes = msg_dict.delayed && 'delayed' || '',
                     template, username;
 

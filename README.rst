@@ -30,8 +30,8 @@ It has the following features:
 * Roster item exchange `XEP 144 <http://xmpp.org/extensions/tmp/xep-0144-1.1.html>`_
 * Chat statuses (online, busy, away, offline)
 * Custom status messages
-* Messages appear in all connnected chat clients `XEP 280 <http://xmpp.org/extensions/tmp/xep-0280.html>`_
-* Typing notifications
+* Messages appear in all connnected chat clients `XEP 280 <http://xmpp.org/extensions/xep-0280.html>`_
+* Typing and chat state notifications `XEP 85 <http://xmpp.org/extensions/xep-0085.html>`_
 * Third person messages (/me )
 * Translated into 14 languages
 * Off-the-record encryption

@@ -23,7 +23,7 @@ It has the following features:
 * Direct invitations to chat rooms `XEP 249 <http://xmpp.org/extensions/xep-0249.html>`_
 * vCard support `XEP 54 <http://xmpp.org/extensions/xep-0054.html>`_
 * Service discovery `XEP 30 <http://xmpp.org/extensions/xep-0030.html>`_
-* In-band registration `XEP 77<http://xmpp.org/extensions/xep-0077.html>`_
+* In-band registration `XEP 77 <http://xmpp.org/extensions/xep-0077.html>`_
 * Contact rosters and groups
 * Contact subscriptions
 * Accept or decline contact requests

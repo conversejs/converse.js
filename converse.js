@@ -5111,6 +5111,9 @@
         // Initialization
         // --------------
         // This is the end of the initialize method.
+        if (settings.connection) {
+            this.connection = settings.connection;
+        }
         this._initializePlugins();
         this._initialize();
         this.registerGlobalEventHandlers();

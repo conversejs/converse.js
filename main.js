@@ -1,3 +1,16 @@
+var config;
+if (typeof(require) === 'undefined') {
+    /* XXX: Hack to work around r.js's stupid parsing.
+    * We want to save the configuration in a variable so that we can reuse it in
+    * tests/main.js.
+    */
+    require = {
+        config: function (c) {
+            config = c;
+        }
+    };
+}
+
 require.config({
     baseUrl: '.',
     paths: {
@@ -79,10 +92,11 @@ require.config({
         "controlbox":               "src/templates/controlbox",
         "controlbox_toggle":        "src/templates/controlbox_toggle",
         "field":                    "src/templates/field",
-        "form_checkbox":            "src/templates/form_checkbox",
         "form_captcha":             "src/templates/form_captcha",
+        "form_checkbox":            "src/templates/form_checkbox",
         "form_input":               "src/templates/form_input",
         "form_select":              "src/templates/form_select",
+        "form_textarea":            "src/templates/form_textarea",
         "group_header":             "src/templates/group_header",
         "info":                     "src/templates/info",
         "login_panel":              "src/templates/login_panel",
@@ -92,11 +106,11 @@ require.config({
         "occupant":                 "src/templates/occupant",
         "pending_contact":          "src/templates/pending_contact",
         "pending_contacts":         "src/templates/pending_contacts",
-        "requesting_contact":       "src/templates/requesting_contact",
-        "requesting_contacts":      "src/templates/requesting_contacts",
         "register_panel":           "src/templates/register_panel",
         "register_tab":             "src/templates/register_tab",
         "registration_form":        "src/templates/registration_form",
+        "requesting_contact":       "src/templates/requesting_contact",
+        "requesting_contacts":      "src/templates/requesting_contacts",
         "room_description":         "src/templates/room_description",
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",
@@ -107,8 +121,7 @@ require.config({
         "status_option":            "src/templates/status_option",
         "toggle_chats":             "src/templates/toggle_chats",
         "toolbar":                  "src/templates/toolbar",
-        "trimmed_chat":             "src/templates/trimmed_chat",
-        "form_textarea":            "src/templates/form_textarea"
+        "trimmed_chat":             "src/templates/trimmed_chat"
     },
 
     map: {
@@ -152,6 +165,10 @@ require.config({
         'strophe.vcard':        { deps: ['strophe'] }
     }
 });
-require(["converse"], function(converse) {
-    window.converse = converse;
-});
+
+if (typeof(require) === 'function') {
+    require(config);
+    require(["converse"], function(converse) {
+        window.converse = converse;
+    });
+}

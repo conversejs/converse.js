@@ -19,19 +19,22 @@ Features
 It has the following features:
 
 * Single-user chat
-* Multi-user chat in chatrooms
-* vCard support
-* Service discovery
-* Contact rosters
-* Manually or automically subscribe to other contacts
+* Multi-user chat rooms `XEP 45 <http://xmpp.org/extensions/xep-0045.html>`_
+* Direct invitations to chat rooms `XEP 249 <http://xmpp.org/extensions/xep-0249.html>`_
+* vCard support `XEP 54 <http://xmpp.org/extensions/xep-0054.html>`_
+* Service discovery `XEP 30 <http://xmpp.org/extensions/xep-0030.html>`_
+* In-band registration `XEP 77<http://xmpp.org/extensions/xep-0077.html>`_
+* Contact rosters and groups
+* Contact subscriptions
 * Accept or decline contact requests
-* Roster item exchange
+* Roster item exchange `XEP 144 <http://xmpp.org/extensions/tmp/xep-0144-1.1.html>`_
 * Chat statuses (online, busy, away, offline)
 * Custom status messages
+* Messages appear in all connnected chat clients `XEP 280 <http://xmpp.org/extensions/tmp/xep-0280.html>`_
 * Typing notifications
 * Third person messages (/me )
-* Translated into multiple languages  (af, de, en, es, fr, he, hu, id, it, ja, nl, pt_BR, ru)
-* Off-the-record encryption support (via `OTR.js <http://arlolra.github.io/otr>`_)
+* Translated into 14 languages
+* Off-the-record encryption
 
 -----------
 Screencasts

@@ -4,7 +4,8 @@ Changelog
 0.8.4 (Unreleased)
 ------------------
 
-* #282 JIDs or nicknames not shown in chat rooms. [jcbrand]
+* #117 JIDs or nicknames not shown in chat rooms. [jcbrand]
+* #282 XEP-0077 In-band registration. [jcbrand]
 
 0.8.4 (2014-11-15)
 ------------------

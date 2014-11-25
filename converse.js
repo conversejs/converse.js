@@ -127,8 +127,8 @@
             } else {
                 audio = new Audio("/sounds/msg_received.mp3");
                 audio.play();
+                }
             }
-        }
     };
 
     var converse = {
@@ -162,6 +162,26 @@
     converse.initialize = function (settings, callback) {
         var converse = this;
 
+        // Logging
+        Strophe.log = function (level, msg) { console.log(level+' '+msg); };
+        Strophe.error = function (msg) {
+            console.log('ERROR: '+msg);
+        };
+
+        // Add Strophe Namespaces
+        Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+        Strophe.addNamespace('XFORM', 'jabber:x:data');
+
+        // Add Strophe Statuses
+        var i = 0;
+        Object.keys(Strophe.Status).forEach(function (key) {
+            i = Math.max(i, Strophe.Status[key]);
+        });
+        Strophe.Status.REGIFAIL        = i + 1;
+        Strophe.Status.REGISTERED      = i + 2;
+        Strophe.Status.CONFLICT        = i + 3;
+        Strophe.Status.NOTACCEPTABLE   = i + 5;
+
         // Constants
         // ---------
         var UNENCRYPTED = 0;
@@ -179,13 +199,11 @@
             'dnd':          2,
             'online':       1
         };
-
         var INACTIVE = 'inactive';
         var ACTIVE = 'active';
         var COMPOSING = 'composing';
         var PAUSED = 'paused';
         var GONE = 'gone';
-
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -195,95 +213,58 @@
             (typeof OTR !== "undefined") &&
             (typeof DSA !== "undefined")
         );
-
         var OPENED = 'opened';
         var CLOSED = 'closed';
 
         // Default configuration values
         // ----------------------------
-        this.allow_contact_requests = true;
-        this.allow_dragresize = true;
-        this.allow_logout = true;
-        this.allow_muc = true;
-        this.allow_otr = true;
-        this.animate = true;
-        this.auto_list_rooms = false;
-        this.auto_reconnect = false;
-        this.auto_subscribe = false;
-        this.bosh_service_url = undefined; // The BOSH connection manager URL.
-        this.cache_otr_key = false;
-        this.debug = false;
-        this.default_box_height = 324; // The default height, in pixels, for the control box, chat boxes and chatrooms.
-        this.expose_rid_and_sid = false;
-        this.forward_messages = false;
-        this.hide_muc_server = false;
-        this.hide_offline_users = false;
-        this.i18n = locales.en;
-        this.keepalive = false;
-        this.message_carbons = false;
-        this.no_trimming = false; // Set to true for phantomjs tests (where browser apparently has no width)
-        this.play_sounds = false;
-        this.prebind = false;
-        this.roster_groups = false;
-        this.show_controlbox_by_default = false;
-        this.show_only_online_users = false;
-        this.show_toolbar = true;
-        this.storage = 'session';
-        this.use_otr_by_default = false;
-        this.use_vcards = true;
-        this.visible_toolbar_buttons = {
-            'emoticons': true,
-            'call': false,
-            'clear': true,
-            'toggle_participants': true
+        var default_settings = {
+            allow_contact_requests: true,
+            allow_dragresize: true,
+            allow_logout: true,
+            allow_muc: true,
+            allow_otr: true,
+            allow_registration: true,
+            animate: true,
+            auto_list_rooms: false,
+            auto_reconnect: false,
+            auto_subscribe: false,
+            bosh_service_url: undefined, // The BOSH connection manager URL.
+            cache_otr_key: false,
+            debug: false,
+            default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
+            expose_rid_and_sid: false,
+            forward_messages: false,
+            hide_muc_server: false,
+            hide_offline_users: false,
+            i18n: locales.en,
+            keepalive: false,
+            message_carbons: false,
+            no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            play_sounds: false,
+            prebind: false,
+            roster_groups: false,
+            show_controlbox_by_default: false,
+            show_only_online_users: false,
+            show_toolbar: true,
+            storage: 'session',
+            use_otr_by_default: false,
+            use_vcards: true,
+            visible_toolbar_buttons: {
+                'emoticons': true,
+                'call': false,
+                'clear': true,
+                'toggle_participants': true
+            },
+            xhr_custom_status: false,
+            xhr_custom_status_url: '',
+            xhr_user_search: false,
+            xhr_user_search_url: ''
         };
-        this.xhr_custom_status = false;
-        this.xhr_custom_status_url = '';
-        this.xhr_user_search = false;
-        this.xhr_user_search_url = '';
-
+        _.extend(this, default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, [
-            'allow_contact_requests',
-            'allow_dragresize',
-            'allow_logout',
-            'allow_muc',
-            'allow_otr',
-            'animate',
-            'auto_list_rooms',
-            'auto_reconnect',
-            'auto_subscribe',
-            'bosh_service_url',
-            'cache_otr_key',
-            'connection',
-            'debug',
-            'default_box_height',
-            'expose_rid_and_sid',
-            'forward_messages',
-            'fullname',
-            'hide_muc_server',
-            'hide_offline_users',
-            'i18n',
-            'jid',
-            'keepalive',
-            'message_carbons',
-            'no_trimming',
-            'play_sounds',
-            'prebind',
-            'rid',
-            'roster_groups',
-            'show_controlbox_by_default',
-            'show_only_online_users',
-            'show_toolbar',
-            'sid',
-            'storage',
-            'use_otr_by_default',
-            'use_vcards',
-            'xhr_custom_status',
-            'xhr_custom_status_url',
-            'xhr_user_search',
-            'xhr_user_search_url'
-        ]));
+        _.extend(this, _.pick(settings, Object.keys(default_settings)));
+
         if (settings.visible_toolbar_buttons) {
             _.extend(
                 this.visible_toolbar_buttons,
@@ -351,10 +332,15 @@
         // Module-level functions
         // ----------------------
         this.giveFeedback = function (message, klass) {
-            $('.conn-feedback').attr('class', 'conn-feedback').text(message);
-            if (klass) {
-                $('.conn-feedback').addClass(klass);
-            }
+            $('.conn-feedback').each(function (idx, el) {
+                var $el = $(el);
+                $el.addClass('conn-feedback').text(message);
+                if (klass) {
+                    $el.addClass(klass);
+                } else {
+                    $el.removeClass('error');
+                }
+            });
         };
 
         this.log = function (txt, level) {
@@ -440,7 +426,6 @@
         };
 
         this.onConnect = function (status, condition, reconnect) {
-            var $button, $form;
             if ((status === Strophe.Status.CONNECTED) ||
                 (status === Strophe.Status.ATTACHED)) {
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
@@ -451,30 +436,26 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                converse.giveFeedback(__('Disconnected'), 'error');
                 if (converse.auto_reconnect) {
                     converse.reconnect();
                 } else {
                     converse.renderLoginPanel();
                 }
             } else if (status === Strophe.Status.Error) {
-                converse.renderLoginPanel();
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
-            } else if (status === Strophe.Status.CONNFAIL) {
-                converse.renderLoginPanel();
-                converse.giveFeedback(__('Connection Failed'), 'error');
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.renderLoginPanel();
                 converse.giveFeedback(__('Authentication Failed'), 'error');
+                converse.connection.disconnect(__('Authentication Failed'));
             } else if (status === Strophe.Status.DISCONNECTING) {
                 if (!converse.connection.connected) {
                     converse.renderLoginPanel();
-                } else {
-                    converse.giveFeedback(__('Disconnecting'), 'error');
+                }
+                if (condition) {
+                    converse.giveFeedback(condition, 'error');
                 }
             }
         };
@@ -534,7 +515,7 @@
             this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.session.fetch();
             $(window).on('beforeunload', $.proxy(function () {
-                if (converse.connection.connected) {
+                if (converse.connection.authenticated) {
                     this.setSession();
                 } else {
                     this.clearSession();
@@ -563,7 +544,6 @@
             converse.chatboxviews.closeAllChatBoxes(false);
             converse.clearSession();
             converse.connection.disconnect();
-            converse.connection.reset();
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -642,16 +622,6 @@
         };
 
         this.onConnected = function () {
-            if (this.debug) {
-                this.connection.xmlInput = function (body) { console.log(body); };
-                this.connection.xmlOutput = function (body) { console.log(body); };
-                Strophe.log = function (level, msg) {
-                    console.log(level+' '+msg);
-                };
-                Strophe.error = function (msg) {
-                    console.log('ERROR: '+msg);
-                };
-            }
             // When reconnecting, there might be some open chat boxes. We don't
             // know whether these boxes are of the same account or not, so we
             // close them now.
@@ -1703,6 +1673,7 @@
 
         this.RoomsPanel = Backbone.View.extend({
             tagName: 'div',
+            className: 'controlbox-pane',
             id: 'chatrooms',
             events: {
                 'submit form.add-chatroom': 'createChatRoom',
@@ -1937,6 +1908,14 @@
                 }
             },
 
+            giveFeedback: function (message, klass) {
+                var $el = this.$('.conn-feedback');
+                $el.addClass('conn-feedback').text(message);
+                if (klass) {
+                    $el.addClass(klass);
+                }
+            },
+
             onConnected: function () {
                 if (this.model.get('connected')) {
                     this.render().initRoster();
@@ -1963,15 +1942,6 @@
                     b64_sha1('converse.roster.groups'+converse.bare_jid));
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 this.contactspanel.$el.append(converse.rosterview.$el);
-                // TODO:
-                // See if we shouldn't also fetch the roster here... otherwise
-                // the roster is always populated by the rosterHandler method,
-                // which appears to be a less economic way.
-                // i.e. from what it seems, only groups are fetched from
-                // browserStorage, and no contacts.
-                // XXX: Make sure that if fetch is called, we don't sort on
-                // each item add...
-                // converse.roster.fetch()
                 converse.rosterview.render().fetch().update();
                 return this;
             },
@@ -1987,15 +1957,29 @@
             },
 
             renderLoginPanel: function () {
+                var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
                 this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                 var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
                 if (!this.loginpanel) {
                     this.loginpanel = new converse.LoginPanel(cfg);
+                    if (converse.allow_registration) {
+                        this.registerpanel = new converse.RegisterPanel(cfg);
+                    }
                 } else {
                     this.loginpanel.delegateEvents().initialize(cfg);
+                    if (converse.allow_registration) {
+                        this.registerpanel.delegateEvents().initialize(cfg);
+                    }
                 }
                 this.loginpanel.render();
+                if (converse.allow_registration) {
+                    this.registerpanel.render().$el.hide();
+                }
                 this.initDragResize();
+                if ($feedback.length) {
+                    this.$('.conn-feedback').replaceWith($feedback);
+                }
+                return this;
             },
 
             renderContactsPanel: function () {
@@ -2078,7 +2062,8 @@
             },
 
             switchTab: function (ev) {
-                ev.preventDefault();
+                // TODO: automatically focus the relevant input
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $tab = $(ev.target),
                     $sibling = $tab.parent().siblings('li').children('a'),
                     $tab_panel = $($tab.attr('href'));
@@ -2086,6 +2071,7 @@
                 $sibling.removeClass('current');
                 $tab.addClass('current');
                 $tab_panel.show();
+                return this;
             },
 
             showHelpMessages: function (msgs) {
@@ -2419,73 +2405,15 @@
                 var $form= this.$el.find('form.chatroom-form'),
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
-                    title = $stanza.find('title').text(),
-                    instructions = $stanza.find('instructions').text(),
-                    i, j, options=[], $field, $options,
-					values=[], $values, value;
-                var input_types = {
-                    'text-private': 'password',
-                    'text-single': 'textline',
-                    'fixed': 'label',
-                    'boolean': 'checkbox',
-                    'hidden': 'hidden',
-                    'jid-multi': 'textarea',
-                    'list-single': 'dropdown',
-                    'list-multi': 'dropdown'
-                };
+                    title = $stanza.find('title').text();
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
                 if (instructions != title) {
-                    $form.append($('<p>').text(instructions));
+                    $form.append($('<p class="instructions">').text(this.instructions));
                 }
-                for (i=0; i<$fields.length; i++) {
-                    $field = $($fields[i]);
-                    if ($field.attr('type') == 'list-single' || $field.attr('type') == 'list-multi') {
-						values = [];
-                        $values = $field.children('value');
-                        for (j=0; j<$values.length; j++) {
-							values.push($($values[j]).text());
-						}
-                        options = [];
-                        $options = $field.children('option');
-                        for (j=0; j<$options.length; j++) {
-                            value = $($options[j]).find('value').text();
-                            options.push(converse.templates.select_option({
-                                value: value,
-                                label: $($options[j]).attr('label'),
-								selected: (values.indexOf(value) >= 0)
-                            }));
-                        }
-                        $form.append(converse.templates.form_select({
-                            name: $field.attr('var'),
-                            label: $field.attr('label'),
-                            options: options.join(''),
-                            multiple: ($field.attr('type') == 'list-multi')
-                        }));
-                    } else if ($field.attr('type') == 'fixed') {
-                        $form.append($('<p>').text($field.find('value').text()));
-                    } else if ($field.attr('type') == 'jid-multi') {
-                        $form.append(converse.templates.form_textarea({
-                            name: $field.attr('var'),
-                            label: $field.attr('label') || '',
-                            value: $field.find('value').text()
-                        }));
-                    } else if ($field.attr('type') == 'boolean') {
-                        $form.append(converse.templates.form_checkbox({
-                            name: $field.attr('var'),
-                            type: input_types[$field.attr('type')],
-                            label: $field.attr('label') || '',
-                            checked: $field.find('value').text() === "1" && 'checked="1"' || ''
-                        }));
-                    } else {
-                        $form.append(converse.templates.form_input({
-                            name: $field.attr('var'),
-                            type: input_types[$field.attr('type')],
-                            label: $field.attr('label') || '',
-                            value: $field.find('value').text()
-                        }));
-                    }
-                }
+                _.each($fields, function (field) {
+                    $form.append(utils.xForm2webForm(field));
+                });
                 $form.append('<input type="submit" value="'+__('Save')+'"/>');
                 $form.append('<input type="button" value="'+__('Cancel')+'"/>');
                 $form.on('submit', $.proxy(this.saveConfiguration, this));
@@ -2499,26 +2427,7 @@
                     count = $inputs.length,
                     configArray = [];
                 $inputs.each(function () {
-                    var $input = $(this), value;
-                    if ($input.is('[type=checkbox]')) {
-                        value = $input.is(':checked') && 1 || 0;
-                    } else if ($input.is('textarea')) {
-                        value = [];
-                        var lines = $input.val().split('\n');
-                        for( var vk=0; vk<lines.length; vk++) {
-                            var val = $.trim(lines[vk]);
-                            if (val === '')
-                                continue;
-                            value.push(val);
-                        }
-                    } else {
-                        value = $input.val();
-                    }
-                    var cnode = $(converse.templates.field({
-                        name: $input.attr('name'),
-                        value: value
-                    }))[0];
-                    configArray.push(cnode);
+                    configArray.push(utils.webForm2xForm(this));
                     if (!--count) {
                         converse.connection.muc.saveConfiguration(
                             that.model.get('jid'),
@@ -2537,7 +2446,7 @@
             },
 
             onConfigSaved: function (stanza) {
-                // XXX
+                // TODO: provide feedback
             },
 
             onErrorConfigSaved: function (stanza) {
@@ -3087,7 +2996,9 @@
                 this.model.each($.proxy(function (model) {
                     var id = model.get('id');
                     if (include_controlbox || id !== 'controlbox') {
-                        this.get(id).close();
+                        if (this.get(id)) { // Should always resolve, but shit happens
+                            this.get(id).close();
+                        }
                     }
                 }, this));
                 return this;
@@ -4550,28 +4461,422 @@
             }
         });
 
+        this.RegisterPanel = Backbone.View.extend({
+            tagName: 'div',
+            id: "register",
+            className: 'controlbox-pane',
+            events: {
+                'submit form#converse-register': 'onProviderChosen'
+            },
+
+            initialize: function (cfg) {
+                this.reset();
+                this.$parent = cfg.$parent;
+                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                this.registerHooks();
+            },
+
+            render: function () {
+                this.$parent.append(this.$el.html(
+                    converse.templates.register_panel({
+                        'label_domain': __("Your XMPP provider's domain:"),
+                        'label_register': __('Fetch registration form')
+                    })
+                ));
+                this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
+                return this;
+            },
+
+            registerHooks: function () {
+                /* Hook into Strophe's _connect_cb, so that we can send an IQ
+                 * requesting the registration fields.
+                 */
+                var conn = converse.connection;
+                var connect_cb = conn._connect_cb.bind(conn);
+                conn._connect_cb = $.proxy(function (req, callback, raw) {
+                    if (!this._registering) {
+                        connect_cb(req, callback, raw);
+                    } else {
+                        if (this.getRegistrationFields(req, callback, raw)) {
+                            delete this._registering;
+                        }
+                    }
+                }, this);
+            },
+
+            getRegistrationFields: function (req, _callback, raw) {
+                /*  Send an IQ stanza to the XMPP server asking for the
+                 *  registration fields.
+                 *
+                 *  Parameters:
+                 *    (Strophe.Request) req - The current request
+                 *    (Function) callback
+                 */
+                converse.log("sendQueryStanza was called");
+                var conn = converse.connection;
+                conn.connected = true;
+
+                var body = conn._proto._reqToData(req);
+                if (!body) { return; }
+                if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
+                    return false;
+                }
+                var register = body.getElementsByTagName("register");
+                var mechanisms = body.getElementsByTagName("mechanism");
+                if (register.length === 0 && mechanisms.length === 0) {
+                    conn._proto._no_auth_received(_callback);
+                    return false;
+                }
+                if (register.length === 0) {
+                    conn._changeConnectStatus(
+                            Strophe.Status.REGIFAIL,
+                            'Sorry, the given provider does not support in band account registration. Please try with a different provider.');
+                    return true;
+                }
+                // Send an IQ stanza to get all required data fields
+                conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
+                conn.send($iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree());
+                return true;
+            },
+
+            onRegistrationFields: function (stanza) {
+                /*  Handler for Registration Fields Request.
+                 *
+                 *  Parameters:
+                 *    (XMLElement) elem - The query stanza.
+                 */
+                if (stanza.getElementsByTagName("query").length !== 1) {
+                    converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                    return false;
+                }
+                this.setFields(stanza);
+                this.renderRegistrationForm(stanza);
+                return false;
+            },
+
+            reset: function (settings) {
+                var defaults = {
+                    fields: {},
+                    urls: [],
+                    title: "",
+                    instructions: "",
+                    registered: false,
+                    _registering: false,
+                    domain: null,
+                    form_type: null
+                };
+                _.extend(this, defaults);
+                if (settings) {
+                    _.extend(this, _.pick(settings, Object.keys(defaults)));
+                }
+            },
+
+            onProviderChosen: function (ev) {
+                /* Callback method that gets called when the user has chosen an
+                 * XMPP provider.
+                 *
+                 * Parameters:
+                 *      (Submit Event) ev - Form submission event.
+                 */
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $form = $(ev.target),
+                    $domain_input = $form.find('input[name=domain]'),
+                    domain = $domain_input.val(),
+                    errors = false;
+                if (!domain) {
+                    $domain_input.addClass('error');
+                    return;
+                }
+                $form.find('input[type=submit]').hide()
+                    .after('<button class="cancel hor_centered">Cancel</button>')
+                    .after('<span class="spinner login-submit"/>')
+                    .after('<p class="info">Requesting a registration form from the XMPP server</p>');
+                $form.find('button.cancel').on('click', $.proxy(this.cancelRegistration, this));
+                this.reset({
+                    domain: Strophe.getDomainFromJid(domain),
+                    _registering: true
+                });
+                converse.connection.connect(this.domain, "", $.proxy(this.onRegistering, this));
+                return false;
+            },
+
+            giveFeedback: function (message, klass) {
+                this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
+                if (klass) {
+                    $('.reg-feedback').addClass(klass);
+                }
+            },
+
+            onRegistering: function (status, error) {
+                var that;
+                console.log('onRegistering');
+                if (_.contains([
+                            Strophe.Status.DISCONNECTED,
+                            Strophe.Status.CONNFAIL,
+                            Strophe.Status.REGIFAIL
+                        ], status)) {
+
+                    converse.log('Problem during registration: Strophe.Status is: '+status);
+                    this.cancelRegistration();
+                    if (error) {
+                        this.giveFeedback(error, 'error');
+                    } else {
+                        this.giveFeedback(__(
+                                'Something went wrong establishing a connection with "%1$s". Are you sure it exists?',
+                                this.domain
+                            ), 'error');
+                    }
+                } else if (status == Strophe.Status.CONFLICT) {
+                    // TODO
+                    converse.log('CONFLICT');
+                } else if (status == Strophe.Status.NOTACCEPTABLE) {
+                    // TODO
+                    converse.log('NOTACCEPTABLE');
+                } else if (status == Strophe.Status.REGISTERED) {
+                    converse.log("Registered successfully.");
+                    converse.connection.reset();
+                    that = this;
+                    this.$('form').hide(function () {
+                        $(this).replaceWith('<span class="spinner centered"/>');
+                        if (that.fields.password && that.fields.username) {
+                            // automatically log the user in
+                            converse.connection.connect(
+                                that.fields.username+'@'+that.domain,
+                                that.fields.password,
+                                converse.onConnect
+                            );
+                            converse.chatboxviews.get('controlbox')
+                                .switchTab({target: that.$tabs.find('.current')})
+                                .giveFeedback(__('Now logging you in'));
+                        } else {
+                            converse.chatboxviews.get('controlbox')
+                                .renderLoginPanel()
+                                .giveFeedback(__('Registered successfully'));
+                        }
+                        that.reset();
+                    });
+                }
+            },
+
+            renderRegistrationForm: function (stanza) {
+                /* Renders the registration form based on the XForm fields
+                 * received from the XMPP server.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
+                 */
+                var $form= this.$('form'),
+                    $stanza = $(stanza),
+                    $fields;
+                $form.empty().append(converse.templates.registration_form({
+                    'domain': this.domain,
+                    'title': this.title,
+                    'instructions': this.instructions
+                }));
+                if (this.form_type == 'xform') {
+                    $fields = $stanza.find('field');
+                    _.each($fields, function (field) {
+                        $form.append(utils.xForm2webForm($(field), $stanza));
+                    });
+                } else {
+                    // Show fields
+                    _.each(Object.keys(this.fields), $.proxy(function (key) {
+                        $form.append('<label>'+key+'</label>');
+                        var $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
+                        if (key === 'password' || key === 'email') {
+                            $input.attr('type', key);
+                        }
+                        $form.append($input);
+                    }, this));
+                    // Show urls
+                    _.each(this.urls, $.proxy(function (url) {
+                        $form.append($('<a target="blank"></a>').attr('href', url).text(url));
+                    }, this));
+                }
+                if (this.fields) {
+                    $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
+                    $form.on('submit', $.proxy(this.submitRegistrationForm, this));
+                    $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
+                    $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
+                } else {
+                    $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');
+                    $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
+                }
+            },
+
+            reportErrors: function (stanza) {
+                /* Report back to the user any error messages received from the
+                 * XMPP server after attempted registration.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - The IQ stanza received from the
+                 *      XMPP server.
+                 */
+                var $form= this.$('form'), flash;
+                var $errmsgs = $(stanza).find('error text');
+                var $flash = $form.find('.form-errors');
+                if (!$flash.length) {
+                   flash = '<legend class="form-errors"></legend>';
+                    if ($form.find('p.instructions').length) {
+                        $form.find('p.instructions').append(flash);
+                    } else {
+                        $form.prepend(flash);
+                    }
+                    $flash = $form.find('.form-errors');
+                } else {
+                    $flash.empty();
+                }
+                $errmsgs.each(function (idx, txt) {
+                    $flash.append($('<p>').text($(txt).text()));
+                });
+                if (!$errmsgs.length) {
+                    $flash.append($('<p>').text(
+                        __('The provider rejected your registration attempt. '+
+                           'Please check the values you entered for correctness.')));
+                }
+                $flash.show();
+            },
+
+            cancelRegistration: function (ev) {
+                /* Handler, when the user cancels the registration form.
+                 */
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                converse.connection.reset();
+                this.render();
+            },
+
+            submitRegistrationForm : function (ev) {
+                /* Handler, when the user submits the registration form.
+                 * Provides form error feedback or starts the registration
+                 * process.
+                 *
+                 * Parameters:
+                 *      (Event) ev - the submit event.
+                 */
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
+                var $empty_inputs = this.$('input.required:emptyVal');
+                if ($empty_inputs.length) {
+                    $empty_inputs.addClass('error');
+                    return;
+                }
+                var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+                    iq = $iq({type: "set"})
+                        .c("query", {xmlns:Strophe.NS.REGISTER})
+                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
+
+                $inputs.each(function () {
+                    iq.cnode(utils.webForm2xForm(this)).up();
+                });
+                converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
+                converse.connection.send(iq);
+                this.setFields(iq.tree());
+            },
+
+            setFields: function (stanza) {
+                /* Stores the values that will be sent to the XMPP server
+                 * during attempted registration.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
+                 */
+                var $query = $(stanza).find('query'), $xform;
+                if ($query.length > 0) {
+                    $xform = $query.find('x[xmlns="'+Strophe.NS.XFORM+'"]');
+                    if ($xform.length > 0) {
+                        this._setFieldsFromXForm($xform);
+                    } else {
+                        this._setFieldsFromLegacy($query);
+                    }
+                }
+            },
+
+            _setFieldsFromLegacy: function ($query) {
+                $query.children().each($.proxy(function (idx, field) {
+                    var $field = $(field);
+                    if (field.tagName.toLowerCase() === 'instructions') {
+                        this.instructions = Strophe.getText(field);
+                        return;
+                    } else if (field.tagName.toLowerCase() === 'x') {
+                        if ($field.attr('xmlns') === 'jabber:x:oob') {
+                            $field.find('url').each($.proxy(function (idx, url) {
+                                this.urls.push($(url).text());
+                            }, this));
+                        }
+                        return;
+                    }
+                    this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
+                }, this));
+                this.form_type = 'legacy';
+            },
+
+            _setFieldsFromXForm: function ($xform) {
+                this.title = $xform.find('title').text();
+                this.instructions = $xform.find('instructions').text();
+                $xform.find('field').each($.proxy(function (idx, field) {
+                    var _var = field.getAttribute('var');
+                    if (_var) {
+                        this.fields[_var.toLowerCase()] = $(field).children('value').text();
+                    } else {
+                        // TODO: other option seems to be type="fixed"
+                        console.log("WARNING: Found field we couldn't parse");
+                    }
+                }, this));
+                this.form_type = 'xform';
+            },
+
+            _onRegisterIQ: function (stanza) {
+                /* Callback method that gets called when a return IQ stanza
+                 * is received from the XMPP server, after attempting to
+                 * register a new user.
+                 *
+                 * Parameters:
+                 *      (XMLElement) stanza - The IQ stanza.
+                 */
+                var i, field, error = null, that,
+                    query = stanza.getElementsByTagName("query");
+                if (query.length > 0) {
+                    query = query[0];
+                }
+                if (stanza.getAttribute("type") === "error") {
+                    converse.log("Registration failed.");
+                    error = stanza.getElementsByTagName("error");
+                    if (error.length !== 1) {
+                        converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                        return false;
+                    }
+                    error = error[0].firstChild.tagName.toLowerCase();
+                    if (error === 'conflict') {
+                        converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
+                    } else if (error === 'not-acceptable') {
+                        converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
+                    } else {
+                        converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
+                    }
+                    this.reportErrors(stanza);
+                } else {
+                    converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
+                }
+                return false;
+            },
+
+            remove: function () {
+                this.$tabs.empty();
+                this.$el.parent().empty();
+            }
+        });
+
         this.LoginPanel = Backbone.View.extend({
             tagName: 'div',
             id: "login-dialog",
+            className: 'controlbox-pane',
             events: {
                 'submit form#converse-login': 'authenticate'
-            },
-
-            connect: function ($form, jid, password) {
-                if ($form) {
-                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                }
-                var resource = Strophe.getResourceFromJid(jid);
-                if (!resource) {
-                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
-                }
-                converse.connection.connect(jid, password, converse.onConnect);
             },
 
             initialize: function (cfg) {
                 cfg.$parent.html(this.$el.html(
                     converse.templates.login_panel({
-                        'label_username': __('XMPP/Jabber Username:'),
+                        'label_username': __('XMPP Username:'),
                         'label_password': __('Password:'),
                         'label_login': __('Log In')
                     })
@@ -4615,6 +4920,18 @@
                 this.connect($form, jid, password);
                 return false;
             },
+
+            connect: function ($form, jid, password) {
+                if ($form) {
+                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
+                }
+                var resource = Strophe.getResourceFromJid(jid);
+                if (!resource) {
+                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                }
+                converse.connection.connect(jid, password, converse.onConnect);
+            },
+
 
             remove: function () {
                 this.$tabs.empty();
@@ -4695,9 +5012,17 @@
             });
         };
 
+        this.setUpXMLLogging = function () {
+            if (this.debug) {
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
+            }
+        };
+
         this.initConnection = function () {
             var rid, sid, jid;
             if (this.connection && this.connection.connected) {
+                this.setUpXMLLogging();
                 this.onConnected();
             } else {
                 // XXX: it's not yet clear what the order of preference should
@@ -4712,6 +5037,7 @@
                     throw("Error: you must supply a value for the bosh_service_url");
                 }
                 this.connection = new Strophe.Connection(this.bosh_service_url);
+                this.setUpXMLLogging();
 
                 if (this.prebind) {
                     if (this.jid && this.sid && this.rid) {
@@ -4742,10 +5068,14 @@
              * connection.
              */
             this.initial_presence_sent = false;
-            this.roster.off().reset(); // Removes roster contacts
+            if (this.roster) {
+                this.roster.off().reset(); // Removes roster contacts
+            }
             this.connection.roster._callbacks = []; // Remove all Roster handlers (e.g. rosterHandler)
-            this.rosterview.model.off().reset(); // Removes roster groups
-            this.rosterview.undelegateEvents().remove();
+            if (this.rosterview) {
+                this.rosterview.model.off().reset(); // Removes roster groups
+                this.rosterview.undelegateEvents().remove();
+            }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             if (this.features) {
                 this.features.reset();
@@ -4781,6 +5111,9 @@
         // Initialization
         // --------------
         // This is the end of the initialize method.
+        if (settings.connection) {
+            this.connection = settings.connection;
+        }
         this._initializePlugins();
         this._initialize();
         this.registerGlobalEventHandlers();

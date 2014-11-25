@@ -509,29 +509,32 @@
   }
 }
 
-span.spinner:before {
+#conversejs .spinner:before {
   font-size: 24px;
   font-family: 'Converse-js' !important;
   content: "\231b";
 }
 
-span.spinner {
+#conversejs .spinner {
     -webkit-animation: spin 2s infinite linear;
     -moz-animation: spin 2s infinite linear;
     -o-animation: spin 2s infinite linear;
     animation: spin 2s infinite linear;
-    width: 100%;
     display: block;
     text-align: center;
+    margin: 5px;
 }
 
-span.spinner.centered {
+#conversejs .centered {
     text-align: center;
-    padding-top: 5em;
+    display: block;
+    margin: 5em auto;
 }
 
-span.spinner.hor_centered {
+#conversejs .hor_centered {
     text-align: center;
+    display: block;
+    margin: 0 auto;
 }
 
 #conversejs #minimized-chats .box-flyout {
@@ -811,14 +814,33 @@ span.spinner.hor_centered {
     color: #7EABBB;
 }
 
-input.error {
+#conversejs input.error {
     border: 1px solid red;
 }
 
-#conversejs .conn-feedback.error {
+#conversejs .error {
     color: red;
 }
 
+#converse-register .provider-title {
+    font-size: 115%;
+}
+
+#converse-register .provider-score {
+    width: 178px;
+    margin-bottom: 8px;
+}
+
+#converse-register .form-help .url {
+    font-weight: bold;
+    color: #2D617A;
+}
+
+#conversejs .reg-feedback {
+    font-size: 85%;
+}
+
+#conversejs .reg-feedback,
 #converse-login .conn-feedback {
     width: 100%;
     text-align: center;
@@ -893,6 +915,7 @@ dl.add-converse-contact {
 #conversejs .fancy-dropdown {
     border:1px solid #ddd;
     height: 22px;
+    text-align: left;
 }
 
 #conversejs .fancy-dropdown a.choose-xmpp-status {
@@ -1074,6 +1097,7 @@ dl.add-converse-contact {
 }
 
 #converse-roster {
+    text-align: left;
     width: 100%;
     position: relative;
     margin: 0.5em 0 0 0;
@@ -1129,6 +1153,10 @@ dl.add-converse-contact {
 
 #conversejs dd.available-chatroom a.open-room {
     width: 148px;
+}
+
+#available-chatrooms {
+    text-align: left;
 }
 
 #available-chatrooms dt,
@@ -1247,36 +1275,84 @@ dl.add-converse-contact {
 }
 
 #conversejs .controlbox-pane {
-    padding: 0;
-    border-bottom-right-radius: 4px;
+    text-align: center;
+    background-color: white;
     border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border: 0;
+    font-size: 14px;
+    height: 289px;
+    height: ~"calc(100% - 35px)";
+    overflow-y: auto;
+    padding: 0;
+    position: absolute;
+    width: 100%;
 }
 
 #conversejs .controlbox-pane dd {
     margin-left: 0;
     margin-bottom: 0;
-    padding: 1em;
 }
 
 #conversejs .controlbox-pane dd.odd {
     background-color: #DCEAC5;
 }
 
+#conversejs form#converse-register .title {
+    font-weight: bold;
+}
+
+#conversejs form#converse-register .info {
+    font-style: italic;
+    color: green;
+    font-size: 85%;
+    margin: 5px 0;
+}
+
+#conversejs .form-help,
+#conversejs form#converse-register .instructions {
+    color: gray;
+    font-size: 85%;
+}
+
+#conversejs .form-help:hover,
+#conversejs form#converse-register .instructions:hover {
+    color: #4f4f4f;
+}
+
+#conversejs .form-help {
+    padding-top: 5px;
+}
+
+#conversejs form#converse-register .form-errors {
+    color: red;
+    display: none;
+}
+
+#conversejs form#converse-register,
 #conversejs form#converse-login {
     background: white;
-    padding: 2em 0.5em;
+    padding: 1em 0.5em;
 }
 
+#conversejs form#converse-register input,
 #conversejs form#converse-login input {
-    width: 100%;
+    width: 178px;
+    height: 30px;
 }
 
+#conversejs form#converse-register label,
 #conversejs form#converse-login label {
     margin-top: 0.5em;
+    font-weight: bold;
 }
 
-#conversejs form#converse-login .login-submit {
+#conversejs form#converse-register .login-submit,
+#conversejs form#converse-login .login-submit,
+#conversejs form#converse-register .submit,
+#conversejs form#converse-login .submit {
     margin-top: 1em;
+    height: 30px;
 }
 
 #conversejs form.set-xmpp-status {
@@ -1334,12 +1410,12 @@ select#select-xmpp-status {
     text-decoration: none;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
-    color: #666;
+    color: #888;
     text-shadow: 0 1px 0 rgba(250, 250, 250, 1);
 }
 
 #conversejs .chat-head #controlbox-tabs li a:hover {
-    color: black;
+    color: #4f4f4f
 }
 
 #conversejs .chat-head #controlbox-tabs li a {
@@ -1355,22 +1431,6 @@ select#select-xmpp-status {
     height: 35px;
     cursor: default;
     color: rgb(102,102,102);
-}
-
-#conversejs div#users,
-#conversejs div#chatrooms,
-#conversejs div#login-dialog,
-#conversejs div#settings {
-    border: 0;
-    font-size: 14px;
-    background-color: white;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    width: 100%;
-    height: 289px;
-    height: ~"calc(100% - 35px)";
-    overflow-y: hidden;
-    position: absolute;
 }
 
 #conversejs div#chatrooms {
@@ -1607,6 +1667,10 @@ input.custom-xmpp-status {
     background-color: #bed6e5;
 }
 
+#conversejs .xmpp-status-menu {
+    text-align: left;
+}
+
 #conversejs .xmpp-status-menu li a {
     width: 100%;
 }
@@ -1631,7 +1695,7 @@ input.custom-xmpp-status {
     bottom: 6px;
     box-shadow: 1px 3px 5px 3px rgba(0,0,0,0.4);
     display: block;
-    height: 324px;
+    height: 400px;
     position: absolute;
 }
 

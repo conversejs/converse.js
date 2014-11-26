@@ -4479,7 +4479,7 @@
             render: function () {
                 this.$parent.append(this.$el.html(
                     converse.templates.register_panel({
-                        'label_domain': __("Your XMPP provider's domain:"),
+                        'label_domain': __("Your XMPP provider's domain name:"),
                         'label_register': __('Fetch registration form')
                     })
                 ));
@@ -4675,9 +4675,9 @@
                 }));
                 if (this.form_type == 'xform') {
                     $fields = $stanza.find('field');
-                    _.each($fields, function (field) {
-                        $form.append(utils.xForm2webForm($(field), $stanza));
-                    });
+                    _.each($fields, $.proxy(function (field) {
+                        $form.append(utils.xForm2webForm.bind(this, $(field), $stanza));
+                    }, this));
                 } else {
                     // Show fields
                     _.each(Object.keys(this.fields), $.proxy(function (key) {

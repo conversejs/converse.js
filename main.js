@@ -97,6 +97,7 @@ require.config({
         "form_input":               "src/templates/form_input",
         "form_select":              "src/templates/form_select",
         "form_textarea":            "src/templates/form_textarea",
+        "form_username":            "src/templates/form_username",
         "group_header":             "src/templates/group_header",
         "info":                     "src/templates/info",
         "login_panel":              "src/templates/login_panel",

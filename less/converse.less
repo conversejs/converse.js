@@ -1298,11 +1298,11 @@ dl.add-converse-contact {
     background-color: #DCEAC5;
 }
 
-#conversejs form#converse-register .title {
+#conversejs #converse-register .title {
     font-weight: bold;
 }
 
-#conversejs form#converse-register .info {
+#conversejs #converse-register .info {
     font-style: italic;
     color: green;
     font-size: 85%;
@@ -1310,13 +1310,13 @@ dl.add-converse-contact {
 }
 
 #conversejs .form-help,
-#conversejs form#converse-register .instructions {
+#conversejs #converse-register .instructions {
     color: gray;
     font-size: 85%;
 }
 
 #conversejs .form-help:hover,
-#conversejs form#converse-register .instructions:hover {
+#conversejs #converse-register .instructions:hover {
     color: #4f4f4f;
 }
 
@@ -1324,33 +1324,48 @@ dl.add-converse-contact {
     padding-top: 5px;
 }
 
-#conversejs form#converse-register .form-errors {
+#conversejs #converse-register .form-errors {
     color: red;
     display: none;
 }
 
-#conversejs form#converse-register,
-#conversejs form#converse-login {
+#conversejs #converse-register,
+#conversejs #converse-login {
     background: white;
     padding: 1em 0.5em;
 }
 
-#conversejs form#converse-register input,
-#conversejs form#converse-login input {
+#conversejs #converse-register input,
+#conversejs #converse-login input {
     width: 178px;
     height: 30px;
 }
 
-#conversejs form#converse-register label,
-#conversejs form#converse-login label {
+#converse-register .input-group {
+    display: table;
+    margin: auto;
+    width: 178px;
+}
+
+#conversejs #converse-register .input-group span,
+#conversejs #converse-register .input-group input[name=username] {
+    display: table-cell;
+}
+
+#conversejs #converse-register .input-group input[name=username] {
+    width: 100%;
+}
+
+#conversejs #converse-register label,
+#conversejs #converse-login label {
     margin-top: 0.5em;
     font-weight: bold;
 }
 
-#conversejs form#converse-register .login-submit,
-#conversejs form#converse-login .login-submit,
-#conversejs form#converse-register .submit,
-#conversejs form#converse-login .submit {
+#conversejs #converse-register .login-submit,
+#conversejs #converse-login .login-submit,
+#conversejs #converse-register .submit,
+#conversejs #converse-login .submit {
     margin-top: 1em;
     height: 30px;
 }

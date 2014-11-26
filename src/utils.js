@@ -149,6 +149,15 @@ define(["jquery", "converse-templates"], function ($, templates) {
                     checked: $field.find('value').text() === "1" && 'checked="1"' || '',
                     required: $field.find('required').length
                 });
+            } else if ($field.attr('type') && $field.attr('var') === 'username') {
+                return templates.form_username({
+                    domain: ' @'+this.domain,
+                    name: $field.attr('var'),
+                    type: XFORM_TYPE_MAP[$field.attr('type')],
+                    label: $field.attr('label') || '',
+                    value: $field.find('value').text(),
+                    required: $field.find('required').length
+                });
             } else if ($field.attr('type')) {
                 return templates.form_input({
                     name: $field.attr('var'),

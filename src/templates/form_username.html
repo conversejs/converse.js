@@ -1,0 +1,11 @@
+{[ if (label) { ]}
+<label>
+    {{label}}
+</label>
+{[ } ]}
+<div class="input-group">
+    <input name="{{name}}" type="{{type}}" 
+        {[ if (value) { ]} value="{{value}}" {[ } ]}
+        {[ if (required) { ]} class="required" {[ } ]} />
+    <span>{{domain}}</span>
+</div>

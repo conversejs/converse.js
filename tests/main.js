@@ -42,8 +42,6 @@ require([
         window.sessionStorage.clear();
 
         converse.initialize({
-            prebind: false,
-            xhr_user_search: false,
             auto_subscribe: false,
             animate: false,
             connection: mock.mock_connection,
@@ -68,7 +66,8 @@ require([
                 "spec/chatbox",
                 "spec/chatroom",
                 "spec/minchats",
-                "spec/profiling"
+                "spec/profiling",
+                "spec/register"
             ], function () {
                 // Make sure this callback is only called once.
                 delete converse.callback;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-15 16:36+0100\n"
+"POT-Creation-Date: 2014-12-01 20:51+0100\n"
 "PO-Revision-Date: 2014-02-21 06:07+0200\n"
 "Last-Translator: GreenLunar <GreenLunar@github.com>\n"
 "Language-Team: Rahut <http://sourceforge.net/projects/rahut/>\n"
@@ -18,125 +18,113 @@ msgstr ""
 "X-Generator: Poedit 1.5.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: converse.js:316
+#: converse.js:297
 msgid "unencrypted"
 msgstr "לא מוצפנת"
 
-#: converse.js:317
+#: converse.js:298
 msgid "unverified"
 msgstr "לא מאומתת"
 
-#: converse.js:318
+#: converse.js:299
 msgid "verified"
 msgstr "מאומתת"
 
-#: converse.js:319
+#: converse.js:300
 msgid "finished"
 msgstr "מוגמרת"
 
 # איש קשר זה הינו
-#: converse.js:322
+#: converse.js:303
 msgid "This contact is busy"
 msgstr "איש קשר זה עסוק"
 
-#: converse.js:323
+#: converse.js:304
 msgid "This contact is online"
 msgstr "איש קשר זה מקוון"
 
 # איש קשר זה אינו
-#: converse.js:324
+#: converse.js:305
 msgid "This contact is offline"
 msgstr "איש קשר זה לא מקוון"
 
-#: converse.js:325
+#: converse.js:306
 msgid "This contact is unavailable"
 msgstr "איש קשר זה לא זמין"
 
-#: converse.js:326
+#: converse.js:307
 msgid "This contact is away for an extended period"
 msgstr "איש קשר זה נעדר למשך זמן ממושך"
 
-#: converse.js:327
+#: converse.js:308
 msgid "This contact is away"
 msgstr "איש קשר זה הינו נעדר"
 
-#: converse.js:329
+#: converse.js:310
 msgid "Click to hide these contacts"
 msgstr "לחץ כדי להסתיר את אנשי קשר אלה"
 
-#: converse.js:331
+#: converse.js:312
 msgid "My contacts"
 msgstr "אנשי הקשר שלי"
 
-#: converse.js:332
+#: converse.js:313
 msgid "Pending contacts"
 msgstr "אנשי קשר ממתינים"
 
-#: converse.js:333
+#: converse.js:314
 msgid "Contact requests"
 msgstr "בקשות איש קשר"
 
-#: converse.js:334
+#: converse.js:315
 msgid "Ungrouped"
 msgstr "ללא קבוצה"
 
-#: converse.js:336
+#: converse.js:317
 msgid "Contacts"
 msgstr "אנשי קשר"
 
-#: converse.js:337
+#: converse.js:318
 msgid "Groups"
 msgstr "קבוצות"
 
-#: converse.js:419
+#: converse.js:405
 msgid "Reconnecting"
 msgstr "כעת מתחבר"
 
-#: converse.js:454
-msgid "Disconnected"
-msgstr "מנותק"
-
-#: converse.js:462
+#: converse.js:445
 msgid "Error"
 msgstr "שגיאה"
 
-#: converse.js:464
+#: converse.js:447
 msgid "Connecting"
 msgstr "כעת מתחבר"
 
-#: converse.js:467
-msgid "Connection Failed"
-msgstr "חיבור נכשל"
-
-#: converse.js:469
+#: converse.js:449
 msgid "Authenticating"
 msgstr "כעת מאמת"
 
-#: converse.js:472
+#: converse.js:451 converse.js:452
 msgid "Authentication Failed"
 msgstr "אימות נכשל"
 
-#: converse.js:477
-msgid "Disconnecting"
-msgstr "כעת מתנתק"
-
-#: converse.js:617 converse.js:669
+#: converse.js:597 converse.js:639
 msgid "Online Contacts"
 msgstr "אנשי קשר מקוונים"
 
-#: converse.js:787
+#: converse.js:757
 msgid "Re-establishing encrypted session"
 msgstr "בסס מחדש ישיבה מוצפנת"
 
-#: converse.js:799
+#: converse.js:769
 msgid "Generating private key."
 msgstr "כעת מפיק מפתח פרטי."
 
-#: converse.js:800
+#: converse.js:770
 msgid "Your browser might become unresponsive."
 msgstr "הדפדפן שלך עשוי שלא להגיב."
 
-#: converse.js:835
+#: converse.js:805
 #, fuzzy
 msgid ""
 "Authentication request from %1$s\n"
@@ -152,68 +140,68 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: converse.js:844
+#: converse.js:814
 msgid "Could not verify this user's identify."
 msgstr "לא היתה אפשרות לאמת את זהות משתמש זה."
 
-#: converse.js:883
+#: converse.js:853
 #, fuzzy
 msgid "Exchanging private key with contact."
 msgstr "ממיר מפתח פרטי עם איש קשר."
 
-#: converse.js:1036
+#: converse.js:1006
 msgid "Personal message"
 msgstr "הודעה אישית"
 
-#: converse.js:1068
+#: converse.js:1038
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"
 
-#: converse.js:1090
+#: converse.js:1060
 msgid "me"
 msgstr "אני"
 
-#: converse.js:1144
+#: converse.js:1114
 msgid "is typing"
 msgstr "מקליד/ה כעת"
 
-#: converse.js:1147
+#: converse.js:1117
 msgid "has stopped typing"
 msgstr "חדל/ה מלהקליד"
 
-#: converse.js:1189 converse.js:2360
+#: converse.js:1159 converse.js:2346
 msgid "Show this menu"
 msgstr "הצג את תפריט זה"
 
-#: converse.js:1190
+#: converse.js:1160
 msgid "Write in the third person"
 msgstr "כתוב בגוף השלישי"
 
-#: converse.js:1191 converse.js:2359
+#: converse.js:1161 converse.js:2345
 msgid "Remove messages"
 msgstr "הסר הודעות"
 
-#: converse.js:1275
+#: converse.js:1245
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך תיבת שיחה זה?"
 
-#: converse.js:1310
+#: converse.js:1280
 msgid "Your message could not be sent"
 msgstr "ההודעה שלך לא היתה יכולה להישלח"
 
-#: converse.js:1313
+#: converse.js:1283
 msgid "We received an unencrypted message"
 msgstr "אנחנו קיבלנו הודעה לא מוצפנת"
 
-#: converse.js:1316
+#: converse.js:1286
 msgid "We received an unreadable encrypted message"
 msgstr "אנחנו קיבלנו הודעה מוצפנת לא קריאה"
 
-#: converse.js:1325
+#: converse.js:1295
 msgid "This user has requested an encrypted session."
 msgstr "משתמש זה ביקש ישיבה מוצפנת."
 
-#: converse.js:1347
+#: converse.js:1317
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"
@@ -234,7 +222,7 @@ msgstr ""
 "היה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."
 
 # הקצה השני
-#: converse.js:1360
+#: converse.js:1330
 #, fuzzy
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
@@ -248,404 +236,404 @@ msgstr ""
 "האישיות שכנגד תתבקש עובר זאת לאותה שאלת אבטחה ואם זו תקלידו את את אותה "
 "התשובה במדויק (case sensitive), זהותה תאומת."
 
-#: converse.js:1361
+#: converse.js:1331
 msgid "What is your security question?"
 msgstr "מהי שאלת האבטחה שלך?"
 
-#: converse.js:1363
+#: converse.js:1333
 msgid "What is the answer to the security question?"
 msgstr "מהי התשובה לשאלת האבטחה?"
 
 # תרשים
-#: converse.js:1367
+#: converse.js:1337
 msgid "Invalid authentication scheme provided"
 msgstr "סופקה סכימת אימות שגויה"
 
-#: converse.js:1482
+#: converse.js:1452
 msgid "Your messages are not encrypted anymore"
 msgstr "ההודעות שלך אינן מוצפנות עוד"
 
-#: converse.js:1484
+#: converse.js:1454
 #, fuzzy
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr "ההודעות שלך מוצפנות כעת אך זהות האישיות שכנגד טרם אומתה."
 
-#: converse.js:1486
+#: converse.js:1456
 #, fuzzy
 msgid "Your contact's identify has been verified."
 msgstr "זהות האישיות שכנגד אומתה."
 
-#: converse.js:1488
+#: converse.js:1458
 #, fuzzy
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr "האישיות שכנגד סיימה הצפנה בקצה שלה, עליך לעשות את אותו הדבר."
 
-#: converse.js:1497
+#: converse.js:1467
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr "ההודעות שלך אינן מוצפנות. לחץ כאן כדי לאפשר OTR."
 
-#: converse.js:1499
+#: converse.js:1469
 #, fuzzy
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr "ההודעות שלך מוצפנות כעת, אך האישיות שכנגד טרם אומתה."
 
-#: converse.js:1501
+#: converse.js:1471
 #, fuzzy
 msgid "Your messages are encrypted and your contact verified."
 msgstr "ההודעות שלך מוצפנות כעת והאישיות שכנגד אומתה."
 
-#: converse.js:1503
+#: converse.js:1473
 #, fuzzy
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr "האישיות שכנגד סגרה את קצה הישיבה הפרטית שלה, עליך לעשות את אותו הדבר"
 
-#: converse.js:1513
+#: converse.js:1483
 #, fuzzy
 msgid "Clear all messages"
 msgstr "הודעה אישית"
 
-#: converse.js:1514
+#: converse.js:1484
 msgid "End encrypted conversation"
 msgstr "סיים ישיבה מוצפנת"
 
-#: converse.js:1515
+#: converse.js:1485
 msgid "Hide the list of participants"
 msgstr ""
 
-#: converse.js:1516
+#: converse.js:1486
 msgid "Refresh encrypted conversation"
 msgstr "רענן ישיבה מוצפנת"
 
-#: converse.js:1517
+#: converse.js:1487
 msgid "Start a call"
 msgstr ""
 
-#: converse.js:1518
+#: converse.js:1488
 msgid "Start encrypted conversation"
 msgstr "התחל ישיבה מוצפנת"
 
-#: converse.js:1519
+#: converse.js:1489
 msgid "Verify with fingerprints"
 msgstr "אמת בעזרת טביעות אצבע"
 
-#: converse.js:1520
+#: converse.js:1490
 msgid "Verify with SMP"
 msgstr "אמת בעזרת SMP"
 
-#: converse.js:1521
+#: converse.js:1491
 msgid "What's this?"
 msgstr "מה זה?"
 
-#: converse.js:1612
+#: converse.js:1582
 msgid "Online"
 msgstr "מקוון"
 
-#: converse.js:1613
+#: converse.js:1583
 msgid "Busy"
 msgstr "עסוק"
 
-#: converse.js:1614
+#: converse.js:1584
 msgid "Away"
 msgstr "נעדר"
 
-#: converse.js:1615
+#: converse.js:1585
 msgid "Offline"
 msgstr "בלתי מקוון"
 
-#: converse.js:1616
+#: converse.js:1586
 #, fuzzy
 msgid "Log out"
 msgstr "כניסה"
 
-#: converse.js:1622
+#: converse.js:1592
 msgid "Contact name"
 msgstr "שם איש קשר"
 
-#: converse.js:1623
+#: converse.js:1593
 msgid "Search"
 msgstr "חיפוש"
 
-#: converse.js:1627
+#: converse.js:1597
 msgid "Contact username"
 msgstr "שם משתמש איש קשר"
 
-#: converse.js:1628
+#: converse.js:1598
 msgid "Add"
 msgstr "הוסף"
 
-#: converse.js:1633
+#: converse.js:1603
 msgid "Click to add new chat contacts"
 msgstr "לחץ כדי להוסיף אנשי קשר שיחה חדשים"
 
-#: converse.js:1634
+#: converse.js:1604
 msgid "Add a contact"
 msgstr "הוסף איש קשר"
 
-#: converse.js:1658
+#: converse.js:1628
 msgid "No users found"
 msgstr "לא נמצאו משתמשים"
 
-#: converse.js:1664
+#: converse.js:1634
 msgid "Click to add as a chat contact"
 msgstr "לחץ כדי להוסיף בתור איש קשר שיחה"
 
-#: converse.js:1727
+#: converse.js:1698
 msgid "Room name"
 msgstr "שם חדר"
 
-#: converse.js:1728
+#: converse.js:1699
 msgid "Nickname"
 msgstr "שם כינוי"
 
-#: converse.js:1729
+#: converse.js:1700
 msgid "Server"
 msgstr "שרת"
 
-#: converse.js:1730
+#: converse.js:1701
 msgid "Join"
 msgstr "הצטרף"
 
-#: converse.js:1731
+#: converse.js:1702
 msgid "Show rooms"
 msgstr "הצג חדרים"
 
-#: converse.js:1735
+#: converse.js:1706
 msgid "Rooms"
 msgstr "חדרים"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: converse.js:1755
+#: converse.js:1726
 msgid "No rooms on %1$s"
 msgstr "אין חדרים על %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: converse.js:1770
+#: converse.js:1741
 msgid "Rooms on %1$s"
 msgstr "חדרים על %1$s"
 
-#: converse.js:1779
+#: converse.js:1750
 msgid "Click to open this room"
 msgstr "לחץ כדי לפתוח את חדר זה"
 
-#: converse.js:1780
+#: converse.js:1751
 msgid "Show more information on this room"
 msgstr "הצג עוד מידע אודות חדר זה"
 
-#: converse.js:1842
+#: converse.js:1813
 msgid "Description:"
 msgstr "תיאור:"
 
-#: converse.js:1843
+#: converse.js:1814
 msgid "Occupants:"
 msgstr "נוכחים:"
 
-#: converse.js:1844
+#: converse.js:1815
 msgid "Features:"
 msgstr "תכונות:"
 
-#: converse.js:1845
+#: converse.js:1816
 msgid "Requires authentication"
 msgstr "מצריך אישור"
 
-#: converse.js:1846
+#: converse.js:1817
 msgid "Hidden"
 msgstr "נסתר"
 
-#: converse.js:1847
+#: converse.js:1818
 msgid "Requires an invitation"
 msgstr "מצריך הזמנה"
 
-#: converse.js:1848
+#: converse.js:1819
 msgid "Moderated"
 msgstr "מבוקר"
 
-#: converse.js:1849
+#: converse.js:1820
 msgid "Non-anonymous"
 msgstr "לא אנונימי"
 
-#: converse.js:1850
+#: converse.js:1821
 msgid "Open room"
 msgstr "חדר פתוח"
 
-#: converse.js:1851
+#: converse.js:1822
 msgid "Permanent room"
 msgstr "חדר צמיתה"
 
-#: converse.js:1852
+#: converse.js:1823
 msgid "Public"
 msgstr "פומבי"
 
-#: converse.js:1853
+#: converse.js:1824
 msgid "Semi-anonymous"
 msgstr "אנונימי למחצה"
 
-#: converse.js:1854
+#: converse.js:1825
 msgid "Temporary room"
 msgstr "חדר זמני"
 
-#: converse.js:1855
+#: converse.js:1826
 msgid "Unmoderated"
 msgstr "לא מבוקר"
 
-#: converse.js:2108
+#: converse.js:2094
 msgid "This user is a moderator"
 msgstr "משתמש זה הינו אחראי"
 
-#: converse.js:2109
+#: converse.js:2095
 msgid "This user can send messages in this room"
 msgstr "משתמש זה מסוגל לשלוח הודעות בתוך חדר זה"
 
-#: converse.js:2110
+#: converse.js:2096
 msgid "This user can NOT send messages in this room"
 msgstr "משתמש זה ﬥﬡ מסוגל לשלוח הודעות בתוך חדר זה"
 
-#: converse.js:2142
+#: converse.js:2128
 msgid "Invite..."
 msgstr ""
 
-#: converse.js:2143
+#: converse.js:2129
 #, fuzzy
 msgid "Occupants"
 msgstr "נוכחים:"
 
-#: converse.js:2208
+#: converse.js:2194
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
 msgstr ""
 
-#: converse.js:2209
+#: converse.js:2195
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
 msgstr ""
 
-#: converse.js:2292
+#: converse.js:2278
 msgid "Message"
 msgstr "הודעה"
 
-#: converse.js:2328
+#: converse.js:2314
 msgid "Error: could not execute the command"
 msgstr ""
 
-#: converse.js:2358
+#: converse.js:2344
 #, fuzzy
 msgid "Ban user from room"
 msgstr "אסור משתמש מתוך חדר שיחה"
 
-#: converse.js:2361
+#: converse.js:2347
 #, fuzzy
 msgid "Kick user from room"
 msgstr "בעט משתמש מתוך חדר שיחה"
 
-#: converse.js:2362
+#: converse.js:2348
 #, fuzzy
 msgid "Write in 3rd person"
 msgstr "כתוב בגוף השלישי"
 
-#: converse.js:2363
+#: converse.js:2349
 msgid "Remove user's ability to post messages"
 msgstr ""
 
-#: converse.js:2364
+#: converse.js:2350
 msgid "Change your nickname"
 msgstr ""
 
-#: converse.js:2365
+#: converse.js:2351
 #, fuzzy
 msgid "Set room topic"
 msgstr "קבע נושא חדר שיחה"
 
-#: converse.js:2366
+#: converse.js:2352
 msgid "Allow muted user to post messages"
 msgstr ""
 
-#: converse.js:2489 converse.js:4417
+#: converse.js:2417 converse.js:4328
 msgid "Save"
 msgstr "שמור"
 
-#: converse.js:2490
+#: converse.js:2418 converse.js:4593 converse.js:4697
 msgid "Cancel"
 msgstr "ביטול"
 
-#: converse.js:2544
+#: converse.js:2453
 msgid "An error occurred while trying to save the form."
 msgstr "אירעה שגיאה במהלך ניסיון שמירת הטופס."
 
-#: converse.js:2588
+#: converse.js:2497
 msgid "This chatroom requires a password"
 msgstr "חדר שיחה זה מצריך סיסמה"
 
-#: converse.js:2589
+#: converse.js:2498
 msgid "Password: "
 msgstr "סיסמה: "
 
-#: converse.js:2590
+#: converse.js:2499
 msgid "Submit"
 msgstr "שלח"
 
-#: converse.js:2625
+#: converse.js:2534
 msgid "This room is not anonymous"
 msgstr "חדר זה אינו אנונימי"
 
-#: converse.js:2626
+#: converse.js:2535
 msgid "This room now shows unavailable members"
 msgstr "חדר זה כעת מציג חברים לא זמינים"
 
-#: converse.js:2627
+#: converse.js:2536
 msgid "This room does not show unavailable members"
 msgstr "חדר זה לא מציג חברים לא זמינים"
 
-#: converse.js:2628
+#: converse.js:2537
 msgid "Non-privacy-related room configuration has changed"
 msgstr "תצורת חדר אשר לא-קשורה-בפרטיות שונתה"
 
-#: converse.js:2629
+#: converse.js:2538
 msgid "Room logging is now enabled"
 msgstr "יומן חדר הינו מופעל כעת"
 
-#: converse.js:2630
+#: converse.js:2539
 msgid "Room logging is now disabled"
 msgstr "יומן חדר הינו מנוטרל כעת"
 
-#: converse.js:2631
+#: converse.js:2540
 msgid "This room is now non-anonymous"
 msgstr "חדר זה אינו אנונימי כעת"
 
-#: converse.js:2632
+#: converse.js:2541
 msgid "This room is now semi-anonymous"
 msgstr "חדר זה הינו אנונימי למחצה כעת"
 
-#: converse.js:2633
+#: converse.js:2542
 msgid "This room is now fully-anonymous"
 msgstr "חדר זה הינו אנונימי לחלוטין כעת"
 
-#: converse.js:2634
+#: converse.js:2543
 msgid "A new room has been created"
 msgstr "חדר חדש נוצר"
 
-#: converse.js:2638 converse.js:2738
+#: converse.js:2547 converse.js:2647
 msgid "You have been banned from this room"
 msgstr "נאסרת מתוך חדר זה"
 
-#: converse.js:2639
+#: converse.js:2548
 msgid "You have been kicked from this room"
 msgstr "נבעטת מתוך חדר זה"
 
-#: converse.js:2640
+#: converse.js:2549
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "הוסרת מתוך חדר זה משום שינוי שיוך"
 
-#: converse.js:2641
+#: converse.js:2550
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
 msgstr "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"
 
-#: converse.js:2642
+#: converse.js:2551
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
@@ -653,177 +641,231 @@ msgstr ""
 "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי "
 "סגירה."
 
-#: converse.js:2656
+#: converse.js:2565
 msgid "<strong>%1$s</strong> has been banned"
 msgstr "<strong>%1$s</strong> נאסר(ה)"
 
-#: converse.js:2657
+#: converse.js:2566
 #, fuzzy
 msgid "<strong>%1$s</strong>'s nickname has changed"
 msgstr "<strong>%1$s</strong> נאסר(ה)"
 
-#: converse.js:2658
+#: converse.js:2567
 msgid "<strong>%1$s</strong> has been kicked out"
 msgstr "<strong>%1$s</strong> נבעט(ה)"
 
-#: converse.js:2659
+#: converse.js:2568
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
 msgstr "<strong>%1$s</strong> הוסרה(ה) משום שינוי שיוך"
 
 # היותו(ה)
-#: converse.js:2660
+#: converse.js:2569
 msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "<strong>%1$s</strong> הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
 
-#: converse.js:2664
+#: converse.js:2573
 #, fuzzy
 msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
 msgstr "שם הכינוי שלך שונה"
 
-#: converse.js:2665
+#: converse.js:2574
 #, fuzzy
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
 msgstr "שם הכינוי שלך שונה"
 
-#: converse.js:2713 converse.js:2723
+#: converse.js:2622 converse.js:2632
 msgid "The reason given is: \""
 msgstr ""
 
-#: converse.js:2736
+#: converse.js:2645
 msgid "You are not on the member list of this room"
 msgstr "אינך ברשימת החברים של חדר זה"
 
 # אף שם כינוי לא צוין
-#: converse.js:2742
+#: converse.js:2651
 msgid "No nickname was specified"
 msgstr "לא צוין שום שם כינוי"
 
 # אינך מורשה
-#: converse.js:2746
+#: converse.js:2655
 msgid "You are not allowed to create new rooms"
 msgstr "אין לך רשות ליצור חדרים חדשים"
 
-#: converse.js:2748
+#: converse.js:2657
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "שם הכינוי שלך לא תואם את המדינויות של חדר זה"
 
 # נלקח כבר
-#: converse.js:2752
+#: converse.js:2661
 msgid "Your nickname is already taken"
 msgstr "שם הכינוי שלך הינו תפוס"
 
-#: converse.js:2754
+#: converse.js:2663
 msgid "This room does not (yet) exist"
 msgstr "חדר זה (עדיין) לא קיים"
 
-#: converse.js:2756
+#: converse.js:2665
 msgid "This room has reached it's maximum number of occupants"
 msgstr "חדר זה הגיע לסף הנוכחים המרבי שלו"
 
-#: converse.js:2798
+#: converse.js:2707
 msgid "Topic set by %1$s to: %2$s"
 msgstr "נושא חדר זה נקבע על ידי %1$s אל: %2$s"
 
-#: converse.js:2880
+#: converse.js:2789
 msgid "%1$s has invited you to join a chat room: %2$s"
 msgstr ""
 
-#: converse.js:2884
+#: converse.js:2793
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
 
-#: converse.js:3140
+#: converse.js:3051
 msgid "Click to restore this chat"
 msgstr "לחץ כדי לשחזר את שיחה זו"
 
-#: converse.js:3285
+#: converse.js:3196
 msgid "Minimized"
 msgstr "ממוזער"
 
-#: converse.js:3381 converse.js:3399
+#: converse.js:3292 converse.js:3310
 msgid "Click to remove this contact"
 msgstr "לחץ כדי להסיר את איש קשר זה"
 
-#: converse.js:3388
+#: converse.js:3299
 msgid "Click to accept this contact request"
 msgstr "לחץ כדי לקבל את בקשת איש קשר זה"
 
-#: converse.js:3389
+#: converse.js:3300
 msgid "Click to decline this contact request"
 msgstr "לחץ כדי לסרב את בקשת איש קשר זה"
 
-#: converse.js:3398
+#: converse.js:3309
 msgid "Click to chat with this contact"
 msgstr "לחץ כדי לשוחח עם איש קשר זה"
 
-#: converse.js:3423
+#: converse.js:3334
 msgid "Are you sure you want to remove this contact?"
 msgstr "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
 
-#: converse.js:3446
+#: converse.js:3357
 msgid "Are you sure you want to decline this contact request?"
 msgstr "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
 
-#: converse.js:3972
+#: converse.js:3883
 msgid "Type to filter"
 msgstr "הקלד כדי לסנן"
 
 # אני במצב
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: converse.js:4388 converse.js:4465
+#: converse.js:4299 converse.js:4376
 msgid "I am %1$s"
 msgstr "מצבי כעת הינו %1$s"
 
-#: converse.js:4390 converse.js:4470
+#: converse.js:4301 converse.js:4381
 msgid "Click here to write a custom status message"
 msgstr "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
 
-#: converse.js:4391 converse.js:4471
+#: converse.js:4302 converse.js:4382
 msgid "Click to change your chat status"
 msgstr "לחץ כדי לשנות את הודעת השיחה שלך"
 
-#: converse.js:4416
+#: converse.js:4327
 msgid "Custom status"
 msgstr "מצב מותאם"
 
-#: converse.js:4445 converse.js:4453
+#: converse.js:4356 converse.js:4364
 msgid "online"
 msgstr "מקוון"
 
-#: converse.js:4447
+#: converse.js:4358
 msgid "busy"
 msgstr "עסוק"
 
-#: converse.js:4449
+#: converse.js:4360
 msgid "away for long"
 msgstr "נעדר לזמן מה"
 
-#: converse.js:4451
+#: converse.js:4362
 msgid "away"
 msgstr "נעדר"
 
-#: converse.js:4574
-msgid "XMPP/Jabber Username:"
+#: converse.js:4482
+msgid "Your XMPP provider's domain name:"
+msgstr ""
+
+#: converse.js:4483
+msgid "Fetch registration form"
+msgstr ""
+
+#: converse.js:4486 converse.js:4695
+msgid "Register"
+msgstr ""
+
+#: converse.js:4533
+msgid ""
+"Sorry, the given provider does not support in band account registration. "
+"Please try with a different provider."
+msgstr ""
+
+#: converse.js:4594
+msgid "Requesting a registration form from the XMPP server"
+msgstr ""
+
+#: converse.js:4629
+msgid ""
+"Something went wrong while establishing a connection with \"%1$s\". Are you "
+"sure it exists?"
+msgstr ""
+
+#: converse.js:4648
+msgid "Now logging you in"
+msgstr ""
+
+#: converse.js:4652
+msgid "Registered successfully"
+msgstr ""
+
+#: converse.js:4700
+msgid "Return"
+msgstr ""
+
+#: converse.js:4732
+msgid "The provider rejected your registration attempt. "
+msgstr ""
+
+#: converse.js:4877
+#, fuzzy
+msgid "XMPP Username:"
 msgstr "שם משתמש XMPP/Jabber:"
 
-#: converse.js:4575
+#: converse.js:4878
 msgid "Password:"
 msgstr "סיסמה:"
 
-#: converse.js:4576
+#: converse.js:4879
 msgid "Log In"
 msgstr "כניסה"
 
-#: converse.js:4583
+#: converse.js:4886
 msgid "Sign in"
 msgstr "התחברות"
 
-#: converse.js:4643
+#: converse.js:4958
 msgid "Toggle chat"
 msgstr "הפעל שיח"
+
+#~ msgid "Disconnected"
+#~ msgstr "מנותק"
+
+#~ msgid "Connection Failed"
+#~ msgstr "חיבור נכשל"
+
+#~ msgid "Disconnecting"
+#~ msgstr "כעת מתנתק"
 
 #~ msgid "Decline"
 #~ msgstr "מקוון"

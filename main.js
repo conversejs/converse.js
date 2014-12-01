@@ -169,7 +169,6 @@ require.config({
 });
 
 if (typeof(require) === 'function') {
-    require(config);
     require(["converse"], function(converse) {
         window.converse = converse;
     });

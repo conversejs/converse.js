@@ -303,19 +303,46 @@ __p += '</field>\n';
 return __p
 };
 
+this["JST"]["form_captcha"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+((__t = (label)) == null ? '' : __t) +
+'\n</label>\n';
+ } ;
+__p += '\n<img src="data:' +
+((__t = (type)) == null ? '' : __t) +
+';base64,' +
+((__t = (data)) == null ? '' : __t) +
+'">\n<input name="' +
+((__t = (name)) == null ? '' : __t) +
+'" type="text" ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n\n\n';
+
+}
+return __p
+};
+
 this["JST"]["form_checkbox"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<label>' +
 ((__t = (label)) == null ? '' : __t) +
-'<input name="' +
+'</label>\n<input name="' +
 ((__t = (name)) == null ? '' : __t) +
 '" type="' +
 ((__t = (type)) == null ? '' : __t) +
 '" ' +
 ((__t = (checked)) == null ? '' : __t) +
-'></label>\n';
+'>\n';
 
 }
 return __p
@@ -323,17 +350,30 @@ return __p
 
 this["JST"]["form_input"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<label>' +
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
 ((__t = (label)) == null ? '' : __t) +
-'<input name="' +
+'\n</label>\n';
+ } ;
+__p += '\n<input name="' +
 ((__t = (name)) == null ? '' : __t) +
 '" type="' +
 ((__t = (type)) == null ? '' : __t) +
-'" value="' +
+'" \n    ';
+ if (value) { ;
+__p += ' value="' +
 ((__t = (value)) == null ? '' : __t) +
-'"></label>\n';
+'" ';
+ } ;
+__p += '\n    ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n';
 
 }
 return __p
@@ -346,7 +386,7 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<label>' +
 ((__t = (label)) == null ? '' : __t) +
-'<select name="' +
+'</label>\n<select name="' +
 ((__t = (name)) == null ? '' : __t) +
 '"  ';
  if (multiple) { ;
@@ -354,7 +394,7 @@ __p += ' multiple="multiple" ';
  } ;
 __p += '>' +
 ((__t = (options)) == null ? '' : __t) +
-'</select></label>\n';
+'</select>\n';
 
 }
 return __p
@@ -366,11 +406,44 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<label class="label-ta">' +
 ((__t = (label)) == null ? '' : __t) +
-'<textarea name="' +
+'</label>\n<textarea name="' +
 ((__t = (name)) == null ? '' : __t) +
 '">' +
 ((__t = (value)) == null ? '' : __t) +
-'</textarea></label>\n';
+'</textarea>\n';
+
+}
+return __p
+};
+
+this["JST"]["form_username"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+((__t = (label)) == null ? '' : __t) +
+'\n</label>\n';
+ } ;
+__p += '\n<div class="input-group">\n    <input name="' +
+((__t = (name)) == null ? '' : __t) +
+'" type="' +
+((__t = (type)) == null ? '' : __t) +
+'" \n        ';
+ if (value) { ;
+__p += ' value="' +
+((__t = (value)) == null ? '' : __t) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' />\n    <span>' +
+((__t = (domain)) == null ? '' : __t) +
+'</span>\n</div>\n';
 
 }
 return __p
@@ -410,9 +483,9 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<form id="converse-login" method="post">\n    <label>' +
 ((__t = (label_username)) == null ? '' : __t) +
-'</label>\n    <input type="username" name="jid" placeholder="Username">\n    <label>' +
+'</label>\n    <input type="username" name="jid" placeholder="user@server">\n    <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
-'</label>\n    <input type="password" name="password" placeholder="Password">\n    <input class="login-submit" type="submit" value="' +
+'</label>\n    <input type="password" name="password" placeholder="password">\n    <input class="submit" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
 '">\n    <span class="conn-feedback"></span>\n</form>\n';
 
@@ -424,7 +497,7 @@ this["JST"]["login_tab"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<li><a class="current" href="#login">' +
+__p += '<li><a class="current" href="#login-dialog">' +
 ((__t = (label_sign_in)) == null ? '' : __t) +
 '</a></li>\n';
 
@@ -524,6 +597,66 @@ __p += '<dt id="pending-xmpp-contacts"><a href="#" class="group-toggle icon-' +
 '">' +
 ((__t = (label_pending_contacts)) == null ? '' : __t) +
 '</a></dt>\n';
+
+}
+return __p
+};
+
+this["JST"]["register_panel"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<form id="converse-register">\n    <span class="reg-feedback"></span>\n    <label>' +
+((__t = (label_domain)) == null ? '' : __t) +
+'</label>\n    <input type="text" name="domain" placeholder=" e.g. conversejs.org">\n    <p class="form-help">Tip: A list of public XMPP providers is available <a href="https://xmpp.net/directory.php" class="url" target="_blank">here</a>.</p>\n    <input class="submit" type="submit" value="' +
+((__t = (label_register)) == null ? '' : __t) +
+'">\n</form>\n';
+
+}
+return __p
+};
+
+this["JST"]["register_tab"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<li><a class="s" href="#register">' +
+((__t = (label_register)) == null ? '' : __t) +
+'</a></li>\n';
+
+}
+return __p
+};
+
+this["JST"]["registration_form"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<p class="provider-title">' +
+((__t = (domain)) == null ? '' : __t) +
+'</p>\n<a href=\'https://xmpp.net/result.php?domain=' +
+((__t = (domain)) == null ? '' : __t) +
+'&amp;type=client\'>\n    <img class="provider-score" src=\'https://xmpp.net/badge.php?domain=' +
+((__t = (domain)) == null ? '' : __t) +
+'\' alt=\'xmpp.net score\' />\n</a>\n<p class="title">' +
+((__t = (title)) == null ? '' : __t) +
+'</p>\n<p class="instructions">' +
+((__t = (instructions)) == null ? '' : __t) +
+'</p>\n';
+
+}
+return __p
+};
+
+this["JST"]["registration_request"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<span class="spinner login-submit"/>\n<p class="info">' +
+((__t = (info_message)) == null ? '' : __t) +
+'</p>\n<button class="cancel hor_centered">' +
+((__t = (cancel)) == null ? '' : __t) +
+'</button>\n';
 
 }
 return __p

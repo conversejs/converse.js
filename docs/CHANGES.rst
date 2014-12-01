@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.4 (Unreleased)
+0.8.4 (2014-12-01)
 ------------------
 
 * #117 JIDs or nicknames not shown in chat rooms. [jcbrand]

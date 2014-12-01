@@ -4498,7 +4498,7 @@
                         connect_cb(req, callback, raw);
                     } else {
                         if (this.getRegistrationFields(req, callback, raw)) {
-                            delete this._registering;
+                            this._registering = false;
                         }
                     }
                 }, this);
@@ -4529,8 +4529,9 @@
                 }
                 if (register.length === 0) {
                     conn._changeConnectStatus(
-                            Strophe.Status.REGIFAIL,
-                            'Sorry, the given provider does not support in band account registration. Please try with a different provider.');
+                        Strophe.Status.REGIFAIL,
+                        __('Sorry, the given provider does not support in band account registration. Please try with a different provider.')
+                    );
                     return true;
                 }
                 // Send an IQ stanza to get all required data fields
@@ -4588,9 +4589,10 @@
                     return;
                 }
                 $form.find('input[type=submit]').hide()
-                    .after('<button class="cancel hor_centered">Cancel</button>')
-                    .after('<span class="spinner login-submit"/>')
-                    .after('<p class="info">Requesting a registration form from the XMPP server</p>');
+                    .after(converse.templates.registration_request({
+                        cancel: __('Cancel'),
+                        info_message: __('Requesting a registration form from the XMPP server')
+                    }));
                 $form.find('button.cancel').on('click', $.proxy(this.cancelRegistration, this));
                 this.reset({
                     domain: Strophe.getDomainFromJid(domain),
@@ -4613,7 +4615,9 @@
                 if (_.contains([
                             Strophe.Status.DISCONNECTED,
                             Strophe.Status.CONNFAIL,
-                            Strophe.Status.REGIFAIL
+                            Strophe.Status.REGIFAIL,
+                            Strophe.Status.NOTACCEPTABLE,
+                            Strophe.Status.CONFLICT
                         ], status)) {
 
                     converse.log('Problem during registration: Strophe.Status is: '+status);
@@ -4622,16 +4626,10 @@
                         this.giveFeedback(error, 'error');
                     } else {
                         this.giveFeedback(__(
-                                'Something went wrong establishing a connection with "%1$s". Are you sure it exists?',
+                                'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
                                 this.domain
                             ), 'error');
                     }
-                } else if (status == Strophe.Status.CONFLICT) {
-                    // TODO
-                    converse.log('CONFLICT');
-                } else if (status == Strophe.Status.NOTACCEPTABLE) {
-                    // TODO
-                    converse.log('NOTACCEPTABLE');
                 } else if (status == Strophe.Status.REGISTERED) {
                     converse.log("Registered successfully.");
                     converse.connection.reset();
@@ -4694,9 +4692,9 @@
                     }, this));
                 }
                 if (this.fields) {
-                    $form.append('<input type="submit" class="submit" value="'+__('Register')+'"/>');
+                    $form.append('<input type="submit" class="save-submit" value="'+__('Register')+'"/>');
                     $form.on('submit', $.proxy(this.submitRegistrationForm, this));
-                    $form.append('<input type="button" class="submit" value="'+__('Cancel')+'"/>');
+                    $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
                     $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
                 } else {
                     $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');

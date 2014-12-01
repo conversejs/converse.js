@@ -110,6 +110,7 @@ require.config({
         "register_panel":           "src/templates/register_panel",
         "register_tab":             "src/templates/register_tab",
         "registration_form":        "src/templates/registration_form",
+        "registration_request":     "src/templates/registration_request",
         "requesting_contact":       "src/templates/requesting_contact",
         "requesting_contacts":      "src/templates/requesting_contacts",
         "room_description":         "src/templates/room_description",

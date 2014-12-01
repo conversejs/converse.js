@@ -11,12 +11,27 @@
 
     describe("The Registration Panel", $.proxy(function (mock, test_utils) {
         beforeEach(function () {
+            test_utils.closeControlBox();
+            connection = mock.mock_connection;
+            connection.connected = false;
+            converse._tearDown();
+            converse.initialize({
+                bosh_service_url: 'localhost',
+                allow_registration: true,
+                auto_subscribe: false,
+                animate: false,
+                connection: connection,
+                no_trimming: true,
+                debug: true
+            });
             test_utils.openControlBox();
+
         });
 
-        afterEach(function () {
+        afterEach($.proxy(function () {
+            this.connection.connected = false;
             test_utils.closeControlBox();
-        });
+        }, converse));
 
         it("is not available unless allow_registration=true",  $.proxy(function () {
             test_utils.closeControlBox();
@@ -61,6 +76,9 @@
             var $panels = cbview.$('.controlbox-panes');
             var $login = $panels.children().first();
             var $registration = $panels.children().last();
+            expect($tabs.find('li').first().text()).toBe('Sign in');
+            expect($tabs.find('li').last().text()).toBe('Register');
+
             spyOn(cbview, 'switchTab').andCallThrough();
             cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
             $tabs.find('li').last().find('a').click(); // Click the Register tab
@@ -94,7 +112,50 @@
         }, converse));
 
         it("will render a registration form as received from the XMPP provider", $.proxy(function () {
-            // TODO
+            var cbview = this.chatboxviews.get('controlbox');
+            cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
+            var registerview = this.chatboxviews.get('controlbox').registerpanel;
+            spyOn(registerview, 'onProviderChosen').andCallThrough();
+            spyOn(registerview, 'getRegistrationFields').andCallThrough();
+            spyOn(registerview, 'onRegistrationFields').andCallThrough();
+            spyOn(registerview, 'renderRegistrationForm').andCallThrough();
+            registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
+            spyOn(this.connection, 'connect').andCallThrough();
+
+            expect(registerview._registering).toBeFalsy();
+            expect(this.connection.connected).toBeFalsy();
+            registerview.$('input[name=domain]').val('conversejs.org');
+            registerview.$('input[type=submit]').click();
+            expect(registerview.onProviderChosen).toHaveBeenCalled();
+            expect(registerview._registering).toBeTruthy();
+            expect(this.connection.connect).toHaveBeenCalled();
+
+            var stanza = new Strophe.Builder("stream:features", {
+                        'xmlns:stream': "http://etherx.jabber.org/streams",
+                        'xmlns': "jabber:client"
+                    })
+                .c('register',  {xmlns: "http://jabber.org/features/iq-register"}).up()
+                .c('mechanisms', {xmlns: "urn:ietf:params:xml:ns:xmpp-sasl"});
+            this.connection._connect_cb(test_utils.createRequest(stanza));
+
+            expect(registerview.getRegistrationFields).toHaveBeenCalled();
+            expect(this.connection.connected).toBeTruthy();
+
+            stanza = $iq({
+                    'type': 'result',
+                    'id': 'reg1'
+                }).c('query', {'xmlns': 'jabber:iq:register'})
+                    .c('instructions')
+                        .t('Please choose a username, password and provide your email address').up()
+                    .c('username').up()
+                    .c('password').up()
+                    .c('email');
+            this.connection._dataRecv(test_utils.createRequest(stanza));
+            expect(registerview.onRegistrationFields).toHaveBeenCalled();
+            expect(registerview.renderRegistrationForm).toHaveBeenCalled();
+            expect(registerview.$('input').length).toBe(5);
+            expect(registerview.$('input[type=submit]').length).toBe(1);
+            expect(registerview.$('input[type=button]').length).toBe(1);
         }, converse));
 
     }, converse, mock, test_utils));

@@ -5,6 +5,7 @@ PAPER        =
 PHANTOMJS	?= node_modules/.bin/phantomjs
 SPHINXBUILD  = sphinx-build
 SPHINXOPTS   =
+POTOJSON	?= node_modules/.bin/po2json
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -41,7 +42,7 @@ po:
 merge: po
 
 po2json:
-	find ./locale -maxdepth 1 -mindepth 1 -type d -exec po2json {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
+	find ./locale -maxdepth 1 -mindepth 1 -type d -exec $(POTOJSON) -p -f jed -d converse {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
 
 ########################################################################
 ## Release management

@@ -232,6 +232,7 @@
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             debug: false,
+            domain_placeholder: " e.g. conversejs.org",  // Placeholder text to show in the domain input on the registration form
             default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,
@@ -243,6 +244,7 @@
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
             prebind: false,
+            providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             roster_groups: false,
             show_controlbox_by_default: false,
             show_only_online_users: false,
@@ -4480,7 +4482,11 @@
                 this.$parent.append(this.$el.html(
                     converse.templates.register_panel({
                         'label_domain': __("Your XMPP provider's domain name:"),
-                        'label_register': __('Fetch registration form')
+                        'label_register': __('Fetch registration form'),
+                        'help_providers': __('Tip: A list of public XMPP providers is available'),
+                        'help_providers_link': __('here'),
+                        'href_providers': converse.providers_link,
+                        'domain_placeholder': converse.domain_placeholder
                     })
                 ));
                 this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
@@ -4885,6 +4891,9 @@
             render: function () {
                 this.$tabs.append(converse.templates.login_tab({label_sign_in: __('Sign in')}));
                 this.$el.find('input#jid').focus();
+                if (!this.$el.is(':visible')) {
+                    this.$el.show();
+                }
                 return this;
             },
 
@@ -4929,7 +4938,6 @@
                 }
                 converse.connection.connect(jid, password, converse.onConnect);
             },
-
 
             remove: function () {
                 this.$tabs.empty();

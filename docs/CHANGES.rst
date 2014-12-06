@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.8.4 (2014-12-01)
+0.8.6 (Unreleased)
+------------------
+
+* Bugfix. Login panel didn't appear under certain conditions. [jcbrand]
+* Text on the registration form was not configurable or i18n aware. [jcbrand]
+
+0.8.5 (2014-12-01)
 ------------------
 
 * #117 JIDs or nicknames not shown in chat rooms. [jcbrand]

@@ -1116,6 +1116,13 @@ Default:  ``false``
 
 If set to true, debugging output will be logged to the browser console.
 
+domain_placeholder
+------------------
+
+Default: ``e.g. conversejs.org``
+
+The placeholder text shown in the domain input on the registration form.
+
 keepalive
 ---------
 
@@ -1295,6 +1302,15 @@ Here is a code example::
             keepalive: true,
             bosh_service_url: 'https://bind.example.com'
         }));
+
+
+providers_link
+--------------
+
+Default:  ``https://xmpp.net/directory.php``
+
+The hyperlink on the registration form which points to a directory of public
+XMPP servers.
 
 
 roster_groups

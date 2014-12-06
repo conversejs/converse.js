@@ -2,4 +2,30 @@
 {% extends "!layout.html" %}
 
 {# Custom CSS overrides #}
-{% set bootswatch_css_custom = ['_static/style.css'] %}
+{% set bootswatch_css_custom = ['_static/style.css', "../../css/converse.min.css"] %}
+{% set script_files = script_files + ["../../builds/converse.min.js"] %}
+
+{# Add some extra stuff before and use existing with 'super()' call. #}
+{% block footer %}
+    {{ super() }}
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
+    <script>
+        require(['converse'], function (converse) {
+            converse.initialize({
+                bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+                i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
+                keepalive: true,
+                play_sounds: true,
+                roster_groups: true,
+                debug: false,
+                xhr_user_search: false
+            });
+        });
+    </script>
+{% endblock %}
+
+

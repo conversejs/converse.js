@@ -3,7 +3,7 @@ BOWER 		?= node_modules/.bin/bower
 BUILDDIR     = ./docs
 PAPER        =
 PHANTOMJS	?= node_modules/.bin/phantomjs
-SPHINXBUILD  = sphinx-build
+SPHINXBUILD  = ./bin/sphinx-build
 SPHINXOPTS   =
 POTOJSON	?= node_modules/.bin/po2json
 

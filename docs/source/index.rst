@@ -23,7 +23,7 @@ When you download a specific release of *Converse.js* there will be two minified
 You can include these two files inside the *<head>* element of your website via the *script* and *link*
 tags:
 
-::
+.. code-block:: html
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/converse.min.css">
     <script src="builds/converse.min.js"></script>
@@ -37,7 +37,7 @@ all the available configuration settings.
 To configure Converse.js, put the following inline Javascript code at the
 bottom of your page (after the closing *</body>* element).
 
-::
+.. code-block:: javascript
 
     require(['converse'], function (converse) {
         converse.initialize({
@@ -264,7 +264,8 @@ Your ``nginx`` or ``apache`` configuration will look as follows:
 
 Nginx
 ~~~~~
-::
+
+.. code-block:: nginx 
 
     http {
         server {
@@ -278,7 +279,8 @@ Nginx
 
 Apache
 ~~~~~~
-::
+
+.. code-block:: apache
 
     <VirtualHost *:80>
         ServerName mysite.com
@@ -314,7 +316,9 @@ do the pre-authentication before the web page loads.
     an XMPP server in order to chat. So the BOSH server acts as a middle man,
     translating our HTTP requests into XMPP stanzas and vice versa.
 
-Jack Moffitt has a great `blogpost`_ about this and even provides an `example Django application`_ to demonstrate it.
+Jack Moffitt has a great `blogpost`_ about this and even provides an
+`example Django application <https://github.com/metajack/strophejs/tree/master/examples/attach>`_
+to demonstrate it.
 
 When you authenticate to the XMPP server on your backend application (for
 example via a BOSH client in Django), you'll receive two tokens, RID (request ID) and SID (session ID).
@@ -337,7 +341,7 @@ XMLHttpRequest call to your server and ask it to return them for you.
 Below is one example of how this could work. An Ajax call is made to the
 relative URL **/prebind** and it expects to receive JSON data back.
 
-::
+.. code-block:: javascript
 
     $.getJSON('/prebind', function (data) {
         converse.initialize({
@@ -447,7 +451,7 @@ non-minified javascript files.
 
 Add the following two lines to the *<head>* section of your webpage:
 
-::
+.. code-block:: html
 
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
     <script data-main="main" src="components/requirejs/require.js"></script>
@@ -553,7 +557,9 @@ converse.js.
 The `initialize` method takes a map (also called a hash or dictionary) of
 `configuration variables`_.
 
-Example::
+Example:
+
+.. code-block:: javascript
 
     converse.initialize({
             allow_otr: true,
@@ -769,9 +775,9 @@ Here are the different events that are emitted:
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | **statusMessageChanged**       | When own custom status message has changed.                                                       | ``converse.on('statusMessageChanged', function (message) { ... });``                    |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **contactStatusChanged**         | When a chat buddy's chat status has changed.                                                      | ``converse.on('contactStatusChanged', function (buddy, status) { ... });``                |
+| **contactStatusChanged**       | When a chat buddy's chat status has changed.                                                      | ``converse.on('contactStatusChanged', function (buddy, status) { ... });``              |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| **contactStatusMessageChanged**  | When a chat buddy's custom status message has changed.                                            | ``converse.on('contactStatusMessageChanged', function (buddy, messageText) { ... });``    |
+| **contactStatusMessageChanged**| When a chat buddy's custom status message has changed.                                            | ``converse.on('contactStatusMessageChanged', function (buddy, messageText) { ... });``  |
 +--------------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 
 
@@ -822,7 +828,7 @@ The POT file contains all translateable strings extracted from converse.js.
 To make a user facing string translateable, wrap it in the double underscore helper
 function like so:
 
-::
+.. code-block:: javascript
 
     __('This string will be translated at runtime');
 
@@ -863,7 +869,7 @@ attributes at the top of the file (under *Content-Transfer-Encoding*). They are
 required as configuration settings for Jed, the Javascript translations library
 that we're using.
 
-::
+.. code-block:: po
 
     "domain: converse\n"
     "lang: de\n"
@@ -893,7 +899,7 @@ object in the language's .js file.
 So, if you are for example translating into German (language code 'de'), you'll
 create or update the file ./locale/LC_MESSAGES/de.js with the following code:
 
-::
+.. code-block:: javascript 
 
     (function (root, factory) {
         define("de", ['jed'], function () {
@@ -1084,7 +1090,7 @@ bosh_service_url
 Connections to an XMPP server depend on a BOSH connection manager which acts as
 a middle man between HTTP and XMPP.
 
-See `here <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_ for more information.
+For more information, read this blog post: `Which BOSH server do you need? <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_
 
 cache_otr_key
 -------------
@@ -1154,7 +1160,7 @@ Both message_carbons and `forward_messages`_ try to solve the same problem
 in two different ways.
 
 Message carbons is the XEP (Jabber protocol extension) specifically drafted to
-solve this problem, while `forwarded_messages`_ uses
+solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
 expose_rid_and_sid
@@ -1185,7 +1191,7 @@ browser tab functions as a separate chat client, with its own resource.
 
 This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
-For an alternative approach, see also `message carbons`_.
+For an alternative approach, see also `message_carbons`_.
 
 fullname
 --------
@@ -1283,7 +1289,9 @@ for some reason ``keepalive`` doesn't have cached session tokens anymore, you
 can listen for the ``noResumeableSession`` event and take that as a cue that
 you should again prebind in order to get valid session tokens.
 
-Here is a code example::
+Here is a code example:
+
+.. code-block:: javascript
 
         converse.on('noResumeableSession', function () {
             $.getJSON('/prebind', function (data) {
@@ -1399,7 +1407,7 @@ visible_toolbar_buttons
 
 Default:
 
-::
+.. code-block:: javascript
 
     {
         call: false,
@@ -1499,4 +1507,3 @@ The available options are:
 .. _`xmpp.org`: http://xmpp.org/xmpp-software/servers/
 .. _`ejabberd`: http://www.ejabberd.im
 .. _`blogpost`: http://metajack.im/2008/10/03/getting-attached-to-strophe
-.. _`example Django application`: https://github.com/metajack/strophejs/tree/master/examples/attach

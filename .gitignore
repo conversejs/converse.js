@@ -8,13 +8,27 @@
 .svn/
 .project
 .pydevproject
+
 Backbone.Overview
-node_modules
-components
-docs/doctrees/environment.pickle
 tags
 stamp-npm
 stamp-bower
+
+# Sphinx
+docs/html
+docs/doctrees
+
+# Bower
+components
+
+# Node.js
+node_modules
+
+# Virtualenv/Buildout
+lib
+include
+bin
+develop-eggs
 
 # OSX
 .DS_Store

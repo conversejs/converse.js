@@ -110,7 +110,7 @@ html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
     'navbar_title': "Converse.js",
     # Tab name for entire site. (Default: "Site")
-    'navbar_site_name': "Converse.js Documentation",
+    'navbar_site_name': "Table of Contents",
     # A list of tuples containing pages or urls to link to.
     # Valid tuples should be in the following forms:
     #    (name, page)                 # a link to a page
@@ -119,15 +119,14 @@ html_theme_options = {
     # Note the "1" or "True" value above as the third argument to indicate
     # an arbitrary url.
     'navbar_links': [
-        ("Main Site", "https://conversejs.org", True),
-        ("Download", "https://github.com/jcbrand/converse.js/releases", True),
+        ("Homepage", "https://conversejs.org", True)
     ],
     # Render the next and previous page links in navbar. (Default: true)
     'navbar_sidebarrel': True,
     # Render the current pages TOC in the navbar. (Default: true)
     'navbar_pagenav': True,
     # Tab name for the current pages TOC. (Default: "Page")
-    'navbar_pagenav_name': "Page",
+    'navbar_pagenav_name': "Current Page",
     # Global TOC depth for "site" navbar tab. (Default: 1)
     # Switching to -1 shows all levels.
     'globaltoc_depth': 2,
@@ -147,7 +146,7 @@ html_theme_options = {
     'navbar_fixed_top': "true",
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
-    'source_link_position': "nav",
+    'source_link_position': "footer",
     # Bootswatch (http://bootswatch.com/) theme.
     # Options are nothing (default) or the name of a valid theme
     # such as "amelia" or "cosmo".

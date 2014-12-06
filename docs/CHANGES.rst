@@ -6,6 +6,7 @@ Changelog
 
 * Bugfix. Login panel didn't appear under certain conditions. [jcbrand]
 * Text on the registration form was not configurable or i18n aware. [jcbrand]
+* #285 With prebind the jid, rid and sid settings were ignored. [jcbrand]
 
 0.8.5 (2014-12-01)
 ------------------

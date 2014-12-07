@@ -1028,12 +1028,6 @@ dl.add-converse-contact {
     border-bottom-left-radius: 4px;
 }
 
-#conversejs .chatroom-form {
-    background: white;
-    font-size: 12px;
-    padding: 10px 5px;
-}
-
 #conversejs .chat-body p {
     font-size: 14px;
     color: #666;
@@ -1044,7 +1038,7 @@ dl.add-converse-contact {
 #conversejs .chatroom-form legend {
     font-size: 14px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin: 5px 0;
 }
 
 #conversejs .chatroom-form label {
@@ -1274,6 +1268,7 @@ dl.add-converse-contact {
     width: 300px;
 }
 
+#conversejs .chatroom-form,
 #conversejs .controlbox-pane {
     text-align: center;
     background-color: white;
@@ -1313,6 +1308,11 @@ dl.add-converse-contact {
 #conversejs #converse-register .instructions {
     color: gray;
     font-size: 85%;
+}
+
+#conversejs .chatroom-form .instructions {
+    color: gray;
+    font-size: 95%;
 }
 
 #conversejs .form-help:hover,
@@ -1357,22 +1357,35 @@ dl.add-converse-contact {
 }
 
 #conversejs #converse-register .cancel,
+#conversejs .chatroom-form .cancel-submit,
 #conversejs #converse-register .cancel-submit {
     color: darkred;
 }
 
+#conversejs .chatroom-form .save-submit,
 #conversejs #converse-register .save-submit {
     color: darkgreen;
 }
 
+#conversejs .chatroom-form .save-submit,
+#conversejs .chatroom-form .cancel-submit,
 #conversejs #converse-register .cancel-submit,
 #conversejs #converse-register .save-submit {
     width: 45%;
-    margin: 5px 3px 0 3px;
+    margin: 5px 3px 5px 3px;
 }
 
+#conversejs .chatroom-form input {
+    width: 80%;
+    padding: 5px;
+    text-align: center;
+}
+
+#conversejs .chatroom-form label,
 #conversejs #converse-register label,
 #conversejs #converse-login label {
+    height: auto;
+    font-size: 14px;
     margin-top: 0.5em;
     font-weight: bold;
 }

@@ -2420,8 +2420,8 @@
                 _.each($fields, function (field) {
                     $form.append(utils.xForm2webForm($(field), $stanza));
                 });
-                $form.append('<input type="submit" value="'+__('Save')+'"/>');
-                $form.append('<input type="button" value="'+__('Cancel')+'"/>');
+                $form.append('<input type="submit" class="save-submit" value="'+__('Save')+'"/>');
+                $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
                 $form.on('submit', $.proxy(this.saveConfiguration, this));
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
             },

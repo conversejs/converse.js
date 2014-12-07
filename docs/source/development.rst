@@ -12,9 +12,9 @@ follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
 .. note::
-    Users have reported that converse.js cannot be built on Windows. Patches to
-    fix this are welcome.
-
+    If you have trouble setting up a development environment on Windows,
+    please read `this post <http://librelist.com/browser//conversejs/2014/11/5/openfire-converse-and-visual-studio-questions/#b28387e7f8f126693b11598a8acbe810>`_
+    in the mailing list.:
 
 Install the development and front-end dependencies
 ==================================================
@@ -25,7 +25,7 @@ which depend on Node.js and npm (the Node package manager).
 If you don't have Node.js installed, you can download and install the latest
 version `here <https://nodejs.org/download>`_.
 
-Also make sure you have ``git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
+Also make sure you have ``Git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
 
 Once you have *Node.js* and *git* installed, run the following command inside the Converse.js
 directory:

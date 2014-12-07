@@ -170,6 +170,9 @@ a:focus {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
 }
+.btn-text {
+  font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 .page-scroll .btn-circle i.animated {
   -webkit-transition-property: -webkit-transform;
   -webkit-transition-duration: 1s;

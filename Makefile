@@ -105,6 +105,7 @@ check:: stamp-npm
 ## Documentation
 
 html:
+	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

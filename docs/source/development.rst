@@ -3,7 +3,7 @@ Development
 ===========
 
 .. contents:: Table of Contents
-   :depth: 3
+   :depth: 2
    :local:
 
 If you want to work with the non-minified Javascript and CSS files you'll soon

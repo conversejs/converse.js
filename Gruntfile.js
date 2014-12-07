@@ -112,7 +112,7 @@ module.exports = function(grunt) {
         // 'r.js -o src/build.js paths.converse-dependencies=src/deps-no-otr paths.locales=locale/nolocales out=builds/converse-no-locales-no-otr.min.js'
     });
 
-    grunt.registerTask('minify', 'Create a new release', ['cssmin', 'jsmin']);
+    grunt.registerTask('minify', 'Create a new minified builds', ['cssmin', 'jsmin']);
 
     grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
         grunt.task.run('jshint', 'test');

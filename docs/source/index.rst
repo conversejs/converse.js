@@ -10,6 +10,12 @@ Converse.js Documentation
 Preface
 =======
 
+This is the official documentation for Converse.js. If you'd like to
+contribute, please read the :doc:`documentation` page.
+
+Introduction
+============
+
 Converse.js is a free and open-source `XMPP <http://xmpp.org/about-xmpp/>`_
 chat client written in Javascript which can be tightly integrated into any website.
 
@@ -37,4 +43,5 @@ Table of Contents
    configuration
    development
    translations
+   documentation
    builds

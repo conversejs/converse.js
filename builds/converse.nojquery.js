@@ -2805,7 +2805,15 @@ var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments
 with(obj||{}){
 __p+='<form id="converse-register">\n    <span class="reg-feedback"></span>\n    <label>'+
 ((__t=(label_domain))==null?'':__t)+
-'</label>\n    <input type="text" name="domain" placeholder=" e.g. conversejs.org">\n    <p class="form-help">Tip: A list of public XMPP providers is available <a href="https://xmpp.net/directory.php" class="url" target="_blank">here</a>.</p>\n    <input class="submit" type="submit" value="'+
+'</label>\n    <input type="text" name="domain" placeholder="'+
+((__t=(domain_placeholder))==null?'':__t)+
+'">\n    <p class="form-help">'+
+((__t=(help_providers))==null?'':__t)+
+' <a href="'+
+((__t=(href_providers))==null?'':__t)+
+'" class="url" target="_blank">'+
+((__t=(help_providers_link))==null?'':__t)+
+'</a>.</p>\n    <input class="submit" type="submit" value="'+
 ((__t=(label_register))==null?'':__t)+
 '">\n</form>\n';
 }
@@ -31946,21 +31954,26 @@ define("converse-dependencies", [
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             debug: false,
+            domain_placeholder: " e.g. conversejs.org",  // Placeholder text shown in the domain input on the registration form
             default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,
             hide_muc_server: false,
             hide_offline_users: false,
             i18n: locales.en,
+            jid: undefined,
             keepalive: false,
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
             prebind: false,
+            providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
+            rid: undefined,
             roster_groups: false,
             show_controlbox_by_default: false,
             show_only_online_users: false,
             show_toolbar: true,
+            sid: undefined,
             storage: 'session',
             use_otr_by_default: false,
             use_vcards: true,
@@ -34119,17 +34132,18 @@ define("converse-dependencies", [
                 var $form= this.$el.find('form.chatroom-form'),
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
-                    title = $stanza.find('title').text();
+                    title = $stanza.find('title').text(),
+                    instructions = $stanza.find('instructions').text();
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
-                if (instructions != title) {
-                    $form.append($('<p class="instructions">').text(this.instructions));
+                if (instructions && instructions != title) {
+                    $form.append($('<p class="instructions">').text(instructions));
                 }
                 _.each($fields, function (field) {
-                    $form.append(utils.xForm2webForm(field));
+                    $form.append(utils.xForm2webForm($(field), $stanza));
                 });
-                $form.append('<input type="submit" value="'+__('Save')+'"/>');
-                $form.append('<input type="button" value="'+__('Cancel')+'"/>');
+                $form.append('<input type="submit" class="save-submit" value="'+__('Save')+'"/>');
+                $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
                 $form.on('submit', $.proxy(this.saveConfiguration, this));
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
             },
@@ -36194,7 +36208,11 @@ define("converse-dependencies", [
                 this.$parent.append(this.$el.html(
                     converse.templates.register_panel({
                         'label_domain': __("Your XMPP provider's domain name:"),
-                        'label_register': __('Fetch registration form')
+                        'label_register': __('Fetch registration form'),
+                        'help_providers': __('Tip: A list of public XMPP providers is available'),
+                        'help_providers_link': __('here'),
+                        'href_providers': converse.providers_link,
+                        'domain_placeholder': converse.domain_placeholder
                     })
                 ));
                 this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
@@ -36599,6 +36617,9 @@ define("converse-dependencies", [
             render: function () {
                 this.$tabs.append(converse.templates.login_tab({label_sign_in: __('Sign in')}));
                 this.$el.find('input#jid').focus();
+                if (!this.$el.is(':visible')) {
+                    this.$el.show();
+                }
                 return this;
             },
 
@@ -36643,7 +36664,6 @@ define("converse-dependencies", [
                 }
                 converse.connection.connect(jid, password, converse.onConnect);
             },
-
 
             remove: function () {
                 this.$tabs.empty();

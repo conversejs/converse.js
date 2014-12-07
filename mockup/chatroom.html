@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title id="pageTitle">Converse.js: Mockup</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="Converse.js: Mockup" />
+    <link type="text/css" href="../css/theme.css" rel="stylesheet" media="screen" />
+    <link type="text/css" href="../css/converse.css" rel="stylesheet" media="screen" />
+    <script src="../components/jquery/dist/jquery.min.js"></script>
+</head>
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+        <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
+        <h2 id="project_tagline">Static Chat Room  Mockup</h2>
+    </header>
+</div>
+
+<div id="conversejs">
+    <div class="chatroom" id="6d8627960a0cb066d9216742f3edccc3dbbf85a9">
+        <div class="box-flyout">
+            <div class="dragresize dragresize-tm"></div>
+            <div class="chat-head chat-head-chatroom">
+                <a class="close-chatbox-button icon-close"></a>
+                <a class="toggle-chatbox-button icon-minus"></a>
+                <a class="configure-chatroom-button" style="display:none">&nbsp;</a>
+                <div class="chat-title"> discuss</div>
+                <p class="chatroom-topic"></p>
+                <p></p>
+            </div>
+            <div class="chat-body">
+                <div class="chatroom-form-container">
+                    <form class="chatroom-form">
+                        <legend>Configuration for discuss@conference.conversejs.com</legend>
+                        <p class="instructions">Complete and submit this form to configure the room.</p>
+                        <input name="FORM_TYPE" type="hidden" value="http://jabber.org/protocol/muc#roomconfig">
+                        <label>Name</label>
+                        <input name="muc#roomconfig_roomname" type="textline" value="xxx">
+
+                        <label>Description</label>
+                        <input name="muc#roomconfig_roomdesc" type="textline">
+                        <div class="input-group cb-input-group">
+                            <label>Make Room Persistent?</label>
+                            <input name="muc#roomconfig_persistentroom" type="checkbox">
+                        </div>
+                        <div class="input-group cb-input-group">
+                            <label>Make Room Publicly Searchable?</label>
+                            <input name="muc#roomconfig_publicroom" type="checkbox" checked="1">
+                        </div>
+                        <div class="input-group cb-input-group">
+                            <label>Allow Occupants to Change Subject?</label>
+                            <input name="muc#roomconfig_changesubject" type="checkbox">
+                        </div>
+                        <label>Who May Discover Real JIDs?</label>
+                        <select name="muc#roomconfig_whois"><option value="moderators" selected="selected">Moderators Only</option>
+                            <option value="anyone">Anyone</option>
+                        </select>
+
+                        <label>Password</label>
+                        <input name="muc#roomconfig_roomsecret" type="password">
+                        <div class="input-group cb-input-group">
+                            <label>Make Room Moderated?</label>
+                            <input name="muc#roomconfig_moderatedroom" type="checkbox">
+                        </div>
+                        <div class="input-group cb-input-group">
+                            <label>Make Room Members-Only?</label>
+                            <input name="muc#roomconfig_membersonly" type="checkbox">
+                        </div>
+                            <label>Maximum Number of History Messages Returned by Room</label>
+                        <input name="muc#roomconfig_historylength" type="textline" value="20">
+                        <input type="submit" class="save-submit" value="Save">
+                        <input type="button" class="cancel-submit" value="Cancel"></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $('a[href=#chatrooms]').click(function (ev) { 
+        switchTab(ev);
+    });
+    $('a[href=#users]').click(function (ev) {
+        switchTab(ev); 
+    });
+
+    $("a.choose-xmpp-status").click(function (ev) {
+        ev.preventDefault();
+        $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
+    });
+
+    $("a.change-xmpp-status-message").click(function (ev) {
+        ev.preventDefault();
+        var form = ''+
+                '<form id="set-custom-xmpp-status">' +
+                    '<input type="text" class="custom-xmpp-status"I am online"'+
+                        'placeholder="I am online"/>' +
+                    '<button type="submit">Save</button>' +
+                '</form>';
+
+        $(ev.target).closest('.xmpp-status').replaceWith(form);
+        $(ev.target).closest('.custom-xmpp-status').focus().focus();
+    });
+
+    $('.toggle-xmpp-contact-form').click(function (ev) {
+        ev.preventDefault();
+        $(ev.target).parent().parent().find('.search-xmpp').toggle('fast', function () {
+            if ($(this).is(':visible')) {
+                $(this).find('input.username').focus();
+            }
+        });
+    });
+
+    var switchTab = function (ev) {
+        ev.preventDefault();
+        var $tab = $(ev.target),
+            $sibling = $tab.parent().siblings('li').children('a'),
+            $tab_panel = $($tab.attr('href')),
+            $sibling_panel = $($sibling.attr('href'));
+
+        $sibling_panel.hide();
+        $sibling.removeClass('current');
+        $tab.addClass('current');
+        $tab_panel.show();
+    }
+
+    $(function() {
+        $('.close-chatbox-button').click(function(ev) {
+            var $grandparent = $(ev.target).parent().parent().parent();
+            $grandparent.hide(300, function () {
+                // Webkit fix
+                document.getElementById('conversejs').style.display = 'none';
+                document.getElementById('conversejs').offsetHeight; // no need to store this anywhere, the reference is enough
+                document.getElementById('conversejs').style.display = 'block';
+            });
+        });
+
+        $('.toggle-participants a').click(function (ev) {
+            var $el = $(ev.target);
+            if ($el.hasClass("icon-hide-users")) {
+                $el.removeClass('icon-hide-users').addClass('icon-show-users');
+                $('div.participants').animate({width: 0}).hide();
+                $el.closest('.chat-area').animate({width: '100%'});
+                $el.closest('form.sendXMPPMessage').animate({width: '100%'});
+            } else {
+                $el.removeClass('icon-show-users').addClass('icon-hide-users');
+                $el.closest('.chat-area').animate({width: '200px'}, function () {
+                    $('div.participants').css({width: '100px'}).show();
+                });
+                $el.closest('form.sendXMPPMessage').animate({width: '200px'});
+            }
+        });
+
+        $('.toggle-chatbox-button').click(function(ev) {
+            var $grandparent = $(ev.target).parent().parent().parent();
+            $grandparent.fadeOut('fast');
+        });
+
+        // Clickable Dropdown
+        $('.toggle-otr').click(function(e) {
+            $('.toggle-otr ul').slideToggle(200);
+            e.stopPropagation();
+        });
+
+        $('.toggle-smiley').click(function(e) {
+            $(e.target).find('ul').slideToggle(200);
+            e.stopPropagation();
+        });
+        $(document).click(function() {
+            if ($('.toggle-otr ul').is(':visible')) {
+                $('.toggle-otr ul', this).slideUp(200);
+            }
+            if ($('.toggle-smiley ul').is(':visible')) {
+                $('.toggle-smiley ul', this).slideUp(200);
+            }
+        });
+    });
+});
+</script>
+</html>

@@ -255,12 +255,13 @@
 
         converse.initialize({
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+            debug: false,
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
             keepalive: true,
+            message_carbons: true,
             play_sounds: true,
             roster_groups: true,
             show_controlbox_by_default: true,
-            debug: false,
             xhr_user_search: false
         });
     });

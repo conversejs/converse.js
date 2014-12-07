@@ -2410,14 +2410,15 @@
                 var $form= this.$el.find('form.chatroom-form'),
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
-                    title = $stanza.find('title').text();
+                    title = $stanza.find('title').text(),
+                    instructions = $stanza.find('instructions').text();
                 $form.find('span.spinner').remove();
                 $form.append($('<legend>').text(title));
-                if (instructions != title) {
-                    $form.append($('<p class="instructions">').text(this.instructions));
+                if (instructions && instructions != title) {
+                    $form.append($('<p class="instructions">').text(instructions));
                 }
                 _.each($fields, function (field) {
-                    $form.append(utils.xForm2webForm(field));
+                    $form.append(utils.xForm2webForm($(field), $stanza));
                 });
                 $form.append('<input type="submit" value="'+__('Save')+'"/>');
                 $form.append('<input type="button" value="'+__('Cancel')+'"/>');

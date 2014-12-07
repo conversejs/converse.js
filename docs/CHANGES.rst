@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Bugfix. Login panel didn't appear under certain conditions. [jcbrand]
+* Bugfix. Error when trying to render chat room configuration form. [jcbrand]
 * Text on the registration form was not configurable or i18n aware. [jcbrand]
 * #285 With prebind the jid, rid and sid settings were ignored. [jcbrand]
 

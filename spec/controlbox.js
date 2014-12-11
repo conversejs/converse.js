@@ -436,7 +436,6 @@
                 });
                 waits(50);
                 spyOn(this.rosterview, 'update').andCallThrough();
-                waits(50);
                 runs($.proxy(function () {
                     expect(this.rosterview.$el.is(':visible')).toEqual(true);
                     expect(this.rosterview.update).toHaveBeenCalled();

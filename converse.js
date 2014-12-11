@@ -3228,18 +3228,10 @@
 
             showInRoster: function () {
                 var chatStatus = this.get('chat_status');
-                if (converse.show_only_online_users && chatStatus !== 'online') {
+                if ((converse.show_only_online_users && chatStatus !== 'online')
+                    || (converse.hide_offline_users && chatStatus === 'offline')) {
                     // If pending or requesting, show
                     if ((this.get('ask') === 'subscribe')
-                        || (this.get('subscription') === 'from')
-                        || (this.get('requesting') === true)) {
-                        return true;
-                    }
-                    return false;
-                }
-                if (converse.hide_offline_users && chatStatus === 'offline') {
-                    // If pending or requesting, show
-                    if ((this.get('ask') === 'subscribe') 
                         || (this.get('subscription') === 'from')
                         || (this.get('requesting') === true)) {
                         return true;

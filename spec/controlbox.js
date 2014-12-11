@@ -410,6 +410,45 @@
                 }, converse));
             }, converse));
 
+            it("are shown in the roster when show_only_online_users", $.proxy(function () {
+		converse.show_only_online_users = true;
+                runs(function () {
+                    _addContacts();
+                });
+                waits(50);
+                spyOn(this.rosterview, 'update').andCallThrough();
+                runs($.proxy(function () {
+                    expect(this.rosterview.$el.is(':visible')).toEqual(true);
+                    expect(this.rosterview.update).toHaveBeenCalled();
+                }, converse));
+                waits(300); // Needed, due to debounce
+                runs ($.proxy(function () {
+                    expect(this.rosterview.$el.find('dd:visible').length).toBe(3);
+                    expect(this.rosterview.$el.find('dt:visible').length).toBe(1);
+                }, converse));
+                converse.show_only_online_users = false;
+            }, converse));
+
+            it("are shown in the roster when hide_offline_users", $.proxy(function () {
+                converse.hide_offline_users = true;
+		runs(function () {
+                    _addContacts();
+                });
+                waits(50);
+                spyOn(this.rosterview, 'update').andCallThrough();
+                waits(50);
+                runs($.proxy(function () {
+                    expect(this.rosterview.$el.is(':visible')).toEqual(true);
+                    expect(this.rosterview.update).toHaveBeenCalled();
+                }, converse));
+                waits(300); // Needed, due to debounce
+                runs ($.proxy(function () {
+                    expect(this.rosterview.$el.find('dd:visible').length).toBe(3);
+                    expect(this.rosterview.$el.find('dt:visible').length).toBe(1);
+                }, converse));
+                converse.hide_offline_users = false;
+            }, converse));
+
             it("can be removed by the user", $.proxy(function () {
                 runs($.proxy(function () {
                     _addContacts();

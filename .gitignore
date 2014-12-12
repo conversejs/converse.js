@@ -9,6 +9,13 @@
 .project
 .pydevproject
 
+# Ruby/Sass/Bundler
+.bundle
+.sass-cache
+Gemfile
+ruby
+bourbon
+
 Backbone.Overview
 tags
 stamp-npm

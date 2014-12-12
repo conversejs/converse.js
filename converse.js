@@ -1703,7 +1703,7 @@
                             'label_room_name': __('Room name'),
                             'label_nickname': __('Nickname'),
                             'label_server': __('Server'),
-                            'label_join': __('Join'),
+                            'label_join': __('Join Room'),
                             'label_show_rooms': __('Show rooms')
                         })
                     ).hide());

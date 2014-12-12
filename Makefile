@@ -1,11 +1,12 @@
 # You can set these variables from the command line.
-BOWER 		?= node_modules/.bin/bower
-BUILDDIR     = ./docs
-PAPER        =
-PHANTOMJS	?= node_modules/.bin/phantomjs
-SPHINXBUILD  = ./bin/sphinx-build
-SPHINXOPTS   =
-POTOJSON	?= node_modules/.bin/po2json
+BOWER           ?= node_modules/.bin/bower
+BUILDDIR     	= ./docs
+PAPER        	=
+PHANTOMJS       ?= node_modules/.bin/phantomjs
+SPHINXBUILD  	?= ./bin/sphinx-build
+SPHINXOPTS   	=
+PO2JSON       	?= node_modules/.bin/po2json
+SASS 			?= sass 
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -42,7 +43,7 @@ po:
 merge: po
 
 po2json:
-	find ./locale -maxdepth 1 -mindepth 1 -type d -exec $(POTOJSON) -p -f jed -d converse {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
+	find ./locale -maxdepth 1 -mindepth 1 -type d -exec $(PO2JSON) -p -f jed -d converse {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
 
 ########################################################################
 ## Release management
@@ -88,8 +89,7 @@ dev: clean
 ## Builds
 
 css::
-	./node_modules/.bin/lessc less/styles.less > css/theme.css
-	./node_modules/.bin/lessc less/converse.less > css/converse.css
+	${SASS} sass/converse.scss > css/converse.css
 
 build::
 	./node_modules/.bin/grunt jst

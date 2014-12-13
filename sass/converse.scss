@@ -35,8 +35,9 @@
 #conversejs {
   @import "components/neat/app/assets/stylesheets/neat";
   
-  /* XXX: These should be moved to a separate file */
+  // XXX: These should be moved to a separate file
   $link-color: #436F64;
+  $inverse-link-color: white;
   $link-shadow-color: #FAFAFA;
   $text-shadow-color: #FAFAFA;
   $text-color: #6C4C44;
@@ -49,8 +50,14 @@
   $chat-head-color: #436F64;
   $chatroom-head-color: #0F592F;
   $chat-head-text-color: white;
-  $chat-head-height: 40px;
+  $chat-head-inverse-text-color: white;
+  $chat-head-height: 44px;
   $save-button-color: #436F64;
+  $chat-textarea-height: 64px;
+  $toolbar-height: 20px;
+  $message-them-color: #4B7003;
+  $roster-height: 194px;
+  $controlbox-dropdown-height: 25px;
 
   $font-size: 14px;
   $legend-font-size: 16px;
@@ -94,7 +101,7 @@
   }
 
   textarea,
-  input[type=submit],
+  input[type=submit], input[type=button],
   input[type=text], input[type=password],
   button {
     font-size: $font-size;
@@ -116,35 +123,17 @@
 
   ul, ol, dl {
     font: inherit;
-    margin: 0 0 15px 0;
+    margin: 0;
   }
 
-<<<<<<< HEAD
-=======
-
-  color: $text-color;
-  font-size: $font-size;
-  bottom: 0;
-  direction: ltr;
-  height: 25px;
-  left: 0;
-  position: fixed;
-  right: 0;
-  z-index: 30;
-  display: block;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-
->>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
   [data-icon]:before {
-    font-family: 'Converse-js';
     content: attr(data-icon);
-    speak: none;
-    font-weight: normal;
+    font-family: 'Converse-js';
     font-variant: normal;
-    text-transform: none;
+    font-weight: normal;
     line-height: 1;
+    speak: none;
+    text-transform: none;
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -152,109 +141,109 @@
 
   [class^="icon-"], [class*=" icon-"] {
     font-family: 'Converse-js';
-    speak: none;
     font-style: normal;
-    font-weight: normal;
     font-variant: normal;
-    text-transform: none;
+    font-weight: normal;
     line-height: 1;
+    speak: none;
+    text-transform: none;
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  .icon-address-book:before 		  { content: "\270f"; }
-  .icon-angry:before 			        { content: "\e03f"; }
-  .icon-attachment:before 			  { content: "\e032"; }
-  .icon-away:before 			        { content: "\25fb"; }
-  .icon-blocked:before 			      { content: "\2718"; }
-  .icon-bold:before 			        { content: "\e04d"; }
-  .icon-bubbles-2:before 			    { content: "\e016"; }
-  .icon-bubbles-3:before 			    { content: "\e017"; }
-  .icon-bubbles:before 			      { content: "\e015"; }
-  .icon-camera-2:before 			    { content: "\2616"; }
-  .icon-camera:before 			      { content: "\e003"; }
-  .icon-cancel-circle:before 		  { content: "\e058"; }
-  .icon-checkbox-checked:before 	{ content: "\2611"; }
-  .icon-checkbox-partial:before 	{ content: "\2b28"; }
-  .icon-checkbox-unchecked:before	{ content: "\2b27"; }
-  .icon-checkmark:before 			    { content: "\2713"; }
-  .icon-close:before 			        { content: "\2715"; }
-  .icon-closed:before 			      { content: "\25ba"; }
-  .icon-cog:before 			          { content: "\e02f"; }
-  .icon-cogs:before 			        { content: "\e022"; }
-  .icon-confused:before 		      { content: "\2368"; }
-  .icon-cool:before 			        { content: "\e040"; }
-  .icon-dnd:before 			          { content: "\e004"; }
-  .icon-envelop:before 			      { content: "\2709"; }
-  .icon-evil:before 			        { content: "\261f"; }
-  .icon-eye-blocked:before 	      { content: "\e031"; }
-  .icon-eye:before 			          { content: "\e030"; }
-  .icon-globe:before 			        { content: "\e033"; }
-  .icon-grin:before 			        { content: "\e041"; }
-  .icon-happy:before 			        { content: "\263b"; }
-  .icon-headphones:before 	      { content: "\266c"; }
-  .icon-heart:before 			        { content: "\2764"; }
-  .icon-hide-users:before 	      { content: "\e01c"; }
-  .icon-home:before 			        { content: "\e000"; }
-  .icon-image:before 			        { content: "\2b14"; }
-  .icon-info:before 			        { content: "\2360"; }
-  .icon-italic:before 			      { content: "\e04f"; }
-  .icon-key-2:before 			        { content: "\e029"; }
-  .icon-key:before 			          { content: "\e028"; }
-  .icon-lock-2:before 			      { content: "\e027"; }
-  .icon-lock:before 	  		      { content: "\e026"; }
-  .icon-logout:before 			      { content: "\e601"; }
-  .icon-minus:before 			        { content: "\e05a"; }
-  .icon-music:before 			        { content: "\266b"; }
-  .icon-new-tab:before 			      { content: "\e053"; }
-  .icon-newspaper:before 		      { content: "\e001"; }
-  .icon-notebook:before 		      { content: "\2710"; }
-  .icon-notification:before	      { content: "\e01f"; }
-  .icon-online:before 			      { content: "\25fc"; }
-  .icon-opened:before 			      { content: "\25bc"; }
-  .icon-pencil:before 			      { content: "\270e"; }
-  .icon-phone-hang-up:before		  { content: "\260e"; }
-  .icon-phone:before 			        { content: "\260f"; }
-  .icon-play:before 			        { content: "\25d9"; }
-  .icon-plus:before 			        { content: "\271a"; }
-  .icon-pushpin:before 			      { content: "\e012"; }
-  .icon-quotes-left:before 			  { content: "\e01d"; }
-  .icon-radio-checked:before 		  { content: "\2b26"; }
-  .icon-radio-unchecked:before 	  { content: "\2b25"; }
-  .icon-remove:before 			      { content: "\e02d"; }
-  .icon-room-info:before 			    { content: "\e059"; }
-  .icon-sad:before 			          { content: "\2639"; }
-  .icon-search:before 			      { content: "\e021"; }
-  .icon-shocked:before 			      { content: "\2364"; }
-  .icon-show-users:before 			  { content: "\e01e"; }
-  .icon-smiley:before 			      { content: "\263a"; }
-  .icon-spell-check:before 			  { content: "\e045"; }
-  .icon-spinner:before 			      { content: "\231b"; }
-  .icon-strikethrough:before 		  { content: "\e050"; }
-  .icon-thumbs-up:before 			    { content: "\261d"; }
-  .icon-tongue:before 			      { content: "\e038"; }
-  .icon-underline:before 			    { content: "\e04e"; }
-  .icon-unlocked:before 			    { content: "\e025"; }
-  .icon-user:before 			        { content: "\e01a"; }
-  .icon-users:before 			        { content: "\e01b"; }
-  .icon-volume-decrease:before	  { content: "\e04b"; }
-  .icon-volume-high:before 			  { content: "\e046"; }
-  .icon-volume-increase:before 	  { content: "\e04c"; }
-  .icon-volume-low:before 			  { content: "\e048"; }
-  .icon-volume-medium:before 		  { content: "\e047"; }
-  .icon-volume-mute-2:before 		  { content: "\e04a"; }
-  .icon-volume-mute:before 			  { content: "\e049"; }
-  .icon-warning:before 			      { content: "\26a0"; }
-  .icon-wink:before 			        { content: "\e03a"; }
-  .icon-wondering:before 			    { content: "\2369"; }
-  .icon-wrench:before 			      { content: "\e024"; }
+  .icon-address-book:before       { content: "\270f"; }
+  .icon-angry:before              { content: "\e03f"; }
+  .icon-attachment:before         { content: "\e032"; }
+  .icon-away:before               { content: "\25fb"; }
+  .icon-blocked:before            { content: "\2718"; }
+  .icon-bold:before               { content: "\e04d"; }
+  .icon-bubbles-2:before          { content: "\e016"; }
+  .icon-bubbles-3:before          { content: "\e017"; }
+  .icon-bubbles:before            { content: "\e015"; }
+  .icon-camera-2:before           { content: "\2616"; }
+  .icon-camera:before             { content: "\e003"; }
+  .icon-cancel-circle:before      { content: "\e058"; }
+  .icon-checkbox-checked:before   { content: "\2611"; }
+  .icon-checkbox-partial:before   { content: "\2b28"; }
+  .icon-checkbox-unchecked:before { content: "\2b27"; }
+  .icon-checkmark:before          { content: "\2713"; }
+  .icon-close:before              { content: "\2715"; }
+  .icon-closed:before             { content: "\25ba"; }
+  .icon-cog:before                { content: "\e02f"; }
+  .icon-cogs:before               { content: "\e022"; }
+  .icon-confused:before           { content: "\2368"; }
+  .icon-cool:before               { content: "\e040"; }
+  .icon-dnd:before                { content: "\e004"; }
+  .icon-envelop:before            { content: "\2709"; }
+  .icon-evil:before               { content: "\261f"; }
+  .icon-eye-blocked:before        { content: "\e031"; }
+  .icon-eye:before                { content: "\e030"; }
+  .icon-globe:before              { content: "\e033"; }
+  .icon-grin:before               { content: "\e041"; }
+  .icon-happy:before              { content: "\263b"; }
+  .icon-headphones:before         { content: "\266c"; }
+  .icon-heart:before              { content: "\2764"; }
+  .icon-hide-users:before         { content: "\e01c"; }
+  .icon-home:before               { content: "\e000"; }
+  .icon-image:before              { content: "\2b14"; }
+  .icon-info:before               { content: "\2360"; }
+  .icon-italic:before             { content: "\e04f"; }
+  .icon-key-2:before              { content: "\e029"; }
+  .icon-key:before                { content: "\e028"; }
+  .icon-lock-2:before             { content: "\e027"; }
+  .icon-lock:before               { content: "\e026"; }
+  .icon-logout:before             { content: "\e601"; }
+  .icon-minus:before              { content: "\e05a"; }
+  .icon-music:before              { content: "\266b"; }
+  .icon-new-tab:before            { content: "\e053"; }
+  .icon-newspaper:before          { content: "\e001"; }
+  .icon-notebook:before           { content: "\2710"; }
+  .icon-notification:before       { content: "\e01f"; }
+  .icon-online:before             { content: "\25fc"; }
+  .icon-opened:before             { content: "\25bc"; }
+  .icon-pencil:before             { content: "\270e"; }
+  .icon-phone-hang-up:before      { content: "\260e"; }
+  .icon-phone:before              { content: "\260f"; }
+  .icon-play:before               { content: "\25d9"; }
+  .icon-plus:before               { content: "\271a"; }
+  .icon-pushpin:before            { content: "\e012"; }
+  .icon-quotes-left:before        { content: "\e01d"; }
+  .icon-radio-checked:before      { content: "\2b26"; }
+  .icon-radio-unchecked:before    { content: "\2b25"; }
+  .icon-remove:before             { content: "\e02d"; }
+  .icon-room-info:before          { content: "\e059"; }
+  .icon-sad:before                { content: "\2639"; }
+  .icon-search:before             { content: "\e021"; }
+  .icon-shocked:before            { content: "\2364"; }
+  .icon-show-users:before         { content: "\e01e"; }
+  .icon-smiley:before             { content: "\263a"; }
+  .icon-spell-check:before        { content: "\e045"; }
+  .icon-spinner:before            { content: "\231b"; }
+  .icon-strikethrough:before      { content: "\e050"; }
+  .icon-thumbs-up:before          { content: "\261d"; }
+  .icon-tongue:before             { content: "\e038"; }
+  .icon-underline:before          { content: "\e04e"; }
+  .icon-unlocked:before           { content: "\e025"; }
+  .icon-user:before               { content: "\e01a"; }
+  .icon-users:before              { content: "\e01b"; }
+  .icon-volume-decrease:before    { content: "\e04b"; }
+  .icon-volume-high:before        { content: "\e046"; }
+  .icon-volume-increase:before    { content: "\e04c"; }
+  .icon-volume-low:before         { content: "\e048"; }
+  .icon-volume-medium:before      { content: "\e047"; }
+  .icon-volume-mute-2:before      { content: "\e04a"; }
+  .icon-volume-mute:before        { content: "\e049"; }
+  .icon-warning:before            { content: "\26a0"; }
+  .icon-wink:before               { content: "\e03a"; }
+  .icon-wondering:before          { content: "\2369"; }
+  .icon-wrench:before             { content: "\e024"; }
   .icon-xa:before,
   .icon-unavailable:before,
-  .icon-offline:before 			      { content: "\e002"; }
-  .icon-youtube:before 			      { content: "\e055"; }
-  .icon-zoom-in:before 			      { content: "\e02b"; }
-  .icon-zoom-out:before 			    { content: "\e02a"; }
+  .icon-offline:before            { content: "\e002"; }
+  .icon-youtube:before            { content: "\e055"; }
+  .icon-zoom-in:before            { content: "\e02b"; }
+  .icon-zoom-out:before           { content: "\e02a"; }
 
   .no-text-select {
       -webkit-touch-callout: none;
@@ -309,16 +298,15 @@
 
   #minimized-chats,
   .toggle-controlbox {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    color: #0a0a0a;
     float: right;
     font-size: 90%;
-    border-top-right-radius: 2px;
-    border-top-left-radius: 2px;
-    background-color: #F4F4F4;
-    padding: 4px 8px;
-    margin-right: 5px;
-    color: #0a0a0a;
     font-weight: bold;
     height: 100%;
+    margin-right: 5px;
+    padding: 4px 8px;
   }
 
   #minimized-chats {
@@ -351,8 +339,6 @@
     display: block;
     width: 100%;
     height: 100%;
-    color: #0f0f0f;
-
     .unread-message-count {
       right: 5px;
       bottom: 5px;
@@ -360,15 +346,17 @@
   }
 
   .toggle-controlbox,
-  .toggle-minimized-chats {
+  a.toggle-minimized-chats {
     float: right;
     font-size: 85%;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
-    background-color: #5390c8;
+    background-color: $link-color;
     padding: 4px 8px;
     margin-right: 5px;
-    color: white;
+    span {
+      color: $inverse-link-color;
+      }
   }
 
   .chat-body {
@@ -418,28 +406,6 @@
     border-bottom-left-radius: 4px;
   }
 
-  .participants {
-    label {
-      margin-top: 5px;
-      display: block;
-    }
-    .participant-list {
-      li {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-        font-size: 12px;
-        font-weight: bold;
-        padding: 0.5em 0 0 0.5em;
-        cursor: default;
-      }
-      li.moderator {
-        color: #8f2831;
-      }
-    }
-  }
-
   .chat-blink {
     background-color: #176679;
     border-right: 1px solid #176679;
@@ -463,7 +429,7 @@
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     height: 206px;
-    height: calc(100% - 84px);
+    height: calc(100% - #{$toolbar-height + $chat-textarea-height});
   }
 
   .chat-info {
@@ -471,7 +437,14 @@
   }
 
   .chat-error {
-    color: #8f2831;
+    color: $warning-color;
+    font-weight: bold;
+  }
+
+  .chat-error,
+  .chat-info,
+  .chat-message {
+    padding: 2px 0;
   }
 
   .chat-message-room,
@@ -491,16 +464,13 @@
     word-wrap: break-word;
   }
 
+  .chat-message-room,
   .chat-message-them {
-    color: #8f2831;
+    color: $message-them-color;
   }
 
   .chat-message-me {
     color: $link-color;
-  }
-
-  .chat-message-room {
-    color: #4B7003;
   }
 
   .chat-event,
@@ -568,9 +538,9 @@
 
   .reg-feedback,
   #converse-login .conn-feedback {
-    width: 100%;
-    text-align: center;
     display: block;
+    text-align: center;
+    width: 100%;
   }
 
   .chat-message-error {
@@ -603,22 +573,11 @@
     white-space: nowrap;
   }
 
-  .chat-head {
-    color: #ffffff;
-    font-size: 100%;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    padding: 2px 2px 2px 4px;
-    margin: 0;
-    .avatar {
-      float: left;
-    }
-  }
   .chat-head-chatbox,
   .chat-head-chatroom {
     height: $chat-head-height;
     position: relative;
-    padding: 3px;
+    padding: 5px;
   }
   .chat-head-chatroom {
     background-color: $chatroom-head-color;
@@ -650,14 +609,13 @@
   }
 
   dl.add-converse-contact {
-    margin: 0 0 0 0.5em;
+    margin: 0 0.5em 0.5em 0.5em;
   }
 
   .fancy-dropdown {
     border: 1px solid $light-background-border-color;
-    height: 22px;
+    height: $controlbox-dropdown-height;
     text-align: left;
-
     .choose-xmpp-status {
       width: 155px;
       span {
@@ -703,17 +661,6 @@
     }
   }
 
-  .controlbox-head {
-    margin: 0;
-    color: #FFF;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    height: $chat-head-height;
-    clear: right;
-    background-color: $link-color;
-    padding: 3px 0 0 0;
-  }
-
   .unread-message-count,
   .chat-head-message-count {
     font-weight: bold;
@@ -735,16 +682,16 @@
   a.configure-chatroom-button,
   a.toggle-chatbox-button,
   a.close-chatbox-button {
-    font-size: 10px;
-    padding: 3px 3px 2px 3px;
-    margin-right: 3px;
-    cursor: pointer;
     border-radius: 6px;
     border: 1px solid #888;
-    display: inline-block;
     color: white;
-    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
     float: right;
+    font-size: 10px;
+    margin: 0 0 0 3px;
+    padding: 3px 3px 2px 3px;
+    text-decoration: none;
   }
 
   a.configure-chatroom-button:active,
@@ -800,7 +747,7 @@
     width: 100%;
     position: relative;
     margin: 0.5em 0 0 0;
-    height: 194px;
+    height: $roster-height;
     height: calc(100% - 68px);
     overflow: hidden;
 
@@ -809,37 +756,22 @@
     }
     .filter-type {
       display: table-cell;
-      height: 24px;
-<<<<<<< HEAD
-      margin: 0 0 0.5em -2px;
-      padding: 0;
-      width: 85px;
-    }
-    .roster-filter {
-      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
-      border: 1px solid #999;
-      display: table-cell;
-      height: 24px;
-      margin: 0 0 0.5em 6px;
-      padding: 2px;
-      width: 104px;
-=======
-      padding: 0;
-      margin: 0 0 0.5em -2px;
-      display: inline-block;
-      width: 85px;
       font-size: $font-size;
+      height: $controlbox-dropdown-height;
+      margin: 0 0 0.5em -1px;
+      padding: 0;
+      width: 84px;
     }
     .roster-filter {
-      display: table-cell;
-      padding: 2px;
-      margin: 0 0 0.5em 6px;
-      width: 104px;
-      height: 24px;
       background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
       border: 1px solid #999;
-      display: inline-block;
->>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
+      display: table-cell;
+      font-size: $font-size;
+      height: $controlbox-dropdown-height;
+      margin: 0 0 0.5em 6px;
+      padding: 0;
+      padding: 2px;
+      width: 104px;
     }
     /* (jQ addClass:) if input has value: */
     .roster-filter.x {
@@ -851,10 +783,10 @@
     }
     .roster-contacts {
       margin: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
       max-height: 195px;
       max-height: calc(100% - 26px);
+      overflow-x: hidden;
+      overflow-y: auto;
       padding-bottom: 15px;
     }
     .group-toggle {
@@ -879,34 +811,41 @@
         padding: 0 5px 0 0;
         margin-left: 3px;
       }
-      a.decline-xmpp-request {
-        margin-left: 5px;
-      }
-      a.remove-xmpp-contact {
-        float: right;
-        width: 22px;
-        margin: 0;
-        display: none;
-        color: $text-color;
+      a {
+         &.decline-xmpp-request {
+            margin-left: 5px;
+        }
+        &.remove-xmpp-contact {
+            float: right;
+            width: 22px;
+            margin: 0;
+            display: none;
+            color: $text-color;
+        }
       }
     }
     dd:hover a.remove-xmpp-contact {
       display: inline-block;
     }
-    dd.odd {
-      background-color: #DCEAC5;
-      /* Make this difference */
+    dd {
+      &.odd {
+        background-color: #DCEAC5;
+        /* Make this difference */
+      }
+      &.current-xmpp-contact span {
+        font-size: 16px;
+        float: left;
+        color: $link-color;
+      }
+      a.open-chat {
+        width: 80%;
+      }
     }
-    dd.current-xmpp-contact span {
-      font-size: 16px;
-      float: left;
-      color: $link-color;
-    }
-    span.req-contact-name {
-      width: 65%;
-    }
-    span.pending-contact-name, a.open-chat {
-      width: 80%;
+    span {
+      &.pending-contact-name,
+      &.req-contact-name {
+        width: 80%;
+      }
     }
   }
 
@@ -955,19 +894,20 @@
     white-space: normal;
   }
 
-  a.room-info {
-    width: 22px;
-    height: 22px;
-    float: right;
-    display: none;
-    clear: right;
-  }
-
-  a.open-room {
-    float: left;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
+  a {
+    &.room-info {
+      width: 22px;
+      height: 22px;
+      float: right;
+      display: none;
+      clear: right;
+    }
+    &.open-room {
+      float: left;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow-x: hidden;
+    }
   }
 
   dd.available-chatroom:hover a.room-info {
@@ -1004,25 +944,15 @@
   }
 
   .chatbox {
-<<<<<<< HEAD
     width: $chat-width;
-
     .box-flyout {
       width: $chat-width;
-=======
-    width: 200px;
-
-    .box-flyout {
-      width: 200px;
->>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     }
-
     .dropdown {
       a {
-        height: 22px;
         width: 148px;
         display: inline-block;
-        line-height: 24px;
+        line-height: $controlbox-dropdown-height;
       }
       li {
         list-style: none;
@@ -1030,14 +960,13 @@
       }
       dd {
         ul {
-          padding: 5px 0 5px 0;
+          padding: 0;
           list-style: none;
           position: absolute;
           left: 0;
           top: 0;
           border: 1px solid $light-background-border-color;
-          border-top: 0;
-          width: 99%;
+          width: 100%;
           z-index: 21;
           background-color: $light-background-color;
           li:hover {
@@ -1058,18 +987,28 @@
 
   .chatroom {
     width: 300px;
-<<<<<<< HEAD
-=======
     label {
       margin-left: 2px;
       font-size: 12px;
     }
->>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     .box-flyout {
       width: 300px;
     }
     .participant-list {
       list-style: none;
+      li {
+        cursor: default;
+        display: block;
+        font-size: 12px;
+        font-weight: bold;
+        overflow: hidden;
+        padding: 2px 5px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &.moderator {
+          color: #8f2831;
+        }
+      }
     }
     .chat-textarea {
       border-bottom-right-radius: 0;
@@ -1077,21 +1016,17 @@
     .chat-area {
       float: left;
       height: 100%;
-<<<<<<< HEAD
       width: $chat-width;
-=======
-      width: 200px;
->>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     }
     .invited-contact {
-      margin: 0;
-      width: 99px;
+      margin: -1px 0 0 -1px;
+      width: 100px;
       border: 1px solid #999;
     }
     .invited-contact.tt-input {
       background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkBCjE0uzKkOgAAAidJREFUKM+N0k+IEnEUB/D3cyscdagkWpHV0WGWREXm0AgOGkSJ07kh2UXYU5cOewm6Bp0KXG/tpSCv6hyEFQIhMEaE3yERYfwTOoqKGLQxDAbqYadLgu7J7/XxeY/3ez8EACDLsgljfMfj8ZxUKhXXYDAAnueBoqgyAMipVOovXAuSZdnUaDQeDofDs16vFyUIAjRNUwmCoG02G1AUdZ5IJN7GYrHfm3AvEAjcnUwmX0ajUdRqtV74fL6sruufKYoa6bp+fzabPUMI7ZfL5eImNHk8npNerxc1m80XHMe98fv9H3K5XDkSibxjWfb1arWaYoyPMMbCFqxUKi6CIODw8LDmdDq7oigaAACiKK5omv7KcdylpmlIkiTHFlRVFTRNUxVFqa/ROqIoGoqi5A3DgFartfU4Jp7ngSAI2uVyPZIk6dZmUZKk2w6H4xghBPF4HK7vWLbZbDCdTp+rqvpUkiS0RvV6/bTf7x8wDHMViURqm/AGAMgURZ232+1X1Wr102KxuEwmk3lZlo/7/f7BcrkkSZKs2e12tHXH/x/gHsY4jTE+0jQNGYYBCCFgGOaKJMkfjUaDZximGQ6HXzSbzZ+ZTMbY6oIxFgqFgqPT6YAgCMBxXM1ut6N0Op0fj8chi8XyjWXZ98Fg8DuCHZLNZh+USqWP8/n8idvt/hUKhV7u7QK9Xu8fmqanAJBQVXUfAGY7TQQAKBaLN8fjsdDtdh/run72Dzhf7XLe2UevAAAAAElFTkSuQmCC ) no-repeat right 3px center;
     }
-    div.participants {
+    .participants {
       float: right;
       background-color: white;
       overflow-y: auto;
@@ -1101,28 +1036,32 @@
       width: 100px;
       height: 100%;
       label {
+        font-size: 12px;
         font-style: italic;
+        margin: 5px;
+        display: block;
       }
     }
   }
 
   .chatroom-form,
   .controlbox-pane {
-    text-align: center;
     background-color: white;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border: 0;
     font-size: $font-size;
-    height: 289px;
-    @include calc(height, '100% - #{$chat-head-height}');
     overflow-y: auto;
     position: absolute;
+    text-align: center;
     width: 100%;
+    height: 289px;
+    @include calc(height, '100% - #{$chat-head-height}');
   }
 
   .controlbox-pane {
     padding: 5px 0;
+    overflow-y: hidden;
     dd {
       margin-left: 0;
       margin-bottom: 0;
@@ -1132,16 +1071,16 @@
     }
   }
 
-
-  #converse-register .title {
-    font-weight: bold;
-  }
-
-  #converse-register .info {
-    font-style: italic;
-    color: green;
-    font-size: 85%;
-    margin: 5px 0;
+  #converse-register {
+    .title {
+      font-weight: bold;
+    }
+    .info {
+      font-style: italic;
+      color: green;
+      font-size: 85%;
+      margin: 5px 0;
+    }
   }
 
   .form-help,
@@ -1169,54 +1108,42 @@
   #converse-login input {
     width: 100%;
     height: 30px;
-    margin: 5px 0;
+    margin: 5px 0 10px 0;
   }
 
   #converse-register {
-      .input-group {
-        display: table;
-        margin: auto;
-        width: 178px;
-    }
-    .input-group span,
-    .input-group input[name=username] {
-        display: table-cell;
-    }
-    .input-group input[name=username] {
-      width: 100%;
+    .input-group {
+      display: table;
+      margin: auto;
+      width: 178px;
+      span, input[name=username] {
+          display: table-cell;
+      }
+      input[name=username] {
+        width: 100%;
+      }
     }
   }
 
-  #converse-register .cancel,
-  .chatroom-form .cancel-submit,
-  #converse-register .cancel-submit {
-    color: $warning-color;
-  }
-
-  .chatroom-form .save-submit,
-  #converse-register .save-submit {
-    color: $save-button-color;
-  }
-
-  .chatroom-form .save-submit,
-  .chatroom-form .cancel-submit,
-  #converse-register .cancel-submit,
-  #converse-register .save-submit {
+  .cancel-submit, .save-submit {
     width: 45%;
     margin: 5px 3px 5px 3px;
+  }
+  .cancel, .cancel-submit {
+    color: $warning-color;
+  }
+  .save-submit {
+    color: $save-button-color;
   }
 
   .chatroom-form label,
   .controlbox-pane label,
   #converse-register label,
   #converse-login label {
-    height: auto;
-<<<<<<< HEAD
-=======
     font-size: $font-size;
-    margin: 4px;
->>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     font-weight: bold;
+    height: auto;
+    margin: 4px;
   }
 
   #converse-register .login-submit,
@@ -1228,10 +1155,8 @@
     font-size: $font-size;
   }
 
-  form.set-xmpp-status {
-    background: none;
-    margin: none;
-    padding: none;
+  #converse-login .submit {
+    margin: 1em 0;
   }
 
   form.add-chatroom {
@@ -1241,10 +1166,12 @@
     input[type=button],
     input[type=submit],
     input[type=text] {
-      margin: 3px 0;
+      margin: 0;
       width: 100%;
+      padding: 5px;
     }
     input[type=submit] {
+      margin: 5px 0;
       color: $save-button-color;
     }
   }
@@ -1256,6 +1183,24 @@
 
   /* @group Tabs */
   .chat-head {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: #ffffff;
+    font-size: 100%;
+    margin: 0;
+    padding: 6px;
+    &.controlbox-head {
+      background-color: $link-color;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      color: $chat-head-inverse-text-color;
+      height: $chat-head-height;
+      margin: 0;
+      padding: 6px 6px 6px 0;
+    }
+    .avatar {
+      float: left;
+    }
     #controlbox-tabs {
       text-align: center;
       display: inline;
@@ -1299,8 +1244,6 @@
           color: $text-color;
         }
       }
-
-
     }
   }
 
@@ -1309,40 +1252,37 @@
   }
 
   form.sendXMPPMessage {
-    background: white;
-    border: 0;
-    border-top: 1px solid #BBB;
-    padding: 0;
-    margin: 0;
-    position: relative;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
     -moz-background-clip: padding;
+    -moz-border-radius: 4px;
     -webkit-background-clip: padding-box;
+    -webkit-border-radius: 4px;
     background-clip: padding-box;
+    background: white;
+    border-radius: 4px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
-    width: $chat-width;
-    height: 83px;
-  }
-
-  .chat-textarea {
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
+    border-top: 1px solid #BBB;
     border: 0;
-    width: 100%;
-    padding: 3px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    resize: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: $chat-width;
+    height: #{$chat-textarea-height + $toolbar-height};
+    .chat-textarea {
+      @include border-bottom-radius(4px);
+      border: 0;
+      height: $chat-textarea-height;
+      padding: 8px;
+      resize: none;
+      width: 100%;
+    }
   }
 
   .chat-toolbar {
     font-size: $font-size;
     margin: 0;
-    padding: 0 5px 0 0;
-    height: 20px;
+    padding: 0 4px;
+    height: $toolbar-height;
     display: block;
 
     a {
@@ -1438,9 +1378,20 @@
     padding-right: 3px;
   }
 
-  form#set-custom-xmpp-status {
+  #set-custom-xmpp-status {
     float: left;
     padding: 0;
+    input {
+      height: $controlbox-dropdown-height - 2px;
+    }
+    button {
+      height: $controlbox-dropdown-height - 2px;
+      width: 40px;
+      padding: 1px 2px 1px 1px;
+    }
+  }
+  .custom-xmpp-status {
+    @include calc(width, '100% - 40px');
   }
 
   .chat-textarea-chatbox-selected {
@@ -1453,10 +1404,6 @@
     margin: 0;
   }
 
-  #set-custom-xmpp-status button {
-    padding: 1px 2px 1px 1px;
-  }
-
   #controlbox {
     display: none;
     div.xmpp-status {
@@ -1467,7 +1414,6 @@
   /* status dropdown styles */
   .chatbox {
     .dropdown {
-      margin: 0.5em;
       background-color: $light-background-color;
       dd {
         position: relative;
@@ -1480,10 +1426,6 @@
   .dropdown ul {
     margin: 0;
     padding: 0;
-  }
-
-  .custom-xmpp-status {
-    width: 124px;
   }
 
   .add-xmpp-contact {
@@ -1499,10 +1441,11 @@
 
   .xmpp-status-menu {
     text-align: left;
-    li a {
-      width: 100%;
-      span {
-        padding: 0 5px 0 5px;
+    li {
+      padding: 2px;
+      a {
+        width: 100%;
+        padding: 0 8px;
       }
     }
   }
@@ -1511,8 +1454,12 @@
     color: $warning-color;
   }
 
-  .set-xmpp-status .dropdown dd ul {
-    z-index: 22;
+  .set-xmpp-status {
+    background: none;
+    padding: 0.5em;
+    .dropdown dd ul {
+      z-index: 22;
+    }
   }
 
   .minimized-chats-flyout,
@@ -1533,7 +1480,6 @@
     position: absolute;
     height: auto;
     width: 130px;
-
     .chat-head-chatroom,
     .chat-head {
       border-radius: 4px;

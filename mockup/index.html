@@ -240,38 +240,38 @@
                         </dd>
                     </dl>
                 </div>
-                <div id="chatrooms" style="display: none;">
-                    <form class="add-chatroom" action="" method="post">
-                        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
-                        <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
-                        <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
-                        <input type="submit" name="join" value="Join">
-                        <input type="button" name="show" id="show-rooms" value="Show rooms" style="display: inline-block;">
-                    </form>
-                    <dl id="available-chatrooms">
-                        <dt>Rooms on conference.opkode.im</dt>
-                        <dd class="available-chatroom">
-                            <a class="open-room" 
-                                data-room-jid="converse.js@conference.opkode.im"
-                                title="Click to open this room" href="#">Special chatroom with a long name (2)</a>
-                            <a class="room-info icon-room-info" 
-                                data-room-jid="converse.js@conference.opkode.im" 
-                                title="Show more information on this room" href="#">&nbsp;</a>
-                            <div class="room-info">
-                                <p class="room-info"><strong>Description:</strong></p>
-                                <p class="room-info"><strong>Occupants:</strong> 2</p>
-                                <p class="room-info"><strong>Features:</strong> </p>
-                                <ul>
-                                    <li class="room-info">Moderated</li><li class="room-info">Open room</li>
-                                    <li class="room-info">Permanent room</li><li class="room-info">Public</li>
-                                    <li class="room-info">Semi-anonymous</li>
-                                    <li class="room-info">Requires authentication <span class="icon-lock"></span></li>
-                                    <p></p>
-                                </ul>
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
+              </div>
+              <div id="chatrooms" class="controlbox-pane" style="display: none;">
+                  <form class="add-chatroom" action="" method="post">
+                      <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
+                      <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
+                      <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
+                      <input type="submit" name="join" value="Join">
+                      <input type="button" name="show" id="show-rooms" value="Show rooms" style="display: inline-block;">
+                  </form>
+                  <dl id="available-chatrooms">
+                      <dt>Rooms on conference.opkode.im</dt>
+                      <dd class="available-chatroom">
+                          <a class="open-room" 
+                              data-room-jid="converse.js@conference.opkode.im"
+                              title="Click to open this room" href="#">Special chatroom with a long name (2)</a>
+                          <a class="room-info icon-room-info" 
+                              data-room-jid="converse.js@conference.opkode.im" 
+                              title="Show more information on this room" href="#">&nbsp;</a>
+                          <div class="room-info">
+                              <p class="room-info"><strong>Description:</strong></p>
+                              <p class="room-info"><strong>Occupants:</strong> 2</p>
+                              <p class="room-info"><strong>Features:</strong> </p>
+                              <ul>
+                                  <li class="room-info">Moderated</li><li class="room-info">Open room</li>
+                                  <li class="room-info">Permanent room</li><li class="room-info">Public</li>
+                                  <li class="room-info">Semi-anonymous</li>
+                                  <li class="room-info">Requires authentication <span class="icon-lock"></span></li>
+                                  <p></p>
+                              </ul>
+                          </div>
+                      </dd>
+                  </dl>
             </div>
         </div>
     </div>
@@ -369,7 +369,6 @@
             <div class="chat-body">
                 <div class="chat-area">
                     <div class="chat-content">
-                        <time class="chat-date" datetime="2013-06-04T00:00:00.000Z">Tue Jun 04 2013</time>
                         <div class="chat-message ">
                             <span class="chat-message-room">18:50 luke:&nbsp;</span>
                             <span class="chat-message-content">leia: hi :)</span>
@@ -379,6 +378,7 @@
                             <span class="chat-message-content">
                                 I'll be gone for a while, will be back in about an hour</span>
                         </div>
+                        <time class="chat-date" datetime="2013-06-04T00:00:00.000Z">Tue Jun 04 2013</time>
                         <div class="chat-message ">
                             <span class="chat-message-room">19:40 Obi-wan Kenobi, Jedi Master:&nbsp;</span>
                             <span class="chat-message-content">
@@ -540,6 +540,9 @@ $(document).ready(function () {
     $('a[href=#users]').click(function (ev) {
         switchTab(ev); 
     });
+    $('a[href=#register]').click(function (ev) { 
+        switchTab(ev);
+    });
 
     $("a.choose-xmpp-status").click(function (ev) {
         ev.preventDefault();
@@ -550,8 +553,7 @@ $(document).ready(function () {
         ev.preventDefault();
         var form = ''+
                 '<form id="set-custom-xmpp-status">' +
-                    '<input type="text" class="custom-xmpp-status"I am online"'+
-                        'placeholder="I am online"/>' +
+                    '<input type="text" class="custom-xmpp-status" placeholder="Custom status"/>' +
                     '<button type="submit">Save</button>' +
                 '</form>';
 

@@ -33,29 +33,42 @@
 }
 
 #conversejs {
-  @import "components/skeleton-sass/skeleton";
+  @import "components/neat/app/assets/stylesheets/neat";
+  
+  /* XXX: These should be moved to a separate file */
+  $link-color: #436F64;
+  $link-shadow-color: #FAFAFA;
+  $text-shadow-color: #FAFAFA;
+  $text-color: #6C4C44;
+  $border-color: #CCC;
+  $warning-color: #681F2C;
+  $light-background-border-color: #F1DCD6;
+  $light-background-color: #F1E2DD;
+  $icon-color: #114327;
+  $highlight-color: #E3C9C1;
+  $chat-head-color: #436F64;
+  $chatroom-head-color: #0F592F;
+  $chat-head-text-color: white;
+  $chat-head-height: 40px;
+  $save-button-color: #436F64;
 
-    $link-color: #436F64;
-    $link-shadow-color: #FAFAFA;
-    $text-shadow-color: #FAFAFA;
-    $text-color: #6C4C44;
-    $border-color: #CCC;
-    $warning-color: #681F2C;
-    $light-background-border-color: #F1DCD6;
-    $light-background-color: #F1E2DD;
-    $icon-color: #114327;
-    $highlight-color: #E3C9C1;
-    $chat-head-color: #436F64;
-    $chatroom-head-color: #0F592F;
-    $chat-head-text-color: white;
-    $chat-head-height: 40px;
-    $save-button-color: #436F64;
+  $font-size: 14px;
+  $legend-font-size: 16px;
 
-    $font-size: 14px;
-    $legend-font-size: 16px;
+  $chat-width: 200px;
+  $chat-height: 400px;
 
-    $chat-width: 200px;
-    $chat-height: 400px;
+  color: $text-color;
+  font-size: $font-size;
+  bottom: 0;
+  direction: ltr;
+  height: 25px;
+  left: 0;
+  position: fixed;
+  right: 0;
+  z-index: 30;
+  display: block;
+  @include box-sizing(border-box);
 
   a, a:visited {
     text-decoration: none;
@@ -63,7 +76,6 @@
     text-shadow: none;
   }
 
-  div   { box-sizing: border-box; }
   ul li { height: auto; }
   div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
   pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
@@ -78,12 +90,17 @@
     vertical-align: baseline;
   }
 
+  input[type=submit] {
+    margin-top: 5px;
+  }
+
   textarea,
   input[type=text], input[type=password],
   button {
     font-size: $font-size;
     padding: 0.5em;
     min-height: 0;
+    margin: 5px 0;
   }
 
   strong {
@@ -102,20 +119,6 @@
     font: inherit;
     margin: 0 0 15px 0;
   }
-
-  color: $text-color;
-  font-size: $font-size;
-  bottom: 0;
-  direction: ltr;
-  height: 25px;
-  left: 0;
-  position: fixed;
-  right: 0;
-  z-index: 30;
-  display: block;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
 
   [data-icon]:before {
     font-family: 'Converse-js';
@@ -144,66 +147,66 @@
   }
 
   .icon-address-book:before 		  { content: "\270f"; }
-  .icon-angry:before 			      { content: "\e03f"; }
+  .icon-angry:before 			        { content: "\e03f"; }
   .icon-attachment:before 			  { content: "\e032"; }
-  .icon-away:before 			      { content: "\25fb"; }
+  .icon-away:before 			        { content: "\25fb"; }
   .icon-blocked:before 			      { content: "\2718"; }
-  .icon-bold:before 			      { content: "\e04d"; }
-  .icon-bubbles-2:before 			  { content: "\e016"; }
-  .icon-bubbles-3:before 			  { content: "\e017"; }
+  .icon-bold:before 			        { content: "\e04d"; }
+  .icon-bubbles-2:before 			    { content: "\e016"; }
+  .icon-bubbles-3:before 			    { content: "\e017"; }
   .icon-bubbles:before 			      { content: "\e015"; }
-  .icon-camera-2:before 			  { content: "\2616"; }
+  .icon-camera-2:before 			    { content: "\2616"; }
   .icon-camera:before 			      { content: "\e003"; }
   .icon-cancel-circle:before 		  { content: "\e058"; }
-  .icon-checkbox-checked:before 	  { content: "\2611"; }
-  .icon-checkbox-partial:before 	  { content: "\2b28"; }
-  .icon-checkbox-unchecked:before	  { content: "\2b27"; }
-  .icon-checkmark:before 			  { content: "\2713"; }
-  .icon-close:before 			      { content: "\2715"; }
+  .icon-checkbox-checked:before 	{ content: "\2611"; }
+  .icon-checkbox-partial:before 	{ content: "\2b28"; }
+  .icon-checkbox-unchecked:before	{ content: "\2b27"; }
+  .icon-checkmark:before 			    { content: "\2713"; }
+  .icon-close:before 			        { content: "\2715"; }
   .icon-closed:before 			      { content: "\25ba"; }
   .icon-cog:before 			          { content: "\e02f"; }
-  .icon-cogs:before 			      { content: "\e022"; }
+  .icon-cogs:before 			        { content: "\e022"; }
   .icon-confused:before 		      { content: "\2368"; }
-  .icon-cool:before 			      { content: "\e040"; }
+  .icon-cool:before 			        { content: "\e040"; }
   .icon-dnd:before 			          { content: "\e004"; }
   .icon-envelop:before 			      { content: "\2709"; }
-  .icon-evil:before 			      { content: "\261f"; }
-  .icon-eye-blocked:before 	          { content: "\e031"; }
+  .icon-evil:before 			        { content: "\261f"; }
+  .icon-eye-blocked:before 	      { content: "\e031"; }
   .icon-eye:before 			          { content: "\e030"; }
-  .icon-globe:before 			      { content: "\e033"; }
-  .icon-grin:before 			      { content: "\e041"; }
-  .icon-happy:before 			      { content: "\263b"; }
-  .icon-headphones:before 	          { content: "\266c"; }
-  .icon-heart:before 			      { content: "\2764"; }
-  .icon-hide-users:before 	          { content: "\e01c"; }
-  .icon-home:before 			      { content: "\e000"; }
-  .icon-image:before 			      { content: "\2b14"; }
-  .icon-info:before 			      { content: "\2360"; }
+  .icon-globe:before 			        { content: "\e033"; }
+  .icon-grin:before 			        { content: "\e041"; }
+  .icon-happy:before 			        { content: "\263b"; }
+  .icon-headphones:before 	      { content: "\266c"; }
+  .icon-heart:before 			        { content: "\2764"; }
+  .icon-hide-users:before 	      { content: "\e01c"; }
+  .icon-home:before 			        { content: "\e000"; }
+  .icon-image:before 			        { content: "\2b14"; }
+  .icon-info:before 			        { content: "\2360"; }
   .icon-italic:before 			      { content: "\e04f"; }
-  .icon-key-2:before 			      { content: "\e029"; }
+  .icon-key-2:before 			        { content: "\e029"; }
   .icon-key:before 			          { content: "\e028"; }
   .icon-lock-2:before 			      { content: "\e027"; }
   .icon-lock:before 	  		      { content: "\e026"; }
   .icon-logout:before 			      { content: "\e601"; }
-  .icon-minus:before 			      { content: "\e05a"; }
-  .icon-music:before 			      { content: "\266b"; }
+  .icon-minus:before 			        { content: "\e05a"; }
+  .icon-music:before 			        { content: "\266b"; }
   .icon-new-tab:before 			      { content: "\e053"; }
   .icon-newspaper:before 		      { content: "\e001"; }
   .icon-notebook:before 		      { content: "\2710"; }
-  .icon-notification:before	          { content: "\e01f"; }
+  .icon-notification:before	      { content: "\e01f"; }
   .icon-online:before 			      { content: "\25fc"; }
   .icon-opened:before 			      { content: "\25bc"; }
   .icon-pencil:before 			      { content: "\270e"; }
   .icon-phone-hang-up:before		  { content: "\260e"; }
-  .icon-phone:before 			      { content: "\260f"; }
-  .icon-play:before 			      { content: "\25d9"; }
-  .icon-plus:before 			      { content: "\271a"; }
+  .icon-phone:before 			        { content: "\260f"; }
+  .icon-play:before 			        { content: "\25d9"; }
+  .icon-plus:before 			        { content: "\271a"; }
   .icon-pushpin:before 			      { content: "\e012"; }
   .icon-quotes-left:before 			  { content: "\e01d"; }
   .icon-radio-checked:before 		  { content: "\2b26"; }
-  .icon-radio-unchecked:before 	      { content: "\2b25"; }
+  .icon-radio-unchecked:before 	  { content: "\2b25"; }
   .icon-remove:before 			      { content: "\e02d"; }
-  .icon-room-info:before 			  { content: "\e059"; }
+  .icon-room-info:before 			    { content: "\e059"; }
   .icon-sad:before 			          { content: "\2639"; }
   .icon-search:before 			      { content: "\e021"; }
   .icon-shocked:before 			      { content: "\2364"; }
@@ -212,37 +215,33 @@
   .icon-spell-check:before 			  { content: "\e045"; }
   .icon-spinner:before 			      { content: "\231b"; }
   .icon-strikethrough:before 		  { content: "\e050"; }
-  .icon-thumbs-up:before 			  { content: "\261d"; }
+  .icon-thumbs-up:before 			    { content: "\261d"; }
   .icon-tongue:before 			      { content: "\e038"; }
-  .icon-underline:before 			  { content: "\e04e"; }
-  .icon-unlocked:before 			  { content: "\e025"; }
-  .icon-user:before 			      { content: "\e01a"; }
-  .icon-users:before 			      { content: "\e01b"; }
-  .icon-volume-decrease:before		  { content: "\e04b"; }
+  .icon-underline:before 			    { content: "\e04e"; }
+  .icon-unlocked:before 			    { content: "\e025"; }
+  .icon-user:before 			        { content: "\e01a"; }
+  .icon-users:before 			        { content: "\e01b"; }
+  .icon-volume-decrease:before	  { content: "\e04b"; }
   .icon-volume-high:before 			  { content: "\e046"; }
-  .icon-volume-increase:before 		  { content: "\e04c"; }
+  .icon-volume-increase:before 	  { content: "\e04c"; }
   .icon-volume-low:before 			  { content: "\e048"; }
   .icon-volume-medium:before 		  { content: "\e047"; }
   .icon-volume-mute-2:before 		  { content: "\e04a"; }
   .icon-volume-mute:before 			  { content: "\e049"; }
   .icon-warning:before 			      { content: "\26a0"; }
-  .icon-wink:before 			      { content: "\e03a"; }
-  .icon-wondering:before 			  { content: "\2369"; }
+  .icon-wink:before 			        { content: "\e03a"; }
+  .icon-wondering:before 			    { content: "\2369"; }
   .icon-wrench:before 			      { content: "\e024"; }
   .icon-xa:before,
   .icon-unavailable:before,
   .icon-offline:before 			      { content: "\e002"; }
   .icon-youtube:before 			      { content: "\e055"; }
   .icon-zoom-in:before 			      { content: "\e02b"; }
-  .icon-zoom-out:before 			  { content: "\e02a"; }
+  .icon-zoom-out:before 			    { content: "\e02a"; }
 
   .no-text-select {
       -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: -moz-none;
-      -ms-user-select: none;
-      user-select: none;
+      @include user-select(none);
   }
 
   .emoticon {
@@ -794,21 +793,18 @@
     .filter-type {
       display: table-cell;
       height: 24px;
-      padding: 0;
       margin: 0 0 0.5em -2px;
-      display: inline-block;
+      padding: 0;
       width: 85px;
-      font-size: $font-size;
     }
     .roster-filter {
-      display: table-cell;
-      padding: 2px;
-      margin: 0 0 0.5em 6px;
-      width: 104px;
-      height: 24px;
       background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
       border: 1px solid #999;
-      display: inline-block;
+      display: table-cell;
+      height: 24px;
+      margin: 0 0 0.5em 6px;
+      padding: 2px;
+      width: 104px;
     }
     /* (jQ addClass:) if input has value: */
     .roster-filter.x {
@@ -880,14 +876,13 @@
   }
 
   dd.available-chatroom {
+    display: inline-block;
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: inline-block;
-  }
-
-  dd.available-chatroom a.open-room {
-    width: 148px;
+    a.open-room {
+      width: 148px;
+    }
   }
 
   #available-chatrooms {
@@ -1021,10 +1016,6 @@
 
   .chatroom {
     width: 300px;
-    label {
-      margin-left: 2px;
-      font-size: 12px;
-    }
     .box-flyout {
       width: 300px;
     }
@@ -1125,6 +1116,7 @@
   #converse-login input {
     width: 100%;
     height: 30px;
+    margin: 5px 0;
   }
 
   #converse-register {
@@ -1166,8 +1158,6 @@
   #converse-register label,
   #converse-login label {
     height: auto;
-    font-size: $font-size;
-    margin: 4px;
     font-weight: bold;
   }
 

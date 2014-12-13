@@ -70,6 +70,9 @@
   display: block;
   @include box-sizing(border-box);
 
+    $font-size: 14px;
+    $legend-font-size: 16px;
+
   a, a:visited {
     text-decoration: none;
     color: $link-color;
@@ -90,17 +93,13 @@
     vertical-align: baseline;
   }
 
-  input[type=submit] {
-    margin-top: 5px;
-  }
-
   textarea,
+  input[type=submit],
   input[type=text], input[type=password],
   button {
     font-size: $font-size;
     padding: 0.5em;
     min-height: 0;
-    margin: 5px 0;
   }
 
   strong {
@@ -120,6 +119,24 @@
     margin: 0 0 15px 0;
   }
 
+<<<<<<< HEAD
+=======
+
+  color: $text-color;
+  font-size: $font-size;
+  bottom: 0;
+  direction: ltr;
+  height: 25px;
+  left: 0;
+  position: fixed;
+  right: 0;
+  z-index: 30;
+  display: block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+
+>>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
   [data-icon]:before {
     font-family: 'Converse-js';
     content: attr(data-icon);
@@ -793,6 +810,7 @@
     .filter-type {
       display: table-cell;
       height: 24px;
+<<<<<<< HEAD
       margin: 0 0 0.5em -2px;
       padding: 0;
       width: 85px;
@@ -805,6 +823,23 @@
       margin: 0 0 0.5em 6px;
       padding: 2px;
       width: 104px;
+=======
+      padding: 0;
+      margin: 0 0 0.5em -2px;
+      display: inline-block;
+      width: 85px;
+      font-size: $font-size;
+    }
+    .roster-filter {
+      display: table-cell;
+      padding: 2px;
+      margin: 0 0 0.5em 6px;
+      width: 104px;
+      height: 24px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
+      border: 1px solid #999;
+      display: inline-block;
+>>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     }
     /* (jQ addClass:) if input has value: */
     .roster-filter.x {
@@ -969,10 +1004,17 @@
   }
 
   .chatbox {
+<<<<<<< HEAD
     width: $chat-width;
 
     .box-flyout {
       width: $chat-width;
+=======
+    width: 200px;
+
+    .box-flyout {
+      width: 200px;
+>>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     }
 
     .dropdown {
@@ -1016,6 +1058,13 @@
 
   .chatroom {
     width: 300px;
+<<<<<<< HEAD
+=======
+    label {
+      margin-left: 2px;
+      font-size: 12px;
+    }
+>>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     .box-flyout {
       width: 300px;
     }
@@ -1028,7 +1077,11 @@
     .chat-area {
       float: left;
       height: 100%;
+<<<<<<< HEAD
       width: $chat-width;
+=======
+      width: 200px;
+>>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     }
     .invited-contact {
       margin: 0;
@@ -1158,6 +1211,11 @@
   #converse-register label,
   #converse-login label {
     height: auto;
+<<<<<<< HEAD
+=======
+    font-size: $font-size;
+    margin: 4px;
+>>>>>>> 5c9a7c257b032996cce5c2059c56acf23b61843b
     font-weight: bold;
   }
 

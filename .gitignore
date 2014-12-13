@@ -8,6 +8,7 @@
 .svn/
 .project
 .pydevproject
+analytics.js
 
 Backbone.Overview
 tags

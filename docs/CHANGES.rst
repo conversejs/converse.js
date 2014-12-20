@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Norwegian Bokmål translations. [Andreas Lorentsen]
+* Updated Afrikaans translations. [jcbrand]
 
 0.8.6 (2014-12-07)
 ------------------

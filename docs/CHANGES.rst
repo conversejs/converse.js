@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.8.8 (Unreleased)
+------------------
+
+* Norwegian Bokmål translations. [Andreas Lorentsen]
+
 0.8.6 (2014-12-07)
 ------------------
 

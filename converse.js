@@ -232,7 +232,7 @@
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             debug: false,
-            domain_placeholder: " e.g. conversejs.org",  // Placeholder text shown in the domain input on the registration form
+            domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,

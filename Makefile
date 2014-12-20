@@ -54,6 +54,7 @@ cssmin:
 	grunt cssmin
 
 release:
+	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\.[0-9]\.[0-9]/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ package.json
 	sed -i s/v[0-9]\.[0-9]\.[0-9]\.zip/v$(VERSION)\.zip/ index.html
@@ -63,6 +64,7 @@ release:
 	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.rst
 	make pot
 	make po
+	make po2json
 	make build
 
 ########################################################################

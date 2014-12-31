@@ -598,7 +598,7 @@
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
-                this.giveFeedback(__('Online Contacts'));
+                this.giveFeedback(__('Contacts'));
             }, this));
         };
 
@@ -640,7 +640,7 @@
             this.initStatus($.proxy(function () {
 
                 this.chatboxes.onConnected();
-                this.giveFeedback(__('Online Contacts'));
+                this.giveFeedback(__('Contacts'));
                 if (this.callback) {
                     if (this.connection.service === 'jasmine tests') {
                         // XXX: Call back with the internal converse object. This

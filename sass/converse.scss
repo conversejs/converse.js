@@ -38,7 +38,7 @@
   font-size: $font-size;
   bottom: 0;
   direction: ltr;
-  height: 25px;
+  height: $bottom-gutter-height;
   left: 0;
   position: fixed;
   right: 0;
@@ -270,29 +270,65 @@
     margin: 0 auto;
   }
 
-  #minimized-chats,
-  .toggle-controlbox {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-    color: #0a0a0a;
+  .toggle-controlbox,
+  #minimized-chats {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     float: right;
-    font-size: 90%;
+    margin: 0 $chat-gutter;
     font-weight: bold;
+  }
+
+  .toggle-controlbox {
+    background-color: $link-color;
+    color: #0a0a0a;
     height: 100%;
-    margin-right: 5px;
-    padding: 4px 8px;
+    padding: 10px 8px 0 8px;
+    span {
+      color: $inverse-link-color;
+    }
   }
 
   #minimized-chats {
-    width: 130px;
-    padding: 0;
+    color: $inverse-link-color;
     display: none;
+    height: 100%;
+    padding: 0;
+    width: 130px;
+
+    #toggle-minimized-chats {
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      background-color: ivory;
+      position: relative;
+      padding: 10px 0 0 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+    
+    .unread-message-count,
+    .chat-head-message-count {
+      font-weight: bold;
+      @include linear-gradient(#f6f6f6 5%, #808080 100%);
+      border: 1px solid;
+      text-shadow: 1px 1px 0 $text-shadow-color;
+      color: $warning-color;
+      border-radius: 5px;
+      padding: 2px 4px;
+      font-size: 16px;
+      text-align: center;
+      position: absolute;
+      right: 116px;
+      bottom: 10px;
+    }
 
     .box-flyout {
       position: absolute;
       display: block;
       height: auto;
-      bottom: 25px;
+      bottom: $bottom-gutter-height;
       margin-left: 0;
 
       .chat-head {
@@ -305,32 +341,6 @@
         width: 130px;
       }
     }
-  }
-
-  #toggle-minimized-chats {
-    position: relative;
-    padding: 4px 0 0 4px;
-    display: block;
-    width: 100%;
-    height: 100%;
-    .unread-message-count {
-      right: 5px;
-      bottom: 5px;
-    }
-  }
-
-  .toggle-controlbox,
-  a.toggle-minimized-chats {
-    float: right;
-    font-size: 85%;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    background-color: $link-color;
-    padding: 4px 8px;
-    margin-right: 5px;
-    span {
-      color: $inverse-link-color;
-      }
   }
 
   .chat-body {
@@ -633,24 +643,6 @@
     }
   }
 
-  .unread-message-count,
-  .chat-head-message-count {
-    font-weight: bold;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.35, #f6f6f6), color-stop(1, #808080));
-    background: -moz-linear-gradient(center top, #ffff00 5%, #f6f6f6 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='yellow', endColorstr='#f6f6f6');
-    border: 1px solid;
-    text-shadow: 1px 1px 0 $text-shadow-color;
-    color: $warning-color;
-    border-radius: 5px;
-    padding: 2px 4px;
-    font-size: 15px;
-    text-align: center;
-    position: absolute;
-    right: 22px;
-    bottom: 1px;
-  }
-
   a.configure-chatroom-button,
   a.toggle-chatbox-button,
   a.close-chatbox-button {
@@ -909,7 +901,7 @@
 
   .chatbox,
   .chatroom {
-    height: 25px;
+    height: $bottom-gutter-height;
     float: right;
     margin: 0 $chat-gutter;
     @media screen and (max-width: $mobile_landscape_length) {
@@ -1466,7 +1458,7 @@
 
   .minimized-chats-flyout {
     border-radius: 4px;
-    bottom: 25px;
+    bottom: $bottom-gutter-height;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
     position: absolute;
@@ -1476,7 +1468,7 @@
     .chat-head {
       border-radius: 4px;
       width: 130px;
-      height: 25px;
+      height: 35px;
       margin-bottom: 1px;
     }
   }

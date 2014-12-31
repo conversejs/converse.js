@@ -46,6 +46,9 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
+  @media screen and (max-width: 480px) {
+    #conversejs {
+      margin: 5px 10px; } }
   #conversejs a, #conversejs a:visited {
     text-decoration: none;
     color: #436F64;
@@ -814,12 +817,22 @@
   #conversejs .chatroom {
     height: 25px;
     float: right;
-    margin-right: 15px;
+    margin: 0 7px;
     display: block; }
+    @media screen and (max-width: 480px) {
+      #conversejs .chatbox,
+      #conversejs .chatroom {
+        margin: 0; } }
   #conversejs .chatbox {
     width: 200px; }
+    @media screen and (max-width: 480px) {
+      #conversejs .chatbox {
+        width: 100%; } }
     #conversejs .chatbox .box-flyout {
       width: 200px; }
+      @media screen and (max-width: 480px) {
+        #conversejs .chatbox .box-flyout {
+          width: 100%; } }
     #conversejs .chatbox .dropdown a {
       width: 148px;
       display: inline-block;
@@ -847,11 +860,16 @@
       padding: 4px 7px 0 5px; }
   #conversejs .chatroom {
     width: 300px; }
+    #conversejs .chatroom .box-flyout {
+      width: 300px; }
+    @media screen and (max-width: 480px) {
+      #conversejs .chatroom {
+        width: 100%; }
+        #conversejs .chatroom .box-flyout {
+          width: 100%; } }
     #conversejs .chatroom label {
       margin-left: 2px;
       font-size: 12px; }
-    #conversejs .chatroom .box-flyout {
-      width: 300px; }
     #conversejs .chatroom .participant-list {
       list-style: none; }
       #conversejs .chatroom .participant-list li {
@@ -1193,6 +1211,10 @@
     display: block;
     height: 400px;
     position: absolute; }
+    @media screen and (max-width: 480px) {
+      #conversejs .minimized-chats-flyout,
+      #conversejs .box-flyout {
+        height: 400px; } }
   #conversejs .minimized-chats-flyout {
     border-radius: 4px;
     bottom: 25px;
@@ -1219,3 +1241,5 @@
     margin-left: 0;
     cursor: n-resize;
     z-index: 20; }
+
+/*# sourceMappingURL=converse.css.map */

@@ -32,7 +32,6 @@
 
 #conversejs {
   @import "../bourbon/bourbon";
-  @import "../components/neat/app/assets/stylesheets/neat";
   @import "variables";
   
   color: $text-color;
@@ -45,7 +44,11 @@
   right: 0;
   z-index: 30;
   display: block;
+
   @include box-sizing(border-box);
+  *, *:before, *:after {
+    @include box-sizing(border-box);
+  }
 
   a, a:visited {
     text-decoration: none;
@@ -393,8 +396,6 @@
     border: 0;
     background-color: #ffffff;
     line-height: 1.3em;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
     height: 206px;
     height: calc(100% - #{$toolbar-height + $chat-textarea-height});
   }
@@ -1240,9 +1241,9 @@
       @include border-bottom-radius(4px);
       border: 0;
       height: $chat-textarea-height;
-      padding: 8px;
-      resize: none;
+      padding: 0.5em;
       width: 100%;
+      resize: none;
     }
   }
 

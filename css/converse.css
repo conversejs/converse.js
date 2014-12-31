@@ -947,7 +947,8 @@
   #conversejs #converse-login input {
     width: 100%;
     height: 30px;
-    margin: 5px 0 10px 0; }
+    margin: 5px 0 10px 0;
+    padding: 0.5em; }
   #conversejs #converse-register .input-group {
     display: table;
     margin: auto;
@@ -1228,3 +1229,5 @@
     margin-left: 0;
     cursor: n-resize;
     z-index: 20; }
+
+/*# sourceMappingURL=converse.css.map */

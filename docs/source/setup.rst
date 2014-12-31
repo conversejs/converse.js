@@ -8,12 +8,9 @@ Setup and integration
 
 .. _what-you-will-need:
 
-------------------
-What you will need
-------------------
-
+--------------
 An XMPP server
-==============
+--------------
 
 *Converse.js* implements `XMPP <http://xmpp.org/about-xmpp/>`_ as its
 messaging protocol, and therefore needs to connect to an XMPP/Jabber
@@ -26,8 +23,9 @@ You can find a list of public XMPP servers/providers on `xmpp.net <http://xmpp.n
 servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software/servers/>`_.
 
 
+-------------------------
 A BOSH Connection Manager
-=========================
+-------------------------
 
 Your website and *Converse.js* use `HTTP <https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol>`_
 as protocol to communicate with the webserver. HTTP connections are stateless and usually shortlived.
@@ -53,7 +51,7 @@ The demo on the `Converse.js homepage <http://conversejs.org>`_ uses a connectio
 This connection manager is available for testing purposes only, please don't use it in production.
 
 Overcoming cross-domain request restrictions
---------------------------------------------
+============================================
 
 Lets say your domain is *example.org*, but the domain of your connection
 manager is *example.com*.
@@ -78,7 +76,7 @@ Apache/Nginx which serves the connection manager under the same domain as your
 website. This will remove the need for any cross-domain XHR support.
 
 For example:
-~~~~~~~~~~~~
+------------
 
 Assuming your site is accessible on port ``80`` for the domain ``mysite.com``
 and your connection manager manager is running at ``someothersite.com/http-bind``.
@@ -90,7 +88,7 @@ the cross-domain restriction is ``mysite.com/http-bind`` and not
 Your ``nginx`` or ``apache`` configuration will look as follows:
 
 Nginx
-~~~~~
+-----
 
 .. code-block:: nginx 
 
@@ -105,7 +103,7 @@ Nginx
     }
 
 Apache
-~~~~~~
+------
 
 .. code-block:: apache
 
@@ -116,13 +114,14 @@ Apache
     </VirtualHost>
 
 
-Server-side authentication
-==========================
-
 .. _`session-support`:
 
-Prebinding and Single Session Support
--------------------------------------
+----------------------
+Single Session Support
+----------------------
+
+Server-side authentication
+==========================
 
 It's possible to enable single-site login, whereby users already
 authenticated in your website will also automatically be logged in on the chat server,
@@ -196,7 +195,7 @@ These values are then passed to converse.js's ``initialize`` method.
 
 
 Example code for server-side prebinding
----------------------------------------
+=======================================
 
 * PHP:
     See `xmpp-prebind-php <https://github.com/candy-chat/xmpp-prebind-php>`_ by

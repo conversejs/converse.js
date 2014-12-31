@@ -12,8 +12,15 @@
     <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <script data-main="main" src="components/requirejs/require.js"></script> 
+    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.min.css" />
+    <script type="text/javascript" src="analytics.js"></script>
+    <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
+    <![if gte IE 9]>
+        <script src="builds/converse.website.min.js"></script>
+    <![endif]>
+    <!--[if lt IE 9]>
+        <script src="builds/converse.website-no-otr.min.js"></script>
+    <![endif]-->
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -145,7 +152,7 @@
                             <li>Custom status messages</li>
                             <li>Typing notifications</li>
                             <li>Third person messages (/me )</li>
-                            <li>Translated into 14 languages</li>
+                            <li>Translated into 15 languages</li>
                             <li>Off-the-record encryption
                         </ul>
                 </div>
@@ -205,6 +212,7 @@
                             <li>Follow me on <a href="http://twitter.com/jcopkode" target="_blank">Twitter</a>.</li>
                             <li>Chat with me via XMPP: <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a>.</li>
                             <li>For technical support, please write to the mailing list: <a href="mailto:conversejs@librelist.com">conversejs@librelist.com</a>.</li>
+                            <li>Or ask in the Converse.js chat room: <a href="xmpp:discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse.js chat room">discuss@conference.conversejs.org</a>.</li>
                             <li>Also check out the <a href="http://librelist.com/browser/conversejs" target="_blank">mailing list archives</a>.</li>
                             <li>Please file <a target="_blank" href="https://github.com/jcbrand/converse.js/issues">bugs on Github</a>.</li>
                             <li>I'm available for features and <a href="http://opkode.com/contact" target="_blank">consulting</a>.</li>
@@ -215,12 +223,6 @@
         </div>
     </section>
 </body>
-
-<script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
 
 <script>
     require(['converse'], function (converse) {
@@ -246,7 +248,6 @@
                 event.preventDefault();
             });
         })();
-
         converse.initialize({
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
@@ -255,7 +256,6 @@
             play_sounds: true,
             roster_groups: true,
             show_controlbox_by_default: true,
-            debug: true,
             xhr_user_search: false
         });
     });

@@ -8,6 +8,7 @@
 .svn/
 .project
 .pydevproject
+analytics.js
 
 # Ruby/Sass/Bundler
 .bundle

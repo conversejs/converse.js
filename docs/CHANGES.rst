@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.8.6 (Unreleased)
+0.8.8 (Unreleased)
+------------------
+
+* Norwegian Bokmål translations. [Andreas Lorentsen]
+* Updated Afrikaans translations. [jcbrand]
+
+0.8.6 (2014-12-07)
 ------------------
 
 * Bugfix. Login panel didn't appear under certain conditions. [jcbrand]

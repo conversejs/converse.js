@@ -608,7 +608,15 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<form id="converse-register">\n    <span class="reg-feedback"></span>\n    <label>' +
 ((__t = (label_domain)) == null ? '' : __t) +
-'</label>\n    <input type="text" name="domain" placeholder=" e.g. conversejs.org">\n    <p class="form-help">Tip: A list of public XMPP providers is available <a href="https://xmpp.net/directory.php" class="url" target="_blank">here</a>.</p>\n    <input class="submit" type="submit" value="' +
+'</label>\n    <input type="text" name="domain" placeholder="' +
+((__t = (domain_placeholder)) == null ? '' : __t) +
+'">\n    <p class="form-help">' +
+((__t = (help_providers)) == null ? '' : __t) +
+' <a href="' +
+((__t = (href_providers)) == null ? '' : __t) +
+'" class="url" target="_blank">' +
+((__t = (help_providers_link)) == null ? '' : __t) +
+'</a>.</p>\n    <input class="submit" type="submit" value="' +
 ((__t = (label_register)) == null ? '' : __t) +
 '">\n</form>\n';
 

@@ -164,9 +164,7 @@
 
         // Logging
         Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) {
-            console.log('ERROR: '+msg);
-        };
+        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -216,6 +214,11 @@
         var OPENED = 'opened';
         var CLOSED = 'closed';
 
+        // Translation machinery
+        // ---------------------
+        var __ = $.proxy(utils.__, this);
+        var ___ = utils.___;
+
         // Default configuration values
         // ----------------------------
         var default_settings = {
@@ -232,7 +235,7 @@
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             debug: false,
-            domain_placeholder: " e.g. conversejs.org",  // Placeholder text shown in the domain input on the registration form
+            domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,
@@ -286,10 +289,6 @@
         // Only use OTR by default if allow OTR is enabled to begin with
         this.use_otr_by_default = this.use_otr_by_default && this.allow_otr;
 
-        // Translation machinery
-        // ---------------------
-        var __ = $.proxy(utils.__, this);
-        var ___ = utils.___;
         // Translation aware constants
         // ---------------------------
         var OTR_CLASS_MAPPING = {};
@@ -3091,7 +3090,7 @@
                 this.model.messages.off('add',null,this);
                 this.remove();
                 this.model.maximize();
-            }, 200)
+            }, 200, true)
         });
 
         this.MinimizedChats = Backbone.Overview.extend({
@@ -3230,10 +3229,13 @@
 
             showInRoster: function () {
                 var chatStatus = this.get('chat_status');
-                if (converse.show_only_online_users && chatStatus !== 'online')
+                if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
+                    // If pending or requesting, show
+                    if ((this.get('ask') === 'subscribe') || (this.get('subscription') === 'from') || (this.get('requesting') === true)) {
+                        return true;
+                    }
                     return false;
-                if (converse.hide_offline_users && chatStatus === 'offline')
-                    return false;
+                }
                 return true;
             }
         });

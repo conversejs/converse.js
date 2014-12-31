@@ -2974,7 +2974,7 @@
 
                 if ((minimized_width + boxes_width + controlbox_width) > this.$el.outerWidth(true)) {
                     oldest_chat = this.getOldestMaximizedChat();
-                    if (oldest_chat) {
+                    if (oldest_chat && oldest_chat.get('id') !== new_id) {
                         oldest_chat.minimize();
                     }
                 }

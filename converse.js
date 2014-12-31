@@ -164,9 +164,7 @@
 
         // Logging
         Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) {
-            console.log('ERROR: '+msg);
-        };
+        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -215,6 +213,11 @@
         );
         var OPENED = 'opened';
         var CLOSED = 'closed';
+
+        // Translation machinery
+        // ---------------------
+        var __ = $.proxy(utils.__, this);
+        var ___ = utils.___;
 
         // Default configuration values
         // ----------------------------
@@ -286,10 +289,6 @@
         // Only use OTR by default if allow OTR is enabled to begin with
         this.use_otr_by_default = this.use_otr_by_default && this.allow_otr;
 
-        // Translation machinery
-        // ---------------------
-        var __ = $.proxy(utils.__, this);
-        var ___ = utils.___;
         // Translation aware constants
         // ---------------------------
         var OTR_CLASS_MAPPING = {};

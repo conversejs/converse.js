@@ -1191,9 +1191,29 @@
             },
 
             keyPressed: function (ev) {
+                var sendChatState = function () {
+                    if (this.model.get('chat_state', 'composing')) {
+                        this.model.set('chat_state', 'paused');
+                        converse.connection.send(
+                            $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                                .c('paused', {'xmlns':'http://jabber.org/protocol/chatstates'})
+                        );
+                        // TODO: Set a new timeout here to send a chat_state of <gone>
+                    }
+                };
                 var $textarea = $(ev.target),
-                    message, notify, composing;
-                if(ev.keyCode == KEY.ENTER) {
+                    args = arguments,
+                    context = this,
+                    message;
+                var later = function() {
+                    delete this.chat_state_timeout;
+                    sendChatState.apply(context, args);
+                };
+                if (typeof this.chat_state_timeout !== 'undefined') {
+                    clearTimeout(this.chat_state_timeout);
+                    delete this.chat_state_timeout; // XXX: Necessary?
+                }
+                if (ev.keyCode == KEY.ENTER) {
                     ev.preventDefault();
                     message = $textarea.val();
                     $textarea.val('').focus();
@@ -1205,19 +1225,21 @@
                         }
                         converse.emit('messageSend', message);
                     }
-                    this.$el.data('composing', false);
+                    this.model.set('chat_state', null);
+                    // TODO: need to put timeout for <gone> state here?
                 } else if (!this.model.get('chatroom')) {
-                    // composing data is only for single user chat
-                    composing = this.$el.data('composing');
-                    if (!composing) {
+                    // chat state data is only for single user chat
+                    this.chat_state_timeout = setTimeout(later, 10000);
+                    if (this.model.get('chat_state') != "composing") {
                         if (ev.keyCode != 47) {
                             // We don't send composing messages if the message
                             // starts with forward-slash.
-                            notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                                            .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
-                            converse.connection.send(notify);
+                            converse.connection.send(
+                                $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                                    .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'})
+                            );
                         }
-                        this.$el.data('composing', true);
+                        this.model.set('chat_state', 'composing');
                     }
                 }
             },

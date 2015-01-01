@@ -773,7 +773,6 @@
       }
       span {
         padding: 0 5px 0 0;
-        margin-left: 3px;
       }
       a {
          &.decline-xmpp-request {
@@ -806,9 +805,12 @@
       }
     }
     span {
-      &.pending-contact-name,
-      &.req-contact-name {
+      &.pending-contact-name {
         width: 80%;
+      }
+      &.req-contact-name {
+        width: 69%;
+        padding: 0;
       }
     }
   }

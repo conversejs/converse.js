@@ -167,6 +167,7 @@
         Strophe.error = function (msg) { console.log('ERROR: '+msg); };
 
         // Add Strophe Namespaces
+        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
@@ -187,7 +188,8 @@
         var VERIFIED= 2;
         var FINISHED = 3;
         var KEY = {
-            ENTER: 13
+            ENTER: 13,
+            FORWARD_SLASH: 47
         };
         var STATUS_WEIGHTS = {
             'offline':      6,
@@ -197,11 +199,20 @@
             'dnd':          2,
             'online':       1
         };
+
+        // XEP-0085 Chat states
+        // http://xmpp.org/extensions/xep-0085.html
         var INACTIVE = 'inactive';
         var ACTIVE = 'active';
         var COMPOSING = 'composing';
         var PAUSED = 'paused';
         var GONE = 'gone';
+        this.TIMEOUTS = { // Set as module attr so that we can override in tests.
+            'PAUSED':     30000,
+            'INACTIVE':   90000,
+            'GONE':       510000
+        };
+
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -711,15 +722,16 @@
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.save({
+                        'chat_state': ACTIVE,
                         'box_id' : b64_sha1(this.get('jid')),
                         'height': height,
                         'minimized': this.get('minimized') || false,
+                        'num_unread': this.get('num_unread') || 0,
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'time_minimized': this.get('time_minimized') || moment(),
                         'time_opened': this.get('time_opened') || moment().valueOf(),
-                        'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-                        'num_unread': this.get('num_unread') || 0,
-                        'url': ''
+                        'url': '',
+                        'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                     });
                 } else {
                     this.set({
@@ -872,8 +884,8 @@
 
             createMessage: function ($message) {
                 var body = $message.children('body').text(),
-                    composing = $message.find('composing'),
-                    paused = $message.find('paused'),
+                    composing = $message.find(COMPOSING),
+                    paused = $message.find(PAUSED),
                     delayed = $message.find('delay').length > 0,
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
@@ -976,10 +988,14 @@
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
-                this.model.on('change', this.onChange, this);
+                // TODO check for changed fullname as well
+                this.model.on('change:chat_state', this.sendChatState, this);
+                this.model.on('change:chat_status', this.onChatStatusChanged, this);
+                this.model.on('change:image', this.renderAvatar, this);
+                this.model.on('change:otr_status', this.onOTRStatusChanged, this);
+                this.model.on('change:minimized', this.onMinimizedChanged, this);
+                this.model.on('change:status', this.onStatusChanged, this);
                 this.model.on('showOTRError', this.showOTRError, this);
-                // XXX: doesn't look like this event is being used?
-                this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.model.on('sendMessageStanza', this.sendMessageStanza, this);
                 this.model.on('showSentOTRMessage', function (text) {
@@ -1140,7 +1156,7 @@
                 var bare_jid = this.model.get('jid');
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
+                    .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES});
                 converse.connection.send(message);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
@@ -1190,25 +1206,40 @@
                 }
             },
 
+            sendChatState: function () {
+                /* XEP-0085 Chat State Notifications.
+                 * Sends a message with the status of the user in this chat session
+                 * as taken from the 'chat_state' attribute of the chat box.
+                 */
+                converse.connection.send(
+                    $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                        .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES})
+                );
+            },
+
+            escalateChatState: function () {
+                /* XEP-0085 Chat State Notifications.
+                 * This method gets called asynchronously via setTimeout. It escalates the
+                 * chat state and depending on the current state can set a new timeout.
+                 */
+                delete this.chat_state_timeout;
+                if (this.model.get('chat_state') == COMPOSING) {
+                    this.model.set('chat_state', PAUSED);
+                    // From now on, if no activity in 2 mins, we'll set the
+                    // state to <inactive>
+                    this.chat_state_timeout = setTimeout($.proxy(this.escalateChatState, this), converse.TIMEOUTS.INACTIVE);
+                } else if (this.model.get('chat_state') == PAUSED) {
+                    this.model.set('chat_state', INACTIVE);
+                    // From now on, if no activity in 10 mins, we'll set the
+                    // state to <gone>
+                    this.chat_state_timeout = setTimeout($.proxy(this.escalateChatState, this), converse.TIMEOUTS.GONE);
+                } else if (this.model.get('chat_state') == INACTIVE) {
+                    this.model.set('chat_state', GONE);
+                }
+            },
+
             keyPressed: function (ev) {
-                var sendChatState = function () {
-                    if (this.model.get('chat_state', 'composing')) {
-                        this.model.set('chat_state', 'paused');
-                        converse.connection.send(
-                            $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                                .c('paused', {'xmlns':'http://jabber.org/protocol/chatstates'})
-                        );
-                        // TODO: Set a new timeout here to send a chat_state of <gone>
-                    }
-                };
-                var $textarea = $(ev.target),
-                    args = arguments,
-                    context = this,
-                    message;
-                var later = function() {
-                    delete this.chat_state_timeout;
-                    sendChatState.apply(context, args);
-                };
+                var $textarea = $(ev.target), message;
                 if (typeof this.chat_state_timeout !== 'undefined') {
                     clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout; // XXX: Necessary?
@@ -1225,21 +1256,15 @@
                         }
                         converse.emit('messageSend', message);
                     }
-                    this.model.set('chat_state', null);
-                    // TODO: need to put timeout for <gone> state here?
+                    this.model.set('chat_state', ACTIVE);
                 } else if (!this.model.get('chatroom')) {
-                    // chat state data is only for single user chat
-                    this.chat_state_timeout = setTimeout(later, 10000);
-                    if (this.model.get('chat_state') != "composing") {
-                        if (ev.keyCode != 47) {
-                            // We don't send composing messages if the message
-                            // starts with forward-slash.
-                            converse.connection.send(
-                                $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                                    .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'})
-                            );
-                        }
-                        this.model.set('chat_state', 'composing');
+                    // chat state data is currently only for single user chat
+                    // Concerning group chat: http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
+                    this.chat_state_timeout = setTimeout($.proxy(this.escalateChatState, this), converse.TIMEOUTS.PAUSED);
+                    if (this.model.get('chat_state') != COMPOSING && ev.keyCode != KEY.FORWARD_SLASH) {
+                        // Set chat state to composing if keyCode is not a forward-slash
+                        // (which would imply an internal command and not a message).
+                        this.model.set('chat_state', COMPOSING);
                     }
                 }
             },
@@ -1317,11 +1342,6 @@
                 console.log("OTR ERROR:"+msg);
             },
 
-            buddyStartsOTR: function (ev) {
-                this.showHelpMessages([__('This user has requested an encrypted session.')]);
-                this.model.initiateOTR();
-            },
-
             startOTRFromToolbar: function (ev) {
                 $(ev.target).parent().parent().slideUp();
                 ev.stopPropagation();
@@ -1372,46 +1392,43 @@
                 });
             },
 
-            onChange: function (item, changed) {
-                if (_.has(item.changed, 'chat_status')) {
-                    var chat_status = item.get('chat_status'),
-                        fullname = item.get('fullname');
-                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
-                    if (this.$el.is(':visible')) {
-                        if (chat_status === 'offline') {
-                            this.showStatusNotification(fullname+' '+'has gone offline');
-                        } else if (chat_status === 'away') {
-                            this.showStatusNotification(fullname+' '+'has gone away');
-                        } else if ((chat_status === 'dnd')) {
-                            this.showStatusNotification(fullname+' '+'is busy');
-                        } else if (chat_status === 'online') {
-                            this.$el.find('div.chat-event').remove();
-                        }
-                    }
-                    converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
-                    // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
-                    converse.emit('buddyStatusChanged', item.attributes, item.get('chat_status'));
-                }
-                if (_.has(item.changed, 'status')) {
-                    this.showStatusMessage();
-                    converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
-                    // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
-                    converse.emit('buddyStatusMessageChanged', item.attributes, item.get('status'));
-                }
-                if (_.has(item.changed, 'image')) {
-                    this.renderAvatar();
-                }
-                if (_.has(item.changed, 'otr_status')) {
-                    this.renderToolbar().informOTRChange();
-                }
-                if (_.has(item.changed, 'minimized')) {
-                    if (item.get('minimized')) {
-                        this.hide();
-                    } else {
-                        this.maximize();
+            onChatStatusChanged: function (item) {
+                var chat_status = item.get('chat_status'),
+                    fullname = item.get('fullname');
+                fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
+                if (this.$el.is(':visible')) {
+                    if (chat_status === 'offline') {
+                        this.showStatusNotification(fullname+' '+'has gone offline');
+                    } else if (chat_status === 'away') {
+                        this.showStatusNotification(fullname+' '+'has gone away');
+                    } else if ((chat_status === 'dnd')) {
+                        this.showStatusNotification(fullname+' '+'is busy');
+                    } else if (chat_status === 'online') {
+                        this.$el.find('div.chat-event').remove();
                     }
                 }
-                // TODO check for changed fullname as well
+                converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
+                // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
+                converse.emit('buddyStatusChanged', item.attributes, item.get('chat_status'));
+            },
+
+            onStatusChanged: function (item) {
+                this.showStatusMessage();
+                converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
+                // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
+                converse.emit('buddyStatusMessageChanged', item.attributes, item.get('status'));
+            },
+
+            onOTRStatusChanged: function (item) {
+                this.renderToolbar().informOTRChange();
+            },
+
+            onMinimizedChanged: function (item) {
+                if (item.get('minimized')) {
+                    this.hide();
+                } else {
+                    this.maximize();
+                }
             },
 
             showStatusMessage: function (msg) {
@@ -3032,9 +3049,9 @@
             },
 
             showChat: function (attrs) {
-                /* Find the chat box and show it.
-                 * If it doesn't exist, create it.
+                /* Find the chat box and show it. If it doesn't exist, create it.
                  */
+                // TODO: Send the chat state ACTIVE to the contact once the chat box is opened.
                 var chatbox  = this.model.get(attrs.jid);
                 if (!chatbox) {
                     chatbox = this.model.create(attrs, {
@@ -3055,7 +3072,6 @@
         this.MinimizedChatBoxView = Backbone.View.extend({
             tagName: 'div',
             className: 'chat-head',
-
             events: {
                 'click .close-chatbox-button': 'close',
                 'click .restore-chat': 'restore'
@@ -3063,7 +3079,7 @@
 
             initialize: function () {
                 this.model.messages.on('add', function (m) {
-                    if (!(m.get('composing') || m.get('paused'))) {
+                    if (!(m.get(COMPOSING) || m.get(PAUSED))) {
                         this.updateUnreadMessagesCounter();
                     }
                 }, this);
@@ -3106,9 +3122,7 @@
             },
 
             restore: _.debounce(function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.model.messages.off('add',null,this);
                 this.remove();
                 this.model.maximize();
@@ -3117,7 +3131,6 @@
 
         this.MinimizedChats = Backbone.Overview.extend({
             el: "#minimized-chats",
-
             events: {
                 "click #toggle-minimized-chats": "toggle"
             },
@@ -3348,17 +3361,7 @@
 
             openChat: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                // XXX: Can this.model.attributes be used here, instead of
-                // manually specifying all attributes?
-                return converse.chatboxviews.showChat({
-                    'id': this.model.get('jid'),
-                    'jid': this.model.get('jid'),
-                    'fullname': this.model.get('fullname'),
-                    'image_type': this.model.get('image_type'),
-                    'image': this.model.get('image'),
-                    'url': this.model.get('url'),
-                    'status': this.model.get('status')
-                });
+                return converse.chatboxviews.showChat(this.model.attributes);
             },
 
             removeContact: function (ev) {
@@ -4457,7 +4460,7 @@
                  * TODO: these features need to be added in the relevant
                  * feature-providing Models, not here
                  */
-                 converse.connection.disco.addFeature('http://jabber.org/protocol/chatstates'); // Limited support
+                 converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
                  converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
                  converse.connection.disco.addFeature('jabber:x:conference');
                  converse.connection.disco.addFeature('urn:xmpp:carbons:2');

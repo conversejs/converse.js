@@ -13,7 +13,6 @@ analytics.js
 # Ruby/Sass/Bundler
 .bundle
 .sass-cache
-Gemfile
 ruby
 bourbon
 

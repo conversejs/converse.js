@@ -86,6 +86,7 @@ clean::
 dev: clean
 	npm install
 	${BOWER} update;
+	bundler install --path=.
 
 ########################################################################
 ## Builds

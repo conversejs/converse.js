@@ -1,4 +1,5 @@
 # You can set these variables from the command line.
+GRUNT   ?= node_modules/.bin/grunt
 BOWER           ?= node_modules/.bin/bower
 BUILDDIR     	= ./docs
 PAPER        	=
@@ -48,12 +49,6 @@ po2json:
 ########################################################################
 ## Release management
 
-jsmin:
-	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js
-
-cssmin:
-	grunt cssmin
-
 release:
 	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\.[0-9]\.[0-9]/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
@@ -85,18 +80,18 @@ clean::
 
 dev: clean
 	npm install
-	${BOWER} update;
+	$(BOWER) update;
 	bundler install --path=.
 
 ########################################################################
 ## Builds
 
 css::
-	${SASS} sass/converse.scss > css/converse.css
+	$(SASS) sass/converse.scss > css/converse.css
 
 build::
-	./node_modules/.bin/grunt jst
-	./node_modules/.bin/grunt minify
+	$(GRUNT) jst
+	$(GRUNT) minify
 
 ########################################################################
 ## Tests

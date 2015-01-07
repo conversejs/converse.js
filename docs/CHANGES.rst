@@ -7,7 +7,8 @@ Changelog
 * Norwegian Bokmål translations. [Andreas Lorentsen]
 * Updated Afrikaans translations. [jcbrand]
 * Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]
-* Add fullname and jid to contact's tooltip in roster, solves #252 and #253. [gbonvehi]
+* #252, 253 Add fullname and jid to contact's tooltip in roster. [gbonvehi]
+* #295 Document "allow_registration". [gbonvehi]
 
 0.8.6 (2014-12-07)
 ------------------

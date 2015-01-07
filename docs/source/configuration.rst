@@ -53,6 +53,15 @@ Default:  ``true``
 
 Allow Off-the-record encryption of single-user chat messages.
 
+allow_registration
+---------
+
+Default:  ``true``
+
+Support for `XEP-0077: In band registration <http://xmpp.org/extensions/xep-0077.html>`_
+
+Allow XMPP account registration showing the corresponding UI register form interface.
+
 animate
 -------
 

@@ -18,11 +18,12 @@
         'id',
         'it',
         'ja',
+        'nb',
         'nl',
         'pt_BR',
         'ru',
         'zh'
-        ], function (jed, af, de, en, es, fr, he, hu, id, it, ja, nl, pt_BR, ru, zh) {
+        ], function (jed, af, de, en, es, fr, he, hu, id, it, ja, nb, nl, pt_BR, ru, zh) {
             root.locales = {
                 'af': af,
                 'de': de,
@@ -34,6 +35,7 @@
                 'id': id,
                 'it': it,
                 'ja': ja,
+                'nb': nb,
                 'nl': nl,
                 'pt-br': pt_BR,
                 'ru': ru,

@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.8.8 (Unreleased)
+------------------
+
+* Norwegian Bokmål translations. [Andreas Lorentsen]
+* Updated Afrikaans translations. [jcbrand]
+* Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]
+
 0.8.6 (2014-12-07)
 ------------------
 

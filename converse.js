@@ -164,9 +164,7 @@
 
         // Logging
         Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) {
-            console.log('ERROR: '+msg);
-        };
+        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -216,6 +214,11 @@
         var OPENED = 'opened';
         var CLOSED = 'closed';
 
+        // Translation machinery
+        // ---------------------
+        var __ = $.proxy(utils.__, this);
+        var ___ = utils.___;
+
         // Default configuration values
         // ----------------------------
         var default_settings = {
@@ -232,7 +235,7 @@
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             debug: false,
-            domain_placeholder: " e.g. conversejs.org",  // Placeholder text shown in the domain input on the registration form
+            domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,
@@ -286,10 +289,6 @@
         // Only use OTR by default if allow OTR is enabled to begin with
         this.use_otr_by_default = this.use_otr_by_default && this.allow_otr;
 
-        // Translation machinery
-        // ---------------------
-        var __ = $.proxy(utils.__, this);
-        var ___ = utils.___;
         // Translation aware constants
         // ---------------------------
         var OTR_CLASS_MAPPING = {};
@@ -599,7 +598,7 @@
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
-                this.giveFeedback(__('Online Contacts'));
+                this.giveFeedback(__('Contacts'));
             }, this));
         };
 
@@ -641,7 +640,7 @@
             this.initStatus($.proxy(function () {
 
                 this.chatboxes.onConnected();
-                this.giveFeedback(__('Online Contacts'));
+                this.giveFeedback(__('Contacts'));
                 if (this.callback) {
                     if (this.connection.service === 'jasmine tests') {
                         // XXX: Call back with the internal converse object. This
@@ -1512,7 +1511,7 @@
                     return;
                 }
                 var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                    canvas = $('<canvas height="31px" width="31px" class="avatar"></canvas>').get(0);
+                    canvas = $('<canvas height="32px" width="32px" class="avatar"></canvas>').get(0);
 
                 if (!(canvas.getContext && canvas.getContext('2d'))) {
                     return this;
@@ -1703,7 +1702,7 @@
                             'label_room_name': __('Room name'),
                             'label_nickname': __('Nickname'),
                             'label_server': __('Server'),
-                            'label_join': __('Join'),
+                            'label_join': __('Join Room'),
                             'label_show_rooms': __('Show rooms')
                         })
                     ).hide());
@@ -2975,7 +2974,7 @@
 
                 if ((minimized_width + boxes_width + controlbox_width) > this.$el.outerWidth(true)) {
                     oldest_chat = this.getOldestMaximizedChat();
-                    if (oldest_chat) {
+                    if (oldest_chat && oldest_chat.get('id') !== new_id) {
                         oldest_chat.minimize();
                     }
                 }
@@ -3221,6 +3220,8 @@
                     'user_id': Strophe.getNodeFromJid(jid),
                     'resources': [],
                     'groups': [],
+                    'image_type': 'image/png',
+                    'image': "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",
                     'status': ''
                 }, attributes);
                 this.set(attrs);
@@ -3228,12 +3229,9 @@
 
             showInRoster: function () {
                 var chatStatus = this.get('chat_status');
-                if ((converse.show_only_online_users && chatStatus !== 'online')
-                    || (converse.hide_offline_users && chatStatus === 'offline')) {
+                if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
                     // If pending or requesting, show
-                    if ((this.get('ask') === 'subscribe')
-                        || (this.get('subscription') === 'from')
-                        || (this.get('requesting') === true)) {
+                    if ((this.get('ask') === 'subscribe') || (this.get('subscription') === 'from') || (this.get('requesting') === true)) {
                         return true;
                     }
                     return false;

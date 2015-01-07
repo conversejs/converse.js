@@ -10,6 +10,12 @@
 .pydevproject
 analytics.js
 
+# Ruby/Sass/Bundler
+.bundle
+.sass-cache
+ruby
+bourbon
+
 Backbone.Overview
 tags
 stamp-npm

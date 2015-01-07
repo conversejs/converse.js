@@ -1,128 +1,126 @@
-# Afrikaans translations for Converse.js package.
-# Copyright (C) 2013 Jan-Carel Brand
-# This file is distributed under the same license as the Converse.js package.
-# JC Brand <jc@opkode.com>, 2013.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: Converse.js 0.4\n"
+"Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-07 13:45+0100\n"
-"PO-Revision-Date: 2014-12-20 11:48+0100\n"
-"Last-Translator: JC Brand <jc@opkode.com>\n"
-"Language-Team: Afrikaans\n"
-"Language: af\n"
+"PO-Revision-Date: 2014-12-20 10:55+0100\n"
+"Last-Translator: Andreas Lorentsen <andreas.lorentsen@gmail.com>\n"
+"Language-Team: \n"
+"Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.8\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
-"lang: af\n"
+"lang: nb\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
 #: converse.js:302
 msgid "unencrypted"
-msgstr "nie-privaat"
+msgstr "ukryptertß"
 
 #: converse.js:303
 msgid "unverified"
-msgstr "ongeverifieer"
+msgstr "uverifisert"
 
 #: converse.js:304
 msgid "verified"
-msgstr "privaat"
+msgstr "verifisert"
 
 #: converse.js:305
 msgid "finished"
-msgstr "afgesluit"
+msgstr "ferdig"
 
 #: converse.js:308
 msgid "This contact is busy"
-msgstr "Hierdie persoon is besig"
+msgstr "Denne kontakten er opptatt"
 
 #: converse.js:309
 msgid "This contact is online"
-msgstr "Hierdie persoon is aanlyn"
+msgstr "Kontakten er pålogget"
 
 #: converse.js:310
 msgid "This contact is offline"
-msgstr "Hierdie persoon is aflyn"
+msgstr "Kontakten er avlogget"
 
 #: converse.js:311
 msgid "This contact is unavailable"
-msgstr "Hierdie persoon is onbeskikbaar"
+msgstr "Kontakten er utilgjengelig"
 
 #: converse.js:312
 msgid "This contact is away for an extended period"
-msgstr "Hierdie persoon is vir lank afwesig"
+msgstr "Kontakten er borte for en lengre periode"
 
 #: converse.js:313
 msgid "This contact is away"
-msgstr "Hierdie persoon is afwesig"
+msgstr "Kontakten er borte"
 
 #: converse.js:315
-#, fuzzy
 msgid "Click to hide these contacts"
-msgstr "Kliek om hierdie kontak te verwyder"
+msgstr "Klikk for å skjule disse kontaktene"
 
 #: converse.js:317
 msgid "My contacts"
-msgstr "My kontakte"
+msgstr "Mine Kontakter"
 
 #: converse.js:318
 msgid "Pending contacts"
-msgstr "Hangende kontakte"
+msgstr "Kontakter som venter på godkjenning"
 
 #: converse.js:319
 msgid "Contact requests"
-msgstr "Kontak versoeke"
+msgstr "Kontaktforespørsler"
 
 #: converse.js:320
 msgid "Ungrouped"
-msgstr "Ongegroepeer"
+msgstr "Ugrupperte"
 
 #: converse.js:322
 msgid "Contacts"
-msgstr "Kontakte"
+msgstr "Kontakter"
 
 #: converse.js:323
 msgid "Groups"
-msgstr "Groepe"
+msgstr "Grupper"
 
 #: converse.js:410
 msgid "Reconnecting"
-msgstr "Herkonnekteer"
+msgstr "Kobler til igjen"
 
 #: converse.js:450
 msgid "Error"
-msgstr "Fout"
+msgstr "Feil"
 
 #: converse.js:452
 msgid "Connecting"
-msgstr "Verbind tans"
+msgstr "Kobler til"
 
 #: converse.js:454
 msgid "Authenticating"
-msgstr "Besig om te bekragtig"
+msgstr "Godkjenner"
 
 #: converse.js:456 converse.js:457
 msgid "Authentication Failed"
-msgstr "Bekragtiging het gefaal"
+msgstr "Godkjenning mislyktes"
 
 #: converse.js:602 converse.js:644
 msgid "Online Contacts"
-msgstr "Kontakte aangemeld"
+msgstr "Påloggede Kontakter"
 
 #: converse.js:762
 msgid "Re-establishing encrypted session"
-msgstr "Herstel versleutelde sessie"
+msgstr "Gjenopptar kryptert økt"
 
 #: converse.js:774
 msgid "Generating private key."
-msgstr "Genereer private sleutel."
+msgstr "Genererer privat nøkkel"
 
 #: converse.js:775
 msgid "Your browser might become unresponsive."
-msgstr "U webblaaier mag tydelik onreageerbaar word."
+msgstr "Din nettleser kan bli uresponsiv"
 
 #: converse.js:810
 msgid ""
@@ -133,73 +131,72 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
-"Verifieeringsversoek van  %1$s\n"
+"Godkjenningsforespørsel fra %1$s\n"
 "\n"
-"U gespreksmaat probeer om u identiteit te verifieer, deur die volgende vraag "
-"te vra \n"
+"Din nettpratkontakt forsøker å bekrefte din identitet, ved å spørre deg "
+"spørsmålet under.\n"
 "\n"
 "%2$s"
 
 #: converse.js:819
 msgid "Could not verify this user's identify."
-msgstr "Kon nie hierdie gebruiker se identitied verifieer nie."
+msgstr "Kunne ikke bekrefte denne brukerens identitet"
 
 #: converse.js:858
 msgid "Exchanging private key with contact."
-msgstr "Sleutels word met gespreksmaat uitgeruil."
+msgstr "Bytter private nøkler med kontakt"
 
 #: converse.js:1011
 msgid "Personal message"
-msgstr "Persoonlike boodskap"
+msgstr "Personlig melding"
 
 #: converse.js:1043
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"
+msgstr "Er du sikker på at du vil fjerne meldingene fra dette rommet?"
 
 #: converse.js:1065
 msgid "me"
-msgstr "ek"
+msgstr "meg"
 
 #: converse.js:1119
 msgid "is typing"
-msgstr "tik tans"
+msgstr "skriver"
 
 #: converse.js:1122
 msgid "has stopped typing"
-msgstr "het opgehou tik"
+msgstr "har stoppet å skrive"
 
-# The last three values are needed by Jed (a Javascript translations library)
 #: converse.js:1164 converse.js:2351
 msgid "Show this menu"
-msgstr "Vertoon hierdie keuselys"
+msgstr "Viser denne menyen"
 
 #: converse.js:1165
 msgid "Write in the third person"
-msgstr "Skryf in die derde persoon"
+msgstr "Skriv i tredjeperson"
 
 #: converse.js:1166 converse.js:2350
 msgid "Remove messages"
-msgstr "Verwyder boodskappe"
+msgstr "Fjern meldinger"
 
 #: converse.js:1250
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr "Is u seker u wil die boodskappe van hierdie klets uitvee?"
+msgstr "Er du sikker på at du vil fjerne meldingene fra denne meldingsboksen?"
 
 #: converse.js:1285
 msgid "Your message could not be sent"
-msgstr "U boodskap kon nie gestuur word nie"
+msgstr "Beskjeden din kunne ikke sendes"
 
 #: converse.js:1288
 msgid "We received an unencrypted message"
-msgstr "Ons het 'n onversleutelde boodskap ontvang"
+msgstr "Vi mottok en ukryptert beskjed"
 
 #: converse.js:1291
 msgid "We received an unreadable encrypted message"
-msgstr "Ons het 'n onleesbare versleutelde boodskap ontvang"
+msgstr "Vi mottok en uleselig melding"
 
 #: converse.js:1300
 msgid "This user has requested an encrypted session."
-msgstr "Hierdie gebruiker versoek 'n versleutelde sessie"
+msgstr "Denne brukeren har ønsket en kryptert økt"
 
 #: converse.js:1322
 msgid ""
@@ -213,14 +210,15 @@ msgid ""
 "If you have confirmed that the fingerprints match, click OK, otherwise click "
 "Cancel."
 msgstr ""
-"Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie "
-"kletskanaal \n"
+"Here are the fingerprints, please confirm them with %1$s, outside of this "
+"chat.\n"
 "\n"
-"U vingerafdruk, %2$s: %3$s\n"
+"Fingerprint for you, %2$s: %3$s\n"
 "\n"
-"Vingerafdruk vir %1$s: %4$s\n"
+"Fingerprint for %1$s: %4$s\n"
 "\n"
-"Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
+"Om du har bekreftet at avtrykkene matcher, klikk OK. I motsatt fall, trykk "
+"Avbryt."
 
 #: converse.js:1335
 msgid ""
@@ -230,629 +228,632 @@ msgid ""
 "Your contact will then be prompted the same question and if they type the "
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
-"Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die "
-"antwoord tot daardie vraag te verskaf.\n"
+"Du vil bli spurt etter å tilby et sikkerhetsspørsmål og siden svare på "
+"dette.\n"
 "\n"
-"U gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies "
-"dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit geverifieer "
-"wees."
+"Din kontakt vil så bli spurt om det samme spørsmålet, og om de svarer det "
+"nøyaktig samme svaret (det er forskjell på små og store bokstaver), vil "
+"identiteten verifiseres."
 
 #: converse.js:1336
 msgid "What is your security question?"
-msgstr "Wat is u sekuriteitsvraag?"
+msgstr "Hva er ditt Sikkerhetsspørsmål?"
 
 #: converse.js:1338
 msgid "What is the answer to the security question?"
-msgstr "Wat is die antwoord tot die sekuriteitsvraag?"
+msgstr "Hva er svaret på ditt Sikkerhetsspørsmål?"
 
 #: converse.js:1342
 msgid "Invalid authentication scheme provided"
-msgstr "Ongeldige verifikasiemetode verskaf"
+msgstr "Du har vedlagt en ugyldig godkjenningsplan."
 
 #: converse.js:1457
 msgid "Your messages are not encrypted anymore"
-msgstr "U boodskappe is nie meer versleutel nie"
+msgstr "Dine meldinger er ikke kryptert lenger."
 
 #: converse.js:1459
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
-"U boodskappe is now versleutel maar u gespreksmaat se identiteit is nog "
-"onseker."
+"Dine meldinger er nå krypterte, men identiteten til din kontakt har ikke "
+"blitt verifisert."
 
 #: converse.js:1461
 msgid "Your contact's identify has been verified."
-msgstr "U gespreksmaat se identiteit is geverifieer."
+msgstr "Din kontakts identitet har blitt verifisert."
 
 #: converse.js:1463
 msgid "Your contact has ended encryption on their end, you should do the same."
-msgstr "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
+msgstr ""
+"Din kontakt har avsluttet kryptering i sin ende, dette burde du også gjøre."
 
 #: converse.js:1472
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
-"U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te "
-"aktiveer."
+"Dine meldinger er ikke krypterte. Klikk her for å aktivere OTR-kryptering."
 
 #: converse.js:1474
 msgid "Your messages are encrypted, but your contact has not been verified."
-msgstr "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."
+msgstr ""
+"Dine meldinger er krypterte, men din kontakt har ikke blitt verifisert."
 
 #: converse.js:1476
 msgid "Your messages are encrypted and your contact verified."
-msgstr "U boodskappe is versleutel en u gespreksmaat se identiteit geverifieer."
+msgstr "Dine meldinger er krypterte og din kontakt er verifisert."
 
 #: converse.js:1478
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
-msgstr "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
+msgstr "Din kontakt har avsluttet økten i sin ende, dette burde du også gjøre."
 
 #: converse.js:1488
 msgid "Clear all messages"
-msgstr "Vee alle boodskappe uit"
+msgstr "Fjern alle meldinger"
 
 #: converse.js:1489
 msgid "End encrypted conversation"
-msgstr "Beëindig versleutelde gesprek"
+msgstr "Avslutt kryptert økt"
 
 #: converse.js:1490
 msgid "Hide the list of participants"
-msgstr "Verskuil die lys van deelnemers"
+msgstr "Skjul deltakerlisten"
 
 #: converse.js:1491
 msgid "Refresh encrypted conversation"
-msgstr "Verfris versleutelde gesprek"
+msgstr "Last inn kryptert samtale på nytt"
 
 #: converse.js:1492
 msgid "Start a call"
-msgstr "Begin 'n oproep"
+msgstr "Start en samtale"
 
 #: converse.js:1493
 msgid "Start encrypted conversation"
-msgstr "Begin versleutelde gesprek"
+msgstr "Start en kryptert samtale"
 
 #: converse.js:1494
 msgid "Verify with fingerprints"
-msgstr "Verifieer met vingerafdrukke"
+msgstr "Verifiser med Avtrykk"
 
 #: converse.js:1495
 msgid "Verify with SMP"
-msgstr "Verifieer met SMP"
+msgstr "Verifiser med SMP"
 
 #: converse.js:1496
 msgid "What's this?"
-msgstr "Wat is hierdie?"
+msgstr "Hva er dette?"
 
 #: converse.js:1587
 msgid "Online"
-msgstr "Aangemeld"
+msgstr "Pålogget"
 
 #: converse.js:1588
 msgid "Busy"
-msgstr "Besig"
+msgstr "Opptatt"
 
 #: converse.js:1589
 msgid "Away"
-msgstr "Afwesig"
+msgstr "Borte"
 
 #: converse.js:1590
 msgid "Offline"
-msgstr "Afgemeld"
+msgstr "Avlogget"
 
 #: converse.js:1591
-#, fuzzy
 msgid "Log out"
-msgstr "Meld aan"
+msgstr "Logg Av"
 
 #: converse.js:1597
 msgid "Contact name"
-msgstr "Kontaknaam"
+msgstr "Kontaktnavn"
 
 #: converse.js:1598
 msgid "Search"
-msgstr "Soek"
+msgstr "Søk"
 
 #: converse.js:1602
 msgid "Contact username"
-msgstr "Konak gebruikersnaam"
+msgstr "Brukernavnet til Kontakt"
 
 #: converse.js:1603
 msgid "Add"
-msgstr "Voeg by"
+msgstr "Legg Til"
 
 #: converse.js:1608
 msgid "Click to add new chat contacts"
-msgstr "Kliek om nuwe kletskontakte by te voeg"
+msgstr "Klikk for å legge til nye meldingskontakter"
 
 #: converse.js:1609
 msgid "Add a contact"
-msgstr "Voeg 'n kontak by"
+msgstr "Legg til en Kontakt"
 
 #: converse.js:1633
 msgid "No users found"
-msgstr "Geen gebruikers gevind"
+msgstr "Ingen brukere funnet"
 
 #: converse.js:1639
 msgid "Click to add as a chat contact"
-msgstr "Kliek om as kletskontak by te voeg"
+msgstr "Klikk for å legge til som meldingskontakt"
 
 #: converse.js:1703
 msgid "Room name"
-msgstr "Kamer naam"
+msgstr "Romnavn"
 
 #: converse.js:1704
 msgid "Nickname"
-msgstr "Bynaam"
+msgstr "Kallenavn"
 
 #: converse.js:1705
 msgid "Server"
-msgstr "Bediener"
+msgstr "Server"
 
 #: converse.js:1706
 msgid "Join"
-msgstr "Sluit aan"
+msgstr "Koble til"
 
 #: converse.js:1707
 msgid "Show rooms"
-msgstr "Wys kamers"
+msgstr "Vis Rom"
 
 #: converse.js:1711
 msgid "Rooms"
-msgstr "Kamers"
+msgstr "Rom"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
 #: converse.js:1731
 msgid "No rooms on %1$s"
-msgstr "Geen kamers op %1$s"
+msgstr "Ingen rom på %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
 #: converse.js:1746
 msgid "Rooms on %1$s"
-msgstr "Kamers op %1$s"
+msgstr "Rom på %1$s"
 
 #: converse.js:1755
 msgid "Click to open this room"
-msgstr "Kliek om hierdie kletskamer te open"
+msgstr "Klikk for å åpne dette rommet"
 
 #: converse.js:1756
 msgid "Show more information on this room"
-msgstr "Wys meer inligting aangaande hierdie kletskamer"
+msgstr "Vis mer informasjon om dette rommet"
 
 #: converse.js:1818
 msgid "Description:"
-msgstr "Beskrywing:"
+msgstr "Beskrivelse:"
 
 #: converse.js:1819
 msgid "Occupants:"
-msgstr "Deelnemers:"
+msgstr "Brukere her:"
 
 #: converse.js:1820
 msgid "Features:"
-msgstr "Eienskappe:"
+msgstr "Egenskaper:"
 
 #: converse.js:1821
 msgid "Requires authentication"
-msgstr "Benodig magtiging"
+msgstr "Krever Godkjenning"
 
 #: converse.js:1822
 msgid "Hidden"
-msgstr "Verskuil"
+msgstr "Skjult"
 
 #: converse.js:1823
 msgid "Requires an invitation"
-msgstr "Benodig 'n uitnodiging"
+msgstr "Krever en invitasjon"
 
 #: converse.js:1824
 msgid "Moderated"
-msgstr "Gemodereer"
+msgstr "Moderert"
 
 #: converse.js:1825
 msgid "Non-anonymous"
-msgstr "Nie-anoniem"
+msgstr "Ikke-Anonym"
 
 #: converse.js:1826
 msgid "Open room"
-msgstr "Oop kletskamer"
+msgstr "Åpent Rom"
 
 #: converse.js:1827
 msgid "Permanent room"
-msgstr "Permanente kamer"
+msgstr "Permanent Rom"
 
 #: converse.js:1828
 msgid "Public"
-msgstr "Publiek"
+msgstr "Alle"
 
 #: converse.js:1829
 msgid "Semi-anonymous"
-msgstr "Deels anoniem"
+msgstr "Semi-anonymt"
 
 #: converse.js:1830
 msgid "Temporary room"
-msgstr "Tydelike kamer"
+msgstr "Midlertidig Rom"
 
 #: converse.js:1831
 msgid "Unmoderated"
-msgstr "Ongemodereer"
+msgstr "Umoderert"
 
 #: converse.js:2099
 msgid "This user is a moderator"
-msgstr "Hierdie gebruiker is 'n moderator"
+msgstr "Denne brukeren er moderator"
 
 #: converse.js:2100
 msgid "This user can send messages in this room"
-msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur"
+msgstr "Denne brukeren kan skrive meldinger i dette rommet"
 
 #: converse.js:2101
 msgid "This user can NOT send messages in this room"
-msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
+msgstr "Denne brukeren kan IKKE sende meldinger i dette rommet"
 
 #: converse.js:2133
 msgid "Invite..."
-msgstr "Nooi uit..."
+msgstr "Invitér..."
 
 #: converse.js:2134
 msgid "Occupants"
-msgstr "Deelnemers"
+msgstr "Brukere her:"
 
 #: converse.js:2199
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
-msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi."
+msgstr "Du er i ferd med å invitere %1$s til samtalerommet \"%2$s\". "
 
 #: converse.js:2200
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
-msgstr "U mag na keuse 'n boodskap insluit, om bv. die rede vir die uitnodiging te staaf."
+msgstr ""
+"Du kan eventuelt inkludere en melding og forklare årsaken til invitasjonen."
 
 #: converse.js:2283
 msgid "Message"
-msgstr "Boodskap"
+msgstr "Melding"
 
 #: converse.js:2319
 msgid "Error: could not execute the command"
-msgstr "Fout: kon nie die opdrag uitvoer nie"
+msgstr "Feil: kunne ikke utføre kommandoen"
 
 #: converse.js:2349
 msgid "Ban user from room"
-msgstr "Verban gebruiker uit hierdie kletskamer"
+msgstr "Utesteng bruker fra rommet"
 
 #: converse.js:2352
 msgid "Kick user from room"
-msgstr "Skop gebruiker uit hierdie kletskamer"
+msgstr "Kast ut bruker fra rommet"
 
 #: converse.js:2353
 msgid "Write in 3rd person"
-msgstr "Skryf in die derde persoon"
+msgstr "Skriv i tredjeperson"
 
 #: converse.js:2354
 msgid "Remove user's ability to post messages"
-msgstr "Verwyder gebruiker se vermoë om boodskappe te plaas"
+msgstr "Fjern brukerens muligheter til å skrive meldinger"
 
 #: converse.js:2355
 msgid "Change your nickname"
-msgstr "Verander u bynaam"
+msgstr "Endre ditt kallenavn"
 
 #: converse.js:2356
 msgid "Set room topic"
-msgstr "Stel onderwerp vir kletskamer"
+msgstr "Endre rommets emne"
 
 #: converse.js:2357
 msgid "Allow muted user to post messages"
-msgstr "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
+msgstr "Tillat stumme brukere å skrive meldinger"
 
 #: converse.js:2423 converse.js:4334
 msgid "Save"
-msgstr "Stoor"
+msgstr "Lagre"
 
 #: converse.js:2424 converse.js:4603 converse.js:4707
 msgid "Cancel"
-msgstr "Kanseleer"
+msgstr "Avbryt"
 
 #: converse.js:2459
 msgid "An error occurred while trying to save the form."
-msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
+msgstr "En feil skjedde under lagring av skjemaet."
 
 #: converse.js:2503
 msgid "This chatroom requires a password"
-msgstr "Hiedie kletskamer benodig 'n wagwoord"
+msgstr "Dette rommet krever et passord"
 
 #: converse.js:2504
 msgid "Password: "
-msgstr "Wagwoord:"
+msgstr "Passord:"
 
 #: converse.js:2505
 msgid "Submit"
-msgstr "Dien in"
+msgstr "Send"
 
 #: converse.js:2540
 msgid "This room is not anonymous"
-msgstr "Hierdie vertrek is nie anoniem nie"
+msgstr "Dette rommet er ikke anonymt"
 
 #: converse.js:2541
 msgid "This room now shows unavailable members"
-msgstr "Hierdie vertrek wys nou onbeskikbare lede"
+msgstr "Dette rommet viser nå utilgjengelige medlemmer"
 
 #: converse.js:2542
 msgid "This room does not show unavailable members"
-msgstr "Hierdie vertrek wys nie onbeskikbare lede nie"
+msgstr "Dette rommet viser ikke utilgjengelige medlemmer"
 
 #: converse.js:2543
 msgid "Non-privacy-related room configuration has changed"
-msgstr "Nie-privaatheidverwante kamer instellings het verander"
+msgstr "Ikke-personvernsrelatert romkonfigurasjon har blitt endret"
 
 #: converse.js:2544
 msgid "Room logging is now enabled"
-msgstr "Kamer log is nou aangeskakel"
+msgstr "Romlogging er nå aktivert"
 
 #: converse.js:2545
 msgid "Room logging is now disabled"
-msgstr "Kamer log is nou afgeskakel"
+msgstr "Romlogging er nå deaktivert"
 
 #: converse.js:2546
 msgid "This room is now non-anonymous"
-msgstr "Hiedie kamer is nou nie anoniem nie"
+msgstr "Dette rommet er nå ikke-anonymt"
 
 #: converse.js:2547
 msgid "This room is now semi-anonymous"
-msgstr "Hierdie kamer is nou gedeeltelik anoniem"
+msgstr "Dette rommet er nå semi-anonymt"
 
 #: converse.js:2548
 msgid "This room is now fully-anonymous"
-msgstr "Hierdie kamer is nou ten volle anoniem"
+msgstr "Dette rommet er nå totalt anonymt"
 
 #: converse.js:2549
 msgid "A new room has been created"
-msgstr "'n Nuwe kamer is geskep"
+msgstr "Et nytt rom har blitt opprettet"
 
 #: converse.js:2553 converse.js:2653
 msgid "You have been banned from this room"
-msgstr "Jy is uit die kamer verban"
+msgstr "Du har blitt utestengt fra dette rommet"
 
 #: converse.js:2554
 msgid "You have been kicked from this room"
-msgstr "Jy is uit die kamer geskop"
+msgstr "Du ble kastet ut av dette rommet"
 
 #: converse.js:2555
 msgid "You have been removed from this room because of an affiliation change"
-msgstr "Jy is vanuit die kamer verwyder a.g.v 'n verandering van affiliasie"
+msgstr "Du har blitt fjernet fra dette rommet på grunn av en holdningsendring"
 
 #: converse.js:2556
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
 msgstr ""
-"Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk "
-"word en jy nie 'n lid is nie."
+"Du har blitt fjernet fra dette rommet fordi rommet nå kun tillater "
+"medlemmer, noe du ikke er."
 
 #: converse.js:2557
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
 msgstr ""
-"Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens "
-"nou afgeskakel word."
+"Du har blitt fjernet fra dette rommet fordi MBC (Multi-Bruker-Chat)-"
+"tjenesten er stengt ned."
 
 #: converse.js:2571
 msgid "<strong>%1$s</strong> has been banned"
-msgstr "<strong>%1$s</strong> is verban"
+msgstr "<strong>%1$s</strong>  har blitt utestengt"
 
 #: converse.js:2572
-#, fuzzy
 msgid "<strong>%1$s</strong>'s nickname has changed"
-msgstr "<strong>%1$s</strong> is verban"
+msgstr "<strong>%1$s</strong> sitt kallenavn er endret"
 
 #: converse.js:2573
 msgid "<strong>%1$s</strong> has been kicked out"
-msgstr "<strong>%1$s</strong> is uitgeskop"
+msgstr "<strong>%1$s</strong>  ble kastet ut"
 
 #: converse.js:2574
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
-msgstr "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
+msgstr ""
+"<strong>%1$s</strong> har blitt fjernet på grunn av en holdningsendring"
 
 #: converse.js:2575
 msgid "<strong>%1$s</strong> has been removed for not being a member"
-msgstr "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
+msgstr ""
+"<strong>%1$s</strong> har blitt fjernet på grunn av at han/hun ikke er medlem"
 
 #: converse.js:2579
 msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
-msgstr "U bynaam is outomaties verander na: <strong>%1$s</strong>"
+msgstr "Ditt kallenavn har blitt automatisk endret til <strong>%1$s</strong> "
 
 #: converse.js:2580
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
-msgstr "U bynaam is verander na: <strong>%1$s</strong>"
+msgstr "Ditt kallenavn har blitt endret til <strong>%1$s</strong> "
 
 #: converse.js:2628 converse.js:2638
 msgid "The reason given is: \""
-msgstr "Die gegewe rede is: \""
+msgstr "Årsaken som er oppgitt er: \""
 
 #: converse.js:2651
 msgid "You are not on the member list of this room"
-msgstr "Jy is nie op die ledelys van hierdie kamer nie"
+msgstr "Du er ikke på medlemslisten til dette rommet"
 
 #: converse.js:2657
 msgid "No nickname was specified"
-msgstr "Geen bynaam verskaf nie"
+msgstr "Ingen kallenavn var spesifisert"
 
 #: converse.js:2661
 msgid "You are not allowed to create new rooms"
-msgstr "Jy word nie toegelaat om nog kamers te skep nie"
+msgstr "Du har ikke tillatelse til å opprette nye rom"
 
 #: converse.js:2663
 msgid "Your nickname doesn't conform to this room's policies"
-msgstr "Jou bynaam voldoen nie aan die kamer se beleid nie"
+msgstr "Ditt kallenavn er ikke i samsvar med rommets regler"
 
 #: converse.js:2667
 msgid "Your nickname is already taken"
-msgstr "Jou bynaam is reeds geneem"
+msgstr "Kallenavnet er allerede tatt"
 
 #: converse.js:2669
 msgid "This room does not (yet) exist"
-msgstr "Hierdie kamer bestaan tans (nog) nie"
+msgstr "Dette rommet eksisterer ikke (enda)"
 
 #: converse.js:2671
 msgid "This room has reached it's maximum number of occupants"
-msgstr "Hierdie kamer het sy maksimum aantal deelnemers bereik"
+msgstr "Dette rommet har nådd maksimalt antall brukere"
 
 #: converse.js:2713
 msgid "Topic set by %1$s to: %2$s"
-msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
+msgstr "Emnet ble endret den %1$s til: %2$s"
 
 #: converse.js:2795
 msgid "%1$s has invited you to join a chat room: %2$s"
-msgstr "%1$s het u uitgenooi om die kletskamer %2$s te besoek"
+msgstr "%1$s har invitert deg til å bli med i chatterommet: %2$s"
 
 #: converse.js:2799
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
-msgstr "%1$s het u uitgenooi om die kletskamer %2$s te besoek, en het "
-"die volgende rede verskaf: \"%3$s\""
+msgstr ""
+"%1$s har invitert deg til å bli med i chatterommet: %2$s, og forlot selv av "
+"følgende grunn:  \"%3$s\""
 
 #: converse.js:3057
 msgid "Click to restore this chat"
-msgstr "Kliek om hierdie klets te herstel"
+msgstr "Klikk for å gjenopprette denne samtalen"
 
 #: converse.js:3202
 msgid "Minimized"
-msgstr "Geminimaliseer"
+msgstr "Minimert"
 
 #: converse.js:3298 converse.js:3316
 msgid "Click to remove this contact"
-msgstr "Kliek om hierdie kontak te verwyder"
+msgstr "Klikk for å fjerne denne kontakten"
 
 #: converse.js:3305
-#, fuzzy
 msgid "Click to accept this contact request"
-msgstr "Kliek om hierdie kontak te verwyder"
+msgstr "Klikk for å Godta denne kontaktforespørselen"
 
 #: converse.js:3306
-#, fuzzy
 msgid "Click to decline this contact request"
-msgstr "Kliek om hierdie kontak te verwyder"
+msgstr "Klikk for å avslå denne kontaktforespørselen"
 
 #: converse.js:3315
 msgid "Click to chat with this contact"
-msgstr "Kliek om met hierdie kontak te klets"
+msgstr "Klikk for å chatte med denne kontakten"
 
 #: converse.js:3340
 msgid "Are you sure you want to remove this contact?"
-msgstr "Is u seker u wil hierdie gespreksmaat verwyder?"
+msgstr "Er du sikker på at du vil fjerne denne kontakten?"
 
 #: converse.js:3363
 msgid "Are you sure you want to decline this contact request?"
-msgstr "Is u seker dat u hierdie persoon se versoek wil afkeur?"
+msgstr "Er du sikker på at du vil avslå denne kontaktforespørselen?"
 
 #: converse.js:3889
 msgid "Type to filter"
-msgstr "Tik om te filtreer"
+msgstr "Skriv til filter"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
 #: converse.js:4305 converse.js:4382
 msgid "I am %1$s"
-msgstr "Ek is %1$s"
+msgstr "Jeg er %1$s"
 
 #: converse.js:4307 converse.js:4387
 msgid "Click here to write a custom status message"
-msgstr "Kliek hier om jou eie statusboodskap te skryf"
+msgstr "Klikk her for å skrive en personlig statusmelding"
 
 #: converse.js:4308 converse.js:4388
 msgid "Click to change your chat status"
-msgstr "Kliek om jou klets-status te verander"
+msgstr "Klikk for å endre din meldingsstatus"
 
 #: converse.js:4333
 msgid "Custom status"
-msgstr "Doelgemaakte status"
+msgstr "Personlig status"
 
 #: converse.js:4362 converse.js:4370
 msgid "online"
-msgstr "aangemeld"
+msgstr "pålogget"
 
 #: converse.js:4364
 msgid "busy"
-msgstr "besig"
+msgstr "opptatt"
 
 #: converse.js:4366
 msgid "away for long"
-msgstr "vir lank afwesig"
+msgstr "borte lenge"
 
 #: converse.js:4368
 msgid "away"
-msgstr "afwesig"
+msgstr "borte"
 
 #: converse.js:4488
 msgid "Your XMPP provider's domain name:"
-msgstr "U XMPP-verskaffer se domein naam:"
+msgstr "Din XMPP-tilbyders domenenavn:"
 
 #: converse.js:4489
 msgid "Fetch registration form"
-msgstr "Haal die registrasie form"
+msgstr "Hent registreringsskjema"
 
 #: converse.js:4490
 msgid "Tip: A list of public XMPP providers is available"
-msgstr "Wenk: A lys van publieke XMPP-verskaffers is beskikbaar"
+msgstr "Tips: En liste med offentlige XMPP-tilbydere er tilgjengelig"
 
 #: converse.js:4491
 msgid "here"
-msgstr "hier"
+msgstr "her"
 
 #: converse.js:4496 converse.js:4705
 msgid "Register"
-msgstr "Registreer"
+msgstr "Registrér deg"
 
 #: converse.js:4543
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
-msgstr "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie."
-"Probeer weer met 'n ander verskaffer."
+msgstr ""
+"Beklager, den valgte tilbyderen støtter ikke in band kontoregistrering. "
+"Vennligst prøv igjen med en annen tilbyder. "
 
 #: converse.js:4604
 msgid "Requesting a registration form from the XMPP server"
-msgstr "Vra tans die XMPP-bediener vir 'n registrasie vorm"
+msgstr "Spør etter registreringsskjema fra XMPP-tjeneren"
 
 #: converse.js:4639
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
-msgstr "Iets het fout geloop tydens koppeling met \"%1$s\". Is u seker dat dit "
-"bestaan?"
+msgstr ""
+"Noe gikk galt under etablering av forbindelse med \"%1$s\". Er du sikker på "
+"at denne eksisterer?"
 
 #: converse.js:4658
 msgid "Now logging you in"
-msgstr "U word nou aangemeld"
+msgstr "Logger deg inn"
 
 #: converse.js:4662
 msgid "Registered successfully"
-msgstr "Suksesvol geregistreer"
+msgstr "Registrering var vellykket"
 
 #: converse.js:4710
 msgid "Return"
-msgstr "Terug"
+msgstr "Tilbake"
 
 #: converse.js:4742
 msgid "The provider rejected your registration attempt. "
-msgstr "Die verskaffer het u registrasieversoek verwerp."
+msgstr "Tilbyderen avviste ditt registreringsforsøk."
 
 #: converse.js:4887
 msgid "XMPP Username:"
-msgstr "XMPP Gebruikersnaam:"
+msgstr "XMPP Brukernavn:"
 
 #: converse.js:4888
 msgid "Password:"
-msgstr "Wagwoord"
+msgstr "Passord:"
 
 #: converse.js:4889
 msgid "Log In"
-msgstr "Meld aan"
+msgstr "Logg inn"
 
 #: converse.js:4896
 msgid "Sign in"
-msgstr "Teken in"
+msgstr "Innlogging"
 
 #: converse.js:4970
 msgid "Toggle chat"
-msgstr "Klets"
+msgstr "Endre chatten"

@@ -971,10 +971,15 @@
 
         describe("All Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.clearBrowserStorage();
-                converse.rosterview.model.reset();
-                utils.createContacts('all').openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.clearBrowserStorage();
+                    converse.rosterview.model.reset();
+                    utils.createContacts('all').openControlBox();
+                });
+                waits(50);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
             }, converse));
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
@@ -998,6 +1003,21 @@
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
                 }
             }, converse));
+            
+            it("will show fullname and jid properties on tooltip", $.proxy(function () {
+                var jid, name, i, t;
+                for (i=0; i<mock.cur_names.length; i++) {
+                    name = mock.cur_names[i];
+                    jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var $dd = this.rosterview.$el.find("dd:contains('"+name+"')").children().first();
+                    var dd_text = $dd.text();
+                    var dd_title = $dd.attr('title');
+                    expect(dd_text).toBe(name);
+                    expect(dd_title).toContain(name);
+                    expect(dd_title).toContain(jid);
+                }
+            }, converse));
+            
         }, converse));
     }, converse, mock, test_utils));
 

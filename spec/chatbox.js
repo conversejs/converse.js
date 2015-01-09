@@ -868,29 +868,6 @@
                         expect($stanza.children().prop('tagName')).toBe('inactive');
                     }, converse));
 
-                    it("will be shown if received", $.proxy(function () {
-                        // TODO: only show paused state if the previous state was composing
-                        // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(converse, 'emit');
-                        var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        // <paused> state
-                        msg = $msg({
-                                from: sender_jid,
-                                to: this.connection.jid,
-                                type: 'chat',
-                                id: (new Date()).getTime()
-                            }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        this.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                        var chatboxview = this.chatboxviews.get(sender_jid);
-                        $events = chatboxview.$el.find('.chat-event');
-                        expect($events.length).toBe(1);
-                        expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has stopped typing');
-                    }, converse));
-
-                }, converse));
-
-                describe("An gone notifciation", $.proxy(function () {
                     it("is sent if the user closes a chat box", $.proxy(function () {
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(contact_jid);
@@ -898,17 +875,38 @@
                         expect(view.model.get('chat_state')).toBe('active');
                         spyOn(converse.connection, 'send');
                         view.close();
-                        expect(view.model.get('chat_state')).toBe('gone');
+                        expect(view.model.get('chat_state')).toBe('inactive');
                         expect(converse.connection.send).toHaveBeenCalled();
                         var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                         expect($stanza.attr('to')).toBe(contact_jid);
                         expect($stanza.children().length).toBe(1);
-                        expect($stanza.children().prop('tagName')).toBe('gone');
+                        expect($stanza.children().prop('tagName')).toBe('inactive');
                     }, converse));
 
-                    xit("will be shown if received", $.proxy(function () {
-                        // TODO: only show paused state if the previous state was composing
+                    it("will clear any other chat status notifications if its received", $.proxy(function () {
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                        spyOn(converse, 'emit');
+                        var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        test_utils.openChatBoxFor(sender_jid);
+                        var view = this.chatboxviews.get(sender_jid);
+                        expect(view.$el.find('.chat-event').length).toBe(0);
+                        view.showStatusNotification(sender_jid+' '+'is typing');
+                        expect(view.$el.find('.chat-event').length).toBe(1);
+                        msg = $msg({
+                                from: sender_jid,
+                                to: this.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        this.chatboxes.onMessage(msg);
+                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(view.$el.find('.chat-event').length).toBe(0);
+                    }, converse));
+
+                }, converse));
+
+                describe("A gone notifciation", $.proxy(function () {
+                    it("will be shown if received", $.proxy(function () {
                         spyOn(converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
@@ -923,7 +921,7 @@
                         var chatboxview = this.chatboxviews.get(sender_jid);
                         $events = chatboxview.$el.find('.chat-event');
                         expect($events.length).toBe(1);
-                        expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has stopped typing');
+                        expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has gone away');
                     }, converse));
                 }, converse));
             }, converse));

@@ -209,10 +209,8 @@
         var GONE = 'gone';
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     20000,
-            'INACTIVE':   90000,
-            'GONE':       510000
+            'INACTIVE':   90000
         };
-
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -886,56 +884,48 @@
 
             createMessage: function ($message) {
                 var body = $message.children('body').text(),
-                    composing = $message.find(COMPOSING),
-                    paused = $message.find(PAUSED),
                     delayed = $message.find('delay').length > 0,
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
                     msgid = $message.attr('id'),
-                    stamp, time, sender, from;
+                    chat_state = $message.find(COMPOSING).length && COMPOSING ||
+                        $message.find(PAUSED).length && PAUSED ||
+                        $message.find(INACTIVE).length && INACTIVE ||
+                        $message.find(ACTIVE).length && ACTIVE ||
+                        $message.find(GONE).length && GONE,
+                    stamp, time, sender, from, createMessage;
 
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
                 } else {
                     from = Strophe.getBareJidFromJid($message.attr('from'));
                 }
-                fullname = (_.isEmpty(fullname)? from: fullname).split(' ')[0];
-
-                if (!body) {
-                    if (composing.length || paused.length) {
-                        // FIXME: use one attribute for chat states (e.g.
-                        // chatstate) instead of saving 'paused' and
-                        // 'composing' separately.
-                        this.messages.add({
-                            fullname: fullname,
-                            sender: 'them',
-                            delayed: delayed,
-                            time: moment().format(),
-                            composing: composing.length,
-                            paused: paused.length
-                        });
-                    }
+                fullname = (_.isEmpty(fullname) ? from: fullname).split(' ')[0];
+                if (delayed) {
+                    stamp = $message.find('delay').attr('stamp');
+                    time = stamp;
                 } else {
-                    if (delayed) {
-                        stamp = $message.find('delay').attr('stamp');
-                        time = stamp;
-                    } else {
-                        time = moment().format();
-                    }
-                    if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from == converse.bare_jid)) {
-                        sender = 'me';
-                    } else {
-                        sender = 'them';
-                    }
-                    this.messages.create({
-                        fullname: fullname,
-                        sender: sender,
-                        delayed: delayed,
-                        time: time,
-                        message: body,
-                        msgid: msgid
-                    });
+                    time = moment().format();
                 }
+                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from == converse.bare_jid)) {
+                    sender = 'me';
+                } else {
+                    sender = 'them';
+                }
+                if (!body) {
+                    createMessage = this.messages.add;
+                } else {
+                    createMessage = this.messages.create;
+                }
+                this.messages.create({
+                    chat_state: chat_state,
+                    delayed: delayed,
+                    fullname: fullname,
+                    message: body || undefined,
+                    msgid: msgid,
+                    sender: sender,
+                    time: time
+                });
             },
 
             receiveMessage: function ($message) {
@@ -1134,12 +1124,20 @@
                         }));
                     }
                 }
-                if (message.get(COMPOSING)) {
-                    this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
-                    return;
-                } else if (message.get(PAUSED)) {
-                    this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                    return;
+                if (!message.get('message')) {
+                    if (message.get('chat_state') === COMPOSING) {
+                        this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                        return;
+                    } else if (message.get('chat_state') === PAUSED) {
+                        this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                        return;
+                    } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
+                        this.$el.find('.chat-content div.chat-event').remove();
+                        return;
+                    } else if (message.get('chat_state') === GONE) {
+                        this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
+                        return;
+                    }
                 } else {
                     this.showMessage(_.clone(message.attributes));
                 }
@@ -1413,11 +1411,11 @@
                 fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
                 if (this.$el.is(':visible')) {
                     if (chat_status === 'offline') {
-                        this.showStatusNotification(fullname+' '+'has gone offline');
+                        this.showStatusNotification(fullname+' '+__('has gone offline'));
                     } else if (chat_status === 'away') {
-                        this.showStatusNotification(fullname+' '+'has gone away');
+                        this.showStatusNotification(fullname+' '+__('has gone away'));
                     } else if ((chat_status === 'dnd')) {
-                        this.showStatusNotification(fullname+' '+'is busy');
+                        this.showStatusNotification(fullname+' '+__('is busy'));
                     } else if (chat_status === 'online') {
                         this.$el.find('div.chat-event').remove();
                     }
@@ -1461,7 +1459,7 @@
                 } else {
                     this.model.trigger('hide');
                 }
-                this.setChatState(GONE);
+                this.setChatState(INACTIVE);
                 converse.emit('chatBoxClosed', this);
                 return this;
             },
@@ -3096,7 +3094,7 @@
 
             initialize: function () {
                 this.model.messages.on('add', function (m) {
-                    if (!(m.get(COMPOSING) || m.get(PAUSED))) {
+                    if (m.get('message')) {
                         this.updateUnreadMessagesCounter();
                     }
                 }, this);

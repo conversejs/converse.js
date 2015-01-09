@@ -208,7 +208,7 @@
         var PAUSED = 'paused';
         var GONE = 'gone';
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
-            'PAUSED':     30000,
+            'PAUSED':     20000,
             'INACTIVE':   90000,
             'GONE':       510000
         };
@@ -722,7 +722,9 @@
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.save({
-                        'chat_state': ACTIVE,
+                        // The chat_state will be set to ACTIVE once the chat box is opened
+                        // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
+                        'chat_state': undefined,
                         'box_id' : b64_sha1(this.get('jid')),
                         'height': height,
                         'minimized': this.get('minimized') || false,
@@ -973,6 +975,8 @@
                 'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'minimize',
                 'keypress textarea.chat-textarea': 'keyPressed',
+                'focus textarea.chat-textarea': 'chatBoxFocused',
+                'blur textarea.chat-textarea': 'chatBoxBlurred',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearMessages',
@@ -1146,8 +1150,7 @@
             },
 
             sendMessageStanza: function (text) {
-                /*
-                 * Sends the actual XML stanza to the XMPP server.
+                /* Sends the actual XML stanza to the XMPP server.
                  */
                 // TODO: Look in ChatPartners to see what resources we have for the recipient.
                 // if we have one resource, we sent to only that resources, if we have multiple
@@ -1207,9 +1210,9 @@
             },
 
             sendChatState: function () {
-                /* XEP-0085 Chat State Notifications.
-                 * Sends a message with the status of the user in this chat session
+                /* Sends a message with the status of the user in this chat session
                  * as taken from the 'chat_state' attribute of the chat box.
+                 * See XEP-0085 Chat State Notifications.
                  */
                 converse.connection.send(
                     $msg({'to':this.model.get('jid'), 'type': 'chat'})
@@ -1217,33 +1220,40 @@
                 );
             },
 
-            escalateChatState: function () {
-                /* XEP-0085 Chat State Notifications.
-                 * This method gets called asynchronously via setTimeout. It escalates the
-                 * chat state and depending on the current state can set a new timeout.
+            setChatState: function (state, no_save) {
+                /* Mutator for setting the chat state of this chat session.
+                 * Handles clearing of any chat state notification timeouts and
+                 * setting new ones if necessary.
+                 * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+                 * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+                 * See XEP-0085 Chat State Notifications.
+                 *
+                 *  Parameters:
+                 *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+                 *    (no_save) no_save - Just do the cleanup or setup but don't actually save the state.
                  */
-                delete this.chat_state_timeout;
-                if (this.model.get('chat_state') == COMPOSING) {
-                    this.model.set('chat_state', PAUSED);
-                    // From now on, if no activity in 2 mins, we'll set the
-                    // state to <inactive>
-                    this.chat_state_timeout = setTimeout($.proxy(this.escalateChatState, this), converse.TIMEOUTS.INACTIVE);
-                } else if (this.model.get('chat_state') == PAUSED) {
-                    this.model.set('chat_state', INACTIVE);
-                    // From now on, if no activity in 10 mins, we'll set the
-                    // state to <gone>
-                    this.chat_state_timeout = setTimeout($.proxy(this.escalateChatState, this), converse.TIMEOUTS.GONE);
-                } else if (this.model.get('chat_state') == INACTIVE) {
-                    this.model.set('chat_state', GONE);
+                if (_.contains([ACTIVE, INACTIVE, GONE], state)) {
+                    if (typeof this.chat_state_timeout !== 'undefined') {
+                        clearTimeout(this.chat_state_timeout);
+                        delete this.chat_state_timeout;
+                    }
+                } else if (state === COMPOSING) {
+                    this.chat_state_timeout = setTimeout(
+                            $.proxy(this.setChatState, this), converse.TIMEOUTS.PAUSED, PAUSED);
+                } else if (state === PAUSED) {
+                    this.chat_state_timeout = setTimeout(
+                            $.proxy(this.setChatState, this), converse.TIMEOUTS.INACTIVE, INACTIVE);
                 }
+                if (!no_save && this.model.get('chat_state') != state) {
+                    this.model.set('chat_state', state);
+                }
+                return this;
             },
 
             keyPressed: function (ev) {
+                /* Event handler for when a key is pressed in a chat box textarea.
+                 */
                 var $textarea = $(ev.target), message;
-                if (typeof this.chat_state_timeout !== 'undefined') {
-                    clearTimeout(this.chat_state_timeout);
-                    delete this.chat_state_timeout; // XXX: Necessary?
-                }
                 if (ev.keyCode == KEY.ENTER) {
                     ev.preventDefault();
                     message = $textarea.val();
@@ -1256,17 +1266,22 @@
                         }
                         converse.emit('messageSend', message);
                     }
-                    this.model.set('chat_state', ACTIVE);
-                } else if (!this.model.get('chatroom')) {
-                    // chat state data is currently only for single user chat
-                    // Concerning group chat: http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
-                    this.chat_state_timeout = setTimeout($.proxy(this.escalateChatState, this), converse.TIMEOUTS.PAUSED);
-                    if (this.model.get('chat_state') != COMPOSING && ev.keyCode != KEY.FORWARD_SLASH) {
-                        // Set chat state to composing if keyCode is not a forward-slash
-                        // (which would imply an internal command and not a message).
-                        this.model.set('chat_state', COMPOSING);
-                    }
+                    this.setChatState(ACTIVE);
+                } else if (!this.model.get('chatroom')) { // chat state data is currently only for single user chat
+                    // Set chat state to composing if keyCode is not a forward-slash
+                    // (which would imply an internal command and not a message).
+                    this.setChatState(COMPOSING, ev.keyCode==KEY.FORWARD_SLASH);
                 }
+            },
+
+            chatBoxFocused: function (ev) {
+                ev.preventDefault();
+                this.setChatState(ACTIVE);
+            },
+
+            chatBoxBlurred: function (ev) {
+                ev.preventDefault();
+                this.setChatState(INACTIVE);
             },
 
             onDragResizeStart: function (ev) {
@@ -1446,6 +1461,7 @@
                 } else {
                     this.model.trigger('hide');
                 }
+                this.setChatState(GONE);
                 converse.emit('chatBoxClosed', this);
                 return this;
             },
@@ -1454,7 +1470,7 @@
                 // Restores a minimized chat box
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
                     converse.refreshWebkit();
-                    this.focus();
+                    this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
                 }, this));
             },
@@ -1462,7 +1478,7 @@
             minimize: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 // Minimizes a chat box
-                this.model.minimize();
+                this.setChatState(INACTIVE).model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);
                 converse.emit('chatBoxMinimized', this);
             },
@@ -1591,6 +1607,7 @@
                     this.model.save();
                     this.initDragResize();
                 }
+                this.setChatState(ACTIVE);
                 return this;
             },
 

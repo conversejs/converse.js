@@ -70,6 +70,7 @@ require.config({
         "ja":        "locale/ja/LC_MESSAGES/ja",
         "nb":        "locale/nb/LC_MESSAGES/nb",
         "nl":        "locale/nl/LC_MESSAGES/nl",
+        "pl":        "locale/pl/LC_MESSAGES/converse.json",
         "pt_BR":     "locale/pt_BR/LC_MESSAGES/pt_BR",
         "ru":        "locale/ru/LC_MESSAGES/ru",
         "zh":        "locale/zh/LC_MESSAGES/zh",

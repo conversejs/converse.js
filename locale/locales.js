@@ -6,8 +6,7 @@
  */
 
 (function (root, factory) {
-    define("locales", [
-        'jed',
+    define("locales", ['jquery', 'jed', 
         'af',
         'de',
         'en',
@@ -20,10 +19,11 @@
         'ja',
         'nb',
         'nl',
+        'text!pl',
         'pt_BR',
         'ru',
         'zh'
-        ], function (jed, af, de, en, es, fr, he, hu, id, it, ja, nb, nl, pt_BR, ru, zh) {
+        ], function ($, Jed, af, de, en, es, fr, he, hu, id, it, ja, nb, nl, pl, pt_BR, ru, zh) {
             root.locales = {
                 'af': af,
                 'de': de,
@@ -37,6 +37,7 @@
                 'ja': ja,
                 'nb': nb,
                 'nl': nl,
+                'pl': new Jed($.parseJSON(pl)),
                 'pt-br': pt_BR,
                 'ru': ru,
                 'zh':zh

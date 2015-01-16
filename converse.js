@@ -37,7 +37,7 @@
             }
         );
     } else {
-        root.converse = factory(jQuery, _, OTR, DSA, JST, moment, utils);
+        root.converse = factory(jQuery, _, OTR, DSA, templates, moment, utils);
     }
 }(this, function ($, _, OTR, DSA, templates, moment, utils) {
     // "use strict";
@@ -281,6 +281,8 @@
         _.extend(this, default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(default_settings)));
+
+        this.jed = new Jed(this.i18n);
 
         if (settings.visible_toolbar_buttons) {
             _.extend(

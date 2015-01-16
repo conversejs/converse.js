@@ -4,6 +4,7 @@ module.exports = function(grunt) {
         jst: {
             compile: {
                 options: {
+                    namespace: 'templates',
                     templateSettings: {
                         evaluate : /\{\[([\s\S]+?)\]\}/g,
                         interpolate : /\{\{([\s\S]+?)\}\}/g
@@ -17,6 +18,20 @@ module.exports = function(grunt) {
                 files: {
                     "builds/templates.js": ["src/templates/*.html"]
                 },
+            }
+        },
+
+        json: {
+            main: {
+                options: {
+                    namespace: 'locales',
+                    includePath: true,
+                    processName: function(filename) {
+                        return filename.toLowerCase().match(/^locale\/(.*)\/lc_messages/)[1];
+                    }
+                },
+                src: ['locale/**/LC_MESSAGES/*.json'],
+                dest: 'builds/locales.js'
             }
         },
 
@@ -52,6 +67,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jst');
+    grunt.loadNpmTasks('grunt-json');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
     grunt.registerTask('test', 'Run Tests', function () {

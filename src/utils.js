@@ -4,7 +4,7 @@
     } else {
         root.utils = factory(jQuery, templates);
     }
-}(this, function ($, templates) {
+}(this, function ($, templates, locales) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -57,6 +57,9 @@
             // Translation factory
             if (typeof this.i18n === "undefined") {
                 this.i18n = locales.en;
+            }
+            if (typeof this.i18n === "string") {
+                this.i18n = $.parseJSON(this.i18n);
             }
             if (typeof this.jed === "undefined") {
                 this.jed = new Jed(this.i18n);

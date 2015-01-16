@@ -56,7 +56,7 @@ require.config({
         "otr":                  "src/otr",
 
         // Locales paths
-        "locales":   "locale/locales",
+        "locales":   "src/locales",
         "jed":       "components/jed/jed",
         "af":        "locale/af/LC_MESSAGES/converse.json",
         "de":        "locale/de/LC_MESSAGES/converse.json",

@@ -3,7 +3,6 @@ define("converse-dependencies", [
     "utils",
     "otr",
     "moment",
-    "locales",
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",

@@ -2,7 +2,6 @@ define("converse-dependencies", [
     "jquery",
     "utils",
     "moment",
-    "locales",
     "bootstrapJS", // XXX: Can be removed, only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",

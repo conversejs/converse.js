@@ -225,6 +225,7 @@
 
         // Translation machinery
         // ---------------------
+        this.i18n = settings.i18n ? settings.i18n : locales.en;
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
 
@@ -250,7 +251,6 @@
             forward_messages: false,
             hide_muc_server: false,
             hide_offline_users: false,
-            i18n: locales.en,
             jid: undefined,
             keepalive: false,
             message_carbons: false,
@@ -281,8 +281,6 @@
         _.extend(this, default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(default_settings)));
-
-        this.jed = new Jed(this.i18n);
 
         if (settings.visible_toolbar_buttons) {
             _.extend(

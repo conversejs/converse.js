@@ -370,6 +370,11 @@
     padding: 10px 8px 0 8px; }
     #conversejs .toggle-controlbox span {
       color: white; }
+  #conversejs .input-button-group {
+    display: table; }
+  #conversejs .input-button-group button,
+  #conversejs .input-button-group input {
+    display: table-cell; }
   #conversejs #minimized-chats {
     color: white;
     display: none;
@@ -678,8 +683,6 @@
     overflow: hidden;
     /* (jQ addClass:) if input has value: */
     /* (jQ addClass:) if mouse is over the 'x' input area*/ }
-    #conversejs #converse-roster .roster-filter-group {
-      display: table; }
     #conversejs #converse-roster .filter-type {
       display: table-cell;
       font-size: 14px;
@@ -690,7 +693,6 @@
     #conversejs #converse-roster .roster-filter {
       background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg==) no-repeat right -20px center;
       border: 1px solid #999;
-      display: table-cell;
       font-size: 14px;
       height: 25px;
       margin: 0 0 0.5em 6px;
@@ -952,7 +954,7 @@
     width: 100%;
     height: 30px;
     margin: 5px 0 10px 0;
-    padding: 0.5em; }
+    padding-left: 0.5em; }
   #conversejs #converse-register .input-group {
     display: table;
     margin: auto;
@@ -1042,7 +1044,7 @@
           border-bottom: 1px solid #CCC;
           border-top-left-radius: 4px;
           border-top-right-radius: 4px;
-          box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.5);
+          box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
           color: #888;
           display: block;
           font-size: 12px;
@@ -1150,14 +1152,14 @@
     float: left;
     padding: 0; }
     #conversejs #set-custom-xmpp-status input {
-      height: 23px; }
+      height: 26px;
+      width: -webkit-calc(100% - 40px);
+      width: calc(100% - 40px);
+      padding: 0 0 0 0.5em; }
     #conversejs #set-custom-xmpp-status button {
-      height: 23px;
+      height: 26px;
       width: 40px;
-      padding: 1px 2px 1px 1px; }
-  #conversejs .custom-xmpp-status {
-    width: -webkit-calc(100% - 40px);
-    width: calc(100% - 40px); }
+      padding: 1px; }
   #conversejs .chat-textarea-chatbox-selected {
     border: 1px solid #578308;
     margin: 0; }

@@ -52,13 +52,13 @@ this["templates"]["change_status_message"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<form id="set-custom-xmpp-status">\n    <input type="text" class="custom-xmpp-status" ' +
+__p += '<form id="set-custom-xmpp-status">\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" ' +
 ((__t = (status_message)) == null ? '' : __t) +
-'\n        placeholder="' +
+'\n            placeholder="' +
 ((__t = (label_custom_status)) == null ? '' : __t) +
-'"/>\n    <button type="submit">' +
+'"/>\n        <button type="submit">' +
 ((__t = (label_save)) == null ? '' : __t) +
-'</button>\n</form>\n';
+'</button>\n    </span>\n</form>\n';
 
 }
 return __p
@@ -849,7 +849,7 @@ this["templates"]["roster"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span class="roster-filter-group">\n    <input style="display: none;" class="roster-filter" placeholder="' +
+__p += '<span class="input-button-group">\n    <input style="display: none;" class="roster-filter" placeholder="' +
 ((__t = (placeholder)) == null ? '' : __t) +
 '">\n    <select style="display: none;" class="filter-type">\n        <option value="contacts">' +
 ((__t = (label_contacts)) == null ? '' : __t) +

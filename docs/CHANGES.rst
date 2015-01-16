@@ -10,6 +10,7 @@ Changelog
 * #252, 253 Add fullname and jid to contact's tooltip in roster. [gbonvehi]
 * #292 Better support for XEP-0085 Chat State Notifications. [jcbrand]
 * #295 Document "allow_registration". [gbonvehi]
+* #304 Added Polish translations. [ser]
 
 0.8.6 (2014-12-07)
 ------------------

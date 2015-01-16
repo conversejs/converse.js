@@ -10,9 +10,9 @@ Translations
    Translations take up a lot of space and will bloat your minified file.
    At the time of writing, all the translations add about 50KB of extra data to
    the minified javascript file. Therefore, make sure to only
-   include those languages that you intend to support and remove from
-   ./locale/locales.js those which you don't need. Remember to rebuild the
-   minified file afterwards.
+   include those languages which you intend to support and remove from
+   ./src/locales.js those which you don't need. Remember to rebuild the
+   minified file afterwards, by running `make build`.
 
 ----------------------------------------------
 Updating the translations template (.pot file)
@@ -61,8 +61,8 @@ the Javascript translations library that we're using.
 
     "domain: converse\n"
     "lang: pl\n"
+    "Content-Type: text/plain; charset=UTF-8\n"
     "plural_forms: nplurals=2; plural=(n != 1);\n"
-
 
 --------------------------------------
 Updating an existing translations file
@@ -107,33 +107,14 @@ You can then convert the translations into JSON format:
 
     po2json -p -f jed -d converse locale/de/LC_MESSAGES/converse.po locale/de/LC_MESSAGES/converse.json
 
-Now from converse.json paste the data as a value for the "locale_data" key in the
-object in the language's .js file.
+To do this for ALL languages, run:
 
-So, if you are for example translating into German (language code 'de'), you'll
-create or update the file ./locale/LC_MESSAGES/de.js with the following code:
+::
 
-.. code-block:: javascript 
+    make po2json
 
-    (function (root, factory) {
-        define("de", ['jed'], function () {
-            return factory(new Jed({
-                "domain": "converse",
-                "locale_data": {
-                    // Paste the JSON data from converse.json here
-                }
-            })
-        }
-    }(this, function (i18n) {
-        return i18n;
-    }));
-
-making sure to also paste the JSON data as value to the "locale_data" key.
 
 .. note::
     If you are adding translations for a new language that is not already supported,
-    you'll have to add the language path in main.js and make one more edit in ./locale/locales.js
+    you'll have to add the language path in main.js and make one more edit in ./src/locales.js
     to make sure the language is loaded by require.js.
-
-Congratulations, you've now succesfully added your translations. Sorry for all
-those hoops you had to jump through.

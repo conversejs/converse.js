@@ -7,6 +7,7 @@ Changelog
 * Norwegian Bokmål translations. [Andreas Lorentsen]
 * Updated Afrikaans translations. [jcbrand]
 * Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]
+* Don't send out the message carbons IQ stanza on each page load. [jcbrand]
 * #252, 253 Add fullname and jid to contact's tooltip in roster. [gbonvehi]
 * #292 Better support for XEP-0085 Chat State Notifications. [jcbrand]
 * #295 Document "allow_registration". [gbonvehi]

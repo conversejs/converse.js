@@ -615,7 +615,7 @@
             /* Ask the XMPP server to enable Message Carbons
              * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
              */
-            if (!this.message_carbons) {
+            if (!this.message_carbons || this.session.get('carbons_enabled')) {
                 return;
             }
             var carbons_iq = new Strophe.Builder('iq', {
@@ -624,14 +624,15 @@
                 type: 'set'
               })
               .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
-            this.connection.send(carbons_iq);
-            this.connection.addHandler(function (iq) {
+            this.connection.addHandler($.proxy(function (iq) {
                 if ($(iq).find('error').length > 0) {
                     converse.log('ERROR: An error occured while trying to enable message carbons.');
                 } else {
-                    converse.log('Message carbons appear to have been enabled.');
+                    this.session.save({carbons_enabled: true});
+                    converse.log('Message carbons have been enabled.');
                 }
-            }, null, "iq", null, "enablecarbons");
+            }, this), null, "iq", null, "enablecarbons");
+            this.connection.send(carbons_iq);
         };
 
         this.onConnected = function () {

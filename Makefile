@@ -1,12 +1,13 @@
 # You can set these variables from the command line.
-BOWER           ?= node_modules/.bin/bower
+BOWER           ?= ./node_modules/.bin/bower
 BUILDDIR     	= ./docs
 PAPER        	=
-PHANTOMJS       ?= node_modules/.bin/phantomjs
+PHANTOMJS       ?= ./node_modules/.bin/phantomjs
 SPHINXBUILD  	?= ./bin/sphinx-build
 SPHINXOPTS   	=
-PO2JSON       	?= node_modules/.bin/po2json
+PO2JSON       	?= ./node_modules/.bin/po2json
 SASS 			?= sass 
+GRUNT           ?= ./node_modules/.bin/grunt
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -52,7 +53,7 @@ jsmin:
 	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js
 
 cssmin:
-	grunt cssmin
+	$(GRUNT) cssmin
 
 release:
 	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\.[0-9]\.[0-9]/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
@@ -95,8 +96,8 @@ css::
 	${SASS} sass/converse.scss > css/converse.css
 
 build::
-	./node_modules/.bin/grunt jst
-	./node_modules/.bin/grunt minify
+	$(GRUNT) jst
+	$(GRUNT) minify
 
 ########################################################################
 ## Tests

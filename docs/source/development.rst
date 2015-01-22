@@ -12,6 +12,8 @@ follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
 .. note::
+    Windows environment: We recommend installing the required tools using `Chocolatey <https://chocolatey.org/>`_
+    You will need Node.js (nodejs.install), Git (git.install) and optionally to build using Makefile, GNU Make (make)
     If you have trouble setting up a development environment on Windows,
     please read `this post <http://librelist.com/browser//conversejs/2014/11/5/openfire-converse-and-visual-studio-questions/#b28387e7f8f126693b11598a8acbe810>`_
     in the mailing list.:
@@ -27,6 +29,9 @@ version `here <https://nodejs.org/download>`_.
 
 Also make sure you have ``Git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
 
+.. note::
+    Windows users should use Chocolatey as recommended above.:
+
 Once you have *Node.js* and *git* installed, run the following command inside the Converse.js
 directory:
 
@@ -34,13 +39,18 @@ directory:
 
     make dev
 
+On Windows you need to specify Makefile.win to be used by running:
+    
+::
+    make -f Makefile.win dev
+    
 Or alternatively, if you don't have GNU Make:
 
 ::
 
     npm install
     bower update
-
+    
 This will first install the Node.js development tools (like Grunt and Bower)
 and then use Bower to install all of Converse.js's front-end dependencies.
 

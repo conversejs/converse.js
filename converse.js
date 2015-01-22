@@ -163,8 +163,8 @@
         var converse = this;
 
         // Logging
-        Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+        Strophe.log = function (level, msg) { converse.log(level+' '+msg, level); };
+        Strophe.error = function (msg) { converse.log(msg, 'error'); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');

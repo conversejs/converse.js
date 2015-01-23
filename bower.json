@@ -23,7 +23,7 @@
     "requirejs-text": "~2.0.12",
     "requirejs-tpl-jcbrand": "*",
     "momentjs": "~2.6.0",
-    "jquery.browser": "https://raw.githubusercontent.com/jcbrand/jquery-browser-plugin/ae5e88aa7a26f583e8865c3961ba857918c4c9c1/dist/jquery.browser.js",
+    "jquery.browser": ">=0.0.7",
     "jquery-easing-original": "https://raw.githubusercontent.com/jcbrand/jquery.easing/7de3458b1845a72c1f407debf6b223c8446396bf/jquery.easing.1.3.js",
     "bootstrap": "~3.2.0",
     "bootstrapJS": "https://raw.githubusercontent.com/jcbrand/bootstrap/7d96a5f60d26c67b5348b270a775518b96a702c8/dist/js/bootstrap.js",

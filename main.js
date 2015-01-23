@@ -24,7 +24,7 @@ require.config({
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
-        "jquery.browser":           "components/jquery.browser/index",
+        "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
         "strophe":                  "components/strophe/strophe",

@@ -14,6 +14,7 @@ Changelog
 * #304 Added Polish translations. [ser]
 * New Makefile.win to build in Windows environments. [gbonvehi]
 * Strophe.log and Strophe.error now uses converse.log to output messages. [gbonvehi]
+* #305 presence/show text in XMPP request isn't allowed by specification. [gbonvehi]
 
 0.8.6 (2014-12-07)
 ------------------

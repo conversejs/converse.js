@@ -12,34 +12,25 @@
         define("converse",
               ["converse-dependencies", "converse-templates"],
             function (dependencies, templates) {
-                var otr = dependencies.otr;
-                if (typeof otr !== "undefined") {
-                    return factory(
-                        dependencies.jQuery,
-                        _,
-                        otr.OTR,
-                        otr.DSA,
-                        templates,
-                        dependencies.moment,
-                        dependencies.utils
-                    );
-                } else {
-                    return factory(
-                        dependencies.jQuery,
-                        _,
-                        undefined,
-                        undefined,
-                        templates,
-                        dependencies.moment,
-                        dependencies.utils
-                    );
-                }
+                return factory(dependencies, templates);
             }
         );
     } else {
-        root.converse = factory(jQuery, _, OTR, DSA, templates, moment, utils);
+        root.converse = factory(dependencies, templates);
     }
-}(this, function ($, _, OTR, DSA, templates, moment, utils) {
+}(this, function (dependencies, templates) {
+    var $ =         dependencies.jQuery;
+    var $iq =       dependencies.$iq;
+    var $msg =      dependencies.$msg;
+    var $pres =     dependencies.$pres;
+    var DSA =       dependencies.otr ? dependencies.otr.DSA : undefined;
+    var OTR =       dependencies.otr ? dependencies.otr.OTR : undefined;
+    var Strophe =   dependencies.Strophe;
+    var _ =         dependencies.underscore;
+    var moment =    dependencies.moment;
+    var utils =     dependencies.utils;
+    var b64_sha1 =  depencencies.SHA1.b64_sha1;
+
     // "use strict";
     // Cannot use this due to Safari bug.
     // See https://github.com/jcbrand/converse.js/issues/196
@@ -5288,7 +5279,7 @@
         },
         'env': {
             'jQuery': $,
-            'Strophe': Strophe,
+            'Strophe': Strophe, // TODO: this must be wrapped
             '_': _
         },
 

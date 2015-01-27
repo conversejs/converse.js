@@ -1,9 +1,9 @@
 var config;
 if (typeof(require) === 'undefined') {
     /* XXX: Hack to work around r.js's stupid parsing.
-    * We want to save the configuration in a variable so that we can reuse it in
-    * tests/main.js.
-    */
+     * We want to save the configuration in a variable so that we can reuse it in
+     * tests/main.js.
+     */
     require = {
         config: function (c) {
             config = c;
@@ -27,7 +27,14 @@ require.config({
         "jquery.browser":           "components/jquery.browser/index",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
-        "strophe":                  "components/strophe/strophe",
+        "strophe-base64":           "components/strophe/src/base64",
+        "strophe-bosh":             "components/strophe/src/bosh",
+        "strophe-core":             "components/strophe/src/core",
+        "strophe-full":             "components/strophe/src/wrapper",
+        "strophe-md5":              "components/strophe/src/md5",
+        "strophe-sha1":             "components/strophe/src/sha1",
+        "strophe-websocket":        "components/strophe/src/websocket",
+        "strophe-polyfill":         "components/strophe/src/polyfill",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.muc":              "components/strophe.muc/index",
         "strophe.roster":           "src/strophe.roster",
@@ -161,12 +168,11 @@ require.config({
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
-        'strophe':              { exports: 'Strophe' },
-        'strophe.disco':        { deps: ['strophe'] },
-        'strophe.muc':          { deps: ['strophe'] },
-        'strophe.register':     { deps: ['strophe'] },
-        'strophe.roster':       { deps: ['strophe'] },
-        'strophe.vcard':        { deps: ['strophe'] }
+        'strophe.disco':        { deps: ['strophe-full'] },
+        'strophe.muc':          { deps: ['strophe-full'] },
+        'strophe.register':     { deps: ['strophe-full'] },
+        'strophe.roster':       { deps: ['strophe-full'] },
+        'strophe.vcard':        { deps: ['strophe-full'] }
     }
 });
 

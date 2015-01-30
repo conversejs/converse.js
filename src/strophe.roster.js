@@ -13,8 +13,33 @@
  *  * authorize/unauthorize
  *  * roster versioning (xep 237)
  */
-Strophe.addConnectionPlugin('roster',
-{
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([
+            "strophe-full"
+        ], function (Strophe) {
+            factory(
+                Strophe.Strophe,
+                Strophe.$build,
+                Strophe.$iq ,
+                Strophe.$msg,
+                Strophe.$pres
+            );
+        });
+    } else {
+        // Browser globals
+        factory(
+            root.Strophe,
+            root.$build,
+            root.$iq ,
+            root.$msg,
+            root.$pres
+        );
+    }
+}(this, function (Strophe, $build, $iq, $msg, $pres) {
+
+Strophe.addConnectionPlugin('roster', {
     /** Function: init
      * Plugin init
      *
@@ -445,3 +470,4 @@ Strophe.addConnectionPlugin('roster',
         }
     }
 });
+}));

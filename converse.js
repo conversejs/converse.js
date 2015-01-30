@@ -29,7 +29,7 @@
     var _ =         dependencies.underscore;
     var moment =    dependencies.moment;
     var utils =     dependencies.utils;
-    var b64_sha1 =  depencencies.SHA1.b64_sha1;
+    var b64_sha1 =  dependencies.SHA1.b64_sha1;
 
     // "use strict";
     // Cannot use this due to Safari bug.

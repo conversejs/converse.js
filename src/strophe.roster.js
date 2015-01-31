@@ -26,6 +26,7 @@
                 Strophe.$msg,
                 Strophe.$pres
             );
+            return Strophe;
         });
     } else {
         // Browser globals

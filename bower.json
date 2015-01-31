@@ -16,7 +16,6 @@
     "backbone.browserStorage": "*",
     "backbone.overview": "*",
     "strophe": "~1.1.3",
-    "strophe.muc": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/muc/strophe.muc.js",
     "otr": "0.2.12",
     "crypto-js-evanvosberg": "~3.1.2",
     "almond": "~0.2.9",

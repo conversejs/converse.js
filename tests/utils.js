@@ -7,6 +7,7 @@
             return factory($, mock);
         });
 }(this, function ($, mock) {
+    var Strophe = converse_api.env.Strophe;
     var utils = {};
 
     utils.createRequest = function (iq) {

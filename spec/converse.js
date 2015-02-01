@@ -8,8 +8,9 @@
         }
     );
 } (this, function ($, mock, test_utils) {
-    return describe("Converse", $.proxy(function(mock, test_utils) {
+    var b64_sha1 = converse_api.env.b64_sha1;
 
+    return describe("Converse", $.proxy(function(mock, test_utils) {
         describe("The \"tokens\" API", $.proxy(function () {
             beforeEach($.proxy(function () {
                 test_utils.closeAllChatBoxes();

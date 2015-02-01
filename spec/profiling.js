@@ -8,6 +8,8 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var Strophe = converse_api.env.Strophe;
+
     describe("Profiling", function() {
         beforeEach(function() {
             converse.connection.roster.items = [];

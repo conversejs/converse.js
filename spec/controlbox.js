@@ -8,6 +8,8 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var $pres = converse_api.env.$pres;
+    var $iq = converse_api.env.$iq;
 
     var checkHeaderToggling = function ($header) {
         var $toggle = $header.find('a.group-toggle');

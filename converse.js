@@ -23,6 +23,7 @@
     var $iq =       dependencies.$iq;
     var $msg =      dependencies.$msg;
     var $pres =     dependencies.$pres;
+    var $build =    dependencies.$build;
     var DSA =       dependencies.otr ? dependencies.otr.DSA : undefined;
     var OTR =       dependencies.otr ? dependencies.otr.OTR : undefined;
     var Strophe =   dependencies.Strophe;
@@ -5280,7 +5281,12 @@
         'env': {
             'jQuery': $,
             'Strophe': Strophe, // TODO: this must be wrapped
-            '_': _
+            '$build': $build,
+            '$iq': $iq,
+            '$pres': $pres,
+            '$msg': $msg,
+            '_': _,
+            'b64_sha1':  b64_sha1
         },
 
         // Deprecated API methods

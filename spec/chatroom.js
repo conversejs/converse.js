@@ -8,6 +8,9 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var $pres = converse_api.env.$pres;
+    var $msg = converse_api.env.$msg;
+
     return describe("ChatRooms", $.proxy(function (mock, test_utils) {
         describe("A Chat Room", $.proxy(function () {
             beforeEach(function () {

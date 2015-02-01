@@ -30,7 +30,7 @@ require.config({
         "strophe-base64":           "components/strophe/src/base64",
         "strophe-bosh":             "components/strophe/src/bosh",
         "strophe-core":             "components/strophe/src/core",
-        "strophe-full":             "components/strophe/src/wrapper",
+        "strophe":                  "components/strophe/src/wrapper",
         "strophe-md5":              "components/strophe/src/md5",
         "strophe-sha1":             "components/strophe/src/sha1",
         "strophe-websocket":        "components/strophe/src/websocket",
@@ -168,11 +168,11 @@ require.config({
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
-        'strophe.disco':        { deps: ['strophe-full'] },
-        'strophe.muc':          { deps: ['strophe-full'] },
-        'strophe.register':     { deps: ['strophe-full'] },
-        'strophe.roster':       { deps: ['strophe-full'] },
-        'strophe.vcard':        { deps: ['strophe-full'] }
+        'strophe.disco':        { deps: ['strophe'] },
+        'strophe.muc':          { deps: ['strophe'] },
+        'strophe.register':     { deps: ['strophe'] },
+        'strophe.roster':       { deps: ['strophe'] },
+        'strophe.vcard':        { deps: ['strophe'] }
     }
 });
 

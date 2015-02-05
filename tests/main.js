@@ -67,7 +67,8 @@ require([
                 "spec/chatroom",
                 "spec/minchats",
                 "spec/profiling",
-                "spec/register"
+                "spec/register",
+                "spec/xmppstatus"
             ], function () {
                 // Make sure this callback is only called once.
                 delete converse.callback;

@@ -1,5 +1,5 @@
 # You can set these variables from the command line.
-BOWER           ?= ./node_modules/.bin/bower
+BOWER           ?= node_modules/.bin/bower
 BUILDDIR     	= ./docs
 PAPER        	=
 PHANTOMJS       ?= ./node_modules/.bin/phantomjs
@@ -86,14 +86,14 @@ clean::
 
 dev: clean
 	npm install
-	${BOWER} update;
+	$(BOWER) update;
 	bundler install --path=.
 
 ########################################################################
 ## Builds
 
 css::
-	${SASS} sass/converse.scss > css/converse.css
+	$(SASS) sass/converse.scss > css/converse.css
 
 build::
 	$(GRUNT) jst

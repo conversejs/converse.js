@@ -1,19 +1,27 @@
 # You can set these variables from the command line.
-GRUNT   ?= node_modules\.bin\grunt.cmd
+GRUNT   		?= node_modules\.bin\grunt.cmd
 BOWER           ?= node_modules\.bin\bower
 PHANTOMJS       ?= node_modules\.bin\phantomjs
 SASS 			?= sass 
-RMRF ?= rmdir /q /s 
-RMF ?= del /q 
+RMRF 			?= rmdir /q /s 
+RMF 			?= del /q 
+HTTPSERVE		?= ./node_modules/.bin/http-server
 
 .PHONY: all help clean css minjs build
 
 all: dev
 
 help:
-	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "Please use \`make <target>' where <target> is one of the following"
 	@echo "  dev        to set up the development environment"
 	@echo "  build      create minified builds containing converse.js and all its dependencies"
+	@echo "  serve      to serve this directory via a webserver on port 8000"
+
+########################################################################
+## Miscellaneous
+
+serve:
+	$(HTTPSERVE) -p 8000
 
 ########################################################################
 ## Install dependencies

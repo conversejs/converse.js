@@ -1,3 +1,5 @@
+.. _development:
+
 ===========
 Development
 ===========
@@ -73,7 +75,6 @@ If you are curious to know what the different dependencies are:
     If this directory does NOT exist, something must have gone wrong.
     Double-check the output of ```make dev``` to see if there are any errors
     listed. For support, you can write to the mailing list: conversejs@librelist.com
-
 
 With AMD and require.js (recommended)
 =====================================

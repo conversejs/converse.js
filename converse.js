@@ -170,8 +170,8 @@
         var converse = this;
 
         // Logging
-        Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+        Strophe.log = function (level, msg) { converse.log(level+' '+msg, level); };
+        Strophe.error = function (msg) { converse.log(msg, 'error'); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
@@ -4257,7 +4257,7 @@
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function () {
                 this.set({
-                    'status' : this.get('status') || 'online'
+                    'status' : this.getStatus()
                 });
                 this.on('change', $.proxy(function (item) {
                     if (this.get('fullname') === undefined) {
@@ -4277,12 +4277,14 @@
                 }, this));
             },
 
-            sendPresence: function (type) {
-                if (type === undefined) {
+            sendPresence: function (type, status_message) {
+                if (typeof type === 'undefined') {
                     type = this.get('status') || 'online';
                 }
-                var status_message = this.get('status_message'),
-                    presence;
+                if (typeof status_message === 'undefined') {
+                    status_message = this.get('status_message');
+                }
+                var presence;
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here fore reference and future proofing.
                 if ((type === 'unavailable') ||
@@ -4316,8 +4318,12 @@
                 this.save({'status': value});
             },
 
+            getStatus: function() {
+                return this.get('status') || 'online';
+            },
+
             setStatusMessage: function (status_message) {
-                converse.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
+                this.sendPresence(this.getStatus(), status_message);
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
                     $.ajax({

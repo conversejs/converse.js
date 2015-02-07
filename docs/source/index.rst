@@ -33,7 +33,7 @@ The :ref:`what-you-will-need` and :ref:`session-support` sections provide more i
 
 Table of Contents
 =================
- 
+
 .. toctree::
    :maxdepth: 2
 
@@ -42,6 +42,7 @@ Table of Contents
    setup
    configuration
    development
+   theming
    translations
    documentation
    builds

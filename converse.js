@@ -280,6 +280,7 @@
                 'clear': true,
                 'toggle_participants': true
             },
+            websocket_url: undefined,
             xhr_custom_status: false,
             xhr_custom_status_url: '',
             xhr_user_search: false,
@@ -664,11 +665,6 @@
                         // object should never be exposed to production systems.
                         // 'jasmine tests' is an invalid http bind service value,
                         // so we're sure that this is just for tests.
-                        //
-                        // TODO: We might need to consider websockets, which
-                        // probably won't use the 'service' attr. Current
-                        // strophe.js version used by converse.js doesn't support
-                        // websockets.
                         this.callback(this);
                     } else  {
                         this.callback();
@@ -5101,10 +5097,14 @@
                 //
                 // Also, what do we do when the keepalive session values are
                 // expired? Do we try to fall back?
-                if (!this.bosh_service_url) {
-                    throw("Error: you must supply a value for the bosh_service_url");
+                if (!this.bosh_service_url && ! this.websocket_url) {
+                    throw("Error: you must supply a value for the bosh_service_url or websocket_url");
                 }
-                this.connection = new Strophe.Connection(this.bosh_service_url);
+                if ('WebSocket' in window || 'MozWebSocket' in window) {
+                    this.connection = new Strophe.Connection(this.websocket_url);
+                } else {
+                    this.connection = new Strophe.Connection(this.bosh_service_url);
+                }
                 this.setUpXMLLogging();
 
                 if (this.prebind) {

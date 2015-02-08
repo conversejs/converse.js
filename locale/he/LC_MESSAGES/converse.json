@@ -53,7 +53,7 @@
          ],
          "My contacts": [
             null,
-            "אנשי הקשר שלי"
+            "האנשי קשר שלי"
          ],
          "Pending contacts": [
             null,
@@ -111,9 +111,17 @@
             null,
             "הדפדפן שלך עשוי שלא להגיב."
          ],
+         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+            null,
+            "בקשת אימות מאת %1$s\n\nהאיש קשר שלך מנסה לאמת את הזהות שלך, בעזרת שאילת השאלה שלהלן.\n\n%2$s"
+         ],
          "Could not verify this user's identify.": [
             null,
             "לא היתה אפשרות לאמת את זהות משתמש זה."
+         ],
+         "Exchanging private key with contact.": [
+            null,
+            "מחליף מפתח פרטי עם איש קשר."
          ],
          "Personal message": [
             null,
@@ -171,6 +179,10 @@
             null,
             "הרי טביעות האצבע, אנא אמת אותן עם %1$s, מחוץ לשיחה זו.\n\nטביעת אצבע עבורך, %2$s: %3$s\n\nטביעת אצבע עבור %1$s: %4$s\n\nהיה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."
          ],
+         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+            null,
+            "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\n\nהאיש קשר יתבקש עובר זאת לאותה שאלת אבטחה ואם אלו יקלידו את אותה התשובה במדויק (case sensitive), זהותם תאומת."
+         ],
          "What is your security question?": [
             null,
             "מהי שאלת האבטחה שלך?"
@@ -187,9 +199,37 @@
             null,
             "ההודעות שלך אינן מוצפנות עוד"
          ],
+         "Your messages are now encrypted but your contact's identity has not been verified.": [
+            null,
+            "ההודעות שלך מוצפנות כעת אך זהות האיש קשר שלך טרם אומתה."
+         ],
+         "Your contact's identify has been verified.": [
+            null,
+            "זהות האיש קשר שלך אומתה."
+         ],
+         "Your contact has ended encryption on their end, you should do the same.": [
+            null,
+            "האיש קשר סיים הצפנה בקצה שלהם, עליך לעשות זאת גם כן."
+         ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
             null,
             "ההודעות שלך אינן מוצפנות. לחץ כאן כדי לאפשר OTR."
+         ],
+         "Your messages are encrypted, but your contact has not been verified.": [
+            null,
+            "ההודעות שלך מוצפנות כעת, אך האיש קשר שלך טרם אומת."
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            "ההודעות שלך מוצפנות כעת והאיש קשר שלך אומת."
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            "האיש קשר סגר את קצה ישיבה פרטית שלהם, עליך לעשות זאת גם כן"
+         ],
+         "Clear all messages": [
+            null,
+            "טהר את כל ההודעות"
          ],
          "End encrypted conversation": [
             null,
@@ -197,7 +237,7 @@
          ],
          "Hide the list of participants": [
             null,
-            ""
+            "הסתר רשימת משתתפים"
          ],
          "Refresh encrypted conversation": [
             null,
@@ -205,7 +245,7 @@
          ],
          "Start a call": [
             null,
-            ""
+            "התחל שיחה"
          ],
          "Start encrypted conversation": [
             null,
@@ -238,6 +278,10 @@
          "Offline": [
             null,
             "בלתי מקוון"
+         ],
+         "Log out": [
+            null,
+            "התנתקות"
          ],
          "Contact name": [
             null,
@@ -381,15 +425,19 @@
          ],
          "Invite...": [
             null,
-            ""
+            "הזמנה..."
+         ],
+         "Occupants": [
+            null,
+            "נוכחים"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
-            ""
+            "אתה עומד להזמין את %1$s לחדר שיחה \"%2$s\". "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
-            ""
+            "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."
          ],
          "Message": [
             null,
@@ -397,19 +445,35 @@
          ],
          "Error: could not execute the command": [
             null,
-            ""
+            "שגיאה: לא היתה אפשרות לבצע פקודה"
+         ],
+         "Ban user from room": [
+            null,
+            "אסור משתמש מתוך חדר"
+         ],
+         "Kick user from room": [
+            null,
+            "בעט משתמש מתוך חדר"
+         ],
+         "Write in 3rd person": [
+            null,
+            "כתוב בגוף שלישי"
          ],
          "Remove user's ability to post messages": [
             null,
-            ""
+            "הסר יכולת משתמש לפרסם הודעות"
          ],
          "Change your nickname": [
             null,
-            ""
+            "שנה את השם כינוי שלך"
+         ],
+         "Set room topic": [
+            null,
+            "קבע נושא חדר"
          ],
          "Allow muted user to post messages": [
             null,
-            ""
+            "התר למשתמש מושתק לפרסם הודעות"
          ],
          "Save": [
             null,
@@ -499,6 +563,10 @@
             null,
             "<strong>%1$s</strong> נאסר(ה)"
          ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "השם כינוי של<strong>%1$s</strong> השתנה"
+         ],
          "<strong>%1$s</strong> has been kicked out": [
             null,
             "<strong>%1$s</strong> נבעט(ה)"
@@ -511,9 +579,17 @@
             null,
             "<strong>%1$s</strong> הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
          ],
+         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
+            null,
+            "השם כינוי שלך שונה אוטומטית בשם: <strong>%1$s</strong>"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "השם כינוי שלך שונה בשם: <strong>%1$s</strong>"
+         ],
          "The reason given is: \"": [
             null,
-            ""
+            "הסיבה שניתנה היא: \""
          ],
          "You are not on the member list of this room": [
             null,
@@ -529,11 +605,11 @@
          ],
          "Your nickname doesn't conform to this room's policies": [
             null,
-            "שם הכינוי שלך לא תואם את המדינויות של חדר זה"
+            "השם כינוי שלך לא תואם את המדינויות של חדר זה"
          ],
          "Your nickname is already taken": [
             null,
-            "שם הכינוי שלך הינו תפוס"
+            "השם כינוי שלך הינו תפוס"
          ],
          "This room does not (yet) exist": [
             null,
@@ -549,11 +625,11 @@
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
-            ""
+            "%1$s הזמינך להצטרף לחדר שיחה: %2$s"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
             null,
-            ""
+            "%1$s הזמינך להצטרף לחדר שיחה: %2$s, והשאיר את הסיבה הבאה: \"%3$s\""
          ],
          "Click to restore this chat": [
             null,
@@ -625,51 +701,55 @@
          ],
          "Your XMPP provider's domain name:": [
             null,
-            ""
+            "שם מתחם של ספק XMPP שלך:"
          ],
          "Fetch registration form": [
             null,
-            ""
+            "משוך טופס הרשמה"
          ],
          "Tip: A list of public XMPP providers is available": [
             null,
-            ""
+            "טיפ: רשימה פומבית של ספקי XMPP הינה זמינה"
          ],
          "here": [
             null,
-            ""
+            "כאן"
          ],
          "Register": [
             null,
-            ""
+            "הירשם"
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
-            ""
+            "מצטערים, הספק שניתן לא תומך ברישום חשבונות in band. אנא נסה ספק אחר."
          ],
          "Requesting a registration form from the XMPP server": [
             null,
-            ""
+            "כעת מבקש טופס הרשמה מתוך שרת XMPP"
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
             null,
-            ""
+            "משהו השתבש במהלך ביסוס חיבור עם \"%1$s\". האם אתה בטוח כי זה קיים?"
          ],
          "Now logging you in": [
             null,
-            ""
+            "כעת מחבר אותך פנימה"
          ],
          "Registered successfully": [
             null,
-            ""
+            "נרשם בהצלחה"
          ],
          "Return": [
             null,
-            ""
+            "חזור"
          ],
          "The provider rejected your registration attempt. ": [
             null,
-            ""
+            "הספק דחה את ניסיון הרישום שלך. "
+         ],
+         "XMPP Username:": [
+            null,
+            "שם משתמש XMPP:"
          ],
          "Password:": [
             null,

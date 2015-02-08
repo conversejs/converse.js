@@ -3530,20 +3530,20 @@
                 /* The localstorage cache containing roster contacts might contain
                 * some contacts that aren't actually in our roster anymore. We
                 * therefore need to remove them now.
+                *
+                * TODO: The method is a performance bottleneck.
+                * Basically we need to chuck out strophe.roster and
+                * rewrite it with backbone.js and well integrated into
+                * converse.js. Then we won't need to have this method at all.
                 */
-                var id, i, contact;
-                for (i=0; i < this.models.length; ++i) {
-                    id = this.models[i].get('id');
-                    if (_.indexOf(_.pluck(items, 'jid'), id) === -1) {
-                        contact = this.get(id);
-                        if (contact && !contact.get('requesting')) {
-                            contact.destroy();
-                        }
+                _.each(_.difference(this.pluck('jid'), _.pluck(items, 'jid')), $.proxy(function (jid) {
+                    var contact = this.get(jid);
+                    if (contact && !contact.get('requesting')) {
+                        contact.destroy();
                     }
-                }
+                }, this));
             },
 
-            // TODO: see if we can only use 2nd item par
             rosterHandler: function (items, item) {
                 converse.emit('roster', items);
                 this.clearCache(items);

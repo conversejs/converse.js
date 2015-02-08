@@ -120,15 +120,15 @@ Apache
 Single Session Support
 ----------------------
 
-Server-side authentication
-==========================
+Server-side authentication (prebind)
+====================================
 
-It's possible to enable single-site login, whereby users already
-authenticated in your website will also automatically be logged in on the chat server,
+It's possible to enable shared sessions whereby users already
+authenticated in your website will also automatically be logged in on the XMPP server,
 
-This session should also persist across page loads. In other words, we don't
-want the user to have to give their chat credentials every time they reload the
-page.
+This session can be made to persist across page loads. In other words, we want
+a user to automatically be logged in to chat when they log in to the website,
+and we want their chat session to persist across page loads.
 
 To do this you will require a `BOSH server <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
 for converse.js to connect to (see the :ref:`bosh-service-url` under :ref:`configuration-variables`)
@@ -192,6 +192,12 @@ These values are then passed to converse.js's ``initialize`` method.
    when calling **converse.initialize** (see ./index.html).
    Additionally you need to pass in valid **jid**, **sid**, **rid** and
    **bosh_service_url** values.
+
+   The :ref:`prebind` configuration setting can be used together with the
+   :ref:`keepalive` setting. This means you only have to prebind once for the
+   first page the user loads and not anymore for subsequent pages.
+
+   For more info, please refer to the :ref:`configuration-variables` section.
 
 
 Example code for server-side prebinding

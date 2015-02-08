@@ -5100,10 +5100,12 @@
                 if (!this.bosh_service_url && ! this.websocket_url) {
                     throw("Error: you must supply a value for the bosh_service_url or websocket_url");
                 }
-                if ('WebSocket' in window || 'MozWebSocket' in window) {
+                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
                     this.connection = new Strophe.Connection(this.websocket_url);
-                } else {
+                } else if (this.bosh_service_url) {
                     this.connection = new Strophe.Connection(this.bosh_service_url);
+                } else {
+                    throw("Error: this browser does not support websockets and no bosh_service_url specified.");
                 }
                 this.setUpXMLLogging();
 

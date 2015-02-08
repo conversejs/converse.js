@@ -103,10 +103,19 @@ If true, the user will automatically subscribe back to any contact requests.
 bosh_service_url
 ----------------
 
-Connections to an XMPP server depend on a BOSH connection manager which acts as
-a middle man between HTTP and XMPP.
+Default: ``undefined``
 
+To connect to an XMPP server over HTTP you need a `BOSH <https://en.wikipedia.org/wiki/BOSH>`_
+connection manager which acts as a middle man between the HTTP and XMPP
+protocols.
+
+The bosh_service_url setting takes the URL of a BOSH connection manager.
+
+Please refer to your XMPP server's documentation on how to enable BOSH.
 For more information, read this blog post: `Which BOSH server do you need? <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_
+
+A more modern alternative to BOSH is to use `websockets <https://developer.mozilla.org/en/docs/WebSockets>`_.
+Please see the :ref:`websocket-url` configuration setting.
 
 cache_otr_key
 -------------
@@ -145,6 +154,8 @@ Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
 
+.. _`keepalive`:
+
 keepalive
 ---------
 
@@ -157,6 +168,13 @@ See also:
 
 * :ref:`session-support`
 * `Using prebind in connection with keepalive`_
+
+.. note::
+    Currently the "keepalive" setting only works with BOSH and not with
+    websockets. This is because XMPP over websocket does not use the same
+    session token as with BOSH. A possible solution for this is to implement
+    `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
+    with regards to "stream resumption".
 
 message_carbons
 ---------------
@@ -256,6 +274,8 @@ it in both formats as ``http://yoursite.com/sounds/msg_received.mp3`` and
 ``http://yoursite.com/sounds/msg_received.ogg``.
 
 ``http://yoursite.com`` should of course be your site's URL.
+
+.. _`prebind`:
 
 prebind
 --------
@@ -451,6 +471,33 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
     Enables rendering of emoticons and provides a toolbar button for choosing them.
 * toggle_participants:
     Shows a button for toggling (i.e. showing/hiding) the list of participants in a chat room.
+
+.. _`websocket-url`:
+
+websocket_url
+-------------
+
+Default: ``undefined``
+
+This option is used to specify a 
+`websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which
+converse.js can connect to.
+
+Websockets provide a more modern and effective two-way communication protocol
+between the browser and a server, effectively emulating TCP at the application
+layer and therefore overcoming many of the problems with existing long-polling
+techniques for bidirectional HTTP (such as `BOSH <https://en.wikipedia.org/wiki/BOSH>`_).
+
+Please refer to your XMPP server's documentation on how to enable websocket
+support.
+
+.. note::
+    Please note that not older browsers do not support websockets. For older
+    browsers you'll want to specify a BOSH URL. See the :ref:`bosh-service-url`
+    configuration setting).
+    
+.. note::
+    Converse.js does not yet support "keepalive" with websockets.
 
 xhr_custom_status
 -----------------

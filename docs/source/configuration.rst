@@ -54,7 +54,7 @@ Default:  ``true``
 Allow Off-the-record encryption of single-user chat messages.
 
 allow_registration
----------
+------------------
 
 Default:  ``true``
 

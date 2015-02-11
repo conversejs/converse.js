@@ -1,19 +1,20 @@
 Changelog
 =========
 
-0.8.8 (Unreleased)
+0.8.7 (Unreleased)
 ------------------
 
-* Norwegian Bokmål translations. [Andreas Lorentsen]
-* Updated Afrikaans translations. [jcbrand]
+* Add new API method to set and get configuration settings. [jcbrand]
 * Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]
 * Don't send out the message carbons IQ stanza on each page load. [jcbrand]
+* New Makefile.win to build in Windows environments. [gbonvehi]
+* Norwegian Bokmål translations. [Andreas Lorentsen]
+* Strophe.log and Strophe.error now uses converse.log to output messages. [gbonvehi]
+* Updated Afrikaans translations. [jcbrand]
 * #252, 253 Add fullname and jid to contact's tooltip in roster. [gbonvehi]
 * #292 Better support for XEP-0085 Chat State Notifications. [jcbrand]
 * #295 Document "allow_registration". [gbonvehi]
 * #304 Added Polish translations. [ser]
-* New Makefile.win to build in Windows environments. [gbonvehi]
-* Strophe.log and Strophe.error now uses converse.log to output messages. [gbonvehi]
 * #305 presence/show text in XMPP request isn't allowed by specification. [gbonvehi]
 
 0.8.6 (2014-12-07)

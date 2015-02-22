@@ -238,7 +238,7 @@
 
         // Default configuration values
         // ----------------------------
-        var default_settings = {
+        this.default_settings = {
             allow_contact_requests: true,
             allow_dragresize: true,
             allow_logout: true,
@@ -286,9 +286,9 @@
             xhr_user_search: false,
             xhr_user_search_url: ''
         };
-        _.extend(this, default_settings);
+        _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, Object.keys(default_settings)));
+        _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
 
         if (settings.visible_toolbar_buttons) {
             _.extend(
@@ -5204,6 +5204,22 @@
     return {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
+        },
+        'settings': {
+            'get': function (key) {
+                if (_.contains(Object.keys(converse.default_settings), key)) {
+                    return converse[key];
+                }
+            },
+            'set': function (key, val) {
+                var o = {};
+                if (typeof key === "object") {
+                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
+                } else if (typeof key === "string") {
+                    o[key] = val;
+                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                }
+            }
         },
         'contacts': {
             'get': function (jids) {

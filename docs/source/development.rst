@@ -301,6 +301,36 @@ Example::
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
+"settings" grouping
+-------------------
+
+This grouping allows you to get or set the configuration settings of converse.js.
+
+get(key)
+~~~~~~~~
+
+Returns the value of a configuration settings. For example::
+
+    converse.settings.get("play_sounds"); // default value returned would be false;
+
+set(key, value) or set(object)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set one or many configuration settings. For example::
+
+    converse.settings.set("play_sounds", true);
+
+or ::
+
+    converse.settings.set({
+        "play_sounds", true,
+        "hide_offline_users" true
+    });
+
+Note, this is not an alternative to calling ``converse.initialize``, which still needs
+to be called. Generally, you'd use this method after converse.js is already
+running and you want to change the configuration on-the-fly.
+
 "tokens" grouping
 -----------------
 

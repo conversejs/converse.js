@@ -87,6 +87,28 @@
             }, converse));
         }, converse));
 
+        describe("The \"settings\" API", $.proxy(function() {
+            beforeEach($.proxy(function () {
+                test_utils.closeAllChatBoxes();
+                test_utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+                test_utils.createContacts('current');
+            }, converse));
+
+            it("has methods 'get' and 'set' to set configuration settings", $.proxy(function () {
+                expect(Object.keys(converse_api.settings)).toEqual(["get", "set"]);
+                expect(converse_api.settings.get("play_sounds")).toBe(false);
+                converse_api.settings.set("play_sounds", true);
+                expect(converse_api.settings.get("play_sounds")).toBe(true);
+                converse_api.settings.set({"play_sounds": false});
+                expect(converse_api.settings.get("play_sounds")).toBe(false);
+                // Only whitelisted settings allowed.
+                expect(typeof converse_api.settings.get("non_existing")).toBe("undefined");
+                converse_api.settings.set("non_existing", true);
+                expect(typeof converse_api.settings.get("non_existing")).toBe("undefined");
+            }, converse));
+        }, converse));
+
         describe("The DEPRECATED API", $.proxy(function() {
             beforeEach($.proxy(function () {
                 test_utils.closeAllChatBoxes();

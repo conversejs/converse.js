@@ -5191,14 +5191,16 @@
     };
 
     var wrappedChatBox = function (chatbox) {
+        var view = converse.chatboxviews.get(chatbox.get('jid'));
         return {
+            'close': $.proxy(view.close, view),
             'endOTR': $.proxy(chatbox.endOTR, chatbox),
+            'focus': $.proxy(view.focus, view),
             'get': $.proxy(chatbox.get, chatbox),
             'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
             'maximize': $.proxy(chatbox.maximize, chatbox),
             'minimize': $.proxy(chatbox.minimize, chatbox),
-            'set': $.proxy(chatbox.set, chatbox),
-            'open': chatbox.trigger.bind(chatbox, 'show')
+            'set': $.proxy(chatbox.set, chatbox)
         };
     };
     return {
@@ -5230,14 +5232,16 @@
                     }
                     return null;
                 };
-                if (typeof jids === "string") {
+                if (typeof jids === "undefined") {
+                    jids = converse.roster.pluck('jid');
+                } else if (typeof jids === "string") {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
             }
         },
         'chats': {
-            'get': function (jids) {
+            'open': function (jids) {
                 var _transform = function (jid) {
                     var chatbox = converse.chatboxes.get(jid);
                     if (!chatbox) {
@@ -5257,10 +5261,28 @@
                     }
                     return wrappedChatBox(chatbox);
                 };
-                if (typeof jids === "string") {
+                if (typeof jids === "undefined") {
+                    converse.log("chats.open: You need to provide at least one JID", "error");
+                    return null;
+                } else if (typeof jids === "string") {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
+            },
+            'get': function (jids) {
+                var _transform = function (jid) {
+                    var chatbox = converse.chatboxes.get(jid);
+                    if (!chatbox) {
+                        return null;
+                    }
+                    return wrappedChatBox(chatbox);
+                };
+                if (typeof jids === "undefined") {
+                    jids = converse.roster.pluck('jid');
+                } else if (typeof jids === "string") {
+                    return _transform(jids);
+                }
+                return _.filter(_.map(jids, _transform), function (i) {return i !== null;});
             }
         },
         'tokens': {
@@ -5319,7 +5341,7 @@
         },
         'env': {
             'jQuery': $,
-            'Strophe': Strophe, // TODO: this must be wrapped
+            'Strophe': Strophe,
             '$build': $build,
             '$iq': $iq,
             '$pres': $pres,

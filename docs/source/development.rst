@@ -163,7 +163,6 @@ which you can then call certain standardised accessors and mutators, like::
     .get
     .set
     .add
-    .all
     .remove
 
 This is done to increase readability and to allow intuitive method chaining.
@@ -175,6 +174,10 @@ For example, to get a contact, you would do the following::
 To get multiple contacts, just pass in an array of jids::
 
     converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
+
+To get all contacts, simply call ``get`` without any jids::
+
+    converse.contacts.get();
 
 
 **Here follows now a breakdown of all API groupings and methods**:
@@ -218,14 +221,22 @@ Example:
 get
 ~~~
 
-Returns a map of attributes for a given buddy (i.e. roster contact), specified
-by JID (Jabber ID).
+This method is used to retrieve roster contacts.
 
-Example::
+To get a single roster contact, call the method with the contact's JID (Jabber ID):
 
     converse.contacts.get('buddy@example.com')
 
-The map of attributes:
+To get multiple contacts, pass in an array of JIDs::
+
+    converse.contacts.get(['buddy1@example.com', 'buddy2@example.com'])
+
+To return all contacts, simply call ``get`` without any parameters::
+
+    converse.contacts.get()
+
+
+The returned roster contact objects have these attributes:
 
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 | Attribute      |                                                                                                                                      |
@@ -267,11 +278,35 @@ The map of attributes:
 get
 ~~~
 
-Returns an object/map representing a chat box (without opening or affecting that chat box). 
+Returns an object representing a chat box, if that chat box is already open.
+If the chat box is not already open, this method will return ``null``.
 
-Example::
+To return a single chat box, provide the JID of the contact you're chatting
+with in that chat box::
 
     converse.chats.get('buddy@example.com')
+
+To return an array of chat boxes, provide an array of JIDs::
+
+    converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+
+To return all open chat boxes, call the method without any JIDs::
+
+    converse.chats.get()
+
+open
+~~~~
+
+Opens a chat box and returns an object representing a chat box.
+
+To open a single chat box, provide the JID of the contact::
+
+    converse.chats.get('buddy@example.com')
+
+To return an array of chat boxes, provide an array of JIDs::
+
+    converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+
 
 *The returned chat box contains the following methods:*
 
@@ -289,6 +324,8 @@ Example::
 | minimize    | Maximize the chat box.                   |
 +-------------+------------------------------------------+
 | set         | Set an attribute (i.e. mutator).         |
++-------------+------------------------------------------+
+| close       | Close the chat box.                      |
 +-------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*

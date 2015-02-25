@@ -1,15 +1,18 @@
 Changelog
 =========
 
-0.8.7 (Unreleased)
+0.9.0 (Unreleased)
 ------------------
 
+* Add new API method ``chats.open`` to open chat boxes. [jcbrand]
 * Add new API method to set and get configuration settings. [jcbrand]
 * Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]
+* Calling the API method ``contacts.get()`` without parameters now returns all contacts. [jcbrand]
 * Don't send out the message carbons IQ stanza on each page load. [jcbrand]
 * New Makefile.win to build in Windows environments. [gbonvehi]
 * Norwegian Bokmål translations. [Andreas Lorentsen]
 * Strophe.log and Strophe.error now uses converse.log to output messages. [gbonvehi]
+* The API method ``chats.get`` now only returns already opened chat boxes. [jcbrand]
 * Updated Afrikaans translations. [jcbrand]
 * #204 Support websocket connections. [jcbrand]
 * #252, 253 Add fullname and jid to contact's tooltip in roster. [gbonvehi]

@@ -4320,6 +4320,7 @@
 
             setStatusMessage: function (status_message) {
                 this.sendPresence(this.getStatus(), status_message);
+                var prev_status = this.get('status_message');
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
                     $.ajax({
@@ -4327,6 +4328,9 @@
                         type: 'POST',
                         data: {'msg': status_message}
                     });
+                }
+                if (prev_status === status_message) {
+                    this.trigger("update-status-ui", this);
                 }
             }
         });
@@ -4342,7 +4346,9 @@
             },
 
             initialize: function () {
-                this.model.on("change", this.updateStatusUI, this);
+                this.model.on("change:status", this.updateStatusUI, this);
+                this.model.on("change:status_message", this.updateStatusUI, this);
+                this.model.on("update-status-ui", this.updateStatusUI, this);
             },
 
            render: function () {
@@ -4393,8 +4399,7 @@
 
             setStatusMessage: function (ev) {
                 ev.preventDefault();
-                var status_message = $(ev.target).find('input').val();
-                this.model.setStatusMessage(status_message);
+                this.model.setStatusMessage($(ev.target).find('input').val());
             },
 
             setStatus: function (ev) {
@@ -4427,9 +4432,6 @@
             },
 
             updateStatusUI: function (model) {
-                if (!(_.has(model.changed, 'status')) && !(_.has(model.changed, 'status_message'))) {
-                    return;
-                }
                 var stat = model.get('status');
                 // # For translators: the %1$s part gets replaced with the status
                 // # Example, I am online

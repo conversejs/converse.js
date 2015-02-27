@@ -4,6 +4,7 @@ Changelog
 0.9.0 (Unreleased)
 ------------------
 
+* Bugfix. Custom status message form doesn't submit/disappear. [jcbrand]
 * Add new API method ``chats.open`` to open chat boxes. [jcbrand]
 * Add new API method to set and get configuration settings. [jcbrand]
 * Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]

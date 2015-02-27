@@ -23,43 +23,12 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="#page-top">
-                    <i class="fa fa-play-circle"></i>  <span class="light">Home</span>
-                </a>
             </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#features">Features</a>
-                    </li>
-                    <!--
-                    <li class="page-scroll">
-                        <a href="#donate">Donate</a>
-                    </li>
-                    -->
-                    <li class="page-scroll">
-                        <a href="#contact">Contact</a>
-                    </li>
-                    <li>
-                        <a href="/docs/html/index.html">Documentation</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank">Download</a>
-                    </li>
+                <ul class="nav navbar-nav"><li> <a href="/docs/html/index.html">Documentation</a> </li>
                 </ul>
             </div>
-            <!-- /.navbar-collapse -->
         </div>
-        <!-- /.container -->
     </nav>
 
     <section class="intro">
@@ -68,147 +37,11 @@
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
                         <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
-                        <p class="intro-text">A free and open-source XMPP chat client for your website</p>
-                        <div class="page-scroll">
-                            <a href="#about" class="btn btn-default btn-lg"><span class="btn-text">Learn More</span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2 banner-social-buttons">
-                        <ul class="list-inline">
-                            <li><a href="https://twitter.com/jcopkode" class="btn btn-circle btn-lg" title="Twitter" target="_blank"><i class="fa fa-twitter"></i></a>
-                            </li>
-                            <li><a href="https://github.com/jcbrand/converse.js" class="btn btn-circle btn-lg" title="GitHub" target="_blank"><i class="fa fa-github"></i></a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2><strong>Converse.js</strong> is a free and open source chat client that runs in your browser. It can be integrated into any website.</h3>
-                <p>Similar to <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a> but it also supports multi-user chatrooms.</p>
-                <p>
-                    <strong>Converse.js</strong> can connect to any accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server,
-                    either from a public provider such as <a href="http://jabber.org">jabber.org</a>, or one you have set up yourself.
-                </p>
-                <p>
-                    It's possible to enable single-site-login, whereby users already authenticated in your website will also automatically be logged in on the chat server.
-                    Please refer to the <strong><a href="/docs/html/index.html">documentation</a></strong> for more info.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <section class="features-section content-section" id="features">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4">
-                    <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-globe" href="#features" title="Integration"></a></span>
-                        <header>
-                            <h2>Integration</h2>
-                        </header>
-                        <ul class="integration">
-                            <li><a href="http://github.com/collective/collective.xmpp.chat" target="_blank">Plone</a></li>
-                            <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank">Django</a></li>
-                            <li><a href="https://github.com/priyadi/roundcube-converse.js-xmpp-plugin" target="_blank">Roundcube</a></li>
-                            <li><a href="http://wordpress.org/plugins/conversejs" target="_blank">Wordpress</a></li>
-                            <li><a href="https://github.com/jcbrand/patterns.converse" target="_blank">Patternslib</a></li>
-                            <li><a href="https://github.com/keensoft/alfresco-js-chat-share" target="_blank">Alfresco</a></li>
-                        </ul>
-                    </section>
-                </div>
-                <div class="col-lg-4">
-                    <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-check-square-o" href="#features" title="Features"></a></span>
-                    </section>
-                        <header>
-                            <h2>Features</h2>
-                        </header>
-                        <ul class="features">
-                            <li>Single-user chat</li>
-                            <li>Multi-user chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html" target="_blank">XEP 45</a>)</li>
-                            <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html" target="_blank">XEP 54</a>)</li>
-                            <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html" target="_blank">XEP 30</a>)</li>
-                            <li>Contact rosters and groups</li>
-                            <li>Contact subscriptions</li>
-                            <li>Accept or decline contact requests</li>
-                            <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html" target="_blank">XEP 144</a>)</li>
-                            <li>Chat statuses (online, busy, away, offline)</li>
-                            <li>Custom status messages</li>
-                            <li>Typing notifications</li>
-                            <li>Third person messages (/me )</li>
-                            <li>Translated into 15 languages</li>
-                            <li>Off-the-record encryption
-                        </ul>
-                </div>
-                <div class="col-lg-4">
-                    <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-video-camera" href="#features" title="Screencasts"></a></span>
-                        <header>
-                            <h2>Screencasts</h2>
-                        </header>
-                        <ul class="screencasts">
-                            <li>
-                                <a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp" target="_blank">
-                                    In a Plone site
-                                </a>
-                            </li>
-                            <li>
-                                <a href="http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript" target="_blank">
-                                    Chatting with buddies from Jabber.org and Gmail
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://opkode.com/media/blog/2013/11/11/conversejs-otr-support" target="_blank">
-                                    Off-the-record encryption
-                                </a>
-                            </li>
-                        </ul>
-                    </section>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!--
-    <section id="donate" class="donate-section content-section text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <h3>Donate</h3>
-                    <p class="bitcoin-header">Most of the work done on <strong>converse.js</strong> is unpaid and a labor of love.</p>
-                    <p>Thanks to those have donated already.</p>
-                    <p class="bitcoin-header"><strong>Bitcoin</strong></p>
-                    <img src="css/images/bitcoin_qr_code.png"/>
-                    <p>16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    -->
-
-    <section class="outro content-section" id="contact">
-        <div class="intro-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-lg-offset-2">
-                        <h2>Contact</h2>
-                        <ul class="contact">
-                            <li>Follow me on <a href="http://twitter.com/jcopkode" target="_blank">Twitter</a>.</li>
-                            <li>Chat with me via XMPP: <a href="xmpp:jc@opkode.com" class="xmpp JSnocheck" title="XMPP/Jabber">jc@opkode.com</a>.</li>
-                            <li>For technical support, please write to the mailing list: <a href="mailto:conversejs@librelist.com">conversejs@librelist.com</a>.</li>
-                            <li>Or ask in the Converse.js chat room: <a href="xmpp:discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse.js chat room">discuss@conference.conversejs.org</a>.</li>
-                            <li>Also check out the <a href="http://librelist.com/browser/conversejs" target="_blank">mailing list archives</a>.</li>
-                            <li>Please file <a target="_blank" href="https://github.com/jcbrand/converse.js/issues">bugs on Github</a>.</li>
-                            <li>I'm available for features and <a href="http://opkode.com/contact" target="_blank">consulting</a>.</li>
-                        </ul>
+                        <p class="intro-text">Developer page.</p>
+                        <p class="intro-text">
+                            Converse.js will only work on this page if you have 
+                            <a href="https://conversejs.org/docs/html/development.html">set up the development environment</a>.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -218,28 +51,6 @@
 
 <script>
     require(['converse'], function (converse) {
-        (function () {
-            /* XXX: This function initializes jquery.easing for the https://conversejs.org
-            * website. This code is only useful in the context of the converse.js
-            * website and converse.js itself is NOT dependent on it.
-            */
-            var $ = converse.env.jQuery;
-            $(window).scroll(function() {
-                if ($(".navbar").offset().top > 50) {
-                    $(".navbar-fixed-top").addClass("top-nav-collapse");
-                } else {
-                    $(".navbar-fixed-top").removeClass("top-nav-collapse");
-                }
-            });
-            //jQuery for page scrolling feature - requires jQuery Easing plugin
-            $('.page-scroll a').bind('click', function(event) {
-                var $anchor = $(this);
-                $('html, body').stop().animate({
-                    scrollTop: $($anchor.attr('href')).offset().top
-                }, 700, 'easeInOutExpo');
-                event.preventDefault();
-            });
-        })();
         converse.initialize({
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported

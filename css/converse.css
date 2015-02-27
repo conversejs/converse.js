@@ -1187,7 +1187,8 @@
     #conversejs .add-xmpp-contact button {
       width: 100%; }
   #conversejs .xmpp-status-menu {
-    text-align: left; }
+    text-align: left;
+    box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
     #conversejs .xmpp-status-menu li {
       padding: 2px; }
       #conversejs .xmpp-status-menu li a {

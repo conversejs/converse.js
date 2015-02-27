@@ -5350,42 +5350,6 @@
             '$msg': $msg,
             '_': _,
             'b64_sha1':  b64_sha1
-        },
-
-        // Deprecated API methods
-        'getBuddy': function (jid) {
-            converse.log('WARNING: the "getBuddy" API method has been deprecated. Please use "contacts.get" instead');
-            return this.contacts.get(jid);
-        },
-        'getChatBox': function (jid) {
-            converse.log('WARNING: the "getChatBox" API method has been deprecated. Please use "chats.get" instead');
-            return this.chats.get(jid);
-        },
-        'openChatBox': function (jid) {
-            converse.log('WARNING: the "openChatBox" API method has been deprecated. Please use "chats.get(jid).open()" instead');
-            var chat = this.chats.get(jid);
-            if (chat) { chat.open(); }
-            return chat;
-        },
-        'getRID': function () {
-            converse.log('WARNING: the "getRID" API method has been deprecated. Please use "tokens.get(\'rid\')" instead');
-            return this.tokens.get('rid');
-        },
-        'getSID': function () {
-            converse.log('WARNING: the "getSID" API method has been deprecated. Please use "tokens.get(\'sid\')" instead');
-            return this.tokens.get('sid');
-        },
-        'once': function (evt, handler) {
-            converse.log('WARNING: the "one" API method has been deprecated. Please use "listen.once" instead');
-            return this.listen.once(evt, handler);
-        },
-        'on': function (evt, handler) {
-            converse.log('WARNING: the "on" API method has been deprecated. Please use "listen.on" instead');
-            return this.listen.on(evt, handler);
-        },
-        'off': function (evt, handler) {
-            converse.log('WARNING: the "off" API method has been deprecated. Please use "listen.not" instead');
-            return this.listen.not(evt, handler);
         }
     };
 }));

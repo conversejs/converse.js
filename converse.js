@@ -2146,6 +2146,7 @@
         this.ChatRoomOccupantView = Backbone.View.extend({
             tagName: 'li',
             initialize: function () {
+                this.model.on('add', this.render, this);
                 this.model.on('change', this.render, this);
                 this.model.on('destroy', this.destroy, this);
             },
@@ -2206,31 +2207,62 @@
                 this.$('.participant-list').append(view.render().$el);
             },
 
-            onChatRoomRoster: function (roster, room) {
-                var roster_size = _.size(roster),
-                    $participant_list = this.$('.participant-list'),
-                    participants = [],
-                    keys = _.keys(roster),
-                    occupant, attrs, i, nick;
-
-                for (i=0; i<roster_size; i++) {
-                    nick = Strophe.unescapeNode(keys[i]);
-                    attrs = {
-                        'id': nick,
-                        'role': roster[keys[i]].role,
-                        'nick': nick
-                    };
-                    occupant = this.model.get(nick);
-                    if (occupant) {
-                        occupant.save(attrs);
-                    } else {
-                        this.model.create(attrs);
+            parsePresence: function (pres) {
+                var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
+                var data = {
+                    id: id,
+                    nick: id,
+                    type: pres.getAttribute("type"),
+                    states: []
+                };
+                _.each(pres.childNodes, function (child) {
+                    switch (child.nodeName) {
+                        case "status":
+                            data.status = child.textContent || null;
+                            break;
+                        case "show":
+                            data.show = child.textContent || null;
+                            break;
+                        case "x":
+                            if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
+                                _.each(child.childNodes, function (item) {
+                                    switch (item.nodeName) {
+                                        case "item":
+                                            data.affiliation = item.getAttribute("affiliation");
+                                            data.role = item.getAttribute("role");
+                                            data.jid = item.getAttribute("jid");
+                                            data.nick = item.getAttribute("nick") || data.nick;
+                                            break;
+                                        case "status":
+                                            if (item.getAttribute("code")) {
+                                                data.states.push(item.getAttribute("code"));
+                                            }
+                                    }
+                                });
+                            }
                     }
+                });
+                return data;
+            },
+
+            updateOccupantsOnPresence: function (pres) {
+                var occupant;
+                var data = this.parsePresence(pres);
+                switch (data.type) {
+                    case 'error':
+                        return true;
+                    case 'unavailable':
+                        occupant = this.model.get(data.id);
+                        if (occupant) { occupant.destroy(); }
+                        break;
+                    default:
+                        occupant = this.model.get(data.id);
+                        if (occupant) {
+                            occupant.save(data);
+                        } else {
+                            this.model.create(data);
+                        }
                 }
-                _.each(_.difference(this.model.pluck('id'), keys), function (id) {
-                    this.model.get(id).destroy();
-                }, this);
-                return true;
             },
 
             initInviteWidget: function () {
@@ -2309,7 +2341,7 @@
                 this.occupantsview.chatroomview = this;
                 this.render();
                 this.occupantsview.model.fetch({add:true});
-                this.connect(null);
+                this.join(null);
                 converse.emit('chatRoomOpened', this);
 
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
@@ -2442,21 +2474,53 @@
                 }
             },
 
-            connect: function (password) {
-                if (_.has(converse.connection.muc.rooms, this.model.get('jid'))) {
-                    // If the room exists, it already has event listeners, so we
-                    // don't add them again.
-                    converse.connection.muc.join(
-                        this.model.get('jid'), this.model.get('nick'), null, null, null, password);
-                } else {
-                    converse.connection.muc.join(
-                        this.model.get('jid'),
-                        this.model.get('nick'),
-                        $.proxy(this.onChatRoomMessage, this),
-                        $.proxy(this.onChatRoomPresence, this),
-                        $.proxy(this.onChatRoomRoster, this),
-                        password);
+            handleMUCStanza: function (stanza) {
+                var xmlns, xquery, i;
+                var from = stanza.getAttribute('from');
+                if (!from || (this.model.get('id') !== from.split("/")[0])) {
+                    return true;
                 }
+                if (stanza.nodeName === "message") {
+                    this.onChatRoomMessage(stanza);
+                } else if (stanza.nodeName === "presence") {
+                    xquery = stanza.getElementsByTagName("x");
+                    if (xquery.length > 0) {
+                        for (i = 0; i < xquery.length; i++) {
+                            xmlns = xquery[i].getAttribute("xmlns");
+                            if (xmlns && xmlns.match(Strophe.NS.MUC)) {
+                                this.onChatRoomPresence(stanza);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return true;
+            },
+
+            join: function(password, history_attrs, extended_presence) {
+                var nick = this.model.get('nick');
+                var room = this.model.get('jid');
+                var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
+                var domain = Strophe.getDomainFromJid(room);
+                var msg = $pres({
+                    from: converse.connection.jid,
+                    to: node + "@" + domain + (nick !== null ? "/" + nick : "")
+                }).c("x", {
+                    xmlns: Strophe.NS.MUC
+                });
+                if (typeof history_attrs === "object" && history_attrs.length) {
+                    msg = msg.c("history", history_attrs).up();
+                }
+                if (password) {
+                    msg.cnode(Strophe.xmlElement("password", [], password));
+                }
+                if (typeof extended_presence !== "undefined" && extended_presence !== null) {
+                    msg.up.cnode(extended_presence);
+                }
+                if (!this.handler) {
+                    this.handler = converse.connection.addHandler($.proxy(this.handleMUCStanza, this));
+                }
+                return converse.connection.send(msg);
             },
 
             onLeave: function () {
@@ -2549,7 +2613,7 @@
                 ev.preventDefault();
                 var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                 this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
-                this.connect(password);
+                this.join(password);
             },
 
             renderPasswordForm: function () {
@@ -2730,13 +2794,15 @@
                 }
             },
 
-            onChatRoomPresence: function (presence, room) {
-                var $presence = $(presence), is_self;
+            onChatRoomPresence: function (pres) {
+                var $presence = $(pres), is_self;
+                var nick = this.model.get('nick');
                 if ($presence.attr('type') === 'error') {
                     this.model.set('connected', false);
                     this.showErrorMessage($presence.find('error'), room);
                 } else {
-                    is_self = ($presence.find("status[code='110']").length) || ($presence.attr('from') == room.name+'/'+Strophe.escapeNode(room.nick));
+                    is_self = ($presence.find("status[code='110']").length) ||
+                        ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));
                     if (!this.model.get('conneced')) {
                         this.model.set('connected', true);
                         this.$('span.centered.spinner').remove();
@@ -2744,7 +2810,7 @@
                     }
                     this.showStatusMessages($presence, is_self);
                 }
-                return true;
+                this.occupantsview.updateOccupantsOnPresence(pres);
             },
 
             onChatRoomMessage: function (message) {
@@ -2784,8 +2850,7 @@
                 return true;
             },
 
-            onChatRoomRoster: function (roster, room) {
-                return this.occupantsview.onChatRoomRoster(roster, room);
+            onChatRoomRoster: function (roster) {
             }
         });
 
@@ -2868,7 +2933,7 @@
                         'password': $x.attr('password')
                     });
                     if (!chatroom.get('connected')) {
-                        converse.chatboxviews.get(room_jid).connect(null);
+                        converse.chatboxviews.get(room_jid).join(null);
                     }
                 }
             },
@@ -5309,6 +5374,9 @@
             'not': function (evt, handler) {
                 converse.off(evt, handler);
             },
+        },
+        'send': function (stanza) {
+            converse.connection.send(stanza);
         },
         'plugins': {
             'add': function (name, callback) {

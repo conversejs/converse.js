@@ -2649,6 +2649,15 @@
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
             },
 
+            sendConfiguration: function(config, onSuccess, onError) {
+                // Send an IQ stanza with the room configuration.
+                var iq = $iq({to: this.model.get('jid'), type: "set"})
+                    .c("query", {xmlns: Strophe.NS.MUC_OWNER})
+                    .c("x", {xmlns: "jabber:x:data", type: "submit"});
+                _.each(config, function (node) { iq.cnode(node); });
+                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+            },
+
             saveConfiguration: function (ev) {
                 ev.preventDefault();
                 var that = this;
@@ -2658,8 +2667,7 @@
                 $inputs.each(function () {
                     configArray.push(utils.webForm2xForm(this));
                     if (!--count) {
-                        converse.connection.muc.saveConfiguration(
-                            that.model.get('jid'),
+                        that.sendConfiguration(
                             configArray,
                             $.proxy(that.onConfigSaved, that),
                             $.proxy(that.onErrorConfigSaved, that)

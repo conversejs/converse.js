@@ -2326,12 +2326,7 @@
                     }
                 }, this);
                 this.model.on('destroy', function (model, response, options) {
-                    this.hide();
-                    converse.connection.muc.leave(
-                        this.model.get('jid'),
-                        this.model.get('nick'),
-                        $.proxy(this.onLeave, this),
-                        undefined);
+                    this.hide().leave();
                 },
                 this);
 
@@ -2497,14 +2492,17 @@
                 return true;
             },
 
-            join: function(password, history_attrs, extended_presence) {
+            getRoomJID: function () {
                 var nick = this.model.get('nick');
-                var room = this.model.get('jid');
                 var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
                 var domain = Strophe.getDomainFromJid(room);
+                return node + "@" + domain + (nick !== null ? "/" + nick : "");
+            },
+
+            join: function (password, history_attrs, extended_presence) {
                 var msg = $pres({
                     from: converse.connection.jid,
-                    to: node + "@" + domain + (nick !== null ? "/" + nick : "")
+                    to: this.getRoomJID()
                 }).c("x", {
                     xmlns: Strophe.NS.MUC
                 });
@@ -2523,8 +2521,20 @@
                 return converse.connection.send(msg);
             },
 
-            onLeave: function () {
-                this.model.set('connected', false);
+            leave: function(exit_msg) {
+                var presence = $pres({
+                    type: "unavailable",
+                    id: converse.connection.getUniqueId(),
+                    from: converse.connection.jid,
+                    to: this.getRoomJID()
+                });
+                if (exit_msg !== null) {
+                    presence.c("status", exit_msg);
+                }
+                converse.connection.addHandler(
+                    $.proxy(function () { this.model.set('connected', false); }, this),
+                    null, "presence", null, presenceid);
+                converse.connection.send(presence);
             },
 
             renderConfigurationForm: function (stanza) {
@@ -2848,9 +2858,6 @@
                     converse.emit('message', message);
                 }
                 return true;
-            },
-
-            onChatRoomRoster: function (roster) {
             }
         });
 

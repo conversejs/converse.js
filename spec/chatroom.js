@@ -2,12 +2,13 @@
     define([
         "jquery",
         "mock",
-        "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        "test_utils",
+        "utils"
+        ], function ($, mock, test_utils, utils) {
+            return factory($, mock, test_utils, utils);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($, mock, test_utils, utils) {
     var $pres = converse_api.env.$pres;
     var $msg = converse_api.env.$msg;
 
@@ -102,7 +103,7 @@
                 expect(converse.chatboxes.models.length).toBe(1);
                 expect(converse.chatboxes.models[0].id).toBe("controlbox");
                 converse.chatboxes.onInvite(message);
-                expect(window.confirm).toHaveBeenCalledWith( 
+                expect(window.confirm).toHaveBeenCalledWith(
                     name + ' has invited you to join a chat room: '+ room_jid +
                     ', and left the following reason: "'+reason+'"');
                 expect(converse.chatboxes.models.length).toBe(2);
@@ -178,7 +179,7 @@
                  *      <status code='110'/>
                  *  </x>
                  *  </presence>
-                 *           
+                 *
                  *  <presence
                  *      from='coven@localhost/oldhag'
                  *      id='5B4F27A4-25ED-43F7-A699-382C6B4AFC67'
@@ -191,8 +192,38 @@
                  *  </x>
                  *  </presence>
                  */
+                var __ = $.proxy(utils.__, converse);
                 test_utils.openChatRoom('lounge', 'localhost', 'oldnick');
-                var presence = $pres().attrs({
+                var view = this.chatboxviews.get('lounge@localhost');
+                var $chat_content = view.$el.find('.chat-content');
+                spyOn(view, 'onChatRoomPresence').andCallThrough();
+
+                // The user has just entered the room and receives their own
+                // presence from the server.
+                // See example 24:
+                // http://xmpp.org/extensions/xep-0045.html#enter-pres
+                var presence = $pres({
+                        to:'dummy@localhost/pda',
+                        from:'lounge@localhost/oldnick',
+                        id:'DC352437-C019-40EC-B590-AF29E879AF97'
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                  .c('item').attrs({
+                      affiliation: 'member',
+                      jid: 'dummy@localhost/pda',
+                      role: 'participant'
+                  }).up()
+                  .c('status').attrs({code:'110'}).up()
+                  .c('status').attrs({code:'210'}).nodeTree;
+
+                this.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.onChatRoomPresence).toHaveBeenCalled();
+                $participants = view.$('.participant-list');
+                expect($participants.children().length).toBe(1);
+                expect($participants.children().first(0).text()).toBe("oldnick");
+                expect($chat_content.find('div.chat-info').length).toBe(1);
+                expect($chat_content.find('div.chat-info').html()).toBe(__(view.newNicknameMessages["210"], "oldnick"));
+
+                presence = $pres().attrs({
                         from:'lounge@localhost/oldnick',
                         id:'DC352437-C019-40EC-B590-AF29E879AF98',
                         to:'dummy@localhost/pda',
@@ -208,13 +239,13 @@
                     .c('status').attrs({code:'303'}).up()
                     .c('status').attrs({code:'110'}).nodeTree;
 
-                var view = this.chatboxviews.get('lounge@localhost');
-                view.onChatRoomPresence(presence, {nick: 'oldnick', name: 'lounge@localhost'});
-                var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.find('div.chat-info').length).toBe(1);
-                expect($chat_content.find('div.chat-info').html()).toBe('Your nickname has been changed to: <strong>newnick</strong>');
+                this.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.onChatRoomPresence).toHaveBeenCalled();
+                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
+                $participants = view.$('.participant-list');
+                expect($participants.children().length).toBe(0);
 
-                // The second presence shouldn't do anything...
                 presence = $pres().attrs({
                         from:'lounge@localhost/newnick',
                         id:'5B4F27A4-25ED-43F7-A699-382C6B4AFC67',
@@ -227,9 +258,14 @@
                         role: 'participant'
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
-                view.onChatRoomPresence(presence, {nick: 'newnick', name: 'lounge@localhost'});
-                expect($chat_content.find('div.chat-info').length).toBe(1);
-                expect($chat_content.find('div.chat-info').html()).toBe('Your nickname has been changed to: <strong>newnick</strong>');
+
+                this.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.onChatRoomPresence).toHaveBeenCalled();
+                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
+                $participants = view.$('.participant-list');
+                expect($participants.children().length).toBe(1);
+                expect($participants.children().first(0).text()).toBe("newnick");
             }, converse));
 
             it("informs users if they have been kicked out of the chat room", $.proxy(function () {

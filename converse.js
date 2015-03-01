@@ -2493,6 +2493,7 @@
             },
 
             getRoomJID: function () {
+                var room = this.model.get('jid');
                 var nick = this.model.get('nick');
                 var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
                 var domain = Strophe.getDomainFromJid(room);
@@ -2732,15 +2733,15 @@
                     });
                     $(x).find('status').each($.proxy(function (idx, stat) {
                         var code = stat.getAttribute('code');
-                        if (is_self && _.contains(_.keys(this.newNicknameMessages), code)) {
-                            this.model.save({'nick': Strophe.getResourceFromJid($el.attr('from'))});
+                        var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')));
+                        if (is_self && code === "210") {
+                            msgs.push(__(this.newNicknameMessages[code], from_nick));
+                        } else if (is_self && code === "303") {
                             msgs.push(__(this.newNicknameMessages[code], $item.attr('nick')));
                         } else if (is_self && _.contains(_.keys(this.disconnectMessages), code)) {
                             disconnect_msgs.push(this.disconnectMessages[code]);
                         } else if (!is_self && _.contains(_.keys(this.actionInfoMessages), code)) {
-                            msgs.push(
-                                __(this.actionInfoMessages[code], Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from'))))
-                            );
+                            msgs.push(__(this.actionInfoMessages[code], from_nick));
                         } else if (_.contains(_.keys(this.infoMessages), code)) {
                             msgs.push(this.infoMessages[code]);
                         } else if (code !== '110') {

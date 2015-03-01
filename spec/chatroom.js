@@ -27,19 +27,18 @@
                 var view = this.chatboxviews.get('lounge@localhost'),
                     $participants = view.$('.participant-list');
                 spyOn(view, 'onChatRoomPresence').andCallThrough();
-                var room = {}, i, role;
+                var presence, room = {}, i, role;
                 for (i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
-                    console.log(name);
                     role = mock.chatroom_roles[name].role;
                     // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
-                    var presence = $pres({
+                    presence = $pres({
                             to:'dummy@localhost/pda',
                             from:'lounge@localhost/'+name
                     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                     .c('item').attrs({
                         affiliation: mock.chatroom_roles[name].affiliation,
-                        jid: 'dummy@localhost/pda',
+                        jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         role: role
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
@@ -49,6 +48,28 @@
                     expect($participants.find('li').length).toBe(1+i);
                     expect($($participants.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
                     expect($($participants.find('li')[i]).hasClass('moderator')).toBe(role === "moderator");
+                }
+
+                // Test users leaving the room
+                // http://xmpp.org/extensions/xep-0045.html#exit
+                for (i=mock.chatroom_names.length-1; i>-1; i--) {
+                    name = mock.chatroom_names[i];
+                    console.log(name);
+                    role = mock.chatroom_roles[name].role;
+                    // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    presence = $pres({
+                        to:'dummy@localhost/pda',
+                        from:'lounge@localhost/'+name,
+                        type: 'unavailable'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        affiliation: mock.chatroom_roles[name].affiliation,
+                        jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                        role: 'none'
+                    }).nodeTree;
+                    this.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(view.onChatRoomPresence).toHaveBeenCalled();
+                    expect($participants.find('li').length).toBe(i);
                 }
             }, converse));
 
@@ -62,7 +83,7 @@
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                 .c('item').attrs({
                     affiliation: 'admin',
-                    jid: 'dummy@localhost/pda',
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     role: 'moderator',
                 }).up()
                 .c('status').attrs({code:'110'}).nodeTree;

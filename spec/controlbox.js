@@ -1005,7 +1005,7 @@
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
                 }
             }, converse));
-            
+
             it("will show fullname and jid properties on tooltip", $.proxy(function () {
                 var jid, name, i, t;
                 for (i=0; i<mock.cur_names.length; i++) {
@@ -1019,7 +1019,7 @@
                     expect(dd_title).toContain(jid);
                 }
             }, converse));
-            
+
         }, converse));
     }, converse, mock, test_utils));
 
@@ -1112,6 +1112,12 @@
                     expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
                 }, converse));
             }, converse));
+
+            it("lists rooms currently on the server", $.proxy(function () {
+                // TODO: test updateRoomsList
+                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
+            }, converse));
+
         }, converse));
     }, converse, mock, test_utils));
 }));

@@ -1790,9 +1790,16 @@
             },
 
             updateRoomsList: function () {
-                converse.connection.muc.listRooms(
-                    this.model.get('muc_domain'),
-                    $.proxy(function (iq) { // Success
+                /* Send and IQ stanza to the server asking for all rooms
+                 */
+                converse.connection.sendIQ(
+                    $iq({
+                        to: this.model.get('muc_domain'),
+                        from: converse.connection.jid,
+                        type: "get"
+                    }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
+                    // Succcess Handler
+                    $.proxy(function (iq) {
                         var name, jid, i, fragment,
                             that = this,
                             $available_chatrooms = this.$el.find('#available-chatrooms');
@@ -1821,9 +1828,8 @@
                         }
                         return true;
                     }, this),
-                    $.proxy(function (iq) { // Failure
-                        this.informNoRoomsFound();
-                    }, this));
+                    // Error handler
+                    $.proxy(function (iq) { this.informNoRoomsFound(); }, this));
             },
 
             showRooms: function (ev) {

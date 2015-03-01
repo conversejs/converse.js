@@ -23,30 +23,54 @@
 
             it("shows users currently present in the room", $.proxy(function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var chatroomview = this.chatboxviews.get('lounge@localhost'),
-                    $participant_list;
-                var roster = {}, room = {}, i;
-                for (i=0; i<mock.chatroom_names.length-1; i++) {
-                    roster[mock.chatroom_names[i]] = {};
-                    chatroomview.onChatRoomRoster(roster, room);
-                    $participant_list = chatroomview.$el.find('.participant-list');
-                    expect($participant_list.find('li').length).toBe(1+i);
-                    expect($($participant_list.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
+                var name;
+                var view = this.chatboxviews.get('lounge@localhost'),
+                    $participants = view.$('.participant-list');
+                spyOn(view, 'onChatRoomPresence').andCallThrough();
+                var room = {}, i, role;
+                for (i=0; i<mock.chatroom_names.length; i++) {
+                    name = mock.chatroom_names[i];
+                    console.log(name);
+                    role = mock.chatroom_roles[name].role;
+                    // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    var presence = $pres({
+                            to:'dummy@localhost/pda',
+                            from:'lounge@localhost/'+name
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        affiliation: mock.chatroom_roles[name].affiliation,
+                        jid: 'dummy@localhost/pda',
+                        role: role
+                    }).up()
+                    .c('status').attrs({code:'110'}).nodeTree;
+
+                    this.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(view.onChatRoomPresence).toHaveBeenCalled();
+                    expect($participants.find('li').length).toBe(1+i);
+                    expect($($participants.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
+                    expect($($participants.find('li')[i]).hasClass('moderator')).toBe(role === "moderator");
                 }
-                roster[converse.bare_jid] = {};
-                chatroomview.onChatRoomRoster(roster, room);
             }, converse));
 
             it("indicates moderators by means of a special css class and tooltip", $.proxy(function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var chatroomview = this.chatboxviews.get('lounge@localhost');
-                var roster = {}, idx = mock.chatroom_names.length-1;
-                roster[mock.chatroom_names[idx]] = {};
-                roster[mock.chatroom_names[idx]].role = 'moderator';
-                chatroomview.onChatRoomRoster(roster, {});
-                var occupant = chatroomview.$el.find('.participant-list').find('li');
+                var view = this.chatboxviews.get('lounge@localhost');
+
+                var presence = $pres({
+                        to:'dummy@localhost/pda',
+                        from:'lounge@localhost/moderatorman'
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'admin',
+                    jid: 'dummy@localhost/pda',
+                    role: 'moderator',
+                }).up()
+                .c('status').attrs({code:'110'}).nodeTree;
+
+                this.connection._dataRecv(test_utils.createRequest(presence));
+                var occupant = view.$el.find('.participant-list').find('li');
                 expect(occupant.length).toBe(1);
-                expect($(occupant).text()).toBe(mock.chatroom_names[idx]);
+                expect($(occupant).text()).toBe("moderatorman");
                 expect($(occupant).attr('class')).toBe('moderator');
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
             }, converse));
@@ -371,7 +395,7 @@
                 var view = this.chatboxviews.get('lounge@localhost'), chatroom = view.model, $el;
                 spyOn(view, 'close').andCallThrough();
                 spyOn(converse, 'emit');
-                spyOn(converse.connection.muc, 'leave');
+                spyOn(view, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 runs(function () {
                     view.$el.find('.close-chatbox-button').click();
@@ -379,7 +403,7 @@
                 waits(50);
                 runs(function () {
                     expect(view.close).toHaveBeenCalled();
-                    expect(this.connection.muc.leave).toHaveBeenCalled();
+                    expect(view.leave).toHaveBeenCalled();
                     expect(this.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 }.bind(converse));
             }, converse));

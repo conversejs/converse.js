@@ -33,6 +33,15 @@
     mock.chatroom_names = [
         'Dyon van de Wege', 'Thomas Kalb', 'Dirk Theissen', 'Felix Hofmann', 'Ka Lek', 'Anne Ebersbacher'
     ];
+    // TODO: need to also test other roles and affiliations
+    mock.chatroom_roles = {
+        'Anne Ebersbacher': { affiliation: "owner", role: "moderator" },
+        'Dirk Theissen': { affiliation: "admin", role: "moderator" },
+        'Dyon van de Wege': { affiliation: "member", role: "participant" },
+        'Felix Hofmann': { affiliation: "member", role: "participant" },
+        'Ka Lek': { affiliation: "member", role: "participant" },
+        'Thomas Kalb': { affiliation: "member", role: "participant" }
+    };
 
     mock.event = {
         'preventDefault': function () {}

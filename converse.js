@@ -2523,9 +2523,10 @@
             },
 
             leave: function(exit_msg) {
+                var presenceid = converse.connection.getUniqueId();
                 var presence = $pres({
                     type: "unavailable",
-                    id: converse.connection.getUniqueId(),
+                    id: presenceid,
                     from: converse.connection.jid,
                     to: this.getRoomJID()
                 });
@@ -2772,10 +2773,10 @@
                 return this.scrollDown();
             },
 
-            showErrorMessage: function ($error, room) {
+            showErrorMessage: function ($error) {
                 // We didn't enter the room, so we must remove it from the MUC
                 // add-on
-                delete converse.connection.muc[room.name];
+                delete converse.connection.muc[this.model.get('jid')]; // XXX: Still needed?
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
                         this.renderPasswordForm();
@@ -2810,7 +2811,7 @@
                 var nick = this.model.get('nick');
                 if ($presence.attr('type') === 'error') {
                     this.model.set('connected', false);
-                    this.showErrorMessage($presence.find('error'), room);
+                    this.showErrorMessage($presence.find('error'));
                 } else {
                     is_self = ($presence.find("status[code='110']").length) ||
                         ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));

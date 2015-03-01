@@ -2414,13 +2414,23 @@
             },
 
             createChatRoomMessage: function (text) {
+                var msgid = converse.connection.getUniqueId();
+                var msg = $msg({
+                    to: this.getRoomJID(),
+                    from: converse.connection.jid,
+                    type: 'groupchat',
+                    id: msgid
+                }).c("body").t(text).up()
+                  .c("x", {xmlns: "jabber:x:event"}).c("composing");
+                converse.connection.send(msg);
+
                 var fullname = converse.xmppstatus.get('fullname');
                 this.model.messages.create({
                     fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
                     sender: 'me',
                     time: moment().format(),
                     message: text,
-                    msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((new Date()).getTime()))
+                    msgid: msgid
                 });
             },
 

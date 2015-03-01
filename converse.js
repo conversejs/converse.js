@@ -2434,54 +2434,124 @@
                 });
             },
 
+            setAffiliation: function(room, jid, affiliation, reason, onSuccess, onError) {
+                var item = $build("item", {jid: jid, affiliation: affiliation});
+                var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                if (reason !== null) { iq.c("reason", reason); }
+                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+            },
+
+            modifyRole: function(room, nick, role, reason, onSuccess, onError) {
+                var item = $build("item", {nick: nick, role: role});
+                var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                if (reason !== null) { iq.c("reason", reason); }
+                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+            },
+
+            member: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'member', reason, handler_cb, error_cb);
+            },
+            revoke: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'none', reason, handler_cb, error_cb);
+            },
+            owner: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'owner', reason, handler_cb, error_cb);
+            },
+            admin: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
+            },
+
             sendChatRoomMessage: function (text) {
-                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args;
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''];
+                var args = match[2].splitOnce(' ');
                 switch (match[1]) {
+                    case 'admin':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'admin', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
+                        break;
                     case 'ban':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.ban(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'outcast', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'clear':
                         this.clearChatRoomMessages();
                         break;
                     case 'deop':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.deop(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'participant', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'help':
                         this.showHelpMessages([
+                            '<strong>/admin</strong>: ' +__("Change user's affiliation to admin"),
                             '<strong>/ban</strong>: '   +__('Ban user from room'),
                             '<strong>/clear</strong>: ' +__('Remove messages'),
+                            '<strong>/deop</strong>: '  +__('Change user role to participant'),
                             '<strong>/help</strong>: '  +__('Show this menu'),
                             '<strong>/kick</strong>: '  +__('Kick user from room'),
                             '<strong>/me</strong>: '    +__('Write in 3rd person'),
+                            '<strong>/member</strong>: '+__('Grant membership to a user'),
                             '<strong>/mute</strong>: '  +__("Remove user's ability to post messages"),
                             '<strong>/nick</strong>: '  +__('Change your nickname'),
+                            '<strong>/op</strong>: '    +__('Grant moderator role to user'),
+                            '<strong>/owner</strong>: ' +__('Grant ownership of this room'),
+                            '<strong>/revoke</strong>: '+__("Revoke user's membership"),
                             '<strong>/topic</strong>: ' +__('Set room topic'),
                             '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
                         ]);
                         break;
                     case 'kick':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.kick(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'none', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'mute':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.mute(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'visitor', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
+                        break;
+                    case 'member':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'member', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'nick':
-                        converse.connection.muc.changeNick(this.model.get('jid'), match[2]);
+                        converse.connection.send($pres({
+                            from: converse.connection.jid,
+                            to: this.getRoomJID(match[2]),
+                            id: converse.connection.getUniqueId()
+                        }).tree());
+                        break;
+                    case 'owner':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'owner', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'op':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.op(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'moderator', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
+                        break;
+                    case 'revoke':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'none', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'topic':
-                        converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
+                        converse.connection.send(
+                            $msg({
+                                to: this.model.get('jid'),
+                                from: converse.connection.jid,
+                                type: "groupchat"
+                            }).c("subject", {xmlns: "jabber:client"}).t(match[2]).tree()
+                        );
                         break;
                     case 'voice':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.voice(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'participant', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     default:
                         this.createChatRoomMessage(text);
@@ -2512,9 +2582,9 @@
                 return true;
             },
 
-            getRoomJID: function () {
+            getRoomJID: function (nick) {
+                nick = nick || this.model.get('nick');
                 var room = this.model.get('jid');
-                var nick = this.model.get('nick');
                 var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
                 var domain = Strophe.getDomainFromJid(room);
                 return node + "@" + domain + (nick !== null ? "/" + nick : "");

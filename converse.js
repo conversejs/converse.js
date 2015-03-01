@@ -1789,6 +1789,39 @@
                 $('input#show-rooms').show().siblings('span.spinner').remove();
             },
 
+            onRoomsFound: function (iq) {
+                /* Handle the IQ stanza returned from the server, containing
+                 * all its public rooms.
+                 */
+                var name, jid, i, fragment,
+                    that = this,
+                    $available_chatrooms = this.$el.find('#available-chatrooms');
+                this.rooms = $(iq).find('query').find('item');
+                if (this.rooms.length) {
+                    // # For translators: %1$s is a variable and will be
+                    // # replaced with the XMPP server name
+                    $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
+                    fragment = document.createDocumentFragment();
+                    for (i=0; i<this.rooms.length; i++) {
+                        name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
+                        jid = $(this.rooms[i]).attr('jid');
+                        fragment.appendChild($(
+                            converse.templates.room_item({
+                                'name':name,
+                                'jid':jid,
+                                'open_title': __('Click to open this room'),
+                                'info_title': __('Show more information on this room')
+                                })
+                            )[0]);
+                    }
+                    $available_chatrooms.append(fragment);
+                    $('input#show-rooms').show().siblings('span.spinner').remove();
+                } else {
+                    this.informNoRoomsFound();
+                }
+                return true;
+            },
+
             updateRoomsList: function () {
                 /* Send and IQ stanza to the server asking for all rooms
                  */
@@ -1798,38 +1831,9 @@
                         from: converse.connection.jid,
                         type: "get"
                     }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
-                    // Succcess Handler
-                    $.proxy(function (iq) {
-                        var name, jid, i, fragment,
-                            that = this,
-                            $available_chatrooms = this.$el.find('#available-chatrooms');
-                        this.rooms = $(iq).find('query').find('item');
-                        if (this.rooms.length) {
-                            // # For translators: %1$s is a variable and will be
-                            // # replaced with the XMPP server name
-                            $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
-                            fragment = document.createDocumentFragment();
-                            for (i=0; i<this.rooms.length; i++) {
-                                name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
-                                jid = $(this.rooms[i]).attr('jid');
-                                fragment.appendChild($(
-                                    converse.templates.room_item({
-                                        'name':name,
-                                        'jid':jid,
-                                        'open_title': __('Click to open this room'),
-                                        'info_title': __('Show more information on this room')
-                                        })
-                                    )[0]);
-                            }
-                            $available_chatrooms.append(fragment);
-                            $('input#show-rooms').show().siblings('span.spinner').remove();
-                        } else {
-                            this.informNoRoomsFound();
-                        }
-                        return true;
-                    }, this),
-                    // Error handler
-                    $.proxy(function (iq) { this.informNoRoomsFound(); }, this));
+                    $.proxy(function (iq) { this.onRoomsFound(); }, this),
+                    $.proxy(function (iq) { this.informNoRoomsFound(); }, this)
+                );
             },
 
             showRooms: function (ev) {

@@ -419,7 +419,7 @@
     background-color: #ffffff;
     line-height: 1.3em;
     height: 206px;
-    height: calc(100% - #{$toolbar-height + $chat-textarea-height});
+    height: calc(100% - #{$toolbar-height + $chat-textarea-height + 2});
   }
 
   .chat-info {

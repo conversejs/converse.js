@@ -1073,12 +1073,12 @@
     padding: 0;
     position: relative;
     width: 200px;
-    height: 84px; }
+    height: 82px; }
     #conversejs form.sendXMPPMessage .chat-textarea {
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       border: 0;
-      height: 64px;
+      height: 62px;
       padding: 0.5em;
       width: 100%;
       resize: none; }

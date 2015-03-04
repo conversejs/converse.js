@@ -1425,15 +1425,11 @@
                     }
                 }
                 converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
-                // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
-                converse.emit('buddyStatusChanged', item.attributes, item.get('chat_status'));
             },
 
             onStatusChanged: function (item) {
                 this.showStatusMessage();
                 converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
-                // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
-                converse.emit('buddyStatusMessageChanged', item.attributes, item.get('status'));
             },
 
             onOTRStatusChanged: function (item) {
@@ -1460,10 +1456,10 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (converse.connection.connected) {
                     this.model.destroy();
+                    this.setChatState(INACTIVE);
                 } else {
-                    this.model.trigger('hide');
+                    this.hide();
                 }
-                this.setChatState(INACTIVE);
                 converse.emit('chatBoxClosed', this);
                 return this;
             },
@@ -2299,8 +2295,7 @@
                         __("You may optionally include a message, explaining the reason for the invitation.")
                     );
                     if (reason !== null) {
-                        converse.connection.muc.rooms[this.chatroomview.model.get('id')].directInvite(suggestion.jid, reason);
-                        converse.emit('roomInviteSent', this, suggestion.jid, reason);
+                        this.chatroomview.directInvite(suggestion.jid, reason);
                     }
                     $(ev.target).typeahead('val', '');
                 }, this));
@@ -2407,6 +2402,22 @@
                         this.scrollDown();
                     }, this));
                 }
+            },
+
+            directInvite: function (receiver, reason) {
+                var attrs = {
+                    xmlns: 'jabber:x:conference',
+                    jid: this.getRoomJID()
+                };
+                if (reason !== null) { attrs.reason = reason; }
+                if (this.model.get('password')) { attrs.password = this.model.get('password'); }
+                var invitation = $msg({
+                    from: converse.connection.jid,
+                    to: receiver,
+                    id: converse.connection.getUniqueId()
+                }).c('x', attrs);
+                converse.connection.send(invitation);
+                converse.emit('roomInviteSent', this, receiver, reason);
             },
 
             onCommandError: function (stanza) {
@@ -2645,7 +2656,7 @@
                 });
                 $form.append('<input type="submit" class="save-submit" value="'+__('Save')+'"/>');
                 $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
-                $form.on('submit', $.proxy(this.saveConfiguration, this));
+                $form.on('submit', this.saveConfiguration.bind(this));
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
             },
 
@@ -2654,7 +2665,7 @@
                 var iq = $iq({to: this.model.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                     .c("x", {xmlns: "jabber:x:data", type: "submit"});
-                _.each(config, function (node) { iq.cnode(node); });
+                _.each(config, function (node) { iq.cnode(node).up(); });
                 return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
             },
 
@@ -2713,9 +2724,12 @@
                         '<span class="spinner centered"/>'+
                         '</form>'+
                     '</div>'));
-                converse.connection.muc.configure(
-                    this.model.get('jid'),
-                    $.proxy(this.renderConfigurationForm, this)
+                converse.connection.sendIQ(
+                        $iq({
+                            to: this.model.get('jid'),
+                            type: "get"
+                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
+                        this.renderConfigurationForm.bind(this)
                 );
             },
 
@@ -2874,7 +2888,6 @@
             showErrorMessage: function ($error) {
                 // We didn't enter the room, so we must remove it from the MUC
                 // add-on
-                delete converse.connection.muc[this.model.get('jid')]; // XXX: Still needed?
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
                         this.renderPasswordForm();

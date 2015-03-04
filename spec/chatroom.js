@@ -362,7 +362,7 @@
                 // The chatboxes will then be fetched from browserStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
-                expect(newchatboxes.length).toEqual(2); // XXX: Includes controlbox, is this a bug?
+                expect(newchatboxes.length).toEqual(2);
                 // Check that the chatrooms retrieved from browserStorage
                 // have the same attributes values as the original ones.
                 attrs = ['id', 'box_id', 'visible'];

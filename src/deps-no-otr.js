@@ -7,7 +7,6 @@ define("converse-dependencies", [
     "jquery.browser",
     "typeahead",
     "strophe",
-    "strophe.muc",
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"

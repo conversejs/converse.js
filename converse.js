@@ -175,6 +175,11 @@
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+        Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
+        Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
+        Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
+        Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
+        Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
@@ -2427,7 +2432,7 @@
             createChatRoomMessage: function (text) {
                 var msgid = converse.connection.getUniqueId();
                 var msg = $msg({
-                    to: this.getRoomJIDAndNick(),
+                    to: this.model.get('jid'),
                     from: converse.connection.jid,
                     type: 'groupchat',
                     id: msgid

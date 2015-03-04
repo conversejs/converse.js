@@ -9,7 +9,6 @@ define("converse-dependencies", [
     "jquery.easing", // XXX: Can be removed, only for https://conversejs.org
     "typeahead",
     "strophe",
-    "strophe.muc",
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco"

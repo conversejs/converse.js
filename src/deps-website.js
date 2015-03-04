@@ -5,7 +5,6 @@ define("converse-dependencies", [
     "otr",
     "moment",
     "strophe",
-    "strophe.muc",
     "strophe.roster",
     "strophe.vcard",
     "strophe.disco",

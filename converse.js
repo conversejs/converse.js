@@ -2407,7 +2407,7 @@
             directInvite: function (receiver, reason) {
                 var attrs = {
                     xmlns: 'jabber:x:conference',
-                    jid: this.getRoomJID()
+                    jid: this.model.get('jid')
                 };
                 if (reason !== null) { attrs.reason = reason; }
                 if (this.model.get('password')) { attrs.password = this.model.get('password'); }
@@ -2427,7 +2427,7 @@
             createChatRoomMessage: function (text) {
                 var msgid = converse.connection.getUniqueId();
                 var msg = $msg({
-                    to: this.getRoomJID(),
+                    to: this.getRoomJIDAndNick(),
                     from: converse.connection.jid,
                     type: 'groupchat',
                     id: msgid
@@ -2531,7 +2531,7 @@
                     case 'nick':
                         converse.connection.send($pres({
                             from: converse.connection.jid,
-                            to: this.getRoomJID(match[2]),
+                            to: this.getRoomJIDAndNick(match[2]),
                             id: converse.connection.getUniqueId()
                         }).tree());
                         break;
@@ -2593,7 +2593,7 @@
                 return true;
             },
 
-            getRoomJID: function (nick) {
+            getRoomJIDAndNick: function (nick) {
                 nick = nick || this.model.get('nick');
                 var room = this.model.get('jid');
                 var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
@@ -2604,7 +2604,7 @@
             join: function (password, history_attrs, extended_presence) {
                 var msg = $pres({
                     from: converse.connection.jid,
-                    to: this.getRoomJID()
+                    to: this.getRoomJIDAndNick()
                 }).c("x", {
                     xmlns: Strophe.NS.MUC
                 });
@@ -2620,6 +2620,7 @@
                 if (!this.handler) {
                     this.handler = converse.connection.addHandler($.proxy(this.handleMUCStanza, this));
                 }
+                this.model.set('connection_status', Strophe.Status.CONNECTING);
                 return converse.connection.send(msg);
             },
 
@@ -2629,13 +2630,13 @@
                     type: "unavailable",
                     id: presenceid,
                     from: converse.connection.jid,
-                    to: this.getRoomJID()
+                    to: this.getRoomJIDAndNick()
                 });
                 if (exit_msg !== null) {
                     presence.c("status", exit_msg);
                 }
                 converse.connection.addHandler(
-                    $.proxy(function () { this.model.set('connected', false); }, this),
+                    $.proxy(function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }, this),
                     null, "presence", null, presenceid);
                 converse.connection.send(presence);
             },
@@ -2872,7 +2873,7 @@
                     for (i=0; i<reasons.length; i++) {
                         this.showDisconnectMessage(__('The reason given is: "'+reasons[i]+'"'), true);
                     }
-                    this.model.set('connected', false);
+                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                     return;
                 }
                 $chat_content = this.$el.find('.chat-content');
@@ -2921,13 +2922,13 @@
                 var $presence = $(pres), is_self;
                 var nick = this.model.get('nick');
                 if ($presence.attr('type') === 'error') {
-                    this.model.set('connected', false);
+                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                     this.showErrorMessage($presence.find('error'));
                 } else {
                     is_self = ($presence.find("status[code='110']").length) ||
                         ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));
-                    if (!this.model.get('conneced')) {
-                        this.model.set('connected', true);
+                    if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                        this.model.set('connection_status', Strophe.Status.CONNECTED);
                         this.$('span.centered.spinner').remove();
                         this.$el.find('.chat-body').children().show();
                     }
@@ -3052,7 +3053,10 @@
                         'box_id' : b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
-                    if (!chatroom.get('connected')) {
+                    if (!_.contains(
+                                [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
+                                chatroom.get('connection_status'))
+                            ) {
                         converse.chatboxviews.get(room_jid).join(null);
                     }
                 }
@@ -3103,6 +3107,12 @@
 
                 chatbox = this.get(contact_jid);
                 if (!chatbox) {
+                    /* FIXME: there is a bug here. If chat state notifications
+                     * (because a roster contact closed a chat box of yours
+                     * they had open) are received and we don't have a chat with
+                     * the user, then a chat box is created here which then
+                     * opens automatically :(
+                     */
                     var fullname = roster_item.get('fullname');
                     fullname = _.isEmpty(fullname)? contact_jid: fullname;
                     chatbox = this.create({

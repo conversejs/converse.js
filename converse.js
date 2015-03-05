@@ -269,6 +269,7 @@
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
             prebind: false,
+            prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             rid: undefined,
             roster_groups: false,
@@ -5325,11 +5326,32 @@
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
                     if (rid && jid && sid) {
-                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                        // The RID needs to be increased with each request.
+                        this.session.save({rid: rid});
                         this.connection.attach(jid, sid, rid, this.onConnect);
                     } else if (this.prebind) {
-                        delete this.connection;
-                        this.emit('noResumeableSession');
+                        if (this.prebind_url) {
+                            $.ajax({
+                                url:  this.prebind_url,
+                                type: 'GET',
+                                success: function (response) {
+                                    this.session.save({rid: rid});
+                                    this.connection.attach(
+                                            response.jid,
+                                            response.sid,
+                                            response.rid,
+                                            this.onConnect
+                                    );
+                                }.bind(this),
+                                error: function (response) {
+                                    delete this.connection;
+                                    this.emit('noResumeableSession');
+                                }.bind(this)
+                            });
+                        } else {
+                            delete this.connection;
+                            this.emit('noResumeableSession');
+                        }
                     }
                 }
             }

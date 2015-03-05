@@ -735,10 +735,10 @@
       border: 1px solid #999;
       font-size: $font-size;
       height: $controlbox-dropdown-height;
-      margin: 0 0 0.5em 6px;
+      margin: 0 0 0.5em 7px;
       padding: 0;
       padding: 2px;
-      width: 104px;
+      width: 103px;
     }
     /* (jQ addClass:) if input has value: */
     .roster-filter.x {
@@ -953,8 +953,12 @@
           }
         }
       }
-      dd.search-xmpp ul li:hover {
-        background-color: $light-background-color;
+      dd.search-xmpp ul {
+        box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
+
+        li:hover {
+            background-color: $light-background-color;
+        }
       }
       dt a span {
         cursor: pointer;

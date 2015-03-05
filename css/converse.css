@@ -694,10 +694,10 @@
       border: 1px solid #999;
       font-size: 14px;
       height: 25px;
-      margin: 0 0 0.5em 6px;
+      margin: 0 0 0.5em 7px;
       padding: 0;
       padding: 2px;
-      width: 104px; }
+      width: 103px; }
     #conversejs #converse-roster .roster-filter.x {
       background-position: right 3px center; }
     #conversejs #converse-roster .roster-filter.onX {
@@ -850,8 +850,10 @@
       background-color: #F1E2DD; }
       #conversejs .chatbox .dropdown dd ul li:hover {
         background-color: #E3C9C1; }
-    #conversejs .chatbox .dropdown dd.search-xmpp ul li:hover {
-      background-color: #F1E2DD; }
+    #conversejs .chatbox .dropdown dd.search-xmpp ul {
+      box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
+      #conversejs .chatbox .dropdown dd.search-xmpp ul li:hover {
+        background-color: #F1E2DD; }
     #conversejs .chatbox .dropdown dt a span {
       cursor: pointer;
       display: block;

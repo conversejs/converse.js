@@ -126,7 +126,7 @@ Server-side authentication (prebind)
 It's possible to enable shared sessions whereby users already
 authenticated in your website will also automatically be logged in on the XMPP server,
 
-This session can be made to persist across page loads. In other words, we want
+This session can also be made to persist across page loads. In other words, we want
 a user to automatically be logged in to chat when they log in to the website,
 and we want their chat session to persist across page loads.
 
@@ -158,47 +158,11 @@ page load). Each page load is a new request which requires a new unique RID.
 The best way to achieve this is to simply increment the RID with each page
 load.
 
-When you initialize converse.js in your browser, you need to pass it these two
-tokens. Converse.js will then use them to attach to the session you just
-created.
+You'll need to configure converse.js with the :ref:`prebind`, :ref:`keepalive` and 
+:ref:`prebind_url` settings.
 
-You can embed the RID and SID tokens in your HTML markup or you can do an
-XMLHttpRequest call to your server and ask it to return them for you.
-
-Below is one example of how this could work. An Ajax call is made to the
-relative URL **/prebind** and it expects to receive JSON data back.
-
-.. code-block:: javascript
-
-    $.getJSON('/prebind', function (data) {
-        converse.initialize({
-            prebind: true,
-            bosh_service_url: data.bosh_service_url,
-            jid: data.jid,
-            sid: data.sid,
-            rid: data.rid
-        });
-    );
-
-**Here's what's happening:**
-
-The JSON data returned from the Ajax call to example.com/prebind contains the user's JID (jabber ID), RID, SID and the URL to the
-BOSH server (also called a *connection manager*).
-
-These values are then passed to converse.js's ``initialize`` method.
-
-.. note::
-   If you want to enable single session support, you need to set **prebind: true**
-   when calling **converse.initialize** (see ./index.html).
-   Additionally you need to pass in valid **jid**, **sid**, **rid** and
-   **bosh_service_url** values.
-
-   The :ref:`prebind` configuration setting can be used together with the
-   :ref:`keepalive` setting. This means you only have to prebind once for the
-   first page the user loads and not anymore for subsequent pages.
-
-   For more info, please refer to the :ref:`configuration-variables` section.
-
+Please read the documentation on those settings for a fuller picture of what
+needs to be done.
 
 Example code for server-side prebinding
 =======================================

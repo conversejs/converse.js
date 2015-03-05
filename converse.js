@@ -1832,8 +1832,8 @@
                         from: converse.connection.jid,
                         type: "get"
                     }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
-                    $.proxy(function (iq) { this.onRoomsFound(); }, this),
-                    $.proxy(function (iq) { this.informNoRoomsFound(); }, this)
+                    this.onRoomsFound.bind(this),
+                    this.informNoRoomsFound.bind(this)
                 );
             },
 

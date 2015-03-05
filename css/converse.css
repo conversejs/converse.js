@@ -1186,7 +1186,8 @@
     background: none;
     padding: 5px; }
     #conversejs .add-xmpp-contact input {
-      margin: 0 0 1rem; }
+      margin: 0 0 1rem;
+      width: 100%; }
     #conversejs .add-xmpp-contact button {
       width: 100%; }
   #conversejs .xmpp-status-menu {

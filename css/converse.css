@@ -42,6 +42,8 @@
   box-sizing: border-box;
   /* @group Tabs */
   /* status dropdown styles */ }
+  #conversejs ::selection {
+    background-color: #E3C9C1; }
   #conversejs *, #conversejs *:before, #conversejs *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -460,9 +462,6 @@
     background-color: #176679;
     border-right: 1px solid #176679;
     border-left: 1px solid #176679; }
-  #conversejs .chat-message span::selection,
-  #conversejs .chat-message::selection {
-    background-color: darkgrey; }
   #conversejs .chat-content {
     position: relative;
     padding: 8px;
@@ -827,6 +826,7 @@
       #conversejs .chatbox {
         width: 100%; } }
     #conversejs .chatbox .box-flyout {
+      z-index: 1;
       width: 200px; }
       @media screen and (max-width: 480px) {
         #conversejs .chatbox .box-flyout {
@@ -1072,8 +1072,11 @@
     margin: 0;
     padding: 0;
     position: relative;
-    width: 200px;
-    height: 82px; }
+    height: 82px;
+    width: 200px; }
+    @media screen and (max-width: 480px) {
+      #conversejs form.sendXMPPMessage {
+        width: 100%; } }
     #conversejs form.sendXMPPMessage .chat-textarea {
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;

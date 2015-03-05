@@ -33,7 +33,11 @@
 #conversejs {
   @import "../bourbon/bourbon";
   @import "variables";
-  
+
+  ::selection {
+    background-color: $highlight-color;
+  }
+
   color: $text-color;
   font-size: $font-size;
   bottom: 0;
@@ -402,11 +406,6 @@
     background-color: #176679;
     border-right: 1px solid #176679;
     border-left: 1px solid #176679;
-  }
-
-  .chat-message span::selection,
-  .chat-message::selection {
-    background-color: darkgrey;
   }
 
   .chat-content {
@@ -922,6 +921,7 @@
         width: $mobile-chat-width;
     }
     .box-flyout {
+      z-index: 1;
       width: $chat-width;
         @media screen and (max-width: $mobile_landscape_length) {
             width: $mobile-chat-width;
@@ -1253,8 +1253,11 @@
     margin: 0;
     padding: 0;
     position: relative;
-    width: $chat-width;
     height: #{$chat-textarea-height + $toolbar-height};
+    width: $chat-width;
+    @media screen and (max-width: $mobile_landscape_length) {
+        width: 100%;
+    }
     .chat-textarea {
       @include border-bottom-radius(4px);
       border: 0;

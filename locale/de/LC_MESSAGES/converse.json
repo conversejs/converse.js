@@ -7,6 +7,10 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "de"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             ""
@@ -87,10 +91,6 @@
             null,
             "Authentifizierung gescheitert"
          ],
-         "Online Contacts": [
-            null,
-            "Online-Kontakte"
-         ],
          "Re-establishing encrypted session": [
             null,
             ""
@@ -148,10 +148,6 @@
             ""
          ],
          "We received an unreadable encrypted message": [
-            null,
-            ""
-         ],
-         "This user has requested an encrypted session.": [
             null,
             ""
          ],
@@ -299,10 +295,6 @@
             null,
             "Server"
          ],
-         "Join": [
-            null,
-            "Beitreten"
-         ],
          "Show rooms": [
             null,
             "Räume anzeigen"
@@ -415,11 +407,31 @@
             null,
             ""
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             ""
          ],
          "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
             null,
             ""
          ],

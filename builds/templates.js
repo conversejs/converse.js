@@ -835,11 +835,11 @@ __p += '<form class="add-chatroom" action="" method="post">\n    <label>' +
 ((__t = (server_input_type)) == null ? '' : __t) +
 '" name="server" class="new-chatroom-server"\n        placeholder="' +
 ((__t = (label_server)) == null ? '' : __t) +
-'"/>\n    <input type="submit" name="join" value="' +
+'"/>\n    <div class="button-group">\n        <input type="submit" class="left" name="join" value="' +
 ((__t = (label_join)) == null ? '' : __t) +
-'"/>\n    <input type="button" name="show" id="show-rooms" value="' +
+'"/>\n        <input type="button" class="right" name="show" id="show-rooms" value="' +
 ((__t = (label_show_rooms)) == null ? '' : __t) +
-'"/>\n</form>\n<dl id="available-chatrooms"></dl>\n';
+'"/>\n    </div>\n</form>\n<dl id="available-chatrooms"></dl>\n';
 
 }
 return __p

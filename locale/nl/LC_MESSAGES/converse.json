@@ -7,6 +7,10 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "nl"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "ongecodeerde"
@@ -87,10 +91,6 @@
             null,
             "Authenticeren mislukt"
          ],
-         "Online Contacts": [
-            null,
-            "Online Contacten"
-         ],
          "Re-establishing encrypted session": [
             null,
             "Bezig versleutelde sessie te herstellen"
@@ -150,10 +150,6 @@
          "We received an unreadable encrypted message": [
             null,
             "We ontvangen een onleesbaar unencrypted bericht"
-         ],
-         "This user has requested an encrypted session.": [
-            null,
-            "Deze gebruiker heeft een encrypted sessie aangevraagd."
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -275,10 +271,6 @@
             null,
             "Server"
          ],
-         "Join": [
-            null,
-            "Deelnemen"
-         ],
          "Show rooms": [
             null,
             "Toon rooms"
@@ -391,11 +383,31 @@
             null,
             ""
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             ""
          ],
          "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
             null,
             ""
          ],

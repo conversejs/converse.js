@@ -7,6 +7,10 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "en"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "unencrypted"
@@ -87,10 +91,6 @@
             null,
             "Authentication Failed"
          ],
-         "Online Contacts": [
-            null,
-            "Online Contacts"
-         ],
          "Re-establishing encrypted session": [
             null,
             "Re-establishing encrypted session"
@@ -131,6 +131,10 @@
             null,
             ""
          ],
+         "has gone away": [
+            null,
+            ""
+         ],
          "Show this menu": [
             null,
             "Show this menu"
@@ -159,10 +163,6 @@
             null,
             ""
          ],
-         "This user has requested an encrypted session.": [
-            null,
-            ""
-         ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
             ""
@@ -180,6 +180,10 @@
             ""
          ],
          "Invalid authentication scheme provided": [
+            null,
+            ""
+         ],
+         "has gone offline": [
             null,
             ""
          ],
@@ -307,10 +311,6 @@
             null,
             "Server"
          ],
-         "Join": [
-            null,
-            "Join"
-         ],
          "Show rooms": [
             null,
             "Show rooms"
@@ -423,11 +423,31 @@
             null,
             ""
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             ""
          ],
          "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
             null,
             ""
          ],

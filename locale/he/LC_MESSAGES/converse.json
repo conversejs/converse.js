@@ -7,6 +7,10 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "he"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "לא מוצפנת"
@@ -95,10 +99,6 @@
             null,
             "אימות נכשל"
          ],
-         "Online Contacts": [
-            null,
-            "אנשי קשר מקוונים"
-         ],
          "Re-establishing encrypted session": [
             null,
             "בסס מחדש ישיבה מוצפנת"
@@ -170,10 +170,6 @@
          "We received an unreadable encrypted message": [
             null,
             "אנחנו קיבלנו הודעה מוצפנת לא קריאה"
-         ],
-         "This user has requested an encrypted session.": [
-            null,
-            "משתמש זה ביקש ישיבה מוצפנת."
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -327,10 +323,6 @@
             null,
             "שרת"
          ],
-         "Join": [
-            null,
-            "הצטרף"
-         ],
          "Show rooms": [
             null,
             "הצג חדרים"
@@ -447,6 +439,10 @@
             null,
             "שגיאה: לא היתה אפשרות לבצע פקודה"
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
          "Ban user from room": [
             null,
             "אסור משתמש מתוך חדר"
@@ -459,6 +455,10 @@
             null,
             "כתוב בגוף שלישי"
          ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             "הסר יכולת משתמש לפרסם הודעות"
@@ -466,6 +466,14 @@
          "Change your nickname": [
             null,
             "שנה את השם כינוי שלך"
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
+            null,
+            ""
          ],
          "Set room topic": [
             null,

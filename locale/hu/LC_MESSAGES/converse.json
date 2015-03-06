@@ -6,6 +6,10 @@
             "domain": "converse",
             "lang": "hu"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "titkosítatlan"
@@ -94,10 +98,6 @@
             null,
             "Azonosítási hiba"
          ],
-         "Online Contacts": [
-            null,
-            "Elérhető partnerek"
-         ],
          "Re-establishing encrypted session": [
             null,
             "Titkosított kapcsolat újraépítése"
@@ -169,10 +169,6 @@
          "We received an unreadable encrypted message": [
             null,
             "Visszafejthetetlen titkosított üzenet érkezett"
-         ],
-         "This user has requested an encrypted session.": [
-            null,
-            "Felkérés érkezett titkosított kapcsolatra."
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -326,10 +322,6 @@
             null,
             "Szerver"
          ],
-         "Join": [
-            null,
-            "Csatlakozás"
-         ],
          "Show rooms": [
             null,
             "Létező szobák"
@@ -434,10 +426,6 @@
             null,
             "%1$s meghívott a \"%2$s\" csevegő szobába. "
          ],
-         "You may optionally include a message, explaining the reason for the invitation. ": [
-            null,
-            "A meghívás okaként üzenet csatolható. "
-         ],
          "Message": [
             null,
             "Üzenet"
@@ -445,6 +433,10 @@
          "Error: could not execute the command": [
             null,
             "Hiba: A parancs nem értelmezett"
+         ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
          ],
          "Ban user from room": [
             null,
@@ -458,6 +450,10 @@
             null,
             "Írjon egyes szám harmadik személyben"
          ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             "A felhasználó nem küldhet üzeneteket"
@@ -465,6 +461,14 @@
          "Change your nickname": [
             null,
             "Becenév módosítása"
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
+            null,
+            ""
          ],
          "Set room topic": [
             null,

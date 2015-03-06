@@ -7,6 +7,10 @@
             "plural_forms": "nplurals=2; plural=(n > 1);",
             "lang": "pt_BR"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "não-criptografado"
@@ -87,10 +91,6 @@
             null,
             "Falha de autenticação"
          ],
-         "Online Contacts": [
-            null,
-            "Contatos online"
-         ],
          "Re-establishing encrypted session": [
             null,
             "Reestabelecendo sessão criptografada"
@@ -142,10 +142,6 @@
          "We received an unreadable encrypted message": [
             null,
             "Recebemos uma mensagem não-criptografada ilegível"
-         ],
-         "This user has requested an encrypted session.": [
-            null,
-            "Usuário pediu uma sessão criptografada."
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -263,10 +259,6 @@
             null,
             "Server"
          ],
-         "Join": [
-            null,
-            "Entrar"
-         ],
          "Show rooms": [
             null,
             "Mostar salas"
@@ -379,11 +371,31 @@
             null,
             ""
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             ""
          ],
          "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
             null,
             ""
          ],

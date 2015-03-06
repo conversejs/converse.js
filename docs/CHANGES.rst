@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.9.0 (Unreleased)
+0.9.0 (2015-03-06)
 ------------------
 
 * #204 Support websocket connections. [jcbrand]

@@ -6,6 +6,10 @@
             "domain": "converse",
             "lang": "zh"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "未加密"
@@ -86,10 +90,6 @@
             null,
             "验证失败"
          ],
-         "Online Contacts": [
-            null,
-            "在线好友"
-         ],
          "Re-establishing encrypted session": [
             null,
             "重新建立加密会话"
@@ -149,10 +149,6 @@
          "We received an unreadable encrypted message": [
             null,
             "我们收到一条无法读取的信息"
-         ],
-         "This user has requested an encrypted session.": [
-            null,
-            "此用户请求了一个加密会话。"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -270,10 +266,6 @@
             null,
             "服务器"
          ],
-         "Join": [
-            null,
-            "加入"
-         ],
          "Show rooms": [
             null,
             "显示所有聊天室"
@@ -386,11 +378,31 @@
             null,
             ""
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             ""
          ],
          "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
             null,
             ""
          ],

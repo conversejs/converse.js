@@ -6,6 +6,10 @@
             "domain": "converse",
             "lang": "ru"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "не зашифровано"
@@ -86,10 +90,6 @@
             null,
             "Не удалось авторизоваться"
          ],
-         "Online Contacts": [
-            null,
-            "Cписок собеседников"
-         ],
          "Re-establishing encrypted session": [
             null,
             ""
@@ -155,10 +155,6 @@
             ""
          ],
          "We received an unreadable encrypted message": [
-            null,
-            ""
-         ],
-         "This user has requested an encrypted session.": [
             null,
             ""
          ],
@@ -290,10 +286,6 @@
             null,
             "Сервер"
          ],
-         "Join": [
-            null,
-            "Подключиться"
-         ],
          "Show rooms": [
             null,
             "Обновить"
@@ -406,7 +398,19 @@
             null,
             ""
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
          "Write in 3rd person": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
             null,
             ""
          ],
@@ -415,6 +419,14 @@
             ""
          ],
          "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
             null,
             ""
          ],

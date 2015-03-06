@@ -83,7 +83,7 @@
   input[type=text], input[type=password],
   button {
     font-size: $font-size;
-    padding: 0.5em;
+    padding: 0.25em;
     min-height: 0;
   }
 
@@ -232,6 +232,12 @@
     font-size: $font-size;
   }
 
+  .left {
+      float: left;
+   } 
+   .right {
+       float: right;
+   }
   .hidden {
     display: none;
   }
@@ -293,8 +299,12 @@
     }
   }
 
+  .button-group,
   .input-button-group {
     display: table;
+  }
+  .button-group {
+    width: 100%;
   }
   .input-button-group button,
   .input-button-group input {
@@ -766,6 +776,8 @@
     }
     dd {
       line-height: 16px;
+      padding: 4px 2px 0 4px;
+      height: 24px;
       a, span {
         text-shadow: 0 1px 0 $link-shadow-color;
         display: inline-block;
@@ -818,16 +830,6 @@
     }
   }
 
-  dd.available-chatroom {
-    display: inline-block;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    a.open-room {
-      width: 148px;
-    }
-  }
-
   #available-chatrooms {
     text-align: left;
   }
@@ -837,7 +839,7 @@
     font-weight: normal;
     color: $text-color;
     border: none;
-    padding: 5px;
+    padding: 0.5em;
     text-shadow: 0 1px 0 $text-shadow-color;
   }
 
@@ -865,9 +867,7 @@
 
   a {
     &.room-info {
-      width: 22px;
-      height: 22px;
-      float: right;
+      width: 15px;
       display: none;
       clear: right;
     }
@@ -879,10 +879,20 @@
     }
   }
 
+  dd.available-chatroom {
+    display: inline-block;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    padding: 0.25em 0.5em;
+    white-space: nowrap;
+    a.open-room {
+      width: 150px;
+    }
+  }
+
   dd.available-chatroom:hover a.room-info {
     display: inline-block;
-    margin-top: 3px;
-    font-size: 15px;
+    font-size: 14px;
   }
 
   dd.available-chatroom,
@@ -890,11 +900,9 @@
     font-weight: bold;
     border: none;
     display: block;
-    padding: 4px 2px 0 4px;
     color: $text-color;
     text-shadow: 0 1px 0 $text-shadow-color;
     clear: both;
-    height: 24px;
     overflow-y: hidden;
   }
 
@@ -1152,17 +1160,23 @@
 
   form.add-chatroom {
     background: none;
-    padding: 8px;
+    padding: 0.5em;
 
     input[type=button],
     input[type=submit],
     input[type=text] {
       margin: 0;
       width: 100%;
-      padding: 5px;
+      padding: 0.25em;
+    }
+    span.spinner,
+    input[type=button],
+    input[type=submit] {
+      margin-top: 0.5em;
+      display: table-cell;
+      width: auto;
     }
     input[type=submit] {
-      margin: 5px 0;
       color: $save-button-color;
     }
   }

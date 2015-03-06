@@ -73,7 +73,7 @@
   #conversejs input[type=text], #conversejs input[type=password],
   #conversejs button {
     font-size: 14px;
-    padding: 0.5em;
+    padding: 0.25em;
     min-height: 0; }
   #conversejs strong {
     font-weight: 700; }
@@ -296,6 +296,10 @@
     user-select: none; }
   #conversejs .emoticon {
     font-size: 14px; }
+  #conversejs .left {
+    float: left; }
+  #conversejs .right {
+    float: right; }
   #conversejs .hidden {
     display: none; }
   #conversejs .locked {
@@ -372,8 +376,11 @@
     padding: 10px 8px 0 8px; }
     #conversejs .toggle-controlbox span {
       color: white; }
+  #conversejs .button-group,
   #conversejs .input-button-group {
     display: table; }
+  #conversejs .button-group {
+    width: 100%; }
   #conversejs .input-button-group button,
   #conversejs .input-button-group input {
     display: table-cell; }
@@ -716,7 +723,9 @@
     #conversejs #converse-roster dt {
       display: none; }
     #conversejs #converse-roster dd {
-      line-height: 16px; }
+      line-height: 16px;
+      padding: 4px 2px 0 4px;
+      height: 24px; }
       #conversejs #converse-roster dd a, #conversejs #converse-roster dd span {
         text-shadow: 0 1px 0 #FAFAFA;
         display: inline-block;
@@ -750,13 +759,6 @@
     #conversejs #converse-roster span.req-contact-name {
       width: 69%;
       padding: 0; }
-  #conversejs dd.available-chatroom {
-    display: inline-block;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
-    #conversejs dd.available-chatroom a.open-room {
-      width: 148px; }
   #conversejs #available-chatrooms {
     text-align: left; }
   #conversejs #available-chatrooms dt,
@@ -764,7 +766,7 @@
     font-weight: normal;
     color: #6C4C44;
     border: none;
-    padding: 5px;
+    padding: 0.5em;
     text-shadow: 0 1px 0 #FAFAFA; }
   #conversejs .room-info {
     font-size: 11px;
@@ -781,9 +783,7 @@
     display: block;
     white-space: normal; }
   #conversejs a.room-info {
-    width: 22px;
-    height: 22px;
-    float: right;
+    width: 15px;
     display: none;
     clear: right; }
   #conversejs a.open-room {
@@ -791,20 +791,25 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow-x: hidden; }
+  #conversejs dd.available-chatroom {
+    display: inline-block;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    padding: 0.25em 0.5em;
+    white-space: nowrap; }
+    #conversejs dd.available-chatroom a.open-room {
+      width: 150px; }
   #conversejs dd.available-chatroom:hover a.room-info {
     display: inline-block;
-    margin-top: 3px;
-    font-size: 15px; }
+    font-size: 14px; }
   #conversejs dd.available-chatroom,
   #conversejs #converse-roster dd {
     font-weight: bold;
     border: none;
     display: block;
-    padding: 4px 2px 0 4px;
     color: #6C4C44;
     text-shadow: 0 1px 0 #FAFAFA;
     clear: both;
-    height: 24px;
     overflow-y: hidden; }
   #conversejs .roster-group:hover,
   #conversejs dd.available-chatroom:hover,
@@ -991,15 +996,20 @@
     margin: 1em 0; }
   #conversejs form.add-chatroom {
     background: none;
-    padding: 8px; }
+    padding: 0.5em; }
     #conversejs form.add-chatroom input[type=button],
     #conversejs form.add-chatroom input[type=submit],
     #conversejs form.add-chatroom input[type=text] {
       margin: 0;
       width: 100%;
-      padding: 5px; }
+      padding: 0.25em; }
+    #conversejs form.add-chatroom span.spinner,
+    #conversejs form.add-chatroom input[type=button],
     #conversejs form.add-chatroom input[type=submit] {
-      margin: 5px 0;
+      margin-top: 0.5em;
+      display: table-cell;
+      width: auto; }
+    #conversejs form.add-chatroom input[type=submit] {
       color: #436F64; }
   #conversejs select#select-xmpp-status {
     float: right;

@@ -1,3 +1,0 @@
-[submodule "Libraries/logging"]
-	path = Libraries/logging
-	url = https://github.com/Patternslib/logging.git

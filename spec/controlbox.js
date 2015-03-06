@@ -8,6 +8,8 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var $pres = converse_api.env.$pres;
+    var $iq = converse_api.env.$iq;
 
     var checkHeaderToggling = function ($header) {
         var $toggle = $header.find('a.group-toggle');
@@ -971,10 +973,15 @@
 
         describe("All Contacts", $.proxy(function () {
             beforeEach($.proxy(function () {
-                utils.clearBrowserStorage();
-                converse.rosterview.model.reset();
-                utils.createContacts('all').openControlBox();
-                utils.openContactsPanel();
+                runs(function () {
+                    utils.clearBrowserStorage();
+                    converse.rosterview.model.reset();
+                    utils.createContacts('all').openControlBox();
+                });
+                waits(50);
+                runs(function () {
+                    utils.openContactsPanel();
+                });
             }, converse));
 
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
@@ -998,6 +1005,21 @@
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
                 }
             }, converse));
+
+            it("will show fullname and jid properties on tooltip", $.proxy(function () {
+                var jid, name, i, t;
+                for (i=0; i<mock.cur_names.length; i++) {
+                    name = mock.cur_names[i];
+                    jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var $dd = this.rosterview.$el.find("dd:contains('"+name+"')").children().first();
+                    var dd_text = $dd.text();
+                    var dd_title = $dd.attr('title');
+                    expect(dd_text).toBe(name);
+                    expect(dd_title).toContain(name);
+                    expect(dd_title).toContain(jid);
+                }
+            }, converse));
+
         }, converse));
     }, converse, mock, test_utils));
 
@@ -1054,15 +1076,10 @@
                 var $chatrooms = $panels.children().last();
                 spyOn(cbview, 'switchTab').andCallThrough();
                 cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                runs(function () {
-                    $tabs.find('li').last().find('a').click(); // Clicks the chatrooms tab
-                });
-                waits(250);
-                runs(function () {
-                    expect($contacts.is(':visible')).toBe(false);
-                    expect($chatrooms.is(':visible')).toBe(true);
-                    expect(cbview.switchTab).toHaveBeenCalled();
-                });
+                $tabs.find('li').last().find('a').click(); // Clicks the chatrooms tab
+                expect($contacts.is(':visible')).toBe(false);
+                expect($chatrooms.is(':visible')).toBe(true);
+                expect(cbview.switchTab).toHaveBeenCalled();
             }, converse));
 
             it("contains a form through which a new chatroom can be created", $.proxy(function () {
@@ -1089,6 +1106,30 @@
                 runs($.proxy(function () {
                     expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
                 }, converse));
+            }, converse));
+
+            it("can list rooms publically available on the server", $.proxy(function () {
+                var panel = this.chatboxviews.get('controlbox').roomspanel;
+                panel.$tabs.find('li').last().find('a').click(); // Click the chatrooms tab
+                panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
+                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
+                expect($('#available-chatrooms').children('dt').length).toBe(0);
+                expect($('#available-chatrooms').children('dd').length).toBe(0);
+
+                var iq = $iq({
+                    from:'muc.localhost',
+                    to:'dummy@localhost/pda',
+                    type:'result'
+                }).c('query')
+                  .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
+                  .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
+                  .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
+                  .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+
+                panel.onRoomsFound(iq);
+                expect(panel.$('#available-chatrooms').children('dt').length).toBe(1);
+                expect(panel.$('#available-chatrooms').children('dt').first().text()).toBe("Rooms on muc.localhost");
+                expect(panel.$('#available-chatrooms').children('dd').length).toBe(4);
             }, converse));
         }, converse));
     }, converse, mock, test_utils));

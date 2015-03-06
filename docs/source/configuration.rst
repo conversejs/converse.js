@@ -53,6 +53,15 @@ Default:  ``true``
 
 Allow Off-the-record encryption of single-user chat messages.
 
+allow_registration
+------------------
+
+Default:  ``true``
+
+Support for `XEP-0077: In band registration <http://xmpp.org/extensions/xep-0077.html>`_
+
+Allow XMPP account registration showing the corresponding UI register form interface.
+
 animate
 -------
 
@@ -94,10 +103,19 @@ If true, the user will automatically subscribe back to any contact requests.
 bosh_service_url
 ----------------
 
-Connections to an XMPP server depend on a BOSH connection manager which acts as
-a middle man between HTTP and XMPP.
+Default: ``undefined``
 
+To connect to an XMPP server over HTTP you need a `BOSH <https://en.wikipedia.org/wiki/BOSH>`_
+connection manager which acts as a middle man between the HTTP and XMPP
+protocols.
+
+The bosh_service_url setting takes the URL of a BOSH connection manager.
+
+Please refer to your XMPP server's documentation on how to enable BOSH.
 For more information, read this blog post: `Which BOSH server do you need? <http://metajack.im/2008/09/08/which-bosh-server-do-you-need>`_
+
+A more modern alternative to BOSH is to use `websockets <https://developer.mozilla.org/en/docs/WebSockets>`_.
+Please see the :ref:`websocket-url` configuration setting.
 
 cache_otr_key
 -------------
@@ -136,6 +154,8 @@ Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
 
+.. _`keepalive`:
+
 keepalive
 ---------
 
@@ -148,6 +168,13 @@ See also:
 
 * :ref:`session-support`
 * `Using prebind in connection with keepalive`_
+
+.. note::
+    Currently the "keepalive" setting only works with BOSH and not with
+    websockets. This is because XMPP over websocket does not use the same
+    session token as with BOSH. A possible solution for this is to implement
+    `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
+    with regards to "stream resumption".
 
 message_carbons
 ---------------
@@ -248,6 +275,8 @@ it in both formats as ``http://yoursite.com/sounds/msg_received.mp3`` and
 
 ``http://yoursite.com`` should of course be your site's URL.
 
+.. _`prebind`:
+
 prebind
 --------
 
@@ -255,71 +284,74 @@ Default:  ``false``
 
 See also: :ref:`session-support`
 
-Use this option when you want to attach to an existing XMPP connection that was
-already authenticated (usually on the backend before page load).
+Use this option when you want to attach to an existing XMPP
+`BOSH <https://en.wikipedia.org/wiki/BOSH>`_ session.
 
-This is useful when you don't want to render the login form on the chat control
-box with each page load.
+Usually a BOSH session is set up server-side in your web app.
 
-For prebinding to work, you must set up a pre-authenticated BOSH session,
-for which you will receive a JID (jabber ID), SID (session ID) and RID
-(Request ID).
+Attaching to an existing BOSH session that was set up server-side is useful
+when you want to maintain a persistent single session for your users instead of
+requiring them to log in manually.
 
-These values (``rid``, ``sid`` and ``jid``) need to be passed into
-``converse.initialize`` (with the exception of ``keepalive``, see below).
+When a BOSH session is initially created, you'll receive three tokens.
+A JID (jabber ID), SID (session ID) and RID (Request ID).
 
-Additionally, you also have to specify a ``bosh_service_url``.
+Converse.js needs these tokens in order to attach to that same session.
 
-Using prebind in connection with keepalive
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There are two complementary configuration settings to ``prebind``.
+They are :ref:`keepalive` and :ref:`prebind_url`.
 
-The ``prebind`` and `keepalive`_ options can be used together.
+``keepalive`` can be used keep the session alive without having to pass in
+new tokens to ``converse.initialize`` every time you reload the page. This
+removes the need to set up a new BOSH session every time a page loads.
 
-The ``keepalive`` option caches the ``rid``, ``sid`` and ``jid`` values
-(henceforth referred to as *session tokens*) one receives from a prebinded
-BOSH session, in order to re-use them when the page reloads.
+``prebind_url`` lets you specify a URL which converse.js will call whenever a
+new BOSH session needs to be set up.
 
-However, if besides setting ``keepalive`` to ``true``, you also set ``prebind``
-to ``true``, and you pass in valid session tokens to ``converse.initialize``,
-then those passed in session tokens will be used instead of any tokens cached by
-``keepalive``.
 
-If you set ``prebind`` to ``true``  and don't pass in the session tokens to
-``converse.initialize``, then converse.js will look for tokens cached by
-``keepalive``.
-
-If you've set ``keepalive`` and ``prebind`` to ``true``, don't pass in session
-tokens and converse.js doesn't find any cached session tokens, then
-converse.js will emit an event ``noResumeableSession`` and exit.
-
-This allows you to start a prebinded session with valid tokens, and then fall
-back to ``keepalive`` for maintaining that session across page reloads. When
-for some reason ``keepalive`` doesn't have cached session tokens anymore, you
-can listen for the ``noResumeableSession`` event and take that as a cue that
-you should again prebind in order to get valid session tokens.
-
-Here is a code example:
+Here's an example of converse.js being initialized with these three options:
 
 .. code-block:: javascript
 
-        converse.on('noResumeableSession', function () {
-            $.getJSON('/prebind', function (data) {
-                converse.initialize({
-                    prebind: true,
-                    keepalive: true,
-                    bosh_service_url: 'https://bind.example.com',
-                    jid: data.jid,
-                    sid: data.sid,
-                    rid: data.rid
-                });
-            });
-        });
-        converse.initialize({
-            prebind: true,
-            keepalive: true,
-            bosh_service_url: 'https://bind.example.com'
-        }));
+    converse.initialize({
+        bosh_service_url: 'https://bind.example.com',
+        keepalive: true,
+        prebind: true,
+        prebind_url: 'http://example.com/api/prebind',
+        allow_logout: false
+    });
 
+.. note:: The ``prebind_url`` configuration setting is new in version 0.9 and
+    simplifies the code needed to set up and maintain prebinded sessions.
+
+    When using ``prebind_url`` and ``keepalive``, you don't need to manually pass in
+    the RID, SID and JID tokens anymore.
+
+
+.. _`prebind_url`:
+
+prebind_url
+-----------
+
+* Default:  ``null``
+* Type:  URL
+
+See also: :ref:`session-support`
+
+This setting should be used in conjunction with :ref:`prebind` and :ref:`keepalive`.
+
+It allows you to specify a URL which converse.js will call when it needs to get
+the RID and SID (Request ID and Session ID) tokens of a BOSH connection, which
+converse.js will then attach to.
+
+The server behind ``prebind_url`` should return a JSON encoded object with the
+three tokens::
+
+    {
+        "jid": "me@example.com/resource",
+        "sid": "346234623462",
+        "rid": "876987608760"
+    }
 
 providers_link
 --------------
@@ -442,6 +474,33 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
     Enables rendering of emoticons and provides a toolbar button for choosing them.
 * toggle_participants:
     Shows a button for toggling (i.e. showing/hiding) the list of participants in a chat room.
+
+.. _`websocket-url`:
+
+websocket_url
+-------------
+
+Default: ``undefined``
+
+This option is used to specify a 
+`websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which
+converse.js can connect to.
+
+Websockets provide a more modern and effective two-way communication protocol
+between the browser and a server, effectively emulating TCP at the application
+layer and therefore overcoming many of the problems with existing long-polling
+techniques for bidirectional HTTP (such as `BOSH <https://en.wikipedia.org/wiki/BOSH>`_).
+
+Please refer to your XMPP server's documentation on how to enable websocket
+support.
+
+.. note::
+    Please note that not older browsers do not support websockets. For older
+    browsers you'll want to specify a BOSH URL. See the :ref:`bosh-service-url`
+    configuration setting).
+    
+.. note::
+    Converse.js does not yet support "keepalive" with websockets.
 
 xhr_custom_status
 -----------------

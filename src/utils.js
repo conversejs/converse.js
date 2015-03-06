@@ -1,4 +1,10 @@
-define(["jquery", "converse-templates"], function ($, templates) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(["jquery", "converse-templates", "locales"], factory);
+    } else {
+        root.utils = factory(jQuery, templates);
+    }
+}(this, function ($, templates, locales) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -49,10 +55,16 @@ define(["jquery", "converse-templates"], function ($, templates) {
         // ---------------------
         __: function (str) {
             // Translation factory
-            if (this.i18n === undefined) {
+            if (typeof this.i18n === "undefined") {
                 this.i18n = locales.en;
             }
-            var t = this.i18n.translate(str);
+            if (typeof this.i18n === "string") {
+                this.i18n = $.parseJSON(this.i18n);
+            }
+            if (typeof this.jed === "undefined") {
+                this.jed = new Jed(this.i18n);
+            }
+            var t = this.jed.translate(str);
             if (arguments.length>1) {
                 return t.fetch.apply(t, [].slice.call(arguments,1));
             } else {
@@ -73,10 +85,10 @@ define(["jquery", "converse-templates"], function ($, templates) {
 
         webForm2xForm: function (field) {
             /* Takes an HTML DOM and turns it into an XForm field.
-             *
-             * Parameters:
-             *      (DOMElement) field - the field to convert
-             */
+            *
+            * Parameters:
+            *      (DOMElement) field - the field to convert
+            */
             var $input = $(field), value;
             if ($input.is('[type=checkbox]')) {
                 value = $input.is(':checked') && 1 || 0;
@@ -100,11 +112,11 @@ define(["jquery", "converse-templates"], function ($, templates) {
 
         xForm2webForm: function ($field, $stanza) {
             /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-             * and turns it into a HTML DOM field.
-             *
-             *  Parameters:
-             *      (XMLElement) field - the field to convert
-             */
+            * and turns it into a HTML DOM field.
+            *
+            *  Parameters:
+            *      (XMLElement) field - the field to convert
+            */
 
             // FIXME: take <required> into consideration
             var options = [], j, $options, $values, value, values;
@@ -186,4 +198,4 @@ define(["jquery", "converse-templates"], function ($, templates) {
         }
     };
     return utils;
-});
+}));

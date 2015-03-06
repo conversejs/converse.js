@@ -1,653 +1,716 @@
 {
-   "converse": {
-      "": {
-         "Project-Id-Version": "Converse.js 0.4",
-         "Report-Msgid-Bugs-To": "",
-         "POT-Creation-Date": "2014-07-06 17:58+0200",
-         "PO-Revision-Date": "2013-09-15 22:15+0200",
-         "Last-Translator": "JC Brand <jc@opkode.com>",
-         "Language-Team": "English",
-         "Language": "en",
-         "MIME-Version": "1.0",
-         "Content-Type": "text/plain; charset=ASCII",
-         "Content-Transfer-Encoding": "8bit",
-         "Plural-Forms": "nplurals=2; plural=(n != 1);"
-      },
-      "unencrypted": [
-         null,
-         "unencrypted"
-      ],
-      "unverified": [
-         null,
-         "unverified"
-      ],
-      "verified": [
-         null,
-         "verified"
-      ],
-      "finished": [
-         null,
-         "finished"
-      ],
-      "This contact is busy": [
-         null,
-         ""
-      ],
-      "This contact is online": [
-         null,
-         ""
-      ],
-      "This contact is offline": [
-         null,
-         ""
-      ],
-      "This contact is unavailable": [
-         null,
-         ""
-      ],
-      "This contact is away for an extended period": [
-         null,
-         ""
-      ],
-      "This contact is away": [
-         null,
-         ""
-      ],
-      "Reconnecting": [
-         null,
-         "Connecting"
-      ],
-      "Disconnected": [
-         null,
-         "Disconnected"
-      ],
-      "Error": [
-         null,
-         "Error"
-      ],
-      "Connecting": [
-         null,
-         "Connecting"
-      ],
-      "Connection Failed": [
-         null,
-         "Connection Failed"
-      ],
-      "Authenticating": [
-         null,
-         "Authenticating"
-      ],
-      "Authentication Failed": [
-         null,
-         "Authentication Failed"
-      ],
-      "Disconnecting": [
-         null,
-         "Disconnecting"
-      ],
-      "Online Contacts": [
-         null,
-         "Online Contacts"
-      ],
-      "Re-establishing encrypted session": [
-         null,
-         "Re-establishing encrypted session"
-      ],
-      "Generating private key.": [
-         null,
-         ""
-      ],
-      "Your browser might become unresponsive.": [
-         null,
-         ""
-      ],
-      "Authentication request from %1$s\n\nYour buddy is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-         null,
-         ""
-      ],
-      "Could not verify this user's identify.": [
-         null,
-         ""
-      ],
-      "Exchanging private key with buddy.": [
-         null,
-         ""
-      ],
-      "Personal message": [
-         null,
-         "Personal message"
-      ],
-      "Are you sure you want to clear the messages from this room?": [
-         null,
-         "You are not on the member list of this room"
-      ],
-      "me": [
-         null,
-         ""
-      ],
-      "Show this menu": [
-         null,
-         "Show this menu"
-      ],
-      "Write in the third person": [
-         null,
-         "Write in the third person"
-      ],
-      "Remove messages": [
-         null,
-         "Remove messages"
-      ],
-      "Are you sure you want to clear the messages from this chat box?": [
-         null,
-         ""
-      ],
-      "Your message could not be sent": [
-         null,
-         ""
-      ],
-      "We received an unencrypted message": [
-         null,
-         ""
-      ],
-      "We received an unreadable encrypted message": [
-         null,
-         ""
-      ],
-      "This user has requested an encrypted session.": [
-         null,
-         ""
-      ],
-      "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-         null,
-         ""
-      ],
-      "You will be prompted to provide a security question and then an answer to that question.\n\nYour buddy will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-         null,
-         ""
-      ],
-      "What is your security question?": [
-         null,
-         ""
-      ],
-      "What is the answer to the security question?": [
-         null,
-         ""
-      ],
-      "Invalid authentication scheme provided": [
-         null,
-         ""
-      ],
-      "Your messages are not encrypted anymore": [
-         null,
-         ""
-      ],
-      "Your messages are now encrypted but your buddy's identity has not been verified.": [
-         null,
-         ""
-      ],
-      "Your buddy's identify has been verified.": [
-         null,
-         ""
-      ],
-      "Your buddy has ended encryption on their end, you should do the same.": [
-         null,
-         ""
-      ],
-      "Your messages are not encrypted. Click here to enable OTR encryption.": [
-         null,
-         ""
-      ],
-      "Your messages are encrypted, but your buddy has not been verified.": [
-         null,
-         ""
-      ],
-      "Your messages are encrypted and your buddy verified.": [
-         null,
-         ""
-      ],
-      "Your buddy has closed their end of the private session, you should do the same": [
-         null,
-         ""
-      ],
-      "End encrypted conversation": [
-         null,
-         ""
-      ],
-      "Refresh encrypted conversation": [
-         null,
-         ""
-      ],
-      "Start encrypted conversation": [
-         null,
-         ""
-      ],
-      "Verify with fingerprints": [
-         null,
-         ""
-      ],
-      "Verify with SMP": [
-         null,
-         ""
-      ],
-      "What's this?": [
-         null,
-         ""
-      ],
-      "Online": [
-         null,
-         "Online"
-      ],
-      "Busy": [
-         null,
-         "Busy"
-      ],
-      "Away": [
-         null,
-         "Away"
-      ],
-      "Offline": [
-         null,
-         "Offline"
-      ],
-      "Contacts": [
-         null,
-         "Contacts"
-      ],
-      "Contact name": [
-         null,
-         "Contact name"
-      ],
-      "Search": [
-         null,
-         "Search"
-      ],
-      "Contact username": [
-         null,
-         "Contact username"
-      ],
-      "Add": [
-         null,
-         "Add"
-      ],
-      "Click to add new chat contacts": [
-         null,
-         "Click to add new chat contacts"
-      ],
-      "Add a contact": [
-         null,
-         "Add a contact"
-      ],
-      "No users found": [
-         null,
-         "No users found"
-      ],
-      "Click to add as a chat contact": [
-         null,
-         "Click to add as a chat contact"
-      ],
-      "Room name": [
-         null,
-         "Room name"
-      ],
-      "Nickname": [
-         null,
-         "Nickname"
-      ],
-      "Server": [
-         null,
-         "Server"
-      ],
-      "Join": [
-         null,
-         "Join"
-      ],
-      "Show rooms": [
-         null,
-         "Show rooms"
-      ],
-      "Rooms": [
-         null,
-         "Rooms"
-      ],
-      "No rooms on %1$s": [
-         null,
-         "No rooms on %1$s"
-      ],
-      "Rooms on %1$s": [
-         null,
-         "Rooms on %1$s"
-      ],
-      "Click to open this room": [
-         null,
-         "Click to open this room"
-      ],
-      "Show more information on this room": [
-         null,
-         "Show more information on this room"
-      ],
-      "Description:": [
-         null,
-         "Description:"
-      ],
-      "Occupants:": [
-         null,
-         "Occupants:"
-      ],
-      "Features:": [
-         null,
-         "Features:"
-      ],
-      "Requires authentication": [
-         null,
-         "Requires authentication"
-      ],
-      "Hidden": [
-         null,
-         "Hidden"
-      ],
-      "Requires an invitation": [
-         null,
-         "Requires an invitation"
-      ],
-      "Moderated": [
-         null,
-         "Moderated"
-      ],
-      "Non-anonymous": [
-         null,
-         "Non-anonymous"
-      ],
-      "Open room": [
-         null,
-         "Open room"
-      ],
-      "Permanent room": [
-         null,
-         "Permanent room"
-      ],
-      "Public": [
-         null,
-         "Public"
-      ],
-      "Semi-anonymous": [
-         null,
-         "Semi-anonymous"
-      ],
-      "Temporary room": [
-         null,
-         "Temporary room"
-      ],
-      "Unmoderated": [
-         null,
-         "Unmoderated"
-      ],
-      "Set chatroom topic": [
-         null,
-         "Set chatroom topic"
-      ],
-      "Kick user from chatroom": [
-         null,
-         "Kick user from chatroom"
-      ],
-      "Ban user from chatroom": [
-         null,
-         "Ban user from chatroom"
-      ],
-      "Message": [
-         null,
-         "Message"
-      ],
-      "Save": [
-         null,
-         "Save"
-      ],
-      "Cancel": [
-         null,
-         "Cancel"
-      ],
-      "An error occurred while trying to save the form.": [
-         null,
-         "An error occurred while trying to save the form."
-      ],
-      "This chatroom requires a password": [
-         null,
-         "This chatroom requires a password"
-      ],
-      "Password: ": [
-         null,
-         "Password: "
-      ],
-      "Submit": [
-         null,
-         "Submit"
-      ],
-      "This room is not anonymous": [
-         null,
-         "This room is not anonymous"
-      ],
-      "This room now shows unavailable members": [
-         null,
-         "This room now shows unavailable members"
-      ],
-      "This room does not show unavailable members": [
-         null,
-         "This room does not show unavailable members"
-      ],
-      "Non-privacy-related room configuration has changed": [
-         null,
-         "Non-privacy-related room configuration has changed"
-      ],
-      "Room logging is now enabled": [
-         null,
-         "Room logging is now enabled"
-      ],
-      "Room logging is now disabled": [
-         null,
-         "Room logging is now disabled"
-      ],
-      "This room is now non-anonymous": [
-         null,
-         "This room is now non-anonymous"
-      ],
-      "This room is now semi-anonymous": [
-         null,
-         "This room is now semi-anonymous"
-      ],
-      "This room is now fully-anonymous": [
-         null,
-         "This room is now fully-anonymous"
-      ],
-      "A new room has been created": [
-         null,
-         "A new room has been created"
-      ],
-      "Your nickname has been changed": [
-         null,
-         "Your nickname has been changed"
-      ],
-      "<strong>%1$s</strong> has been banned": [
-         null,
-         "<strong>%1$s</strong> has been banned"
-      ],
-      "<strong>%1$s</strong> has been kicked out": [
-         null,
-         "<strong>%1$s</strong> has been kicked out"
-      ],
-      "<strong>%1$s</strong> has been removed because of an affiliation change": [
-         null,
-         "<strong>%1$s</strong> has been removed because of an affiliation change"
-      ],
-      "<strong>%1$s</strong> has been removed for not being a member": [
-         null,
-         "<strong>%1$s</strong> has been removed for not being a member"
-      ],
-      "You have been banned from this room": [
-         null,
-         "You have been banned from this room"
-      ],
-      "You have been kicked from this room": [
-         null,
-         "You have been kicked from this room"
-      ],
-      "You have been removed from this room because of an affiliation change": [
-         null,
-         "You have been removed from this room because of an affiliation change"
-      ],
-      "You have been removed from this room because the room has changed to members-only and you're not a member": [
-         null,
-         "You have been removed from this room because the room has changed to members-only and you're not a member"
-      ],
-      "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-         null,
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down."
-      ],
-      "You are not on the member list of this room": [
-         null,
-         "You are not on the member list of this room"
-      ],
-      "No nickname was specified": [
-         null,
-         "No nickname was specified"
-      ],
-      "You are not allowed to create new rooms": [
-         null,
-         "You are not allowed to create new rooms"
-      ],
-      "Your nickname doesn't conform to this room's policies": [
-         null,
-         "Your nickname doesn't conform to this room's policies"
-      ],
-      "Your nickname is already taken": [
-         null,
-         "Your nickname is already taken"
-      ],
-      "This room does not (yet) exist": [
-         null,
-         "This room does not (yet) exist"
-      ],
-      "This room has reached it's maximum number of occupants": [
-         null,
-         "This room has reached it's maximum number of occupants"
-      ],
-      "Topic set by %1$s to: %2$s": [
-         null,
-         "Topic set by %1$s to: %2$s"
-      ],
-      "This user is a moderator": [
-         null,
-         "This user is a moderator"
-      ],
-      "This user can send messages in this room": [
-         null,
-         "This user can send messages in this room"
-      ],
-      "This user can NOT send messages in this room": [
-         null,
-         "This user can NOT send messages in this room"
-      ],
-      "Click to restore this chat": [
-         null,
-         "Click to remove this contact"
-      ],
-      "Minimized": [
-         null,
-         ""
-      ],
-      "Are you sure you want to remove this contact?": [
-         null,
-         "Click to remove this contact"
-      ],
-      "Click to remove this contact": [
-         null,
-         "Click to remove this contact"
-      ],
-      "Accept": [
-         null,
-         ""
-      ],
-      "Decline": [
-         null,
-         "Online"
-      ],
-      "Click to chat with this contact": [
-         null,
-         "Click to chat with this contact"
-      ],
-      "My contacts": [
-         null,
-         "My contacts"
-      ],
-      "Contact requests": [
-         null,
-         "Contact requests"
-      ],
-      "Pending contacts": [
-         null,
-         "Pending contacts"
-      ],
-      "Custom status": [
-         null,
-         "Custom status"
-      ],
-      "online": [
-         null,
-         "online"
-      ],
-      "busy": [
-         null,
-         "busy"
-      ],
-      "away for long": [
-         null,
-         "away for long"
-      ],
-      "away": [
-         null,
-         "away"
-      ],
-      "I am %1$s": [
-         null,
-         "I am %1$s"
-      ],
-      "Click here to write a custom status message": [
-         null,
-         "Click here to write a custom status message"
-      ],
-      "Click to change your chat status": [
-         null,
-         "Click to change your chat status"
-      ],
-      "XMPP/Jabber Username:": [
-         null,
-         "XMPP/Jabber Username:"
-      ],
-      "Password:": [
-         null,
-         "Password:"
-      ],
-      "Log In": [
-         null,
-         "Log In"
-      ],
-      "Sign in": [
-         null,
-         "Sign in"
-      ],
-      "Toggle chat": [
-         null,
-         ""
-      ],
-      "BOSH Service URL:": [
-         null,
-         "BOSH Service URL:"
-      ],
-      "Connected": [
-         null,
-         "Connected"
-      ],
-      "Attached": [
-         null,
-         "Attached"
-      ]
+   "domain": "converse",
+   "locale_data": {
+      "converse": {
+         "": {
+            "domain": "converse",
+            "plural_forms": "nplurals=2; plural=(n != 1);",
+            "lang": "en"
+         },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
+         "unencrypted": [
+            null,
+            "unencrypted"
+         ],
+         "unverified": [
+            null,
+            "unverified"
+         ],
+         "verified": [
+            null,
+            "verified"
+         ],
+         "finished": [
+            null,
+            "finished"
+         ],
+         "This contact is busy": [
+            null,
+            ""
+         ],
+         "This contact is online": [
+            null,
+            ""
+         ],
+         "This contact is offline": [
+            null,
+            ""
+         ],
+         "This contact is unavailable": [
+            null,
+            ""
+         ],
+         "This contact is away for an extended period": [
+            null,
+            ""
+         ],
+         "This contact is away": [
+            null,
+            ""
+         ],
+         "My contacts": [
+            null,
+            "My contacts"
+         ],
+         "Pending contacts": [
+            null,
+            "Pending contacts"
+         ],
+         "Contact requests": [
+            null,
+            "Contact requests"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Contacts": [
+            null,
+            "Contacts"
+         ],
+         "Groups": [
+            null,
+            ""
+         ],
+         "Error": [
+            null,
+            "Error"
+         ],
+         "Connecting": [
+            null,
+            "Connecting"
+         ],
+         "Authenticating": [
+            null,
+            "Authenticating"
+         ],
+         "Authentication Failed": [
+            null,
+            "Authentication Failed"
+         ],
+         "Re-establishing encrypted session": [
+            null,
+            "Re-establishing encrypted session"
+         ],
+         "Generating private key.": [
+            null,
+            ""
+         ],
+         "Your browser might become unresponsive.": [
+            null,
+            ""
+         ],
+         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+            null,
+            ""
+         ],
+         "Could not verify this user's identify.": [
+            null,
+            ""
+         ],
+         "Exchanging private key with contact.": [
+            null,
+            ""
+         ],
+         "Personal message": [
+            null,
+            "Personal message"
+         ],
+         "me": [
+            null,
+            ""
+         ],
+         "is typing": [
+            null,
+            ""
+         ],
+         "has stopped typing": [
+            null,
+            ""
+         ],
+         "has gone away": [
+            null,
+            ""
+         ],
+         "Show this menu": [
+            null,
+            "Show this menu"
+         ],
+         "Write in the third person": [
+            null,
+            "Write in the third person"
+         ],
+         "Remove messages": [
+            null,
+            "Remove messages"
+         ],
+         "Are you sure you want to clear the messages from this chat box?": [
+            null,
+            ""
+         ],
+         "Your message could not be sent": [
+            null,
+            ""
+         ],
+         "We received an unencrypted message": [
+            null,
+            ""
+         ],
+         "We received an unreadable encrypted message": [
+            null,
+            ""
+         ],
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+            null,
+            ""
+         ],
+         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+            null,
+            ""
+         ],
+         "What is your security question?": [
+            null,
+            ""
+         ],
+         "What is the answer to the security question?": [
+            null,
+            ""
+         ],
+         "Invalid authentication scheme provided": [
+            null,
+            ""
+         ],
+         "has gone offline": [
+            null,
+            ""
+         ],
+         "Your messages are not encrypted anymore": [
+            null,
+            ""
+         ],
+         "Your messages are now encrypted but your contact's identity has not been verified.": [
+            null,
+            ""
+         ],
+         "Your contact's identify has been verified.": [
+            null,
+            ""
+         ],
+         "Your contact has ended encryption on their end, you should do the same.": [
+            null,
+            ""
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            ""
+         ],
+         "Your messages are encrypted, but your contact has not been verified.": [
+            null,
+            ""
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            ""
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            ""
+         ],
+         "End encrypted conversation": [
+            null,
+            ""
+         ],
+         "Hide the list of participants": [
+            null,
+            ""
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            ""
+         ],
+         "Start a call": [
+            null,
+            ""
+         ],
+         "Start encrypted conversation": [
+            null,
+            ""
+         ],
+         "Verify with fingerprints": [
+            null,
+            ""
+         ],
+         "Verify with SMP": [
+            null,
+            ""
+         ],
+         "What's this?": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "Online"
+         ],
+         "Busy": [
+            null,
+            "Busy"
+         ],
+         "Away": [
+            null,
+            "Away"
+         ],
+         "Offline": [
+            null,
+            "Offline"
+         ],
+         "Contact name": [
+            null,
+            "Contact name"
+         ],
+         "Search": [
+            null,
+            "Search"
+         ],
+         "Contact username": [
+            null,
+            "Contact username"
+         ],
+         "Add": [
+            null,
+            "Add"
+         ],
+         "Click to add new chat contacts": [
+            null,
+            "Click to add new chat contacts"
+         ],
+         "Add a contact": [
+            null,
+            "Add a contact"
+         ],
+         "No users found": [
+            null,
+            "No users found"
+         ],
+         "Click to add as a chat contact": [
+            null,
+            "Click to add as a chat contact"
+         ],
+         "Room name": [
+            null,
+            "Room name"
+         ],
+         "Nickname": [
+            null,
+            "Nickname"
+         ],
+         "Server": [
+            null,
+            "Server"
+         ],
+         "Show rooms": [
+            null,
+            "Show rooms"
+         ],
+         "Rooms": [
+            null,
+            "Rooms"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "No rooms on %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "Rooms on %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Click to open this room"
+         ],
+         "Show more information on this room": [
+            null,
+            "Show more information on this room"
+         ],
+         "Description:": [
+            null,
+            "Description:"
+         ],
+         "Occupants:": [
+            null,
+            "Occupants:"
+         ],
+         "Features:": [
+            null,
+            "Features:"
+         ],
+         "Requires authentication": [
+            null,
+            "Requires authentication"
+         ],
+         "Hidden": [
+            null,
+            "Hidden"
+         ],
+         "Requires an invitation": [
+            null,
+            "Requires an invitation"
+         ],
+         "Moderated": [
+            null,
+            "Moderated"
+         ],
+         "Non-anonymous": [
+            null,
+            "Non-anonymous"
+         ],
+         "Open room": [
+            null,
+            "Open room"
+         ],
+         "Permanent room": [
+            null,
+            "Permanent room"
+         ],
+         "Public": [
+            null,
+            "Public"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi-anonymous"
+         ],
+         "Temporary room": [
+            null,
+            "Temporary room"
+         ],
+         "Unmoderated": [
+            null,
+            "Unmoderated"
+         ],
+         "This user is a moderator": [
+            null,
+            "This user is a moderator"
+         ],
+         "This user can send messages in this room": [
+            null,
+            "This user can send messages in this room"
+         ],
+         "This user can NOT send messages in this room": [
+            null,
+            "This user can NOT send messages in this room"
+         ],
+         "Invite...": [
+            null,
+            ""
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            ""
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Message": [
+            null,
+            "Message"
+         ],
+         "Error: could not execute the command": [
+            null,
+            ""
+         ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
+         "Remove user's ability to post messages": [
+            null,
+            ""
+         ],
+         "Change your nickname": [
+            null,
+            ""
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
+            null,
+            ""
+         ],
+         "Allow muted user to post messages": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Save"
+         ],
+         "Cancel": [
+            null,
+            "Cancel"
+         ],
+         "An error occurred while trying to save the form.": [
+            null,
+            "An error occurred while trying to save the form."
+         ],
+         "This chatroom requires a password": [
+            null,
+            "This chatroom requires a password"
+         ],
+         "Password: ": [
+            null,
+            "Password: "
+         ],
+         "Submit": [
+            null,
+            "Submit"
+         ],
+         "This room is not anonymous": [
+            null,
+            "This room is not anonymous"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "This room now shows unavailable members"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "This room does not show unavailable members"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Non-privacy-related room configuration has changed"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Room logging is now enabled"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Room logging is now disabled"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "This room is now non-anonymous"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "This room is now semi-anonymous"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "This room is now fully-anonymous"
+         ],
+         "A new room has been created": [
+            null,
+            "A new room has been created"
+         ],
+         "You have been banned from this room": [
+            null,
+            "You have been banned from this room"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "You have been kicked from this room"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "You have been removed from this room because of an affiliation change"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "You have been removed from this room because the room has changed to members-only and you're not a member"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "You have been removed from this room because the MUC (Multi-user chat) service is being shut down."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> has been banned"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> has been kicked out"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> has been removed because of an affiliation change"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> has been removed for not being a member"
+         ],
+         "The reason given is: \"": [
+            null,
+            ""
+         ],
+         "You are not on the member list of this room": [
+            null,
+            "You are not on the member list of this room"
+         ],
+         "No nickname was specified": [
+            null,
+            "No nickname was specified"
+         ],
+         "You are not allowed to create new rooms": [
+            null,
+            "You are not allowed to create new rooms"
+         ],
+         "Your nickname doesn't conform to this room's policies": [
+            null,
+            "Your nickname doesn't conform to this room's policies"
+         ],
+         "Your nickname is already taken": [
+            null,
+            "Your nickname is already taken"
+         ],
+         "This room does not (yet) exist": [
+            null,
+            "This room does not (yet) exist"
+         ],
+         "This room has reached it's maximum number of occupants": [
+            null,
+            "This room has reached it's maximum number of occupants"
+         ],
+         "Topic set by %1$s to: %2$s": [
+            null,
+            "Topic set by %1$s to: %2$s"
+         ],
+         "%1$s has invited you to join a chat room: %2$s": [
+            null,
+            ""
+         ],
+         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
+            null,
+            ""
+         ],
+         "Minimized": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "Click to remove this contact"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Click to chat with this contact"
+         ],
+         "Type to filter": [
+            null,
+            ""
+         ],
+         "I am %1$s": [
+            null,
+            "I am %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "Click here to write a custom status message"
+         ],
+         "Click to change your chat status": [
+            null,
+            "Click to change your chat status"
+         ],
+         "Custom status": [
+            null,
+            "Custom status"
+         ],
+         "online": [
+            null,
+            "online"
+         ],
+         "busy": [
+            null,
+            "busy"
+         ],
+         "away for long": [
+            null,
+            "away for long"
+         ],
+         "away": [
+            null,
+            "away"
+         ],
+         "Your XMPP provider's domain name:": [
+            null,
+            ""
+         ],
+         "Fetch registration form": [
+            null,
+            ""
+         ],
+         "Tip: A list of public XMPP providers is available": [
+            null,
+            ""
+         ],
+         "here": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            ""
+         ],
+         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
+            null,
+            ""
+         ],
+         "Requesting a registration form from the XMPP server": [
+            null,
+            ""
+         ],
+         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+            null,
+            ""
+         ],
+         "Now logging you in": [
+            null,
+            ""
+         ],
+         "Registered successfully": [
+            null,
+            ""
+         ],
+         "Return": [
+            null,
+            ""
+         ],
+         "The provider rejected your registration attempt. ": [
+            null,
+            ""
+         ],
+         "Password:": [
+            null,
+            "Password:"
+         ],
+         "Log In": [
+            null,
+            "Log In"
+         ],
+         "Sign in": [
+            null,
+            "Sign in"
+         ],
+         "Toggle chat": [
+            null,
+            ""
+         ]
+      }
    }
 }

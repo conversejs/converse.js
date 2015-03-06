@@ -1,9 +1,11 @@
 module.exports = function(grunt) {
+    var path = require('path');
     var cfg = require('./package.json');
     grunt.initConfig({
         jst: {
             compile: {
                 options: {
+                    namespace: 'templates',
                     templateSettings: {
                         evaluate : /\{\[([\s\S]+?)\]\}/g,
                         interpolate : /\{\{([\s\S]+?)\}\}/g
@@ -17,6 +19,20 @@ module.exports = function(grunt) {
                 files: {
                     "builds/templates.js": ["src/templates/*.html"]
                 },
+            }
+        },
+
+        json: {
+            main: {
+                options: {
+                    namespace: 'locales',
+                    includePath: true,
+                    processName: function(filename) {
+                        return filename.toLowerCase().match(/^locale\/(.*)\/lc_messages/)[1];
+                    }
+                },
+                src: ['locale/**/LC_MESSAGES/*.json'],
+                dest: 'builds/locales.js'
             }
         },
 
@@ -47,12 +63,18 @@ module.exports = function(grunt) {
                 dest: 'css/converse.min.css',
                 src: ['css/converse.css']
             }
+        },
+        touch: {
+            npm: ['stamp-npm'],
+            bower: ['stamp-bower']
         }
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jst');
+    grunt.loadNpmTasks('grunt-json');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-touch');
 
     grunt.registerTask('test', 'Run Tests', function () {
         var done = this.async();
@@ -91,23 +113,26 @@ module.exports = function(grunt) {
         var child_process = require('child_process');
         var exec = child_process.exec;
         var callback = function (err, stdout, stderr) {
+            grunt.log.write(stdout);
             if (err) {
                 grunt.log.write('build failed with error code '+err.code);
                 grunt.log.write(stderr);
-            }
-            grunt.log.write(stdout);
-            done();
+                done(false);
+            } else
+                done();
         };
-        exec('./node_modules/requirejs/bin/r.js -o src/build.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build.js optimize=none out=builds/converse.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-jquery.js &&' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-otr.js &&' +
-             './node_modules/requirejs/bin/r.js -o src/build-no-otr.js optimize=none out=builds/converse-no-otr.js && ' +
-             './node_modules/requirejs/bin/r.js -o src/build-website-no-otr.js &&' +
-             './node_modules/requirejs/bin/r.js -o src/build-website.js', callback);
+        var rjsext = (process.platform === 'win32') ? '.cmd' : '';
+        var rjs = path.resolve('./node_modules/.bin/r.js' + rjsext);
+        exec(rjs + ' -o src/build.js && ' +
+             rjs + ' -o src/build.js optimize=none out=builds/converse.js && ' +
+             rjs + ' -o src/build-no-jquery.js &&' +
+             rjs + ' -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js && ' +
+             rjs + ' -o src/build-no-locales-no-otr.js && ' +
+             rjs + ' -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js && ' +
+             rjs + ' -o src/build-no-otr.js &&' +
+             rjs + ' -o src/build-no-otr.js optimize=none out=builds/converse-no-otr.js && ' +
+             rjs + ' -o src/build-website-no-otr.js &&' +
+             rjs + ' -o src/build-website.js', callback);
         // XXX: It might be possible to not have separate build config files. For example:
         // 'r.js -o src/build.js paths.converse-dependencies=src/deps-no-otr paths.locales=locale/nolocales out=builds/converse-no-locales-no-otr.min.js'
     });

@@ -1,6 +1,6 @@
-this["JST"] = this["JST"] || {};
+this["templates"] = this["templates"] || {};
 
-this["JST"]["action"] = function(obj) {
+this["templates"]["action"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -20,7 +20,7 @@ __p += '<div class="chat-message ' +
 return __p
 };
 
-this["JST"]["add_contact_dropdown"] = function(obj) {
+this["templates"]["add_contact_dropdown"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -34,7 +34,7 @@ __p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-sea
 return __p
 };
 
-this["JST"]["add_contact_form"] = function(obj) {
+this["templates"]["add_contact_form"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -48,23 +48,23 @@ __p += '<li>\n    <form class="add-xmpp-contact">\n        <input type="text"\n 
 return __p
 };
 
-this["JST"]["change_status_message"] = function(obj) {
+this["templates"]["change_status_message"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<form id="set-custom-xmpp-status">\n    <input type="text" class="custom-xmpp-status" ' +
+__p += '<form id="set-custom-xmpp-status">\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" ' +
 ((__t = (status_message)) == null ? '' : __t) +
-'\n        placeholder="' +
+'\n            placeholder="' +
 ((__t = (label_custom_status)) == null ? '' : __t) +
-'"/>\n    <button type="submit">' +
+'"/>\n        <button type="submit">' +
 ((__t = (label_save)) == null ? '' : __t) +
-'</button>\n</form>\n';
+'</button>\n    </span>\n</form>\n';
 
 }
 return __p
 };
 
-this["JST"]["chat_status"] = function(obj) {
+this["templates"]["chat_status"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -86,7 +86,7 @@ __p += '<div class="xmpp-status">\n    <a class="choose-xmpp-status ' +
 return __p
 };
 
-this["JST"]["chatarea"] = function(obj) {
+this["templates"]["chatarea"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -103,7 +103,7 @@ __p += '\n        <textarea type="text" class="chat-textarea" \n            plac
 return __p
 };
 
-this["JST"]["chatbox"] = function(obj) {
+this["templates"]["chatbox"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -134,7 +134,7 @@ __p += '\n        <textarea\n            type="text"\n            class="chat-te
 return __p
 };
 
-this["JST"]["chatroom"] = function(obj) {
+this["templates"]["chatroom"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -153,7 +153,7 @@ __p += '>\n    <div class="dragresize dragresize-tm"></div>\n    <div class="cha
 return __p
 };
 
-this["JST"]["chatroom_password_form"] = function(obj) {
+this["templates"]["chatroom_password_form"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -161,7 +161,7 @@ __p += '<div class="chatroom-form-container">\n    <form class="chatroom-form">\
 ((__t = (heading)) == null ? '' : __t) +
 '</legend>\n        <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
-'<input type="password" name="password"/></label>\n        <input type="submit" value="' +
+'</label>\n        <input type="password" name="password"/>\n        <input type="submit" value="' +
 ((__t = (label_submit)) == null ? '' : __t) +
 '"/>\n    </form>\n</div>\n';
 
@@ -169,7 +169,7 @@ __p += '<div class="chatroom-form-container">\n    <form class="chatroom-form">\
 return __p
 };
 
-this["JST"]["chatroom_sidebar"] = function(obj) {
+this["templates"]["chatroom_sidebar"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -183,7 +183,7 @@ __p += '<!-- <div class="participants"> -->\n<form class="room-invite">\n    <in
 return __p
 };
 
-this["JST"]["chatrooms_tab"] = function(obj) {
+this["templates"]["chatrooms_tab"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -195,7 +195,7 @@ __p += '<li><a class="s" href="#chatrooms">' +
 return __p
 };
 
-this["JST"]["chats_panel"] = function(obj) {
+this["templates"]["chats_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -205,7 +205,7 @@ __p += '<div id="minimized-chats">\n    <a id="toggle-minimized-chats" href="#">
 return __p
 };
 
-this["JST"]["choose_status"] = function(obj) {
+this["templates"]["choose_status"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -215,7 +215,7 @@ __p += '<dl id="target" class="dropdown">\n    <dt id="fancy-xmpp-status-select"
 return __p
 };
 
-this["JST"]["contacts_panel"] = function(obj) {
+this["templates"]["contacts_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -240,7 +240,7 @@ __p += '\n        </select>\n    </span>\n</form>\n';
 return __p
 };
 
-this["JST"]["contacts_tab"] = function(obj) {
+this["templates"]["contacts_tab"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -252,7 +252,7 @@ __p += '<li><a class="s current" href="#users">' +
 return __p
 };
 
-this["JST"]["controlbox"] = function(obj) {
+this["templates"]["controlbox"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -264,7 +264,7 @@ __p += '<div class="box-flyout" style="height: ' +
 return __p
 };
 
-this["JST"]["controlbox_toggle"] = function(obj) {
+this["templates"]["controlbox_toggle"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -276,7 +276,7 @@ __p += '<span class="conn-feedback">' +
 return __p
 };
 
-this["JST"]["field"] = function(obj) {
+this["templates"]["field"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -303,7 +303,7 @@ __p += '</field>\n';
 return __p
 };
 
-this["JST"]["form_captcha"] = function(obj) {
+this["templates"]["form_captcha"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -330,7 +330,7 @@ __p += ' >\n\n\n';
 return __p
 };
 
-this["JST"]["form_checkbox"] = function(obj) {
+this["templates"]["form_checkbox"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -348,7 +348,7 @@ __p += '<label>' +
 return __p
 };
 
-this["JST"]["form_input"] = function(obj) {
+this["templates"]["form_input"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -379,7 +379,7 @@ __p += ' >\n';
 return __p
 };
 
-this["JST"]["form_select"] = function(obj) {
+this["templates"]["form_select"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -400,7 +400,7 @@ __p += '>' +
 return __p
 };
 
-this["JST"]["form_textarea"] = function(obj) {
+this["templates"]["form_textarea"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -416,7 +416,7 @@ __p += '<label class="label-ta">' +
 return __p
 };
 
-this["JST"]["form_username"] = function(obj) {
+this["templates"]["form_username"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -449,7 +449,7 @@ __p += ' />\n    <span>' +
 return __p
 };
 
-this["JST"]["group_header"] = function(obj) {
+this["templates"]["group_header"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -465,7 +465,7 @@ __p += '<a href="#" class="group-toggle icon-' +
 return __p
 };
 
-this["JST"]["info"] = function(obj) {
+this["templates"]["info"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -477,7 +477,7 @@ __p += '<div class="chat-info">' +
 return __p
 };
 
-this["JST"]["login_panel"] = function(obj) {
+this["templates"]["login_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -493,7 +493,7 @@ __p += '<form id="converse-login" method="post">\n    <label>' +
 return __p
 };
 
-this["JST"]["login_tab"] = function(obj) {
+this["templates"]["login_tab"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -505,7 +505,7 @@ __p += '<li><a class="current" href="#login-dialog">' +
 return __p
 };
 
-this["JST"]["message"] = function(obj) {
+this["templates"]["message"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -525,7 +525,7 @@ __p += '<div class="chat-message ' +
 return __p
 };
 
-this["JST"]["new_day"] = function(obj) {
+this["templates"]["new_day"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -539,7 +539,7 @@ __p += '<time class="chat-date" datetime="' +
 return __p
 };
 
-this["JST"]["occupant"] = function(obj) {
+this["templates"]["occupant"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -572,11 +572,15 @@ __p += '\n>' +
 return __p
 };
 
-this["JST"]["pending_contact"] = function(obj) {
+this["templates"]["pending_contact"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span class="pending-contact-name">' +
+__p += '<span class="pending-contact-name" title="Name: ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\nJID: ' +
+((__t = (jid)) == null ? '' : __t) +
+'">' +
 ((__t = (fullname)) == null ? '' : __t) +
 '</span> <a class="remove-xmpp-contact icon-remove" title="' +
 ((__t = (desc_remove)) == null ? '' : __t) +
@@ -586,7 +590,7 @@ __p += '<span class="pending-contact-name">' +
 return __p
 };
 
-this["JST"]["pending_contacts"] = function(obj) {
+this["templates"]["pending_contacts"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -602,7 +606,7 @@ __p += '<dt id="pending-xmpp-contacts"><a href="#" class="group-toggle icon-' +
 return __p
 };
 
-this["JST"]["register_panel"] = function(obj) {
+this["templates"]["register_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -624,7 +628,7 @@ __p += '<form id="converse-register">\n    <span class="reg-feedback"></span>\n 
 return __p
 };
 
-this["JST"]["register_tab"] = function(obj) {
+this["templates"]["register_tab"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -636,7 +640,7 @@ __p += '<li><a class="s" href="#register">' +
 return __p
 };
 
-this["JST"]["registration_form"] = function(obj) {
+this["templates"]["registration_form"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -656,7 +660,7 @@ __p += '<p class="provider-title">' +
 return __p
 };
 
-this["JST"]["registration_request"] = function(obj) {
+this["templates"]["registration_request"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -670,11 +674,15 @@ __p += '<span class="spinner login-submit"/>\n<p class="info">' +
 return __p
 };
 
-this["JST"]["requesting_contact"] = function(obj) {
+this["templates"]["requesting_contact"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span class="req-contact-name">' +
+__p += '<span class="req-contact-name" title="Name: ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\nJID: ' +
+((__t = (jid)) == null ? '' : __t) +
+'">' +
 ((__t = (fullname)) == null ? '' : __t) +
 '</span>\n<span class="request-actions">\n    <a class="accept-xmpp-request icon-checkmark" title="' +
 ((__t = (desc_accept)) == null ? '' : __t) +
@@ -686,7 +694,7 @@ __p += '<span class="req-contact-name">' +
 return __p
 };
 
-this["JST"]["requesting_contacts"] = function(obj) {
+this["templates"]["requesting_contacts"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -702,7 +710,7 @@ __p += '<dt id="xmpp-contact-requests"><a href="#" class="group-toggle icon-' +
 return __p
 };
 
-this["JST"]["room_description"] = function(obj) {
+this["templates"]["room_description"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -789,7 +797,7 @@ __p += '\n    </ul>\n</p>\n</div>\n';
 return __p
 };
 
-this["JST"]["room_item"] = function(obj) {
+this["templates"]["room_item"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -809,49 +817,59 @@ __p += '<dd class="available-chatroom">\n<a class="open-room" data-room-jid="' +
 return __p
 };
 
-this["JST"]["room_panel"] = function(obj) {
+this["templates"]["room_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<form class="add-chatroom" action="" method="post">\n    <input type="text" name="chatroom" class="new-chatroom-name"\n        placeholder="' +
+__p += '<form class="add-chatroom" action="" method="post">\n    <label>' +
 ((__t = (label_room_name)) == null ? '' : __t) +
-'"/>\n    <input type="text" name="nick" class="new-chatroom-nick"\n        placeholder="' +
+'</label>\n    <input type="text" name="chatroom" class="new-chatroom-name"\n        placeholder="' +
+((__t = (label_room_name)) == null ? '' : __t) +
+'"/>\n    <label>' +
 ((__t = (label_nickname)) == null ? '' : __t) +
-'"/>\n    <input type="' +
+'</label>\n    <input type="text" name="nick" class="new-chatroom-nick"\n        placeholder="' +
+((__t = (label_nickname)) == null ? '' : __t) +
+'"/>\n    <label>' +
+((__t = (label_server)) == null ? '' : __t) +
+'</label>\n    <input type="' +
 ((__t = (server_input_type)) == null ? '' : __t) +
 '" name="server" class="new-chatroom-server"\n        placeholder="' +
 ((__t = (label_server)) == null ? '' : __t) +
-'"/>\n    <input type="submit" name="join" value="' +
+'"/>\n    <div class="button-group">\n        <input type="submit" class="left" name="join" value="' +
 ((__t = (label_join)) == null ? '' : __t) +
-'"/>\n    <input type="button" name="show" id="show-rooms" value="' +
+'"/>\n        <input type="button" class="right" name="show" id="show-rooms" value="' +
 ((__t = (label_show_rooms)) == null ? '' : __t) +
-'"/>\n</form>\n<dl id="available-chatrooms"></dl>\n';
+'"/>\n    </div>\n</form>\n<dl id="available-chatrooms"></dl>\n';
 
 }
 return __p
 };
 
-this["JST"]["roster"] = function(obj) {
+this["templates"]["roster"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<input style="display: none;" class="roster-filter" placeholder="' +
+__p += '<span class="input-button-group">\n    <input style="display: none;" class="roster-filter" placeholder="' +
 ((__t = (placeholder)) == null ? '' : __t) +
-'">\n<select style="display: none;" class="filter-type">\n    <option value="contacts">' +
+'">\n    <select style="display: none;" class="filter-type">\n        <option value="contacts">' +
 ((__t = (label_contacts)) == null ? '' : __t) +
-'</option>\n    <option value="groups">' +
+'</option>\n        <option value="groups">' +
 ((__t = (label_groups)) == null ? '' : __t) +
-'</option>\n</select>\n';
+'</option>\n    </select>\n</span>\n';
 
 }
 return __p
 };
 
-this["JST"]["roster_item"] = function(obj) {
+this["templates"]["roster_item"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<a class="open-chat" title="' +
+__p += '<a class="open-chat" title="Name: ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\nJID: ' +
+((__t = (jid)) == null ? '' : __t) +
+'\n' +
 ((__t = (desc_chat)) == null ? '' : __t) +
 '" href="#"><span class="icon-' +
 ((__t = (chat_status)) == null ? '' : __t) +
@@ -867,7 +885,7 @@ __p += '<a class="open-chat" title="' +
 return __p
 };
 
-this["JST"]["search_contact"] = function(obj) {
+this["templates"]["search_contact"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -881,7 +899,7 @@ __p += '<li>\n    <form class="search-xmpp-contact">\n        <input type="text"
 return __p
 };
 
-this["JST"]["select_option"] = function(obj) {
+this["templates"]["select_option"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -900,7 +918,7 @@ __p += ' >' +
 return __p
 };
 
-this["JST"]["status_option"] = function(obj) {
+this["templates"]["status_option"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -918,7 +936,7 @@ __p += '<li>\n    <a href="#" class="' +
 return __p
 };
 
-this["JST"]["toggle_chats"] = function(obj) {
+this["templates"]["toggle_chats"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -939,7 +957,7 @@ __p += '\n    href="#">' +
 return __p
 };
 
-this["JST"]["toolbar"] = function(obj) {
+this["templates"]["toolbar"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -1022,7 +1040,7 @@ __p += '\n';
 return __p
 };
 
-this["JST"]["trimmed_chat"] = function(obj) {
+this["templates"]["trimmed_chat"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }

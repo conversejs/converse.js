@@ -8,6 +8,8 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var Strophe = converse_api.env.Strophe;
+    var $iq = converse_api.env.$iq;
 
     describe("The Registration Panel", $.proxy(function (mock, test_utils) {
         beforeEach(function () {

@@ -8,6 +8,8 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var b64_sha1 = converse_api.env.b64_sha1;
+
     return describe("The OTR module", $.proxy(function(mock, test_utils) {
 
         beforeEach($.proxy(function () {

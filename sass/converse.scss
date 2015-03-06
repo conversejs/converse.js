@@ -33,7 +33,11 @@
 #conversejs {
   @import "../bourbon/bourbon";
   @import "variables";
-  
+
+  ::selection {
+    background-color: $highlight-color;
+  }
+
   color: $text-color;
   font-size: $font-size;
   bottom: 0;
@@ -79,7 +83,7 @@
   input[type=text], input[type=password],
   button {
     font-size: $font-size;
-    padding: 0.5em;
+    padding: 0.25em;
     min-height: 0;
   }
 
@@ -228,6 +232,12 @@
     font-size: $font-size;
   }
 
+  .left {
+      float: left;
+   } 
+   .right {
+       float: right;
+   }
   .hidden {
     display: none;
   }
@@ -287,6 +297,18 @@
     span {
       color: $inverse-link-color;
     }
+  }
+
+  .button-group,
+  .input-button-group {
+    display: table;
+  }
+  .button-group {
+    width: 100%;
+  }
+  .input-button-group button,
+  .input-button-group input {
+    display: table-cell;
   }
 
   #minimized-chats {
@@ -396,11 +418,6 @@
     border-left: 1px solid #176679;
   }
 
-  .chat-message span::selection,
-  .chat-message::selection {
-    background-color: darkgrey;
-  }
-
   .chat-content {
     position: relative;
     padding: 8px;
@@ -411,7 +428,7 @@
     background-color: #ffffff;
     line-height: 1.3em;
     height: 206px;
-    height: calc(100% - #{$toolbar-height + $chat-textarea-height});
+    height: calc(100% - #{$toolbar-height + $chat-textarea-height + 2});
   }
 
   .chat-info {
@@ -715,11 +732,9 @@
     height: calc(100% - 68px);
     overflow: hidden;
 
-    .roster-filter-group {
-        display: table;
-    }
     .filter-type {
       display: table-cell;
+      float: right;
       font-size: $font-size;
       height: $controlbox-dropdown-height;
       margin: 0 0 0.5em -1px;
@@ -727,15 +742,15 @@
       width: 84px;
     }
     .roster-filter {
+      float: left;
       background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
       border: 1px solid #999;
-      display: table-cell;
       font-size: $font-size;
       height: $controlbox-dropdown-height;
-      margin: 0 0 0.5em 6px;
+      margin: 0 0 0.5em 7px;
       padding: 0;
       padding: 2px;
-      width: 104px;
+      width: 103px;
     }
     /* (jQ addClass:) if input has value: */
     .roster-filter.x {
@@ -763,6 +778,8 @@
     }
     dd {
       line-height: 16px;
+      padding: 4px 2px 0 4px;
+      height: 24px;
       a, span {
         text-shadow: 0 1px 0 $link-shadow-color;
         display: inline-block;
@@ -773,7 +790,6 @@
       }
       span {
         padding: 0 5px 0 0;
-        margin-left: 3px;
       }
       a {
          &.decline-xmpp-request {
@@ -806,20 +822,13 @@
       }
     }
     span {
-      &.pending-contact-name,
-      &.req-contact-name {
+      &.pending-contact-name {
         width: 80%;
       }
-    }
-  }
-
-  dd.available-chatroom {
-    display: inline-block;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    a.open-room {
-      width: 148px;
+      &.req-contact-name {
+        width: 69%;
+        padding: 0;
+      }
     }
   }
 
@@ -832,7 +841,7 @@
     font-weight: normal;
     color: $text-color;
     border: none;
-    padding: 5px;
+    padding: 0.5em;
     text-shadow: 0 1px 0 $text-shadow-color;
   }
 
@@ -860,9 +869,7 @@
 
   a {
     &.room-info {
-      width: 22px;
-      height: 22px;
-      float: right;
+      width: 15px;
       display: none;
       clear: right;
     }
@@ -874,10 +881,20 @@
     }
   }
 
+  dd.available-chatroom {
+    display: inline-block;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    padding: 0.25em 0.5em;
+    white-space: nowrap;
+    a.open-room {
+      width: 150px;
+    }
+  }
+
   dd.available-chatroom:hover a.room-info {
     display: inline-block;
-    margin-top: 3px;
-    font-size: 15px;
+    font-size: 14px;
   }
 
   dd.available-chatroom,
@@ -885,11 +902,9 @@
     font-weight: bold;
     border: none;
     display: block;
-    padding: 4px 2px 0 4px;
     color: $text-color;
     text-shadow: 0 1px 0 $text-shadow-color;
     clear: both;
-    height: 24px;
     overflow-y: hidden;
   }
 
@@ -916,6 +931,7 @@
         width: $mobile-chat-width;
     }
     .box-flyout {
+      z-index: 1;
       width: $chat-width;
         @media screen and (max-width: $mobile_landscape_length) {
             width: $mobile-chat-width;
@@ -947,8 +963,12 @@
           }
         }
       }
-      dd.search-xmpp ul li:hover {
-        background-color: $light-background-color;
+      dd.search-xmpp ul {
+        box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
+
+        li:hover {
+            background-color: $light-background-color;
+        }
       }
       dt a span {
         cursor: pointer;
@@ -1089,7 +1109,7 @@
     width: 100%;
     height: 30px;
     margin: 5px 0 10px 0;
-    padding: 0.5em;
+    padding-left: 0.5em;
   }
 
   #converse-register {
@@ -1142,17 +1162,23 @@
 
   form.add-chatroom {
     background: none;
-    padding: 8px;
+    padding: 0.5em;
 
     input[type=button],
     input[type=submit],
     input[type=text] {
       margin: 0;
       width: 100%;
-      padding: 5px;
+      padding: 0.25em;
+    }
+    span.spinner,
+    input[type=button],
+    input[type=submit] {
+      margin-top: 0.5em;
+      display: table-cell;
+      width: auto;
     }
     input[type=submit] {
-      margin: 5px 0;
       color: $save-button-color;
     }
   }
@@ -1211,7 +1237,7 @@
           border-bottom: 1px solid $border-color;
           border-top-left-radius: 4px;
           border-top-right-radius: 4px;
-          box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.3);
+          box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
           color: #888;
           display: block;
           font-size: 12px;
@@ -1247,8 +1273,11 @@
     margin: 0;
     padding: 0;
     position: relative;
-    width: $chat-width;
     height: #{$chat-textarea-height + $toolbar-height};
+    width: $chat-width;
+    @media screen and (max-width: $mobile_landscape_length) {
+        width: 100%;
+    }
     .chat-textarea {
       @include border-bottom-radius(4px);
       border: 0;
@@ -1363,16 +1392,15 @@
     float: left;
     padding: 0;
     input {
-      height: $controlbox-dropdown-height - 2px;
+      height: $controlbox-dropdown-height + 1px;
+      @include calc(width, '100% - 40px');
+      padding: 0 0 0 0.5em;
     }
     button {
-      height: $controlbox-dropdown-height - 2px;
+      height: $controlbox-dropdown-height + 1px;
       width: 40px;
-      padding: 1px 2px 1px 1px;
+      padding: 1px;
     }
-  }
-  .custom-xmpp-status {
-    @include calc(width, '100% - 40px');
   }
 
   .chat-textarea-chatbox-selected {
@@ -1414,14 +1442,16 @@
     padding: 5px;
     input {
       margin: 0 0 1rem;
+      width: 100%;
     }
     button {
-        width: 100%;
+      width: 100%;
     }
   }
 
   .xmpp-status-menu {
     text-align: left;
+    box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
     li {
       padding: 2px;
       a {

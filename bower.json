@@ -1,6 +1,8 @@
 {
-  "name": "converse",
-  "version": "0.8.6",
+  "name": "converse.js",
+  "description": "Web-based XMPP/Jabber chat client written in javascript",
+  "version": "0.9.0",
+  "license": "MPL",
   "devDependencies": {
     "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
     "otr": "0.2.12",
@@ -8,29 +10,28 @@
     "requirejs-tpl-jcbrand": "*"
   },
   "dependencies": {
-    "requirejs": "2.1.11",
+    "requirejs": "~2.1.15",
     "jquery": "1.11.0",
     "jed": "0.5.4",
     "underscore": "1.6.0",
     "backbone": "1.1.2",
     "backbone.browserStorage": "*",
     "backbone.overview": "*",
-    "strophe": "~1.1.3",
-    "strophe.muc": "https://raw.githubusercontent.com/strophe/strophejs-plugins/master/muc/strophe.muc.js",
     "otr": "0.2.12",
     "crypto-js-evanvosberg": "~3.1.2",
-    "almond": "~0.2.9",
+    "almond": "~0.3.0",
     "requirejs-text": "~2.0.12",
     "requirejs-tpl-jcbrand": "*",
     "momentjs": "~2.6.0",
-    "jquery.browser": "https://raw.githubusercontent.com/jcbrand/jquery-browser-plugin/ae5e88aa7a26f583e8865c3961ba857918c4c9c1/dist/jquery.browser.js",
+    "jquery.browser": ">=0.0.7",
     "jquery-easing-original": "https://raw.githubusercontent.com/jcbrand/jquery.easing/7de3458b1845a72c1f407debf6b223c8446396bf/jquery.easing.1.3.js",
     "bootstrap": "~3.2.0",
     "bootstrapJS": "https://raw.githubusercontent.com/jcbrand/bootstrap/7d96a5f60d26c67b5348b270a775518b96a702c8/dist/js/bootstrap.js",
     "fontawesome": "~4.1.0",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js",
-    "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#conversejs",
-    "skeleton-sass": "~2.0.3"
+    "skeleton-sass": "~2.0.3",
+    "strophejs": "https://github.com/strophe/strophejs.git#9e285eaa59f4ceb2b25e4d95c5bbe90690251bbc",
+    "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#amd"
   },
   "exportsOverride": {}
 }

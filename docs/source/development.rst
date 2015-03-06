@@ -1,3 +1,5 @@
+.. _development:
+
 ===========
 Development
 ===========
@@ -12,6 +14,8 @@ follow the instructions below to create this folder and fetch Converse's
 3rd-party dependencies.
 
 .. note::
+    Windows environment: We recommend installing the required tools using `Chocolatey <https://chocolatey.org/>`_
+    You will need Node.js (nodejs.install), Git (git.install) and optionally to build using Makefile, GNU Make (make)
     If you have trouble setting up a development environment on Windows,
     please read `this post <http://librelist.com/browser//conversejs/2014/11/5/openfire-converse-and-visual-studio-questions/#b28387e7f8f126693b11598a8acbe810>`_
     in the mailing list.:
@@ -27,6 +31,9 @@ version `here <https://nodejs.org/download>`_.
 
 Also make sure you have ``Git`` installed. `Details <http://git-scm.com/book/en/Getting-Started-Installing-Git>`_.
 
+.. note::
+    Windows users should use Chocolatey as recommended above.:
+
 Once you have *Node.js* and *git* installed, run the following command inside the Converse.js
 directory:
 
@@ -34,13 +41,18 @@ directory:
 
     make dev
 
+On Windows you need to specify Makefile.win to be used by running:
+    
+::
+    make -f Makefile.win dev
+    
 Or alternatively, if you don't have GNU Make:
 
 ::
 
     npm install
     bower update
-
+    
 This will first install the Node.js development tools (like Grunt and Bower)
 and then use Bower to install all of Converse.js's front-end dependencies.
 
@@ -63,7 +75,6 @@ If you are curious to know what the different dependencies are:
     If this directory does NOT exist, something must have gone wrong.
     Double-check the output of ```make dev``` to see if there are any errors
     listed. For support, you can write to the mailing list: conversejs@librelist.com
-
 
 With AMD and require.js (recommended)
 =====================================
@@ -152,7 +163,6 @@ which you can then call certain standardised accessors and mutators, like::
     .get
     .set
     .add
-    .all
     .remove
 
 This is done to increase readability and to allow intuitive method chaining.
@@ -164,6 +174,10 @@ For example, to get a contact, you would do the following::
 To get multiple contacts, just pass in an array of jids::
 
     converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
+
+To get all contacts, simply call ``get`` without any jids::
+
+    converse.contacts.get();
 
 
 **Here follows now a breakdown of all API groupings and methods**:
@@ -207,14 +221,22 @@ Example:
 get
 ~~~
 
-Returns a map of attributes for a given buddy (i.e. roster contact), specified
-by JID (Jabber ID).
+This method is used to retrieve roster contacts.
 
-Example::
+To get a single roster contact, call the method with the contact's JID (Jabber ID):
 
     converse.contacts.get('buddy@example.com')
 
-The map of attributes:
+To get multiple contacts, pass in an array of JIDs::
+
+    converse.contacts.get(['buddy1@example.com', 'buddy2@example.com'])
+
+To return all contacts, simply call ``get`` without any parameters::
+
+    converse.contacts.get()
+
+
+The returned roster contact objects have these attributes:
 
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 | Attribute      |                                                                                                                                      |
@@ -256,11 +278,35 @@ The map of attributes:
 get
 ~~~
 
-Returns an object/map representing a chat box (without opening or affecting that chat box). 
+Returns an object representing a chat box, if that chat box is already open.
+If the chat box is not already open, this method will return ``null``.
 
-Example::
+To return a single chat box, provide the JID of the contact you're chatting
+with in that chat box::
 
     converse.chats.get('buddy@example.com')
+
+To return an array of chat boxes, provide an array of JIDs::
+
+    converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+
+To return all open chat boxes, call the method without any JIDs::
+
+    converse.chats.get()
+
+open
+~~~~
+
+Opens a chat box and returns an object representing a chat box.
+
+To open a single chat box, provide the JID of the contact::
+
+    converse.chats.get('buddy@example.com')
+
+To return an array of chat boxes, provide an array of JIDs::
+
+    converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+
 
 *The returned chat box contains the following methods:*
 
@@ -279,6 +325,8 @@ Example::
 +-------------+------------------------------------------+
 | set         | Set an attribute (i.e. mutator).         |
 +-------------+------------------------------------------+
+| close       | Close the chat box.                      |
++-------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*
 
@@ -289,6 +337,36 @@ Example::
 +-------------+-----------------------------------------------------+
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
+
+"settings" grouping
+-------------------
+
+This grouping allows you to get or set the configuration settings of converse.js.
+
+get(key)
+~~~~~~~~
+
+Returns the value of a configuration settings. For example::
+
+    converse.settings.get("play_sounds"); // default value returned would be false;
+
+set(key, value) or set(object)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set one or many configuration settings. For example::
+
+    converse.settings.set("play_sounds", true);
+
+or ::
+
+    converse.settings.set({
+        "play_sounds", true,
+        "hide_offline_users" true
+    });
+
+Note, this is not an alternative to calling ``converse.initialize``, which still needs
+to be called. Generally, you'd use this method after converse.js is already
+running and you want to change the configuration on-the-fly.
 
 "tokens" grouping
 -----------------

@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Converse.js (Non-AMD Example)</title>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Converse.js: Open Source Browser-Based Instant Messaging" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="author" content="JC Brand" />
+    <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="components/otr/build/dep/salsa20.js"></script>
     <script type="text/javascript" src="src/bigint.js"></script>
     <!-- CryptoJS -->
@@ -25,176 +31,43 @@
     <!-- until here -->
     <script type="text/javascript" src="components/otr/build/dep/eventemitter.js"></script>
     <script type="text/javascript" src="src/otr.js"></script>
-    <script type="text/javascript" src="components/strophe/strophe.js"></script>
-    <script type="text/javascript" src="components/strophe.roster/index.js"></script>
-    <script type="text/javascript" src="components/strophe.muc/index.js"></script>
-    <script type="text/javascript" src="components/strophe.vcard/index.js"></script>
-    <script type="text/javascript" src="components/strophe.disco/index.js"></script>
+    <script type="text/javascript" src="components/strophe/strophe.min.js"></script>
+    <script type="text/javascript" src="src/strophe.roster.js"></script>
+    <script type="text/javascript" src="components/strophejs-plugins/vcard/strophe.vcard.js"></script>
+    <script type="text/javascript" src="components/strophejs-plugins/disco/strophe.disco.js"></script>
     <script type="text/javascript" src="components/underscore/underscore.js"></script>
     <script type="text/javascript" src="components/backbone//backbone.js"></script>
     <script type="text/javascript" src="components/backbone.browserStorage/backbone.browserStorage.js"></script>
     <script type="text/javascript" src="components/backbone.overview/backbone.overview.js"></script>
     <script type="text/javascript" src="components/momentjs/moment.js"></script>
     <script type="text/javascript" src="components/jquery.browser/dist/jquery.browser.js"></script>
-    <script type="text/javascript" src="components/typeahead.js/dist/typeahead.jquery.js"></script>
+    <script type="text/javascript" src="components/typeahead.js/index.js"></script>
     <script type="text/javascript" src="components/jed/jed.js"></script>
-    <script type="text/javascript" src="locale/en/LC_MESSAGES/en.js"></script>
+    <script type="text/javascript" src="builds/locales.js"></script>
     <script type="text/javascript" src="builds/templates.js"></script>
     <script type="text/javascript" src="src/utils.js"></script>
     <script type="text/javascript" src="converse.js"></script>
-    <title>Converse.js</title>
 </head>
-<body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-    <header class="inner">
-        <a id="forkme_banner" href="https://github.com/jcbrand/converse.js">View on GitHub</a>
-        <h1 id="project_title"><a href="http://conversejs.org">Converse.js</a></h1>
-        <h2 id="project_tagline">Non-AMD Test Page</h2>
-        <section id="downloads">
-            <a class="zip_download_link" href="https://github.com/jcbrand/converse.js/archive/v0.4.zip">Download the latest release as a .zip file</a>
-            <a class="tar_download_link" href="https://github.com/jcbrand/converse.js/archive/v0.4.tar.gz">Download the latest release as a tar.gz file</a>
-        </section>
-    </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-    <section id="main_content" class="inner">
-
-    <p><strong>Converse.js</strong> is an open source, webchat client, that
-    runs in the browser and can be integrated into any website.</p>
-
-    <p>It's similar to <a href="https://www.facebook.com/sitetour/chat.php" target="_blank">Facebook chat</a>, but also supports multi-user chatrooms.</p>
-
-    <p><em>Converse.js</em> can connect to any accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server, either from a public provider such as
-    <a href="http://jabber.org">jabber.org</a>, or to one you have set up
-    yourself.</a>
-
-    <p>It's possible to enable single-site login, whereby users already authenticated in your website will also automatically be logged in on the chat server,
-    but you will have to pre-authenticate them on your server. You can refer to the <a href="/docs/html/index.html">documentation</a> for more
-    info.</p>
-
-    <p>An <a href="http://github.com/collective/collective.xmpp.chat" target="_blank">add-on product</a> that does exactly this,
-    already exists for the <a href="http://plone.org" target="_blank">Plone</a> CMS. Hopefully in the future more such add-ons will
-    be created for other platforms.
-   </p>
-
-    <p>If you have integrated <em>Converse.js</em> into any other CMS or framework,
-    <a href="http://opkode.com/contact.html" target="_blank">please let me know</a> and I'll mention it on this page.</p>
-
-    <h2>Features</h2>
-    <ul>
-        <li>Single-user chat</li>
-        <li>Multi-user chat in chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html">XEP 45</a>)</li>
-        <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html">XEP 54</a>)</li>
-        <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html">XEP 30</a>)</li>
-        <li>Contact rosters</li>
-        <li>Manually or automically subscribe to other contacts</li>
-        <li>Accept or decline contact requests</li>
-        <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html">XEP 144</a>)</li>
-        <li>Chat statuses (online, busy, away, offline)</li>
-        <li>Custom status messages</li>
-        <li>Typing notifications</li>
-        <li>Third person messages (/me )</li>
-        <li>i18n aware</li>
-    </ul>
-
-    <h2>Screencasts</h2>
-    <ul>
-        <li><a href="http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp" target="_blank">Screencast 1</a>:
-            Integrated into a Plone site via <strong>collective.xmpp.chat</strong>.
-        </li>
-        <li><a href="http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript" target="_blank">Screencast 2</a>:
-            A static HTML page with <em>Converse.js</em>. Here we chat to external XMPP accounts on Jabber.org and Gmail.
-        </li>
-    </ul>
-
-    <h2>Demo</h2>
-    <p>You can log in with any existing XMPP account. There is also a list of public XMPP providers on <a href="http://xmpp.net" target="_blank">xmpp.net</a>.</p>
-    <p><em><strong>Note:</strong> currently the demo doesn't work in Internet Explorer older
-    than 10. This is due to lacking support for <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>,
-    a standard which enables cross-domain XmlHttpRequests. There are ways
-    around this, but it hasn't been a priority for me to implement them for
-    this demo.
-   </p>
-   <p>
-        See <a href="/docs/html/index.html#overcoming-cross-domain-request-restrictions" target="_blank">here</a> for more information.
-    </p>
-    </em>
-
-    <h3>Is it secure?</h3>
-    <p>Yes. In this demo <em>Converse.js</em> makes an
-    <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer" target="_blank">SSL</a> encrypted connection to a secure connection manager. 
-    The connection manager then uses SSL and <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a> to connect to an XMPP server.</p>
-    That said, the developers don't assume any liability for any loss or damages as a result of using this software or demo. Use this demo at your own risk. 
-
-    <h3>Session support</h3>
-    <p>
-        The chat client will disconnect whenever you reload the page. If you
-        want the user's session to persist across page reloads, you can
-        establish an authenticated connection on the server side and then attach to
-        this connection in your browser.
-   </p>
-    <p><em>Converse.js</em> already supports this usecase, but you'll have to do some integration work yourself.</p>
-
-
-    <h2>Documentation</h2>
-    <p>
-        The documentation is still a bit sparse and a work in progress.
-        Nevertheless, you can read what's already written <a href="/docs/html/index.html" target="_blank">here</a>.
-    </p>
-
-    <h2>Tests</h2>
-    <p>
-        We use the <a href="http://pivotal.github.io/jasmine"
-        target="_blank">Jasmine</a> testing framework to write tests.
-        The tests can be run in the browser and can be viewed <a href="http://conversejs.org/tests.html" target="_blank">here</a>.
-    </p>
-
-    <h2>Credits and Dependencies</h2>
-    <p><strong>Converse.js</strong> depends on a few third party libraries, including: 
-    <ul>
-        <li><a href="http://jquery.com" target="_blank">JQuery</a></li>
-        <li><a href="http://strophe.im/strophejs" target="_blank">strophe.js</a></li>
-        <li><a href="http://backbonejs.org" target="_blank">backbone.js</a></li>
-        <li><a href="http://requirejs.org" target="_blank">require.js</a> (optional dependency)</li>
-    </ul>
-    </p>
-    <p>Some images were taken from <a href="http://plone.org" target="_blank">Plone</a> and the
-    <a href="http://openiconlibrary.sourceforge.net" target="_blank">Open Icon Library</a>.
-
-    <h2>Licence</h2>
-    <p><strong>Converse.js</strong> is released under both the <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT</a> 
-    and <a href="http://opensource.org/licenses/GPL-2.0" target="_blank">GPL</a> licenses.</p>
-
-    <h2>Contact</h2>
-    <p>You can follow me on <strong><a href="http://twitter.com/jcopkode" target="_blank">Twitter</a></strong> and <strong><a href="http://identi.ca/opkode" target="_blank">Identica</a></strong></p>
-    <p>My XMPP username is <strong>jc@opkode.im</strong>.</p>
-    <p>Send me an email via this <a href="http://opkode.com/contact" target="_blank">contact form</a>.</p>
-</section>
-
-</div>
-
-<!-- FOOTER  -->
-<div id="footer_wrap" class="outer">
-    <footer class="inner">
-    <p class="copyright">Converse.js created by <a href="http://opkode.com" target="_blank">jcbrand</a></p>
-    </footer>
-</div>
-
-<div id="conversejs"></div>
-
-<script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">try { var pageTracker = _gat._getTracker("UA-2128260-8"); pageTracker._trackPageview(); } catch(err) {}</script>
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+    <section class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
+                        <p class="intro-text">Example page without require.js and AMD module loading.</p>
+                        <div class="page-scroll">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
+
 <script>
     converse.initialize({
-        bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
         prebind: false,
         show_controlbox_by_default: true,

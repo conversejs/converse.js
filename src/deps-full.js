@@ -3,21 +3,20 @@ define("converse-dependencies", [
     "utils",
     "otr",
     "moment",
-    "locales",
+    "strophe",
+    "strophe.roster",
+    "strophe.vcard",
+    "strophe.disco",
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",
-    "typeahead",
-    "strophe",
-    "strophe.muc",
-    "strophe.roster",
-    "strophe.vcard",
-    "strophe.disco"
-], function($, utils, otr, moment) {
-    return {
+    "typeahead"
+], function($, utils, otr, moment, Strophe) {
+    return _.extend({
+        'underscore': _,
         'jQuery': $,
-        'moment': moment,
         'otr': otr,
+        'moment': moment,
         'utils': utils
-    };
+    }, Strophe);
 });

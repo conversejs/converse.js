@@ -1,12 +1,28 @@
 Changelog
 =========
 
-0.8.8 (Unreleased)
+0.9.0 (2015-03-06)
 ------------------
 
-* Norwegian Bokmål translations. [Andreas Lorentsen]
-* Updated Afrikaans translations. [jcbrand]
+* #204 Support websocket connections. [jcbrand]
+* #252, 253 Add fullname and jid to contact's tooltip in roster. [gbonvehi]
+* #292 Better support for XEP-0085 Chat State Notifications. [jcbrand]
+* #295 Document "allow_registration". [gbonvehi]
+* #304 Added Polish translations. [ser]
+* #305 presence/show text in XMPP request isn't allowed by specification. [gbonvehi]
+* Add new API method ``chats.open`` to open chat boxes. [jcbrand]
+* Add new API method to set and get configuration settings. [jcbrand]
 * Add responsiveness to CSS. We now use Sass preprocessor for generating CSS. [jcbrand]
+* Bugfix. Custom status message form doesn't submit/disappear. [jcbrand]
+* Calling the API method ``contacts.get()`` without parameters now returns all contacts. [jcbrand]
+* Don't send out the message carbons IQ stanza on each page load. [jcbrand]
+* New Makefile.win to build in Windows environments. [gbonvehi]
+* Norwegian Bokmål translations. [Andreas Lorentsen]
+* Removed deprecated API methods. [jcbrand]
+* Strophe.log and Strophe.error now uses converse.log to output messages. [gbonvehi]
+* The API method ``chats.get`` now only returns already opened chat boxes. [jcbrand]
+* Updated Afrikaans translations. [jcbrand]
+* Add new configuration setting `prebind_url <https://conversejs.org/docs/html/configuration.html#prebind-url>`_ [jcbrand]
 
 0.8.6 (2014-12-07)
 ------------------
@@ -61,7 +77,7 @@ Changelog
 
 * Converse.js now has the ability to maintain sessions across page loads.
   Previously, the session tokens had to be handled externally and passed in.
-  See the `keepalive <https://conversejs.org/docs/html/index.html#keepalive>`_ configuration setting. [jcbrand]
+  See the `keepalive <https://conversejs.org/docs/html/configuration.html#keepalive>`_ configuration setting. [jcbrand]
 * Allow changing of nickname in a chat room via /nick command. [jcbrand]
 * Allow a chat room user to be muted or unmuted with the /mute and /voice commands. [jcbrand]
 * Add a chat room toolbar button for toggling the list of participants. [jcbrand]
@@ -92,7 +108,7 @@ Changelog
 
 .. note::
     1. Converse.js is now relicensed under the `Mozilla Public License <http://www.mozilla.org/MPL/2.0/>`_.
-    2. Configuration options for the chat toolbar have changed. Please refer to the `relevant documentation <http://devbox:8890/docs/html/index.html#visible-toolbar-buttons>`_.
+    2. Configuration options for the chat toolbar have changed. Please refer to the `relevant documentation <http://devbox:8890/docs/html/configuration.html#visible-toolbar-buttons>`_.
     3. This release has reduced support for IE8 (some features won't work).
     4. Events have been renamed to remove "on" prefix (sorry for any inconvenience).
 
@@ -101,7 +117,7 @@ Changelog
 * Add a new toolbar button for clearing chat messages. [jcbrand]
 * Chat boxes and rooms can now be resized vertically. [jcbrand]
 * Upgraded dependencies to their latest versions. [jcbrand]
-* Add new configuration setting `forward_messages <https://conversejs.org/docs/html/index.html#forward_messages>`_
+* Add new configuration setting `forwarded_messages <https://conversejs.org/docs/html/configuration.html#forwarded-messages>`_
   Message forwarding was before a default behavior but is now optional (and disabled by default). [jcbrand]
 * Newly opened chat boxes always appear immediately left of the controlbox. [jcbrand]
 * #71 Chat boxes and rooms can be minimized. [jcbrand]
@@ -112,7 +128,7 @@ Changelog
 * #123 Show converse.js in the resource assigned to a user. [jcbrand]
 * #130 Fixed bootstrap conflicts. [jcbrand]
 * #132 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html'>`_.
-    Configured via `message_carbons <https://conversejs.org/docs/html/index.html#message_carbons>`_ [hejazee]
+    Configured via `message_carbons <https://conversejs.org/docs/html/configuration.html#message-carbons>`_ [hejazee]
 * #176 Add support for caching in sessionStorage as opposed to localStorage. [jcbrand]
 * #180 RID and SID undefined [g8g3]
 * #191 No messages history [heban]

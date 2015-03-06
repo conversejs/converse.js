@@ -12,34 +12,41 @@
         define("converse",
               ["converse-dependencies", "converse-templates"],
             function (dependencies, templates) {
-                var otr = dependencies.otr;
-                if (typeof otr !== "undefined") {
-                    return factory(
-                        dependencies.jQuery,
-                        _,
-                        otr.OTR,
-                        otr.DSA,
-                        templates,
-                        dependencies.moment,
-                        dependencies.utils
-                    );
-                } else {
-                    return factory(
-                        dependencies.jQuery,
-                        _,
-                        undefined,
-                        undefined,
-                        templates,
-                        dependencies.moment,
-                        dependencies.utils
-                    );
-                }
+                return factory(
+                    templates,
+                    dependencies.jQuery,
+                    dependencies.$iq,
+                    dependencies.$msg,
+                    dependencies.$pres,
+                    dependencies.$build,
+                    dependencies.otr ? dependencies.otr.DSA : undefined,
+                    dependencies.otr ? dependencies.otr.OTR : undefined,
+                    dependencies.Strophe,
+                    dependencies.underscore,
+                    dependencies.moment,
+                    dependencies.utils,
+                    dependencies.SHA1.b64_sha1
+                );
             }
         );
     } else {
-        root.converse = factory(jQuery, _, OTR, DSA, JST, moment, utils);
+        root.converse = factory(
+            templates,
+            jQuery,
+            $iq,
+            $msg,
+            $pres,
+            $build,
+            DSA,
+            OTR,
+            Strophe,
+            _,
+            moment,
+            utils,
+            b64_sha1
+        );
     }
-}(this, function ($, _, OTR, DSA, templates, moment, utils) {
+}(this, function (templates, $, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1) {
     // "use strict";
     // Cannot use this due to Safari bug.
     // See https://github.com/jcbrand/converse.js/issues/196
@@ -163,10 +170,16 @@
         var converse = this;
 
         // Logging
-        Strophe.log = function (level, msg) { console.log(level+' '+msg); };
-        Strophe.error = function (msg) { console.log('ERROR: '+msg); };
+        Strophe.log = function (level, msg) { converse.log(level+' '+msg, level); };
+        Strophe.error = function (msg) { converse.log(msg, 'error'); };
 
         // Add Strophe Namespaces
+        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+        Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
+        Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
+        Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
+        Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
+        Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
@@ -187,7 +200,8 @@
         var VERIFIED= 2;
         var FINISHED = 3;
         var KEY = {
-            ENTER: 13
+            ENTER: 13,
+            FORWARD_SLASH: 47
         };
         var STATUS_WEIGHTS = {
             'offline':      6,
@@ -197,11 +211,18 @@
             'dnd':          2,
             'online':       1
         };
+
+        // XEP-0085 Chat states
+        // http://xmpp.org/extensions/xep-0085.html
         var INACTIVE = 'inactive';
         var ACTIVE = 'active';
         var COMPOSING = 'composing';
         var PAUSED = 'paused';
         var GONE = 'gone';
+        this.TIMEOUTS = { // Set as module attr so that we can override in tests.
+            'PAUSED':     20000,
+            'INACTIVE':   90000
+        };
         var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
             ((typeof crypto.randomBytes === 'function') ||
                 (typeof crypto.getRandomValues === 'function')
@@ -216,12 +237,13 @@
 
         // Translation machinery
         // ---------------------
+        this.i18n = settings.i18n ? settings.i18n : locales.en;
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
 
         // Default configuration values
         // ----------------------------
-        var default_settings = {
+        this.default_settings = {
             allow_contact_requests: true,
             allow_dragresize: true,
             allow_logout: true,
@@ -241,13 +263,13 @@
             forward_messages: false,
             hide_muc_server: false,
             hide_offline_users: false,
-            i18n: locales.en,
             jid: undefined,
             keepalive: false,
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
             prebind: false,
+            prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             rid: undefined,
             roster_groups: false,
@@ -264,14 +286,15 @@
                 'clear': true,
                 'toggle_participants': true
             },
+            websocket_url: undefined,
             xhr_custom_status: false,
             xhr_custom_status_url: '',
             xhr_user_search: false,
             xhr_user_search_url: ''
         };
-        _.extend(this, default_settings);
+        _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, Object.keys(default_settings)));
+        _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
 
         if (settings.visible_toolbar_buttons) {
             _.extend(
@@ -606,7 +629,7 @@
             /* Ask the XMPP server to enable Message Carbons
              * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
              */
-            if (!this.message_carbons) {
+            if (!this.message_carbons || this.session.get('carbons_enabled')) {
                 return;
             }
             var carbons_iq = new Strophe.Builder('iq', {
@@ -615,14 +638,15 @@
                 type: 'set'
               })
               .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
-            this.connection.send(carbons_iq);
-            this.connection.addHandler(function (iq) {
+            this.connection.addHandler($.proxy(function (iq) {
                 if ($(iq).find('error').length > 0) {
                     converse.log('ERROR: An error occured while trying to enable message carbons.');
                 } else {
-                    converse.log('Message carbons appear to have been enabled.');
+                    this.session.save({carbons_enabled: true});
+                    converse.log('Message carbons have been enabled.');
                 }
-            }, null, "iq", null, "enablecarbons");
+            }, this), null, "iq", null, "enablecarbons");
+            this.connection.send(carbons_iq);
         };
 
         this.onConnected = function () {
@@ -647,11 +671,6 @@
                         // object should never be exposed to production systems.
                         // 'jasmine tests' is an invalid http bind service value,
                         // so we're sure that this is just for tests.
-                        //
-                        // TODO: We might need to consider websockets, which
-                        // probably won't use the 'service' attr. Current
-                        // strophe.js version used by converse.js doesn't support
-                        // websockets.
                         this.callback(this);
                     } else  {
                         this.callback();
@@ -711,15 +730,18 @@
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                     this.save({
+                        // The chat_state will be set to ACTIVE once the chat box is opened
+                        // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
+                        'chat_state': undefined,
                         'box_id' : b64_sha1(this.get('jid')),
                         'height': height,
                         'minimized': this.get('minimized') || false,
+                        'num_unread': this.get('num_unread') || 0,
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'time_minimized': this.get('time_minimized') || moment(),
                         'time_opened': this.get('time_opened') || moment().valueOf(),
-                        'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-                        'num_unread': this.get('num_unread') || 0,
-                        'url': ''
+                        'url': '',
+                        'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                     });
                 } else {
                     this.set({
@@ -872,56 +894,48 @@
 
             createMessage: function ($message) {
                 var body = $message.children('body').text(),
-                    composing = $message.find('composing'),
-                    paused = $message.find('paused'),
                     delayed = $message.find('delay').length > 0,
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
                     msgid = $message.attr('id'),
-                    stamp, time, sender, from;
+                    chat_state = $message.find(COMPOSING).length && COMPOSING ||
+                        $message.find(PAUSED).length && PAUSED ||
+                        $message.find(INACTIVE).length && INACTIVE ||
+                        $message.find(ACTIVE).length && ACTIVE ||
+                        $message.find(GONE).length && GONE,
+                    stamp, time, sender, from, createMessage;
 
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
                 } else {
                     from = Strophe.getBareJidFromJid($message.attr('from'));
                 }
-                fullname = (_.isEmpty(fullname)? from: fullname).split(' ')[0];
-
-                if (!body) {
-                    if (composing.length || paused.length) {
-                        // FIXME: use one attribute for chat states (e.g.
-                        // chatstate) instead of saving 'paused' and
-                        // 'composing' separately.
-                        this.messages.add({
-                            fullname: fullname,
-                            sender: 'them',
-                            delayed: delayed,
-                            time: moment().format(),
-                            composing: composing.length,
-                            paused: paused.length
-                        });
-                    }
+                fullname = (_.isEmpty(fullname) ? from: fullname).split(' ')[0];
+                if (delayed) {
+                    stamp = $message.find('delay').attr('stamp');
+                    time = stamp;
                 } else {
-                    if (delayed) {
-                        stamp = $message.find('delay').attr('stamp');
-                        time = stamp;
-                    } else {
-                        time = moment().format();
-                    }
-                    if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from == converse.bare_jid)) {
-                        sender = 'me';
-                    } else {
-                        sender = 'them';
-                    }
-                    this.messages.create({
-                        fullname: fullname,
-                        sender: sender,
-                        delayed: delayed,
-                        time: time,
-                        message: body,
-                        msgid: msgid
-                    });
+                    time = moment().format();
                 }
+                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from == converse.bare_jid)) {
+                    sender = 'me';
+                } else {
+                    sender = 'them';
+                }
+                if (!body) {
+                    createMessage = this.messages.add;
+                } else {
+                    createMessage = this.messages.create;
+                }
+                this.messages.create({
+                    chat_state: chat_state,
+                    delayed: delayed,
+                    fullname: fullname,
+                    message: body || undefined,
+                    msgid: msgid,
+                    sender: sender,
+                    time: time
+                });
             },
 
             receiveMessage: function ($message) {
@@ -961,6 +975,8 @@
                 'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'minimize',
                 'keypress textarea.chat-textarea': 'keyPressed',
+                'focus textarea.chat-textarea': 'chatBoxFocused',
+                'blur textarea.chat-textarea': 'chatBoxBlurred',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearMessages',
@@ -976,10 +992,14 @@
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
-                this.model.on('change', this.onChange, this);
+                // TODO check for changed fullname as well
+                this.model.on('change:chat_state', this.sendChatState, this);
+                this.model.on('change:chat_status', this.onChatStatusChanged, this);
+                this.model.on('change:image', this.renderAvatar, this);
+                this.model.on('change:otr_status', this.onOTRStatusChanged, this);
+                this.model.on('change:minimized', this.onMinimizedChanged, this);
+                this.model.on('change:status', this.onStatusChanged, this);
                 this.model.on('showOTRError', this.showOTRError, this);
-                // XXX: doesn't look like this event is being used?
-                this.model.on('buddyStartsOTR', this.buddyStartsOTR, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.model.on('sendMessageStanza', this.sendMessageStanza, this);
                 this.model.on('showSentOTRMessage', function (text) {
@@ -1114,12 +1134,20 @@
                         }));
                     }
                 }
-                if (message.get(COMPOSING)) {
-                    this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
-                    return;
-                } else if (message.get(PAUSED)) {
-                    this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                    return;
+                if (!message.get('message')) {
+                    if (message.get('chat_state') === COMPOSING) {
+                        this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                        return;
+                    } else if (message.get('chat_state') === PAUSED) {
+                        this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                        return;
+                    } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
+                        this.$el.find('.chat-content div.chat-event').remove();
+                        return;
+                    } else if (message.get('chat_state') === GONE) {
+                        this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
+                        return;
+                    }
                 } else {
                     this.showMessage(_.clone(message.attributes));
                 }
@@ -1130,8 +1158,7 @@
             },
 
             sendMessageStanza: function (text) {
-                /*
-                 * Sends the actual XML stanza to the XMPP server.
+                /* Sends the actual XML stanza to the XMPP server.
                  */
                 // TODO: Look in ChatPartners to see what resources we have for the recipient.
                 // if we have one resource, we sent to only that resources, if we have multiple
@@ -1140,7 +1167,7 @@
                 var bare_jid = this.model.get('jid');
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'});
+                    .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES});
                 converse.connection.send(message);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
@@ -1190,10 +1217,52 @@
                 }
             },
 
+            sendChatState: function () {
+                /* Sends a message with the status of the user in this chat session
+                 * as taken from the 'chat_state' attribute of the chat box.
+                 * See XEP-0085 Chat State Notifications.
+                 */
+                converse.connection.send(
+                    $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                        .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES})
+                );
+            },
+
+            setChatState: function (state, no_save) {
+                /* Mutator for setting the chat state of this chat session.
+                 * Handles clearing of any chat state notification timeouts and
+                 * setting new ones if necessary.
+                 * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+                 * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+                 * See XEP-0085 Chat State Notifications.
+                 *
+                 *  Parameters:
+                 *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+                 *    (no_save) no_save - Just do the cleanup or setup but don't actually save the state.
+                 */
+                if (_.contains([ACTIVE, INACTIVE, GONE], state)) {
+                    if (typeof this.chat_state_timeout !== 'undefined') {
+                        clearTimeout(this.chat_state_timeout);
+                        delete this.chat_state_timeout;
+                    }
+                } else if (state === COMPOSING) {
+                    this.chat_state_timeout = setTimeout(
+                            $.proxy(this.setChatState, this), converse.TIMEOUTS.PAUSED, PAUSED);
+                } else if (state === PAUSED) {
+                    this.chat_state_timeout = setTimeout(
+                            $.proxy(this.setChatState, this), converse.TIMEOUTS.INACTIVE, INACTIVE);
+                }
+                if (!no_save && this.model.get('chat_state') != state) {
+                    this.model.set('chat_state', state);
+                }
+                return this;
+            },
+
             keyPressed: function (ev) {
-                var $textarea = $(ev.target),
-                    message, notify, composing;
-                if(ev.keyCode == KEY.ENTER) {
+                /* Event handler for when a key is pressed in a chat box textarea.
+                 */
+                var $textarea = $(ev.target), message;
+                if (ev.keyCode == KEY.ENTER) {
                     ev.preventDefault();
                     message = $textarea.val();
                     $textarea.val('').focus();
@@ -1205,21 +1274,22 @@
                         }
                         converse.emit('messageSend', message);
                     }
-                    this.$el.data('composing', false);
-                } else if (!this.model.get('chatroom')) {
-                    // composing data is only for single user chat
-                    composing = this.$el.data('composing');
-                    if (!composing) {
-                        if (ev.keyCode != 47) {
-                            // We don't send composing messages if the message
-                            // starts with forward-slash.
-                            notify = $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                                            .c('composing', {'xmlns':'http://jabber.org/protocol/chatstates'});
-                            converse.connection.send(notify);
-                        }
-                        this.$el.data('composing', true);
-                    }
+                    this.setChatState(ACTIVE);
+                } else if (!this.model.get('chatroom')) { // chat state data is currently only for single user chat
+                    // Set chat state to composing if keyCode is not a forward-slash
+                    // (which would imply an internal command and not a message).
+                    this.setChatState(COMPOSING, ev.keyCode==KEY.FORWARD_SLASH);
                 }
+            },
+
+            chatBoxFocused: function (ev) {
+                ev.preventDefault();
+                this.setChatState(ACTIVE);
+            },
+
+            chatBoxBlurred: function (ev) {
+                ev.preventDefault();
+                this.setChatState(INACTIVE);
             },
 
             onDragResizeStart: function (ev) {
@@ -1295,11 +1365,6 @@
                 console.log("OTR ERROR:"+msg);
             },
 
-            buddyStartsOTR: function (ev) {
-                this.showHelpMessages([__('This user has requested an encrypted session.')]);
-                this.model.initiateOTR();
-            },
-
             startOTRFromToolbar: function (ev) {
                 $(ev.target).parent().parent().slideUp();
                 ev.stopPropagation();
@@ -1350,46 +1415,39 @@
                 });
             },
 
-            onChange: function (item, changed) {
-                if (_.has(item.changed, 'chat_status')) {
-                    var chat_status = item.get('chat_status'),
-                        fullname = item.get('fullname');
-                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
-                    if (this.$el.is(':visible')) {
-                        if (chat_status === 'offline') {
-                            this.showStatusNotification(fullname+' '+'has gone offline');
-                        } else if (chat_status === 'away') {
-                            this.showStatusNotification(fullname+' '+'has gone away');
-                        } else if ((chat_status === 'dnd')) {
-                            this.showStatusNotification(fullname+' '+'is busy');
-                        } else if (chat_status === 'online') {
-                            this.$el.find('div.chat-event').remove();
-                        }
-                    }
-                    converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
-                    // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
-                    converse.emit('buddyStatusChanged', item.attributes, item.get('chat_status'));
-                }
-                if (_.has(item.changed, 'status')) {
-                    this.showStatusMessage();
-                    converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
-                    // TODO: DEPRECATED AND SHOULD BE REMOVED IN 0.9.0
-                    converse.emit('buddyStatusMessageChanged', item.attributes, item.get('status'));
-                }
-                if (_.has(item.changed, 'image')) {
-                    this.renderAvatar();
-                }
-                if (_.has(item.changed, 'otr_status')) {
-                    this.renderToolbar().informOTRChange();
-                }
-                if (_.has(item.changed, 'minimized')) {
-                    if (item.get('minimized')) {
-                        this.hide();
-                    } else {
-                        this.maximize();
+            onChatStatusChanged: function (item) {
+                var chat_status = item.get('chat_status'),
+                    fullname = item.get('fullname');
+                fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
+                if (this.$el.is(':visible')) {
+                    if (chat_status === 'offline') {
+                        this.showStatusNotification(fullname+' '+__('has gone offline'));
+                    } else if (chat_status === 'away') {
+                        this.showStatusNotification(fullname+' '+__('has gone away'));
+                    } else if ((chat_status === 'dnd')) {
+                        this.showStatusNotification(fullname+' '+__('is busy'));
+                    } else if (chat_status === 'online') {
+                        this.$el.find('div.chat-event').remove();
                     }
                 }
-                // TODO check for changed fullname as well
+                converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
+            },
+
+            onStatusChanged: function (item) {
+                this.showStatusMessage();
+                converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
+            },
+
+            onOTRStatusChanged: function (item) {
+                this.renderToolbar().informOTRChange();
+            },
+
+            onMinimizedChanged: function (item) {
+                if (item.get('minimized')) {
+                    this.hide();
+                } else {
+                    this.maximize();
+                }
             },
 
             showStatusMessage: function (msg) {
@@ -1404,8 +1462,9 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (converse.connection.connected) {
                     this.model.destroy();
+                    this.setChatState(INACTIVE);
                 } else {
-                    this.model.trigger('hide');
+                    this.hide();
                 }
                 converse.emit('chatBoxClosed', this);
                 return this;
@@ -1415,7 +1474,7 @@
                 // Restores a minimized chat box
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
                     converse.refreshWebkit();
-                    this.focus();
+                    this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
                 }, this));
             },
@@ -1423,7 +1482,7 @@
             minimize: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 // Minimizes a chat box
-                this.model.minimize();
+                this.setChatState(INACTIVE).model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);
                 converse.emit('chatBoxMinimized', this);
             },
@@ -1552,6 +1611,7 @@
                     this.model.save();
                     this.initDragResize();
                 }
+                this.setChatState(ACTIVE);
                 return this;
             },
 
@@ -1731,41 +1791,51 @@
                 $('input#show-rooms').show().siblings('span.spinner').remove();
             },
 
+            onRoomsFound: function (iq) {
+                /* Handle the IQ stanza returned from the server, containing
+                 * all its public rooms.
+                 */
+                var name, jid, i, fragment,
+                    that = this,
+                    $available_chatrooms = this.$el.find('#available-chatrooms');
+                this.rooms = $(iq).find('query').find('item');
+                if (this.rooms.length) {
+                    // # For translators: %1$s is a variable and will be
+                    // # replaced with the XMPP server name
+                    $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
+                    fragment = document.createDocumentFragment();
+                    for (i=0; i<this.rooms.length; i++) {
+                        name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
+                        jid = $(this.rooms[i]).attr('jid');
+                        fragment.appendChild($(
+                            converse.templates.room_item({
+                                'name':name,
+                                'jid':jid,
+                                'open_title': __('Click to open this room'),
+                                'info_title': __('Show more information on this room')
+                                })
+                            )[0]);
+                    }
+                    $available_chatrooms.append(fragment);
+                    $('input#show-rooms').show().siblings('span.spinner').remove();
+                } else {
+                    this.informNoRoomsFound();
+                }
+                return true;
+            },
+
             updateRoomsList: function () {
-                converse.connection.muc.listRooms(
-                    this.model.get('muc_domain'),
-                    $.proxy(function (iq) { // Success
-                        var name, jid, i, fragment,
-                            that = this,
-                            $available_chatrooms = this.$el.find('#available-chatrooms');
-                        this.rooms = $(iq).find('query').find('item');
-                        if (this.rooms.length) {
-                            // # For translators: %1$s is a variable and will be
-                            // # replaced with the XMPP server name
-                            $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
-                            fragment = document.createDocumentFragment();
-                            for (i=0; i<this.rooms.length; i++) {
-                                name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
-                                jid = $(this.rooms[i]).attr('jid');
-                                fragment.appendChild($(
-                                    converse.templates.room_item({
-                                        'name':name,
-                                        'jid':jid,
-                                        'open_title': __('Click to open this room'),
-                                        'info_title': __('Show more information on this room')
-                                        })
-                                    )[0]);
-                            }
-                            $available_chatrooms.append(fragment);
-                            $('input#show-rooms').show().siblings('span.spinner').remove();
-                        } else {
-                            this.informNoRoomsFound();
-                        }
-                        return true;
-                    }, this),
-                    $.proxy(function (iq) { // Failure
-                        this.informNoRoomsFound();
-                    }, this));
+                /* Send and IQ stanza to the server asking for all rooms
+                 */
+                converse.connection.sendIQ(
+                    $iq({
+                        to: this.model.get('muc_domain'),
+                        from: converse.connection.jid,
+                        type: "get"
+                    }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
+                    this.onRoomsFound.bind(this),
+                    this.informNoRoomsFound.bind(this)
+                );
             },
 
             showRooms: function (ev) {
@@ -2088,6 +2158,7 @@
         this.ChatRoomOccupantView = Backbone.View.extend({
             tagName: 'li',
             initialize: function () {
+                this.model.on('add', this.render, this);
                 this.model.on('change', this.render, this);
                 this.model.on('destroy', this.destroy, this);
             },
@@ -2148,31 +2219,62 @@
                 this.$('.participant-list').append(view.render().$el);
             },
 
-            onChatRoomRoster: function (roster, room) {
-                var roster_size = _.size(roster),
-                    $participant_list = this.$('.participant-list'),
-                    participants = [],
-                    keys = _.keys(roster),
-                    occupant, attrs, i, nick;
-
-                for (i=0; i<roster_size; i++) {
-                    nick = Strophe.unescapeNode(keys[i]);
-                    attrs = {
-                        'id': nick,
-                        'role': roster[keys[i]].role,
-                        'nick': nick
-                    };
-                    occupant = this.model.get(nick);
-                    if (occupant) {
-                        occupant.save(attrs);
-                    } else {
-                        this.model.create(attrs);
+            parsePresence: function (pres) {
+                var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
+                var data = {
+                    id: id,
+                    nick: id,
+                    type: pres.getAttribute("type"),
+                    states: []
+                };
+                _.each(pres.childNodes, function (child) {
+                    switch (child.nodeName) {
+                        case "status":
+                            data.status = child.textContent || null;
+                            break;
+                        case "show":
+                            data.show = child.textContent || null;
+                            break;
+                        case "x":
+                            if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
+                                _.each(child.childNodes, function (item) {
+                                    switch (item.nodeName) {
+                                        case "item":
+                                            data.affiliation = item.getAttribute("affiliation");
+                                            data.role = item.getAttribute("role");
+                                            data.jid = item.getAttribute("jid");
+                                            data.nick = item.getAttribute("nick") || data.nick;
+                                            break;
+                                        case "status":
+                                            if (item.getAttribute("code")) {
+                                                data.states.push(item.getAttribute("code"));
+                                            }
+                                    }
+                                });
+                            }
                     }
+                });
+                return data;
+            },
+
+            updateOccupantsOnPresence: function (pres) {
+                var occupant;
+                var data = this.parsePresence(pres);
+                switch (data.type) {
+                    case 'error':
+                        return true;
+                    case 'unavailable':
+                        occupant = this.model.get(data.id);
+                        if (occupant) { occupant.destroy(); }
+                        break;
+                    default:
+                        occupant = this.model.get(data.id);
+                        if (occupant) {
+                            occupant.save(data);
+                        } else {
+                            this.model.create(data);
+                        }
                 }
-                _.each(_.difference(this.model.pluck('id'), keys), function (id) {
-                    this.model.get(id).destroy();
-                }, this);
-                return true;
             },
 
             initInviteWidget: function () {
@@ -2199,8 +2301,7 @@
                         __("You may optionally include a message, explaining the reason for the invitation.")
                     );
                     if (reason !== null) {
-                        converse.connection.muc.rooms[this.chatroomview.model.get('id')].directInvite(suggestion.jid, reason);
-                        converse.emit('roomInviteSent', this, suggestion.jid, reason);
+                        this.chatroomview.directInvite(suggestion.jid, reason);
                     }
                     $(ev.target).typeahead('val', '');
                 }, this));
@@ -2236,12 +2337,7 @@
                     }
                 }, this);
                 this.model.on('destroy', function (model, response, options) {
-                    this.hide();
-                    converse.connection.muc.leave(
-                        this.model.get('jid'),
-                        this.model.get('nick'),
-                        $.proxy(this.onLeave, this),
-                        undefined);
+                    this.hide().leave();
                 },
                 this);
 
@@ -2251,7 +2347,7 @@
                 this.occupantsview.chatroomview = this;
                 this.render();
                 this.occupantsview.model.fetch({add:true});
-                this.connect(null);
+                this.join(null);
                 converse.emit('chatRoomOpened', this);
 
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
@@ -2314,69 +2410,165 @@
                 }
             },
 
+            directInvite: function (receiver, reason) {
+                var attrs = {
+                    xmlns: 'jabber:x:conference',
+                    jid: this.model.get('jid')
+                };
+                if (reason !== null) { attrs.reason = reason; }
+                if (this.model.get('password')) { attrs.password = this.model.get('password'); }
+                var invitation = $msg({
+                    from: converse.connection.jid,
+                    to: receiver,
+                    id: converse.connection.getUniqueId()
+                }).c('x', attrs);
+                converse.connection.send(invitation);
+                converse.emit('roomInviteSent', this, receiver, reason);
+            },
+
             onCommandError: function (stanza) {
                 this.showStatusNotification(__("Error: could not execute the command"), true);
             },
 
             createChatRoomMessage: function (text) {
+                var msgid = converse.connection.getUniqueId();
+                var msg = $msg({
+                    to: this.model.get('jid'),
+                    from: converse.connection.jid,
+                    type: 'groupchat',
+                    id: msgid
+                }).c("body").t(text).up()
+                  .c("x", {xmlns: "jabber:x:event"}).c("composing");
+                converse.connection.send(msg);
+
                 var fullname = converse.xmppstatus.get('fullname');
                 this.model.messages.create({
                     fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
                     sender: 'me',
                     time: moment().format(),
                     message: text,
-                    msgid: converse.connection.muc.groupchat(this.model.get('jid'), text, undefined, String((new Date()).getTime()))
+                    msgid: msgid
                 });
             },
 
+            setAffiliation: function(room, jid, affiliation, reason, onSuccess, onError) {
+                var item = $build("item", {jid: jid, affiliation: affiliation});
+                var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                if (reason !== null) { iq.c("reason", reason); }
+                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+            },
+
+            modifyRole: function(room, nick, role, reason, onSuccess, onError) {
+                var item = $build("item", {nick: nick, role: role});
+                var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                if (reason !== null) { iq.c("reason", reason); }
+                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+            },
+
+            member: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'member', reason, handler_cb, error_cb);
+            },
+            revoke: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'none', reason, handler_cb, error_cb);
+            },
+            owner: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'owner', reason, handler_cb, error_cb);
+            },
+            admin: function(room, jid, reason, handler_cb, error_cb) {
+                return this.setAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
+            },
+
             sendChatRoomMessage: function (text) {
-                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false], args;
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''];
+                var args = match[2].splitOnce(' ');
                 switch (match[1]) {
+                    case 'admin':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'admin', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
+                        break;
                     case 'ban':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.ban(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'outcast', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'clear':
                         this.clearChatRoomMessages();
                         break;
                     case 'deop':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.deop(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'participant', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'help':
                         this.showHelpMessages([
+                            '<strong>/admin</strong>: ' +__("Change user's affiliation to admin"),
                             '<strong>/ban</strong>: '   +__('Ban user from room'),
                             '<strong>/clear</strong>: ' +__('Remove messages'),
+                            '<strong>/deop</strong>: '  +__('Change user role to participant'),
                             '<strong>/help</strong>: '  +__('Show this menu'),
                             '<strong>/kick</strong>: '  +__('Kick user from room'),
                             '<strong>/me</strong>: '    +__('Write in 3rd person'),
+                            '<strong>/member</strong>: '+__('Grant membership to a user'),
                             '<strong>/mute</strong>: '  +__("Remove user's ability to post messages"),
                             '<strong>/nick</strong>: '  +__('Change your nickname'),
+                            '<strong>/op</strong>: '    +__('Grant moderator role to user'),
+                            '<strong>/owner</strong>: ' +__('Grant ownership of this room'),
+                            '<strong>/revoke</strong>: '+__("Revoke user's membership"),
                             '<strong>/topic</strong>: ' +__('Set room topic'),
                             '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
                         ]);
                         break;
                     case 'kick':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.kick(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'none', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'mute':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.mute(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'visitor', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
+                        break;
+                    case 'member':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'member', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'nick':
-                        converse.connection.muc.changeNick(this.model.get('jid'), match[2]);
+                        converse.connection.send($pres({
+                            from: converse.connection.jid,
+                            to: this.getRoomJIDAndNick(match[2]),
+                            id: converse.connection.getUniqueId()
+                        }).tree());
+                        break;
+                    case 'owner':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'owner', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'op':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.op(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'moderator', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
+                        break;
+                    case 'revoke':
+                        this.setAffiliation(
+                                this.model.get('jid'), args[0], 'none', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'topic':
-                        converse.connection.muc.setTopic(this.model.get('jid'), match[2]);
+                        converse.connection.send(
+                            $msg({
+                                to: this.model.get('jid'),
+                                from: converse.connection.jid,
+                                type: "groupchat"
+                            }).c("subject", {xmlns: "jabber:client"}).t(match[2]).tree()
+                        );
                         break;
                     case 'voice':
-                        args = match[2].splitOnce(' ');
-                        converse.connection.muc.voice(this.model.get('jid'), args[0], args[1], undefined, $.proxy(this.onCommandError, this));
+                        this.modifyRole(
+                                this.model.get('jid'), args[0], 'participant', args[1],
+                                undefined, $.proxy(this.onCommandError, this));
                         break;
                     default:
                         this.createChatRoomMessage(text);
@@ -2384,25 +2576,75 @@
                 }
             },
 
-            connect: function (password) {
-                if (_.has(converse.connection.muc.rooms, this.model.get('jid'))) {
-                    // If the room exists, it already has event listeners, so we
-                    // don't add them again.
-                    converse.connection.muc.join(
-                        this.model.get('jid'), this.model.get('nick'), null, null, null, password);
-                } else {
-                    converse.connection.muc.join(
-                        this.model.get('jid'),
-                        this.model.get('nick'),
-                        $.proxy(this.onChatRoomMessage, this),
-                        $.proxy(this.onChatRoomPresence, this),
-                        $.proxy(this.onChatRoomRoster, this),
-                        password);
+            handleMUCStanza: function (stanza) {
+                var xmlns, xquery, i;
+                var from = stanza.getAttribute('from');
+                if (!from || (this.model.get('id') !== from.split("/")[0])) {
+                    return true;
                 }
+                if (stanza.nodeName === "message") {
+                    this.onChatRoomMessage(stanza);
+                } else if (stanza.nodeName === "presence") {
+                    xquery = stanza.getElementsByTagName("x");
+                    if (xquery.length > 0) {
+                        for (i = 0; i < xquery.length; i++) {
+                            xmlns = xquery[i].getAttribute("xmlns");
+                            if (xmlns && xmlns.match(Strophe.NS.MUC)) {
+                                this.onChatRoomPresence(stanza);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return true;
             },
 
-            onLeave: function () {
-                this.model.set('connected', false);
+            getRoomJIDAndNick: function (nick) {
+                nick = nick || this.model.get('nick');
+                var room = this.model.get('jid');
+                var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
+                var domain = Strophe.getDomainFromJid(room);
+                return node + "@" + domain + (nick !== null ? "/" + nick : "");
+            },
+
+            join: function (password, history_attrs, extended_presence) {
+                var msg = $pres({
+                    from: converse.connection.jid,
+                    to: this.getRoomJIDAndNick()
+                }).c("x", {
+                    xmlns: Strophe.NS.MUC
+                });
+                if (typeof history_attrs === "object" && history_attrs.length) {
+                    msg = msg.c("history", history_attrs).up();
+                }
+                if (password) {
+                    msg.cnode(Strophe.xmlElement("password", [], password));
+                }
+                if (typeof extended_presence !== "undefined" && extended_presence !== null) {
+                    msg.up.cnode(extended_presence);
+                }
+                if (!this.handler) {
+                    this.handler = converse.connection.addHandler($.proxy(this.handleMUCStanza, this));
+                }
+                this.model.set('connection_status', Strophe.Status.CONNECTING);
+                return converse.connection.send(msg);
+            },
+
+            leave: function(exit_msg) {
+                var presenceid = converse.connection.getUniqueId();
+                var presence = $pres({
+                    type: "unavailable",
+                    id: presenceid,
+                    from: converse.connection.jid,
+                    to: this.getRoomJIDAndNick()
+                });
+                if (exit_msg !== null) {
+                    presence.c("status", exit_msg);
+                }
+                converse.connection.addHandler(
+                    $.proxy(function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }, this),
+                    null, "presence", null, presenceid);
+                converse.connection.send(presence);
             },
 
             renderConfigurationForm: function (stanza) {
@@ -2421,8 +2663,17 @@
                 });
                 $form.append('<input type="submit" class="save-submit" value="'+__('Save')+'"/>');
                 $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
-                $form.on('submit', $.proxy(this.saveConfiguration, this));
+                $form.on('submit', this.saveConfiguration.bind(this));
                 $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
+            },
+
+            sendConfiguration: function(config, onSuccess, onError) {
+                // Send an IQ stanza with the room configuration.
+                var iq = $iq({to: this.model.get('jid'), type: "set"})
+                    .c("query", {xmlns: Strophe.NS.MUC_OWNER})
+                    .c("x", {xmlns: "jabber:x:data", type: "submit"});
+                _.each(config, function (node) { iq.cnode(node).up(); });
+                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
             },
 
             saveConfiguration: function (ev) {
@@ -2434,8 +2685,7 @@
                 $inputs.each(function () {
                     configArray.push(utils.webForm2xForm(this));
                     if (!--count) {
-                        converse.connection.muc.saveConfiguration(
-                            that.model.get('jid'),
+                        that.sendConfiguration(
                             configArray,
                             $.proxy(that.onConfigSaved, that),
                             $.proxy(that.onErrorConfigSaved, that)
@@ -2481,9 +2731,12 @@
                         '<span class="spinner centered"/>'+
                         '</form>'+
                     '</div>'));
-                converse.connection.muc.configure(
-                    this.model.get('jid'),
-                    $.proxy(this.renderConfigurationForm, this)
+                converse.connection.sendIQ(
+                        $iq({
+                            to: this.model.get('jid'),
+                            type: "get"
+                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
+                        this.renderConfigurationForm.bind(this)
                 );
             },
 
@@ -2491,7 +2744,7 @@
                 ev.preventDefault();
                 var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                 this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
-                this.connect(password);
+                this.join(password);
             },
 
             renderPasswordForm: function () {
@@ -2600,15 +2853,15 @@
                     });
                     $(x).find('status').each($.proxy(function (idx, stat) {
                         var code = stat.getAttribute('code');
-                        if (is_self && _.contains(_.keys(this.newNicknameMessages), code)) {
-                            this.model.save({'nick': Strophe.getResourceFromJid($el.attr('from'))});
+                        var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')));
+                        if (is_self && code === "210") {
+                            msgs.push(__(this.newNicknameMessages[code], from_nick));
+                        } else if (is_self && code === "303") {
                             msgs.push(__(this.newNicknameMessages[code], $item.attr('nick')));
                         } else if (is_self && _.contains(_.keys(this.disconnectMessages), code)) {
                             disconnect_msgs.push(this.disconnectMessages[code]);
                         } else if (!is_self && _.contains(_.keys(this.actionInfoMessages), code)) {
-                            msgs.push(
-                                __(this.actionInfoMessages[code], Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from'))))
-                            );
+                            msgs.push(__(this.actionInfoMessages[code], from_nick));
                         } else if (_.contains(_.keys(this.infoMessages), code)) {
                             msgs.push(this.infoMessages[code]);
                         } else if (code !== '110') {
@@ -2626,7 +2879,7 @@
                     for (i=0; i<reasons.length; i++) {
                         this.showDisconnectMessage(__('The reason given is: "'+reasons[i]+'"'), true);
                     }
-                    this.model.set('connected', false);
+                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                     return;
                 }
                 $chat_content = this.$el.find('.chat-content');
@@ -2639,10 +2892,9 @@
                 return this.scrollDown();
             },
 
-            showErrorMessage: function ($error, room) {
+            showErrorMessage: function ($error) {
                 // We didn't enter the room, so we must remove it from the MUC
                 // add-on
-                delete converse.connection.muc[room.name];
                 if ($error.attr('type') == 'auth') {
                     if ($error.find('not-authorized').length) {
                         this.renderPasswordForm();
@@ -2672,21 +2924,23 @@
                 }
             },
 
-            onChatRoomPresence: function (presence, room) {
-                var $presence = $(presence), is_self;
+            onChatRoomPresence: function (pres) {
+                var $presence = $(pres), is_self;
+                var nick = this.model.get('nick');
                 if ($presence.attr('type') === 'error') {
-                    this.model.set('connected', false);
-                    this.showErrorMessage($presence.find('error'), room);
+                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                    this.showErrorMessage($presence.find('error'));
                 } else {
-                    is_self = ($presence.find("status[code='110']").length) || ($presence.attr('from') == room.name+'/'+Strophe.escapeNode(room.nick));
-                    if (!this.model.get('conneced')) {
-                        this.model.set('connected', true);
+                    is_self = ($presence.find("status[code='110']").length) ||
+                        ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));
+                    if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                        this.model.set('connection_status', Strophe.Status.CONNECTED);
                         this.$('span.centered.spinner').remove();
                         this.$el.find('.chat-body').children().show();
                     }
                     this.showStatusMessages($presence, is_self);
                 }
-                return true;
+                this.occupantsview.updateOccupantsOnPresence(pres);
             },
 
             onChatRoomMessage: function (message) {
@@ -2724,10 +2978,6 @@
                     converse.emit('message', message);
                 }
                 return true;
-            },
-
-            onChatRoomRoster: function (roster, room) {
-                return this.occupantsview.onChatRoomRoster(roster, room);
             }
         });
 
@@ -2809,8 +3059,11 @@
                         'box_id' : b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
-                    if (!chatroom.get('connected')) {
-                        converse.chatboxviews.get(room_jid).connect(null);
+                    if (!_.contains(
+                                [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
+                                chatroom.get('connection_status'))
+                            ) {
+                        converse.chatboxviews.get(room_jid).join(null);
                     }
                 }
             },
@@ -2860,6 +3113,12 @@
 
                 chatbox = this.get(contact_jid);
                 if (!chatbox) {
+                    /* FIXME: there is a bug here. If chat state notifications
+                     * (because a roster contact closed a chat box of yours
+                     * they had open) are received and we don't have a chat with
+                     * the user, then a chat box is created here which then
+                     * opens automatically :(
+                     */
                     var fullname = roster_item.get('fullname');
                     fullname = _.isEmpty(fullname)? contact_jid: fullname;
                     chatbox = this.create({
@@ -3010,9 +3269,9 @@
             },
 
             showChat: function (attrs) {
-                /* Find the chat box and show it.
-                 * If it doesn't exist, create it.
+                /* Find the chat box and show it. If it doesn't exist, create it.
                  */
+                // TODO: Send the chat state ACTIVE to the contact once the chat box is opened.
                 var chatbox  = this.model.get(attrs.jid);
                 if (!chatbox) {
                     chatbox = this.model.create(attrs, {
@@ -3033,7 +3292,6 @@
         this.MinimizedChatBoxView = Backbone.View.extend({
             tagName: 'div',
             className: 'chat-head',
-
             events: {
                 'click .close-chatbox-button': 'close',
                 'click .restore-chat': 'restore'
@@ -3041,7 +3299,7 @@
 
             initialize: function () {
                 this.model.messages.on('add', function (m) {
-                    if (!(m.get('composing') || m.get('paused'))) {
+                    if (m.get('message')) {
                         this.updateUnreadMessagesCounter();
                     }
                 }, this);
@@ -3084,9 +3342,7 @@
             },
 
             restore: _.debounce(function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                }
+                if (ev && ev.preventDefault) { ev.preventDefault(); }
                 this.model.messages.off('add',null,this);
                 this.remove();
                 this.model.maximize();
@@ -3095,7 +3351,6 @@
 
         this.MinimizedChats = Backbone.Overview.extend({
             el: "#minimized-chats",
-
             events: {
                 "click #toggle-minimized-chats": "toggle"
             },
@@ -3326,17 +3581,7 @@
 
             openChat: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                // XXX: Can this.model.attributes be used here, instead of
-                // manually specifying all attributes?
-                return converse.chatboxviews.showChat({
-                    'id': this.model.get('jid'),
-                    'jid': this.model.get('jid'),
-                    'fullname': this.model.get('fullname'),
-                    'image_type': this.model.get('image_type'),
-                    'image': this.model.get('image'),
-                    'url': this.model.get('url'),
-                    'status': this.model.get('status')
-                });
+                return converse.chatboxviews.showChat(this.model.attributes);
             },
 
             removeContact: function (ev) {
@@ -3486,20 +3731,20 @@
                 /* The localstorage cache containing roster contacts might contain
                 * some contacts that aren't actually in our roster anymore. We
                 * therefore need to remove them now.
+                *
+                * TODO: The method is a performance bottleneck.
+                * Basically we need to chuck out strophe.roster and
+                * rewrite it with backbone.js and well integrated into
+                * converse.js. Then we won't need to have this method at all.
                 */
-                var id, i, contact;
-                for (i=0; i < this.models.length; ++i) {
-                    id = this.models[i].get('id');
-                    if (_.indexOf(_.pluck(items, 'jid'), id) === -1) {
-                        contact = this.get(id);
-                        if (contact && !contact.get('requesting')) {
-                            contact.destroy();
-                        }
+                _.each(_.difference(this.pluck('jid'), _.pluck(items, 'jid')), $.proxy(function (jid) {
+                    var contact = this.get(jid);
+                    if (contact && !contact.get('requesting')) {
+                        contact.destroy();
                     }
-                }
+                }, this));
             },
 
-            // TODO: see if we can only use 2nd item par
             rosterHandler: function (items, item) {
                 converse.emit('roster', items);
                 this.clearCache(items);
@@ -4209,7 +4454,7 @@
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function () {
                 this.set({
-                    'status' : this.get('status') || 'online'
+                    'status' : this.getStatus()
                 });
                 this.on('change', $.proxy(function (item) {
                     if (this.get('fullname') === undefined) {
@@ -4229,12 +4474,14 @@
                 }, this));
             },
 
-            sendPresence: function (type) {
-                if (type === undefined) {
+            sendPresence: function (type, status_message) {
+                if (typeof type === 'undefined') {
                     type = this.get('status') || 'online';
                 }
-                var status_message = this.get('status_message'),
-                    presence;
+                if (typeof status_message === 'undefined') {
+                    status_message = this.get('status_message');
+                }
+                var presence;
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here fore reference and future proofing.
                 if ((type === 'unavailable') ||
@@ -4268,8 +4515,13 @@
                 this.save({'status': value});
             },
 
+            getStatus: function() {
+                return this.get('status') || 'online';
+            },
+
             setStatusMessage: function (status_message) {
-                converse.connection.send($pres().c('show').t(this.get('status')).up().c('status').t(status_message));
+                this.sendPresence(this.getStatus(), status_message);
+                var prev_status = this.get('status_message');
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
                     $.ajax({
@@ -4277,6 +4529,9 @@
                         type: 'POST',
                         data: {'msg': status_message}
                     });
+                }
+                if (prev_status === status_message) {
+                    this.trigger("update-status-ui", this);
                 }
             }
         });
@@ -4292,7 +4547,9 @@
             },
 
             initialize: function () {
-                this.model.on("change", this.updateStatusUI, this);
+                this.model.on("change:status", this.updateStatusUI, this);
+                this.model.on("change:status_message", this.updateStatusUI, this);
+                this.model.on("update-status-ui", this.updateStatusUI, this);
             },
 
            render: function () {
@@ -4343,8 +4600,7 @@
 
             setStatusMessage: function (ev) {
                 ev.preventDefault();
-                var status_message = $(ev.target).find('input').val();
-                this.model.setStatusMessage(status_message);
+                this.model.setStatusMessage($(ev.target).find('input').val());
             },
 
             setStatus: function (ev) {
@@ -4377,9 +4633,6 @@
             },
 
             updateStatusUI: function (model) {
-                if (!(_.has(model.changed, 'status')) && !(_.has(model.changed, 'status_message'))) {
-                    return;
-                }
                 var stat = model.get('status');
                 // # For translators: the %1$s part gets replaced with the status
                 // # Example, I am online
@@ -4435,7 +4688,7 @@
                  * TODO: these features need to be added in the relevant
                  * feature-providing Models, not here
                  */
-                 converse.connection.disco.addFeature('http://jabber.org/protocol/chatstates'); // Limited support
+                 converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
                  converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
                  converse.connection.disco.addFeature('jabber:x:conference');
                  converse.connection.disco.addFeature('urn:xmpp:carbons:2');
@@ -5047,10 +5300,16 @@
                 //
                 // Also, what do we do when the keepalive session values are
                 // expired? Do we try to fall back?
-                if (!this.bosh_service_url) {
-                    throw("Error: you must supply a value for the bosh_service_url");
+                if (!this.bosh_service_url && ! this.websocket_url) {
+                    throw("Error: you must supply a value for the bosh_service_url or websocket_url");
                 }
-                this.connection = new Strophe.Connection(this.bosh_service_url);
+                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                    this.connection = new Strophe.Connection(this.websocket_url);
+                } else if (this.bosh_service_url) {
+                    this.connection = new Strophe.Connection(this.bosh_service_url);
+                } else {
+                    throw("Error: this browser does not support websockets and no bosh_service_url specified.");
+                }
                 this.setUpXMLLogging();
 
                 if (this.prebind) {
@@ -5067,11 +5326,32 @@
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
                     if (rid && jid && sid) {
-                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                        // The RID needs to be increased with each request.
+                        this.session.save({rid: rid});
                         this.connection.attach(jid, sid, rid, this.onConnect);
                     } else if (this.prebind) {
-                        delete this.connection;
-                        this.emit('noResumeableSession');
+                        if (this.prebind_url) {
+                            $.ajax({
+                                url:  this.prebind_url,
+                                type: 'GET',
+                                success: function (response) {
+                                    this.session.save({rid: rid});
+                                    this.connection.attach(
+                                            response.jid,
+                                            response.sid,
+                                            response.rid,
+                                            this.onConnect
+                                    );
+                                }.bind(this),
+                                error: function (response) {
+                                    delete this.connection;
+                                    this.emit('noResumeableSession');
+                                }.bind(this)
+                            });
+                        } else {
+                            delete this.connection;
+                            this.emit('noResumeableSession');
+                        }
                     }
                 }
             }
@@ -5135,19 +5415,37 @@
     };
 
     var wrappedChatBox = function (chatbox) {
+        var view = converse.chatboxviews.get(chatbox.get('jid'));
         return {
+            'close': $.proxy(view.close, view),
             'endOTR': $.proxy(chatbox.endOTR, chatbox),
+            'focus': $.proxy(view.focus, view),
             'get': $.proxy(chatbox.get, chatbox),
             'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
             'maximize': $.proxy(chatbox.maximize, chatbox),
             'minimize': $.proxy(chatbox.minimize, chatbox),
-            'set': $.proxy(chatbox.set, chatbox),
-            'open': chatbox.trigger.bind(chatbox, 'show')
+            'set': $.proxy(chatbox.set, chatbox)
         };
     };
     return {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
+        },
+        'settings': {
+            'get': function (key) {
+                if (_.contains(Object.keys(converse.default_settings), key)) {
+                    return converse[key];
+                }
+            },
+            'set': function (key, val) {
+                var o = {};
+                if (typeof key === "object") {
+                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
+                } else if (typeof key === "string") {
+                    o[key] = val;
+                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                }
+            }
         },
         'contacts': {
             'get': function (jids) {
@@ -5158,14 +5456,16 @@
                     }
                     return null;
                 };
-                if (typeof jids === "string") {
+                if (typeof jids === "undefined") {
+                    jids = converse.roster.pluck('jid');
+                } else if (typeof jids === "string") {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
             }
         },
         'chats': {
-            'get': function (jids) {
+            'open': function (jids) {
                 var _transform = function (jid) {
                     var chatbox = converse.chatboxes.get(jid);
                     if (!chatbox) {
@@ -5185,10 +5485,28 @@
                     }
                     return wrappedChatBox(chatbox);
                 };
-                if (typeof jids === "string") {
+                if (typeof jids === "undefined") {
+                    converse.log("chats.open: You need to provide at least one JID", "error");
+                    return null;
+                } else if (typeof jids === "string") {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
+            },
+            'get': function (jids) {
+                var _transform = function (jid) {
+                    var chatbox = converse.chatboxes.get(jid);
+                    if (!chatbox) {
+                        return null;
+                    }
+                    return wrappedChatBox(chatbox);
+                };
+                if (typeof jids === "undefined") {
+                    jids = converse.roster.pluck('jid');
+                } else if (typeof jids === "string") {
+                    return _transform(jids);
+                }
+                return _.filter(_.map(jids, _transform), function (i) {return i !== null;});
             }
         },
         'tokens': {
@@ -5213,6 +5531,9 @@
             'not': function (evt, handler) {
                 converse.off(evt, handler);
             },
+        },
+        'send': function (stanza) {
+            converse.connection.send(stanza);
         },
         'plugins': {
             'add': function (name, callback) {
@@ -5248,43 +5569,12 @@
         'env': {
             'jQuery': $,
             'Strophe': Strophe,
-            '_': _
-        },
-
-        // Deprecated API methods
-        'getBuddy': function (jid) {
-            converse.log('WARNING: the "getBuddy" API method has been deprecated. Please use "contacts.get" instead');
-            return this.contacts.get(jid);
-        },
-        'getChatBox': function (jid) {
-            converse.log('WARNING: the "getChatBox" API method has been deprecated. Please use "chats.get" instead');
-            return this.chats.get(jid);
-        },
-        'openChatBox': function (jid) {
-            converse.log('WARNING: the "openChatBox" API method has been deprecated. Please use "chats.get(jid).open()" instead');
-            var chat = this.chats.get(jid);
-            if (chat) { chat.open(); }
-            return chat;
-        },
-        'getRID': function () {
-            converse.log('WARNING: the "getRID" API method has been deprecated. Please use "tokens.get(\'rid\')" instead');
-            return this.tokens.get('rid');
-        },
-        'getSID': function () {
-            converse.log('WARNING: the "getSID" API method has been deprecated. Please use "tokens.get(\'sid\')" instead');
-            return this.tokens.get('sid');
-        },
-        'once': function (evt, handler) {
-            converse.log('WARNING: the "one" API method has been deprecated. Please use "listen.once" instead');
-            return this.listen.once(evt, handler);
-        },
-        'on': function (evt, handler) {
-            converse.log('WARNING: the "on" API method has been deprecated. Please use "listen.on" instead');
-            return this.listen.on(evt, handler);
-        },
-        'off': function (evt, handler) {
-            converse.log('WARNING: the "off" API method has been deprecated. Please use "listen.not" instead');
-            return this.listen.not(evt, handler);
+            '$build': $build,
+            '$iq': $iq,
+            '$pres': $pres,
+            '$msg': $msg,
+            '_': _,
+            'b64_sha1':  b64_sha1
         }
     };
 }));

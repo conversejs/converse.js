@@ -2,23 +2,22 @@ define("converse-dependencies", [
     "jquery",
     "utils",
     "moment",
-    "locales",
+    "strophe",
+    "strophe.roster",
+    "strophe.vcard",
+    "strophe.disco",
     "bootstrapJS", // XXX: Can be removed, only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",
     "jquery.easing", // XXX: Can be removed, only for https://conversejs.org
-    "typeahead",
-    "strophe",
-    "strophe.muc",
-    "strophe.roster",
-    "strophe.vcard",
-    "strophe.disco"
-], function($, utils, moment) {
-    return {
+    "typeahead"
+], function($, utils, moment, Strophe) {
+    return _.extend({
+        'underscore': _,
         'jQuery': $,
-        'otr': undefined,
+        'otr': otr,
         'moment': moment,
         'utils': utils
-    };
+    }, Strophe);
 });

@@ -7,19 +7,20 @@
             return factory($, mock);
         });
 }(this, function ($, mock) {
+    var Strophe = converse_api.env.Strophe;
     var utils = {};
 
     utils.createRequest = function (iq) {
         iq = typeof iq.tree == "function" ? iq.tree() : iq;
         var req = new Strophe.Request(iq, function() {});
-        req.getResponse = function() { 
+        req.getResponse = function() {
             var env = new Strophe.Builder('env', {type: 'mock'}).tree();
             env.appendChild(iq);
             return env;
         };
         return req;
     };
-    
+
     utils.closeAllChatBoxes = function () {
         var i, chatbox;
         for (i=converse.chatboxes.models.length-1; i>-1; i--) {

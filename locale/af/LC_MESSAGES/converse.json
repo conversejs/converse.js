@@ -6,6 +6,10 @@
             "domain": "converse",
             "lang": "af"
          },
+         " e.g. conversejs.org": [
+            null,
+            ""
+         ],
          "unencrypted": [
             null,
             "nie-privaat"
@@ -90,10 +94,6 @@
             null,
             "Bekragtiging het gefaal"
          ],
-         "Online Contacts": [
-            null,
-            "Kontakte aangemeld"
-         ],
          "Re-establishing encrypted session": [
             null,
             "Herstel versleutelde sessie"
@@ -165,10 +165,6 @@
          "We received an unreadable encrypted message": [
             null,
             "Ons het 'n onleesbare versleutelde boodskap ontvang"
-         ],
-         "This user has requested an encrypted session.": [
-            null,
-            "Hierdie gebruiker versoek 'n versleutelde sessie"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -318,10 +314,6 @@
             null,
             "Bediener"
          ],
-         "Join": [
-            null,
-            "Sluit aan"
-         ],
          "Show rooms": [
             null,
             "Wys kamers"
@@ -438,6 +430,10 @@
             null,
             "Fout: kon nie die opdrag uitvoer nie"
          ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
          "Ban user from room": [
             null,
             "Verban gebruiker uit hierdie kletskamer"
@@ -450,6 +446,10 @@
             null,
             "Skryf in die derde persoon"
          ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
          "Remove user's ability to post messages": [
             null,
             "Verwyder gebruiker se vermoë om boodskappe te plaas"
@@ -457,6 +457,14 @@
          "Change your nickname": [
             null,
             "Verander u bynaam"
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
+            null,
+            ""
          ],
          "Set room topic": [
             null,

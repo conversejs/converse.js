@@ -8,6 +8,8 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    var $msg = converse_api.env.$msg;
+
     return describe("The Minimized Chats Widget", $.proxy(function(mock, test_utils) {
         beforeEach(function () {
             runs(function () {

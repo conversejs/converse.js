@@ -1,12 +1,14 @@
 # You can set these variables from the command line.
 BOWER           ?= node_modules/.bin/bower
-BUILDDIR     	= ./docs
-PAPER        	=
-PHANTOMJS       ?= node_modules/.bin/phantomjs
-SPHINXBUILD  	?= ./bin/sphinx-build
-SPHINXOPTS   	=
-PO2JSON       	?= node_modules/.bin/po2json
-SASS 			?= sass 
+BUILDDIR        = ./docs
+PAPER           =
+PHANTOMJS       ?= ./node_modules/.bin/phantomjs
+SPHINXBUILD     ?= ./bin/sphinx-build
+SPHINXOPTS      =
+PO2JSON         ?= ./node_modules/.bin/po2json
+SASS            ?= sass 
+GRUNT           ?= ./node_modules/.bin/grunt
+HTTPSERVE		?= ./node_modules/.bin/http-server
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -18,18 +20,27 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 all: dev
 
 help:
-	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  dev        to set up the development environment"
+	@echo "Please use \`make <target>' where <target> is one of the following"
 	@echo "  build      create minified builds containing converse.js and all its dependencies"
-	@echo "  gettext    to make PO message catalogs of the documentation"
-	@echo "  html       to make standalone HTML files of the documentation"
-	@echo "  pot        to generate a gettext POT file to be used for translations"
-	@echo "  po         to generate gettext PO files for each i18n language"
-	@echo "  po2json    to generate JSON files from the language PO files"
-	@echo "  release    to make a new minified release"
-	@echo "  linkcheck  to check all documentation external links for integrity"
-	@echo "  epub       to export the documentation to epub"
-	@echo "  changes    to make an overview of all changed/added/deprecated items added to the documentation"
+	@echo "  changes    make an overview of all changed/added/deprecated items added to the documentation"
+	@echo "  css        generate CSS from the Sass files"
+	@echo "  dev        set up the development environment"
+	@echo "  epub       export the documentation to epub"
+	@echo "  gettext    make PO message catalogs of the documentation"
+	@echo "  html       make standalone HTML files of the documentation"
+	@echo "  linkcheck  check all documentation external links for integrity"
+	@echo "  cssmin     minify the CSS files"
+	@echo "  po         generate gettext PO files for each i18n language"
+	@echo "  po2json    generate JSON files from the language PO files"
+	@echo "  pot        generate a gettext POT file to be used for translations"
+	@echo "  release    make a new minified release"
+	@echo "  serve      serve this directory via a webserver on port 8000"
+
+########################################################################
+## Miscellaneous
+
+serve: dev
+	$(HTTPSERVE) -p 8000
 
 ########################################################################
 ## Translation machinery
@@ -47,12 +58,6 @@ po2json:
 
 ########################################################################
 ## Release management
-
-jsmin:
-	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js
-
-cssmin:
-	grunt cssmin
 
 release:
 	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\.[0-9]\.[0-9]/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
@@ -85,18 +90,24 @@ clean::
 
 dev: clean
 	npm install
-	${BOWER} update;
+	$(BOWER) update;
 	bundler install --path=.
 
 ########################################################################
 ## Builds
 
 css::
-	${SASS} sass/converse.scss > css/converse.css
+	$(SASS) sass/converse.scss > css/converse.css
+
+jsmin:
+	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js
+
+cssmin:
+	$(GRUNT) cssmin
 
 build::
-	./node_modules/.bin/grunt jst
-	./node_modules/.bin/grunt minify
+	$(GRUNT) jst
+	$(GRUNT) minify
 
 ########################################################################
 ## Tests

@@ -1,9 +1,9 @@
 var config;
 if (typeof(require) === 'undefined') {
     /* XXX: Hack to work around r.js's stupid parsing.
-    * We want to save the configuration in a variable so that we can reuse it in
-    * tests/main.js.
-    */
+     * We want to save the configuration in a variable so that we can reuse it in
+     * tests/main.js.
+     */
     require = {
         config: function (c) {
             config = c;
@@ -24,14 +24,20 @@ require.config({
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
-        "jquery.browser":           "components/jquery.browser/index",
+        "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
-        "strophe":                  "components/strophe/strophe",
+        "strophe-base64":           "components/strophejs/src/base64",
+        "strophe-bosh":             "components/strophejs/src/bosh",
+        "strophe-core":             "components/strophejs/src/core",
+        "strophe":                  "components/strophejs/src/wrapper",
+        "strophe-md5":              "components/strophejs/src/md5",
+        "strophe-sha1":             "components/strophejs/src/sha1",
+        "strophe-websocket":        "components/strophejs/src/websocket",
+        "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
-        "strophe.muc":              "components/strophe.muc/index",
         "strophe.roster":           "src/strophe.roster",
-        "strophe.vcard":            "components/strophejs-plugins/vcard/strophe.vcard",
+        "strophe.vcard":            "src/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
         "typeahead":                "components/typeahead.js/index",
@@ -56,23 +62,24 @@ require.config({
         "otr":                  "src/otr",
 
         // Locales paths
-        "locales":   "locale/locales",
+        "locales":   "src/locales",
         "jed":       "components/jed/jed",
-        "af":        "locale/af/LC_MESSAGES/af",
-        "de":        "locale/de/LC_MESSAGES/de",
-        "en":        "locale/en/LC_MESSAGES/en",
-        "es":        "locale/es/LC_MESSAGES/es",
-        "fr":        "locale/fr/LC_MESSAGES/fr",
-        "he":        "locale/he/LC_MESSAGES/he",
-        "hu":        "locale/hu/LC_MESSAGES/hu",
-        "id":        "locale/id/LC_MESSAGES/id",
-        "it":        "locale/it/LC_MESSAGES/it",
-        "ja":        "locale/ja/LC_MESSAGES/ja",
-        "nb":        "locale/nb/LC_MESSAGES/nb",
-        "nl":        "locale/nl/LC_MESSAGES/nl",
-        "pt_BR":     "locale/pt_BR/LC_MESSAGES/pt_BR",
-        "ru":        "locale/ru/LC_MESSAGES/ru",
-        "zh":        "locale/zh/LC_MESSAGES/zh",
+        "af":        "locale/af/LC_MESSAGES/converse.json",
+        "de":        "locale/de/LC_MESSAGES/converse.json",
+        "en":        "locale/en/LC_MESSAGES/converse.json",
+        "es":        "locale/es/LC_MESSAGES/converse.json",
+        "fr":        "locale/fr/LC_MESSAGES/converse.json",
+        "he":        "locale/he/LC_MESSAGES/converse.json",
+        "hu":        "locale/hu/LC_MESSAGES/converse.json",
+        "id":        "locale/id/LC_MESSAGES/converse.json",
+        "it":        "locale/it/LC_MESSAGES/converse.json",
+        "ja":        "locale/ja/LC_MESSAGES/converse.json",
+        "nb":        "locale/nb/LC_MESSAGES/converse.json",
+        "nl":        "locale/nl/LC_MESSAGES/converse.json",
+        "pl":        "locale/pl/LC_MESSAGES/converse.json",
+        "pt_BR":     "locale/pt_BR/LC_MESSAGES/converse.json",
+        "ru":        "locale/ru/LC_MESSAGES/converse.json",
+        "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
         // Templates
         "action":                   "src/templates/action",
@@ -160,9 +167,7 @@ require.config({
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
-        'strophe':              { exports: 'Strophe' },
         'strophe.disco':        { deps: ['strophe'] },
-        'strophe.muc':          { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }

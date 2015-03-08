@@ -8,6 +8,29 @@ Setup and integration
 
 .. _what-you-will-need:
 
+------------------
+What you will need
+------------------
+
+If you'd like to host your own version of converse.js or you would like to
+integrate it into your website, then you'll need to set up and configure some
+more server components.
+
+For example, if you want to allow chat accounts under your own domain (for
+example, the same domain as your website), then you will need to set up your
+own :ref:`XMPP server`.
+
+Besides an XMPP server, you also need a way for converse.js (which uses HTTP), to
+communicate with XMPP servers (which use XMPP).
+
+For this, you'll need :ref:`BOSH Connection Manager`.
+
+Lastly, if you want to maintain a single chat session for your website's users,
+you'll need to set up a BOSH session on your server, which converse.js can then
+connect to once the page loads. Please see the section: :ref:`session-support`.
+
+.. _`XMPP server`:
+
 --------------
 An XMPP server
 --------------
@@ -23,6 +46,8 @@ You can find a list of public XMPP servers/providers on `xmpp.net <http://xmpp.n
 servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software/servers/>`_.
 
 
+.. _`BOSH connection manager`:
+
 -------------------------
 A BOSH Connection Manager
 -------------------------
@@ -34,21 +59,41 @@ as protocol to communicate with the webserver. HTTP connections are stateless an
 its connections are stateful and usually longer.
 
 To enable a web application like *Converse.js* to communicate with an XMPP
-server, we need a proxy in the middle that can act as a bridge between the two
-protocols.
+server, we need a proxy which acts as a bridge between these two protocols.
 
-The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
+This is the job of a BOSH connection manager. BOSH (Bidirectional-streams Over
+Synchronous HTTP) is a protocol for allowing XMPP communication over HTTP. The
+protocol is defined in `XEP-0206: XMPP Over BOSH <http://xmpp.org/extensions/xep-0206.html>`_.
 
-This is the job of a connection manager. A connection manager can be either a
-standalone application or part of an XMPP server. Popular XMPP servers such as
-`ejabberd <http://www.ejabberd.im>`_, `prosody <http://prosody.im/doc/setting_up_bosh>`_ and
-`openfire <http://www.igniterealtime.org/projects/openfire/>`_ all include their own connection managers
-(but you usually have to enable them in the configuration).
+Popular XMPP servers such as `ejabberd <http://www.ejabberd.im>`_,
+`prosody <http://prosody.im/doc/setting_up_bosh>`_ and
+`openfire <http://www.igniterealtime.org/projects/openfire/>`_ all include
+their own connection managers (but you usually have to enable them in the
+configuration).
 
-Standalone connection managers also exist, see for example `Punjab <https://github.com/twonds/punjab>`_.
+However, if you intend to support multiple different servers (like
+https://conversejs.org does), then you'll need a standalone connection manager.
 
-The demo on the `Converse.js homepage <http://conversejs.org>`_ uses a connection manager located at https://bind.conversejs.org.
-This connection manager is available for testing purposes only, please don't use it in production.
+For a standalone manager, see for example `Punjab <https://github.com/twonds/punjab>`_
+and `node-xmpp-bosh <https://github.com/dhruvbird/node-xmpp-bosh>`_.
+
+The demo on the `Converse.js homepage <http://conversejs.org>`_ uses a connection
+manager located at https://conversejs.org/http-bind.
+
+This connection manager is available for testing purposes only, please don't
+use it in production.
+
+Websockets
+==========
+
+Websockets provide an alternative means of connection to an XMPP server from
+your browser.
+
+Websockets provide long-lived, bidirectional connections which do not rely on
+HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
+
+`Prosody <prosody.im>`_ (from version 0.10) supports websocket connections, as
+does the node-xmpp-bosh connection manager.
 
 Overcoming cross-domain request restrictions
 ============================================
@@ -88,7 +133,7 @@ the cross-domain restriction is ``mysite.com/http-bind`` and not
 Your ``nginx`` or ``apache`` configuration will look as follows:
 
 Nginx
------
+~~~~~
 
 .. code-block:: nginx 
 
@@ -103,7 +148,7 @@ Nginx
     }
 
 Apache
-------
+~~~~~~
 
 .. code-block:: apache
 
@@ -120,6 +165,19 @@ Apache
 Single Session Support
 ----------------------
 
+.. note::
+    What is prebinding?
+    ~~~~~~~~~~~~~~~~~~~
+
+    **Prebind** refers to a technique whereby your web application sets up an
+    authenticated BOSH session with a BOSH connection manager (which could be your
+    XMPP server). Then later, in the browser, converse.js attaches to that
+    session that was previously set up.
+
+    This reduces network traffic and also speeds up loading times for
+    converse.js. Additionally, because prebinding works with tokens, it's not necessary
+    for the XMPP client to store users' passwords).
+
 Server-side authentication (prebind)
 ====================================
 
@@ -132,8 +190,9 @@ and we want their chat session to persist across page loads.
 
 To do this you will require a `BOSH server <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
 for converse.js to connect to (see the :ref:`bosh-service-url` under :ref:`configuration-variables`)
-as well as a BOSH client on your own server (written for example in Python, Ruby or PHP) that will
-do the pre-authentication before the web page loads.
+as well as a BOSH client in your web application (written for example in
+Python, Ruby or PHP) that will set up an authenticated BOSH session, which
+converse.js can then attach to.
 
 .. note::
     A BOSH server acts as a bridge between HTTP, the protocol of the web, and
@@ -173,3 +232,4 @@ Example code for server-side prebinding
 
 * Python:
     See this `example Django application`_ by Jack Moffitt.
+

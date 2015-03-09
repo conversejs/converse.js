@@ -155,7 +155,6 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
-        'underscore':           { exports: '_' },
         'crypto.aes':           { deps: ['crypto.cipher-core'] },
         'crypto.cipher-core':   { deps: ['crypto.enc-base64', 'crypto.evpkdf'] },
         'crypto.enc-base64':    { deps: ['crypto.core'] },

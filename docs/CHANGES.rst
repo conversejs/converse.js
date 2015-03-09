@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.9.1 (Unreleased)
+------------------
+
+* Set the JID input field in the login form to ``type=email``. [chatme]
+* New configuration setting ``allow_contact_removal``. [jcbrand]
+
 0.9.0 (2015-03-06)
 ------------------
 

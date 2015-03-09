@@ -28,6 +28,14 @@ JS file so that it will include the new settings. Please refer to the
 Configuration variables
 =======================
 
+allow_contact_removal
+---------------------
+
+Default:  ``true``
+
+Allow the user to remove roster contacts by clicking on the delete icon
+(i.e. traschcan) next to a contact's name in the roster.
+
 allow_contact_requests
 ----------------------
 

@@ -1,4 +1,6 @@
 <a class="open-chat" title="Name: {{fullname}}
 JID: {{jid}}
 {{desc_chat}}" href="#"><span class="icon-{{chat_status}}" title="{{desc_status}}"></span>{{fullname}}</a>
+{[ if (allow_contact_removal) { ]}
 <a class="remove-xmpp-contact icon-remove" title="{{desc_remove}}" href="#"></a>
+{[ } ]}

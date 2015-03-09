@@ -244,6 +244,7 @@
         // Default configuration values
         // ----------------------------
         this.default_settings = {
+            allow_contact_removal: true,
             allow_contact_requests: true,
             allow_dragresize: true,
             allow_logout: true,
@@ -3572,7 +3573,8 @@
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status||'offline'],
                             'desc_chat': __('Click to chat with this contact'),
-                            'desc_remove': __('Click to remove this contact')
+                            'desc_remove': __('Click to remove this contact'),
+                            'allow_contact_removal': converse.allow_contact_removal
                         })
                     ));
                 }
@@ -3586,6 +3588,7 @@
 
             removeContact: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                if (!converse.allow_contact_removal) { return; }
                 var result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
                     var bare_jid = this.model.get('jid');

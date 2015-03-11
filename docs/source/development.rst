@@ -301,11 +301,11 @@ Opens a chat box and returns an object representing a chat box.
 
 To open a single chat box, provide the JID of the contact::
 
-    converse.chats.get('buddy@example.com')
+    converse.chats.open('buddy@example.com')
 
 To return an array of chat boxes, provide an array of JIDs::
 
-    converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+    converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
 
 
 *The returned chat box contains the following methods:*

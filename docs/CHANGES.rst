@@ -6,6 +6,7 @@ Changelog
 
 * Set the JID input field in the login form to ``type=email``. [chatme]
 * New configuration setting ``allow_contact_removal``. [jcbrand]
+* Document that event handlers receive 'event' obj as first arg. [jcbrand]
 
 0.9.0 (2015-03-06)
 ------------------

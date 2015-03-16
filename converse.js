@@ -125,19 +125,6 @@
         return this;
     };
 
-    var playNotification = function () {
-        var audio;
-        if (converse.play_sounds && typeof Audio !== "undefined"){
-            audio = new Audio("sounds/msg_received.ogg");
-            if (audio.canPlayType('/audio/ogg')) {
-                audio.play();
-            } else {
-                audio = new Audio("/sounds/msg_received.mp3");
-                audio.play();
-                }
-            }
-    };
-
     var converse = {
         plugins: {},
         templates: templates,
@@ -359,6 +346,19 @@
 
         // Module-level functions
         // ----------------------
+        this.playNotification = function () {
+            var audio;
+            if (converse.play_sounds && typeof Audio !== "undefined"){
+                audio = new Audio("sounds/msg_received.ogg");
+                if (audio.canPlayType('/audio/ogg')) {
+                    audio.play();
+                } else {
+                    audio = new Audio("/sounds/msg_received.mp3");
+                    audio.play();
+                    }
+                }
+        };
+
         this.giveFeedback = function (message, klass) {
             $('.conn-feedback').each(function (idx, el) {
                 var $el = $(el);
@@ -2972,7 +2972,7 @@
                 }
                 this.model.createMessage($message);
                 if (!delayed && sender !== this.model.get('nick') && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
-                    playNotification();
+                    converse.playNotification();
                 }
                 if (sender !== this.model.get('nick')) {
                     // We only emit an event if it's not our own message
@@ -3142,7 +3142,7 @@
                     return true; // We already have this message stored.
                 }
                 if (!this.isOnlyChatStateNotification($message) && from !== converse.bare_jid) {
-                    playNotification();
+                    converse.playNotification();
                 }
                 chatbox.receiveMessage($message);
                 converse.roster.addResource(contact_jid, resource);

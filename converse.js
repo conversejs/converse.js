@@ -1760,6 +1760,7 @@
                     this.$el.html(
                         converse.templates.room_panel({
                             'server_input_type': converse.hide_muc_server && 'hidden' || 'text',
+                            'server_label_global_attr': converse.hide_muc_server && ' hidden' || '',
                             'label_room_name': __('Room name'),
                             'label_nickname': __('Nickname'),
                             'label_server': __('Server'),

@@ -6,6 +6,8 @@
  * Licensed under the Mozilla Public License
  */
 
+@import "../ruby/1.9.1/gems/bourbon-4.2.1/app/assets/stylesheets/_bourbon";
+
 @font-face {
   font-family: 'Converse-js';
   src: url('../fonticons/fonts/icomoon.eot?-mnoxh0');
@@ -31,7 +33,6 @@
 }
 
 #conversejs {
-  @import "../bourbon/bourbon";
   @import "variables";
 
   ::selection {
@@ -87,6 +88,10 @@
     min-height: 0;
   }
 
+  input[type=text] {
+    height: 26px;
+  }
+
   strong {
     font-weight: 700;
   }
@@ -118,10 +123,14 @@
   }
 
   [class^="icon-"], [class*=" icon-"] {
+    background-position: 14px 14px;
+    background-image: none;
     font-family: 'Converse-js';
     font-style: normal;
     font-variant: normal;
     font-weight: normal;
+    width: auto;
+    height: auto;
     line-height: 1;
     speak: none;
     text-transform: none;

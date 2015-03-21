@@ -5290,20 +5290,32 @@
             }
         };
 
+        this.startNewBOSHSession = function () {
+            $.ajax({
+                url:  this.prebind_url,
+                type: 'GET',
+                success: function (response) {
+                    this.session.save({rid: response.rid});
+                    this.connection.attach(
+                            response.jid,
+                            response.sid,
+                            response.rid,
+                            this.onConnect
+                    );
+                }.bind(this),
+                error: function (response) {
+                    delete this.connection;
+                    this.emit('noResumeableSession');
+                }.bind(this)
+            });
+        };
+
         this.initConnection = function () {
             var rid, sid, jid;
             if (this.connection && this.connection.connected) {
                 this.setUpXMLLogging();
                 this.onConnected();
             } else {
-                // XXX: it's not yet clear what the order of preference should
-                // be between RID and SID received via the initialize method or
-                // those received from sessionStorage.
-                //
-                // What do you we if we receive values from both avenues?
-                //
-                // Also, what do we do when the keepalive session values are
-                // expired? Do we try to fall back?
                 if (!this.bosh_service_url && ! this.websocket_url) {
                     throw("Error: you must supply a value for the bosh_service_url or websocket_url");
                 }
@@ -5326,39 +5338,27 @@
                     }
                 }
                 if (this.keepalive) {
-                    if (!this.jid) {
-                        throw("When using 'keepalive', you must supply the JID of the current user. ");
-                    }
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
-                    if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
-                        // The RID needs to be increased with each request.
-                        this.session.save({rid: rid});
-                        this.connection.attach(jid, sid, rid, this.onConnect);
-
-                    } else if (this.prebind) {
-                        if (this.prebind_url) {
-                            $.ajax({
-                                url:  this.prebind_url,
-                                type: 'GET',
-                                success: function (response) {
-                                    this.session.save({rid: rid});
-                                    this.connection.attach(
-                                            response.jid,
-                                            response.sid,
-                                            response.rid,
-                                            this.onConnect
-                                    );
-                                }.bind(this),
-                                error: function (response) {
-                                    delete this.connection;
-                                    this.emit('noResumeableSession');
-                                }.bind(this)
-                            });
+                    if (this.prebind) {
+                        if (!this.jid) {
+                            throw("When using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                        }
+                        if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
+                            this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                            this.connection.attach(jid, sid, rid, this.onConnect);
+                        } else if (this.prebind_url) {
+                            this.startNewBOSHSession();
                         } else {
                             delete this.connection;
                             this.emit('noResumeableSession');
+                        }
+                    } else {
+                        // Non-prebind case.
+                        if (rid && sid && jid) {
+                            this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                            this.connection.attach(jid, sid, rid, this.onConnect);
                         }
                     }
                 }
@@ -5438,6 +5438,11 @@
     return {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
+        },
+        'account': {
+            'logout': function () {
+                converse.logOut();
+            },
         },
         'settings': {
             'get': function (key) {

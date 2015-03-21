@@ -169,7 +169,8 @@ The Jabber ID or "JID" of the current user. The JID uniquely identifies a user
 on the XMPP network. It looks like an email address, but it's used for instant
 messaging instead.
 
-This value needs to be provided when using the :ref:`keepalive` option.
+This value needs to be provided when using the :ref:`keepalive` option together
+with `prebind`_.
 
 
 .. _`keepalive`:
@@ -182,11 +183,11 @@ Default:    ``true``
 Determines whether Converse.js will maintain the chat session across page
 loads.
 
-When using keepalive, you will have to provide the `jid`_ of the current user
-to ensure that a cached session is only resumed if it belongs to the current
-user.
+This setting should also be used in conjunction with :ref:`prebind`.
 
-This setting should also be used in conjunction with :ref:`prebind` and :ref:`keepalive`.
+When using ``keepalive`` and ``prebind``, you will have to provide the `jid`_
+of the current user to ensure that a cached session is only resumed if it
+belongs to the current user.
 
 See also:
 
@@ -350,8 +351,9 @@ Here's an example of converse.js being initialized with these three options:
 .. note:: The ``prebind_url`` configuration setting is new in version 0.9 and
     simplifies the code needed to set up and maintain prebinded sessions.
 
-    When using ``prebind_url`` and ``keepalive``, you don't need to manually pass in
-    the RID, SID tokens anymore, but you still need to provide the JID.
+    When using ``prebind``, ``prebind_url`` and ``keepalive``, you don't need
+    to manually pass in the RID, SID tokens anymore, but you still need to
+    provide the JID.
 
 
 .. _`prebind_url`:

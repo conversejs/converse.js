@@ -8,6 +8,8 @@ Changelog
 * New configuration setting ``allow_contact_removal``. [jcbrand]
 * Document that event handlers receive 'event' obj as first arg. [jcbrand]
 * Add a test to check that notifications are played in chat rooms. [jcbrand] 
+* #339 Require the JID to be specified when using ``keepalive`` with
+  ``prebind``. Also add a logout API method. [jcbrand]
 
 0.9.0 (2015-03-06)
 ------------------

@@ -431,7 +431,6 @@
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
-            converse.emit('reconnect');
             if (!converse.prebind) {
                 this.connection.connect(
                     this.connection.jid,
@@ -443,6 +442,10 @@
                     this.connection.hold,
                     this.connection.route
                 );
+            } else if (converse.prebind_url) {
+                this.clearSession();
+                this._tearDown();
+                this.startNewBOSHSession();
             }
         };
 
@@ -479,6 +482,7 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
             } else if (status === Strophe.Status.DISCONNECTING) {
+                // FIXME: what about prebind?
                 if (!converse.connection.connected) {
                     converse.renderLoginPanel();
                 }
@@ -554,8 +558,8 @@
         this.clearSession = function () {
             this.roster.browserStorage._clear();
             this.session.browserStorage._clear();
-            // XXX: this should perhaps go into the beforeunload handler
-            converse.chatboxes.get('controlbox').save({'connected': false});
+            var controlbox = converse.chatboxes.get('controlbox');
+            controlbox.save({'connected': false});
         };
 
         this.setSession = function () {
@@ -5438,6 +5442,9 @@
     return {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
+        },
+        'disconnect': function () {
+              converse.connection.disconnect();
         },
         'account': {
             'logout': function () {

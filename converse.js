@@ -5326,13 +5326,17 @@
                     }
                 }
                 if (this.keepalive) {
+                    if (!this.jid) {
+                        throw("When using 'keepalive', you must supply the JID of the current user. ");
+                    }
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
-                    if (rid && jid && sid) {
+                    if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
                         // The RID needs to be increased with each request.
                         this.session.save({rid: rid});
                         this.connection.attach(jid, sid, rid, this.onConnect);
+
                     } else if (this.prebind) {
                         if (this.prebind_url) {
                             $.ajax({

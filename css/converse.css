@@ -977,15 +977,15 @@
     font-weight: bold;
     height: auto;
     margin: 4px; }
-  #conversejs #converse-register .login-submit,
-  #conversejs #converse-login .login-submit,
-  #conversejs #converse-register .submit,
-  #conversejs #converse-login .submit {
+  #conversejs #converse-register .login-submit, #conversejs #converse-register .submit, #conversejs #converse-login .login-submit, #conversejs #converse-login .submit {
     height: 30px;
     padding: 0px;
     font-size: 14px; }
-  #conversejs #converse-login .submit {
+  #conversejs #converse-register .submit, #conversejs #converse-login .submit {
     margin: 1em 0; }
+  #conversejs #converse-register .login-anon, #conversejs #converse-login .login-anon {
+    height: auto;
+    white-space: normal; }
   #conversejs form.add-chatroom {
     background: none;
     padding: 0.5em; }

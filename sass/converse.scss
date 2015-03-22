@@ -1156,19 +1156,21 @@
     margin: 4px;
   }
 
-  #converse-register .login-submit,
-  #converse-login .login-submit,
-  #converse-register .submit,
-  #converse-login .submit {
-    height: 30px;
-    padding: 0px;
-    font-size: $font-size;
+  #converse-register, #converse-login {
+    .login-submit, .submit {
+      height: 30px;
+      padding: 0px;
+      font-size: $font-size;
+    }
+    .submit {
+      margin: 1em 0;
+    }
+    .login-anon {
+      height: auto;
+      white-space: normal;
+    }
   }
-
-  #converse-login .submit {
-    margin: 1em 0;
-  }
-
+  
   form.add-chatroom {
     background: none;
     padding: 0.5em;

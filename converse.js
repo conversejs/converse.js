@@ -182,6 +182,10 @@
 
         // Constants
         // ---------
+        var MANUAL = "manual";
+        var ANONYMOUS  = "anonymous";
+        var PREBIND = "prebind";
+
         var UNENCRYPTED = 0;
         var UNVERIFIED= 1;
         var VERIFIED= 2;
@@ -256,7 +260,8 @@
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
-            prebind: false,
+            authentication: 'manual', // Available values are "manual", "prebind", "anonymous".
+            prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             rid: undefined,
@@ -283,6 +288,9 @@
         _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
+
+        // BBB
+        if (this.prebind === true) { this.authentication = PREBIND; }
 
         if (settings.visible_toolbar_buttons) {
             _.extend(
@@ -431,7 +439,7 @@
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
-            if (!converse.prebind) {
+            if (converse.authentication !== "prebind") {
                 this.connection.connect(
                     this.connection.jid,
                     this.connection.pass,
@@ -690,7 +698,7 @@
         this.OTR = Backbone.Model.extend({
             // A model for managing OTR settings.
             getSessionPassphrase: function () {
-                if (converse.prebind) {
+                if (converse.authentication === 'prebind') {
                     var key = b64_sha1(converse.connection.jid),
                         pass = window.sessionStorage[key];
                     if (typeof pass === 'undefined') {
@@ -5149,8 +5157,13 @@
             initialize: function (cfg) {
                 cfg.$parent.html(this.$el.html(
                     converse.templates.login_panel({
+                        'MANUAL': MANUAL,
+                        'ANONYMOUS': ANONYMOUS,
+                        'PREBIND': PREBIND,
+                        'authentication': converse.authentication,
                         'label_username': __('XMPP Username:'),
                         'label_password': __('Password:'),
+                        'label_anon_login': __('Click here to log in anonymously'),
                         'label_login': __('Log In')
                     })
                 ));
@@ -5168,8 +5181,16 @@
 
             authenticate: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $form = $(ev.target),
-                    $jid_input = $form.find('input[name=jid]'),
+                var $form = $(ev.target);
+                if (converse.authentication === ANONYMOUS) {
+                    if (!converse.jid) {
+                        throw("Config Error: you need to provide the server's domain via the " +
+                              "'jid' option when using anonymous authentication.");
+                    }
+                    this.connect($form, converse.jid, null);
+                    return;
+                }
+                var $jid_input = $form.find('input[name=jid]'),
                     jid = $jid_input.val(),
                     $pw_input = $form.find('input[name=password]'),
                     password = $pw_input.val(),
@@ -5198,12 +5219,15 @@
             },
 
             connect: function ($form, jid, password) {
+                var resource;
                 if ($form) {
                     $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                 }
-                var resource = Strophe.getResourceFromJid(jid);
-                if (!resource) {
-                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                if (jid) {
+                    resource = Strophe.getResourceFromJid(jid);
+                    if (!resource) {
+                        jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                    }
                 }
                 converse.connection.connect(jid, password, converse.onConnect);
             },
@@ -5321,33 +5345,25 @@
                 this.onConnected();
             } else {
                 if (!this.bosh_service_url && ! this.websocket_url) {
-                    throw("Error: you must supply a value for the bosh_service_url or websocket_url");
+                    throw("Config Error: you must supply a value for the bosh_service_url or websocket_url");
                 }
                 if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
                     this.connection = new Strophe.Connection(this.websocket_url);
                 } else if (this.bosh_service_url) {
                     this.connection = new Strophe.Connection(this.bosh_service_url);
                 } else {
-                    throw("Error: this browser does not support websockets and no bosh_service_url specified.");
+                    throw("Config Error: this browser does not support websockets and no bosh_service_url specified.");
                 }
                 this.setUpXMLLogging();
 
-                if (this.prebind) {
-                    if (this.jid && this.sid && this.rid) {
-                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
-                    }
-                    if (!this.keepalive) {
-                        throw("If you use prebind and don't use keepalive, "+
-                              "then you MUST supply JID, RID and SID values");
-                    }
-                }
                 if (this.keepalive) {
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
-                    if (this.prebind) {
+                    if (this.authentication === "prebind") {
                         if (!this.jid) {
-                            throw("When using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                            throw("Config Eror: When using 'keepalive' with authentication='prebind', " +
+                                  "you must supply the JID of the current user.");
                         }
                         if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
@@ -5364,6 +5380,14 @@
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
                             this.connection.attach(jid, sid, rid, this.onConnect);
                         }
+                    }
+                } else if (this.authentication == "prebind") {
+                    // prebind is used without keepalive
+                    if (this.jid && this.sid && this.rid) {
+                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                    } else {
+                        throw("Config Error: If you use authentication='prebind' and don't use keepalive, "+
+                              "then you MUST supply JID, RID and SID values");
                     }
                 }
             }

@@ -244,6 +244,7 @@
             allow_registration: true,
             animate: true,
             auto_list_rooms: false,
+            auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,
             auto_subscribe: false,
             bosh_service_url: undefined, // The BOSH connection manager URL.
@@ -291,6 +292,13 @@
 
         // BBB
         if (this.prebind === true) { this.authentication = PREBIND; }
+
+        if (this.authentication === ANONYMOUS) {
+            if (!this.jid) {
+                throw("Config Error: you need to provide the server's domain via the " +
+                        "'jid' option when using anonymous authentication.");
+            }
+        }
 
         if (settings.visible_toolbar_buttons) {
             _.extend(
@@ -5160,6 +5168,7 @@
                         'MANUAL': MANUAL,
                         'ANONYMOUS': ANONYMOUS,
                         'PREBIND': PREBIND,
+                        'auto_login': converse.auto_login,
                         'authentication': converse.authentication,
                         'label_username': __('XMPP Username:'),
                         'label_password': __('Password:'),
@@ -5183,10 +5192,6 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var $form = $(ev.target);
                 if (converse.authentication === ANONYMOUS) {
-                    if (!converse.jid) {
-                        throw("Config Error: you need to provide the server's domain via the " +
-                              "'jid' option when using anonymous authentication.");
-                    }
                     this.connect($form, converse.jid, null);
                     return;
                 }
@@ -5379,6 +5384,8 @@
                         if (rid && sid && jid) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
                             this.connection.attach(jid, sid, rid, this.onConnect);
+                        } else if (this.authentication === ANONYMOUS && this.auto_login) {
+                            this.connection.connect(this.jid, null, this.onConnect);
                         }
                     }
                 } else if (this.authentication == "prebind") {

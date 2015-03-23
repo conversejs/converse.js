@@ -880,6 +880,8 @@
         white-space: nowrap; }
         #conversejs .chatroom .participant-list li.moderator {
           color: #8f2831; }
+        #conversejs .chatroom .participant-list li.visitor {
+          color: #A3A3A3; }
     #conversejs .chatroom .chat-textarea {
       border-bottom-right-radius: 0; }
     #conversejs .chatroom .chat-area {

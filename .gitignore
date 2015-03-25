@@ -15,6 +15,7 @@ analytics.js
 .sass-cache
 ruby
 bourbon
+Gemfile.lock
 
 Backbone.Overview
 tags

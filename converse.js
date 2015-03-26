@@ -5332,15 +5332,6 @@
                 }
                 this.setUpXMLLogging();
 
-                if (this.prebind) {
-                    if (this.jid && this.sid && this.rid) {
-                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
-                    }
-                    if (!this.keepalive) {
-                        throw("If you use prebind and don't use keepalive, "+
-                              "then you MUST supply JID, RID and SID values");
-                    }
-                }
                 if (this.keepalive) {
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
@@ -5364,6 +5355,15 @@
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
                             this.connection.attach(jid, sid, rid, this.onConnect);
                         }
+                    }
+
+                // Prebind without keepalive
+                } else if (this.prebind) {
+                    if (this.jid && this.sid && this.rid) {
+                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                    } else {
+                        throw("If you use prebind and don't use keepalive, "+
+                            "then you MUST supply JID, RID and SID values");
                     }
                 }
             }

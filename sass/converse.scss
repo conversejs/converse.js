@@ -287,6 +287,7 @@
     text-align: center;
     display: block;
     margin: 0 auto;
+    clear: both;
   }
 
   .toggle-controlbox,
@@ -891,34 +892,39 @@
   }
 
   dd.available-chatroom {
-    display: inline-block;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    border: none;
+    clear: both;
+    color: $text-color;
+    display: block;
+    font-weight: bold;
+    overflow: hidden;
     padding: 0.25em 0.5em;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 0 $text-shadow-color;
     white-space: nowrap;
     a.open-room {
       width: 150px;
     }
+    &:hover {
+      background-color: $highlight-color;
+      .room-info {
+        display: inline-block;
+        font-size: 14px;
+      }
+    }
   }
 
-  dd.available-chatroom:hover a.room-info {
-    display: inline-block;
-    font-size: 14px;
-  }
-
-  dd.available-chatroom,
   #converse-roster dd {
-    font-weight: bold;
     border: none;
-    display: block;
-    color: $text-color;
-    text-shadow: 0 1px 0 $text-shadow-color;
     clear: both;
+    color: $text-color;
+    display: block;
+    font-weight: bold;
     overflow-y: hidden;
+    text-shadow: 0 1px 0 $text-shadow-color;
   }
 
   .roster-group:hover,
-  dd.available-chatroom:hover,
   #converse-roster dd:hover {
     background-color: $highlight-color;
   }

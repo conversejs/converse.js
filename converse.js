@@ -5482,6 +5482,14 @@
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
+            },
+            'add': function (jid, name) {
+                if (jid.indexOf('@') < 0) return false;
+                name = _.isEmpty(name)? jid: name;
+                converse.connection.roster.add(jid, name, [], function (iq) {
+                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                });
+                return true;
             }
         },
         'chats': {

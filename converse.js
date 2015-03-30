@@ -5484,7 +5484,15 @@
                 return _.map(jids, _transform);
             },
             'add': function (jid, name) {
-                if (jid.indexOf('@') < 0) return false;
+                if (typeof jid === "undefined") {
+                    throw new Error("Error: you must supply a jid");
+                }
+                if (typeof jid !== "string") {
+                    throw new Error('Error: wrong attribute (jid) type. Must be string.');
+                }
+                if (jid.indexOf('@') < 0) {
+                    throw new Error('Error: invalid jid ');
+                }
                 name = _.isEmpty(name)? jid: name;
                 converse.connection.roster.add(jid, name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));

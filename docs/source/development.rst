@@ -272,6 +272,19 @@ The returned roster contact objects have these attributes:
 | vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 
+add
+~~~
+
+Add a contact.
+
+Provide the JID of the contact you want to add::
+
+    converse.chats.add('buddy@example.com')
+    
+You may also provide the fullname. If not present, we use the jid as fullname.
+
+    converse.chats.add('buddy@example.com', 'Buddy')
+
 "chats" grouping
 ----------------
 

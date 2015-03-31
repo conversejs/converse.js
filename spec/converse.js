@@ -11,13 +11,57 @@
     var b64_sha1 = converse_api.env.b64_sha1;
 
     return describe("Converse", $.proxy(function(mock, test_utils) {
+
+        describe("Authentication", function () {
+            it("needs either a bosh_service_url a websocket_url or both", function () {
+                expect(converse.initConnection.bind({})).toThrow(
+                    new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
+            });
+
+            describe("with prebind", function () {
+                it("needs a jid when also using keepalive", function () {
+                    var connection = converse.connection;
+                    var jid = converse.jid;
+                    converse.bosh_service_url = "localhost";
+                    converse.connection = undefined;
+                    converse.jid = undefined;
+                    converse.keepalive = true;
+                    converse.prebind = true;
+                    expect(converse.initConnection.bind(converse)).toThrow(
+                        new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
+                    converse.bosh_service_url = undefined;
+                    converse.connection = connection;
+                    converse.jid = jid;
+                    converse.keepalive = undefined;
+                    converse.prebind = undefined;
+                });
+
+                it("needs jid, rid and sid values when not using keepalive", function () {
+                    var connection = converse.connection;
+                    var jid = converse.jid;
+                    converse.bosh_service_url = "localhost";
+                    converse.connection = undefined;
+                    converse.jid = undefined;
+                    converse.keepalive = false;
+                    converse.prebind = true;
+                    expect(converse.initConnection.bind(converse)).toThrow(
+                        new Error("initConnection: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values"));
+                    converse.bosh_service_url = undefined;
+                    converse.connection = connection;
+                    converse.jid = jid;
+                    converse.keepalive = undefined;
+                    converse.prebind = undefined;
+                });
+            });
+        });
+
         describe("The \"tokens\" API", $.proxy(function () {
-            beforeEach($.proxy(function () {
+            beforeEach(function () {
                 test_utils.closeAllChatBoxes();
                 test_utils.clearBrowserStorage();
                 converse.rosterview.model.reset();
                 test_utils.createContacts('current');
-            }, converse));
+            });
 
             it("has a method for retrieving the next RID", $.proxy(function () {
                 var old_connection = converse.connection;

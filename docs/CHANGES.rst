@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.9.2 (Undefined)
+-----------------
+
+* Bugfix. Prevent attaching twice during initialization. [jcbrand]
+* Add API method contacts.add. [pzia]
+
 0.9.1 (2015-03-26)
 ------------------
 

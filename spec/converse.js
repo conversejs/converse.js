@@ -57,24 +57,30 @@
             it("has a method 'get' which returns wrapped contacts", $.proxy(function () {
                 // Check that it returns nothing if a non-existing JID is given
                 expect(converse_api.contacts.get('non-existing@jabber.org')).toBeFalsy();
-
                 // Check when a single jid is given
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var attrs = converse_api.contacts.get(jid);
                 expect(typeof attrs).toBe('object');
                 expect(attrs.fullname).toBe(mock.cur_names[0]);
                 expect(attrs.jid).toBe(jid);
-
                 // You can retrieve multiple contacts by passing in an array
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var list = converse_api.contacts.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].fullname).toBe(mock.cur_names[0]);
                 expect(list[1].fullname).toBe(mock.cur_names[1]);
-
                 // Check that all JIDs are returned if you call without any parameters
                 list = converse_api.contacts.get();
                 expect(list.length).toBe(mock.cur_names.length);
+            }, converse));
+
+            it("has a method 'add' with which contacts can be added", $.proxy(function () {
+                var error = new TypeError('contacts.add: invalid jid');
+                expect(converse_api.contacts.add).toThrow(error);
+                expect(converse_api.contacts.add.bind(converse_api, "invalid jid")).toThrow(error);
+                spyOn(converse.connection.roster, 'add');
+                converse_api.contacts.add("newcontact@example.org");
+                expect(converse.connection.roster.add).toHaveBeenCalled();
             }, converse));
 
         }, converse));

@@ -74,7 +74,7 @@
             } else if (typeof attr === 'string') {
                 return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
             } else {
-                throw new Error('Wrong attribute type. Must be string or array.');
+                throw new TypeError('contains: wrong attribute type. Must be string or array.');
             }
         };
     };
@@ -848,7 +848,7 @@
                         }
                         break;
                     default:
-                        throw new Error('Unknown type.');
+                        throw new TypeError('ChatBox.onSMP: Unknown type for SMP');
                 }
             },
 
@@ -5321,14 +5321,14 @@
                 this.onConnected();
             } else {
                 if (!this.bosh_service_url && ! this.websocket_url) {
-                    throw("Error: you must supply a value for the bosh_service_url or websocket_url");
+                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
                 }
                 if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
                     this.connection = new Strophe.Connection(this.websocket_url);
                 } else if (this.bosh_service_url) {
                     this.connection = new Strophe.Connection(this.bosh_service_url);
                 } else {
-                    throw("Error: this browser does not support websockets and no bosh_service_url specified.");
+                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
                 }
                 this.setUpXMLLogging();
 
@@ -5338,7 +5338,7 @@
                     jid = this.session.get('jid');
                     if (this.prebind) {
                         if (!this.jid) {
-                            throw("When using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                            throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
                         }
                         if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
@@ -5362,7 +5362,7 @@
                     if (this.jid && this.sid && this.rid) {
                         this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
                     } else {
-                        throw("If you use prebind and don't use keepalive, "+
+                        throw new Error("initConnection: If you use prebind and not keepalive, "+
                             "then you MUST supply JID, RID and SID values");
                     }
                 }
@@ -5484,17 +5484,10 @@
                 return _.map(jids, _transform);
             },
             'add': function (jid, name) {
-                if (typeof jid === "undefined") {
-                    throw new Error("Error: you must supply a jid");
+                if (typeof jid !== "string" || jid.indexOf('@') < 0) {
+                    throw new TypeError('contacts.add: invalid jid');
                 }
-                if (typeof jid !== "string") {
-                    throw new Error('Error: wrong attribute (jid) type. Must be string.');
-                }
-                if (jid.indexOf('@') < 0) {
-                    throw new Error('Error: invalid jid ');
-                }
-                name = _.isEmpty(name)? jid: name;
-                converse.connection.roster.add(jid, name, [], function (iq) {
+                converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
                 return true;

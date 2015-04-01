@@ -5587,7 +5587,7 @@
                     if (key === 'events') {
                         obj.prototype[key] = _.extend(value, obj.prototype[key]);
                     } else {
-                        if (typeof key === 'function') {
+                        if (typeof value === 'function') {
                             obj.prototype._super[key] = obj.prototype[key];
                         }
                         obj.prototype[key] = value;

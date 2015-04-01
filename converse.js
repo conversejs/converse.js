@@ -3119,12 +3119,15 @@
 
                 chatbox = this.get(contact_jid);
                 if (!chatbox) {
-                    /* FIXME: there is a bug here. If chat state notifications
-                     * (because a roster contact closed a chat box of yours
-                     * they had open) are received and we don't have a chat with
-                     * the user, then a chat box is created here which then
-                     * opens automatically :(
+                    /* If chat state notifications (because a roster contact
+                     * closed a chat box of yours they had open) are received
+                     * and we don't have a chat with the user, then we do not
+                     * want to open a chat box. We only open a new chat box when
+                     * the message has a body.
                      */
+                    if ($message.find('body').length === 0) {
+                        return true;
+                    }
                     var fullname = roster_item.get('fullname');
                     fullname = _.isEmpty(fullname)? contact_jid: fullname;
                     chatbox = this.create({
@@ -3140,7 +3143,7 @@
                     // FIXME: There's still a bug here..
                     // If a duplicate message is received just after the chat
                     // box was closed, then it'll open again (due to it being
-                    // created here above), with now new messages.
+                    // created here above), with no new messages.
                     // The solution is mostly likely to not let chat boxes show
                     // automatically when they are created, but to require
                     // "show" to be called explicitly.

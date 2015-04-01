@@ -2188,11 +2188,7 @@
         });
 
         this.ChatRoomOccupants = Backbone.Collection.extend({
-            model: converse.ChatRoomOccupant,
-            initialize: function (options) {
-                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.occupants'+converse.bare_jid+options.nick));
-            }
+            model: converse.ChatRoomOccupant
         });
 
         this.ChatRoomOccupantsView = Backbone.Overview.extend({
@@ -2350,6 +2346,10 @@
                 this.occupantsview = new converse.ChatRoomOccupantsView({
                     model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
                 });
+                var id =  b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
+                this.occupantsview.model.id = id; // Appears to be necessary for backbone.browserStorage
+                this.occupantsview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+
                 this.occupantsview.chatroomview = this;
                 this.render();
                 this.occupantsview.model.fetch({add:true});

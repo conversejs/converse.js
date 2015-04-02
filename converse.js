@@ -182,7 +182,7 @@
 
         // Constants
         // ---------
-        var MANUAL = "manual";
+        var LOGIN = "login";
         var ANONYMOUS  = "anonymous";
         var PREBIND = "prebind";
 
@@ -261,7 +261,8 @@
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
-            authentication: 'manual', // Available values are "manual", "prebind", "anonymous".
+            password: undefined,
+            authentication: 'login', // Available values are "login", "prebind", "anonymous".
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
@@ -5160,7 +5161,7 @@
             initialize: function (cfg) {
                 cfg.$parent.html(this.$el.html(
                     converse.templates.login_panel({
-                        'MANUAL': MANUAL,
+                        'LOGIN': LOGIN,
                         'ANONYMOUS': ANONYMOUS,
                         'PREBIND': PREBIND,
                         'auto_login': converse.auto_login,
@@ -5378,8 +5379,19 @@
                         if (rid && sid && jid) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
                             this.connection.attach(jid, sid, rid, this.onConnect);
-                        } else if (this.authentication === ANONYMOUS && this.auto_login) {
-                            this.connection.connect(this.jid, null, this.onConnect);
+                        } else if (this.auto_login) {
+                            if (!this.jid) {
+                                throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
+                            }
+                            if (this.authentication === ANONYMOUS) {
+                                this.connection.connect(this.jid, null, this.onConnect);
+                            } else if (this.authentication === LOGIN) {
+                                if (!this.password) {
+                                    throw new Error("initConnection: If you use auto_login and "+
+                                        "authentication='login' then you also need to provide a password.");
+                                }
+                                this.connection.connect(this.jid, this.password, this.onConnect);
+                            }
                         }
                     }
                 } else if (this.authentication == "prebind") {

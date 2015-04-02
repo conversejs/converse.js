@@ -137,21 +137,23 @@
                 test_utils.createContacts('current');
             }, converse));
 
-            it("has a method 'get' which returns a wrapped chat box if it's already open", $.proxy(function () {
+            it("has a method 'get' which returns a wrapped chat box", $.proxy(function () {
                 // Test on chat that doesn't exist.
                 expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
 
                 // Test on chat that's not open
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var box = converse_api.chats.get(jid);
-                expect(box).toBe(null);
+                expect(box instanceof Object).toBeTruthy();
+                var chatboxview = this.chatboxviews.get(jid);
+                expect(chatboxview.$el.is(':visible')).toBeFalsy();
 
                 // Test for single JID
                 test_utils.openChatBoxFor(jid);
                 box = converse_api.chats.get(jid);
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
-                var chatboxview = this.chatboxviews.get(jid);
+                chatboxview = this.chatboxviews.get(jid);
                 expect(chatboxview.$el.is(':visible')).toBeTruthy();
 
                 // Test for multiple JIDs

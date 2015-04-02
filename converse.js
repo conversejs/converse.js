@@ -1016,12 +1016,7 @@
 
                 this.updateVCard();
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                this.render().model.messages.fetch({add: true});
-                if (this.model.get('minimized')) {
-                    this.hide();
-                } else {
-                    this.show();
-                }
+                this.hide().render().model.messages.fetch({add: true});
                 if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
                 }
@@ -1159,7 +1154,10 @@
                 if ((message.get('sender') != 'me') && (converse.windowState == 'blur')) {
                     converse.incrementMsgCounter();
                 }
-                return this.scrollDown();
+                this.scrollDown();
+                if (!this.model.get('minimized') && !this.$el.is(':visible')) {
+                    this.show();
+                }
             },
 
             sendMessageStanza: function (text) {
@@ -1617,7 +1615,7 @@
                     this.initDragResize();
                 }
                 this.setChatState(ACTIVE);
-                return this;
+                return this.focus();
             },
 
             scrollDown: function () {
@@ -3075,6 +3073,8 @@
             },
 
             onMessage: function (message) {
+                /* Handler method for all incoming single-user chat "message" stanzas.
+                 */
                 var $message = $(message);
                 var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
@@ -3280,7 +3280,6 @@
             showChat: function (attrs) {
                 /* Find the chat box and show it. If it doesn't exist, create it.
                  */
-                // TODO: Send the chat state ACTIVE to the contact once the chat box is opened.
                 var chatbox  = this.model.get(attrs.jid);
                 if (!chatbox) {
                     chatbox = this.model.create(attrs, {
@@ -5432,6 +5431,7 @@
     var wrappedChatBox = function (chatbox) {
         var view = converse.chatboxviews.get(chatbox.get('jid'));
         return {
+            'open': $.proxy(view.show, view),
             'close': $.proxy(view.close, view),
             'endOTR': $.proxy(chatbox.endOTR, chatbox),
             'focus': $.proxy(view.focus, view),
@@ -5442,6 +5442,27 @@
             'set': $.proxy(chatbox.set, chatbox)
         };
     };
+
+    var getWrappedChatBox = function (jid) {
+        var chatbox = converse.chatboxes.get(jid);
+        if (!chatbox) {
+            var roster_item = converse.roster.get(jid);
+            if (roster_item === undefined) {
+                converse.log('Could not get roster item for JID '+jid, 'error');
+                return null;
+            }
+            chatbox = converse.chatboxes.create({
+                'id': jid,
+                'jid': jid,
+                'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                'image_type': roster_item.get('image_type'),
+                'image': roster_item.get('image'),
+                'url': roster_item.get('url')
+            });
+        }
+        return wrappedChatBox(chatbox);
+    };
+
     return {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
@@ -5498,47 +5519,29 @@
         },
         'chats': {
             'open': function (jids) {
-                var _transform = function (jid) {
-                    var chatbox = converse.chatboxes.get(jid);
-                    if (!chatbox) {
-                        var roster_item = converse.roster.get(jid);
-                        if (roster_item === undefined) {
-                            converse.log('Could not get roster item for JID '+jid, 'error');
-                            return null;
-                        }
-                        chatbox = converse.chatboxes.create({
-                            'id': jid,
-                            'jid': jid,
-                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                            'image_type': roster_item.get('image_type'),
-                            'image': roster_item.get('image'),
-                            'url': roster_item.get('url')
-                        });
-                    }
-                    return wrappedChatBox(chatbox);
-                };
+                var chatbox;
                 if (typeof jids === "undefined") {
                     converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
-                    return _transform(jids);
+                    chatbox = getWrappedChatBox(jids);
+                    chatbox.open();
+                    return chatbox;
                 }
-                return _.map(jids, _transform);
+                return _.map(jids, function (jid) {
+                    var chatbox = getWrappedChatBox(jid);
+                    chatbox.open();
+                    return chatbox;
+                });
             },
             'get': function (jids) {
-                var _transform = function (jid) {
-                    var chatbox = converse.chatboxes.get(jid);
-                    if (!chatbox) {
-                        return null;
-                    }
-                    return wrappedChatBox(chatbox);
-                };
                 if (typeof jids === "undefined") {
-                    jids = converse.roster.pluck('jid');
+                    converse.log("chats.get: You need to provide at least one JID", "error");
+                    return null;
                 } else if (typeof jids === "string") {
-                    return _transform(jids);
+                    return getWrappedChatBox(jids);
                 }
-                return _.filter(_.map(jids, _transform), function (i) {return i !== null;});
+                return _.map(jids, getWrappedChatBox);
             }
         },
         'tokens': {

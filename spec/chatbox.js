@@ -431,7 +431,7 @@
                         this.chatboxes.onMessage(msg);
                         expect(converse.emit).toHaveBeenCalledWith('message', msg);
                     }, converse));
-                    waits(250);
+                    waits(50);
                     runs($.proxy(function () {
                         // Check that the chatbox and its view now exist
                         var chatbox = this.chatboxes.get(sender_jid);
@@ -462,61 +462,46 @@
                     var contact_name = mock.cur_names[0];
                     var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     spyOn(this, 'emit');
-                    runs(function () {
-                        test_utils.openChatBoxFor(contact_jid);
-                        var chatview = converse.chatboxviews.get(contact_jid);
-                        expect(chatview.model.get('minimized')).toBeFalsy();
-                        chatview.$el.find('.toggle-chatbox-button').click();
-                    });
-                    waits(50);
-                    runs($.proxy(function () {
-                        var chatview = this.chatboxviews.get(contact_jid);
-                        expect(chatview.model.get('minimized')).toBeTruthy();
-                        var message = 'This message is sent to a minimized chatbox';
-                        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        msg = $msg({
-                            from: sender_jid,
+                    test_utils.openChatBoxFor(contact_jid);
+                    var chatview = this.chatboxviews.get(contact_jid);
+                    expect(chatview.$el.is(':visible')).toBeTruthy();
+                    expect(chatview.model.get('minimized')).toBeFalsy();
+                    chatview.$el.find('.toggle-chatbox-button').click();
+                    expect(chatview.model.get('minimized')).toBeTruthy();
+                    var message = 'This message is sent to a minimized chatbox';
+                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    msg = $msg({
+                        from: sender_jid,
+                        to: this.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                    this.chatboxes.onMessage(msg);
+                    expect(this.emit).toHaveBeenCalledWith('message', msg);
+                    var trimmed_chatboxes = this.minimized_chats;
+                    var trimmedview = trimmed_chatboxes.get(contact_jid);
+                    var $count = trimmedview.$el.find('.chat-head-message-count');
+                    expect(chatview.$el.is(':visible')).toBeFalsy();
+                    expect(trimmedview.model.get('minimized')).toBeTruthy();
+                    expect($count.is(':visible')).toBeTruthy();
+                    expect($count.html()).toBe('1');
+                    this.chatboxes.onMessage(
+                        $msg({
+                            from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                             to: this.connection.jid,
                             type: 'chat',
                             id: (new Date()).getTime()
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                        this.chatboxes.onMessage(msg);
-                        expect(this.emit).toHaveBeenCalledWith('message', msg);
-                    }, converse));
-                    waits(50);
-                    runs($.proxy(function () {
-                        var trimmed_chatboxes = this.minimized_chats;
-                        var trimmedview = trimmed_chatboxes.get(contact_jid);
-                        var $count = trimmedview.$el.find('.chat-head-message-count');
-                        expect(trimmedview.model.get('minimized')).toBeTruthy();
-                        expect($count.is(':visible')).toBeTruthy();
-                        expect($count.html()).toBe('1');
-                        this.chatboxes.onMessage(
-                            $msg({
-                                from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
-                                to: this.connection.jid,
-                                type: 'chat',
-                                id: (new Date()).getTime()
-                            }).c('body').t('This message is also sent to a minimized chatbox').up()
-                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-                        );
-                    }, converse));
-                    waits(50);
-                    runs($.proxy(function () {
-                        var trimmed_chatboxes = this.minimized_chats;
-                        var trimmedview = trimmed_chatboxes.get(contact_jid);
-                        var $count = trimmedview.$el.find('.chat-head-message-count');
-                        expect(trimmedview.model.get('minimized')).toBeTruthy();
-                        expect($count.is(':visible')).toBeTruthy();
-                        expect($count.html()).toBe('2');
-                        trimmedview.$el.find('.restore-chat').click();
-                    }, converse));
-                    waits(250);
-                    runs($.proxy(function () {
-                        var trimmed_chatboxes = this.minimized_chats;
-                        expect(trimmed_chatboxes.keys().length).toBe(0);
-                    }, converse));
+                        }).c('body').t('This message is also sent to a minimized chatbox').up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                    );
+                    expect(chatview.$el.is(':visible')).toBeFalsy();
+                    expect(trimmedview.model.get('minimized')).toBeTruthy();
+                    $count = trimmedview.$el.find('.chat-head-message-count');
+                    expect($count.is(':visible')).toBeTruthy();
+                    expect($count.html()).toBe('2');
+                    trimmedview.$el.find('.restore-chat').click();
+                    expect(trimmed_chatboxes.keys().length).toBe(0);
                 }, converse));
 
                 it("will indicate when it has a time difference of more than a day between it and its predecessor", $.proxy(function () {
@@ -591,21 +576,16 @@
                 it("can be sent from a chatbox, and will appear inside it", $.proxy(function () {
                     spyOn(converse, 'emit');
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    runs(function () {
-                        test_utils.openChatBoxFor(contact_jid);
-                    });
-                    waits(250);
-                    runs(function () {
-                        expect(converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
-                        var view = this.chatboxviews.get(contact_jid);
-                        var message = 'This message is sent from this chatbox';
-                        spyOn(view, 'sendMessage').andCallThrough();
-                        test_utils.sendMessage(view, message);
-                        expect(view.sendMessage).toHaveBeenCalled();
-                        expect(view.model.messages.length, 2);
-                        expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
-                        expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text()).toEqual(message);
-                    }.bind(converse));
+                    test_utils.openChatBoxFor(contact_jid);
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+                    var view = this.chatboxviews.get(contact_jid);
+                    var message = 'This message is sent from this chatbox';
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    test_utils.sendMessage(view, message);
+                    expect(view.sendMessage).toHaveBeenCalled();
+                    expect(view.model.messages.length, 2);
+                    expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
+                    expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text()).toEqual(message);
                 }, converse));
 
                 it("is sanitized to prevent Javascript injection attacks", $.proxy(function () {
@@ -696,6 +676,23 @@
             }, converse));
 
             describe("A Chat Status Notification", $.proxy(function () {
+
+                it("does not open automatically if a chat state notification is received", $.proxy(function () {
+                    spyOn(converse, 'emit');
+                    var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    // <composing> state
+                    var msg = $msg({
+                            from: sender_jid,
+                            to: this.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                    this.chatboxes.onMessage(msg);
+                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                    var chatboxview = this.chatboxviews.get(sender_jid);
+                    expect(chatboxview).toBeDefined();
+                    expect(chatboxview.$el.is(':visible')).toBeFalsy(); // The chat box is not visible
+                }, converse));
 
                 describe("An active notification", $.proxy(function () {
                     it("is sent when the user opens a chat box", $.proxy(function () {

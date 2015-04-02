@@ -5,7 +5,11 @@ Changelog
 -----------------
 
 * Bugfix. Prevent attaching twice during initialization. [jcbrand]
+* API method chats.get can now also return chat boxes which haven't been opened yet. [jcbrand]
 * Add API method contacts.add. [pzia]
+* #356 Fix the plugin extend function. [floriancargoet]
+* #357 Fix the known bug where a state notification reopens a chat box. [floriancargoet]
+* #358 Bugfix. Chat rooms show the same occupants bug. [floriancargoet]
 
 0.9.1 (2015-03-26)
 ------------------

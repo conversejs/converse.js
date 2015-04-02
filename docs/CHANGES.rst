@@ -1,17 +1,26 @@
 Changelog
 =========
 
-0.9.1 (Unreleased)
+0.9.2 (Undefined)
+-----------------
+
+* Bugfix. Prevent attaching twice during initialization. [jcbrand]
+* API method chats.get can now also return chat boxes which haven't been opened yet. [jcbrand]
+* Add API method contacts.add. [pzia]
+* #356 Fix the plugin extend function. [floriancargoet]
+* #357 Fix the known bug where a state notification reopens a chat box. [floriancargoet]
+* #358 Bugfix. Chat rooms show the same occupants bug. [floriancargoet]
+
+0.9.1 (2015-03-26)
 ------------------
 
 * Set the JID input field in the login form to ``type=email``. [chatme]
-* New configuration setting ``allow_contact_removal``. [jcbrand]
+* New configuration setting `allow_contact_removal <https://conversejs.org/docs/html/configuration.html#allow-contact-removal>`_ [jcbrand]
 * Document that event handlers receive 'event' obj as first arg. [jcbrand]
 * Add a test to check that notifications are played in chat rooms. [jcbrand] 
-* Enable automatic reconnection when ``prebind`` and ``prebind_url`` are
-  specified. [jcbrand]
-* #339 Require the JID to be specified when using ``keepalive`` with
-  ``prebind``. Also add a logout API method. [jcbrand]
+* #333 Enable automatic reconnection when ``prebind`` and ``prebind_url`` are specified. [jcbrand]
+* #339 Require the JID to be specified when using ``keepalive`` with ``prebind``. Also add a logout API method. [jcbrand]
+* #349 Indicate visitors in chat rooms. [c143]
 
 0.9.0 (2015-03-06)
 ------------------

@@ -41,9 +41,8 @@ directory:
 
     make dev
 
-On Windows you need to specify Makefile.win to be used by running:
-    
-::
+On Windows you need to specify Makefile.win to be used by running: ::
+
     make -f Makefile.win dev
     
 Or alternatively, if you don't have GNU Make:
@@ -272,14 +271,26 @@ The returned roster contact objects have these attributes:
 | vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
 +----------------+--------------------------------------------------------------------------------------------------------------------------------------+
 
+add
+~~~
+
+Add a contact.
+
+Provide the JID of the contact you want to add::
+
+    converse.chats.add('buddy@example.com')
+    
+You may also provide the fullname. If not present, we use the jid as fullname.
+
+    converse.chats.add('buddy@example.com', 'Buddy')
+
 "chats" grouping
 ----------------
 
 get
 ~~~
 
-Returns an object representing a chat box, if that chat box is already open.
-If the chat box is not already open, this method will return ``null``.
+Returns an object representing a chat box.
 
 To return a single chat box, provide the JID of the contact you're chatting
 with in that chat box::
@@ -308,7 +319,7 @@ To return an array of chat boxes, provide an array of JIDs::
     converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
 
 
-*The returned chat box contains the following methods:*
+*The returned chat box object contains the following methods:*
 
 +-------------+------------------------------------------+
 | Method      | Description                              |
@@ -326,6 +337,8 @@ To return an array of chat boxes, provide an array of JIDs::
 | set         | Set an attribute (i.e. mutator).         |
 +-------------+------------------------------------------+
 | close       | Close the chat box.                      |
++-------------+------------------------------------------+
+| open        | Opens the chat box.                      |
 +-------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*

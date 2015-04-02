@@ -483,7 +483,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<form id="converse-login" method="post">\n    <label>' +
 ((__t = (label_username)) == null ? '' : __t) +
-'</label>\n    <input type="username" name="jid" placeholder="user@server">\n    <label>' +
+'</label>\n    <input type="email" name="jid" placeholder="user@server">\n    <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
 '</label>\n    <input type="password" name="password" placeholder="password">\n    <input class="submit" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
@@ -829,7 +829,9 @@ __p += '<form class="add-chatroom" action="" method="post">\n    <label>' +
 ((__t = (label_nickname)) == null ? '' : __t) +
 '</label>\n    <input type="text" name="nick" class="new-chatroom-nick"\n        placeholder="' +
 ((__t = (label_nickname)) == null ? '' : __t) +
-'"/>\n    <label>' +
+'"/>\n    <label' +
+((__t = (server_label_global_attr)) == null ? '' : __t) +
+'>' +
 ((__t = (label_server)) == null ? '' : __t) +
 '</label>\n    <input type="' +
 ((__t = (server_input_type)) == null ? '' : __t) +
@@ -863,7 +865,8 @@ return __p
 
 this["templates"]["roster_item"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<a class="open-chat" title="Name: ' +
 ((__t = (fullname)) == null ? '' : __t) +
@@ -877,9 +880,13 @@ __p += '<a class="open-chat" title="Name: ' +
 ((__t = (desc_status)) == null ? '' : __t) +
 '"></span>' +
 ((__t = (fullname)) == null ? '' : __t) +
-'</a>\n<a class="remove-xmpp-contact icon-remove" title="' +
+'</a>\n';
+ if (allow_contact_removal) { ;
+__p += '\n<a class="remove-xmpp-contact icon-remove" title="' +
 ((__t = (desc_remove)) == null ? '' : __t) +
 '" href="#"></a>\n';
+ } ;
+__p += '\n';
 
 }
 return __p

@@ -10,6 +10,7 @@ Changelog
 * #356 Fix the plugin extend function. [floriancargoet]
 * #357 Fix the known bug where a state notification reopens a chat box. [floriancargoet]
 * #358 Bugfix. Chat rooms show the same occupants bug. [floriancargoet]
+* #359 Fix a timeout bug in chat state notifications. [floriancargoet]
 
 0.9.1 (2015-03-26)
 ------------------

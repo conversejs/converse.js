@@ -1243,12 +1243,11 @@
                  *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
                  *    (no_save) no_save - Just do the cleanup or setup but don't actually save the state.
                  */
-                if (_.contains([ACTIVE, INACTIVE, GONE], state)) {
-                    if (typeof this.chat_state_timeout !== 'undefined') {
-                        clearTimeout(this.chat_state_timeout);
-                        delete this.chat_state_timeout;
-                    }
-                } else if (state === COMPOSING) {
+                if (typeof this.chat_state_timeout !== 'undefined') {
+                    clearTimeout(this.chat_state_timeout);
+                    delete this.chat_state_timeout;
+                }
+                if (state === COMPOSING) {
                     this.chat_state_timeout = setTimeout(
                             $.proxy(this.setChatState, this), converse.TIMEOUTS.PAUSED, PAUSED);
                 } else if (state === PAUSED) {

@@ -781,6 +781,8 @@
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(contact_jid);
                         var view = this.chatboxviews.get(contact_jid);
+                        spyOn(converse.connection, 'send');
+                        spyOn(view, 'setChatState').andCallThrough();
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
@@ -788,16 +790,39 @@
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
-                            spyOn(converse.connection, 'send');
+                            expect(converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect($stanza.children().prop('tagName')).toBe('composing');
                         });
                         waits(250);
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('paused');
                             expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            var $stanza = $(converse.connection.send.argsForCall[1][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(1);
                             expect($stanza.children().prop('tagName')).toBe('paused');
+                            // Test #359. A paused notification should not be sent
+                            // out if the user simply types longer than the
+                            // timeout.
+                            view.keyPressed({
+                                target: view.$el.find('textarea.chat-textarea'),
+                                keyCode: 1
+                            });
+                            expect(view.setChatState).toHaveBeenCalled();
+                            expect(view.model.get('chat_state')).toBe('composing');
+                        });
+                        waits(100);
+                        runs(function () {
+                            view.keyPressed({
+                                target: view.$el.find('textarea.chat-textarea'),
+                                keyCode: 1
+                            });
+                            expect(view.model.get('chat_state')).toBe('composing');
+                        });
+                        waits(150);
+                        runs(function () {
+                            expect(view.model.get('chat_state')).toBe('composing');
                         });
                     }, converse));
 

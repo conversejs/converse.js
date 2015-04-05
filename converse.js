@@ -5543,6 +5543,46 @@
                 return _.map(jids, getWrappedChatBox);
             }
         },
+        'rooms': {
+            'open': function (jids, nick) {
+                if (!nick) {
+                    nick = Strophe.getNodeFromJid(converse.bare_jid)
+                }
+                if (typeof nick !== "string") {
+                    throw new TypeError('rooms.open: invalid nick, must be string');
+                }
+                var _transform = function (jid) {
+                    var chatroom = converse.chatboxes.get(jid);
+                    converse.log('jid');
+                    if (!chatroom) {
+                        var chatroom = converse.chatboxviews.showChat({
+                            'id': jid,
+                            'jid': jid,
+                            'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                            'nick': nick,
+                            'chatroom': true,
+                            'box_id' : b64_sha1(jid)
+                        });
+                    }
+                    return wrappedChatBox(chatroom);
+                };
+                if (typeof jids === "undefined") {
+                    throw new TypeError('rooms.open: You need to provide at least one JID');
+                } else if (typeof jids === "string") {
+                    return _transform(jids);
+                }
+                return _.map(jids, _transform);
+            },
+            'get': function (jids) {
+                if (typeof jids === "undefined") {
+                    throw new TypeError("rooms.get: You need to provide at least one JID");
+                    return null;
+                } else if (typeof jids === "string") {
+                    return getWrappedChatBox(jids);
+                }
+                return _.map(jids, getWrappedChatBox);
+            }
+        },
         'tokens': {
             'get': function (id) {
                 if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {

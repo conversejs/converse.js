@@ -1747,8 +1747,7 @@
             },
 
             addContact: function (jid, name) {
-                name = _.isEmpty(name)? jid: name;
-                converse.connection.roster.add(jid, name, [], function (iq) {
+                converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
             }
@@ -5548,7 +5547,6 @@
                 converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
-                return true;
             }
         },
         'chats': {

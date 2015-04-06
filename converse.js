@@ -3538,6 +3538,7 @@
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
                 converse.connection.sendIQ(iq, callback, callback);
+                return this;
             },
 
             showInRoster: function () {
@@ -3833,17 +3834,15 @@
 
             unsubscribe: function (jid) {
                 /* Upon receiving the presence stanza of type "unsubscribed",
-                * the user SHOULD acknowledge receipt of that subscription state
-                * notification by sending a presence stanza of type "unsubscribe"
-                * this step lets the user's server know that it MUST no longer
-                * send notification of the subscription state change to the user.
-                */
+                 * the user SHOULD acknowledge receipt of that subscription state
+                 * notification by sending a presence stanza of type "unsubscribe"
+                 * this step lets the user's server know that it MUST no longer
+                 * send notification of the subscription state change to the user.
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user who is unsubscribing
+                 */
                 converse.xmppstatus.sendPresence('unsubscribe');
-                if (converse.connection.roster.findItem(jid)) {
-                    converse.connection.roster.remove(jid, function (iq) {
-                        converse.rosterview.model.remove(jid);
-                    });
-                }
+                this.get(bare_jid).destroy(); // Will cause removeFromRoster to be called.
             },
 
             getNumOnlineContacts: function () {

@@ -448,7 +448,7 @@
                     this.connection.jid,
                     this.connection.pass,
                     function (status, condition) {
-                        converse.onConnect(status, condition, true);
+                        converse.onConnStatusChanged(status, condition, true);
                     },
                     this.connection.wait,
                     this.connection.hold,
@@ -468,9 +468,8 @@
             view.renderLoginPanel();
         };
 
-        this.onConnect = function (status, condition, reconnect) {
-            if ((status === Strophe.Status.CONNECTED) ||
-                (status === Strophe.Status.ATTACHED)) {
+        this.onConnStatusChanged = function (status, condition, reconnect) {
+            if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
@@ -3529,6 +3528,17 @@
                 return this;
             },
 
+            removeResource: function (resource) {
+                var resources = item.get('resources');
+                var idx = _.indexOf(resources, resource);
+                if (idx !== -1) {
+                    resources.splice(idx, 1);
+                    item.save({'resources': resources});
+                    return resources.length;
+                }
+                return 0;
+            },
+
             removeFromRoster: function (callback) {
                 /* Instruct the XMPP server to remove this contact from our roster
                  * Parameters:
@@ -3804,20 +3814,6 @@
                 }
             },
 
-            removeResource: function (bare_jid, resource) {
-                var item = this.get(bare_jid), resources, idx;
-                if (item) {
-                    resources = item.get('resources');
-                    idx = _.indexOf(resources, resource);
-                    if (idx !== -1) {
-                        resources.splice(idx, 1);
-                        item.save({'resources': resources});
-                        return resources.length;
-                    }
-                }
-                return 0;
-            },
-
             subscribeBack: function (bare_jid) {
                 var contact = this.get(bare_jid);
                 if (contact instanceof converse.RosterContact) {
@@ -3862,65 +3858,45 @@
                 return count;
             },
 
-            clearCache: function (items) {
-                /* The localstorage cache containing roster contacts might contain
-                * some contacts that aren't actually in our roster anymore. We
-                * therefore need to remove them now.
-                *
-                * TODO: The method is a performance bottleneck.
-                * Basically we need to chuck out strophe.roster and
-                * rewrite it with backbone.js and well integrated into
-                * converse.js. Then we won't need to have this method at all.
-                */
-                _.each(_.difference(this.pluck('jid'), _.pluck(items, 'jid')), $.proxy(function (jid) {
-                    var contact = this.get(jid);
-                    if (contact && !contact.get('requesting')) {
-                        contact.destroy();
-                    }
-                }, this));
+            onRosterPush: function (iq) {
+                /* Handle roster updates from the XMPP server.
+                 * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                 * Parameters:
+                 *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                 */
+                var id = iq.getAttribute('id');
+                var from = iq.getAttribute('from');
+                if (from && from !== "" && from != converse.bare_jid) {
+                    // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
+                    converse.connection.send(
+                        $iq({type: 'error', id: id, from: converse.connection.jid})
+                            .c('error', {'type': 'cancel'})
+                            .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
+                    );
+                    return true;
+                }
+                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
+                $(iq).children('query').find('item').each(function (idx, item) {
+                    this.updateContact(item);
+                }.bind(this));
+                return true;
             },
 
-            rosterHandler: function (items, item) {
-                converse.emit('roster', items);
-                this.clearCache(items);
-                var new_items = item ? [item] : items;
-                _.each(new_items, function (item, index, items) {
-                    if (this.isSelf(item.jid)) { return; }
-                    var model = this.get(item.jid);
-                    if (!model) {
-                        var is_last = (index === (items.length-1)) ? true : false;
-                        if ((item.subscription === 'none') && (item.ask === null) && !is_last) {
-                            // We're not interested in zombies
-                            // (Hack: except if it's the last item, then we still
-                            // add it so that the roster will be shown).
-                            return;
-                        }
-                        this.create({
-                            ask: item.ask,
-                            fullname: item.name || item.jid,
-                            groups: item.groups,
-                            jid: item.jid,
-                            subscription: item.subscription
-                        }, {sort: false});
-                    } else {
-                        if ((item.subscription === 'none') && (item.ask === null)) {
-                            // This user is no longer in our roster
-                            model.destroy();
-                        } else {
-                            // We only find out about requesting contacts via the
-                            // presence handler, so if we receive a contact
-                            // here, we know they aren't requesting anymore.
-                            // see docs/DEVELOPER.rst
-                            model.save({
-                                subscription: item.subscription,
-                                ask: item.ask,
-                                requesting: null,
-                                groups: item.groups
-                            });
-                        }
-                    }
-                }, this);
+            fetchFromServer: function (callback, errback) {
+                /* Get the roster from the XMPP server */
+                var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
+                        .c('query', {xmlns: Strophe.NS.ROSTER});
+                return converse.connection.sendIQ(iq, this.onReceivedFromServer.bind(this));
+            },
 
+            onReceivedFromServer: function (iq) {
+                /* An IQ stanza containing the roster has been received from
+                 * the XMPP server.
+                 */
+                converse.emit('roster', iq);
+                $(iq).children('query').find('item').each(function (idx, item) {
+                    this.updateContact(item);
+                }.bind(this));
                 if (!converse.initial_presence_sent) {
                     /* Once we've sent out our initial presence stanza, we'll
                      * start receiving presence stanzas from our contacts.
@@ -3930,6 +3906,45 @@
                      */
                     converse.initial_presence_sent = 1;
                     converse.xmppstatus.sendPresence();
+                }
+            },
+
+            updateContact: function (item) {
+                /* Update or create RosterContact models based on items
+                 * received in the IQ from the server.
+                 */
+                var jid = item.getAttribute('jid');
+                if (this.isSelf(jid)) { return; }
+                var groups = [],
+                    contact = this.get(jid),
+                    ask = item.getAttribute("ask"),
+                    subscription = item.getAttribute("subscription");
+                $.map(item.getElementsByTagName('group'), function (group) {
+                    groups.push(Strophe.getText(group));
+                });
+                if (!contact) {
+                    this.create({
+                        ask: ask,
+                        fullname: item.getAttribute("name") || jid,
+                        groups: groups,
+                        jid: jid,
+                        subscription: subscription
+                    }, {sort: false});
+                } else {
+                    if ((subscription === 'none') && (ask === null)) {
+                        contact.destroy(); // This user is no longer in our roster
+                    } else {
+                        // We only find out about requesting contacts via the
+                        // presence handler, so if we receive a contact
+                        // here, we know they aren't requesting anymore.
+                        // see docs/DEVELOPER.rst
+                        contact.save({
+                            subscription: subscription,
+                            ask: ask,
+                            requesting: null,
+                            groups: groups
+                        });
+                    }
                 }
             },
 
@@ -3977,17 +3992,15 @@
 
             presenceHandler: function (presence) {
                 var $presence = $(presence),
-                    presence_type = $presence.attr('type');
-                if (presence_type === 'error') {
-                    return true;
-                }
-                var jid = $presence.attr('from'),
+                    presence_type = presence.getAttribute('type');
+                if (presence_type === 'error') { return true; }
+                var jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
                     $show = $presence.find('show'),
                     chat_status = $show.text() || 'online',
                     status_message = $presence.find('status'),
-                    contact;
+                    contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
@@ -3998,7 +4011,6 @@
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
                     return true; // Ignore MUC
                 }
-                contact = this.get(bare_jid);
                 if (contact && (status_message.text() != contact.get('status'))) {
                     contact.save({'status': status_message.text()});
                 }
@@ -4009,11 +4021,13 @@
                 } else if (presence_type === 'unsubscribed') {
                     this.unsubscribe(bare_jid);
                 } else if (presence_type === 'unavailable') {
-                    if (this.removeResource(bare_jid, resource) === 0) {
-                        chat_status = "offline";
-                    }
-                    if (contact && chat_status) {
-                        contact.save({'chat_status': chat_status});
+                    if (contact) {
+                        if (contact.removeResource(bare_jid, resource) === 0) {
+                            chat_status = "offline";
+                        }
+                        if (chat_status) {
+                            contact.save({'chat_status': chat_status});
+                        }
                     }
                 } else if (contact) {
                     // presence_type is undefined
@@ -4277,32 +4291,17 @@
                         converse.roster.fetch({
                             add: true,
                             success: function (collection) {
-                                // XXX: Bit of a hack.
-                                // strophe.roster expects .get to be called for
-                                // every page load so that its "items" attr
-                                // gets populated.
-                                // This is very inefficient for large rosters,
-                                // and we already have the roster cached in
-                                // sessionStorage.
-                                // Therefore we manually populate the "items"
-                                // attr.
-                                // Ideally we should eventually replace
-                                // strophe.roster with something better.
                                 if (collection.length > 0) {
-                                    collection.each(function (item) {
-                                        converse.connection.roster.items.push({
-                                            name         : item.get('fullname'),
-                                            jid          : item.get('jid'),
-                                            subscription : item.get('subscription'),
-                                            ask          : item.get('ask'),
-                                            groups       : item.get('groups'),
-                                            resources    : item.get('resources')
-                                        });
-                                    });
                                     converse.initial_presence_sent = 1;
+                                    // XXX: Should we actually send the presence here?
+                                    // This means the presence is sent on every
+                                    // page load.
                                     converse.xmppstatus.sendPresence();
                                 } else {
-                                    converse.connection.roster.get();
+                                    // We don't have any roster contacts stored
+                                    // in sessionStorage, so lets fetch the
+                                    // roster from the XMPP server.
+                                    converse.roster.fetchFromServer();
                                 }
                             }
                         });
@@ -4397,9 +4396,9 @@
             },
 
             registerRosterHandler: function () {
-                // Register handlers that depend on the roster
-                converse.connection.roster.registerCallback(
-                    $.proxy(converse.roster.rosterHandler, converse.roster)
+                converse.connection.addHandler(
+                    converse.roster.onRosterPush.bind(converse.roster),
+                    Strophe.NS.ROSTER, 'iq', "set"
                 );
             },
 
@@ -4417,7 +4416,8 @@
                         t += $(msg).find('item').length*250;
                         return true;
                     },
-                    'http://jabber.org/protocol/rosterx', 'message', null);
+                    'http://jabber.org/protocol/rosterx', 'message', null
+                );
             },
 
             registerPresenceHandler: function () {
@@ -4479,13 +4479,13 @@
 
             positionFetchedGroups: function (model, resp, options) {
                 /* Instead of throwing an add event for each group
-                    * fetched, we wait until they're all fetched and then
-                    * we position them.
-                    * Works around the problem of positionGroup not
-                    * working when all groups besides the one being
-                    * positioned aren't already in inserted into the
-                    * roster DOM element.
-                    */
+                 * fetched, we wait until they're all fetched and then
+                 * we position them.
+                 * Works around the problem of positionGroup not
+                 * working when all groups besides the one being
+                 * positioned aren't already in inserted into the
+                 * roster DOM element.
+                 */
                 model.sort();
                 model.each($.proxy(function (group, idx) {
                     var view = this.get(group.get('name'));
@@ -4897,7 +4897,6 @@
             getRegistrationFields: function (req, _callback, raw) {
                 /*  Send an IQ stanza to the XMPP server asking for the
                  *  registration fields.
-                 *
                  *  Parameters:
                  *    (Strophe.Request) req - The current request
                  *    (Function) callback
@@ -5031,7 +5030,7 @@
                             converse.connection.connect(
                                 that.fields.username+'@'+that.domain,
                                 that.fields.password,
-                                converse.onConnect
+                                converse.onConnStatusChanged
                             );
                             converse.chatboxviews.get('controlbox')
                                 .switchTab({target: that.$tabs.find('.current')})
@@ -5333,7 +5332,7 @@
                         jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
                     }
                 }
-                converse.connection.connect(jid, password, converse.onConnect);
+                converse.connection.connect(jid, password, converse.onConnStatusChanged);
             },
 
             remove: function () {
@@ -5432,7 +5431,7 @@
                             response.jid,
                             response.sid,
                             response.rid,
-                            this.onConnect
+                            this.onConnStatusChanged
                     );
                 }.bind(this),
                 error: function (response) {
@@ -5470,7 +5469,7 @@
                         }
                         if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                            this.connection.attach(jid, sid, rid, this.onConnect);
+                            this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
                         } else if (this.prebind_url) {
                             this.startNewBOSHSession();
                         } else {
@@ -5481,26 +5480,26 @@
                         // Non-prebind case.
                         if (rid && sid && jid) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                            this.connection.attach(jid, sid, rid, this.onConnect);
+                            this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
                         } else if (this.auto_login) {
                             if (!this.jid) {
                                 throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
                             }
                             if (this.authentication === ANONYMOUS) {
-                                this.connection.connect(this.jid, null, this.onConnect);
+                                this.connection.connect(this.jid, null, this.onConnStatusChanged);
                             } else if (this.authentication === LOGIN) {
                                 if (!this.password) {
                                     throw new Error("initConnection: If you use auto_login and "+
                                         "authentication='login' then you also need to provide a password.");
                                 }
-                                this.connection.connect(this.jid, this.password, this.onConnect);
+                                this.connection.connect(this.jid, this.password, this.onConnStatusChanged);
                             }
                         }
                     }
                 } else if (this.authentication == "prebind") {
                     // prebind is used without keepalive
                     if (this.jid && this.sid && this.rid) {
-                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
+                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnStatusChanged);
                     } else {
                         throw new Error("initConnection: If you use prebind and not keepalive, "+
                             "then you MUST supply JID, RID and SID values");
@@ -5517,7 +5516,6 @@
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }
-            this.connection.roster._callbacks = []; // Remove all Roster handlers (e.g. rosterHandler)
             if (this.rosterview) {
                 this.rosterview.model.off().reset(); // Removes roster groups
                 this.rosterview.undelegateEvents().remove();

@@ -12,7 +12,8 @@
 
     describe("Profiling", function() {
         beforeEach(function() {
-            converse.connection.roster.items = [];
+            test_utils.clearBrowserStorage();
+            converse.rosterview.model.reset();
             converse.connection._changeConnectStatus(Strophe.Status.CONNECTED);
         });
 
@@ -36,7 +37,7 @@
                     }).c('group').t(group).up().up();
                 }
             });
-            this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());
+            this.roster.onReceivedFromServer(stanza.tree());
             expect(this.roster.clearCache).toHaveBeenCalled();
             expect(this.roster.pluck('jid').length).toBe(400);
         }, converse));
@@ -62,7 +63,7 @@
                     }).c('group').t(group).up().up();
                 }
             });
-            this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());
+            this.roster.onReceivedFromServer(stanza.tree());
             expect(this.roster.clearCache).toHaveBeenCalled();
             //expect(this.roster.pluck('jid').length).toBe(400);
         }, converse));

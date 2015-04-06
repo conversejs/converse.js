@@ -5,7 +5,6 @@ define("converse-dependencies", [
     "otr",
     "moment",
     "strophe",
-    "strophe.roster",
     "strophe.vcard",
     "strophe.disco",
     "bootstrapJS", // XXX: Only for https://conversejs.org

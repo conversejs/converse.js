@@ -4,7 +4,6 @@ define("converse-dependencies", [
     "otr",
     "moment",
     "strophe",
-    "strophe.roster",
     "strophe.vcard",
     "strophe.disco",
     "backbone.browserStorage",

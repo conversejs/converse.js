@@ -925,7 +925,6 @@
                  * https://github.com/jcbrand/converse.js/issues/262
                  */
                 this.rosterview.model.reset();
-                spyOn(this.roster, 'clearCache').andCallThrough();
                 expect(this.roster.pluck('jid').length).toBe(0);
 
                 var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
@@ -956,8 +955,7 @@
                     name: 'Benvolio',
                     subscription:'both'
                 }).c('group').t('Friends');
-                this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());
-                expect(this.roster.clearCache).toHaveBeenCalled();
+                this.roster.onReceivedFromServer(stanza.tree());
                 expect(_.contains(this.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
             }, converse));
 

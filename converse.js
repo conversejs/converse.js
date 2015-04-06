@@ -3666,11 +3666,13 @@
 
             acceptRequest: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var jid = this.model.get('jid');
                 this.model.authorize();
-                converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
-                    converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
-                });
+                converse.roster.sendContactAddIQ(
+                    this.model.get('jid'),
+                    this.model.get('fullname'),
+                    [],
+                    function (iq) { this.model.subscribe(); }.bind(this)
+                );
             },
 
             declineRequest: function (ev) {
@@ -3733,9 +3735,26 @@
                 });
             },
 
+            sendContactAddIQ: function (jid, name, groups, callback, errback) {
+                /*  Send an IQ stanza to the XMPP server to add a new roster contact.
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user being added
+                 *    (String) name - The name of that user
+                 *    (Array of Strings) groups - Any roster groups the user might belong to
+                 *    (Function) callback - A function to call once the VCard is returned
+                 *    (Function) errback - A function to call if an error occured
+                 */
+                name = _.isEmpty(name)? jid: name;
+                var iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', { jid: jid, name: name });
+                _.map(groups, function (group) { iq.c('group').t(group).up(); });
+                converse.connection.sendIQ(iq, callback, errback);
+            },
+
             addContact: function (jid, name, groups, attributes) {
-                /* Adds a roster contact.
-                 * A RosterContact model will be created and added to converse.roster.
+                /* Adds a RosterContact instance to converse.roster and
+                 * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
                  * responded.
                  *  Parameters:
@@ -3747,9 +3766,7 @@
                 var deferred = new $.Deferred();
                 groups = groups || [];
                 name = _.isEmpty(name)? jid: name;
-                var iq = $iq({type: 'set'}).c('query', {xmlns: Strophe.NS.ROSTER}).c('item', { jid: jid, name: name });
-                _.map(groups, function (group) { iq.c('group').t(group).up(); });
-                converse.connection.sendIQ(iq,
+                this.sendContactAddIQ(jid, name, groups,
                     function (iq) {
                         var contact = this.create(_.extend({
                             ask: undefined,

@@ -30,21 +30,7 @@
             }
         );
     } else {
-        root.converse = factory(
-            templates,
-            jQuery,
-            $iq,
-            $msg,
-            $pres,
-            $build,
-            DSA,
-            OTR,
-            Strophe,
-            _,
-            moment,
-            utils,
-            b64_sha1
-        );
+        root.converse = factory(templates, jQuery, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1);
     }
 }(this, function (templates, $, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1) {
     // "use strict";
@@ -397,8 +383,27 @@
                 }
             }
         };
+  
+        this.rejectPresenceSubscription = function (jid, message) {
+            /* Reject or cancel another user's subscription to our presence updates.
+             *  Parameters:
+             *    (String) jid - The Jabber ID of the user whose subscription
+             *      is being canceled.
+             *    (String) message - An optional message to the user 
+             */
+            var pres = $pres({to: jid, type: "unsubscribed"});
+            if (message && message !== "") { pres.c("status").t(message); }
+            converse.connection.send(pres);
+        };
 
         this.getVCard = function (jid, callback, errback) {
+            /* Request the VCard of another user.
+             *  Parameters:
+             *    (String) jid - The Jabber ID of the user whose VCard is being requested.
+             *    (Function) callback - A function to call once the VCard is returned
+             *    (Function) errback - A function to call if an error occured
+             *      while trying to fetch the VCard.
+             */
             if (!this.use_vcards) {
                 if (callback) {
                     callback(jid, jid);
@@ -3511,12 +3516,22 @@
             unauthorize: function (message) {
                 /* Unauthorize this contact's presence subscription
                  * Parameters:
-                 *   (String) message - An optional message to send to the person being unauthorized.
+                 *   (String) message - Optional message to send to the person being unauthorized
                  */
-                var pres = $pres({to: this.get('jid'), type: "unsubscribed"});
-                if (message && message !== "") { pres.c("status").t(message); }
-                converse.connection.send(pres);
+                converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
+            },
+
+            authorize: function (message) {
+                /* Authorize presence subscription
+                 * Parameters:
+                 *   (String) message - Optional message to send to the person being authorized
+                 */
+                var pres = $pres({to: jid, type: "subscribed"});
+                if (message && message !== "") {
+                    pres.c("status").t(message);
+                }
+                converse.connection.send(pres);
             },
 
             removeFromRoster: function (callback) {
@@ -3657,7 +3672,7 @@
             acceptRequest: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var jid = this.model.get('jid');
-                converse.connection.roster.authorize(jid);
+                this.model.authorize();
                 converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
                     converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
@@ -3667,8 +3682,7 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var result = confirm(__("Are you sure you want to decline this contact request?"));
                 if (result === true) {
-                    converse.connection.roster.unauthorize(this.model.get('jid'));
-                    this.model.destroy();
+                    this.model.unauthorize().destroy();
                 }
                 return this;
             }
@@ -3902,9 +3916,8 @@
             handleIncomingSubscription: function (jid) {
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var item = this.get(bare_jid);
-
                 if (!converse.allow_contact_requests) {
-                    converse.connection.roster.unauthorize(bare_jid);
+                    converse.rejectPresenceSubscription(jid, __("This client does not allow presence subscriptions"));
                     return true;
                 }
                 if (converse.auto_subscribe) {

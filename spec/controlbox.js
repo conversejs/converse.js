@@ -889,35 +889,32 @@
                 // mock_connection.
                 var name = mock.req_names.sort()[0];
                 var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                spyOn(this.connection.roster, 'authorize');
-
+                var contact = this.roster.get(jid);
+                spyOn(contact, 'authorize');
                 converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
                     .siblings('.request-actions')
                     .find('.accept-xmpp-request').click();
-
-                expect(this.connection.roster.authorize).toHaveBeenCalled();
+                expect(contact.authorize).toHaveBeenCalled();
             }, converse));
 
             it("can have their requests denied by the user", $.proxy(function () {
                 this.rosterview.model.reset();
                 runs($.proxy(function () {
-                    spyOn(converse, 'emit');
-                    spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(window, 'confirm').andReturn(true);
                     utils.createContacts('requesting').openControlBox();
                     converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
                     var name = mock.req_names.sort()[1];
+                    var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact = this.roster.get(jid);
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
                     converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
                         .siblings('.request-actions')
                         .find('.decline-xmpp-request').click();
-                }, this));
-                waits(50);
-                runs($.proxy(function () {
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
+                    expect(contact.unauthorize).toHaveBeenCalled();
                     // There should now be one less contact
                     expect(this.roster.length).toEqual(mock.req_names.length-1);
                 }, this));

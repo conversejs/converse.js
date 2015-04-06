@@ -1732,7 +1732,7 @@
                     $input.addClass('error');
                     return;
                 }
-                this.addContact(jid);
+                converse.roster.addAndSubscribe(jid);
                 $('.search-xmpp').hide();
             },
 
@@ -1741,15 +1741,9 @@
                 var $target = $(ev.target),
                     jid = $target.attr('data-recipient'),
                     name = $target.text();
-                this.addContact(jid, name);
+                converse.roster.addAndSubscribe(jid, name);
                 $target.parent().remove();
                 $('.search-xmpp').hide();
-            },
-
-            addContact: function (jid, name) {
-                converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
-                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
-                });
             }
         });
 
@@ -3484,7 +3478,7 @@
         this.RosterContact = Backbone.Model.extend({
             initialize: function (attributes, options) {
                 var jid = attributes.jid;
-                var attrs = _.extend({
+                this.set(_.extend({
                     'id': jid,
                     'fullname': jid,
                     'chat_status': 'offline',
@@ -3494,8 +3488,46 @@
                     'image_type': 'image/png',
                     'image': "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",
                     'status': ''
-                }, attributes);
-                this.set(attrs);
+                }, attributes));
+
+                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
+            },
+
+           subscribe: function (message) {
+                /* Send a presence subscription request to this roster contact
+                 */
+                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
+                var pres = $pres({to: this.get('jid'), type: "subscribe"});
+                if (message && message !== "") {
+                    pres.c("status").t(message).up();
+                }
+                var nick = converse.xmppstatus.get('fullname');
+                if (nick && nick !== "") {
+                    pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
+                }
+                converse.connection.send(pres);
+            },
+
+            unauthorize: function (message) {
+                /* Unauthorize this contact's presence subscription
+                 * Parameters:
+                 *   (String) message - An optional message to send to the person being unauthorized.
+                 */
+                var pres = $pres({to: this.get('jid'), type: "unsubscribed"});
+                if (message && message !== "") { pres.c("status").t(message); }
+                converse.connection.send(pres);
+                return this;
+            },
+
+            removeFromRoster: function (callback) {
+                /* Instruct the XMPP server to remove this contact from our roster
+                 * Parameters:
+                 *   (Function) callback
+                 */
+                var iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', {jid: this.get('jid'), subscription: "remove"});
+                converse.connection.sendIQ(iq, callback, callback);
             },
 
             showInRoster: function () {
@@ -3606,13 +3638,19 @@
                 if (!converse.allow_contact_removal) { return; }
                 var result = confirm(__("Are you sure you want to remove this contact?"));
                 if (result === true) {
-                    var bare_jid = this.model.get('jid');
-                    converse.connection.roster.remove(bare_jid, $.proxy(function (iq) {
-                        converse.connection.roster.unauthorize(bare_jid);
-                        converse.rosterview.model.remove(bare_jid);
-                        this.model.destroy();
-                        this.remove();
-                    }, this));
+                    var iq = $iq({type: 'set'})
+                        .c('query', {xmlns: Strophe.NS.ROSTER})
+                        .c('item', {jid: this.model.get('jid'), subscription: "remove"});
+                    converse.connection.sendIQ(iq,
+                        function (iq) {
+                            this.model.unauthorize().destroy();
+                            this.remove();
+                        }.bind(this),
+                        function (err) {
+                            alert(__("Sorry, there was an error while trying to remove "+name+" as a contact."));
+                            converse.log(err);
+                        }
+                    );
                 }
             },
 
@@ -3621,7 +3659,7 @@
                 var jid = this.model.get('jid');
                 converse.connection.roster.authorize(jid);
                 converse.connection.roster.add(jid, this.model.get('fullname'), [], function (iq) {
-                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                    converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
             },
 
@@ -3658,7 +3696,7 @@
                         action = $this.attr('action'),
                         fullname = $this.attr('name');
                     if (action === 'add') {
-                        converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                        converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                     }
                 });
                 return true;
@@ -3666,6 +3704,52 @@
 
             isSelf: function (jid) {
                 return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
+            },
+
+            addAndSubscribe: function (jid, name, groups, message) {
+                /* Add a roster contact and then once we have confirmation from
+                 * the XMPP server we subscribe to that contact's presence
+                 * updates.
+                 */
+                this.addContact(jid, name, groups).done(function (contact) {
+                    if (contact instanceof converse.RosterContact) {
+                        contact.subscribe(message);
+                    }
+                });
+            },
+
+            addContact: function (jid, name, groups) {
+                /* Adds a roster contact.
+                 *
+                 * A RosterContact model will be created and added to converse.roster.
+                 *
+                 * Returns a promise which is resolved once the XMPP server has
+                 * responded.
+                 */
+                var deferred = new $.Deferred();
+                groups = groups || [];
+                name = _.isEmpty(name)? jid: name;
+                var iq = $iq({type: 'set'}).c('query', {xmlns: Strophe.NS.ROSTER}).c('item', { jid: jid, name: name });
+                _.map(groups, function (group) { iq.c('group').t(group).up(); });
+                converse.connection.sendIQ(iq,
+                    function (iq) {
+                        var contact = this.create({
+                            ask: undefined,
+                            fullname: name,
+                            groups: groups,
+                            jid: jid,
+                            requesting: false,
+                            subscription: 'none' 
+                        }, {sort: false});
+                        deferred.resolve(contact);
+                    }.bind(this),
+                    function (err) {
+                        alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
+                        converse.log(err);
+                        deferred.resolve(err);
+                    }
+                );
+                return deferred.promise();
             },
 
             addResource: function (bare_jid, resource) {
@@ -3685,9 +3769,7 @@
             },
 
             removeResource: function (bare_jid, resource) {
-                var item = this.get(bare_jid),
-                    resources,
-                    idx;
+                var item = this.get(bare_jid), resources, idx;
                 if (item) {
                     resources = item.get('resources');
                     idx = _.indexOf(resources, resource);
@@ -3704,11 +3786,12 @@
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 if (converse.connection.roster.findItem(bare_jid)) {
                     converse.connection.roster.authorize(bare_jid);
-                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                    converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 } else {
+                    // FIXME
                     converse.connection.roster.add(jid, '', [], function (iq) {
                         converse.connection.roster.authorize(bare_jid);
-                        converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                        converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                     });
                 }
             },
@@ -5544,9 +5627,7 @@
                 if (typeof jid !== "string" || jid.indexOf('@') < 0) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
-                converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
-                    converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
-                });
+                converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
             }
         },
         'chats': {

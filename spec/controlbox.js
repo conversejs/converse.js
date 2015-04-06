@@ -413,7 +413,7 @@
             }, converse));
 
             it("are shown in the roster when show_only_online_users", $.proxy(function () {
-		converse.show_only_online_users = true;
+                converse.show_only_online_users = true;
                 runs(function () {
                     _addContacts();
                 });
@@ -433,7 +433,7 @@
 
             it("are shown in the roster when hide_offline_users", $.proxy(function () {
                 converse.hide_offline_users = true;
-		runs(function () {
+                runs(function () {
                     _addContacts();
                 });
                 waits(50);
@@ -456,34 +456,25 @@
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
-                    /* FIXME: Monkepatch
-                    * After refactoring the mock connection to use a
-                    * Strophe.Connection object, these tests fail because "remove"
-                    * function in strophe.roster (line 292) gets called and it
-                    * then tries to actually remove the user which is not in the roster...
-                    */
-                    var old_remove = this.connection.roster.remove;
-                    this.connection.roster.remove = function (jid, callback) { callback(); };
-
                     var name = mock.pend_names[0];
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact = this.roster.get(jid);
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(converse, 'emit');
-                    spyOn(this.connection.roster, 'remove').andCallThrough();
-                    spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(this.rosterview.model, 'remove').andCallThrough();
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
+                    spyOn(contact, 'removeFromRoster');
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
 
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
 
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.remove).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                    expect(this.rosterview.model.remove).toHaveBeenCalled();
+                    expect(converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(contact.unauthorize).toHaveBeenCalled();
+                    expect(contact.removeFromRoster).toHaveBeenCalled();
+                    expect(this.connection.sendIQ).toHaveBeenCalled();
                     expect(converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length).toEqual(0);
-
-                    /* XXX Restore Monkeypatch */
-                    this.connection.roster.remove = old_remove;
                 }, this));
             }, converse));
 
@@ -494,17 +485,23 @@
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
-                    spyOn(window, 'confirm').andReturn(true);
-                    this.roster.create({
+                    contact = this.roster.create({
                         jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
                         fullname: name
                     });
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
                     expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(true);
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
+                    expect(contact.unauthorize).toHaveBeenCalled();
+                    expect(this.connection.sendIQ).toHaveBeenCalled();
                     expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(false);
                 }, this));
             }, converse));
@@ -587,7 +584,6 @@
                 waits(50);
                 runs($.proxy(function () {
                     var i, t;
-                    spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
                     for (i=0; i<mock.cur_names.length; i++) {
                         this.roster.create({
@@ -610,34 +606,24 @@
                 });
                 waits(50);
                 runs($.proxy(function () {
-                    /* FIXME: Monkepatch
-                    * After refactoring the mock connection to use a
-                    * Strophe.Connection object, these tests fail because "remove"
-                    * function in strophe.roster (line 292) gets called and it
-                    * then tries to actually remove the user which is not in the roster...
-                    */
-                    var old_remove = this.connection.roster.remove;
-                    this.connection.roster.remove = function (jid, callback) { callback(); };
-
                     var name = mock.cur_names[0];
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact = this.roster.get(jid);
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(converse, 'emit');
-                    spyOn(this.connection.roster, 'remove').andCallThrough();
-                    spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(this.rosterview.model, 'remove').andCallThrough();
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
+                    spyOn(contact, 'removeFromRoster');
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
 
                     converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
 
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.remove).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                    expect(this.rosterview.model.remove).toHaveBeenCalled();
+                    expect(converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(contact.unauthorize).toHaveBeenCalled();
+                    expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(converse.rosterview.$el.find(".open-chat:contains('"+name+"')").length).toEqual(0);
-
-                    /* XXX Restore Monkeypatch */
-                    this.connection.roster.remove = old_remove;
                 }, this));
             }, converse));
 
@@ -649,17 +635,26 @@
                 });
                 waits(50);
                 runs($.proxy(function () {
-                    spyOn(window, 'confirm').andReturn(true);
-                    this.roster.create({
+                    var contact = this.roster.create({
                         jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
                         fullname: name
                     });
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
+                    spyOn(contact, 'removeFromRoster');
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
+
                     expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
                     converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
+                    expect(this.connection.sendIQ).toHaveBeenCalled();
+                    expect(contact.unauthorize).toHaveBeenCalled();
+                    expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
                 }, this));
             }, converse));

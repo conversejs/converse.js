@@ -3506,6 +3506,18 @@
                 return this;
             },
 
+            acknowledgeSubscription: function () {
+                /* Upon receiving the presence stanza of type "subscribed",
+                 * the user SHOULD acknowledge receipt of that subscription
+                 * state notification by sending a presence stanza of type
+                 * "subscribe" to the contact
+                 */
+                converse.connection.send($pres({
+                    'type': 'subscribe',
+                    'to': this.get('jid')
+                }));
+            },
+
             unauthorize: function (message) {
                 /* Unauthorize this contact's presence subscription
                  * Parameters:
@@ -3556,7 +3568,9 @@
                 var chatStatus = this.get('chat_status');
                 if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
                     // If pending or requesting, show
-                    if ((this.get('ask') === 'subscribe') || (this.get('subscription') === 'from') || (this.get('requesting') === true)) {
+                    if ((this.get('ask') === 'subscribe') ||
+                            (this.get('subscription') === 'from') ||
+                            (this.get('requesting') === true)) {
                         return true;
                     }
                     return false;
@@ -3678,12 +3692,11 @@
 
             acceptRequest: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                this.model.authorize();
                 converse.roster.sendContactAddIQ(
                     this.model.get('jid'),
                     this.model.get('fullname'),
                     [],
-                    function (iq) { this.model.subscribe(); }.bind(this)
+                    function (iq) { this.model.authorize().subscribe(); }.bind(this)
                 );
             },
 
@@ -3714,12 +3727,10 @@
 
             subscribeToSuggestedItems: function (msg) {
                 $(msg).find('item').each(function (i, items) {
-                    var $this = $(this),
-                        jid = $this.attr('jid'),
-                        action = $this.attr('action'),
-                        fullname = $this.attr('name');
-                    if (action === 'add') {
-                        converse.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
+                    var $this = $(this);
+                    if (this.getAttribute('action') === 'add') {
+                        converse.roster.addAndSubscribe(
+                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
                     }
                 });
                 return true;
@@ -3838,8 +3849,8 @@
                  *  Parameters:
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
-                converse.xmppstatus.sendPresence('unsubscribe');
-                this.get(bare_jid).destroy(); // Will cause removeFromRoster to be called.
+                converse.connection.send($pres({'type': 'unsubscribe', 'to': jid}));
+                this.get(jid).destroy(); // Will cause removeFromRoster to be called.
             },
 
             getNumOnlineContacts: function () {
@@ -3924,6 +3935,9 @@
                     groups.push(Strophe.getText(group));
                 });
                 if (!contact) {
+                    if (subscription === "none" || subscription === "remove") {
+                        return; // We're lazy when adding contacts.
+                    }
                     this.create({
                         ask: ask,
                         fullname: item.getAttribute("name") || jid,
@@ -3932,29 +3946,19 @@
                         subscription: subscription
                     }, {sort: false});
                 } else {
-                    if ((subscription === 'none') && (ask === null)) {
-                        // When making a contact request, a roster push is
-                        // received with the user being requested with
-                        /* <iq xmlns="jabber:client" type="set" id="lx799">
-                                <query xmlns="jabber:iq:roster" ver="30">
-                                    <item jid="jc@opkode.com" name="jc@opkode.com" subscription="none"/>
-                                </query>
-                            </iq>
-                        */
-                        return; // XXX: figure out what's going on here.
-                        // contact.destroy(); // This user is no longer in our roster
-                    } else {
-                        // We only find out about requesting contacts via the
-                        // presence handler, so if we receive a contact
-                        // here, we know they aren't requesting anymore.
-                        // see docs/DEVELOPER.rst
-                        contact.save({
-                            subscription: subscription,
-                            ask: ask,
-                            requesting: null,
-                            groups: groups
-                        });
+                    if (subscription === "remove") {
+                        return contact.destroy(); // will trigger removeFromRoster
                     }
+                    // We only find out about requesting contacts via the
+                    // presence handler, so if we receive a contact
+                    // here, we know they aren't requesting anymore.
+                    // see docs/DEVELOPER.rst
+                    contact.save({
+                        subscription: subscription,
+                        ask: ask,
+                        requesting: null,
+                        groups: groups
+                    });
                 }
             },
 
@@ -3986,8 +3990,12 @@
                         contact.authorize();
                     }
                 } else {
-                    if ((contact) && (contact.get('subscription') != 'none'))  {
-                        contact.authorize();
+                    if (contact) {
+                        if (contact.get('subscription') != 'none')  {
+                            contact.authorize();
+                        } else if (contact.get('ask') == "subscribe") {
+                            contact.authorize();
+                        }
                     } else if (!contact) {
                         converse.getVCard(
                             bare_jid, this.createContactFromVCard.bind(this),
@@ -4022,7 +4030,9 @@
                 if (contact && (status_message.text() != contact.get('status'))) {
                     contact.save({'status': status_message.text()});
                 }
-                if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
+                if (presence_type === 'subscribed' && contact) {
+                    contact.acknowledgeSubscription();
+                } else if (presence_type === 'unsubscribe') {
                     return;
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(jid);

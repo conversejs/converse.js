@@ -3520,7 +3520,7 @@
                  * Parameters:
                  *   (String) message - Optional message to send to the person being authorized
                  */
-                var pres = $pres({to: jid, type: "subscribed"});
+                var pres = $pres({to: this.get('jid'), type: "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
@@ -3529,14 +3529,15 @@
             },
 
             removeResource: function (resource) {
-                var resources = item.get('resources');
-                var idx = _.indexOf(resources, resource);
-                if (idx !== -1) {
-                    resources.splice(idx, 1);
-                    item.save({'resources': resources});
-                    return resources.length;
+                var resources = this.get('resources'), idx;
+                if (resource) {
+                    idx = _.indexOf(resources, resource);
+                    if (idx !== -1) {
+                        resources.splice(idx, 1);
+                        this.save({'resources': resources});
+                    }
                 }
-                return 0;
+                return resources.length;
             },
 
             removeFromRoster: function (callback) {
@@ -3932,7 +3933,16 @@
                     }, {sort: false});
                 } else {
                     if ((subscription === 'none') && (ask === null)) {
-                        contact.destroy(); // This user is no longer in our roster
+                        // When making a contact request, a roster push is
+                        // received with the user being requested with
+                        /* <iq xmlns="jabber:client" type="set" id="lx799">
+                                <query xmlns="jabber:iq:roster" ver="30">
+                                    <item jid="jc@opkode.com" name="jc@opkode.com" subscription="none"/>
+                                </query>
+                            </iq>
+                        */
+                        return; // XXX: figure out what's going on here.
+                        // contact.destroy(); // This user is no longer in our roster
                     } else {
                         // We only find out about requesting contacts via the
                         // presence handler, so if we receive a contact
@@ -3983,7 +3993,7 @@
                             bare_jid, this.createContactFromVCard.bind(this),
                             function (iq, jid) {
                                 converse.log("Error while retrieving vcard for "+jid);
-                                this.createContactFromVCard.apply(this, iq, jid);
+                                this.createContactFromVCard.call(this, iq, jid);
                             }.bind(this)
                         );
                     }
@@ -3997,44 +4007,33 @@
                 var jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
-                    $show = $presence.find('show'),
-                    chat_status = $show.text() || 'online',
+                    chat_status = $presence.find('show').text() || 'online',
                     status_message = $presence.find('status'),
                     contact = this.get(bare_jid);
-
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
                         // Another resource has changed it's status, we'll update ours as well.
                         converse.xmppstatus.save({'status': chat_status});
                     }
-                    return true;
+                    return;
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
-                    return true; // Ignore MUC
+                    return; // Ignore MUC
                 }
                 if (contact && (status_message.text() != contact.get('status'))) {
                     contact.save({'status': status_message.text()});
                 }
                 if ((presence_type === 'subscribed') || (presence_type === 'unsubscribe')) {
-                    return true;
+                    return;
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(jid);
                 } else if (presence_type === 'unsubscribed') {
                     this.unsubscribe(bare_jid);
-                } else if (presence_type === 'unavailable') {
-                    if (contact) {
-                        if (contact.removeResource(bare_jid, resource) === 0) {
-                            chat_status = "offline";
-                        }
-                        if (chat_status) {
-                            contact.save({'chat_status': chat_status});
-                        }
-                    }
-                } else if (contact) {
-                    // presence_type is undefined
+                } else if (presence_type === 'unavailable' && contact) {
+                    contact.save({'chat_status': (contact.removeResource(resource) === 0) ? "offline" : chat_status});
+                } else if (contact) { // presence_type is undefined
                     this.addResource(bare_jid, resource);
                     contact.save({'chat_status': chat_status});
                 }
-                return true;
             }
         });
 

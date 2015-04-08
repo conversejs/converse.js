@@ -34,8 +34,10 @@
 
 #conversejs {
   @import "variables";
-
   ::selection {
+    background-color: $highlight-color;
+  }
+  ::-moz-selection {
     background-color: $highlight-color;
   }
 

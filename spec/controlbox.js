@@ -890,10 +890,14 @@
                 var name = mock.req_names.sort()[0];
                 var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
                 var contact = this.roster.get(jid);
-                spyOn(contact, 'authorize');
+                spyOn(converse.roster, 'sendContactAddIQ').andCallFake(function (jid, fullname, groups, callback) {
+                    callback();
+                });
+                spyOn(contact, 'authorize').andCallFake(function () { return contact; });
                 converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
                     .siblings('.request-actions')
                     .find('.accept-xmpp-request').click();
+                expect(converse.roster.sendContactAddIQ).toHaveBeenCalled();
                 expect(contact.authorize).toHaveBeenCalled();
             }, converse));
 

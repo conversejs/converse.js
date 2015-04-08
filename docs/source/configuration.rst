@@ -293,7 +293,7 @@ nickname is mentioned in a chat room.
 Inside the ``./sounds`` directory of the Converse.js repo, you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
 
-For now, sound files are looked up by convention, not configuration. So to have
+Sound files are looked up by convention, not configuration. So to have
 a sound play when a message is received, make sure that your webserver serves
 it in both formats as ``http://yoursite.com/sounds/msg_received.mp3`` and
 ``http://yoursite.com/sounds/msg_received.ogg``.

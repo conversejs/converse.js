@@ -355,8 +355,8 @@
                 } else {
                     audio = new Audio("/sounds/msg_received.mp3");
                     audio.play();
-                    }
                 }
+            }
         };
 
         this.giveFeedback = function (message, klass) {

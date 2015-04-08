@@ -3696,7 +3696,7 @@
                     this.model.get('jid'),
                     this.model.get('fullname'),
                     [],
-                    function (iq) { this.model.authorize().subscribe(); }.bind(this)
+                    function () { this.model.authorize().subscribe(); }.bind(this)
                 );
             },
 

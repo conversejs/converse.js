@@ -3810,7 +3810,6 @@
             handleIncomingSubscription: function (jid) {
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var item = this.get(bare_jid);
-
                 if (!converse.allow_contact_requests) {
                     converse.connection.roster.unauthorize(bare_jid);
                     return true;
@@ -4148,6 +4147,11 @@
                     label_contacts: LABEL_CONTACTS,
                     label_groups: LABEL_GROUPS
                 }));
+                if (!converse.allow_contact_requests) {
+                    // XXX: if we ever support live editing of config then
+                    // we'll need to be able to remove this class on the fly.
+                    this.$el.addClass('no-contact-requests');
+                }
                 return this;
             },
 
@@ -5546,7 +5550,7 @@
         'rooms': {
             'open': function (jids, nick) {
                 if (!nick) {
-                    nick = Strophe.getNodeFromJid(converse.bare_jid)
+                    nick = Strophe.getNodeFromJid(converse.bare_jid);
                 }
                 if (typeof nick !== "string") {
                     throw new TypeError('rooms.open: invalid nick, must be string');
@@ -5555,7 +5559,7 @@
                     var chatroom = converse.chatboxes.get(jid);
                     converse.log('jid');
                     if (!chatroom) {
-                        var chatroom = converse.chatboxviews.showChat({
+                        chatroom = converse.chatboxviews.showChat({
                             'id': jid,
                             'jid': jid,
                             'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -5576,7 +5580,6 @@
             'get': function (jids) {
                 if (typeof jids === "undefined") {
                     throw new TypeError("rooms.get: You need to provide at least one JID");
-                    return null;
                 } else if (typeof jids === "string") {
                     return getWrappedChatBox(jids);
                 }

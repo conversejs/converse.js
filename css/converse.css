@@ -677,10 +677,12 @@
     position: relative;
     margin: 0.5em 0 0 0;
     height: 194px;
-    height: calc(100% - 68px);
+    height: calc(100% - 50px - 20px);
     overflow: hidden;
     /* (jQ addClass:) if input has value: */
     /* (jQ addClass:) if mouse is over the 'x' input area*/ }
+    #conversejs #converse-roster.no-contact-requests {
+      height: calc(100% - 25px - 20px); }
     #conversejs #converse-roster .filter-type {
       display: table-cell;
       float: right;

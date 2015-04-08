@@ -351,6 +351,35 @@ To return an array of chat boxes, provide an array of JIDs::
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
+"rooms" grouping
+----------------
+
+get
+~~~
+
+Returns an object representing a multi user chat box (room).
+
+Similar to chats.get API
+
+open
+~~~~
+
+Opens a multi user chat box and returns an object representing it.
+Similar to chats.get API
+
+To open a single multi user chat box, provide the JID of the room::
+
+    converse.room.open('group@muc.example.com')
+
+To return an array of chat boxes, provide an array of JIDs::
+
+    converse.chats.open(['group1@muc.example.com', 'group2@muc.example.com'])
+
+To setup a custom nickname when joining the room, provide the optionnal nick argument::
+
+    converse.room.open('group@muc.example.com', 'mycustomnick')
+
+
 "settings" grouping
 -------------------
 

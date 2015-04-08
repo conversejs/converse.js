@@ -8,8 +8,12 @@
         }
     );
 } (this, function ($, mock, test_utils) {
+    "use strict";
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
+    var $pres = converse_api.env.$pres;
+    // See:
+    // https://xmpp.org/rfcs/rfc3921.html
 
     describe("The Protocol", $.proxy(function (mock, test_utils) {
         describe("Integration of Roster Items and Presence Subscriptions", $.proxy(function (mock, test_utils) {
@@ -54,123 +58,259 @@
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
-                var stanzaID;
-                var sentStanza;
-                var panel = this.chatboxviews.get('controlbox').contactspanel;
-                spyOn(panel, "addContactFromForm").andCallThrough();
-                spyOn(converse.roster, "addAndSubscribe").andCallThrough();
-                spyOn(converse.roster, "addContact").andCallThrough();
-                spyOn(converse.roster, "sendContactAddIQ").andCallThrough();
-                var sendIQ = this.connection.sendIQ;
-                spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
-                    sentStanza = iq;
-                    stanzaID = sendIQ.bind(this)(iq, callback, errback);
-                });
-                panel.delegateEvents(); // Rebind all events so that our spy gets called
+                var contact, stanza, sentStanza, iq_id;
+                runs($.proxy(function () {
+                    var panel = this.chatboxviews.get('controlbox').contactspanel;
+                    spyOn(panel, "addContactFromForm").andCallThrough();
+                    spyOn(this.roster, "addAndSubscribe").andCallThrough();
+                    spyOn(this.roster, "addContact").andCallThrough();
+                    spyOn(this.roster, "sendContactAddIQ").andCallThrough();
+                    spyOn(this, "getVCard").andCallThrough();
+                    var sendIQ = this.connection.sendIQ;
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                        sentStanza = iq;
+                        iq_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    panel.delegateEvents(); // Rebind all events so that our spy gets called
 
-                /* Add a new contact through the UI */
-                var $form = panel.$('form.add-xmpp-contact');
-                expect($form.is(":visible")).toBeFalsy();
-                // Click the "Add a contact" link.
-                panel.$('.toggle-xmpp-contact-form').click();
-                // Check that the $form appears
-                expect($form.is(":visible")).toBeTruthy();
-                // Fill in the form and submit
-                $form.find('input').val('contact@example.org');
-                $form.submit();
+                    /* Add a new contact through the UI */
+                    var $form = panel.$('form.add-xmpp-contact');
+                    expect($form.is(":visible")).toBeFalsy();
+                    // Click the "Add a contact" link.
+                    panel.$('.toggle-xmpp-contact-form').click();
+                    // Check that the $form appears
+                    expect($form.is(":visible")).toBeTruthy();
+                    // Fill in the form and submit
+                    $form.find('input').val('contact@example.org');
+                    $form.submit();
 
-                /* In preparation for being able to render the contact in the
-                * user's client interface and for the server to keep track of the
-                * subscription, the user's client SHOULD perform a "roster set"
-                * for the new roster item.
-                */
-                expect(panel.addContactFromForm).toHaveBeenCalled();
-                expect(converse.roster.addAndSubscribe).toHaveBeenCalled();
-                expect(converse.roster.addContact).toHaveBeenCalled();
-                // The form should not be visible anymore.
-                expect($form.is(":visible")).toBeFalsy();
+                    /* In preparation for being able to render the contact in the
+                    * user's client interface and for the server to keep track of the
+                    * subscription, the user's client SHOULD perform a "roster set"
+                    * for the new roster item.
+                    */
+                    expect(panel.addContactFromForm).toHaveBeenCalled();
+                    expect(converse.roster.addAndSubscribe).toHaveBeenCalled();
+                    expect(converse.roster.addContact).toHaveBeenCalled();
+                    // The form should not be visible anymore.
+                    expect($form.is(":visible")).toBeFalsy();
 
-                /* This request consists of sending an IQ
-                * stanza of type='set' containing a <query/> element qualified by
-                * the 'jabber:iq:roster' namespace, which in turn contains an
-                * <item/> element that defines the new roster item; the <item/>
-                * element MUST possess a 'jid' attribute, MAY possess a 'name'
-                * attribute, MUST NOT possess a 'subscription' attribute, and MAY
-                * contain one or more <group/> child elements:
-                *
-                *   <iq type='set' id='set1'>
-                *   <query xmlns='jabber:iq:roster'>
-                *       <item
-                *           jid='contact@example.org'
-                *           name='MyContact'>
-                *       <group>MyBuddies</group>
-                *       </item>
-                *   </query>
-                *   </iq>
-                */
-                expect(converse.roster.sendContactAddIQ).toHaveBeenCalled();
-                expect(sentStanza.toLocaleString()).toBe(
-                    "<iq type='set' xmlns='jabber:client' id='"+stanzaID+"'>"+
-                        "<query xmlns='jabber:iq:roster'>"+
-                            "<item jid='contact@example.org' name='contact@example.org'/>"+
-                        "</query>"+
-                    "</iq>"
-                );
-                /* As a result, the user's server (1) MUST initiate a roster push
-                * for the new roster item to all available resources associated
-                * with this user that have requested the roster, setting the
-                * 'subscription' attribute to a value of "none"; and (2) MUST
-                * reply to the sending resource with an IQ result indicating the
-                * success of the roster set:
-                *
-                * <iq type='set'>
-                *     <query xmlns='jabber:iq:roster'>
-                *         <item
-                *             jid='contact@example.org'
-                *             subscription='none'
-                *             name='MyContact'>
-                *         <group>MyBuddies</group>
-                *         </item>
-                *     </query>
-                * </iq>
-                */
-                var contact;
-                var send = converse.connection.send;
-                var create = converse.roster.create;
-                spyOn(converse.roster, 'create').andCallFake(function () {
-                    contact = create.apply(converse.roster, arguments);
-                    spyOn(contact, 'subscribe').andCallThrough();
+                    /* This request consists of sending an IQ
+                    * stanza of type='set' containing a <query/> element qualified by
+                    * the 'jabber:iq:roster' namespace, which in turn contains an
+                    * <item/> element that defines the new roster item; the <item/>
+                    * element MUST possess a 'jid' attribute, MAY possess a 'name'
+                    * attribute, MUST NOT possess a 'subscription' attribute, and MAY
+                    * contain one or more <group/> child elements:
+                    *
+                    *   <iq type='set' id='set1'>
+                    *   <query xmlns='jabber:iq:roster'>
+                    *       <item
+                    *           jid='contact@example.org'
+                    *           name='MyContact'>
+                    *       <group>MyBuddies</group>
+                    *       </item>
+                    *   </query>
+                    *   </iq>
+                    */
+                    expect(converse.roster.sendContactAddIQ).toHaveBeenCalled();
+                    expect(sentStanza.toLocaleString()).toBe(
+                        "<iq type='set' xmlns='jabber:client' id='"+iq_id+"'>"+
+                            "<query xmlns='jabber:iq:roster'>"+
+                                "<item jid='contact@example.org' name='contact@example.org'/>"+
+                            "</query>"+
+                        "</iq>"
+                    );
+                    /* As a result, the user's server (1) MUST initiate a roster push
+                    * for the new roster item to all available resources associated
+                    * with this user that have requested the roster, setting the
+                    * 'subscription' attribute to a value of "none"; and (2) MUST
+                    * reply to the sending resource with an IQ result indicating the
+                    * success of the roster set:
+                    *
+                    * <iq type='set'>
+                    *     <query xmlns='jabber:iq:roster'>
+                    *         <item
+                    *             jid='contact@example.org'
+                    *             subscription='none'
+                    *             name='MyContact'>
+                    *         <group>MyBuddies</group>
+                    *         </item>
+                    *     </query>
+                    * </iq>
+                    */
+                    var create = converse.roster.create;
                     spyOn(converse.connection, 'send').andCallFake(function (stanza) {
                         sentStanza = stanza;
                     });
-                    return contact;
-                });
-                var iq = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
-                    .c('item', {
-                        'jid': 'contact@example.org',
-                        'subscription': 'none',
-                        'name': 'contact@example.org'});
-                this.connection._dataRecv(test_utils.createRequest(iq));
-                /* 
-                 * <iq type='result' id='set1'/>
-                 */
-                iq = $iq({'type': 'result', 'id':stanzaID});
-                this.connection._dataRecv(test_utils.createRequest(iq));
+                    spyOn(converse.roster, 'create').andCallFake(function () {
+                        contact = create.apply(converse.roster, arguments);
+                        spyOn(contact, 'subscribe').andCallThrough();
+                        return contact;
+                    });
+                    stanza = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
+                        .c('item', {
+                            'jid': 'contact@example.org',
+                            'subscription': 'none',
+                            'name': 'contact@example.org'});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    /* 
+                    * <iq type='result' id='set1'/>
+                    */
+                    stanza = $iq({'type': 'result', 'id':iq_id});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
 
-                // A contact should now have been created
-                expect(this.roster.get('contact@example.org') instanceof converse.RosterContact).toBeTruthy();
-                expect(contact.get('jid')).toBe('contact@example.org');
+                    // A contact should now have been created
+                    expect(this.roster.get('contact@example.org') instanceof converse.RosterContact).toBeTruthy();
+                    expect(contact.get('jid')).toBe('contact@example.org');
+                    expect(this.getVCard).toHaveBeenCalled();
 
-                /* To subscribe to the contact's presence information,
-                 * the user's client MUST send a presence stanza of
-                 * type='subscribe' to the contact:
-                 *
-                 *  <presence to='contact@example.org' type='subscribe'/>
-                 */
-                expect(contact.subscribe).toHaveBeenCalled();
-                expect(sentStanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                    "<presence to='contact@example.org' type='subscribe' xmlns='jabber:client'/>"
-                );
+                    /* To subscribe to the contact's presence information,
+                    * the user's client MUST send a presence stanza of
+                    * type='subscribe' to the contact:
+                    *
+                    *  <presence to='contact@example.org' type='subscribe'/>
+                    */
+                    expect(contact.subscribe).toHaveBeenCalled();
+                    expect(sentStanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                        "<presence to='contact@example.org' type='subscribe' xmlns='jabber:client'/>"
+                    );
+                    /* As a result, the user's server MUST initiate a second roster
+                    * push to all of the user's available resources that have
+                    * requested the roster, setting the contact to the pending
+                    * sub-state of the 'none' subscription state; this pending
+                    * sub-state is denoted by the inclusion of the ask='subscribe'
+                    * attribute in the roster item:
+                    *
+                    *  <iq type='set'>
+                    *    <query xmlns='jabber:iq:roster'>
+                    *      <item
+                    *          jid='contact@example.org'
+                    *          subscription='none'
+                    *          ask='subscribe'
+                    *          name='MyContact'>
+                    *      <group>MyBuddies</group>
+                    *      </item>
+                    *    </query>
+                    *  </iq>
+                    */
+                    spyOn(converse.roster, "updateContact").andCallThrough();
+                    stanza = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
+                        .c('item', {
+                            'jid': 'contact@example.org',
+                            'subscription': 'none',
+                            'ask': 'subscribe',
+                            'name': 'contact@example.org'});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(converse.roster.updateContact).toHaveBeenCalled();
+                }, this));
+                waits(50); // Needed, due to debounce
+                runs($.proxy(function () {
+                    // Check that the user is now properly shown as a pending
+                    // contact in the roster.
+                    var $header = $('a:contains("Pending contacts")');
+                    expect($header.length).toBe(1);
+                    expect($header.is(":visible")).toBeTruthy();
+                    var $contacts = $header.parent().nextUntil('dt', 'dd');
+                    expect($contacts.length).toBe(1);
+
+                    spyOn(contact, "acknowledgeSubscription").andCallThrough();
+                    /* Here we assume the "happy path" that the contact
+                     * approves the subscription request
+                     *
+                     *  <presence
+                     *      to='user@example.com'
+                     *      from='contact@example.org'
+                     *      type='subscribed'/>
+                     */
+                    stanza = $pres({
+                        'to': converse.bare_jid,
+                        'from': 'contact@example.org',
+                        'type': 'subscribed'
+                    });
+                    sentStanza = ""; // Reset
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    /* Upon receiving the presence stanza of type "subscribed",
+                     * the user SHOULD acknowledge receipt of that
+                     * subscription state notification by sending a presence
+                     * stanza of type "subscribe".
+                     */
+                    expect(contact.acknowledgeSubscription).toHaveBeenCalled();
+                    expect(sentStanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                        "<presence type='subscribe' to='contact@example.org' xmlns='jabber:client'/>"
+                    );
+
+                    /* The user's server MUST initiate a roster push to all of the user's
+                     * available resources that have requested the roster,
+                     * containing an updated roster item for the contact with
+                     * the 'subscription' attribute set to a value of "to"; 
+                     *
+                     *  <iq type='set'>
+                     *    <query xmlns='jabber:iq:roster'>
+                     *      <item
+                     *          jid='contact@example.org'
+                     *          subscription='to'
+                     *          name='MyContact'>
+                     *        <group>MyBuddies</group>
+                     *      </item>
+                     *    </query>
+                     *  </iq>
+                     */
+                    iq_id = converse.connection.getUniqueId('roster');
+                    stanza = $iq({'type': 'set', 'id': iq_id})
+                        .c('query', {'xmlns': 'jabber:iq:roster'})
+                        .c('item', {
+                            'jid': 'contact@example.org',
+                            'subscription': 'to',
+                            'name': 'contact@example.org'});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    // Check that the IQ set was acknowledged.
+                    expect(sentStanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                        "<iq type='result' id='"+iq_id+"' from='dummy@localhost/resource' xmlns='jabber:client'/>"
+                    );
+                    expect(converse.roster.updateContact).toHaveBeenCalled();
+
+                    // The contact should now be visible as an existing
+                    // contact (but still offline).
+                    $header = $('a:contains("My contacts")');
+                    expect($header.length).toBe(1);
+                    expect($header.is(":visible")).toBeTruthy();
+                    $contacts = $header.parent().nextUntil('dt', 'dd');
+                    expect($contacts.length).toBe(1);
+                    // Check that it has the right classes and text
+                    expect($contacts.hasClass('to')).toBeTruthy();
+                    expect($contacts.hasClass('from')).toBeFalsy();
+                    expect($contacts.hasClass('current-xmpp-contact')).toBeTruthy();
+                    expect($contacts.text().trim()).toBe('Contact');
+                    expect(contact.get('chat_status')).toBe('offline');
+
+                    /*  <presence
+                     *      from='contact@example.org/resource'
+                     *      to='user@example.com/resource'/>
+                     */
+                    stanza = $pres({'to': converse.bare_jid, 'from': 'contact@example.org/resource'});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    // Now the contact should also be online.
+                    expect(contact.get('chat_status')).toBe('online');
+
+                    /* Section 8.3.  Creating a Mutual Subscription
+                     *
+                     * If the contact wants to create a mutual subscription,
+                     * the contact MUST send a subscription request to the
+                     * user.
+                     *
+                     * <presence from='contact@example.org' to='user@example.com' type='subscribe'/>
+                     */
+                    // TODO
+
+                    /* The user's client MUST send a presence stanza of type
+                     * "subscribed" to the contact in order to approve the
+                     * subscription request.
+                     * 
+                     *  <presence to='contact@example.org' type='subscribed'/>
+                     */
+                    // TODO
+                }, this));
             }, converse));
 
             it("Alternate Flow: Contact Declines Subscription Request", $.proxy(function () {

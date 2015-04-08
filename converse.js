@@ -3652,6 +3652,7 @@
                     converse.controlboxtoggle.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
+                    this.$el.addClass(subscription);
                     this.$el.html(converse.templates.roster_item(
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status||'offline'],
@@ -4255,9 +4256,9 @@
             },
 
             initialize: function () {
-                this.registerRosterHandler();
-                this.registerRosterXHandler();
-                this.registerPresenceHandler();
+                this.roster_handler_ref = this.registerRosterHandler();
+                this.rosterx_handler_ref = this.registerRosterXHandler();
+                this.presence_ref = this.registerPresenceHandler();
                 converse.roster.on("add", this.onContactAdd, this);
                 converse.roster.on('change', this.onContactChange, this);
                 converse.roster.on("destroy", this.update, this);
@@ -4265,6 +4266,15 @@
                 this.model.on("add", this.onGroupAdd, this);
                 this.model.on("reset", this.reset, this);
                 this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
+            },
+
+            unregisterHandlers: function () {
+                converse.connection.deleteHandler(this.roster_handler_ref);
+                delete this.roster_handler_ref;
+                converse.connection.deleteHandler(this.rosterx_handler_ref);
+                delete this.rosterx_handler_ref;
+                converse.connection.deleteHandler(this.presence_ref);
+                delete this.presence_ref;
             },
 
             update: _.debounce(function () {
@@ -4457,7 +4467,7 @@
                 if (_.has(contact.changed, 'subscription')) {
                     if (contact.changed.subscription == 'from') {
                         this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-                    } else if (contact.get('subscription') === 'both') {
+                    } else if (_.contains(['both', 'to'], contact.get('subscription'))) {
                         this.addExistingContact(contact);
                     }
                 }
@@ -5526,6 +5536,7 @@
                 this.roster.off().reset(); // Removes roster contacts
             }
             if (this.rosterview) {
+                this.rosterview.unregisterHandlers();
                 this.rosterview.model.off().reset(); // Removes roster groups
                 this.rosterview.undelegateEvents().remove();
             }

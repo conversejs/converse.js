@@ -54,7 +54,7 @@
                 test_utils.openContactsPanel();
             });
 
-            it("User Subscribes to Contact", $.proxy(function () {
+            it("Mutual subscription between the users and a contact", $.proxy(function () {
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
@@ -154,7 +154,7 @@
                             'subscription': 'none',
                             'name': 'contact@example.org'});
                     this.connection._dataRecv(test_utils.createRequest(stanza));
-                    /* 
+                    /*
                     * <iq type='result' id='set1'/>
                     */
                     stanza = $iq({'type': 'result', 'id':iq_id});
@@ -243,7 +243,7 @@
                     /* The user's server MUST initiate a roster push to all of the user's
                      * available resources that have requested the roster,
                      * containing an updated roster item for the contact with
-                     * the 'subscription' attribute set to a value of "to"; 
+                     * the 'subscription' attribute set to a value of "to";
                      *
                      *  <iq type='set'>
                      *    <query xmlns='jabber:iq:roster'>
@@ -279,7 +279,7 @@
                     expect($contacts.length).toBe(1);
                     // Check that it has the right classes and text
                     expect($contacts.hasClass('to')).toBeTruthy();
-                    expect($contacts.hasClass('from')).toBeFalsy();
+                    expect($contacts.hasClass('both')).toBeFalsy();
                     expect($contacts.hasClass('current-xmpp-contact')).toBeTruthy();
                     expect($contacts.text().trim()).toBe('Contact');
                     expect(contact.get('chat_status')).toBe('offline');
@@ -301,15 +301,53 @@
                      *
                      * <presence from='contact@example.org' to='user@example.com' type='subscribe'/>
                      */
-                    // TODO
+                    spyOn(contact, 'authorize').andCallThrough();
+                    spyOn(this.roster, 'handleIncomingSubscription').andCallThrough();
+                    stanza = $pres({
+                        'to': converse.bare_jid,
+                        'from': 'contact@example.org/resource',
+                        'type': 'subscribe'});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(this.roster.handleIncomingSubscription).toHaveBeenCalled();
 
                     /* The user's client MUST send a presence stanza of type
                      * "subscribed" to the contact in order to approve the
                      * subscription request.
-                     * 
+                     *
                      *  <presence to='contact@example.org' type='subscribed'/>
                      */
-                    // TODO
+                    expect(contact.authorize).toHaveBeenCalled();
+                    expect(sentStanza.toLocaleString()).toBe(
+                        "<presence to='contact@example.org' type='subscribed' xmlns='jabber:client'/>"
+                    );
+
+                    /* As a result, the user's server MUST initiate a
+                     * roster push containing a roster item for the
+                     * contact with the 'subscription' attribute set to
+                     * a value of "both".
+                     *
+                     *  <iq type='set'>
+                     *    <query xmlns='jabber:iq:roster'>
+                     *      <item
+                     *          jid='contact@example.org'
+                     *          subscription='both'
+                     *          name='MyContact'>
+                     *      <group>MyBuddies</group>
+                     *      </item>
+                     *    </query>
+                     *  </iq>
+                     */
+                    stanza = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
+                        .c('item', {
+                            'jid': 'contact@example.org',
+                            'subscription': 'both',
+                            'name': 'contact@example.org'});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(converse.roster.updateContact).toHaveBeenCalled();
+
+                    // The class on the contact will now have switched.
+                    expect($contacts.hasClass('to')).toBeFalsy();
+                    expect($contacts.hasClass('both')).toBeTruthy();
                 }, this));
             }, converse));
 

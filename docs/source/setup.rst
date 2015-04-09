@@ -105,8 +105,8 @@ HTTP requests are made by *Converse.js* to the connection manager via XmlHttpReq
 Until recently, it was not possible to make such requests to a different domain
 than the one currently being served (to prevent XSS attacks).
 
-Luckily there is now a standard called 
-`CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_ 
+Luckily there is now a standard called
+`CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_
 (Cross-origin resource sharing), which enables exactly that.
 Modern browsers support CORS, but there are problems with Internet Explorer < 10.
 
@@ -135,7 +135,7 @@ Your ``nginx`` or ``apache`` configuration will look as follows:
 Nginx
 ~~~~~
 
-.. code-block:: nginx 
+.. code-block:: nginx
 
     http {
         server {
@@ -167,7 +167,6 @@ Single Session Support
 
 .. note::
     What is prebinding?
-    ~~~~~~~~~~~~~~~~~~~
 
     **Prebind** refers to a technique whereby your web application sets up an
     authenticated BOSH session with a BOSH connection manager (which could be your
@@ -217,7 +216,7 @@ page load). Each page load is a new request which requires a new unique RID.
 The best way to achieve this is to simply increment the RID with each page
 load.
 
-You'll need to configure converse.js with the :ref:`prebind`, :ref:`keepalive` and 
+You'll need to configure converse.js with the ``prebind``, :ref:`keepalive` and
 :ref:`prebind_url` settings.
 
 Please read the documentation on those settings for a fuller picture of what

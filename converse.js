@@ -3652,7 +3652,7 @@
                     converse.controlboxtoggle.showControlBox();
                 } else if (subscription === 'both' || subscription === 'to') {
                     this.$el.addClass('current-xmpp-contact');
-                    this.$el.addClass(subscription);
+                    this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
                     this.$el.html(converse.templates.roster_item(
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status||'offline'],

@@ -1,8 +1,14 @@
 Changelog
 =========
 
-0.9.2 (Undefined)
+0.9.3 (Undefined)
 -----------------
+
+* Add the ability to log in anonymously. [jcbrand]
+* Add the ability to log in automatically. [jcbrand]
+
+0.9.2 (2015-04-09)
+------------------
 
 * Bugfix. Prevent attaching twice during initialization. [jcbrand]
 * API method chats.get can now also return chat boxes which haven't been opened yet. [jcbrand]

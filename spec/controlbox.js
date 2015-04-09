@@ -789,22 +789,58 @@
 
                     var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                     for (i=0; i<3; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('online');
+                        expect($(contacts[i]).hasClass('online')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=3; i<6; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('dnd');
+                        expect($(contacts[i]).hasClass('dnd')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=6; i<9; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('away');
+                        expect($(contacts[i]).hasClass('away')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=9; i<12; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('xa');
+                        expect($(contacts[i]).hasClass('xa')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=12; i<15; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('unavailable');
+                        expect($(contacts[i]).hasClass('unavailable')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=15; i<mock.cur_names.length; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
+                        expect($(contacts[i]).hasClass('offline')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
                     }
                 }, this));
             }, converse));

@@ -353,7 +353,8 @@
   #conversejs .hor_centered {
     text-align: center;
     display: block;
-    margin: 0 auto; }
+    margin: 0 auto;
+    clear: both; }
   #conversejs .toggle-controlbox,
   #conversejs #minimized-chats {
     border-top-left-radius: 4px;
@@ -788,27 +789,32 @@
     text-overflow: ellipsis;
     overflow-x: hidden; }
   #conversejs dd.available-chatroom {
-    display: inline-block;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    border: none;
+    clear: both;
+    color: #6C4C44;
+    display: block;
+    font-weight: bold;
+    overflow: hidden;
     padding: 0.25em 0.5em;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 0 #FAFAFA;
     white-space: nowrap; }
     #conversejs dd.available-chatroom a.open-room {
       width: 150px; }
-  #conversejs dd.available-chatroom:hover a.room-info {
-    display: inline-block;
-    font-size: 14px; }
-  #conversejs dd.available-chatroom,
+    #conversejs dd.available-chatroom:hover {
+      background-color: #E3C9C1; }
+      #conversejs dd.available-chatroom:hover .room-info {
+        display: inline-block;
+        font-size: 14px; }
   #conversejs #converse-roster dd {
-    font-weight: bold;
     border: none;
-    display: block;
-    color: #6C4C44;
-    text-shadow: 0 1px 0 #FAFAFA;
     clear: both;
-    overflow-y: hidden; }
+    color: #6C4C44;
+    display: block;
+    font-weight: bold;
+    overflow-y: hidden;
+    text-shadow: 0 1px 0 #FAFAFA; }
   #conversejs .roster-group:hover,
-  #conversejs dd.available-chatroom:hover,
   #conversejs #converse-roster dd:hover {
     background-color: #E3C9C1; }
   #conversejs .chatbox,
@@ -981,15 +987,15 @@
     font-weight: bold;
     height: auto;
     margin: 4px; }
-  #conversejs #converse-register .login-submit,
-  #conversejs #converse-login .login-submit,
-  #conversejs #converse-register .submit,
-  #conversejs #converse-login .submit {
+  #conversejs #converse-register .login-submit, #conversejs #converse-register .submit, #conversejs #converse-login .login-submit, #conversejs #converse-login .submit {
     height: 30px;
     padding: 0px;
     font-size: 14px; }
-  #conversejs #converse-login .submit {
+  #conversejs #converse-register .submit, #conversejs #converse-login .submit {
     margin: 1em 0; }
+  #conversejs #converse-register .login-anon, #conversejs #converse-login .login-anon {
+    height: auto;
+    white-space: normal; }
   #conversejs form.add-chatroom {
     background: none;
     padding: 0.5em; }

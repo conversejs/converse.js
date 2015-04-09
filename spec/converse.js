@@ -20,37 +20,39 @@
 
             describe("with prebind", function () {
                 it("needs a jid when also using keepalive", function () {
+                    var authentication = converse.authentication;
                     var connection = converse.connection;
                     var jid = converse.jid;
                     converse.bosh_service_url = "localhost";
                     converse.connection = undefined;
                     converse.jid = undefined;
                     converse.keepalive = true;
-                    converse.prebind = true;
+                    converse.authentication = "prebind";
                     expect(converse.initConnection.bind(converse)).toThrow(
                         new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
+                    converse.authentication= authentication;
                     converse.bosh_service_url = undefined;
                     converse.connection = connection;
                     converse.jid = jid;
                     converse.keepalive = undefined;
-                    converse.prebind = undefined;
                 });
 
                 it("needs jid, rid and sid values when not using keepalive", function () {
+                    var authentication = converse.authentication;
                     var connection = converse.connection;
                     var jid = converse.jid;
                     converse.bosh_service_url = "localhost";
                     converse.connection = undefined;
                     converse.jid = undefined;
                     converse.keepalive = false;
-                    converse.prebind = true;
+                    converse.authentication = "prebind";
                     expect(converse.initConnection.bind(converse)).toThrow(
                         new Error("initConnection: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values"));
+                    converse.authentication= authentication;
                     converse.bosh_service_url = undefined;
                     converse.connection = connection;
                     converse.jid = jid;
                     converse.keepalive = undefined;
-                    converse.prebind = undefined;
                 });
             });
         });

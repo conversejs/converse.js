@@ -1,8 +1,14 @@
 Changelog
 =========
 
-0.9.2 (Undefined)
+0.9.3 (Undefined)
 -----------------
+
+* Add the ability to log in anonymously. [jcbrand]
+* Add the ability to log in automatically. [jcbrand]
+
+0.9.2 (2015-04-09)
+------------------
 
 * Bugfix. Prevent attaching twice during initialization. [jcbrand]
 * API method chats.get can now also return chat boxes which haven't been opened yet. [jcbrand]
@@ -11,6 +17,9 @@ Changelog
 * #357 Fix the known bug where a state notification reopens a chat box. [floriancargoet]
 * #358 Bugfix. Chat rooms show the same occupants bug. [floriancargoet]
 * #359 Fix a timeout bug in chat state notifications. [floriancargoet]
+* #360 Incorrect roster height when ``allow_contact_requests=true``. [floriancargoet, jcbrand]
+* #362 Add API for retrieving and opening rooms. [pzia]
+* #364 Text selection in chat boxes not shown in Firefox. [jcbrand]
 
 0.9.1 (2015-03-26)
 ------------------

@@ -44,6 +44,8 @@
   /* status dropdown styles */ }
   #conversejs ::selection {
     background-color: #E3C9C1; }
+  #conversejs ::-moz-selection {
+    background-color: #E3C9C1; }
   #conversejs *, #conversejs *:before, #conversejs *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -676,10 +678,12 @@
     position: relative;
     margin: 0.5em 0 0 0;
     height: 194px;
-    height: calc(100% - 68px);
+    height: calc(100% - 50px - 20px);
     overflow: hidden;
     /* (jQ addClass:) if input has value: */
     /* (jQ addClass:) if mouse is over the 'x' input area*/ }
+    #conversejs #converse-roster.no-contact-requests {
+      height: calc(100% - 25px - 20px); }
     #conversejs #converse-roster .filter-type {
       display: table-cell;
       float: right;
@@ -886,8 +890,6 @@
         white-space: nowrap; }
         #conversejs .chatroom .participant-list li.moderator {
           color: #8f2831; }
-        #conversejs .chatroom .participant-list li.visitor {
-          color: #A3A3A3; }
     #conversejs .chatroom .chat-textarea {
       border-bottom-right-radius: 0; }
     #conversejs .chatroom .chat-area {

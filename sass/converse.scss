@@ -34,8 +34,10 @@
 
 #conversejs {
   @import "variables";
-
   ::selection {
+    background-color: $highlight-color;
+  }
+  ::-moz-selection {
     background-color: $highlight-color;
   }
 
@@ -739,8 +741,12 @@
     position: relative;
     margin: 0.5em 0 0 0;
     height: $roster-height;
-    height: calc(100% - 68px);
+    height: calc(100% - #{$controlbox-dropdown-height*2} - 20px);
     overflow: hidden;
+
+    &.no-contact-requests {
+        height: calc(100% - #{$controlbox-dropdown-height} - 20px);
+    }
 
     .filter-type {
       display: table-cell;

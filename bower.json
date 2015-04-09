@@ -18,7 +18,7 @@
     "backbone.browserStorage": "*",
     "backbone.overview": "*",
     "otr": "0.2.12",
-    "crypto-js-evanvosberg": "3.1.2-5",
+    "crypto-js-evanvosberg": "git@github.com:evanvosberg/crypto-js.git#release-3.1.2-5",
     "almond": "~0.3.0",
     "requirejs-text": "~2.0.12",
     "requirejs-tpl-jcbrand": "*",

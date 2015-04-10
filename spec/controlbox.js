@@ -471,7 +471,6 @@
 
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.connection.sendIQ).toHaveBeenCalled();
-                    expect(contact.unauthorize).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(this.connection.sendIQ).toHaveBeenCalled();
                     expect(converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length).toEqual(0);
@@ -492,7 +491,6 @@
                         fullname: name
                     });
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
                     spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
                         if (typeof callback === "function") { return callback(); }
                     });
@@ -500,7 +498,6 @@
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(contact.unauthorize).toHaveBeenCalled();
                     expect(this.connection.sendIQ).toHaveBeenCalled();
                     expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(false);
                 }, this));
@@ -610,7 +607,6 @@
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     var contact = this.roster.get(jid);
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
                     spyOn(contact, 'removeFromRoster');
                     spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
                         if (typeof callback === "function") { return callback(); }
@@ -621,7 +617,6 @@
 
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.connection.sendIQ).toHaveBeenCalled();
-                    expect(contact.unauthorize).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(converse.rosterview.$el.find(".open-chat:contains('"+name+"')").length).toEqual(0);
                 }, this));
@@ -642,7 +637,6 @@
                         fullname: name
                     });
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
                     spyOn(contact, 'removeFromRoster');
                     spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
                         if (typeof callback === "function") { return callback(); }
@@ -653,7 +647,6 @@
                         .siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
                     expect(this.connection.sendIQ).toHaveBeenCalled();
-                    expect(contact.unauthorize).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
                 }, this));

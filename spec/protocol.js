@@ -54,7 +54,7 @@
                 test_utils.openContactsPanel();
             });
 
-            it("Mutual subscription between the users and a contact", $.proxy(function () {
+            it("Subscribe to contact, contact accepts and subscribes back", $.proxy(function () {
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
@@ -391,7 +391,7 @@
                      * have requested the roster, containing an updated roster
                      * item for the contact with the 'subscription' attribute
                      * set to a value of "none" and with no 'ask' attribute:
-                     * 
+                     *
                      *  <presence
                      *      from='contact@example.org'
                      *      to='user@example.com'
@@ -408,6 +408,7 @@
                      *  </query>
                      *  </iq>
                      */
+                    // FIXME: also add the <iq>
                     stanza = $pres({
                         'to': converse.bare_jid,
                         'from': 'contact@example.org',
@@ -437,6 +438,89 @@
                     );
                 }, this));
             }, converse));
+
+            it("Unsubscribe to a contact when subscription is mutual", function () {
+                var sent_IQ, IQ_id, jid = 'annegreet.gomez@localhost';
+                runs(function () {
+                    test_utils.createContacts('current');
+                });
+                waits(50);
+                runs(function () {
+                    spyOn(window, 'confirm').andReturn(true);
+                    // We now have a contact we want to remove
+                    expect(this.roster.get(jid) instanceof this.RosterContact).toBeTruthy();
+
+                    var sendIQ = this.connection.sendIQ;
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+
+                    var $header = $('a:contains("My contacts")');
+                    // remove the first user
+                    $($header.parent().nextUntil('dt', 'dd').find('.remove-xmpp-contact').get(0)).click();
+                    expect(window.confirm).toHaveBeenCalled();
+
+                    /* Section 8.6 Removing a Roster Item and Cancelling All
+                     * Subscriptions
+                     *
+                     * First the user is removed from the roster
+                     * Because there may be many steps involved in completely
+                     * removing a roster item and cancelling subscriptions in
+                     * both directions, the roster management protocol includes
+                     * a "shortcut" method for doing so. The process may be
+                     * initiated no matter what the current subscription state
+                     * is by sending a roster set containing an item for the
+                     * contact with the 'subscription' attribute set to a value
+                     * of "remove":
+                     *
+                     * <iq type='set' id='remove1'>
+                     *   <query xmlns='jabber:iq:roster'>
+                     *       <item jid='contact@example.org' subscription='remove'/>
+                     *   </query>
+                     * </iq>
+                     */
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='jabber:iq:roster'>"+
+                                "<item jid='annegreet.gomez@localhost' subscription='remove'/>"+
+                            "</query>"+
+                        "</iq>");
+
+                    // Receive confirmation from the contact's server
+                    // <iq type='result' id='remove1'/>
+                    var stanza = $iq({'type': 'result', 'id':IQ_id});
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    // Our contact has now been removed
+                    expect(typeof this.roster.get(jid) === "undefined").toBeTruthy();
+                }.bind(converse));
+            }.bind(converse));
+
+            it("Receiving a subscription request", function () {
+                runs(function () {
+                    test_utils.createContacts('current'); // Create some contacts so that we can test positioning
+                });
+                waits(50);
+                runs(function () {
+                    /*
+                    * <presence
+                    *     from='user@example.com'
+                    *     to='contact@example.org'
+                    *     type='subscribe'/>
+                    */
+                    var stanza = $pres({
+                        'to': converse.bare_jid,
+                        'from': 'contact@example.org',
+                        'type': 'subscribe'
+                    });
+                    this.connection._dataRecv(test_utils.createRequest(stanza));
+                    var $header = $('a:contains("Contact requests")');
+                    expect($header.length).toBe(1);
+                    expect($header.is(":visible")).toBeTruthy();
+                    var $contacts = $header.parent().nextUntil('dt', 'dd');
+                    expect($contacts.length).toBe(1);
+                }.bind(converse));
+            }.bind(converse));
         }, converse, mock, test_utils));
     }, converse, mock, test_utils));
 }));

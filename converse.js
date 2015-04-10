@@ -3693,7 +3693,7 @@
                         .c('item', {jid: this.model.get('jid'), subscription: "remove"});
                     converse.connection.sendIQ(iq,
                         function (iq) {
-                            this.model.unauthorize().destroy();
+                            this.model.destroy();
                             this.remove();
                         }.bind(this),
                         function (err) {

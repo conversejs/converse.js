@@ -3484,7 +3484,7 @@
                     'status': ''
                 }, attributes));
 
-                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
+                this.on('destroy', this.removeFromRoster, this);
             },
 
            subscribe: function (message) {
@@ -3506,7 +3506,7 @@
                 return this;
             },
 
-            acknowledgeSubscription: function () {
+            ackSubscribe: function () {
                 /* Upon receiving the presence stanza of type "subscribed",
                  * the user SHOULD acknowledge receipt of that subscription
                  * state notification by sending a presence stanza of type
@@ -3516,6 +3516,19 @@
                     'type': 'subscribe',
                     'to': this.get('jid')
                 }));
+            },
+
+            ackUnsubscribe: function (jid) {
+                /* Upon receiving the presence stanza of type "unsubscribed",
+                 * the user SHOULD acknowledge receipt of that subscription state
+                 * notification by sending a presence stanza of type "unsubscribe"
+                 * this step lets the user's server know that it MUST no longer
+                 * send notification of the subscription state change to the user.
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user who is unsubscribing
+                 */
+                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                this.destroy(); // Will cause removeFromRoster to be called.
             },
 
             unauthorize: function (message) {
@@ -3841,19 +3854,6 @@
                 }
             },
 
-            unsubscribe: function (jid) {
-                /* Upon receiving the presence stanza of type "unsubscribed",
-                 * the user SHOULD acknowledge receipt of that subscription state
-                 * notification by sending a presence stanza of type "unsubscribe"
-                 * this step lets the user's server know that it MUST no longer
-                 * send notification of the subscription state change to the user.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user who is unsubscribing
-                 */
-                converse.connection.send($pres({'type': 'unsubscribe', 'to': jid}));
-                this.get(jid).destroy(); // Will cause removeFromRoster to be called.
-            },
-
             getNumOnlineContacts: function () {
                 var count = 0,
                     ignored = ['offline', 'unavailable'],
@@ -3936,7 +3936,7 @@
                     groups.push(Strophe.getText(group));
                 });
                 if (!contact) {
-                    if (subscription === "none" || subscription === "remove") {
+                    if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                         return; // We're lazy when adding contacts.
                     }
                     this.create({
@@ -4032,13 +4032,13 @@
                     contact.save({'status': status_message.text()});
                 }
                 if (presence_type === 'subscribed' && contact) {
-                    contact.acknowledgeSubscription();
+                    contact.ackSubscribe();
+                } else if (presence_type === 'unsubscribed' && contact) {
+                    contact.ackUnsubscribe();
                 } else if (presence_type === 'unsubscribe') {
                     return;
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(jid);
-                } else if (presence_type === 'unsubscribed') {
-                    this.unsubscribe(bare_jid);
                 } else if (presence_type === 'unavailable' && contact) {
                     contact.save({'chat_status': (contact.removeResource(resource) === 0) ? "offline" : chat_status});
                 } else if (contact) { // presence_type is undefined

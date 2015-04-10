@@ -3484,7 +3484,7 @@
                     'status': ''
                 }, attributes));
 
-                this.on('destroy', this.removeFromRoster, this);
+                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
             },
 
            subscribe: function (message) {

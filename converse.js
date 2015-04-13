@@ -4040,7 +4040,11 @@
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(jid);
                 } else if (presence_type === 'unavailable' && contact) {
-                    contact.save({'chat_status': (contact.removeResource(resource) === 0) ? "offline" : chat_status});
+                    // Only set the user to offline if there aren't any
+                    // other resources still available.
+                    if (contact.removeResource(resource) === 0) {
+                        contact.save({'chat_status': "offline"});
+                    }
                 } else if (contact) { // presence_type is undefined
                     this.addResource(bare_jid, resource);
                     contact.save({'chat_status': chat_status});

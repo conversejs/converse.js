@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-04-08 13:39+0200\n"
-"PO-Revision-Date: 2013-09-15 22:15+0200\n"
+"PO-Revision-Date: 2015-04-13 17:01+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -23,19 +23,19 @@ msgstr ""
 
 #: converse.js:312
 msgid "unencrypted"
-msgstr "unencrypted"
+msgstr ""
 
 #: converse.js:313
 msgid "unverified"
-msgstr "unverified"
+msgstr ""
 
 #: converse.js:314
 msgid "verified"
-msgstr "verified"
+msgstr ""
 
 #: converse.js:315
 msgid "finished"
-msgstr "finished"
+msgstr ""
 
 #: converse.js:318
 msgid "This contact is busy"
@@ -62,21 +62,20 @@ msgid "This contact is away"
 msgstr ""
 
 #: converse.js:325
-#, fuzzy
 msgid "Click to hide these contacts"
-msgstr "Click to remove this contact"
+msgstr ""
 
 #: converse.js:327
 msgid "My contacts"
-msgstr "My contacts"
+msgstr ""
 
 #: converse.js:328
 msgid "Pending contacts"
-msgstr "Pending contacts"
+msgstr ""
 
 #: converse.js:329
 msgid "Contact requests"
-msgstr "Contact requests"
+msgstr ""
 
 #: converse.js:330
 msgid "Ungrouped"
@@ -84,36 +83,35 @@ msgstr ""
 
 #: converse.js:332 converse.js:629 converse.js:672
 msgid "Contacts"
-msgstr "Contacts"
+msgstr ""
 
 #: converse.js:333
 msgid "Groups"
 msgstr ""
 
 #: converse.js:433
-#, fuzzy
 msgid "Reconnecting"
-msgstr "Connecting"
+msgstr ""
 
 #: converse.js:476
 msgid "Error"
-msgstr "Error"
+msgstr ""
 
 #: converse.js:478
 msgid "Connecting"
-msgstr "Connecting"
+msgstr ""
 
 #: converse.js:480
 msgid "Authenticating"
-msgstr "Authenticating"
+msgstr ""
 
 #: converse.js:482 converse.js:483
 msgid "Authentication Failed"
-msgstr "Authentication Failed"
+msgstr ""
 
 #: converse.js:788
 msgid "Re-establishing encrypted session"
-msgstr "Re-establishing encrypted session"
+msgstr ""
 
 #: converse.js:800
 msgid "Generating private key."
@@ -143,12 +141,11 @@ msgstr ""
 
 #: converse.js:1030
 msgid "Personal message"
-msgstr "Personal message"
+msgstr ""
 
 #: converse.js:1062
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "You are not on the member list of this room"
+msgstr ""
 
 #: converse.js:1084
 msgid "me"
@@ -233,9 +230,8 @@ msgid "has gone offline"
 msgstr ""
 
 #: converse.js:1430
-#, fuzzy
 msgid "is busy"
-msgstr "busy"
+msgstr ""
 
 #: converse.js:1517
 msgid "Your messages are not encrypted anymore"
@@ -274,9 +270,8 @@ msgid ""
 msgstr ""
 
 #: converse.js:1548
-#, fuzzy
 msgid "Clear all messages"
-msgstr "Personal message"
+msgstr ""
 
 #: converse.js:1549
 msgid "End encrypted conversation"
@@ -312,86 +307,84 @@ msgstr ""
 
 #: converse.js:1648
 msgid "Online"
-msgstr "Online"
+msgstr ""
 
 #: converse.js:1649
 msgid "Busy"
-msgstr "Busy"
+msgstr ""
 
 #: converse.js:1650
 msgid "Away"
-msgstr "Away"
+msgstr ""
 
 #: converse.js:1651
 msgid "Offline"
-msgstr "Offline"
+msgstr ""
 
 #: converse.js:1652
-#, fuzzy
 msgid "Log out"
-msgstr "Log In"
+msgstr ""
 
 #: converse.js:1658
 msgid "Contact name"
-msgstr "Contact name"
+msgstr ""
 
 #: converse.js:1659
 msgid "Search"
-msgstr "Search"
+msgstr ""
 
 #: converse.js:1663
 msgid "Contact username"
-msgstr "Contact username"
+msgstr ""
 
 #: converse.js:1664
 msgid "Add"
-msgstr "Add"
+msgstr ""
 
 #: converse.js:1669
 msgid "Click to add new chat contacts"
-msgstr "Click to add new chat contacts"
+msgstr ""
 
 #: converse.js:1670
 msgid "Add a contact"
-msgstr "Add a contact"
+msgstr ""
 
 #: converse.js:1694
 msgid "No users found"
-msgstr "No users found"
+msgstr ""
 
 #: converse.js:1700
 msgid "Click to add as a chat contact"
-msgstr "Click to add as a chat contact"
+msgstr ""
 
 #: converse.js:1765
 msgid "Room name"
-msgstr "Room name"
+msgstr ""
 
 #: converse.js:1766
 msgid "Nickname"
-msgstr "Nickname"
+msgstr ""
 
 #: converse.js:1767
 msgid "Server"
 msgstr "Server"
 
 #: converse.js:1768
-#, fuzzy
 msgid "Join Room"
-msgstr "Join"
+msgstr ""
 
 #: converse.js:1769
 msgid "Show rooms"
-msgstr "Show rooms"
+msgstr ""
 
 #: converse.js:1773
 msgid "Rooms"
-msgstr "Rooms"
+msgstr ""
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
 #: converse.js:1793
 msgid "No rooms on %1$s"
-msgstr "No rooms on %1$s"
+msgstr ""
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
@@ -480,9 +473,8 @@ msgid "Invite..."
 msgstr ""
 
 #: converse.js:2203
-#, fuzzy
 msgid "Occupants"
-msgstr "Occupants:"
+msgstr ""
 
 #: converse.js:2299
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
@@ -507,23 +499,20 @@ msgid "Change user's affiliation to admin"
 msgstr ""
 
 #: converse.js:2509
-#, fuzzy
 msgid "Ban user from room"
-msgstr "Ban user from chatroom"
+msgstr ""
 
 #: converse.js:2511
 msgid "Change user role to participant"
 msgstr ""
 
 #: converse.js:2513
-#, fuzzy
 msgid "Kick user from room"
-msgstr "Kick user from chatroom"
+msgstr ""
 
 #: converse.js:2514
-#, fuzzy
 msgid "Write in 3rd person"
-msgstr "Write in the third person"
+msgstr ""
 
 #: converse.js:2515
 msgid "Grant membership to a user"
@@ -542,18 +531,16 @@ msgid "Grant moderator role to user"
 msgstr ""
 
 #: converse.js:2519
-#, fuzzy
 msgid "Grant ownership of this room"
-msgstr "You are not on the member list of this room"
+msgstr ""
 
 #: converse.js:2520
 msgid "Revoke user's membership"
 msgstr ""
 
 #: converse.js:2521
-#, fuzzy
 msgid "Set room topic"
-msgstr "Set chatroom topic"
+msgstr ""
 
 #: converse.js:2522
 msgid "Allow muted user to post messages"
@@ -656,9 +643,8 @@ msgid "<strong>%1$s</strong> has been banned"
 msgstr "<strong>%1$s</strong> has been banned"
 
 #: converse.js:2827
-#, fuzzy
 msgid "<strong>%1$s</strong>'s nickname has changed"
-msgstr "<strong>%1$s</strong> has been banned"
+msgstr ""
 
 #: converse.js:2828
 msgid "<strong>%1$s</strong> has been kicked out"
@@ -674,14 +660,12 @@ msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "<strong>%1$s</strong> has been removed for not being a member"
 
 #: converse.js:2834
-#, fuzzy
 msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
-msgstr "Your nickname has been changed"
+msgstr ""
 
 #: converse.js:2835
-#, fuzzy
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
-msgstr "Your nickname has been changed"
+msgstr ""
 
 #: converse.js:2883 converse.js:2893
 msgid "The reason given is: \""
@@ -730,9 +714,8 @@ msgid ""
 msgstr ""
 
 #: converse.js:3321
-#, fuzzy
 msgid "Click to restore this chat"
-msgstr "Click to remove this contact"
+msgstr ""
 
 #: converse.js:3463
 msgid "Minimized"
@@ -743,28 +726,24 @@ msgid "Click to remove this contact"
 msgstr "Click to remove this contact"
 
 #: converse.js:3571
-#, fuzzy
 msgid "Click to accept this contact request"
-msgstr "Click to remove this contact"
+msgstr ""
 
 #: converse.js:3572
-#, fuzzy
 msgid "Click to decline this contact request"
-msgstr "Click to remove this contact"
+msgstr ""
 
 #: converse.js:3581
 msgid "Click to chat with this contact"
 msgstr "Click to chat with this contact"
 
 #: converse.js:3598
-#, fuzzy
 msgid "Are you sure you want to remove this contact?"
-msgstr "Click to remove this contact"
+msgstr ""
 
 #: converse.js:3621
-#, fuzzy
 msgid "Are you sure you want to decline this contact request?"
-msgstr "Click to remove this contact"
+msgstr ""
 
 #: converse.js:4146
 msgid "Type to filter"
@@ -857,9 +836,8 @@ msgid "The provider rejected your registration attempt. "
 msgstr ""
 
 #: converse.js:5157
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "XMPP/Jabber Username:"
+msgstr ""
 
 #: converse.js:5158
 msgid "Password:"
@@ -876,28 +854,3 @@ msgstr "Sign in"
 #: converse.js:5240
 msgid "Toggle chat"
 msgstr ""
-
-#~ msgid "Online Contacts"
-#~ msgstr "Online Contacts"
-
-#~ msgid "Disconnected"
-#~ msgstr "Disconnected"
-
-#~ msgid "Connection Failed"
-#~ msgstr "Connection Failed"
-
-#~ msgid "Disconnecting"
-#~ msgstr "Disconnecting"
-
-#, fuzzy
-#~ msgid "Decline"
-#~ msgstr "Online"
-
-#~ msgid "BOSH Service URL:"
-#~ msgstr "BOSH Service URL:"
-
-#~ msgid "Connected"
-#~ msgstr "Connected"
-
-#~ msgid "Attached"
-#~ msgstr "Attached"

@@ -122,7 +122,7 @@ module.exports = function(grunt) {
                 done();
         };
         var rjsext = (process.platform === 'win32') ? '.cmd' : '';
-        var rjs = path.resolve('./node_modules/.bin/r.js' + rjsext);
+        var rjs = '"' + path.resolve('./node_modules/.bin/r.js' + rjsext) + '"';
         exec(rjs + ' -o src/build.js && ' +
              rjs + ' -o src/build.js optimize=none out=builds/converse.js && ' +
              rjs + ' -o src/build-no-jquery.js &&' +

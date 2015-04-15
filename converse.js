@@ -1501,6 +1501,7 @@
             },
 
             updateVCard: function () {
+                if (!this.use_vcards) { return; }
                 var jid = this.model.get('jid'),
                     contact = converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {

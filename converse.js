@@ -168,6 +168,7 @@
         Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
         Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
         // Add Strophe Statuses
@@ -2017,7 +2018,7 @@
                     converse.features.on('add', this.featureAdded, this);
                     // Features could have been added before the controlbox was
                     // initialized. Currently we're only interested in MUC
-                    var feature = converse.features.findWhere({'var': 'http://jabber.org/protocol/muc'});
+                    var feature = converse.features.findWhere({'var': Strophe.NS.MUC});
                     if (feature) {
                         this.featureAdded(feature);
                     }
@@ -2146,7 +2147,7 @@
             },
 
             featureAdded: function (feature) {
-                if ((feature.get('var') == 'http://jabber.org/protocol/muc') && (converse.allow_muc)) {
+                if ((feature.get('var') == Strophe.NS.MUC) && (converse.allow_muc)) {
                     this.roomspanel.model.save({muc_domain: feature.get('from')});
                     var $server= this.$el.find('input.new-chatroom-server');
                     if (! $server.is(':focus')) {
@@ -4317,7 +4318,8 @@
                         t += $(msg).find('item').length*250;
                         return true;
                     },
-                    'http://jabber.org/protocol/rosterx', 'message', null);
+                    Strophe.NS.ROSTERX, 'message', null
+                );
             },
 
             registerPresenceHandler: function () {
@@ -4712,7 +4714,7 @@
                  * feature-providing Models, not here
                  */
                  converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                 converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
+                 converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
                  converse.connection.disco.addFeature('jabber:x:conference');
                  converse.connection.disco.addFeature('urn:xmpp:carbons:2');
                  converse.connection.disco.addFeature(Strophe.NS.VCARD);

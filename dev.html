@@ -52,11 +52,6 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
-            auto_login: true,
-            allow_registration: false,
-            allow_logout: false,
-            authentication: "anonymous",
-            jid: "opkode.im",
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             i18n: locales['en'], // Refer to ./locale/locales.js to see which locales are supported
             keepalive: true,

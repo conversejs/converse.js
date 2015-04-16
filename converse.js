@@ -3096,7 +3096,13 @@
                 var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
-                    message_from = $message.attr('from');
+                    message_from = $message.attr('from'),
+                    message_to = $message.attr('to');
+
+                if(!_.contains([converse.connection.jid, converse.bare_jid], message_to)) {
+                    // Ignore messages sent to a different resource
+                    return true;
+                }
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted

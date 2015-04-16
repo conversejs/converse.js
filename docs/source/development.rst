@@ -369,7 +369,7 @@ Similar to chats.get API
 
 To open a single multi user chat box, provide the JID of the room::
 
-    converse.room.open('group@muc.example.com')
+    converse.rooms.open('group@muc.example.com')
 
 To return an array of chat boxes, provide an array of JIDs::
 
@@ -377,7 +377,7 @@ To return an array of chat boxes, provide an array of JIDs::
 
 To setup a custom nickname when joining the room, provide the optionnal nick argument::
 
-    converse.room.open('group@muc.example.com', 'mycustomnick')
+    converse.rooms.open('group@muc.example.com', 'mycustomnick')
 
 
 "settings" grouping

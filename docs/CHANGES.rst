@@ -6,6 +6,7 @@ Changelog
 
 * Add the ability to log in anonymously. [jcbrand]
 * Add the ability to log in automatically. [jcbrand]
+* #374 Fix collapsed group visibility on page load. [floriancargoet]
 
 0.9.2 (2015-04-09)
 ------------------
@@ -27,7 +28,7 @@ Changelog
 * Set the JID input field in the login form to ``type=email``. [chatme]
 * New configuration setting `allow_contact_removal <https://conversejs.org/docs/html/configuration.html#allow-contact-removal>`_ [jcbrand]
 * Document that event handlers receive 'event' obj as first arg. [jcbrand]
-* Add a test to check that notifications are played in chat rooms. [jcbrand] 
+* Add a test to check that notifications are played in chat rooms. [jcbrand]
 * #333 Enable automatic reconnection when ``prebind`` and ``prebind_url`` are specified. [jcbrand]
 * #339 Require the JID to be specified when using ``keepalive`` with ``prebind``. Also add a logout API method. [jcbrand]
 * #349 Indicate visitors in chat rooms. [c143]
@@ -214,7 +215,7 @@ Changelog
     to fetch the newest strophe.muc.plugin (for bugfix of #85).
 
     This release contains 3 different builds:
-    - converse.min.js 
+    - converse.min.js
     - converse-no-otr.min.js (Without OTR encryption)
     - converse-no-locales-no-otr.min.js (Without OTR encryption or any translations)
 

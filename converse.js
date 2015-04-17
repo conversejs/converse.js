@@ -3978,7 +3978,7 @@
                 if (contact.showInRoster()) {
                     if (this.model.get('state') === CLOSED) {
                         if (view.$el[0].style.display !== "none") { view.$el.hide(); }
-                        if (this.$el[0].style.display === "none") { this.$el.show(); }
+                        if (!this.$el.is(':visible')) { this.$el.show(); }
                     } else {
                         if (this.$el[0].style.display !== "block") { this.show(); }
                     }

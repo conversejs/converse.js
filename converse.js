@@ -4003,10 +4003,12 @@
             },
 
             show: function () {
-                // FIXME: There's a bug here, if show_only_online_users is true
-                // Possible solution, get the group, call _.each and check
-                // showInRoster
-                this.$el.nextUntil('dt').addBack().show();
+                this.$el.show();
+                _.each(this.getAll(), function (contactView) {
+                    if (contactView.model.showInRoster()) {
+                        contactView.$el.show();
+                    }
+                });
             },
 
             hide: function () {

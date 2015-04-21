@@ -5092,7 +5092,7 @@
                  */
                 var $form= this.$('form'),
                     $stanza = $(stanza),
-                    $fields;
+                    $fields, $input;
                 $form.empty().append(converse.templates.registration_form({
                     'domain': this.domain,
                     'title': this.title,
@@ -5100,16 +5100,27 @@
                 }));
                 if (this.form_type == 'xform') {
                     $fields = $stanza.find('field');
-                    _.each($fields, $.proxy(function (field) {
+                    _.each($fields, function (field) {
                         $form.append(utils.xForm2webForm.bind(this, $(field), $stanza));
-                    }, this));
+                    }.bind(this));
                 } else {
                     // Show fields
                     _.each(Object.keys(this.fields), $.proxy(function (key) {
-                        $form.append('<label>'+key+'</label>');
-                        var $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
-                        if (key === 'password' || key === 'email') {
-                            $input.attr('type', key);
+                        if (key == "username") {
+                            $input = templates.form_username({
+                                domain: ' @'+this.domain,
+                                name: key,
+                                type: "text",
+                                label: key,
+                                value: '',
+                                required: 1
+                            });
+                        } else {
+                            $form.append('<label>'+key+'</label>');
+                            $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
+                            if (key === 'password' || key === 'email') {
+                                $input.attr('type', key);
+                            }
                         }
                         $form.append($input);
                     }, this));
@@ -5185,8 +5196,7 @@
                     return;
                 }
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
-                    iq = $iq({type: "set"})
-                        .c("query", {xmlns:Strophe.NS.REGISTER})
+                    iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
 
                 if (this.form_type == 'xform') {
                     iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
@@ -5199,7 +5209,6 @@
                         iq.c($input.attr('name'), {}, $input.val());
                     });
                 }
-
                 converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                 converse.connection.send(iq);
                 this.setFields(iq.tree());

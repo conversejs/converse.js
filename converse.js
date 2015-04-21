@@ -5060,11 +5060,19 @@
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
                     iq = $iq({type: "set"})
                         .c("query", {xmlns:Strophe.NS.REGISTER})
-                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
 
-                $inputs.each(function () {
-                    iq.cnode(utils.webForm2xForm(this)).up();
-                });
+                if (this.form_type == 'xform') {
+                    iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
+                    $inputs.each(function () {
+                        iq.cnode(utils.webForm2xForm(this)).up();
+                    });
+                } else {
+                    $inputs.each(function () {
+                        var $input = $(this);
+                        iq.c($input.attr('name'), {}, $input.val());
+                    });
+                }
+
                 converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                 converse.connection.send(iq);
                 this.setFields(iq.tree());

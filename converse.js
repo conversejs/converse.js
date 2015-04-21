@@ -3084,7 +3084,13 @@
                 var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
-                    message_from = $message.attr('from');
+                    message_from = $message.attr('from'),
+                    message_to = $message.attr('to');
+
+                if(!_.contains([converse.connection.jid, converse.bare_jid], message_to)) {
+                    // Ignore messages sent to a different resource
+                    return true;
+                }
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted
@@ -4106,7 +4112,7 @@
                 if (contact.showInRoster()) {
                     if (this.model.get('state') === CLOSED) {
                         if (view.$el[0].style.display !== "none") { view.$el.hide(); }
-                        if (this.$el[0].style.display === "none") { this.$el.show(); }
+                        if (!this.$el.is(':visible')) { this.$el.show(); }
                     } else {
                         if (this.$el[0].style.display !== "block") { this.show(); }
                     }
@@ -4131,10 +4137,12 @@
             },
 
             show: function () {
-                // FIXME: There's a bug here, if show_only_online_users is true
-                // Possible solution, get the group, call _.each and check
-                // showInRoster
-                this.$el.nextUntil('dt').addBack().show();
+                this.$el.show();
+                _.each(this.getAll(), function (contactView) {
+                    if (contactView.model.showInRoster()) {
+                        contactView.$el.show();
+                    }
+                });
             },
 
             hide: function () {
@@ -5179,11 +5187,19 @@
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
                     iq = $iq({type: "set"})
                         .c("query", {xmlns:Strophe.NS.REGISTER})
-                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
 
-                $inputs.each(function () {
-                    iq.cnode(utils.webForm2xForm(this)).up();
-                });
+                if (this.form_type == 'xform') {
+                    iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
+                    $inputs.each(function () {
+                        iq.cnode(utils.webForm2xForm(this)).up();
+                    });
+                } else {
+                    $inputs.each(function () {
+                        var $input = $(this);
+                        iq.c($input.attr('name'), {}, $input.val());
+                    });
+                }
+
                 converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                 converse.connection.send(iq);
                 this.setFields(iq.tree());

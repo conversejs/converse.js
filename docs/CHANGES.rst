@@ -7,6 +7,7 @@ Changelog
 * Add the ability to log in anonymously. [jcbrand]
 * Add the ability to log in automatically. [jcbrand]
 * #370 Unable to register a new user to ejabberd 2.1.11. [gbonvehi]
+* #372 Some offline users have a visible empty <dd> in the roster. [floriancargoet]
 * #374 Fix collapsed group visibility on page load. [floriancargoet]
 
 0.9.2 (2015-04-09)

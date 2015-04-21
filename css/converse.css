@@ -965,13 +965,15 @@
     margin: 5px 0 10px 0;
     padding-left: 0.5em; }
   #conversejs #converse-register .input-group {
+    table-layout: fixed;
     display: table;
     margin: auto;
     width: 178px; }
+    #conversejs #converse-register .input-group span {
+      overflow-x: hidden;
+      text-overflow: ellipsis; }
     #conversejs #converse-register .input-group span, #conversejs #converse-register .input-group input[name=username] {
       display: table-cell; }
-    #conversejs #converse-register .input-group input[name=username] {
-      width: 100%; }
   #conversejs .cancel-submit, #conversejs .save-submit {
     width: 45%;
     margin: 5px 3px 5px 3px; }

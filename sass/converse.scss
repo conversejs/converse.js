@@ -1135,14 +1135,16 @@
 
   #converse-register {
     .input-group {
+      table-layout: fixed;
       display: table;
       margin: auto;
       width: 178px;
+      span {
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+      }
       span, input[name=username] {
           display: table-cell;
-      }
-      input[name=username] {
-        width: 100%;
       }
     }
   }

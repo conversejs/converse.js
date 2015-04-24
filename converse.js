@@ -1717,7 +1717,7 @@
                             $('<li class="found-user"></li>')
                             .append(
                                 $('<a class="subscribe-to-user" href="#" title="'+__('Click to add as a chat contact')+'"></a>')
-                                .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+converse.domain)
+                                .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
                                 .text(obj.fullname)
                             )
                         );

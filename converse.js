@@ -368,11 +368,11 @@
         this.playNotification = function () {
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined"){
-                audio = new Audio(converse.play_sounds_path."msg_received.ogg");
+                audio = new Audio(converse.play_sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
                 } else {
-                    audio = new Audio(converse.play_sounds_path."msg_received.mp3");
+                    audio = new Audio(converse.play_sounds_path+"msg_received.mp3");
                     audio.play();
                 }
             }

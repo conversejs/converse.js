@@ -70,7 +70,7 @@ A JID (jabber ID), SID (session ID) and RID (Request ID).
 Converse.js needs these tokens in order to attach to that same session.
 
 There are two complementary configuration settings to ``prebind``.
-They are :ref:`keepalive` and :ref:`prebind_url`.
+They are :ref:`keepalive` and `prebind_url`_.
 
 ``keepalive`` can be used keep the session alive without having to pass in
 new RID and SID tokens to ``converse.initialize`` every time you reload the page.
@@ -78,7 +78,7 @@ This removes the need to set up a new BOSH session every time a page loads.
 You do however still need to supply the user's JID so that converse.js can be
 sure that the session it's resuming is for the right user.
 
-``prebind_url`` lets you specify a URL which converse.js will call whenever a
+`prebind_url`_ lets you specify a URL which converse.js will call whenever a
 new BOSH session needs to be set up.
 
 Here's an example of converse.js being initialized with these three options:
@@ -370,17 +370,12 @@ play_sounds
 Plays a notification sound when you receive a personal message or when your
 nickname is mentioned in a chat room.
 
-Inside the ``./sounds`` directory of the Converse.js repo, you'll see MP3 and Ogg
+Inside the ``./sounds`` directory of the Converse.js repo you'll see MP3 and Ogg
 formatted sound files. We need both, because neither format is supported by all browsers.
 
-Sound files are looked up by convention, not configuration. So to have
-a sound play when a message is received, make sure that your webserver serves
-it in both formats as ``http://yoursite.com/sounds/msg_received.mp3`` and
-``http://yoursite.com/sounds/msg_received.ogg``.
+You can set the URL where the sound files are hosted with the `sounds_path`_
+option.
 
-``http://yoursite.com`` should of course be your site's URL.
-
-.. _`prebind_url`:
 
 prebind_url
 -----------
@@ -448,6 +443,18 @@ show_only_online_users
 
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
+
+sounds_path
+-----------
+
+* Default: ``/sounds/``
+
+This option only makes sense in conjunction with the `play_sounds`_ option and
+specifies the URL of the sound files to be played (exluding the file names
+themselves).
+
+In order to support all browsers we need both an MP3 and an Ogg file. Make sure
+to name your files ``msg_received.ogg`` and ``msg_received.mp3``.
 
 storage
 -------
@@ -610,8 +617,7 @@ xhr_user_search_url
 
 Used only in conjunction with ``xhr_user_search``.
 
-This is the URL to which an AJAX GET request will be made to fetch user data from your remote server.
+This is the URL to which an XHR GET request will be made to fetch user data from your remote server.
 The query string will be included in the request with ``q`` as its key.
 
-The calendar can be configured through a `data-pat-calendar` attribute.
-The available options are:
+The data returned must be a JSON encoded list of user JIDs.

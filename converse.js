@@ -248,6 +248,7 @@
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
+            sounds_path: '/sounds/',
             password: undefined,
             authentication: 'login', // Available values are "login", "prebind", "anonymous".
             prebind: false, // XXX: Deprecated, use "authentication" instead.
@@ -353,11 +354,11 @@
         this.playNotification = function () {
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined"){
-                audio = new Audio("/sounds/msg_received.ogg");
+                audio = new Audio(converse.sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
                 } else {
-                    audio = new Audio("/sounds/msg_received.mp3");
+                    audio = new Audio(converse.sounds_path+"msg_received.mp3");
                     audio.play();
                 }
             }
@@ -1711,7 +1712,7 @@
                             $('<li class="found-user"></li>')
                             .append(
                                 $('<a class="subscribe-to-user" href="#" title="'+__('Click to add as a chat contact')+'"></a>')
-                                .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+converse.domain)
+                                .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
                                 .text(obj.fullname)
                             )
                         );

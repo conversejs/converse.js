@@ -278,11 +278,11 @@ Add a contact.
 
 Provide the JID of the contact you want to add::
 
-    converse.chats.add('buddy@example.com')
+    converse.contacts.add('buddy@example.com')
     
-You may also provide the fullname. If not present, we use the jid as fullname.
+You may also provide the fullname. If not present, we use the jid as fullname::
 
-    converse.chats.add('buddy@example.com', 'Buddy')
+    converse.contacts.add('buddy@example.com', 'Buddy')
 
 "chats" grouping
 ----------------
@@ -371,11 +371,11 @@ To open a single multi user chat box, provide the JID of the room::
 
     converse.rooms.open('group@muc.example.com')
 
-To return an array of chat boxes, provide an array of JIDs::
+To return an array of rooms, provide an array of room JIDs::
 
-    converse.chats.open(['group1@muc.example.com', 'group2@muc.example.com'])
+    converse.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
 
-To setup a custom nickname when joining the room, provide the optionnal nick argument::
+To setup a custom nickname when joining the room, provide the optional nick argument::
 
     converse.rooms.open('group@muc.example.com', 'mycustomnick')
 

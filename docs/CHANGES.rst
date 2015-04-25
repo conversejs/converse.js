@@ -6,9 +6,13 @@ Changelog
 
 * Add the ability to log in anonymously. [jcbrand]
 * Add the ability to log in automatically. [jcbrand]
+* #344 Enable the path to the sound files to be configured [thierrytiti and jcbrand]
 * #370 Unable to register a new user to ejabberd 2.1.11. [gbonvehi]
 * #372 Some offline users have a visible empty <dd> in the roster. [floriancargoet]
 * #374 Fix collapsed group visibility on page load. [floriancargoet]
+* #378 Expect full JIDs to be returned via XHR user search [thierrytiti]
+* #379 Updated French translations [thierrytiti]
+* #379 Fix for bower not finding crypto-js-evanvosberg#3.1.2-5 any more. [jcbrand]
 
 0.9.2 (2015-04-09)
 ------------------

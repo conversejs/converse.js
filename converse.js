@@ -262,7 +262,7 @@
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
-			play_sounds_path: '/sounds/',
+            sounds_path: '/sounds/',
             password: undefined,
             authentication: 'login', // Available values are "login", "prebind", "anonymous".
             prebind: false, // XXX: Deprecated, use "authentication" instead.
@@ -368,11 +368,11 @@
         this.playNotification = function () {
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined"){
-                audio = new Audio(converse.play_sounds_path+"msg_received.ogg");
+                audio = new Audio(converse.sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
                 } else {
-                    audio = new Audio(converse.play_sounds_path+"msg_received.mp3");
+                    audio = new Audio(converse.sounds_path+"msg_received.mp3");
                     audio.play();
                 }
             }

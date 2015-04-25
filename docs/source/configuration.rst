@@ -610,8 +610,7 @@ xhr_user_search_url
 
 Used only in conjunction with ``xhr_user_search``.
 
-This is the URL to which an AJAX GET request will be made to fetch user data from your remote server.
+This is the URL to which an XHR GET request will be made to fetch user data from your remote server.
 The query string will be included in the request with ``q`` as its key.
 
-The calendar can be configured through a `data-pat-calendar` attribute.
-The available options are:
+The data returned must be a JSON encoded list of user JIDs.

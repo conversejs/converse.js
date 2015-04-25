@@ -26,49 +26,47 @@ msgstr ""
 
 #: converse.js:312
 msgid "unencrypted"
-msgstr ""
+msgstr "non crypté"
 
 #: converse.js:313
 msgid "unverified"
-msgstr ""
+msgstr "non vérifié"
 
 #: converse.js:314
 msgid "verified"
-msgstr ""
+msgstr "vérifié"
 
 #: converse.js:315
 msgid "finished"
-msgstr ""
+msgstr "terminé"
 
 #: converse.js:318
 msgid "This contact is busy"
-msgstr ""
+msgstr "Ce contact est occupé"
 
 #: converse.js:319
 msgid "This contact is online"
-msgstr ""
+msgstr "Ce contact est connecté"
 
 #: converse.js:320
 msgid "This contact is offline"
-msgstr ""
+msgstr "Ce contact est déconnecté"
 
 #: converse.js:321
-#, fuzzy
 msgid "This contact is unavailable"
-msgstr "Ce salon affiche maintenant des membres indisponibles"
+msgstr "Ce contact est indisponible"
 
 #: converse.js:322
 msgid "This contact is away for an extended period"
-msgstr ""
+msgstr "Ce contact est absent"
 
 #: converse.js:323
 msgid "This contact is away"
-msgstr ""
+msgstr "Ce contact est absent"
 
 #: converse.js:325
-#, fuzzy
 msgid "Click to hide these contacts"
-msgstr "Cliquez pour supprimer ce contact"
+msgstr "Cliquez pour cacher ces contacts"
 
 #: converse.js:327
 msgid "My contacts"
@@ -84,7 +82,7 @@ msgstr "Demandes de contacts"
 
 #: converse.js:330
 msgid "Ungrouped"
-msgstr ""
+msgstr "Sans groupe"
 
 #: converse.js:332 converse.js:629 converse.js:672
 msgid "Contacts"
@@ -92,12 +90,12 @@ msgstr "Contacts"
 
 #: converse.js:333
 msgid "Groups"
-msgstr ""
+msgstr "Groupes"
 
 #: converse.js:433
 #, fuzzy
 msgid "Reconnecting"
-msgstr "Connection"
+msgstr "En cours de connexion"
 
 #: converse.js:476
 msgid "Error"
@@ -105,7 +103,7 @@ msgstr "Erreur"
 
 #: converse.js:478
 msgid "Connecting"
-msgstr "Connection"
+msgstr "Connexion"
 
 #: converse.js:480
 msgid "Authenticating"
@@ -117,15 +115,15 @@ msgstr "L'authentification a échoué"
 
 #: converse.js:788
 msgid "Re-establishing encrypted session"
-msgstr ""
+msgstr "Rétablissement de la session encryptée"
 
 #: converse.js:800
 msgid "Generating private key."
-msgstr ""
+msgstr "Génération de la clé privée"
 
 #: converse.js:801
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "Votre navigateur pourrait ne plus répondre"
 
 #: converse.js:836
 msgid ""
@@ -136,39 +134,44 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
+"Demande d'authtification de %1$s\n"
+"\n"
+"Votre contact tente de vérifier votre identité, en vous posant "
+"la question ci-dessous.\n"
+"\n"
+"%2$s"
 
 #: converse.js:845
 msgid "Could not verify this user's identify."
-msgstr ""
+msgstr "L'identité de cet utilisateur ne peut pas être vérifiée"
 
 #: converse.js:884
 msgid "Exchanging private key with contact."
-msgstr ""
+msgstr "Échange de clé privée avec le contact"
 
 #: converse.js:1030
 msgid "Personal message"
 msgstr "Message personnel"
 
 #: converse.js:1062
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Vous n'êtes pas dans la liste des membres de ce salon"
+msgstr "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
 
 #: converse.js:1084
 msgid "me"
-msgstr ""
+msgstr "moi"
 
 #: converse.js:1139
 msgid "is typing"
-msgstr ""
+msgstr "écrit"
 
 #: converse.js:1142
 msgid "has stopped typing"
-msgstr ""
+msgstr "a arrêté d'écrire"
 
 #: converse.js:1148 converse.js:1428
 msgid "has gone away"
-msgstr ""
+msgstr "est parti"
 
 #: converse.js:1193 converse.js:2512
 msgid "Show this menu"
@@ -184,19 +187,19 @@ msgstr "Effacer les messages"
 
 #: converse.js:1321
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "Etes-vous sûr de vouloir supprimer les messages de cette conversation?"
 
 #: converse.js:1356
 msgid "Your message could not be sent"
-msgstr ""
+msgstr "Votre message ne peut pas être envoyé"
 
 #: converse.js:1359
 msgid "We received an unencrypted message"
-msgstr ""
+msgstr "Un message non crypté a été reçu"
 
 #: converse.js:1362
 msgid "We received an unreadable encrypted message"
-msgstr ""
+msgstr "Un message crypté illisible a été reçu"
 
 #: converse.js:1388
 msgid ""
@@ -234,12 +237,11 @@ msgstr ""
 
 #: converse.js:1426
 msgid "has gone offline"
-msgstr ""
+msgstr "est déconnecté"
 
 #: converse.js:1430
-#, fuzzy
 msgid "is busy"
-msgstr "occupé"
+msgstr "est occupé"
 
 #: converse.js:1517
 msgid "Your messages are not encrypted anymore"
@@ -280,7 +282,7 @@ msgstr ""
 #: converse.js:1548
 #, fuzzy
 msgid "Clear all messages"
-msgstr "Message personnel"
+msgstr "Supprimer tous les messages"
 
 #: converse.js:1549
 msgid "End encrypted conversation"
@@ -288,7 +290,7 @@ msgstr ""
 
 #: converse.js:1550
 msgid "Hide the list of participants"
-msgstr ""
+msgstr "Cacher la liste des participants"
 
 #: converse.js:1551
 msgid "Refresh encrypted conversation"
@@ -296,7 +298,7 @@ msgstr ""
 
 #: converse.js:1552
 msgid "Start a call"
-msgstr ""
+msgstr "Démarrer un appel"
 
 #: converse.js:1553
 msgid "Start encrypted conversation"
@@ -331,9 +333,8 @@ msgid "Offline"
 msgstr "Déconnecté"
 
 #: converse.js:1652
-#, fuzzy
 msgid "Log out"
-msgstr "Se connecter"
+msgstr "Se déconnecter"
 
 #: converse.js:1658
 msgid "Contact name"
@@ -365,11 +366,11 @@ msgstr "Aucun utilisateur trouvé"
 
 #: converse.js:1700
 msgid "Click to add as a chat contact"
-msgstr "Cliquer pour ajouter aux contacts de chat"
+msgstr "Cliquer pour ajouter aux contacts"
 
 #: converse.js:1765
 msgid "Room name"
-msgstr "Numéro de salon"
+msgstr "Nom du salon"
 
 #: converse.js:1766
 msgid "Nickname"

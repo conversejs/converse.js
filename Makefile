@@ -112,10 +112,10 @@ watch:: dev-ruby
 jsmin:
 	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js
 
-cssmin: stamp-node
+cssmin: stamp-npm
 	$(GRUNT) cssmin
 
-build:: stamp-node
+build:: stamp-npm
 	$(GRUNT) jst
 	$(GRUNT) minify
 

@@ -21,6 +21,7 @@ Backbone.Overview
 tags
 stamp-npm
 stamp-bower
+stamp-bundler
 
 # Sphinx
 docs/html

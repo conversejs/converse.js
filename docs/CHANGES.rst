@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.9.3 (Unreleased)
+0.9.3 (2015-05-01)
 ------------------
 
 * Add the ability to log in anonymously. [jcbrand]

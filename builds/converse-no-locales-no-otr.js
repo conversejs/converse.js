@@ -10784,7 +10784,7 @@ define('jquery-private',['jquery'], function (jq) {
   java, location, Components, FileUtils */
 
 define('text',['module'], function (module) {
-    
+    'use strict';
 
     var text, fs, Cc, Ci, xpcIsWindows,
         progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
@@ -11165,7 +11165,7 @@ define('text',['module'], function (module) {
     return text;
 });
 
-//     Underscore.js 1.8.2
+//     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
@@ -11222,7 +11222,7 @@ define('text',['module'], function (module) {
   }
 
   // Current version.
-  _.VERSION = '1.8.2';
+  _.VERSION = '1.8.3';
 
   // Internal function that returns an efficient (for current engines) version
   // of the passed-in callback, to be repeatedly applied in other Underscore
@@ -11289,12 +11289,20 @@ define('text',['module'], function (module) {
     return result;
   };
 
+  var property = function(key) {
+    return function(obj) {
+      return obj == null ? void 0 : obj[key];
+    };
+  };
+
   // Helper for collection methods to determine whether a collection
   // should be iterated as an array or as an object
   // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
   var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+  var getLength = property('length');
   var isArrayLike = function(collection) {
-    var length = collection && collection.length;
+    var length = getLength(collection);
     return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
   };
 
@@ -11419,11 +11427,12 @@ define('text',['module'], function (module) {
     return false;
   };
 
-  // Determine if the array or object contains a given value (using `===`).
+  // Determine if the array or object contains a given item (using `===`).
   // Aliased as `includes` and `include`.
-  _.contains = _.includes = _.include = function(obj, target, fromIndex) {
+  _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
     if (!isArrayLike(obj)) obj = _.values(obj);
-    return _.indexOf(obj, target, typeof fromIndex == 'number' && fromIndex) >= 0;
+    if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+    return _.indexOf(obj, item, fromIndex) >= 0;
   };
 
   // Invoke a method (with arguments) on every item in a collection.
@@ -11647,7 +11656,7 @@ define('text',['module'], function (module) {
   // Internal implementation of a recursive `flatten` function.
   var flatten = function(input, shallow, strict, startIndex) {
     var output = [], idx = 0;
-    for (var i = startIndex || 0, length = input && input.length; i < length; i++) {
+    for (var i = startIndex || 0, length = getLength(input); i < length; i++) {
       var value = input[i];
       if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
         //flatten current level of array or arguments object
@@ -11678,7 +11687,6 @@ define('text',['module'], function (module) {
   // been sorted, you have the option of using a faster algorithm.
   // Aliased as `unique`.
   _.uniq = _.unique = function(array, isSorted, iteratee, context) {
-    if (array == null) return [];
     if (!_.isBoolean(isSorted)) {
       context = iteratee;
       iteratee = isSorted;
@@ -11687,7 +11695,7 @@ define('text',['module'], function (module) {
     if (iteratee != null) iteratee = cb(iteratee, context);
     var result = [];
     var seen = [];
-    for (var i = 0, length = array.length; i < length; i++) {
+    for (var i = 0, length = getLength(array); i < length; i++) {
       var value = array[i],
           computed = iteratee ? iteratee(value, i, array) : value;
       if (isSorted) {
@@ -11714,10 +11722,9 @@ define('text',['module'], function (module) {
   // Produce an array that contains every item shared between all the
   // passed-in arrays.
   _.intersection = function(array) {
-    if (array == null) return [];
     var result = [];
     var argsLength = arguments.length;
-    for (var i = 0, length = array.length; i < length; i++) {
+    for (var i = 0, length = getLength(array); i < length; i++) {
       var item = array[i];
       if (_.contains(result, item)) continue;
       for (var j = 1; j < argsLength; j++) {
@@ -11746,7 +11753,7 @@ define('text',['module'], function (module) {
   // Complement of _.zip. Unzip accepts an array of arrays and groups
   // each array's elements on shared indices
   _.unzip = function(array) {
-    var length = array && _.max(array, 'length').length || 0;
+    var length = array && _.max(array, getLength).length || 0;
     var result = Array(length);
 
     for (var index = 0; index < length; index++) {
@@ -11760,7 +11767,7 @@ define('text',['module'], function (module) {
   // the corresponding values.
   _.object = function(list, values) {
     var result = {};
-    for (var i = 0, length = list && list.length; i < length; i++) {
+    for (var i = 0, length = getLength(list); i < length; i++) {
       if (values) {
         result[list[i]] = values[i];
       } else {
@@ -11770,42 +11777,11 @@ define('text',['module'], function (module) {
     return result;
   };
 
-  // Return the position of the first occurrence of an item in an array,
-  // or -1 if the item is not included in the array.
-  // If the array is large and already in sort order, pass `true`
-  // for **isSorted** to use binary search.
-  _.indexOf = function(array, item, isSorted) {
-    var i = 0, length = array && array.length;
-    if (typeof isSorted == 'number') {
-      i = isSorted < 0 ? Math.max(0, length + isSorted) : isSorted;
-    } else if (isSorted && length) {
-      i = _.sortedIndex(array, item);
-      return array[i] === item ? i : -1;
-    }
-    if (item !== item) {
-      return _.findIndex(slice.call(array, i), _.isNaN);
-    }
-    for (; i < length; i++) if (array[i] === item) return i;
-    return -1;
-  };
-
-  _.lastIndexOf = function(array, item, from) {
-    var idx = array ? array.length : 0;
-    if (typeof from == 'number') {
-      idx = from < 0 ? idx + from + 1 : Math.min(idx, from + 1);
-    }
-    if (item !== item) {
-      return _.findLastIndex(slice.call(array, 0, idx), _.isNaN);
-    }
-    while (--idx >= 0) if (array[idx] === item) return idx;
-    return -1;
-  };
-
   // Generator function to create the findIndex and findLastIndex functions
-  function createIndexFinder(dir) {
+  function createPredicateIndexFinder(dir) {
     return function(array, predicate, context) {
       predicate = cb(predicate, context);
-      var length = array != null && array.length;
+      var length = getLength(array);
       var index = dir > 0 ? 0 : length - 1;
       for (; index >= 0 && index < length; index += dir) {
         if (predicate(array[index], index, array)) return index;
@@ -11815,16 +11791,15 @@ define('text',['module'], function (module) {
   }
 
   // Returns the first index on an array-like that passes a predicate test
-  _.findIndex = createIndexFinder(1);
-
-  _.findLastIndex = createIndexFinder(-1);
+  _.findIndex = createPredicateIndexFinder(1);
+  _.findLastIndex = createPredicateIndexFinder(-1);
 
   // Use a comparator function to figure out the smallest index at which
   // an object should be inserted so as to maintain order. Uses binary search.
   _.sortedIndex = function(array, obj, iteratee, context) {
     iteratee = cb(iteratee, context, 1);
     var value = iteratee(obj);
-    var low = 0, high = array.length;
+    var low = 0, high = getLength(array);
     while (low < high) {
       var mid = Math.floor((low + high) / 2);
       if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
@@ -11832,11 +11807,43 @@ define('text',['module'], function (module) {
     return low;
   };
 
+  // Generator function to create the indexOf and lastIndexOf functions
+  function createIndexFinder(dir, predicateFind, sortedIndex) {
+    return function(array, item, idx) {
+      var i = 0, length = getLength(array);
+      if (typeof idx == 'number') {
+        if (dir > 0) {
+            i = idx >= 0 ? idx : Math.max(idx + length, i);
+        } else {
+            length = idx >= 0 ? Math.min(idx + 1, length) : idx + length + 1;
+        }
+      } else if (sortedIndex && idx && length) {
+        idx = sortedIndex(array, item);
+        return array[idx] === item ? idx : -1;
+      }
+      if (item !== item) {
+        idx = predicateFind(slice.call(array, i, length), _.isNaN);
+        return idx >= 0 ? idx + i : -1;
+      }
+      for (idx = dir > 0 ? i : length - 1; idx >= 0 && idx < length; idx += dir) {
+        if (array[idx] === item) return idx;
+      }
+      return -1;
+    };
+  }
+
+  // Return the position of the first occurrence of an item in an array,
+  // or -1 if the item is not included in the array.
+  // If the array is large and already in sort order, pass `true`
+  // for **isSorted** to use binary search.
+  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
+
   // Generate an integer Array containing an arithmetic progression. A port of
   // the native Python `range()` function. See
   // [the Python documentation](http://docs.python.org/library/functions.html#range).
   _.range = function(start, stop, step) {
-    if (arguments.length <= 1) {
+    if (stop == null) {
       stop = start || 0;
       start = 0;
     }
@@ -12215,6 +12222,15 @@ define('text',['module'], function (module) {
   // Fill in a given object with default properties.
   _.defaults = createAssigner(_.allKeys, true);
 
+  // Creates an object that inherits from the given prototype object.
+  // If additional properties are provided then they will be added to the
+  // created object.
+  _.create = function(prototype, props) {
+    var result = baseCreate(prototype);
+    if (props) _.extendOwn(result, props);
+    return result;
+  };
+
   // Create a (shallow-cloned) duplicate of an object.
   _.clone = function(obj) {
     if (!_.isObject(obj)) return obj;
@@ -12292,7 +12308,7 @@ define('text',['module'], function (module) {
     }
     // Assume equality for cyclic structures. The algorithm for detecting cyclic
     // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
-    
+
     // Initializing stack of traversed objects.
     // It's done here since we only need them for objects and arrays comparison.
     aStack = aStack || [];
@@ -12443,11 +12459,7 @@ define('text',['module'], function (module) {
 
   _.noop = function(){};
 
-  _.property = function(key) {
-    return function(obj) {
-      return obj == null ? void 0 : obj[key];
-    };
-  };
+  _.property = property;
 
   // Generates a function for a given object that returns a given property.
   _.propertyOf = function(obj) {
@@ -12456,7 +12468,7 @@ define('text',['module'], function (module) {
     };
   };
 
-  // Returns a predicate for checking whether an object has a given set of 
+  // Returns a predicate for checking whether an object has a given set of
   // `key:value` pairs.
   _.matcher = _.matches = function(attrs) {
     attrs = _.extendOwn({}, attrs);
@@ -12683,7 +12695,7 @@ define('text',['module'], function (module) {
   // Provide unwrapping proxy for some methods used in engine operations
   // such as arithmetic and JSON stringification.
   _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
-  
+
   _.prototype.toString = function() {
     return '' + this._wrapped;
   };
@@ -12736,7 +12748,7 @@ define('text',['module'], function (module) {
 /*global define: false */
 
 define('tpl',['text', 'underscore'], function (text, _) {
-    
+    'use strict';
 
     var buildMap = {},
         buildTemplateSource = "define('{pluginName}!{moduleName}', function () { return {source}; });\n";
@@ -13176,7 +13188,7 @@ __p+='\n<div class="input-group">\n    <input name="'+
 ((__t=(name))==null?'':__t)+
 '" type="'+
 ((__t=(type))==null?'':__t)+
-'" \n        ';
+'"\n        ';
  if (value) { 
 __p+=' value="'+
 ((__t=(value))==null?'':__t)+
@@ -13186,7 +13198,9 @@ __p+='\n        ';
  if (required) { 
 __p+=' class="required" ';
  } 
-__p+=' />\n    <span>'+
+__p+=' />\n    <span title="'+
+((__t=(domain))==null?'':__t)+
+'">'+
 ((__t=(domain))==null?'':__t)+
 '</span>\n</div>\n';
 }
@@ -13223,13 +13237,35 @@ return __p;
 define('tpl!login_panel', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form id="converse-login" method="post">\n    <label>'+
+__p+='<form id="converse-login" method="post">\n    ';
+ if (auto_login) { 
+__p+='\n        <span class="spinner login-submit"/>\n    ';
+ } 
+__p+='\n    ';
+ if (!auto_login) { 
+__p+='\n        ';
+ if (authentication == LOGIN) { 
+__p+='\n            <label>'+
 ((__t=(label_username))==null?'':__t)+
-'</label>\n    <input type="email" name="jid" placeholder="user@server">\n    <label>'+
+'</label>\n            <input name="jid" placeholder="user@server">\n            <label>'+
 ((__t=(label_password))==null?'':__t)+
-'</label>\n    <input type="password" name="password" placeholder="password">\n    <input class="submit" type="submit" value="'+
+'</label>\n            <input type="password" name="password" placeholder="password">\n            <input class="submit" type="submit" value="'+
 ((__t=(label_login))==null?'':__t)+
-'">\n    <span class="conn-feedback"></span>\n</form>\n';
+'">\n            <span class="conn-feedback"></span>\n        ';
+ } 
+__p+='\n        ';
+ if (authentication == ANONYMOUS) { 
+__p+='\n            <input type="submit" class="submit login-anon" value="'+
+((__t=(label_anon_login))==null?'':__t)+
+'"/>\n        ';
+ } 
+__p+='\n        ';
+ if (authentication == PREBIND) { 
+__p+='\n            <p>Disconnected.</p>\n        ';
+ } 
+__p+='\n    ';
+ } 
+__p+='\n</form>\n';
 }
 return __p;
 }; });
@@ -14922,7 +14958,7 @@ return parser;
         root.utils = factory(jQuery, templates);
     }
 }(this, function ($, templates, locales) {
-    
+    "use strict";
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
@@ -25591,7 +25627,7 @@ return Backbone.BrowserStorage;
       factory(_, Backbone);
    }
 }(this, function (_, Backbone) {
-    
+    "use strict";
     var Overview = Backbone.Overview = function (options) {
         /* An Overview is a View that contains and keeps track of sub-views.
          * Kind of like what a Collection is to a Model.
@@ -25649,7 +25685,7 @@ return Backbone.BrowserStorage;
     factory(jQuery, root);
   }
 }(this, function(jQuery, window) {
-  
+  "use strict";
 
   var matched, browser;
 
@@ -25812,7 +25848,7 @@ return Backbone.BrowserStorage;
     }
 }(this, function($, window) {
     var _ = function() {
-        
+        "use strict";
         return {
             isMsie: function() {
                 return /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
@@ -25942,7 +25978,7 @@ return Backbone.BrowserStorage;
         };
     }();
     var css = function() {
-        
+        "use strict";
         var css = {
             wrapper: {
                 position: "relative",
@@ -26004,7 +26040,7 @@ return Backbone.BrowserStorage;
         return css;
     }();
     var EventBus = function() {
-        
+        "use strict";
         var namespace = "typeahead:";
         function EventBus(o) {
             if (!o || !o.el) {
@@ -26021,7 +26057,7 @@ return Backbone.BrowserStorage;
         return EventBus;
     }();
     var EventEmitter = function() {
-        
+        "use strict";
         var splitter = /\s+/, nextTick = getNextTick();
         return {
             onSync: onSync,
@@ -26111,7 +26147,7 @@ return Backbone.BrowserStorage;
         }
     }();
     var highlight = function(doc) {
-        
+        "use strict";
         var defaults = {
             node: null,
             pattern: null,
@@ -26163,7 +26199,7 @@ return Backbone.BrowserStorage;
         }
     }(window.document);
     var Input = function() {
-        
+        "use strict";
         var specialKeyCodeMap;
         specialKeyCodeMap = {
             9: "tab",
@@ -26358,7 +26394,7 @@ return Backbone.BrowserStorage;
         }
     }();
     var Dataset = function() {
-        
+        "use strict";
         var datasetKey = "ttDataset", valueKey = "ttValue", datumKey = "ttDatum";
         function Dataset(o) {
             o = o || {};
@@ -26492,7 +26528,7 @@ return Backbone.BrowserStorage;
         }
     }();
     var Dropdown = function() {
-        
+        "use strict";
         function Dropdown(o) {
             var that = this, onSuggestionClick, onSuggestionMouseEnter, onSuggestionMouseLeave;
             o = o || {};
@@ -26652,7 +26688,7 @@ return Backbone.BrowserStorage;
         }
     }();
     var Typeahead = function() {
-        
+        "use strict";
         var attrsKey = "ttAttrs";
         function Typeahead(o) {
             var $menu, $input, $hint;
@@ -26899,7 +26935,7 @@ return Backbone.BrowserStorage;
         }
     }();
     (function() {
-        
+        "use strict";
         var old, typeaheadKey, methods;
         old = $.fn.typeahead;
         typeaheadKey = "ttTypeahead";
@@ -27061,7 +27097,7 @@ define("converse-dependencies", [
         );
     }
 }(this, function (templates, $, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1) {
-    // 
+    // "use strict";
     // Cannot use this due to Safari bug.
     // See https://github.com/jcbrand/converse.js/issues/196
     if (typeof console === "undefined" || typeof console.log === "undefined") {
@@ -27182,6 +27218,7 @@ define("converse-dependencies", [
         Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
         Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
+        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
         // Add Strophe Statuses
@@ -27196,6 +27233,10 @@ define("converse-dependencies", [
 
         // Constants
         // ---------
+        var LOGIN = "login";
+        var ANONYMOUS  = "anonymous";
+        var PREBIND = "prebind";
+
         var UNENCRYPTED = 0;
         var UNVERIFIED= 1;
         var VERIFIED= 2;
@@ -27254,6 +27295,7 @@ define("converse-dependencies", [
             allow_registration: true,
             animate: true,
             auto_list_rooms: false,
+            auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,
             auto_subscribe: false,
             bosh_service_url: undefined, // The BOSH connection manager URL.
@@ -27270,7 +27312,10 @@ define("converse-dependencies", [
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
-            prebind: false,
+            sounds_path: '/sounds/',
+            password: undefined,
+            authentication: 'login', // Available values are "login", "prebind", "anonymous".
+            prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             rid: undefined,
@@ -27297,6 +27342,16 @@ define("converse-dependencies", [
         _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
+
+        // BBB
+        if (this.prebind === true) { this.authentication = PREBIND; }
+
+        if (this.authentication === ANONYMOUS) {
+            if (!this.jid) {
+                throw("Config Error: you need to provide the server's domain via the " +
+                        "'jid' option when using anonymous authentication.");
+            }
+        }
 
         if (settings.visible_toolbar_buttons) {
             _.extend(
@@ -27363,11 +27418,11 @@ define("converse-dependencies", [
         this.playNotification = function () {
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined"){
-                audio = new Audio("sounds/msg_received.ogg");
+                audio = new Audio(converse.sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
                 } else {
-                    audio = new Audio("/sounds/msg_received.mp3");
+                    audio = new Audio(converse.sounds_path+"msg_received.mp3");
                     audio.play();
                 }
             }
@@ -27445,7 +27500,7 @@ define("converse-dependencies", [
 
         this.reconnect = function () {
             converse.giveFeedback(__('Reconnecting'), 'error');
-            if (!converse.prebind) {
+            if (converse.authentication !== "prebind") {
                 this.connection.connect(
                     this.connection.jid,
                     this.connection.pass,
@@ -27704,7 +27759,7 @@ define("converse-dependencies", [
         this.OTR = Backbone.Model.extend({
             // A model for managing OTR settings.
             getSessionPassphrase: function () {
-                if (converse.prebind) {
+                if (converse.authentication === 'prebind') {
                     var key = b64_sha1(converse.connection.jid),
                         pass = window.sessionStorage[key];
                     if (typeof pass === 'undefined') {
@@ -28504,6 +28559,7 @@ define("converse-dependencies", [
             },
 
             updateVCard: function () {
+                if (!this.use_vcards) { return; }
                 var jid = this.model.get('jid'),
                     contact = converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
@@ -28712,7 +28768,7 @@ define("converse-dependencies", [
                             $('<li class="found-user"></li>')
                             .append(
                                 $('<a class="subscribe-to-user" href="#" title="'+__('Click to add as a chat contact')+'"></a>')
-                                .attr('data-recipient', Strophe.escapeNode(obj.id)+'@'+converse.domain)
+                                .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
                                 .text(obj.fullname)
                             )
                         );
@@ -28744,8 +28800,7 @@ define("converse-dependencies", [
             },
 
             addContact: function (jid, name) {
-                name = _.isEmpty(name)? jid: name;
-                converse.connection.roster.add(jid, name, [], function (iq) {
+                converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
             }
@@ -29014,7 +29069,7 @@ define("converse-dependencies", [
                     converse.features.on('add', this.featureAdded, this);
                     // Features could have been added before the controlbox was
                     // initialized. Currently we're only interested in MUC
-                    var feature = converse.features.findWhere({'var': 'http://jabber.org/protocol/muc'});
+                    var feature = converse.features.findWhere({'var': Strophe.NS.MUC});
                     if (feature) {
                         this.featureAdded(feature);
                     }
@@ -29143,7 +29198,7 @@ define("converse-dependencies", [
             },
 
             featureAdded: function (feature) {
-                if ((feature.get('var') == 'http://jabber.org/protocol/muc') && (converse.allow_muc)) {
+                if ((feature.get('var') == Strophe.NS.MUC) && (converse.allow_muc)) {
                     this.roomspanel.model.save({muc_domain: feature.get('from')});
                     var $server= this.$el.find('input.new-chatroom-server');
                     if (! $server.is(':focus')) {
@@ -30092,7 +30147,13 @@ define("converse-dependencies", [
                 var contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
-                    message_from = $message.attr('from');
+                    message_from = $message.attr('from'),
+                    message_to = $message.attr('to');
+
+                if(!_.contains([converse.connection.jid, converse.bare_jid], message_to)) {
+                    // Ignore messages sent to a different resource
+                    return true;
+                }
                 if (message_from === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources,
                     // not broadcasted
@@ -30153,13 +30214,6 @@ define("converse-dependencies", [
                     });
                 }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
-                    // FIXME: There's still a bug here..
-                    // If a duplicate message is received just after the chat
-                    // box was closed, then it'll open again (due to it being
-                    // created here above), with no new messages.
-                    // The solution is mostly likely to not let chat boxes show
-                    // automatically when they are created, but to require
-                    // "show" to be called explicitly.
                     return true; // We already have this message stored.
                 }
                 if (!this.isOnlyChatStateNotification($message) && from !== converse.bare_jid) {
@@ -30975,7 +31029,7 @@ define("converse-dependencies", [
                 if (contact.showInRoster()) {
                     if (this.model.get('state') === CLOSED) {
                         if (view.$el[0].style.display !== "none") { view.$el.hide(); }
-                        if (this.$el[0].style.display === "none") { this.$el.show(); }
+                        if (!this.$el.is(':visible')) { this.$el.show(); }
                     } else {
                         if (this.$el[0].style.display !== "block") { this.show(); }
                     }
@@ -31000,10 +31054,12 @@ define("converse-dependencies", [
             },
 
             show: function () {
-                // FIXME: There's a bug here, if show_only_online_users is true
-                // Possible solution, get the group, call _.each and check
-                // showInRoster
-                this.$el.nextUntil('dt').addBack().show();
+                this.$el.show();
+                _.each(this.getAll(), function (contactView) {
+                    if (contactView.model.showInRoster()) {
+                        contactView.$el.show();
+                    }
+                });
             },
 
             hide: function () {
@@ -31321,7 +31377,8 @@ define("converse-dependencies", [
                         t += $(msg).find('item').length*250;
                         return true;
                     },
-                    'http://jabber.org/protocol/rosterx', 'message', null);
+                    Strophe.NS.ROSTERX, 'message', null
+                );
             },
 
             registerPresenceHandler: function () {
@@ -31716,7 +31773,7 @@ define("converse-dependencies", [
                  * feature-providing Models, not here
                  */
                  converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                 converse.connection.disco.addFeature('http://jabber.org/protocol/rosterx'); // Limited support
+                 converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
                  converse.connection.disco.addFeature('jabber:x:conference');
                  converse.connection.disco.addFeature('urn:xmpp:carbons:2');
                  converse.connection.disco.addFeature(Strophe.NS.VCARD);
@@ -31959,7 +32016,7 @@ define("converse-dependencies", [
                  */
                 var $form= this.$('form'),
                     $stanza = $(stanza),
-                    $fields;
+                    $fields, $input;
                 $form.empty().append(converse.templates.registration_form({
                     'domain': this.domain,
                     'title': this.title,
@@ -31967,16 +32024,27 @@ define("converse-dependencies", [
                 }));
                 if (this.form_type == 'xform') {
                     $fields = $stanza.find('field');
-                    _.each($fields, $.proxy(function (field) {
+                    _.each($fields, function (field) {
                         $form.append(utils.xForm2webForm.bind(this, $(field), $stanza));
-                    }, this));
+                    }.bind(this));
                 } else {
                     // Show fields
                     _.each(Object.keys(this.fields), $.proxy(function (key) {
-                        $form.append('<label>'+key+'</label>');
-                        var $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
-                        if (key === 'password' || key === 'email') {
-                            $input.attr('type', key);
+                        if (key == "username") {
+                            $input = templates.form_username({
+                                domain: ' @'+this.domain,
+                                name: key,
+                                type: "text",
+                                label: key,
+                                value: '',
+                                required: 1
+                            });
+                        } else {
+                            $form.append('<label>'+key+'</label>');
+                            $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
+                            if (key === 'password' || key === 'email') {
+                                $input.attr('type', key);
+                            }
                         }
                         $form.append($input);
                     }, this));
@@ -32052,13 +32120,19 @@ define("converse-dependencies", [
                     return;
                 }
                 var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
-                    iq = $iq({type: "set"})
-                        .c("query", {xmlns:Strophe.NS.REGISTER})
-                        .c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
+                    iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
 
-                $inputs.each(function () {
-                    iq.cnode(utils.webForm2xForm(this)).up();
-                });
+                if (this.form_type == 'xform') {
+                    iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
+                    $inputs.each(function () {
+                        iq.cnode(utils.webForm2xForm(this)).up();
+                    });
+                } else {
+                    $inputs.each(function () {
+                        var $input = $(this);
+                        iq.c($input.attr('name'), {}, $input.val());
+                    });
+                }
                 converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                 converse.connection.send(iq);
                 this.setFields(iq.tree());
@@ -32168,8 +32242,14 @@ define("converse-dependencies", [
             initialize: function (cfg) {
                 cfg.$parent.html(this.$el.html(
                     converse.templates.login_panel({
+                        'LOGIN': LOGIN,
+                        'ANONYMOUS': ANONYMOUS,
+                        'PREBIND': PREBIND,
+                        'auto_login': converse.auto_login,
+                        'authentication': converse.authentication,
                         'label_username': __('XMPP Username:'),
                         'label_password': __('Password:'),
+                        'label_anon_login': __('Click here to log in anonymously'),
                         'label_login': __('Log In')
                     })
                 ));
@@ -32187,8 +32267,12 @@ define("converse-dependencies", [
 
             authenticate: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $form = $(ev.target),
-                    $jid_input = $form.find('input[name=jid]'),
+                var $form = $(ev.target);
+                if (converse.authentication === ANONYMOUS) {
+                    this.connect($form, converse.jid, null);
+                    return;
+                }
+                var $jid_input = $form.find('input[name=jid]'),
                     jid = $jid_input.val(),
                     $pw_input = $form.find('input[name=password]'),
                     password = $pw_input.val(),
@@ -32217,12 +32301,15 @@ define("converse-dependencies", [
             },
 
             connect: function ($form, jid, password) {
+                var resource;
                 if ($form) {
                     $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                 }
-                var resource = Strophe.getResourceFromJid(jid);
-                if (!resource) {
-                    jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                if (jid) {
+                    resource = Strophe.getResourceFromJid(jid);
+                    if (!resource) {
+                        jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                    }
                 }
                 converse.connection.connect(jid, password, converse.onConnect);
             },
@@ -32355,7 +32442,7 @@ define("converse-dependencies", [
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
-                    if (this.prebind) {
+                    if (this.authentication === "prebind") {
                         if (!this.jid) {
                             throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
                         }
@@ -32373,11 +32460,23 @@ define("converse-dependencies", [
                         if (rid && sid && jid) {
                             this.session.save({rid: rid}); // The RID needs to be increased with each request.
                             this.connection.attach(jid, sid, rid, this.onConnect);
+                        } else if (this.auto_login) {
+                            if (!this.jid) {
+                                throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
+                            }
+                            if (this.authentication === ANONYMOUS) {
+                                this.connection.connect(this.jid, null, this.onConnect);
+                            } else if (this.authentication === LOGIN) {
+                                if (!this.password) {
+                                    throw new Error("initConnection: If you use auto_login and "+
+                                        "authentication='login' then you also need to provide a password.");
+                                }
+                                this.connection.connect(this.jid, this.password, this.onConnect);
+                            }
                         }
                     }
-
-                // Prebind without keepalive
-                } else if (this.prebind) {
+                } else if (this.authentication == "prebind") {
+                    // prebind is used without keepalive
                     if (this.jid && this.sid && this.rid) {
                         this.connection.attach(this.jid, this.sid, this.rid, this.onConnect);
                     } else {
@@ -32531,7 +32630,6 @@ define("converse-dependencies", [
                 converse.connection.roster.add(jid, _.isEmpty(name)? jid: name, [], function (iq) {
                     converse.connection.roster.subscribe(jid, null, converse.xmppstatus.get('fullname'));
                 });
-                return true;
             }
         },
         'chats': {
@@ -32751,6 +32849,7 @@ require.config({
         "pl":        "locale/pl/LC_MESSAGES/converse.json",
         "pt_BR":     "locale/pt_BR/LC_MESSAGES/converse.json",
         "ru":        "locale/ru/LC_MESSAGES/converse.json",
+        "uk":        "locale/uk/LC_MESSAGES/converse.json",
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
         // Templates

@@ -1,7 +1,7 @@
 {
   "name": "converse.js",
   "description": "Web-based XMPP/Jabber chat client written in javascript",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "license": "MPL",
   "devDependencies": {
     "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",

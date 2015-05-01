@@ -431,7 +431,7 @@ __p += '\n<div class="input-group">\n    <input name="' +
 ((__t = (name)) == null ? '' : __t) +
 '" type="' +
 ((__t = (type)) == null ? '' : __t) +
-'" \n        ';
+'"\n        ';
  if (value) { ;
 __p += ' value="' +
 ((__t = (value)) == null ? '' : __t) +
@@ -441,7 +441,9 @@ __p += '\n        ';
  if (required) { ;
 __p += ' class="required" ';
  } ;
-__p += ' />\n    <span>' +
+__p += ' />\n    <span title="' +
+((__t = (domain)) == null ? '' : __t) +
+'">' +
 ((__t = (domain)) == null ? '' : __t) +
 '</span>\n</div>\n';
 
@@ -479,15 +481,38 @@ return __p
 
 this["templates"]["login_panel"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form id="converse-login" method="post">\n    <label>' +
+__p += '<form id="converse-login" method="post">\n    ';
+ if (auto_login) { ;
+__p += '\n        <span class="spinner login-submit"/>\n    ';
+ } ;
+__p += '\n    ';
+ if (!auto_login) { ;
+__p += '\n        ';
+ if (authentication == LOGIN) { ;
+__p += '\n            <label>' +
 ((__t = (label_username)) == null ? '' : __t) +
-'</label>\n    <input type="email" name="jid" placeholder="user@server">\n    <label>' +
+'</label>\n            <input name="jid" placeholder="user@server">\n            <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
-'</label>\n    <input type="password" name="password" placeholder="password">\n    <input class="submit" type="submit" value="' +
+'</label>\n            <input type="password" name="password" placeholder="password">\n            <input class="submit" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
-'">\n    <span class="conn-feedback"></span>\n</form>\n';
+'">\n            <span class="conn-feedback"></span>\n        ';
+ } ;
+__p += '\n        ';
+ if (authentication == ANONYMOUS) { ;
+__p += '\n            <input type="submit" class="submit login-anon" value="' +
+((__t = (label_anon_login)) == null ? '' : __t) +
+'"/>\n        ';
+ } ;
+__p += '\n        ';
+ if (authentication == PREBIND) { ;
+__p += '\n            <p>Disconnected.</p>\n        ';
+ } ;
+__p += '\n    ';
+ } ;
+__p += '\n</form>\n';
 
 }
 return __p

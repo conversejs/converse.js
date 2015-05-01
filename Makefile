@@ -6,7 +6,8 @@ PHANTOMJS       ?= ./node_modules/.bin/phantomjs
 SPHINXBUILD     ?= ./bin/sphinx-build
 SPHINXOPTS      =
 PO2JSON         ?= ./node_modules/.bin/po2json
-SASS            ?= sass 
+SASS            ?= ./.bundle/bin/sass
+BUNDLE          ?= ./.bundle/bin/bundle
 GRUNT           ?= ./node_modules/.bin/grunt
 HTTPSERVE		?= ./node_modules/.bin/http-server
 
@@ -15,31 +16,34 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./d
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs build
-
-all: dev
+.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs build dev-ruby
 
 help:
-	@echo "Please use \`make <target>' where <target> is one of the following"
-	@echo "  build      create minified builds containing converse.js and all its dependencies"
-	@echo "  changes    make an overview of all changed/added/deprecated items added to the documentation"
-	@echo "  css        generate CSS from the Sass files"
-	@echo "  dev        set up the development environment"
-	@echo "  epub       export the documentation to epub"
-	@echo "  gettext    make PO message catalogs of the documentation"
-	@echo "  html       make standalone HTML files of the documentation"
-	@echo "  linkcheck  check all documentation external links for integrity"
-	@echo "  cssmin     minify the CSS files"
-	@echo "  po         generate gettext PO files for each i18n language"
-	@echo "  po2json    generate JSON files from the language PO files"
-	@echo "  pot        generate a gettext POT file to be used for translations"
-	@echo "  release    make a new minified release"
-	@echo "  serve      serve this directory via a webserver on port 8000"
+	@echo "Please use \`make <target>' where <target> is one of the following:"
+	@echo ""
+	@echo " all        A synonym for 'make dev'."
+	@echo " build      Create minified builds of converse.js and all its dependencies."
+	@echo " changes    Make an overview of all changed/added/deprecated items added to the documentation."
+	@echo " css        Generate CSS from the Sass files."
+	@echo " cssmin     Minify the CSS files."
+	@echo " dev        Set up the development environment. To force a fresh start, run 'make clean' first."
+	@echo " epub       Export the documentation to epub."
+	@echo " gettext    Make PO message catalogs of the documentation."
+	@echo " html       Make standalone HTML files of the documentation."
+	@echo " linkcheck  Check all documentation external links for integrity."
+	@echo " po         Generate gettext PO files for each i18n language."
+	@echo " po2json    Generate JSON files from the language PO files."
+	@echo " pot        Generate a gettext POT file to be used for translations."
+	@echo " release    Make a new minified release."
+	@echo " serve      Serve this directory via a webserver on port 8000."
+	@echo " watch      Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
+
+all: dev
 
 ########################################################################
 ## Miscellaneous
 
-serve: dev
+serve: stamp-npm
 	$(HTTPSERVE) -p 8000
 
 ########################################################################
@@ -84,28 +88,34 @@ stamp-bower: stamp-npm bower.json
 	$(BOWER) install
 	touch stamp-bower
 
-clean::
-	rm -f stamp-npm stamp-bower
-	rm -rf node_modules components
+stamp-bundler:
+	mkdir -p .bundle
+	gem install --user bundler --bindir .bundle/bin
+	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
+	touch stamp-bundler
 
-dev: clean
-	npm install
-	$(BOWER) update;
-	bundle install --path=~/
+clean::
+	rm -f stamp-npm stamp-bower stamp-bundler
+	rm -rf node_modules components .bundle
+
+dev: stamp-bower stamp-bundler
 
 ########################################################################
 ## Builds
 
-css::
-	$(SASS) sass/converse.scss > css/converse.css
+css:: dev-ruby
+	$(SASS) -I .bundle/bin sass/converse.scss css/converse.css
+
+watch:: dev-ruby
+	$(SASS) --watch -I .bundle/bin sass/converse.scss:css/converse.css
 
 jsmin:
 	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js
 
-cssmin:
+cssmin: stamp-npm
 	$(GRUNT) cssmin
 
-build::
+build:: stamp-npm
 	$(GRUNT) jst
 	$(GRUNT) minify
 

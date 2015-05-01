@@ -4,803 +4,800 @@
       "converse": {
          "": {
             "domain": "converse",
-            "lang": "af"
+            "plural_forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
+            "lang": "uk"
          },
          " e.g. conversejs.org": [
             null,
-            "bv. conversejs.org"
+            " напр. conversejs.org"
          ],
          "unencrypted": [
             null,
-            "nie-privaat"
+            "некриптовано"
          ],
          "unverified": [
             null,
-            "onbevestig"
+            "неперевірено"
          ],
          "verified": [
             null,
-            "privaat"
+            "перевірено"
          ],
          "finished": [
             null,
-            "afgesluit"
+            "завершено"
          ],
          "This contact is busy": [
             null,
-            "Hierdie persoon is besig"
+            "Цей контакт зайнятий"
          ],
          "This contact is online": [
             null,
-            "Hierdie persoon is aanlyn"
+            "Цей контакт на зв'язку"
          ],
          "This contact is offline": [
             null,
-            "Hierdie persoon is aflyn"
+            "Цей контакт поза мережею"
          ],
          "This contact is unavailable": [
             null,
-            "Hierdie persoon is onbeskikbaar"
+            "Цей контакт недоступний"
          ],
          "This contact is away for an extended period": [
             null,
-            "Hierdie persoon is vir lank afwesig"
+            "Цей контакт відсутній тривалий час"
          ],
          "This contact is away": [
             null,
-            "Hierdie persoon is afwesig"
+            "Цей контакт відсутній"
          ],
          "Click to hide these contacts": [
             null,
-            "Kliek om hierdie kontakte te verskuil"
+            "Клацніть, щоб приховати ці контакти"
          ],
          "My contacts": [
             null,
-            "My kontakte"
+            "Мої контакти"
          ],
          "Pending contacts": [
             null,
-            "Hangende kontakte"
+            "Контакти в очікуванні"
          ],
          "Contact requests": [
             null,
-            "Kontak versoeke"
+            "Запити контакту"
          ],
          "Ungrouped": [
             null,
-            "Ongegroepeer"
+            "Негруповані"
          ],
          "Contacts": [
             null,
-            "Kontakte"
+            "Контакти"
          ],
          "Groups": [
             null,
-            "Groepe"
+            "Групи"
          ],
          "Reconnecting": [
             null,
-            "Herkonnekteer"
+            "Перепід'єднуюсь"
          ],
          "Error": [
             null,
-            "Fout"
+            "Помилка"
          ],
          "Connecting": [
             null,
-            "Verbind tans"
+            "Під'єднуюсь"
          ],
          "Authenticating": [
             null,
-            "Besig om te bekragtig"
+            "Автентикуюсь"
          ],
          "Authentication Failed": [
             null,
-            "Bekragtiging het gefaal"
+            "Автентикація невдала"
          ],
          "Re-establishing encrypted session": [
             null,
-            "Herstel versleutelde sessie"
+            "Перевстановлюю криптований сеанс"
          ],
          "Generating private key.": [
             null,
-            "Genereer private sleutel."
+            "Генерація приватного ключа."
          ],
          "Your browser might become unresponsive.": [
             null,
-            "U webblaaier mag tydelik onreageerbaar word."
+            "Ваш браузер може підвиснути."
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            "Identiteitbevestigingsversoek van  %1$s\n\nU gespreksmaat probeer om u identiteit te bevestig, deur die volgende vraag te vra \n\n%2$s"
+            "Запит автентикації від %1$s\n\nВаш контакт в чаті намагається встановити Вашу особу і просить відповісти на питання нижче.\n\n%2$s"
          ],
          "Could not verify this user's identify.": [
             null,
-            "Kon nie hierdie gebruiker se identitied bevestig nie."
+            "Не можу перевірити автентичність цього користувача."
          ],
          "Exchanging private key with contact.": [
             null,
-            "Sleutels word met gespreksmaat uitgeruil."
+            "Обмін приватним ключем з контактом."
          ],
          "Personal message": [
             null,
-            "Persoonlike boodskap"
+            "Персональна вісточка"
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
-            "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"
+            "Ви впевнені, що хочете очистити повідомлення з цієї кімнати?"
          ],
          "me": [
             null,
-            "ek"
+            "я"
          ],
          "is typing": [
             null,
-            "tik tans"
+            "друкує"
          ],
          "has stopped typing": [
             null,
-            "het opgehou tik"
+            "припинив друкувати"
          ],
          "has gone away": [
             null,
-            "het weggegaan"
+            "пішов геть"
          ],
          "Show this menu": [
             null,
-            "Vertoon hierdie keuselys"
+            "Показати це меню"
          ],
          "Write in the third person": [
             null,
-            "Skryf in die derde persoon"
+            "Писати від третьої особи"
          ],
          "Remove messages": [
             null,
-            "Verwyder boodskappe"
+            "Видалити повідомлення"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            "Is u seker u wil die boodskappe van hierdie klets uitvee?"
+            "Ви впевнені, що хочете очистити повідомлення з цього вікна чату?"
          ],
          "Your message could not be sent": [
             null,
-            "U boodskap kon nie gestuur word nie"
+            "Ваше повідомлення не може бути надіслане"
          ],
          "We received an unencrypted message": [
             null,
-            "Ons het 'n onversleutelde boodskap ontvang"
+            "Ми отримали некриптоване повідомлення"
          ],
          "We received an unreadable encrypted message": [
             null,
-            "Ons het 'n onleesbare versleutelde boodskap ontvang"
+            "Ми отримали нечитабельне криптоване повідомлення"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
-            "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \n\nU vingerafdruk, %2$s: %3$s\n\nVingerafdruk vir %1$s: %4$s\n\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
+            "Ось відбитки, будь-ласка, підтвердіть їх з %1$s, за межами цього чату.\n\nВідбиток для Вас, %2$s: %3$s\n\nВідбиток для %1$s: %4$s\n\nЯкщо Ви підтверджуєте відповідність відбитка, клацніть Гаразд, інакше клацніть Відміна."
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
-            "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\n\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit bevestig wees."
+            "Вас запитають таємне питання і відповідь на нього.\n\nПотім Вашого контакта запитають те саме питання, і якщо вони введуть ту саму відповідь (враховуючи регістр), їх особи будуть перевірені."
          ],
          "What is your security question?": [
             null,
-            "Wat is u sekuriteitsvraag?"
+            "Яке Ваше таємне питання?"
          ],
          "What is the answer to the security question?": [
             null,
-            "Wat is die antwoord tot die sekuriteitsvraag?"
+            "Яка відповідь на таємне питання?"
          ],
          "Invalid authentication scheme provided": [
             null,
-            "Ongeldige verifikasiemetode verskaf"
+            "Надана некоректна схема автентикації"
          ],
          "has gone offline": [
             null,
-            "is nou aflyn"
+            "тепер поза мережею"
          ],
          "is busy": [
             null,
-            "is besig"
+            "зайнятий"
          ],
          "Your messages are not encrypted anymore": [
             null,
-            "U boodskappe is nie meer versleutel nie"
+            "Ваші повідомлення більше не криптуються"
          ],
          "Your messages are now encrypted but your contact's identity has not been verified.": [
             null,
-            "U boodskappe is now versleutel maar u gespreksmaat se identiteit is nog onseker."
+            "Ваші повідомлення вже криптуються, але особа Вашого контакту не перевірена."
          ],
          "Your contact's identify has been verified.": [
             null,
-            "U gespreksmaat se identiteit is bevestig."
+            "Особу Вашого контакту перевірено."
          ],
          "Your contact has ended encryption on their end, you should do the same.": [
             null,
-            "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
+            "Ваш контакт припинив криптування зі свого боку, Вам слід зробити те саме."
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
             null,
-            "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te aktiveer."
+            "Ваші повідомлення не криптуються. Клацніть тут, щоб увімкнути OTR-криптування."
          ],
          "Your messages are encrypted, but your contact has not been verified.": [
             null,
-            "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."
+            "Ваші повідомлення криптуються, але Ваш контакт не був перевірений."
          ],
          "Your messages are encrypted and your contact verified.": [
             null,
-            "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."
+            "Ваші повідомлення криптуються і Ваш контакт перевірено."
          ],
          "Your contact has closed their end of the private session, you should do the same": [
             null,
-            "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
+            "Ваш контакт закрив зі свого боку приватну сесію, Вам слід зробити те ж саме"
          ],
          "Clear all messages": [
             null,
-            "Vee alle boodskappe uit"
+            "Очистити всі повідомлення"
          ],
          "End encrypted conversation": [
             null,
-            "Beëindig versleutelde gesprek"
+            "Завершити криптовану розмову"
          ],
          "Hide the list of participants": [
             null,
-            "Verskuil die lys van deelnemers"
+            "Сховати список учасників"
          ],
          "Refresh encrypted conversation": [
             null,
-            "Verfris versleutelde gesprek"
+            "Оновити криптовану розмову"
          ],
          "Start a call": [
             null,
-            "Begin 'n oproep"
+            "Почати виклик"
          ],
          "Start encrypted conversation": [
             null,
-            "Begin versleutelde gesprek"
+            "Почати криптовану розмову"
          ],
          "Verify with fingerprints": [
             null,
-            "Bevestig met vingerafdrukke"
+            "Перевірити за відбитками"
          ],
          "Verify with SMP": [
             null,
-            "Bevestig met SMP"
+            "Перевірити за SMP"
          ],
          "What's this?": [
             null,
-            "Wat is hierdie?"
+            "Що це?"
          ],
          "Online": [
             null,
-            "Aangemeld"
+            "На зв'язку"
          ],
          "Busy": [
             null,
-            "Besig"
+            "Зайнятий"
          ],
          "Away": [
             null,
-            "Afwesig"
+            "Далеко"
          ],
          "Offline": [
             null,
-            "Afgemeld"
+            "Поза мережею"
          ],
          "Log out": [
             null,
-            "Meld af"
+            "Вийти"
          ],
          "Contact name": [
             null,
-            "Kontaknaam"
+            "Назва контакту"
          ],
          "Search": [
             null,
-            "Soek"
+            "Пошук"
          ],
          "Contact username": [
             null,
-            "Konak gebruikersnaam"
+            "Логін контакту"
          ],
          "Add": [
             null,
-            "Voeg by"
+            "Додати"
          ],
          "Click to add new chat contacts": [
             null,
-            "Kliek om nuwe kletskontakte by te voeg"
+            "Клацніть, щоб додати нові контакти до чату"
          ],
          "Add a contact": [
             null,
-            "Voeg 'n kontak by"
+            "Додати контакт"
          ],
          "No users found": [
             null,
-            "Geen gebruikers gevind"
+            "Жодного користувача не знайдено"
          ],
          "Click to add as a chat contact": [
             null,
-            "Kliek om as kletskontak by te voeg"
+            "Клацніть, щоб додати як чат-контакт"
          ],
          "Room name": [
             null,
-            "Kamer naam"
+            "Назва кімнати"
          ],
          "Nickname": [
             null,
-            "Bynaam"
+            "Прізвисько"
          ],
          "Server": [
             null,
-            "Bediener"
+            "Сервер"
          ],
          "Join Room": [
             null,
-            "Betree kamer"
+            "Приєднатися до кімнати"
          ],
          "Show rooms": [
             null,
-            "Wys kamers"
+            "Показати кімнати"
          ],
          "Rooms": [
             null,
-            "Kamers"
+            "Кімнати"
          ],
          "No rooms on %1$s": [
             null,
-            "Geen kamers op %1$s"
+            "Жодної кімнати на %1$s"
          ],
          "Rooms on %1$s": [
             null,
-            "Kamers op %1$s"
+            "Кімнати на %1$s"
          ],
          "Click to open this room": [
             null,
-            "Kliek om hierdie kletskamer te open"
+            "Клацніть, щоб увійти в цю кімнату"
          ],
          "Show more information on this room": [
             null,
-            "Wys meer inligting aangaande hierdie kletskamer"
+            "Показати більше інформації про цю кімату"
          ],
          "Description:": [
             null,
-            "Beskrywing:"
+            "Опис:"
          ],
          "Occupants:": [
             null,
-            "Deelnemers:"
+            "Присутні:"
          ],
          "Features:": [
             null,
-            "Eienskappe:"
+            "Особливості:"
          ],
          "Requires authentication": [
             null,
-            "Benodig magtiging"
+            "Вимагає автентикації"
          ],
          "Hidden": [
             null,
-            "Verskuil"
+            "Прихована"
          ],
          "Requires an invitation": [
             null,
-            "Benodig 'n uitnodiging"
+            "Вимагає запрошення"
          ],
          "Moderated": [
             null,
-            "Gemodereer"
+            "Модерована"
          ],
          "Non-anonymous": [
             null,
-            "Nie-anoniem"
+            "Не-анонімні"
          ],
          "Open room": [
             null,
-            "Oop kletskamer"
+            "Увійти в кімнату"
          ],
          "Permanent room": [
             null,
-            "Permanente kamer"
+            "Постійна кімната"
          ],
          "Public": [
             null,
-            "Publiek"
+            "Публічна"
          ],
          "Semi-anonymous": [
             null,
-            "Deels anoniem"
+            "Напів-анонімна"
          ],
          "Temporary room": [
             null,
-            "Tydelike kamer"
+            "Тимчасова кімната"
          ],
          "Unmoderated": [
             null,
-            "Ongemodereer"
+            "Немодерована"
          ],
          "This user is a moderator": [
             null,
-            "Hierdie gebruiker is 'n moderator"
+            "Цей користувач є модератором"
          ],
          "This user can send messages in this room": [
             null,
-            "Hierdie gebruiker kan boodskappe na die kamer stuur"
+            "Цей користувач може слати повідомлення в цій кімнаті"
          ],
          "This user can NOT send messages in this room": [
             null,
-            "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
+            "Цей користувач НЕ МОЖЕ слати повідомлення в цій кімнаті"
          ],
          "Invite...": [
             null,
-            "Nooi uit..."
+            "Запросіть..."
          ],
          "Occupants": [
             null,
-            "Deelnemers"
+            "Учасники"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
-            "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi."
+            "Ви запрошуєте %1$s до чату \"%2$s\". "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
-            "U mag na keuse 'n boodskap insluit, om bv. die rede vir die uitnodiging te staaf."
+            "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
          ],
          "Message": [
             null,
-            "Boodskap"
+            "Повідомлення"
          ],
          "Error: could not execute the command": [
             null,
-            "Fout: kon nie die opdrag uitvoer nie"
+            "Помилка: Не можу виконати команду"
          ],
          "Change user's affiliation to admin": [
             null,
-            ""
+            "Призначити користувача адміністратором"
          ],
          "Ban user from room": [
             null,
-            "Verban gebruiker uit hierdie kletskamer"
+            "Заблокувати і викинути з кімнати"
          ],
          "Change user role to participant": [
             null,
-            "Verander gebruikersrol na deelnemer"
+            "Зробити користувача учасником"
          ],
          "Kick user from room": [
             null,
-            "Skop gebruiker uit hierdie kletskamer"
+            "Викинути з кімнати"
          ],
          "Write in 3rd person": [
             null,
-            "Skryf in die derde persoon"
+            "Писати в 3-й особі"
          ],
          "Grant membership to a user": [
             null,
-            "Verleen lidmaatskap aan 'n gebruiker"
+            "Надати членство користувачу"
          ],
          "Remove user's ability to post messages": [
             null,
-            "Verwyder gebruiker se vermoë om boodskappe te plaas"
+            "Забрати можливість слати повідомлення"
          ],
          "Change your nickname": [
             null,
-            "Verander u bynaam"
+            "Змінити Ваше прізвисько"
          ],
          "Grant moderator role to user": [
             null,
-            "Verleen moderator rol aan gebruiker"
+            "Надати права модератора"
          ],
          "Grant ownership of this room": [
             null,
-            "Verleen eienaarskap van hierdie kamer"
+            "Передати у власність цю кімнату"
          ],
          "Revoke user's membership": [
             null,
-            "Herroep gebruiker se lidmaatskap"
+            "Забрати членство в користувача"
          ],
          "Set room topic": [
             null,
-            "Stel onderwerp vir kletskamer"
+            "Встановити тему кімнати"
          ],
          "Allow muted user to post messages": [
             null,
-            "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
+            "Дозволити безголосому користувачу слати повідомлення"
          ],
          "Save": [
             null,
-            "Stoor"
+            "Зберегти"
          ],
          "Cancel": [
             null,
-            "Kanseleer"
+            "Відміна"
          ],
          "An error occurred while trying to save the form.": [
             null,
-            "A fout het voorgekom terwyl probeer is om die vorm te stoor."
+            "Трапилася помилка при спробі зберегти форму."
          ],
          "This chatroom requires a password": [
             null,
-            "Hiedie kletskamer benodig 'n wagwoord"
+            "Ця кімната вимагає пароль"
          ],
          "Password: ": [
             null,
-            "Wagwoord:"
+            "Пароль:"
          ],
          "Submit": [
             null,
-            "Dien in"
+            "Надіслати"
          ],
          "This room is not anonymous": [
             null,
-            "Hierdie vertrek is nie anoniem nie"
+            "Ця кімната не є анонімною"
          ],
          "This room now shows unavailable members": [
             null,
-            "Hierdie vertrek wys nou onbeskikbare lede"
+            "Ця кімната вже показує недоступних учасників"
          ],
          "This room does not show unavailable members": [
             null,
-            "Hierdie vertrek wys nie onbeskikbare lede nie"
+            "Ця кімната не показує недоступних учасників"
          ],
          "Non-privacy-related room configuration has changed": [
             null,
-            "Nie-privaatheidverwante kamer instellings het verander"
+            "Змінено конфігурацію кімнати, не повязану з приватністю"
          ],
          "Room logging is now enabled": [
             null,
-            "Kamer log is nou aangeskakel"
+            "Журналювання кімнати тепер ввімкнено"
          ],
          "Room logging is now disabled": [
             null,
-            "Kamer log is nou afgeskakel"
+            "Журналювання кімнати тепер вимкнено"
          ],
          "This room is now non-anonymous": [
             null,
-            "Hiedie kamer is nou nie anoniem nie"
+            "Ця кімната тепер не-анонімна"
          ],
          "This room is now semi-anonymous": [
             null,
-            "Hierdie kamer is nou gedeeltelik anoniem"
+            "Ця кімната тепер напів-анонімна"
          ],
          "This room is now fully-anonymous": [
             null,
-            "Hierdie kamer is nou ten volle anoniem"
+            "Ця кімната тепер повністю анонімна"
          ],
          "A new room has been created": [
             null,
-            "'n Nuwe kamer is geskep"
+            "Створено нову кімнату"
          ],
          "You have been banned from this room": [
             null,
-            "Jy is uit die kamer verban"
+            "Вам заблокували доступ до цієї кімнати"
          ],
          "You have been kicked from this room": [
             null,
-            "Jy is uit die kamer geskop"
+            "Вас викинули з цієї кімнати"
          ],
          "You have been removed from this room because of an affiliation change": [
             null,
-            "Jy is vanuit die kamer verwyder a.g.v 'n verandering van affiliasie"
+            "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
             null,
-            "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie."
+            "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"
          ],
          "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
             null,
-            "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
+            "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."
          ],
          "<strong>%1$s</strong> has been banned": [
             null,
-            "<strong>%1$s</strong> is verban"
+            "<strong>%1$s</strong> заблоковано"
          ],
          "<strong>%1$s</strong>'s nickname has changed": [
             null,
-            "<strong>%1$s</strong> se bynaam het verander"
+            "Прізвисько <strong>%1$s</strong> змінено"
          ],
          "<strong>%1$s</strong> has been kicked out": [
             null,
-            "<strong>%1$s</strong> is uitgeskop"
+            "<strong>%1$s</strong> було викинуто звідси"
          ],
          "<strong>%1$s</strong> has been removed because of an affiliation change": [
             null,
-            "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
+            "<strong>%1$s</strong> було видалено через зміни власності кімнати"
          ],
          "<strong>%1$s</strong> has been removed for not being a member": [
             null,
-            "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
+            "<strong>%1$s</strong> було виделано через відсутність членства"
          ],
          "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
             null,
-            "U bynaam is outomaties verander na: <strong>%1$s</strong>"
+            "Ваше прізвисько було автоматично змінене на: <strong>%1$s</strong>"
          ],
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
-            "U bynaam is verander na: <strong>%1$s</strong>"
+            "Ваше прізвисько було змінене на: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,
-            "Die gegewe rede is: \""
+            "Причиною вказано: \""
          ],
          "You are not on the member list of this room": [
             null,
-            "Jy is nie op die ledelys van hierdie kamer nie"
+            "Ви не є у списку членів цієї кімнати"
          ],
          "No nickname was specified": [
             null,
-            "Geen bynaam verskaf nie"
+            "Не вказане прізвисько"
          ],
          "You are not allowed to create new rooms": [
             null,
-            "Jy word nie toegelaat om nog kamers te skep nie"
+            "Вам не дозволено створювати нові кімнати"
          ],
          "Your nickname doesn't conform to this room's policies": [
             null,
-            "Jou bynaam voldoen nie aan die kamer se beleid nie"
+            "Ваше прізвисько не відповідає політиці кімнати"
          ],
          "Your nickname is already taken": [
             null,
-            "Jou bynaam is reeds geneem"
+            "Таке прізвисько вже зайняте"
          ],
          "This room does not (yet) exist": [
             null,
-            "Hierdie kamer bestaan tans (nog) nie"
+            "Такої кімнати (поки) не існує"
          ],
          "This room has reached it's maximum number of occupants": [
             null,
-            "Hierdie kamer het sy maksimum aantal deelnemers bereik"
+            "Ця кімната досягнула максимуму учасників"
          ],
          "Topic set by %1$s to: %2$s": [
             null,
-            "Onderwerp deur %1$s bygewerk na: %2$s"
+            "Тема встановлена %1$s: %2$s"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
-            "%1$s het u uitgenooi om die kletskamer %2$s te besoek"
+            "%1$s запрошує вас приєднатись до чату: %2$s"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
             null,
-            "%1$s het u uitgenooi om die kletskamer %2$s te besoek, en het die volgende rede verskaf: \"%3$s\""
+            "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \"%3$s\""
          ],
          "Click to restore this chat": [
             null,
-            "Kliek om hierdie klets te herstel"
+            "Клацніть, щоб відновити цей чат"
          ],
          "Minimized": [
             null,
-            "Geminimaliseer"
+            "Мінімізовано"
          ],
          "Click to remove this contact": [
             null,
-            "Kliek om hierdie kontak te verwyder"
+            "Клацніть, щоб видалити цей контакт"
          ],
          "Click to accept this contact request": [
             null,
-            "Kliek om hierdie kontakversoek te aanvaar"
+            "Клацніть, щоб прийняти цей запит контакту"
          ],
          "Click to decline this contact request": [
             null,
-            "Kliek om hierdie kontakversoek te weier"
+            "Клацніть, щоб відхилити цей запит контакту"
          ],
          "Click to chat with this contact": [
             null,
-            "Kliek om met hierdie kontak te klets"
+            "Клацніть, щоб почати розмову з цим контактом"
          ],
          "Are you sure you want to remove this contact?": [
             null,
-            "Is u seker u wil hierdie gespreksmaat verwyder?"
+            "Ви впевнені, що хочете видалити цей контакт?"
          ],
          "Are you sure you want to decline this contact request?": [
             null,
-            "Is u seker dat u hierdie persoon se versoek wil afkeur?"
+            "Ви впевнені, що хочете відхилити цей запит контакту?"
          ],
          "Type to filter": [
             null,
-            "Tik om te filtreer"
+            "Друкуйте для фільтру"
          ],
          "I am %1$s": [
             null,
-            "Ek is %1$s"
+            "Я %1$s"
          ],
          "Click here to write a custom status message": [
             null,
-            "Kliek hier om jou eie statusboodskap te skryf"
+            "Клацніть тут, щоб створити власний статус"
          ],
          "Click to change your chat status": [
             null,
-            "Kliek om jou klets-status te verander"
+            "Клацніть, щоб змінити статус в чаті"
          ],
          "Custom status": [
             null,
-            "Doelgemaakte status"
+            "Власний статус"
          ],
          "online": [
             null,
-            "aangemeld"
+            "на зв'язку"
          ],
          "busy": [
             null,
-            "besig"
+            "зайнятий"
          ],
          "away for long": [
             null,
-            "vir lank afwesig"
+            "давно відсутній"
          ],
          "away": [
             null,
-            "afwesig"
+            "відсутній"
          ],
          "Your XMPP provider's domain name:": [
             null,
-            "U XMPP-verskaffer se domein naam:"
+            "Домен Вашого провайдера XMPP:"
          ],
          "Fetch registration form": [
             null,
-            "Haal die registrasie form"
+            "Отримати форму реєстрації"
          ],
          "Tip: A list of public XMPP providers is available": [
             null,
-            "Wenk: A lys van publieke XMPP-verskaffers is beskikbaar"
+            "Порада: доступний перелік публічних XMPP-провайдерів"
          ],
          "here": [
             null,
-            "hier"
+            "тут"
          ],
          "Register": [
             null,
-            "Registreer"
+            "Реєстрація"
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
-            "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer weer met 'n ander verskaffer."
+            "Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого провайдера."
          ],
          "Requesting a registration form from the XMPP server": [
             null,
-            "Vra tans die XMPP-bediener vir 'n registrasie vorm"
+            "Запитую форму реєстрації з XMPP сервера"
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
             null,
-            "Iets het fout geloop tydens koppeling met \"%1$s\". Is u seker dat dit bestaan?"
+            "Щось пішло не так при встановленні зв'язку з \"%1$s\". Ви впевнені, що такий існує?"
          ],
          "Now logging you in": [
             null,
-            "U word nou aangemeld"
+            "Входимо"
          ],
          "Registered successfully": [
             null,
-            "Suksesvol geregistreer"
+            "Успішно зареєстровано"
          ],
          "Return": [
             null,
-            "Terug"
+            "Вернутися"
          ],
          "The provider rejected your registration attempt. ": [
             null,
-            "Die verskaffer het u registrasieversoek verwerp."
+            "Провайдер відхилив Вашу спробу реєстрації."
          ],
          "XMPP Username:": [
             null,
-            "XMPP Gebruikersnaam:"
+            "XMPP адреса:"
          ],
          "Password:": [
             null,
-            "Wagwoord"
-         ],
-         "Click here to log in anonymously": [
-            null,
-            "Kliek hier om anoniem aan te meld"
+            "Пароль:"
          ],
          "Log In": [
             null,
-            "Meld aan"
+            "Ввійти"
          ],
          "Sign in": [
             null,
-            "Teken in"
+            "Вступити"
          ],
          "Toggle chat": [
             null,
-            "Klets"
+            "Включити чат"
          ]
       }
    }

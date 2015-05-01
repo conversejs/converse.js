@@ -4200,6 +4200,8 @@
                                 // strophe.roster with something better.
                                 if (collection.length > 0) {
                                     collection.each(function (item) {
+                                        // hotfix by mainerror
+                                        if (converse.connection.roster.items == undefined) converse.connection.roster.items = [];
                                         converse.connection.roster.items.push({
                                             name         : item.get('fullname'),
                                             jid          : item.get('jid'),

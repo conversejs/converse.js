@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-04-08 13:39+0200\n"
-"PO-Revision-Date: 2013-09-15 22:03+0200\n"
+"PO-Revision-Date: 2015-05-01 12:25+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -22,23 +22,23 @@ msgstr ""
 
 #: converse.js:248
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr "z. B. conversejs.org"
 
 #: converse.js:312
 msgid "unencrypted"
-msgstr ""
+msgstr "unverschlüsselt"
 
 #: converse.js:313
 msgid "unverified"
-msgstr ""
+msgstr "unbestätigt"
 
 #: converse.js:314
 msgid "verified"
-msgstr ""
+msgstr "bestätigt"
 
 #: converse.js:315
 msgid "finished"
-msgstr ""
+msgstr "erledigt"
 
 #: converse.js:318
 msgid "This contact is busy"
@@ -65,9 +65,8 @@ msgid "This contact is away"
 msgstr "Dieser Kontakt ist abwesend"
 
 #: converse.js:325
-#, fuzzy
 msgid "Click to hide these contacts"
-msgstr "Hier klicken um diesen Kontakt zu entfernen"
+msgstr "Hier klicken um diesen Kontakte zu verstecken"
 
 #: converse.js:327
 msgid "My contacts"
@@ -487,7 +486,6 @@ msgid "Invite..."
 msgstr ""
 
 #: converse.js:2203
-#, fuzzy
 msgid "Occupants"
 msgstr "Teilnehmer"
 
@@ -514,7 +512,6 @@ msgid "Change user's affiliation to admin"
 msgstr ""
 
 #: converse.js:2509
-#, fuzzy
 msgid "Ban user from room"
 msgstr "Verbanne einen Benutzer aus dem Raum."
 
@@ -523,12 +520,10 @@ msgid "Change user role to participant"
 msgstr ""
 
 #: converse.js:2513
-#, fuzzy
 msgid "Kick user from room"
 msgstr "Werfe einen Benutzer aus dem Raum."
 
 #: converse.js:2514
-#, fuzzy
 msgid "Write in 3rd person"
 msgstr "In der dritten Person schreiben"
 
@@ -558,7 +553,6 @@ msgid "Revoke user's membership"
 msgstr ""
 
 #: converse.js:2521
-#, fuzzy
 msgid "Set room topic"
 msgstr "Chatraum Thema festlegen"
 
@@ -857,16 +851,15 @@ msgstr ""
 
 #: converse.js:4980
 msgid "Return"
-msgstr ""
+msgstr "Zurück"
 
 #: converse.js:5012
 msgid "The provider rejected your registration attempt. "
 msgstr ""
 
 #: converse.js:5157
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "XMPP/Jabber Benutzername"
+msgstr "XMPP Benutzername"
 
 #: converse.js:5158
 msgid "Password:"

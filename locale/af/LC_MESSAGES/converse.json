@@ -8,7 +8,7 @@
          },
          " e.g. conversejs.org": [
             null,
-            ""
+            "bv. conversejs.org"
          ],
          "unencrypted": [
             null,
@@ -16,7 +16,7 @@
          ],
          "unverified": [
             null,
-            "ongeverifieer"
+            "onbevestig"
          ],
          "verified": [
             null,
@@ -49,6 +49,10 @@
          "This contact is away": [
             null,
             "Hierdie persoon is afwesig"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Kliek om hierdie kontakte te verskuil"
          ],
          "My contacts": [
             null,
@@ -108,11 +112,11 @@
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            "Verifieeringsversoek van  %1$s\n\nU gespreksmaat probeer om u identiteit te verifieer, deur die volgende vraag te vra \n\n%2$s"
+            "Identiteitbevestigingsversoek van  %1$s\n\nU gespreksmaat probeer om u identiteit te bevestig, deur die volgende vraag te vra \n\n%2$s"
          ],
          "Could not verify this user's identify.": [
             null,
-            "Kon nie hierdie gebruiker se identitied verifieer nie."
+            "Kon nie hierdie gebruiker se identitied bevestig nie."
          ],
          "Exchanging private key with contact.": [
             null,
@@ -137,6 +141,10 @@
          "has stopped typing": [
             null,
             "het opgehou tik"
+         ],
+         "has gone away": [
+            null,
+            "het weggegaan"
          ],
          "Show this menu": [
             null,
@@ -172,7 +180,7 @@
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
-            "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\n\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit geverifieer wees."
+            "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die antwoord tot daardie vraag te verskaf.\n\nU gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit bevestig wees."
          ],
          "What is your security question?": [
             null,
@@ -186,6 +194,14 @@
             null,
             "Ongeldige verifikasiemetode verskaf"
          ],
+         "has gone offline": [
+            null,
+            "is nou aflyn"
+         ],
+         "is busy": [
+            null,
+            "is besig"
+         ],
          "Your messages are not encrypted anymore": [
             null,
             "U boodskappe is nie meer versleutel nie"
@@ -196,7 +212,7 @@
          ],
          "Your contact's identify has been verified.": [
             null,
-            "U gespreksmaat se identiteit is geverifieer."
+            "U gespreksmaat se identiteit is bevestig."
          ],
          "Your contact has ended encryption on their end, you should do the same.": [
             null,
@@ -212,7 +228,7 @@
          ],
          "Your messages are encrypted and your contact verified.": [
             null,
-            "U boodskappe is versleutel en u gespreksmaat se identiteit geverifieer."
+            "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."
          ],
          "Your contact has closed their end of the private session, you should do the same": [
             null,
@@ -244,11 +260,11 @@
          ],
          "Verify with fingerprints": [
             null,
-            "Verifieer met vingerafdrukke"
+            "Bevestig met vingerafdrukke"
          ],
          "Verify with SMP": [
             null,
-            "Verifieer met SMP"
+            "Bevestig met SMP"
          ],
          "What's this?": [
             null,
@@ -269,6 +285,10 @@
          "Offline": [
             null,
             "Afgemeld"
+         ],
+         "Log out": [
+            null,
+            "Meld af"
          ],
          "Contact name": [
             null,
@@ -313,6 +333,10 @@
          "Server": [
             null,
             "Bediener"
+         ],
+         "Join Room": [
+            null,
+            "Betree kamer"
          ],
          "Show rooms": [
             null,
@@ -438,6 +462,10 @@
             null,
             "Verban gebruiker uit hierdie kletskamer"
          ],
+         "Change user role to participant": [
+            null,
+            "Verander gebruikersrol na deelnemer"
+         ],
          "Kick user from room": [
             null,
             "Skop gebruiker uit hierdie kletskamer"
@@ -448,7 +476,7 @@
          ],
          "Grant membership to a user": [
             null,
-            ""
+            "Verleen lidmaatskap aan 'n gebruiker"
          ],
          "Remove user's ability to post messages": [
             null,
@@ -460,11 +488,15 @@
          ],
          "Grant moderator role to user": [
             null,
-            ""
+            "Verleen moderator rol aan gebruiker"
+         ],
+         "Grant ownership of this room": [
+            null,
+            "Verleen eienaarskap van hierdie kamer"
          ],
          "Revoke user's membership": [
             null,
-            ""
+            "Herroep gebruiker se lidmaatskap"
          ],
          "Set room topic": [
             null,
@@ -562,6 +594,10 @@
             null,
             "<strong>%1$s</strong> is verban"
          ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "<strong>%1$s</strong> se bynaam het verander"
+         ],
          "<strong>%1$s</strong> has been kicked out": [
             null,
             "<strong>%1$s</strong> is uitgeskop"
@@ -637,6 +673,14 @@
          "Click to remove this contact": [
             null,
             "Kliek om hierdie kontak te verwyder"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "Kliek om hierdie kontakversoek te aanvaar"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "Kliek om hierdie kontakversoek te weier"
          ],
          "Click to chat with this contact": [
             null,
@@ -741,6 +785,10 @@
          "Password:": [
             null,
             "Wagwoord"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Kliek hier om anoniem aan te meld"
          ],
          "Log In": [
             null,

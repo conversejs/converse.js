@@ -1,12 +1,13 @@
 Changelog
 =========
 
-0.9.3 (Undefined)
------------------
+0.9.3 (Unreleased)
+------------------
 
 * Add the ability to log in anonymously. [jcbrand]
 * Add the ability to log in automatically. [jcbrand]
 * Remove ``type=email`` from JID field in login form. Resulting validation error confuses people. [jcbrand]
+* Add Ukranian translations [Andriy Kopystyansky]
 * #344 Enable the path to the sound files to be configured [thierrytiti and jcbrand]
 * #370 Unable to register a new user to ejabberd 2.1.11. [gbonvehi]
 * #372 Some offline users have a visible empty <dd> in the roster. [floriancargoet]

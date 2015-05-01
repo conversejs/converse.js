@@ -1,3 +1,7 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/quickstart.rst">Edit me on GitHub</a></div>
+
 =========================================
 Quickstart (to get a demo up and running)
 =========================================

@@ -525,24 +525,6 @@
     border: 1px solid red;
   }
 
-  #converse-register {
-    .form-errors {
-      color: red;
-      display: none;
-    }
-    .provider-title {
-      font-size: 115%;
-    }
-    .provider-score {
-      width: 178px;
-      margin-bottom: 8px;
-    }
-    .form-help .url {
-      font-weight: bold;
-      color: $link-color;
-    }
-  }
-
   .reg-feedback {
     font-size: 85%;
   }
@@ -620,7 +602,7 @@
   }
 
   dl.add-converse-contact {
-    margin: 0 0.5em 0.5em 0.5em;
+    margin: 0 0.5em 0.75em 0.5em;
   }
 
   .fancy-dropdown {
@@ -1081,18 +1063,19 @@
   }
 
   .controlbox-pane {
-    padding: 5px 0;
     overflow-y: hidden;
+    overflow-x: hidden;
     dd {
       margin-left: 0;
       margin-bottom: 0;
-    }
-    dd.odd {
-      background-color: #DCEAC5;
+      &.odd {
+        background-color: #DCEAC5;
+      }
     }
   }
 
   #converse-register {
+    background: white;
     .title {
       font-weight: bold;
     }
@@ -1102,75 +1085,48 @@
       font-size: 85%;
       margin: 5px 0;
     }
-  }
-
-  .form-help,
-  #converse-register .instructions {
-    color: gray;
-    font-size: 85%;
-  }
-
-  .form-help:hover,
-  #converse-register .instructions:hover {
-    color: $text-color;
-  }
-
-  .form-help {
-    padding-top: 5px;
-  }
-
-  #converse-register,
-  #converse-login {
-    background: white;
-    padding: 1em;
-  }
-
-  #converse-register input,
-  #converse-login input {
-    width: 100%;
-    height: 30px;
-    margin: 5px 0 10px 0;
-    padding-left: 0.5em;
-  }
-
-  #converse-register {
+    .form-errors {
+      color: red;
+      display: none;
+    }
+    .provider-title {
+      font-size: 22px;
+    }
+    .provider-score {
+      width: 178px;
+      margin-bottom: 8px;
+    }
+    .form-help .url {
+      font-weight: bold;
+      color: $link-color;
+    }
     .input-group {
-      table-layout: fixed;
       display: table;
       margin: auto;
-      width: 178px;
+      width: 100%;
       span {
           overflow-x: hidden;
           text-overflow: ellipsis;
+          max-width: 110px;
       }
       span, input[name=username] {
           display: table-cell;
+          text-align: left;
+      }
+    }
+    .instructions {
+      color: gray;
+      font-size: 85%;
+      &:hover {
+        color: $text-color;
       }
     }
   }
 
-  .cancel-submit, .save-submit {
-    width: 45%;
-    margin: 5px 3px 5px 3px;
-  }
-  .cancel, .cancel-submit {
-    color: $warning-color;
-  }
-  .save-submit {
-    color: $save-button-color;
-  }
-
-  .chatroom-form label,
-  .controlbox-pane label,
-  #converse-register label,
-  #converse-login label {
-    font-size: $font-size;
-    font-weight: bold;
-    height: auto;
-    margin: 4px;
-  }
-
   #converse-register, #converse-login {
+    margin: 2em 1em 1em 1em;
+    background: white;
+
     .login-submit, .submit {
       height: 30px;
       padding: 0px;
@@ -1183,6 +1139,41 @@
       height: auto;
       white-space: normal;
     }
+    .cancel-submit, .save-submit {
+      width: 45%;
+      margin: 5px 3px 5px 3px;
+    }
+    .cancel, .cancel-submit {
+      color: $warning-color;
+    }
+    .save-submit {
+      color: $save-button-color;
+    }
+    input {
+      width: 100%;
+      height: 30px;
+      margin: 5px 0 10px 0;
+      padding-left: 0.5em;
+    }
+  }
+
+  .form-help {
+    color: gray;
+    font-size: 85%;
+    padding-top: 5px;
+    &:hover {
+      color: $text-color;
+    }
+  }
+
+  .chatroom-form label,
+  .controlbox-pane label,
+  #converse-register label,
+  #converse-login label {
+    font-size: $font-size;
+    font-weight: bold;
+    height: auto;
+    margin: 4px;
   }
   
   form.add-chatroom {
@@ -1492,7 +1483,7 @@
 
   .set-xmpp-status {
     background: none;
-    padding: 0.5em;
+    padding: 0.75em 0.5em 0.5em 0.5em;
     .dropdown dd ul {
       z-index: 22;
     }

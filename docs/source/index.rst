@@ -13,6 +13,8 @@ Preface
 This is the official documentation for Converse.js. If you'd like to
 contribute, please read the :doc:`documentation` page.
 
+You might instead be looking for the `User Manual <manual.html>`_.
+
 Introduction
 ============
 
@@ -46,3 +48,4 @@ Table of Contents
    translations
    documentation
    builds
+

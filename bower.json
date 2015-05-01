@@ -36,5 +36,6 @@
   "resolutions": {
     "backbone": "1.1.2"
   },
-  "exportsOverride": {}
+  "exportsOverride": {},
+  "ignore": ["docs", "mockup"]
 }

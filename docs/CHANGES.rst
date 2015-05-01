@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.9.4 (2015-05-01)
+------------------
+
+* Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
+
 0.9.3 (2015-05-01)
 ------------------
 

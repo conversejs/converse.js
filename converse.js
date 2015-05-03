@@ -1026,13 +1026,15 @@
                 this.model.on('showReceivedOTRMessage', function (text) {
                     this.showMessage({'message': text, 'sender': 'them'});
                 }, this);
-
-                this.updateVCard();
-                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                this.updateVCard().insertIntoPage();
                 this.hide().render().model.messages.fetch({add: true});
                 if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
                 }
+            },
+
+            insertIntoPage: function () {
+                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
             },
 
             render: function () {
@@ -1503,7 +1505,7 @@
             },
 
             updateVCard: function () {
-                if (!this.use_vcards) { return; }
+                if (!this.use_vcards) { return this; }
                 var jid = this.model.get('jid'),
                     contact = converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
@@ -1522,6 +1524,7 @@
                         }
                     );
                 }
+                return this;
             },
 
             informOTRChange: function () {

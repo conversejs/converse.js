@@ -79,6 +79,7 @@ require.config({
         "pl":        "locale/pl/LC_MESSAGES/converse.json",
         "pt_BR":     "locale/pt_BR/LC_MESSAGES/converse.json",
         "ru":        "locale/ru/LC_MESSAGES/converse.json",
+        "uk":        "locale/uk/LC_MESSAGES/converse.json",
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
         // Templates

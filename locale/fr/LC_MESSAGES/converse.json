@@ -13,39 +13,47 @@
          ],
          "unencrypted": [
             null,
-            ""
+            "non crypté"
          ],
          "unverified": [
             null,
-            ""
+            "non vérifié"
          ],
          "verified": [
             null,
-            ""
+            "vérifié"
          ],
          "finished": [
             null,
-            ""
+            "terminé"
          ],
          "This contact is busy": [
             null,
-            ""
+            "Ce contact est occupé"
          ],
          "This contact is online": [
             null,
-            ""
+            "Ce contact est connecté"
          ],
          "This contact is offline": [
             null,
-            ""
+            "Ce contact est déconnecté"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Ce contact est indisponible"
          ],
          "This contact is away for an extended period": [
             null,
-            ""
+            "Ce contact est absent"
          ],
          "This contact is away": [
             null,
-            ""
+            "Ce contact est absent"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Cliquez pour cacher ces contacts"
          ],
          "My contacts": [
             null,
@@ -61,7 +69,7 @@
          ],
          "Ungrouped": [
             null,
-            ""
+            "Sans groupe"
          ],
          "Contacts": [
             null,
@@ -69,7 +77,7 @@
          ],
          "Groups": [
             null,
-            ""
+            "Groupes"
          ],
          "Error": [
             null,
@@ -77,7 +85,7 @@
          ],
          "Connecting": [
             null,
-            "Connection"
+            "Connexion"
          ],
          "Authenticating": [
             null,
@@ -89,47 +97,51 @@
          ],
          "Re-establishing encrypted session": [
             null,
-            ""
+            "Rétablissement de la session encryptée"
          ],
          "Generating private key.": [
             null,
-            ""
+            "Génération de la clé privée"
          ],
          "Your browser might become unresponsive.": [
             null,
-            ""
+            "Votre navigateur pourrait ne plus répondre"
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            ""
+            "Demande d'authtification de %1$s\n\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\n\n%2$s"
          ],
          "Could not verify this user's identify.": [
             null,
-            ""
+            "L'identité de cet utilisateur ne peut pas être vérifiée"
          ],
          "Exchanging private key with contact.": [
             null,
-            ""
+            "Échange de clé privée avec le contact"
          ],
          "Personal message": [
             null,
             "Message personnel"
          ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
+         ],
          "me": [
             null,
-            ""
+            "moi"
          ],
          "is typing": [
             null,
-            ""
+            "écrit"
          ],
          "has stopped typing": [
             null,
-            ""
+            "a arrêté d'écrire"
          ],
          "has gone away": [
             null,
-            ""
+            "est parti"
          ],
          "Show this menu": [
             null,
@@ -145,19 +157,19 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            ""
+            "Etes-vous sûr de vouloir supprimer les messages de cette conversation?"
          ],
          "Your message could not be sent": [
             null,
-            ""
+            "Votre message ne peut pas être envoyé"
          ],
          "We received an unencrypted message": [
             null,
-            ""
+            "Un message non crypté a été reçu"
          ],
          "We received an unreadable encrypted message": [
             null,
-            ""
+            "Un message crypté illisible a été reçu"
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
@@ -181,7 +193,11 @@
          ],
          "has gone offline": [
             null,
-            ""
+            "est déconnecté"
+         ],
+         "is busy": [
+            null,
+            "est occupé"
          ],
          "Your messages are not encrypted anymore": [
             null,
@@ -221,7 +237,7 @@
          ],
          "Hide the list of participants": [
             null,
-            ""
+            "Cacher la liste des participants"
          ],
          "Refresh encrypted conversation": [
             null,
@@ -229,7 +245,7 @@
          ],
          "Start a call": [
             null,
-            ""
+            "Démarrer un appel"
          ],
          "Start encrypted conversation": [
             null,
@@ -263,6 +279,10 @@
             null,
             "Déconnecté"
          ],
+         "Log out": [
+            null,
+            "Se déconnecter"
+         ],
          "Contact name": [
             null,
             "Nom du contact"
@@ -293,11 +313,11 @@
          ],
          "Click to add as a chat contact": [
             null,
-            "Cliquer pour ajouter aux contacts de chat"
+            "Cliquer pour ajouter aux contacts"
          ],
          "Room name": [
             null,
-            "Numéro de salon"
+            "Nom du salon"
          ],
          "Nickname": [
             null,

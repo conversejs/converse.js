@@ -1,3 +1,7 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/development.rst">Edit me on GitHub</a></div>
+
 .. _development:
 
 ===========
@@ -33,6 +37,9 @@ Also make sure you have ``Git`` installed. `Details <http://git-scm.com/book/en/
 
 .. note::
     Windows users should use Chocolatey as recommended above.:
+
+.. note::
+    Debian & Ubuntu users : apt-get install git npm nodejs-legacy
 
 Once you have *Node.js* and *git* installed, run the following command inside the Converse.js
 directory:

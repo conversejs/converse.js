@@ -1,3 +1,8 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/builds.rst">Edit me on GitHub</a></div>
+
+
 .. _builds:
 
 ===============

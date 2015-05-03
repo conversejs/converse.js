@@ -9,23 +9,23 @@
          },
          " e.g. conversejs.org": [
             null,
-            ""
+            "z. B. conversejs.org"
          ],
          "unencrypted": [
             null,
-            ""
+            "unverschlüsselt"
          ],
          "unverified": [
             null,
-            ""
+            "unbestätigt"
          ],
          "verified": [
             null,
-            ""
+            "bestätigt"
          ],
          "finished": [
             null,
-            ""
+            "erledigt"
          ],
          "This contact is busy": [
             null,
@@ -50,6 +50,10 @@
          "This contact is away": [
             null,
             "Dieser Kontakt ist abwesend"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Hier klicken um diesen Kontakte zu verstecken"
          ],
          "My contacts": [
             null,
@@ -391,6 +395,10 @@
             null,
             ""
          ],
+         "Occupants": [
+            null,
+            "Teilnehmer"
+         ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
             ""
@@ -411,9 +419,21 @@
             null,
             ""
          ],
+         "Ban user from room": [
+            null,
+            "Verbanne einen Benutzer aus dem Raum."
+         ],
          "Change user role to participant": [
             null,
             ""
+         ],
+         "Kick user from room": [
+            null,
+            "Werfe einen Benutzer aus dem Raum."
+         ],
+         "Write in 3rd person": [
+            null,
+            "In der dritten Person schreiben"
          ],
          "Grant membership to a user": [
             null,
@@ -434,6 +454,10 @@
          "Revoke user's membership": [
             null,
             ""
+         ],
+         "Set room topic": [
+            null,
+            "Chatraum Thema festlegen"
          ],
          "Allow muted user to post messages": [
             null,
@@ -673,11 +697,15 @@
          ],
          "Return": [
             null,
-            ""
+            "Zurück"
          ],
          "The provider rejected your registration attempt. ": [
             null,
             ""
+         ],
+         "XMPP Username:": [
+            null,
+            "XMPP Benutzername"
          ],
          "Password:": [
             null,

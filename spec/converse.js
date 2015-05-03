@@ -124,9 +124,9 @@
                 var error = new TypeError('contacts.add: invalid jid');
                 expect(converse_api.contacts.add).toThrow(error);
                 expect(converse_api.contacts.add.bind(converse_api, "invalid jid")).toThrow(error);
-                spyOn(converse.connection.roster, 'add');
+                spyOn(converse.roster, 'addAndSubscribe');
                 converse_api.contacts.add("newcontact@example.org");
-                expect(converse.connection.roster.add).toHaveBeenCalled();
+                expect(converse.roster.addAndSubscribe).toHaveBeenCalled();
             }, converse));
 
         }, converse));

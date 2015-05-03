@@ -21,6 +21,7 @@
         'text!pl',
         'text!pt_BR',
         'text!ru',
+        'text!uk',
         'text!zh'
         ], function ($, Jed) {
             root.locales = {
@@ -39,7 +40,8 @@
                 'pl':     arguments[14],
                 'pt-br':  arguments[15],
                 'ru':     arguments[16],
-                'zh':     arguments[17]
+                'uk':     arguments[17],
+                'zh':     arguments[18]
             };
             return root.locales;
         });

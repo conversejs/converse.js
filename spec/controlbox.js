@@ -413,7 +413,7 @@
             }, converse));
 
             it("are shown in the roster when show_only_online_users", $.proxy(function () {
-		converse.show_only_online_users = true;
+                converse.show_only_online_users = true;
                 runs(function () {
                     _addContacts();
                 });
@@ -433,7 +433,7 @@
 
             it("are shown in the roster when hide_offline_users", $.proxy(function () {
                 converse.hide_offline_users = true;
-		runs(function () {
+                runs(function () {
                     _addContacts();
                 });
                 waits(50);
@@ -456,34 +456,24 @@
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
-                    /* FIXME: Monkepatch
-                    * After refactoring the mock connection to use a
-                    * Strophe.Connection object, these tests fail because "remove"
-                    * function in strophe.roster (line 292) gets called and it
-                    * then tries to actually remove the user which is not in the roster...
-                    */
-                    var old_remove = this.connection.roster.remove;
-                    this.connection.roster.remove = function (jid, callback) { callback(); };
-
                     var name = mock.pend_names[0];
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact = this.roster.get(jid);
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(converse, 'emit');
-                    spyOn(this.connection.roster, 'remove').andCallThrough();
-                    spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(this.rosterview.model, 'remove').andCallThrough();
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
+                    spyOn(contact, 'removeFromRoster');
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
 
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
 
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.remove).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                    expect(this.rosterview.model.remove).toHaveBeenCalled();
+                    expect(converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(contact.removeFromRoster).toHaveBeenCalled();
+                    expect(this.connection.sendIQ).toHaveBeenCalled();
                     expect(converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')").length).toEqual(0);
-
-                    /* XXX Restore Monkeypatch */
-                    this.connection.roster.remove = old_remove;
                 }, this));
             }, converse));
 
@@ -494,17 +484,21 @@
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
-                    spyOn(window, 'confirm').andReturn(true);
-                    this.roster.create({
+                    contact = this.roster.create({
                         jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
                         fullname: name
                     });
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
                     expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(true);
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
+                    expect(this.connection.sendIQ).toHaveBeenCalled();
                     expect(this.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(false);
                 }, this));
             }, converse));
@@ -587,7 +581,6 @@
                 waits(50);
                 runs($.proxy(function () {
                     var i, t;
-                    spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
                     for (i=0; i<mock.cur_names.length; i++) {
                         this.roster.create({
@@ -610,34 +603,22 @@
                 });
                 waits(50);
                 runs($.proxy(function () {
-                    /* FIXME: Monkepatch
-                    * After refactoring the mock connection to use a
-                    * Strophe.Connection object, these tests fail because "remove"
-                    * function in strophe.roster (line 292) gets called and it
-                    * then tries to actually remove the user which is not in the roster...
-                    */
-                    var old_remove = this.connection.roster.remove;
-                    this.connection.roster.remove = function (jid, callback) { callback(); };
-
                     var name = mock.cur_names[0];
                     var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact = this.roster.get(jid);
                     spyOn(window, 'confirm').andReturn(true);
-                    spyOn(converse, 'emit');
-                    spyOn(this.connection.roster, 'remove').andCallThrough();
-                    spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(this.rosterview.model, 'remove').andCallThrough();
+                    spyOn(contact, 'removeFromRoster');
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
 
                     converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
 
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.remove).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
-                    expect(this.rosterview.model.remove).toHaveBeenCalled();
+                    expect(converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(converse.rosterview.$el.find(".open-chat:contains('"+name+"')").length).toEqual(0);
-
-                    /* XXX Restore Monkeypatch */
-                    this.connection.roster.remove = old_remove;
                 }, this));
             }, converse));
 
@@ -649,17 +630,24 @@
                 });
                 waits(50);
                 runs($.proxy(function () {
-                    spyOn(window, 'confirm').andReturn(true);
-                    this.roster.create({
+                    var contact = this.roster.create({
                         jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
                         ask: null,
                         fullname: name
                     });
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(contact, 'removeFromRoster');
+                    spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback) {
+                        if (typeof callback === "function") { return callback(); }
+                    });
+
                     expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
                     converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
+                    expect(this.connection.sendIQ).toHaveBeenCalled();
+                    expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(this.rosterview.$el.find('dt.roster-group').css('display')).toEqual('none');
                 }, this));
             }, converse));
@@ -794,22 +782,58 @@
 
                     var contacts = this.rosterview.$el.find('dd.current-xmpp-contact');
                     for (i=0; i<3; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('online');
+                        expect($(contacts[i]).hasClass('online')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=3; i<6; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('dnd');
+                        expect($(contacts[i]).hasClass('dnd')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=6; i<9; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('away');
+                        expect($(contacts[i]).hasClass('away')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=9; i<12; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('xa');
+                        expect($(contacts[i]).hasClass('xa')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=12; i<15; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('unavailable');
+                        expect($(contacts[i]).hasClass('unavailable')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
                     }
                     for (i=15; i<mock.cur_names.length; i++) {
-                        expect($(contacts[i]).attr('class').split(' ',1)[0]).toEqual('offline');
+                        expect($(contacts[i]).hasClass('offline')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
+                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
+                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
                     }
                 }, this));
             }, converse));
@@ -894,35 +918,36 @@
                 // mock_connection.
                 var name = mock.req_names.sort()[0];
                 var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                spyOn(this.connection.roster, 'authorize');
-
+                var contact = this.roster.get(jid);
+                spyOn(converse.roster, 'sendContactAddIQ').andCallFake(function (jid, fullname, groups, callback) {
+                    callback();
+                });
+                spyOn(contact, 'authorize').andCallFake(function () { return contact; });
                 converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
                     .siblings('.request-actions')
                     .find('.accept-xmpp-request').click();
-
-                expect(this.connection.roster.authorize).toHaveBeenCalled();
+                expect(converse.roster.sendContactAddIQ).toHaveBeenCalled();
+                expect(contact.authorize).toHaveBeenCalled();
             }, converse));
 
             it("can have their requests denied by the user", $.proxy(function () {
                 this.rosterview.model.reset();
                 runs($.proxy(function () {
-                    spyOn(converse, 'emit');
-                    spyOn(this.connection.roster, 'unauthorize');
-                    spyOn(window, 'confirm').andReturn(true);
                     utils.createContacts('requesting').openControlBox();
                     converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
                     var name = mock.req_names.sort()[1];
+                    var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var contact = this.roster.get(jid);
+                    spyOn(window, 'confirm').andReturn(true);
+                    spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
                     converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
                         .siblings('.request-actions')
                         .find('.decline-xmpp-request').click();
-                }, this));
-                waits(50);
-                runs($.proxy(function () {
                     expect(window.confirm).toHaveBeenCalled();
-                    expect(this.connection.roster.unauthorize).toHaveBeenCalled();
+                    expect(contact.unauthorize).toHaveBeenCalled();
                     // There should now be one less contact
                     expect(this.roster.length).toEqual(mock.req_names.length-1);
                 }, this));
@@ -933,7 +958,6 @@
                  * https://github.com/jcbrand/converse.js/issues/262
                  */
                 this.rosterview.model.reset();
-                spyOn(this.roster, 'clearCache').andCallThrough();
                 expect(this.roster.pluck('jid').length).toBe(0);
 
                 var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
@@ -964,8 +988,7 @@
                     name: 'Benvolio',
                     subscription:'both'
                 }).c('group').t('Friends');
-                this.connection.roster._onReceiveRosterSuccess(null, stanza.tree());
-                expect(this.roster.clearCache).toHaveBeenCalled();
+                this.roster.onReceivedFromServer(stanza.tree());
                 expect(_.contains(this.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
             }, converse));
 

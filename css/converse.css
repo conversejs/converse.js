@@ -523,17 +523,6 @@
     color: red; }
   #conversejs input.error {
     border: 1px solid red; }
-  #conversejs #converse-register .form-errors {
-    color: red;
-    display: none; }
-  #conversejs #converse-register .provider-title {
-    font-size: 115%; }
-  #conversejs #converse-register .provider-score {
-    width: 178px;
-    margin-bottom: 8px; }
-  #conversejs #converse-register .form-help .url {
-    font-weight: bold;
-    color: #436F64; }
   #conversejs .reg-feedback {
     font-size: 85%; }
   #conversejs .reg-feedback,
@@ -589,7 +578,7 @@
     padding-left: 2em;
     font-weight: bold; }
   #conversejs dl.add-converse-contact {
-    margin: 0 0.5em 0.5em 0.5em; }
+    margin: 0 0.5em 0.75em 0.5em; }
   #conversejs .fancy-dropdown {
     border: 1px solid #F1DCD6;
     height: 25px;
@@ -931,56 +920,79 @@
     height: -webkit-calc(100% - 44px);
     height: calc(100% - 44px); }
   #conversejs .controlbox-pane {
-    padding: 5px 0;
-    overflow-y: hidden; }
+    overflow-y: hidden;
+    overflow-x: hidden; }
     #conversejs .controlbox-pane dd {
       margin-left: 0;
       margin-bottom: 0; }
-    #conversejs .controlbox-pane dd.odd {
-      background-color: #DCEAC5; }
-  #conversejs #converse-register .title {
-    font-weight: bold; }
-  #conversejs #converse-register .info {
-    font-style: italic;
-    color: green;
-    font-size: 85%;
-    margin: 5px 0; }
-  #conversejs .form-help,
-  #conversejs #converse-register .instructions {
-    color: gray;
-    font-size: 85%; }
-  #conversejs .form-help:hover,
-  #conversejs #converse-register .instructions:hover {
-    color: #6C4C44; }
+      #conversejs .controlbox-pane dd.odd {
+        background-color: #DCEAC5; }
+  #conversejs #converse-register {
+    background: white; }
+    #conversejs #converse-register .title {
+      font-weight: bold; }
+    #conversejs #converse-register .info {
+      font-style: italic;
+      color: green;
+      font-size: 85%;
+      margin: 5px 0; }
+    #conversejs #converse-register .form-errors {
+      color: red;
+      display: none; }
+    #conversejs #converse-register .provider-title {
+      font-size: 22px; }
+    #conversejs #converse-register .provider-score {
+      width: 178px;
+      margin-bottom: 8px; }
+    #conversejs #converse-register .form-help .url {
+      font-weight: bold;
+      color: #436F64; }
+    #conversejs #converse-register .input-group {
+      display: table;
+      margin: auto;
+      width: 100%; }
+      #conversejs #converse-register .input-group span {
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        max-width: 110px; }
+      #conversejs #converse-register .input-group span, #conversejs #converse-register .input-group input[name=username] {
+        display: table-cell;
+        text-align: left; }
+    #conversejs #converse-register .instructions {
+      color: gray;
+      font-size: 85%; }
+      #conversejs #converse-register .instructions:hover {
+        color: #6C4C44; }
+  #conversejs #converse-register, #conversejs #converse-login {
+    margin: 2em 1em 1em 1em;
+    background: white; }
+    #conversejs #converse-register .login-submit, #conversejs #converse-register .submit, #conversejs #converse-login .login-submit, #conversejs #converse-login .submit {
+      height: 30px;
+      padding: 0px;
+      font-size: 14px; }
+    #conversejs #converse-register .submit, #conversejs #converse-login .submit {
+      margin: 1em 0; }
+    #conversejs #converse-register .login-anon, #conversejs #converse-login .login-anon {
+      height: auto;
+      white-space: normal; }
+    #conversejs #converse-register .cancel-submit, #conversejs #converse-register .save-submit, #conversejs #converse-login .cancel-submit, #conversejs #converse-login .save-submit {
+      width: 45%;
+      margin: 5px 3px 5px 3px; }
+    #conversejs #converse-register .cancel, #conversejs #converse-register .cancel-submit, #conversejs #converse-login .cancel, #conversejs #converse-login .cancel-submit {
+      color: #681F2C; }
+    #conversejs #converse-register .save-submit, #conversejs #converse-login .save-submit {
+      color: #436F64; }
+    #conversejs #converse-register input, #conversejs #converse-login input {
+      width: 100%;
+      height: 30px;
+      margin: 5px 0 10px 0;
+      padding-left: 0.5em; }
   #conversejs .form-help {
+    color: gray;
+    font-size: 85%;
     padding-top: 5px; }
-  #conversejs #converse-register,
-  #conversejs #converse-login {
-    background: white;
-    padding: 1em; }
-  #conversejs #converse-register input,
-  #conversejs #converse-login input {
-    width: 100%;
-    height: 30px;
-    margin: 5px 0 10px 0;
-    padding-left: 0.5em; }
-  #conversejs #converse-register .input-group {
-    table-layout: fixed;
-    display: table;
-    margin: auto;
-    width: 178px; }
-    #conversejs #converse-register .input-group span {
-      overflow-x: hidden;
-      text-overflow: ellipsis; }
-    #conversejs #converse-register .input-group span, #conversejs #converse-register .input-group input[name=username] {
-      display: table-cell; }
-  #conversejs .cancel-submit, #conversejs .save-submit {
-    width: 45%;
-    margin: 5px 3px 5px 3px; }
-  #conversejs .cancel, #conversejs .cancel-submit {
-    color: #681F2C; }
-  #conversejs .save-submit {
-    color: #436F64; }
+    #conversejs .form-help:hover {
+      color: #6C4C44; }
   #conversejs .chatroom-form label,
   #conversejs .controlbox-pane label,
   #conversejs #converse-register label,
@@ -989,15 +1001,6 @@
     font-weight: bold;
     height: auto;
     margin: 4px; }
-  #conversejs #converse-register .login-submit, #conversejs #converse-register .submit, #conversejs #converse-login .login-submit, #conversejs #converse-login .submit {
-    height: 30px;
-    padding: 0px;
-    font-size: 14px; }
-  #conversejs #converse-register .submit, #conversejs #converse-login .submit {
-    margin: 1em 0; }
-  #conversejs #converse-register .login-anon, #conversejs #converse-login .login-anon {
-    height: auto;
-    white-space: normal; }
   #conversejs form.add-chatroom {
     background: none;
     padding: 0.5em; }
@@ -1260,3 +1263,5 @@
     margin-left: 0;
     cursor: n-resize;
     z-index: 20; }
+
+/*# sourceMappingURL=converse.css.map */

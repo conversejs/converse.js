@@ -1,0 +1,890 @@
+# Ukrainian translations for Converse.js package.
+# Copyright (C) 2015 Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# Andriy Kopystyansky <anri@polynet.lviv.ua>, 2015.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 0.7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-01 12:26+0200\n"
+"PO-Revision-Date: 2015-04-28 13:39+0200\n"
+"Last-Translator: Andriy Kopystyansky <anri@polynet.lviv.ua>\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"domain: converse\n"
+"lang: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: converse.js:254
+msgid " e.g. conversejs.org"
+msgstr " напр. conversejs.org"
+
+#: converse.js:331
+msgid "unencrypted"
+msgstr "некриптовано"
+
+#: converse.js:332
+msgid "unverified"
+msgstr "неперевірено"
+
+#: converse.js:333
+msgid "verified"
+msgstr "перевірено"
+
+#: converse.js:334
+msgid "finished"
+msgstr "завершено"
+
+#: converse.js:337
+msgid "This contact is busy"
+msgstr "Цей контакт зайнятий"
+
+#: converse.js:338
+msgid "This contact is online"
+msgstr "Цей контакт на зв'язку"
+
+#: converse.js:339
+msgid "This contact is offline"
+msgstr "Цей контакт поза мережею"
+
+#: converse.js:340
+msgid "This contact is unavailable"
+msgstr "Цей контакт недоступний"
+
+#: converse.js:341
+msgid "This contact is away for an extended period"
+msgstr "Цей контакт відсутній тривалий час"
+
+#: converse.js:342
+msgid "This contact is away"
+msgstr "Цей контакт відсутній"
+
+#: converse.js:344
+msgid "Click to hide these contacts"
+msgstr "Клацніть, щоб приховати ці контакти"
+
+#: converse.js:346
+msgid "My contacts"
+msgstr "Мої контакти"
+
+#: converse.js:347
+msgid "Pending contacts"
+msgstr "Контакти в очікуванні"
+
+#: converse.js:348
+msgid "Contact requests"
+msgstr "Запити контакту"
+
+#: converse.js:349
+msgid "Ungrouped"
+msgstr "Негруповані"
+
+#: converse.js:351 converse.js:648 converse.js:691
+msgid "Contacts"
+msgstr "Контакти"
+
+#: converse.js:352
+msgid "Groups"
+msgstr "Групи"
+
+#: converse.js:452
+msgid "Reconnecting"
+msgstr "Перепід'єднуюсь"
+
+#: converse.js:495
+msgid "Error"
+msgstr "Помилка"
+
+#: converse.js:497
+msgid "Connecting"
+msgstr "Під'єднуюсь"
+
+#: converse.js:499
+msgid "Authenticating"
+msgstr "Автентикуюсь"
+
+#: converse.js:501 converse.js:502
+msgid "Authentication Failed"
+msgstr "Автентикація невдала"
+
+#: converse.js:807
+msgid "Re-establishing encrypted session"
+msgstr "Перевстановлюю криптований сеанс"
+
+#: converse.js:819
+msgid "Generating private key."
+msgstr "Генерація приватного ключа."
+
+#: converse.js:820
+msgid "Your browser might become unresponsive."
+msgstr "Ваш браузер може підвиснути."
+
+#: converse.js:855
+msgid ""
+"Authentication request from %1$s\n"
+"\n"
+"Your chat contact is attempting to verify your identity, by asking you the "
+"question below.\n"
+"\n"
+"%2$s"
+msgstr ""
+"Запит автентикації від %1$s\n"
+"\n"
+"Ваш контакт в чаті намагається встановити Вашу особу і просить відповісти на "
+"питання нижче.\n"
+"\n"
+"%2$s"
+
+#: converse.js:864
+msgid "Could not verify this user's identify."
+msgstr "Не можу перевірити автентичність цього користувача."
+
+#: converse.js:903
+msgid "Exchanging private key with contact."
+msgstr "Обмін приватним ключем з контактом."
+
+#: converse.js:1049
+msgid "Personal message"
+msgstr "Персональна вісточка"
+
+#: converse.js:1081
+msgid "Are you sure you want to clear the messages from this room?"
+msgstr "Ви впевнені, що хочете очистити повідомлення з цієї кімнати?"
+
+#: converse.js:1103
+msgid "me"
+msgstr "я"
+
+#: converse.js:1158
+msgid "is typing"
+msgstr "друкує"
+
+#: converse.js:1161
+msgid "has stopped typing"
+msgstr "припинив друкувати"
+
+#: converse.js:1167 converse.js:1447
+msgid "has gone away"
+msgstr "пішов геть"
+
+#: converse.js:1212 converse.js:2531
+msgid "Show this menu"
+msgstr "Показати це меню"
+
+#: converse.js:1213
+msgid "Write in the third person"
+msgstr "Писати від третьої особи"
+
+#: converse.js:1214 converse.js:2529
+msgid "Remove messages"
+msgstr "Видалити повідомлення"
+
+#: converse.js:1340
+msgid "Are you sure you want to clear the messages from this chat box?"
+msgstr "Ви впевнені, що хочете очистити повідомлення з цього вікна чату?"
+
+#: converse.js:1375
+msgid "Your message could not be sent"
+msgstr "Ваше повідомлення не може бути надіслане"
+
+#: converse.js:1378
+msgid "We received an unencrypted message"
+msgstr "Ми отримали некриптоване повідомлення"
+
+#: converse.js:1381
+msgid "We received an unreadable encrypted message"
+msgstr "Ми отримали нечитабельне криптоване повідомлення"
+
+#: converse.js:1407
+msgid ""
+"Here are the fingerprints, please confirm them with %1$s, outside of this "
+"chat.\n"
+"\n"
+"Fingerprint for you, %2$s: %3$s\n"
+"\n"
+"Fingerprint for %1$s: %4$s\n"
+"\n"
+"If you have confirmed that the fingerprints match, click OK, otherwise click "
+"Cancel."
+msgstr ""
+"Ось відбитки, будь-ласка, підтвердіть їх з %1$s, за межами цього чату.\n"
+"\n"
+"Відбиток для Вас, %2$s: %3$s\n"
+"\n"
+"Відбиток для %1$s: %4$s\n"
+"\n"
+"Якщо Ви підтверджуєте відповідність відбитка, клацніть Гаразд, інакше "
+"клацніть Відміна."
+
+#: converse.js:1420
+msgid ""
+"You will be prompted to provide a security question and then an answer to "
+"that question.\n"
+"\n"
+"Your contact will then be prompted the same question and if they type the "
+"exact same answer (case sensitive), their identity will be verified."
+msgstr ""
+"Вас запитають таємне питання і відповідь на нього.\n"
+"\n"
+"Потім Вашого контакта запитають те саме питання, і якщо вони введуть ту саму "
+"відповідь (враховуючи регістр), їх особи будуть перевірені."
+
+#: converse.js:1421
+msgid "What is your security question?"
+msgstr "Яке Ваше таємне питання?"
+
+#: converse.js:1423
+msgid "What is the answer to the security question?"
+msgstr "Яка відповідь на таємне питання?"
+
+#: converse.js:1427
+msgid "Invalid authentication scheme provided"
+msgstr "Надана некоректна схема автентикації"
+
+#: converse.js:1445
+msgid "has gone offline"
+msgstr "тепер поза мережею"
+
+#: converse.js:1449
+msgid "is busy"
+msgstr "зайнятий"
+
+#: converse.js:1537
+msgid "Your messages are not encrypted anymore"
+msgstr "Ваші повідомлення більше не криптуються"
+
+#: converse.js:1539
+msgid ""
+"Your messages are now encrypted but your contact's identity has not been "
+"verified."
+msgstr ""
+"Ваші повідомлення вже криптуються, але особа Вашого контакту не перевірена."
+
+#: converse.js:1541
+msgid "Your contact's identify has been verified."
+msgstr "Особу Вашого контакту перевірено."
+
+#: converse.js:1543
+msgid "Your contact has ended encryption on their end, you should do the same."
+msgstr ""
+"Ваш контакт припинив криптування зі свого боку, Вам слід зробити те саме."
+
+#: converse.js:1552
+msgid "Your messages are not encrypted. Click here to enable OTR encryption."
+msgstr ""
+"Ваші повідомлення не криптуються. Клацніть тут, щоб увімкнути OTR-"
+"криптування."
+
+#: converse.js:1554
+msgid "Your messages are encrypted, but your contact has not been verified."
+msgstr "Ваші повідомлення криптуються, але Ваш контакт не був перевірений."
+
+#: converse.js:1556
+msgid "Your messages are encrypted and your contact verified."
+msgstr "Ваші повідомлення криптуються і Ваш контакт перевірено."
+
+#: converse.js:1558
+msgid ""
+"Your contact has closed their end of the private session, you should do the "
+"same"
+msgstr ""
+"Ваш контакт закрив зі свого боку приватну сесію, Вам слід зробити те ж саме"
+
+#: converse.js:1568
+msgid "Clear all messages"
+msgstr "Очистити всі повідомлення"
+
+#: converse.js:1569
+msgid "End encrypted conversation"
+msgstr "Завершити криптовану розмову"
+
+#: converse.js:1570
+msgid "Hide the list of participants"
+msgstr "Сховати список учасників"
+
+#: converse.js:1571
+msgid "Refresh encrypted conversation"
+msgstr "Оновити криптовану розмову"
+
+#: converse.js:1572
+msgid "Start a call"
+msgstr "Почати виклик"
+
+#: converse.js:1573
+msgid "Start encrypted conversation"
+msgstr "Почати криптовану розмову"
+
+#: converse.js:1574
+msgid "Verify with fingerprints"
+msgstr "Перевірити за відбитками"
+
+#: converse.js:1575
+msgid "Verify with SMP"
+msgstr "Перевірити за SMP"
+
+#: converse.js:1576
+msgid "What's this?"
+msgstr "Що це?"
+
+#: converse.js:1668
+msgid "Online"
+msgstr "На зв'язку"
+
+#: converse.js:1669
+msgid "Busy"
+msgstr "Зайнятий"
+
+#: converse.js:1670
+msgid "Away"
+msgstr "Далеко"
+
+#: converse.js:1671
+msgid "Offline"
+msgstr "Поза мережею"
+
+#: converse.js:1672
+msgid "Log out"
+msgstr "Вийти"
+
+#: converse.js:1678
+msgid "Contact name"
+msgstr "Назва контакту"
+
+#: converse.js:1679
+msgid "Search"
+msgstr "Пошук"
+
+#: converse.js:1683
+msgid "Contact username"
+msgstr "Логін контакту"
+
+#: converse.js:1684
+msgid "Add"
+msgstr "Додати"
+
+#: converse.js:1689
+msgid "Click to add new chat contacts"
+msgstr "Клацніть, щоб додати нові контакти до чату"
+
+#: converse.js:1690
+msgid "Add a contact"
+msgstr "Додати контакт"
+
+#: converse.js:1714
+msgid "No users found"
+msgstr "Жодного користувача не знайдено"
+
+#: converse.js:1720
+msgid "Click to add as a chat contact"
+msgstr "Клацніть, щоб додати як чат-контакт"
+
+#: converse.js:1784
+msgid "Room name"
+msgstr "Назва кімнати"
+
+#: converse.js:1785
+msgid "Nickname"
+msgstr "Прізвисько"
+
+#: converse.js:1786
+msgid "Server"
+msgstr "Сервер"
+
+#: converse.js:1787
+msgid "Join Room"
+msgstr "Приєднатися до кімнати"
+
+#: converse.js:1788
+msgid "Show rooms"
+msgstr "Показати кімнати"
+
+#: converse.js:1792
+msgid "Rooms"
+msgstr "Кімнати"
+
+#. For translators: %1$s is a variable and will be replaced with the XMPP server name
+#: converse.js:1812
+msgid "No rooms on %1$s"
+msgstr "Жодної кімнати на %1$s"
+
+#. For translators: %1$s is a variable and will be
+#. replaced with the XMPP server name
+#: converse.js:1827
+msgid "Rooms on %1$s"
+msgstr "Кімнати на %1$s"
+
+#: converse.js:1836
+msgid "Click to open this room"
+msgstr "Клацніть, щоб увійти в цю кімнату"
+
+#: converse.js:1837
+msgid "Show more information on this room"
+msgstr "Показати більше інформації про цю кімату"
+
+#: converse.js:1909
+msgid "Description:"
+msgstr "Опис:"
+
+#: converse.js:1910
+msgid "Occupants:"
+msgstr "Присутні:"
+
+#: converse.js:1911
+msgid "Features:"
+msgstr "Особливості:"
+
+#: converse.js:1912
+msgid "Requires authentication"
+msgstr "Вимагає автентикації"
+
+#: converse.js:1913
+msgid "Hidden"
+msgstr "Прихована"
+
+#: converse.js:1914
+msgid "Requires an invitation"
+msgstr "Вимагає запрошення"
+
+#: converse.js:1915
+msgid "Moderated"
+msgstr "Модерована"
+
+#: converse.js:1916
+msgid "Non-anonymous"
+msgstr "Не-анонімні"
+
+#: converse.js:1917
+msgid "Open room"
+msgstr "Увійти в кімнату"
+
+#: converse.js:1918
+msgid "Permanent room"
+msgstr "Постійна кімната"
+
+#: converse.js:1919
+msgid "Public"
+msgstr "Публічна"
+
+#: converse.js:1920
+msgid "Semi-anonymous"
+msgstr "Напів-анонімна"
+
+#: converse.js:1921
+msgid "Temporary room"
+msgstr "Тимчасова кімната"
+
+#: converse.js:1922
+msgid "Unmoderated"
+msgstr "Немодерована"
+
+#: converse.js:2191
+msgid "This user is a moderator"
+msgstr "Цей користувач є модератором"
+
+#: converse.js:2192
+msgid "This user can send messages in this room"
+msgstr "Цей користувач може слати повідомлення в цій кімнаті"
+
+#: converse.js:2193
+msgid "This user can NOT send messages in this room"
+msgstr "Цей користувач НЕ МОЖЕ слати повідомлення в цій кімнаті"
+
+#: converse.js:2221
+msgid "Invite..."
+msgstr "Запросіть..."
+
+#: converse.js:2222
+msgid "Occupants"
+msgstr "Учасники"
+
+#: converse.js:2318
+msgid "You are about to invite %1$s to the chat room \"%2$s\". "
+msgstr "Ви запрошуєте %1$s до чату \"%2$s\". "
+
+#: converse.js:2319
+msgid ""
+"You may optionally include a message, explaining the reason for the "
+"invitation."
+msgstr ""
+"Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
+
+#: converse.js:2400
+msgid "Message"
+msgstr "Повідомлення"
+
+#: converse.js:2452
+msgid "Error: could not execute the command"
+msgstr "Помилка: Не можу виконати команду"
+
+#: converse.js:2527
+msgid "Change user's affiliation to admin"
+msgstr "Призначити користувача адміністратором"
+
+#: converse.js:2528
+msgid "Ban user from room"
+msgstr "Заблокувати і викинути з кімнати"
+
+#: converse.js:2530
+msgid "Change user role to participant"
+msgstr "Зробити користувача учасником"
+
+#: converse.js:2532
+msgid "Kick user from room"
+msgstr "Викинути з кімнати"
+
+#: converse.js:2533
+msgid "Write in 3rd person"
+msgstr "Писати в 3-й особі"
+
+#: converse.js:2534
+msgid "Grant membership to a user"
+msgstr "Надати членство користувачу"
+
+#: converse.js:2535
+msgid "Remove user's ability to post messages"
+msgstr "Забрати можливість слати повідомлення"
+
+#: converse.js:2536
+msgid "Change your nickname"
+msgstr "Змінити Ваше прізвисько"
+
+#: converse.js:2537
+msgid "Grant moderator role to user"
+msgstr "Надати права модератора"
+
+#: converse.js:2538
+msgid "Grant ownership of this room"
+msgstr "Передати у власність цю кімнату"
+
+#: converse.js:2539
+msgid "Revoke user's membership"
+msgstr "Забрати членство в користувача"
+
+#: converse.js:2540
+msgid "Set room topic"
+msgstr "Встановити тему кімнати"
+
+#: converse.js:2541
+msgid "Allow muted user to post messages"
+msgstr "Дозволити безголосому користувачу слати повідомлення"
+
+#: converse.js:2686 converse.js:4629
+msgid "Save"
+msgstr "Зберегти"
+
+#: converse.js:2687 converse.js:4894 converse.js:5009
+msgid "Cancel"
+msgstr "Відміна"
+
+#: converse.js:2730
+msgid "An error occurred while trying to save the form."
+msgstr "Трапилася помилка при спробі зберегти форму."
+
+#: converse.js:2777
+msgid "This chatroom requires a password"
+msgstr "Ця кімната вимагає пароль"
+
+#: converse.js:2778
+msgid "Password: "
+msgstr "Пароль:"
+
+#: converse.js:2779
+msgid "Submit"
+msgstr "Надіслати"
+
+#: converse.js:2814
+msgid "This room is not anonymous"
+msgstr "Ця кімната не є анонімною"
+
+#: converse.js:2815
+msgid "This room now shows unavailable members"
+msgstr "Ця кімната вже показує недоступних учасників"
+
+#: converse.js:2816
+msgid "This room does not show unavailable members"
+msgstr "Ця кімната не показує недоступних учасників"
+
+#: converse.js:2817
+msgid "Non-privacy-related room configuration has changed"
+msgstr "Змінено конфігурацію кімнати, не повязану з приватністю"
+
+#: converse.js:2818
+msgid "Room logging is now enabled"
+msgstr "Журналювання кімнати тепер ввімкнено"
+
+#: converse.js:2819
+msgid "Room logging is now disabled"
+msgstr "Журналювання кімнати тепер вимкнено"
+
+#: converse.js:2820
+msgid "This room is now non-anonymous"
+msgstr "Ця кімната тепер не-анонімна"
+
+#: converse.js:2821
+msgid "This room is now semi-anonymous"
+msgstr "Ця кімната тепер напів-анонімна"
+
+#: converse.js:2822
+msgid "This room is now fully-anonymous"
+msgstr "Ця кімната тепер повністю анонімна"
+
+#: converse.js:2823
+msgid "A new room has been created"
+msgstr "Створено нову кімнату"
+
+#: converse.js:2827 converse.js:2926
+msgid "You have been banned from this room"
+msgstr "Вам заблокували доступ до цієї кімнати"
+
+#: converse.js:2828
+msgid "You have been kicked from this room"
+msgstr "Вас викинули з цієї кімнати"
+
+#: converse.js:2829
+msgid "You have been removed from this room because of an affiliation change"
+msgstr "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
+
+#: converse.js:2830
+msgid ""
+"You have been removed from this room because the room has changed to members-"
+"only and you're not a member"
+msgstr ""
+"Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним "
+"не є її членом"
+
+#: converse.js:2831
+msgid ""
+"You have been removed from this room because the MUC (Multi-user chat) "
+"service is being shut down."
+msgstr "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."
+
+#: converse.js:2845
+msgid "<strong>%1$s</strong> has been banned"
+msgstr "<strong>%1$s</strong> заблоковано"
+
+#: converse.js:2846
+msgid "<strong>%1$s</strong>'s nickname has changed"
+msgstr "Прізвисько <strong>%1$s</strong> змінено"
+
+#: converse.js:2847
+msgid "<strong>%1$s</strong> has been kicked out"
+msgstr "<strong>%1$s</strong> було викинуто звідси"
+
+#: converse.js:2848
+msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
+msgstr "<strong>%1$s</strong> було видалено через зміни власності кімнати"
+
+#: converse.js:2849
+msgid "<strong>%1$s</strong> has been removed for not being a member"
+msgstr "<strong>%1$s</strong> було виделано через відсутність членства"
+
+#: converse.js:2853
+msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
+msgstr "Ваше прізвисько було автоматично змінене на: <strong>%1$s</strong>"
+
+#: converse.js:2854
+msgid "Your nickname has been changed to: <strong>%1$s</strong>"
+msgstr "Ваше прізвисько було змінене на: <strong>%1$s</strong>"
+
+#: converse.js:2902 converse.js:2912
+msgid "The reason given is: \""
+msgstr "Причиною вказано: \""
+
+#: converse.js:2924
+msgid "You are not on the member list of this room"
+msgstr "Ви не є у списку членів цієї кімнати"
+
+#: converse.js:2930
+msgid "No nickname was specified"
+msgstr "Не вказане прізвисько"
+
+#: converse.js:2934
+msgid "You are not allowed to create new rooms"
+msgstr "Вам не дозволено створювати нові кімнати"
+
+#: converse.js:2936
+msgid "Your nickname doesn't conform to this room's policies"
+msgstr "Ваше прізвисько не відповідає політиці кімнати"
+
+#: converse.js:2940
+msgid "Your nickname is already taken"
+msgstr "Таке прізвисько вже зайняте"
+
+#: converse.js:2942
+msgid "This room does not (yet) exist"
+msgstr "Такої кімнати (поки) не існує"
+
+#: converse.js:2944
+msgid "This room has reached it's maximum number of occupants"
+msgstr "Ця кімната досягнула максимуму учасників"
+
+#: converse.js:2988
+msgid "Topic set by %1$s to: %2$s"
+msgstr "Тема встановлена %1$s: %2$s"
+
+#: converse.js:3066
+msgid "%1$s has invited you to join a chat room: %2$s"
+msgstr "%1$s запрошує вас приєднатись до чату: %2$s"
+
+#: converse.js:3070
+msgid ""
+"%1$s has invited you to join a chat room: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
+"%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \"%3$s\""
+
+#: converse.js:3339
+msgid "Click to restore this chat"
+msgstr "Клацніть, щоб відновити цей чат"
+
+#: converse.js:3481
+msgid "Minimized"
+msgstr "Мінімізовано"
+
+#: converse.js:3582 converse.js:3600
+msgid "Click to remove this contact"
+msgstr "Клацніть, щоб видалити цей контакт"
+
+#: converse.js:3589
+msgid "Click to accept this contact request"
+msgstr "Клацніть, щоб прийняти цей запит контакту"
+
+#: converse.js:3590
+msgid "Click to decline this contact request"
+msgstr "Клацніть, щоб відхилити цей запит контакту"
+
+#: converse.js:3599
+msgid "Click to chat with this contact"
+msgstr "Клацніть, щоб почати розмову з цим контактом"
+
+#: converse.js:3616
+msgid "Are you sure you want to remove this contact?"
+msgstr "Ви впевнені, що хочете видалити цей контакт?"
+
+#: converse.js:3639
+msgid "Are you sure you want to decline this contact request?"
+msgstr "Ви впевнені, що хочете відхилити цей запит контакту?"
+
+#: converse.js:4166
+msgid "Type to filter"
+msgstr "Друкуйте для фільтру"
+
+#. For translators: the %1$s part gets replaced with the status
+#. Example, I am online
+#: converse.js:4600 converse.js:4673
+msgid "I am %1$s"
+msgstr "Я %1$s"
+
+#: converse.js:4602 converse.js:4678
+msgid "Click here to write a custom status message"
+msgstr "Клацніть тут, щоб створити власний статус"
+
+#: converse.js:4603 converse.js:4679
+msgid "Click to change your chat status"
+msgstr "Клацніть, щоб змінити статус в чаті"
+
+#: converse.js:4628
+msgid "Custom status"
+msgstr "Власний статус"
+
+#: converse.js:4656 converse.js:4664
+msgid "online"
+msgstr "на зв'язку"
+
+#: converse.js:4658
+msgid "busy"
+msgstr "зайнятий"
+
+#: converse.js:4660
+msgid "away for long"
+msgstr "давно відсутній"
+
+#: converse.js:4662
+msgid "away"
+msgstr "відсутній"
+
+#: converse.js:4779
+msgid "Your XMPP provider's domain name:"
+msgstr "Домен Вашого провайдера XMPP:"
+
+#: converse.js:4780
+msgid "Fetch registration form"
+msgstr "Отримати форму реєстрації"
+
+#: converse.js:4781
+msgid "Tip: A list of public XMPP providers is available"
+msgstr "Порада: доступний перелік публічних XMPP-провайдерів"
+
+#: converse.js:4782
+msgid "here"
+msgstr "тут"
+
+#: converse.js:4787 converse.js:5007
+msgid "Register"
+msgstr "Реєстрація"
+
+#: converse.js:4834
+msgid ""
+"Sorry, the given provider does not support in band account registration. "
+"Please try with a different provider."
+msgstr ""
+"Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого "
+"провайдера."
+
+#: converse.js:4895
+msgid "Requesting a registration form from the XMPP server"
+msgstr "Запитую форму реєстрації з XMPP сервера"
+
+#: converse.js:4930
+msgid ""
+"Something went wrong while establishing a connection with \"%1$s\". Are you "
+"sure it exists?"
+msgstr ""
+"Щось пішло не так при встановленні зв'язку з \"%1$s\". Ви впевнені, що такий "
+"існує?"
+
+#: converse.js:4949
+msgid "Now logging you in"
+msgstr "Входимо"
+
+#: converse.js:4953
+msgid "Registered successfully"
+msgstr "Успішно зареєстровано"
+
+#: converse.js:5012
+msgid "Return"
+msgstr "Вернутися"
+
+#: converse.js:5044
+msgid "The provider rejected your registration attempt. "
+msgstr "Провайдер відхилив Вашу спробу реєстрації."
+
+#: converse.js:5200
+msgid "XMPP Username:"
+msgstr "XMPP адреса:"
+
+#: converse.js:5201
+msgid "Password:"
+msgstr "Пароль:"
+
+#: converse.js:5202
+#, fuzzy
+msgid "Click here to log in anonymously"
+msgstr "Ця кімната не є анонімною"
+
+#: converse.js:5203
+msgid "Log In"
+msgstr "Ввійти"
+
+#: converse.js:5210
+msgid "Sign in"
+msgstr "Вступити"
+
+#: converse.js:5291
+msgid "Toggle chat"
+msgstr "Включити чат"

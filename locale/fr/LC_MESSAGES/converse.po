@@ -52,11 +52,8 @@ msgstr "Ce contact est connecté"
 msgid "This contact is offline"
 msgstr "Ce contact est déconnecté"
 
-<<<<<<< HEAD
+
 #: converse.js:321
-=======
-#: converse.js:340
->>>>>>> jcbrand/master
 msgid "This contact is unavailable"
 msgstr "Ce contact est indisponible"
 
@@ -68,11 +65,8 @@ msgstr "Ce contact est absent"
 msgid "This contact is away"
 msgstr "Ce contact est absent"
 
-<<<<<<< HEAD
+
 #: converse.js:325
-=======
-#: converse.js:344
->>>>>>> jcbrand/master
 msgid "Click to hide these contacts"
 msgstr "Cliquez pour cacher ces contacts"
 
@@ -144,13 +138,8 @@ msgid ""
 msgstr ""
 "Demande d'authtification de %1$s\n"
 "\n"
-<<<<<<< HEAD
 "Votre contact tente de vérifier votre identité, en vous posant "
 "la question ci-dessous.\n"
-=======
-"Votre contact tente de vérifier votre identité, en vous posant la question "
-"ci-dessous.\n"
->>>>>>> jcbrand/master
 "\n"
 "%2$s"
 
@@ -166,11 +155,7 @@ msgstr "Échange de clé privée avec le contact"
 msgid "Personal message"
 msgstr "Message personnel"
 
-<<<<<<< HEAD
 #: converse.js:1062
-=======
-#: converse.js:1081
->>>>>>> jcbrand/master
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
 
@@ -256,11 +241,7 @@ msgstr ""
 msgid "has gone offline"
 msgstr "est déconnecté"
 
-<<<<<<< HEAD
 #: converse.js:1430
-=======
-#: converse.js:1449
->>>>>>> jcbrand/master
 msgid "is busy"
 msgstr "est occupé"
 
@@ -353,11 +334,8 @@ msgstr "Absent"
 msgid "Offline"
 msgstr "Déconnecté"
 
-<<<<<<< HEAD
+
 #: converse.js:1652
-=======
-#: converse.js:1672
->>>>>>> jcbrand/master
 msgid "Log out"
 msgstr "Se déconnecter"
 

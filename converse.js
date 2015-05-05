@@ -248,11 +248,7 @@
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             play_sounds: false,
-<<<<<<< HEAD
-			play_sounds_path: '/sounds/',
-=======
             sounds_path: '/sounds/',
->>>>>>> jcbrand/master
             password: undefined,
             authentication: 'login', // Available values are "login", "prebind", "anonymous".
             prebind: false, // XXX: Deprecated, use "authentication" instead.
@@ -358,19 +354,17 @@
         this.playNotification = function () {
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined"){
-<<<<<<< HEAD
-                audio = new Audio(converse.play_sounds_path+"msg_received.ogg");
-                if (audio.canPlayType('/audio/ogg')) {
-                    audio.play();
-                } else {
-                    audio = new Audio(converse.play_sounds_path+"msg_received.mp3");
-=======
                 audio = new Audio(converse.sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
                 } else {
                     audio = new Audio(converse.sounds_path+"msg_received.mp3");
->>>>>>> jcbrand/master
+
+                audio = new Audio(converse.sounds_path+"msg_received.ogg");
+                if (audio.canPlayType('/audio/ogg')) {
+                    audio.play();
+                } else {
+                    audio = new Audio(converse.sounds_path+"msg_received.mp3");
                     audio.play();
                 }
             }
@@ -642,12 +636,32 @@
                 this.chatboxviews.trimChats();
             },this), 200));
         };
+		this.ping = function (jid, success, error, timeout){
+				if (jid == null) {   jid= this.bare_jid; }
+				this.connection.ping.ping( jid, success, error, timeout );
+			},
+			
+		this.pong = function (ping){
+				converse.connection.ping.pong(ping);
+			},
+			
+		this.registerPongHandler = function (){
+				converse.connection.ping.addPingHandler( this.pong );
+			},
+			
+		this.registerPingHandler = function (){
+				window.setTimeout(
+					function() {
+						converse.connection.ping.ping(null,null,null,45);
+					}, 60000);
+			},
 
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
                 this.registerRosterXHandler();
+				this.registerPongHandler();
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
@@ -692,7 +706,8 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-
+				this.registerPingHandler();
+				this.registerPongHandler();
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {
@@ -4445,7 +4460,7 @@
                 this.render().update();
                 return this;
             },
-
+			
             registerRosterHandler: function () {
                 converse.connection.addHandler(
                     converse.roster.onRosterPush.bind(converse.roster),

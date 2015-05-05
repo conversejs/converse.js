@@ -636,33 +636,32 @@
                 this.chatboxviews.trimChats();
             },this), 200));
         };
-		/*
 		this.ping = function (jid, success, error, timeout){
 				if (jid == null) {   jid= this.bare_jid; }
 				this.connection.ping.ping( jid, success, error, timeout );
-		};
+			},
 			
 		this.pong = function (ping){
 				converse.connection.ping.pong(ping);
-		};
+			},
 			
 		this.registerPongHandler = function (){
 				converse.connection.ping.addPingHandler( this.pong );
-		};
+			},
 			
 		this.registerPingHandler = function (){
 				window.setTimeout(
 					function() {
 						converse.connection.ping.ping(null,null,null,45);
 					}, 60000);
-		};
-*/
+			},
+
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
                 this.registerRosterXHandler();
-				//this.registerPongHandler();
+				this.registerPongHandler();
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
@@ -707,8 +706,8 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-				//this.registerPingHandler();
-				//this.registerPongHandler();
+				this.registerPingHandler();
+				this.registerPongHandler();
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {

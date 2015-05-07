@@ -36,7 +36,7 @@ require.config({
         "strophe-websocket":        "components/strophejs/src/websocket",
         "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
-        "strophe.roster":           "src/strophe.roster",
+        "strophe.roster":           "components/strophejs-plugins/roster/strophe.roster",
         "strophe.vcard":            "src/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',

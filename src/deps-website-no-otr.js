@@ -5,6 +5,7 @@ define("converse-dependencies", [
     "strophe",
     "strophe.vcard",
     "strophe.disco",
+    "strophe.ping",
     "bootstrapJS", // XXX: Can be removed, only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",

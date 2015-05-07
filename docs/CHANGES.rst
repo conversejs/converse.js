@@ -1,18 +1,19 @@
 Changelog
 =========
 
-0.9.4 (2015-05-01)
+0.9.4 (Unreleased)
 ------------------
 
 * Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
+* Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
 
 0.9.3 (2015-05-01)
 ------------------
 
-* Add the ability to log in anonymously. [jcbrand]
 * Add the ability to log in automatically. [jcbrand]
 * Remove ``type=email`` from JID field in login form. Resulting validation error confuses people. [jcbrand]
 * Add Ukranian translations [Andriy Kopystyansky]
+* #244 Add the ability to log in anonymously. [jcbrand]
 * #344 Enable the path to the sound files to be configured [thierrytiti and jcbrand]
 * #370 Unable to register a new user to ejabberd 2.1.11. [gbonvehi]
 * #372 Some offline users have a visible empty <dd> in the roster. [floriancargoet]

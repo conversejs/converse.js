@@ -5359,14 +5359,6 @@
                     $bsu_input = null,
                     errors = false;
 
-                if (! converse.bosh_service_url) {
-                    $bsu_input = $form.find('input#bosh_service_url');
-                    converse.bosh_service_url = $bsu_input.val();
-                    if (! converse.bosh_service_url)  {
-                        errors = true;
-                        $bsu_input.addClass('error');
-                    }
-                }
                 if (! jid) {
                     errors = true;
                     $jid_input.addClass('error');

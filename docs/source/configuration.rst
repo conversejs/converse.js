@@ -366,7 +366,7 @@ Specify the locale/language. The language must be in the ``locales`` object. Ref
 .. _`play-sounds`:
 
 ping_interval
------------
+-------------
 
 * Default:  ``120``
 

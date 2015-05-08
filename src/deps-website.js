@@ -7,6 +7,7 @@ define("converse-dependencies", [
     "strophe",
     "strophe.vcard",
     "strophe.disco",
+	"strophe.ping",
     "bootstrapJS", // XXX: Only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",

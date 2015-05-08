@@ -365,6 +365,17 @@ Specify the locale/language. The language must be in the ``locales`` object. Ref
 
 .. _`play-sounds`:
 
+ping_interval
+-------------
+
+* Default:  ``120``
+
+Make ping every ``ping_interval`` to server in order to keep connection with server.
+
+If you set this to ``0`` or any negative value, il will disable this functionality.
+You need to set the value to any positive value to enable this functionality.
+
+
 play_sounds
 -----------
 

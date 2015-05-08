@@ -5,6 +5,7 @@ define("converse-dependencies", [
     "strophe",
     "strophe.vcard",
     "strophe.disco",
+	"strophe.ping",
     "backbone.browserStorage",
     "backbone.overview",
     "jquery.browser",

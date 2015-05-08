@@ -273,8 +273,9 @@
             xhr_custom_status: false,
             xhr_custom_status_url: '',
             xhr_user_search: false,
-            xhr_user_search_url: ''
-        };
+            xhr_user_search_url: '',
+            ping_interval: 120
+	};
         _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
@@ -634,11 +635,35 @@
             },this), 200));
         };
 
+	this.ping = function (jid, timeout, success, error){
+		if (typeof jid === 'undefined'     || jid == null)     { jid = this.bare_jid; }
+                if (typeof timeout === 'undefined' || timeout == null) { timeout = 45; }
+                if (typeof success === 'undefined' ) { success = null; }
+                if (typeof error === 'undefined' ) { error = null; }
+                if (this.connection) this.connection.ping.ping( jid, success, error, timeout );
+	};
+
+	this.pong = function (ping){
+		converse.connection.ping.pong(ping);
+	        return true;
+	};
+
+	this.registerPongHandler = function (){
+		converse.connection.ping.addPingHandler( this.pong );
+	};
+
+	this.registerPingHandler = function (){
+                if (this.ping_interval>0){
+		    window.setInterval( function() { converse.ping(); }, this.ping_interval*1000);
+                }
+	};
+
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
                 this.registerRosterXHandler();
+				this.registerPongHandler();
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
@@ -683,7 +708,8 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-
+				this.registerPingHandler();
+				this.registerPongHandler();
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {
@@ -5796,6 +5822,9 @@
         },
         'send': function (stanza) {
             converse.connection.send(stanza);
+        },
+        'ping': function (jid) {
+            converse.ping(jid);
         },
         'plugins': {
             'add': function (name, callback) {

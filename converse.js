@@ -569,10 +569,13 @@
         };
 
         this.clearSession = function () {
-            this.roster.browserStorage._clear();
+            if (this.roster) {
+                this.roster.browserStorage._clear();
+            }
             this.session.browserStorage._clear();
-            var controlbox = converse.chatboxes.get('controlbox');
-            controlbox.save({'connected': false});
+            if (converse.connection.connected) {
+                converse.chatboxes.get('controlbox').save({'connected': false});
+            }
         };
 
         this.setSession = function () {

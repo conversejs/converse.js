@@ -3686,6 +3686,7 @@
                             'desc_status': STATUSES[chat_status||'offline'],
                             'desc_chat': __('Click to chat with this contact'),
                             'desc_remove': __('Click to remove this contact'),
+                            'title_fullname': __('Name'),
                             'allow_contact_removal': converse.allow_contact_removal
                         })
                     ));
@@ -5333,7 +5334,9 @@
                         'label_username': __('XMPP Username:'),
                         'label_password': __('Password:'),
                         'label_anon_login': __('Click here to log in anonymously'),
-                        'label_login': __('Log In')
+                        'label_login': __('Log In'),
+                        'placeholder_username': __('user@server'),
+                        'placeholder_password': __('password')
                     })
                 ));
                 this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');

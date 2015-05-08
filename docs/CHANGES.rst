@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
+* #385 Add Ping funcionnality and Pong Handler  (Fix to issue #144) [thierrytiti]
  
 
 0.9.3 (2015-05-01)

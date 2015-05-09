@@ -5,9 +5,9 @@
     {[ if (!auto_login) { ]}
         {[ if (authentication == LOGIN) { ]}
             <label>{{label_username}}</label>
-            <input name="jid" placeholder="user@server">
+            <input name="jid" placeholder="{{placeholder_username}}">
             <label>{{label_password}}</label>
-            <input type="password" name="password" placeholder="password">
+            <input type="password" name="password" placeholder="{{placeholder_password}}">
             <input class="submit" type="submit" value="{{label_login}}">
             <span class="conn-feedback"></span>
         {[ } ]}

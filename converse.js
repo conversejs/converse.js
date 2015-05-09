@@ -4643,7 +4643,7 @@
                 }, this));
             },
 
-            sendPresence: function (type, status_message) {
+            constructPresence: function (type, status_message) {
                 if (typeof type === 'undefined') {
                     type = this.get('status') || 'online';
                 }
@@ -4676,7 +4676,11 @@
                         presence.c('status').t(status_message);
                     }
                 }
-                converse.connection.send(presence);
+                return presence;
+            },
+
+            sendPresence: function (type, status_message) {
+                converse.connection.send(this.constructPresence(type, status_message));
             },
 
             setStatus: function (value) {
@@ -5604,9 +5608,56 @@
             return this;
         };
 
+        this._overrideAttribute = function (key, plugin) {
+            // See converse.plugins.override
+            var value = plugin.overrides[key];
+            if (typeof value === "function") {
+                plugin._super = {'converse': converse};
+                plugin._super[key] = converse[key].bind(converse);
+                converse[key] = value.bind(this);
+            } else {
+                converse[key] = value;
+            }
+        };
+
+        this._extendObject = function (obj, attributes) {
+            // See converse.plugins.extend
+            if (!obj.prototype._super) {
+                obj.prototype._super = {'converse': converse};
+            }
+            _.each(attributes, function (value, key) {
+                if (key === 'events') {
+                    obj.prototype[key] = _.extend(value, obj.prototype[key]);
+                } else {
+                    if (typeof value === 'function') {
+                        obj.prototype._super[key] = obj.prototype[key];
+                    }
+                    obj.prototype[key] = value;
+                }
+            });
+        };
+
         this._initializePlugins = function () {
             _.each(this.plugins, $.proxy(function (plugin) {
-                $.proxy(plugin, this)(this);
+                plugin.converse = converse;
+                _.each(Object.keys(plugin.overrides), function (key) {
+                    /* We automatically override all methods and Backbone views and
+                     * models that are in the "overrides" namespace.
+                     */
+                    var override = plugin.overrides[key];
+                    if (typeof override == "object") {
+                        this._extendObject(converse[key], override);
+                    } else {
+                        this._overrideAttribute(key, plugin);
+                    }
+                }.bind(this));
+
+                if (typeof plugin.initialize === "function") {
+                    plugin.initialize.bind(plugin)(this);
+                } else {
+                    // This will be deprecated in 0.10
+                    $.proxy(plugin, this)(this);
+                }
             }, this));
         };
 
@@ -5801,34 +5852,35 @@
             converse.connection.send(stanza);
         },
         'plugins': {
-            'add': function (name, callback) {
-                converse.plugins[name] = callback;
+            'add': function (name, plugin) {
+                converse.plugins[name] = plugin;
             },
             'remove': function (name) {
                 delete converse.plugins[name];
             },
+            'override': function (name, value) {
+                /* Helper method for overriding methods and attributes directly on the
+                 * converse object. For Backbone objects, use instead the 'extend'
+                 * method.
+                 *
+                 * If a method is overridden, then the original method will still be
+                 * available via the _super attribute.
+                 *
+                 * name: The attribute being overridden.
+                 * value: The value of the attribute being overridden.
+                 */
+                converse._overrideAttribute(name, value);
+            },
             'extend': function (obj, attributes) {
                 /* Helper method for overriding or extending Converse's Backbone Views or Models
-                *
-                * When a method is overriden, the original will still be available
-                * on the _super attribute of the object being overridden.
-                *
-                * obj: The Backbone View or Model
-                * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
-                */
-                if (!obj.prototype._super) {
-                    obj.prototype._super = {};
-                }
-                _.each(attributes, function (value, key) {
-                    if (key === 'events') {
-                        obj.prototype[key] = _.extend(value, obj.prototype[key]);
-                    } else {
-                        if (typeof value === 'function') {
-                            obj.prototype._super[key] = obj.prototype[key];
-                        }
-                        obj.prototype[key] = value;
-                    }
-                });
+                 *
+                 * When a method is overriden, the original will still be available
+                 * on the _super attribute of the object being overridden.
+                 *
+                 * obj: The Backbone View or Model
+                 * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
+                 */
+                converse._extendObject(obj, attributes);
             }
         },
         'env': {

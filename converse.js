@@ -5614,7 +5614,7 @@
             if (typeof value === "function") {
                 plugin._super = {'converse': converse};
                 plugin._super[key] = converse[key].bind(converse);
-                converse[key] = value.bind(this);
+                converse[key] = value.bind(plugin);
             } else {
                 converse[key] = value;
             }

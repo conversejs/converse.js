@@ -215,7 +215,32 @@
 
         // Translation machinery
         // ---------------------
-        this.i18n = settings.i18n ? settings.i18n : locales.en;
+		 this.isAvailableLocale=function(locale){
+            ret=null;
+            if (locales[locale]) ret=locales[locale];
+            else{
+                sublocale=locale.split("-")[0];
+                if (sublocale!=locale && locales[sublocale]) ret=locales[sublocale];
+            }
+            return ret;
+        };
+		
+        this.detectLocale=function(){
+            ret=null;
+            if (window.navigator.userLanguage) ret=this.isAvailableLocale(window.navigator.userLanguage);
+            else if (window.navigator.languages && !ret){
+                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
+                 ret=this.isAvailableLocale(window.navigator.languages[i]);
+                }
+            }
+            else if (window.navigator.browserLanguage && !ret) ret=this.isAvailableLocale(window.navigator.browserLanguage);
+            else if (window.navigator.language && !ret) ret=this.isAvailableLocale(window.navigator.language);
+            else if (window.navigator.systemLanguage && !ret) ret=this.isAvailableLocale(window.navigator.systemLanguage);
+            else {ret=locales.en}
+            return ret;
+        };
+
+        this.i18n = settings.i18n ? settings.i18n : this.detectLocale();
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
 

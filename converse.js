@@ -247,7 +247,7 @@
             keepalive: false,
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
-			ping_interval: 120,
+            ping_interval: 120, //in seconds
             play_sounds: false,
             sounds_path: '/sounds/',
             password: undefined,
@@ -396,7 +396,7 @@
              */
             var pres = $pres({to: jid, type: "unsubscribed"});
             if (message && message !== "") { pres.c("status").t(message); }
-            converse.connection.send(pres);
+            converse.send(pres);
         };
 
         this.getVCard = function (jid, callback, errback) {
@@ -634,36 +634,68 @@
                 this.chatboxviews.trimChats();
             },this), 200));
         };
-
-        this.ping = function (jid, timeout, success, error){
-            if (typeof jid === 'undefined'     || jid == null)     { jid = this.bare_jid; }
-                if (typeof timeout === 'undefined' || timeout == null) { timeout = 45; }
+	
+        this.ping = function (jid, success, error, timeout){
+            //var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+            //if (feature) {
+                converse.lastMessage=new Date();
+                if (typeof jid === 'undefined'     || jid == null)     { jid = converse.bare_jid; }
+                if (typeof timeout === 'undefined' ) { timeout = null; }
                 if (typeof success === 'undefined' ) { success = null; }
                 if (typeof error === 'undefined' ) { error = null; }
-                if (this.connection) this.connection.ping.ping( jid, success, error, timeout );
-        };
-
+                if (converse.connection) {
+				    converse.connection.ping.ping( jid, success, error, timeout );
+					return true
+				};
+            //}
+            return false;
+		};
+		
         this.pong = function (ping){
+            converse.lastMessage=new Date();
 		    converse.connection.ping.pong(ping);
 	        return true;
     	};
 
 	    this.registerPongHandler = function (){
-			converse.connection.ping.addPingHandler( this.pong );
+			var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+            if (feature) {
+			    converse.connection.ping.addPingHandler( this.pong );
+			}
     	};
 
 	    this.registerPingHandler = function (){
             if (this.ping_interval>0){
-		        window.setInterval( function() { converse.ping(); }, this.ping_interval*1000);
-                }
+		        converse.connection.addTimedHandler(1000,function() {
+                    now = new Date();
+                    if (!converse.lastMessage) converse.lastMessage=now;
+                    //converse.log("diff:"+(now - converse.lastMessage)/1000)+" "+converse.ping_interval;
+                    if ((now - converse.lastMessage)/1000 > converse.ping_interval){
+                        return converse.ping();
+                    }
+                    return true; 
+                    }
+				);
+            }
     	};
 
+		this.send = function (stanza){
+            this.lastMessage=new Date();
+            this.connection.send(stanza);
+        };
+
+        this.sendIQ = function (iq, onSuccess, onError, timeout){
+            this.lastMessage=new Date();
+            this.connection.sendIQ(iq, onSuccess, onError, timeout);
+        };
+		
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
                 this.registerRosterXHandler();
                 this.registerPongHandler();
+				this.registerPingHandler();
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
@@ -692,7 +724,7 @@
                     converse.log('Message carbons have been enabled.');
                 }
             }, this), null, "iq", null, "enablecarbons");
-            this.connection.send(carbons_iq);
+            this.send(carbons_iq);
         };
 
         this.onConnected = function () {
@@ -1216,14 +1248,14 @@
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
                     .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES});
-                converse.connection.send(message);
+                converse.send(message);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
                     var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
                                     .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                                     .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
                                     .cnode(message.tree());
-                    converse.connection.send(forwarded);
+                    converse.send(forwarded);
                 }
             },
 
@@ -1270,7 +1302,7 @@
                  * as taken from the 'chat_state' attribute of the chat box.
                  * See XEP-0085 Chat State Notifications.
                  */
-                converse.connection.send(
+                converse.send(
                     $msg({'to':this.model.get('jid'), 'type': 'chat'})
                         .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES})
                 );
@@ -1870,7 +1902,7 @@
             updateRoomsList: function () {
                 /* Send and IQ stanza to the server asking for all rooms
                  */
-                converse.connection.sendIQ(
+                converse.sendIQ(
                     $iq({
                         to: this.model.get('muc_domain'),
                         from: converse.connection.jid,
@@ -2465,7 +2497,7 @@
                     to: receiver,
                     id: converse.connection.getUniqueId()
                 }).c('x', attrs);
-                converse.connection.send(invitation);
+                converse.send(invitation);
                 converse.emit('roomInviteSent', this, receiver, reason);
             },
 
@@ -2482,7 +2514,7 @@
                     id: msgid
                 }).c("body").t(text).up()
                   .c("x", {xmlns: "jabber:x:event"}).c("composing");
-                converse.connection.send(msg);
+                converse.send(msg);
 
                 var fullname = converse.xmppstatus.get('fullname');
                 this.model.messages.create({
@@ -2498,14 +2530,14 @@
                 var item = $build("item", {jid: jid, affiliation: affiliation});
                 var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                 if (reason !== null) { iq.c("reason", reason); }
-                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+                return converse.sendIQ(iq.tree(), onSuccess, onError);
             },
 
             modifyRole: function(room, nick, role, reason, onSuccess, onError) {
                 var item = $build("item", {nick: nick, role: role});
                 var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                 if (reason !== null) { iq.c("reason", reason); }
-                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+                return converse.sendIQ(iq.tree(), onSuccess, onError);
             },
 
             member: function(room, jid, reason, handler_cb, error_cb) {
@@ -2578,7 +2610,7 @@
                                 undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'nick':
-                        converse.connection.send($pres({
+                        converse.send($pres({
                             from: converse.connection.jid,
                             to: this.getRoomJIDAndNick(match[2]),
                             id: converse.connection.getUniqueId()
@@ -2600,7 +2632,7 @@
                                 undefined, $.proxy(this.onCommandError, this));
                         break;
                     case 'topic':
-                        converse.connection.send(
+                        converse.send(
                             $msg({
                                 to: this.model.get('jid'),
                                 from: converse.connection.jid,
@@ -2670,7 +2702,7 @@
                     this.handler = converse.connection.addHandler($.proxy(this.handleMUCStanza, this));
                 }
                 this.model.set('connection_status', Strophe.Status.CONNECTING);
-                return converse.connection.send(msg);
+                return converse.send(msg);
             },
 
             leave: function(exit_msg) {
@@ -2687,7 +2719,7 @@
                 converse.connection.addHandler(
                     $.proxy(function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }, this),
                     null, "presence", null, presenceid);
-                converse.connection.send(presence);
+                converse.send(presence);
             },
 
             renderConfigurationForm: function (stanza) {
@@ -2716,7 +2748,7 @@
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                     .c("x", {xmlns: "jabber:x:data", type: "submit"});
                 _.each(config, function (node) { iq.cnode(node).up(); });
-                return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+                return converse.sendIQ(iq.tree(), onSuccess, onError);
             },
 
             saveConfiguration: function (ev) {
@@ -2774,7 +2806,7 @@
                         '<span class="spinner centered"/>'+
                         '</form>'+
                     '</div>'));
-                converse.connection.sendIQ(
+                converse.sendIQ(
                         $iq({
                             to: this.model.get('jid'),
                             type: "get"
@@ -3544,7 +3576,7 @@
                 if (nick && nick !== "") {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
-                converse.connection.send(pres);
+                converse.send(pres);
                 return this;
             },
 
@@ -3554,7 +3586,7 @@
                  * state notification by sending a presence stanza of type
                  * "subscribe" to the contact
                  */
-                converse.connection.send($pres({
+                converse.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
                 }));
@@ -3569,7 +3601,7 @@
                  *  Parameters:
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
-                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                converse.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.destroy(); // Will cause removeFromRoster to be called.
             },
 
@@ -3591,7 +3623,7 @@
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
-                converse.connection.send(pres);
+                converse.send(pres);
                 return this;
             },
 
@@ -3615,7 +3647,7 @@
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                converse.connection.sendIQ(iq, callback, callback);
+                converse.sendIQ(iq, callback, callback);
                 return this;
             },
 
@@ -3734,7 +3766,7 @@
                     var iq = $iq({type: 'set'})
                         .c('query', {xmlns: Strophe.NS.ROSTER})
                         .c('item', {jid: this.model.get('jid'), subscription: "remove"});
-                    converse.connection.sendIQ(iq,
+                    converse.sendIQ(iq,
                         function (iq) {
                             this.model.destroy();
                             this.remove();
@@ -3829,7 +3861,7 @@
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', { jid: jid, name: name });
                 _.map(groups, function (group) { iq.c('group').t(group).up(); });
-                converse.connection.sendIQ(iq, callback, errback);
+                converse.sendIQ(iq, callback, errback);
             },
 
             addContact: function (jid, name, groups, attributes) {
@@ -3924,14 +3956,14 @@
                 var from = iq.getAttribute('from');
                 if (from && from !== "" && from != converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-                    converse.connection.send(
+                    converse.send(
                         $iq({type: 'error', id: id, from: converse.connection.jid})
                             .c('error', {'type': 'cancel'})
                             .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
                     );
                     return true;
                 }
-                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
+                converse.send($iq({type: 'result', id: id, from: converse.connection.jid}));
                 $(iq).children('query').find('item').each(function (idx, item) {
                     this.updateContact(item);
                 }.bind(this));
@@ -3942,7 +3974,7 @@
                 /* Get the roster from the XMPP server */
                 var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
-                return converse.connection.sendIQ(iq, this.onReceivedFromServer.bind(this));
+                return converse.sendIQ(iq, this.onReceivedFromServer.bind(this));
             },
 
             onReceivedFromServer: function (iq) {
@@ -4703,7 +4735,7 @@
                         presence.c('status').t(status_message);
                     }
                 }
-                converse.connection.send(presence);
+                converse.send(presence);
             },
 
             setStatus: function (value) {
@@ -5245,7 +5277,7 @@
                     });
                 }
                 converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
-                converse.connection.send(iq);
+                converse.send(iq);
                 this.setFields(iq.tree());
             },
 
@@ -5825,7 +5857,7 @@
             },
         },
         'send': function (stanza) {
-            converse.connection.send(stanza);
+            converse.send(stanza);
         },
         'ping': function (jid) {
             converse.ping(jid);

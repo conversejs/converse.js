@@ -215,7 +215,7 @@
 
         // Translation machinery
         // ---------------------
-		 this.isAvailableLocale=function(locale){
+	this.isAvailableLocale=function(locale){
             ret=null;
             if (locales[locale]) ret=locales[locale];
             else{

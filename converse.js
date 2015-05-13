@@ -376,7 +376,8 @@
                 $(window).on('beforeunload' , function(){converse.autoAwayReset()});
 
                 window.setInterval(function () {
-                    if (converse._idleCounter <= converse.auto_away || (converse.auto_xa>0 && converse._idleCounter <= converse.auto_xa)){
+                    if ((converse._idleCounter <= converse.auto_away || (converse.auto_xa>0 && converse._idleCounter <= converse.auto_xa)) &&
+                        (converse.xmppstatus.get('status') == 'online' && converse._autoAway==0) || (converse.xmppstatus.get('status') == 'away' && converse._autoAway==1) ){
                         converse._idleCounter++;
                     }
                     if (converse.auto_away>0 && converse._autoAway!=1 && converse._idleCounter > converse.auto_away && converse._idleCounter <= converse.auto_xa){

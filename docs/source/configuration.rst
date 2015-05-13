@@ -175,6 +175,27 @@ It should be used either with ``authentication`` set to ``anonymous`` or to
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values.
 
+auto_away
+---------
+
+* Default:  ``0``
+
+This option can be used to let converse.js automatically change user presence
+
+This set the number a seconds before user presence become ``away``
+If the value if negative or ``0``, the function is disabled.
+
+auto_xa
+-------
+
+* Default:  ``0``
+
+This option can be used to let converse.js automatically change user presence
+
+This set the number a seconds before user presence become ``xa`` (eXtended Away)
+The value must be greater than ``auto_away``
+If the value if negative or ``0``, the function is disabled.
+
 auto_reconnect
 --------------
 

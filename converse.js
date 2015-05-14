@@ -247,6 +247,7 @@
             keepalive: false,
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            ping_interval: 120, //in seconds
             play_sounds: false,
             sounds_path: '/sounds/',
             password: undefined,
@@ -633,12 +634,61 @@
                 this.chatboxviews.trimChats();
             },this), 200));
         };
+	
+        this.ping = function (jid, success, error, timeout){
+            //var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+            //if (feature) {
+                converse.lastMessage=new Date();
+                if (typeof jid === 'undefined'     || jid == null)     { jid = converse.bare_jid; }
+                if (typeof timeout === 'undefined' ) { timeout = null; }
+                if (typeof success === 'undefined' ) { success = null; }
+                if (typeof error === 'undefined' ) { error = null; }
+                if (converse.connection) {
+				    converse.connection.ping.ping( jid, success, error, timeout );
+					return true
+				};
+            //}
+            return false;
+		};
+		
+        this.pong = function (ping){
+            converse.lastMessage=new Date();
+		    converse.connection.ping.pong(ping);
+	        return true;
+    	};
+
+	    this.registerPongHandler = function (){
+			var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+            if (feature) {
+			    converse.connection.disco.addFeature(Strophe.NS.PING);
+			    converse.connection.ping.addPingHandler( this.pong );
+			}
+    	};
+
+	    this.registerPingHandler = function (){
+            if (this.ping_interval>0){
+				//handler on each message : save last message date in order to ping only when needed
+				converse.connection.addHandler(function(){ converse.lastMessage=new Date();});
+		        converse.connection.addTimedHandler(1000,function() {
+                    now = new Date();
+                    if (!converse.lastMessage) converse.lastMessage=now;
+                    //converse.log("diff:"+(now - converse.lastMessage)/1000)+" "+converse.ping_interval;
+                    if ((now - converse.lastMessage)/1000 > converse.ping_interval){
+                        return converse.ping();
+                    }
+                    return true; 
+                    }
+				);
+            }
+    	};
 
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
                 this.registerRosterXHandler();
+                this.registerPongHandler();
+				this.registerPingHandler();
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
@@ -667,7 +717,7 @@
                     converse.log('Message carbons have been enabled.');
                 }
             }, this), null, "iq", null, "enablecarbons");
-            this.connection.send(carbons_iq);
+            this.send(carbons_iq);
         };
 
         this.onConnected = function () {
@@ -684,6 +734,8 @@
             this.enableCarbons();
             this.initStatus($.proxy(function () {
 
+                this.registerPingHandler();
+                this.registerPongHandler();
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {
@@ -5799,6 +5851,9 @@
         },
         'send': function (stanza) {
             converse.connection.send(stanza);
+        },
+        'ping': function (jid) {
+            converse.ping(jid);
         },
         'plugins': {
             'add': function (name, callback) {

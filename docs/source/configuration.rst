@@ -363,6 +363,18 @@ i18n
 Specify the locale/language. The language must be in the ``locales`` object. Refer to
 ``./locale/locales.js`` to see which locales are supported.
 
+
+ping_interval
+-------------
+
+* Default:  ``120``
+
+Make ping every ``ping_interval`` to server in order to keep connection with server killing sessions after idle timeout.
+You need to set the value to any positive value to enable this functionality.
+
+If you set this value to ``0`` or any negative value, il will disable this functionality.
+
+
 .. _`play-sounds`:
 
 play_sounds

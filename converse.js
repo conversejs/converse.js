@@ -228,8 +228,8 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
-			auto_away: 0, //in seconds
-			auto_xa: 0, //in seconds
+            auto_away: 0, //in seconds
+            auto_xa: 0, //in seconds
             allow_registration: true,
             animate: true,
             auto_list_rooms: false,
@@ -354,7 +354,7 @@
         // Module-level functions
         // ----------------------
 		
-		this.autoAwayReset=function(){
+	this.autoAwayReset=function(){
             if (converse._idleCounter > 0) {
                 converse._idleCounter = 0;
                 if (converse._autoAway>0) {

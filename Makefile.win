@@ -1,11 +1,11 @@
 # You can set these variables from the command line.
 GRUNT   		?= node_modules\.bin\grunt.cmd
-BOWER           ?= node_modules\.bin\bower
-PHANTOMJS       ?= node_modules\.bin\phantomjs
+BOWER                   ?= node_modules\.bin\bower.cmd
+PHANTOMJS               ?= node_modules\.bin\phantomjs.cmd
 SASS 			?= sass 
 RMRF 			?= rmdir /q /s 
 RMF 			?= del /q 
-HTTPSERVE		?= ./node_modules/.bin/http-server
+HTTPSERVE		?= ./node_modules/.bin/http-server.cmd
 
 .PHONY: all help clean css minjs build
 

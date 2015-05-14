@@ -924,7 +924,7 @@
                         $message.find(INACTIVE).length && INACTIVE ||
                         $message.find(ACTIVE).length && ACTIVE ||
                         $message.find(GONE).length && GONE,
-                    stamp, time, sender, from, createMessage;
+                    stamp, time, sender, from;
 
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
@@ -942,11 +942,6 @@
                     sender = 'me';
                 } else {
                     sender = 'them';
-                }
-                if (!body) {
-                    createMessage = this.messages.add;
-                } else {
-                    createMessage = this.messages.create;
                 }
                 this.messages.create({
                     chat_state: chat_state,

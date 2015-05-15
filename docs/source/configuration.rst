@@ -610,6 +610,9 @@ This setting enables the second mechanism, otherwise by default the first will b
 A default JSON encoded list of objects must be returned. Each object
 corresponds to a matched user and needs the keys ``id`` and ``fullname``.
 
+.. note::
+    Make sure your server script sets the header `Content-Type: application/json`.
+
 xhr_user_search_url
 -------------------
 

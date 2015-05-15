@@ -1562,6 +1562,7 @@
                                 allow_otr: converse.allow_otr && !this.is_chatroom,
                                 label_clear: __('Clear all messages'),
                                 label_end_encrypted_conversation: __('End encrypted conversation'),
+                                label_insert_smiley: __('Insert a smiley'),
                                 label_hide_participants: __('Hide the list of participants'),
                                 label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
                                 label_start_call: __('Start a call'),

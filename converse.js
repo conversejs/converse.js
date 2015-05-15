@@ -4629,7 +4629,7 @@
                     if (this.get('fullname') === undefined) {
                         converse.getVCard(
                             null, // No 'to' attr when getting one's own vCard
-                            $.proxy(function (jid, fullname, image, image_type, url) {
+                            $.proxy(function (iq, jid, fullname, image, image_type, url) {
                                 this.save({'fullname': fullname});
                             }, this)
                         );

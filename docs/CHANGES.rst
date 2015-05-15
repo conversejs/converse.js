@@ -7,6 +7,7 @@ Changelog
 * Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
 * Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
 * Bugfix. clearSessions during unload event would throw an error when not logged in. [gbonvehi]
+* Bugfix. wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]
 * #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
 
 0.9.3 (2015-05-01)

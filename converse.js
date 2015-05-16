@@ -5608,7 +5608,9 @@
             // See converse.plugins.override
             var value = plugin.overrides[key];
             if (typeof value === "function") {
-                plugin._super = {'converse': converse};
+                if (typeof plugin._super === "undefined") {
+                    plugin._super = {'converse': converse};
+                }
                 plugin._super[key] = converse[key].bind(converse);
                 converse[key] = value.bind(plugin);
             } else {

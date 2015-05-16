@@ -5517,49 +5517,49 @@
                 this.setUpXMLLogging();
 
                 if (this.keepalive) {
+                    if (!this.jid) {
+                        throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                    }
                     rid = this.session.get('rid');
                     sid = this.session.get('sid');
                     jid = this.session.get('jid');
-                    if (this.authentication === "prebind") {
-                        if (!this.jid) {
-                            throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
-                        }
-                        if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
-                            this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                            this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
-                        } else if (this.prebind_url) {
-                            this.startNewBOSHSession();
+                }
+                if (this.authentication === PREBIND) {
+                    if (!this.keepalive) {
+                        if (this.jid && this.sid && this.rid) {
+                            this.connection.attach(this.jid, this.sid, this.rid, this.onConnStatusChanged);
                         } else {
-                            delete this.connection;
-                            this.emit('noResumeableSession');
-                        }
-                    } else {
-                        // Non-prebind case.
-                        if (rid && sid && jid) {
-                            this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                            this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
-                        } else if (this.auto_login) {
-                            if (!this.jid) {
-                                throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
-                            }
-                            if (this.authentication === ANONYMOUS) {
-                                this.connection.connect(this.jid, null, this.onConnStatusChanged);
-                            } else if (this.authentication === LOGIN) {
-                                if (!this.password) {
-                                    throw new Error("initConnection: If you use auto_login and "+
-                                        "authentication='login' then you also need to provide a password.");
-                                }
-                                this.connection.connect(this.jid, this.password, this.onConnStatusChanged);
-                            }
+                            throw new Error("initConnection: If you use prebind and not keepalive, "+
+                                "then you MUST supply JID, RID and SID values");
                         }
                     }
-                } else if (this.authentication == "prebind") {
-                    // prebind is used without keepalive
-                    if (this.jid && this.sid && this.rid) {
-                        this.connection.attach(this.jid, this.sid, this.rid, this.onConnStatusChanged);
+                    if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
+                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                        this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
+                    } else if (this.prebind_url) {
+                        this.startNewBOSHSession();
                     } else {
-                        throw new Error("initConnection: If you use prebind and not keepalive, "+
-                            "then you MUST supply JID, RID and SID values");
+                        delete this.connection;
+                        this.emit('noResumeableSession');
+                    }
+                } else {
+                    // Non-prebind case.
+                    if (this.keepalive && rid && sid && jid) {
+                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                        this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
+                    } else if (this.auto_login) {
+                        if (!this.jid) {
+                            throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
+                        }
+                        if (this.authentication === ANONYMOUS) {
+                            this.connection.connect(this.jid, null, this.onConnStatusChanged);
+                        } else if (this.authentication === LOGIN) {
+                            if (!this.password) {
+                                throw new Error("initConnection: If you use auto_login and "+
+                                    "authentication='login' then you also need to provide a password.");
+                            }
+                            this.connection.connect(this.jid, this.password, this.onConnStatusChanged);
+                        }
                     }
                 }
             }

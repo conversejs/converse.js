@@ -3483,9 +3483,12 @@
         this.RosterContact = Backbone.Model.extend({
             initialize: function (attributes, options) {
                 var jid = attributes.jid;
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                attributes.jid = bare_jid;
                 this.set(_.extend({
-                    'id': Strophe.getBareJidFromJid(jid),
-                    'fullname': jid,
+                    'id': bare_jid,
+                    'jid': bare_jid,
+                    'fullname': bare_jid,
                     'chat_status': 'offline',
                     'user_id': Strophe.getNodeFromJid(jid),
                     'resources': [Strophe.getResourceFromJid(jid)],

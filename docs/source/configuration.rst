@@ -360,6 +360,9 @@ If set to ``true``, then don't show offline users.
 i18n
 ----
 
+* Default:  Auto-detection of the User/Browser language
+
+If no locale is matching available locales, the default is ``en``.
 Specify the locale/language. The language must be in the ``locales`` object. Refer to
 ``./locale/locales.js`` to see which locales are supported.
 

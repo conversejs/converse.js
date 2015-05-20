@@ -13,6 +13,7 @@ Changelog
 * Updated French translation [thierrytiti]
 * CSS fix: position and width of the div #conversejs [thierrytiti]
 * CSS fix: room-info bug on hover after room description loaded [thierrytiti]
+* I18N: Autodetection of User Locale if no i18n setting is set. [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

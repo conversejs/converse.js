@@ -763,7 +763,8 @@
     display: block;
     margin-left: 5px; }
   #conversejs div.room-info {
-    clear: left; }
+    clear: left;
+    width: 100%}
   #conversejs p.room-info {
     margin: 0;
     padding: 0;
@@ -794,7 +795,7 @@
     #conversejs dd.available-chatroom:hover {
       background-color: #E3C9C1; }
       #conversejs dd.available-chatroom:hover .room-info {
-        display: inline-block;
+        display: block;
         font-size: 14px; }
   #conversejs #converse-roster dd {
     border: none;

@@ -32,14 +32,15 @@
   bottom: 0;
   direction: ltr;
   height: 35px;
-  left: 0;
+  left: auto;
   position: fixed;
-  right: 0;
+  right: 30px;
   z-index: 30;
   display: block;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  width: auto;
   /* @group Tabs */
   /* status dropdown styles */ }
   #conversejs ::selection {
@@ -762,7 +763,8 @@
     display: block;
     margin-left: 5px; }
   #conversejs div.room-info {
-    clear: left; }
+    clear: left;
+    width: 100%; }
   #conversejs p.room-info {
     margin: 0;
     padding: 0;
@@ -793,7 +795,7 @@
     #conversejs dd.available-chatroom:hover {
       background-color: #E3C9C1; }
       #conversejs dd.available-chatroom:hover .room-info {
-        display: inline-block;
+        display: block;
         font-size: 14px; }
   #conversejs #converse-roster dd {
     border: none;

@@ -11,6 +11,8 @@ Changelog
 * #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
 * Add placeholder for "Insert a smiley" translation [thierrytiti]
 * Updated French translation [thierrytiti]
+* CSS fix: position and width of the div #conversejs [thierrytiti]
+* CSS fix: room-info [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

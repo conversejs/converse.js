@@ -32,14 +32,15 @@
   bottom: 0;
   direction: ltr;
   height: 35px;
-  left: 0;
+  left: auto;
   position: fixed;
-  right: 0;
+  right: 30px;
   z-index: 30;
   display: block;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  width: auto;
   /* @group Tabs */
   /* status dropdown styles */ }
   #conversejs ::selection {

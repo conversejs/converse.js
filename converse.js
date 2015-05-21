@@ -667,10 +667,10 @@
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
-                this.registerRosterXHandler();
-                this.registerPresenceHandler();
+                this.rosterview.registerRosterXHandler();
+                this.rosterview.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
-                converse.xmppstatus.sendPresence();
+                this.xmppstatus.sendPresence();
                 this.giveFeedback(__('Contacts'));
             }, this));
         };

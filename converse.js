@@ -644,43 +644,41 @@
                 if (typeof success === 'undefined' ) { success = null; }
                 if (typeof error === 'undefined' ) { error = null; }
                 if (converse.connection) {
-				    converse.connection.ping.ping( jid, success, error, timeout );
-					return true
-				};
+		    converse.connection.ping.ping( jid, success, error, timeout );
+		    return true
+		};
             //}
             return false;
-		};
+	};
 		
         this.pong = function (ping){
             converse.lastMessage=new Date();
-		    converse.connection.ping.pong(ping);
-	        return true;
+            converse.connection.ping.pong(ping);
+            return true;
     	};
 
-	    this.registerPongHandler = function (){
-			var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+        this.registerPongHandler = function (){
+            var feature = converse.features.findWhere({'var': Strophe.NS.PING});
             if (feature) {
-			    converse.connection.disco.addFeature(Strophe.NS.PING);
-			    converse.connection.ping.addPingHandler( this.pong );
-			}
+                converse.connection.disco.addFeature(Strophe.NS.PING);
+                converse.connection.ping.addPingHandler( this.pong );
+            }
     	};
 
-	    this.registerPingHandler = function (){
+        this.registerPingHandler = function (){
             if (this.ping_interval>0){
-				//handler on each message : save last message date in order to ping only when needed
-				converse.connection.addHandler(function(){ converse.lastMessage=new Date();});
-		        converse.connection.addTimedHandler(1000,function() {
+                //handler on each message : save last message date in order to ping only when needed
+                converse.connection.addHandler(function(){ converse.lastMessage=new Date();});
+                converse.connection.addTimedHandler(1000,function() {
                     now = new Date();
                     if (!converse.lastMessage) converse.lastMessage=now;
-                    //converse.log("diff:"+(now - converse.lastMessage)/1000)+" "+converse.ping_interval;
                     if ((now - converse.lastMessage)/1000 > converse.ping_interval){
                         return converse.ping();
                     }
                     return true; 
-                    }
-				);
+                });
             }
-    	};
+        };
 
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
@@ -688,7 +686,7 @@
             this.initStatus($.proxy(function () {
                 this.registerRosterXHandler();
                 this.registerPongHandler();
-				this.registerPingHandler();
+                this.registerPingHandler();
                 this.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 converse.xmppstatus.sendPresence();
@@ -717,7 +715,7 @@
                     converse.log('Message carbons have been enabled.');
                 }
             }, this), null, "iq", null, "enablecarbons");
-            this.send(carbons_iq);
+            this.connection.send(carbons_iq);
         };
 
         this.onConnected = function () {

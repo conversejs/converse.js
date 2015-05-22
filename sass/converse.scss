@@ -8,10 +8,12 @@
 
 @import "../ruby/1.9.1/gems/bourbon-4.2.1/app/assets/stylesheets/_bourbon";
 
+@import "variables";
+
 @font-face {
   font-family: 'Converse-js';
-  src: url('../fonticons/fonts/icomoon.eot?-mnoxh0');
-  src: url('../fonticons/fonts/icomoon.eot?#iefix-mnoxh0') format("embedded-opentype"), url('../fonticons/fonts/icomoon.woff?-mnoxh0') format("woff"), url('../fonticons/fonts/icomoon.ttf?-mnoxh0') format("truetype"), url('../fonticons/fonts/icomoon.svg?-mnoxh0#icomoon') format("svg");
+  src: url($font-path + 'icomoon.eot?-mnoxh0');
+  src: url($font-path + 'icomoon.eot?#iefix-mnoxh0') format("embedded-opentype"), url($font-path + 'icomoon.woff?-mnoxh0') format("woff"), url($font-path + 'icomoon.ttf?-mnoxh0') format("truetype"), url($font-path + 'icomoon.svg?-mnoxh0#icomoon') format("svg");
   font-weight: normal;
   font-style: normal;
 }

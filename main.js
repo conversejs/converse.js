@@ -37,7 +37,7 @@ require.config({
         "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.roster":           "src/strophe.roster",
-		"strophe.ping":             "src/strophe.ping",
+        "strophe.ping":             "src/strophe.ping",
         "strophe.vcard":            "src/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
@@ -171,7 +171,7 @@ require.config({
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
         'strophe.roster':       { deps: ['strophe'] },
-		'strophe.ping':         { deps: ['strophe'] },
+        'strophe.ping':         { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] }
     }
 });

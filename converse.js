@@ -246,7 +246,7 @@
         //Check Browser information
         this.detectLocale = function  (testLocale) {
             ret = null;
-            if (window.navigator.userLanguage) { ret = this.isAvailableLocale(window.navigator.userLanguage, testLocale);
+            if (window.navigator.userLanguage) ret = this.isAvailableLocale(window.navigator.userLanguage, testLocale);
             else if (window.navigator.languages && !ret) {
                 for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
                     ret = this.isAvailableLocale(window.navigator.languages[i], testLocale);

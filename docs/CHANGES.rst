@@ -15,6 +15,7 @@ Changelog
 * CSS fix: room-info bug on hover after room description loaded [thierrytiti]
 * I18N: Autodetection of User Locale if no i18n setting is set. [thierrytiti]
 * CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
+* Add offline pretty status to enable translation [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

@@ -215,35 +215,56 @@
 
         // Translation machinery
         // ---------------------
-        this.isAvailableLocale = function (locale) {
+		
+		//test for MomentJS
+        this.testMomentLocale = function(locale){
+            oldlang=moment.locale();
+            moment.locale(locale);
+            newlang=moment.locale();
+            return (newlang != oldlang);
+        }
+
+		//test for COnverseJS
+        this.testConverseLocale = function (locale){
+            return (locales[locale]);
+        }
+		
+		//Check locale and sub locale (e.g. locale: en-US  sublocale: en)
+        this.isAvailableLocale = function (locale,available) {
             ret = null;
-            if (locales[locale]) {
-                ret = locales[locale];
+            if (available(locale)) {
+                ret = locale;
             } else{
                 sublocale=locale.split("-")[0];
-                if (sublocale!=locale && locales[sublocale]) {
-                    ret=locales[sublocale];
+                if (sublocale!=locale && available(sublocale)) {
+                    ret=sublocale;
                 }
             }
+            return ret;
+        };
+
+        //Check Browser information
+        this.detectLocale = function  (testLocale) {
+            ret = null;
+            if (window.navigator.userLanguage) ret = this.isAvailableLocale(window.navigator.userLanguage, testLocale);
+            else if (window.navigator.languages && !ret) {
+                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
+                    ret = this.isAvailableLocale(window.navigator.languages[i], testLocale);
+                }
+            }
+            else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage, testLocale);
+            else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language, testLocale);
+            else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage, testLocale);
+            if (!ret) { ret = 'en'; }
             return ret;
         };
 		
-        this.detectLocale = function () {
-            ret = null;
-            if (window.navigator.userLanguage) {
-                ret = this.isAvailableLocale(window.navigator.userLanguage);
-            } else if (window.navigator.languages && !ret) {
-                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
-                    ret = this.isAvailableLocale(window.navigator.languages[i]);
-                }
-            }
-            else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage);
-            else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language);
-            else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage);
-            else { ret = locales.en; }
-            return ret;
-        };
-        this.i18n = settings.i18n ? settings.i18n : this.detectLocale();
+        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.testConverseLocale)];
+		
+		//moment.lang is deprecated in 2.8.1, use moment.locale instead
+        if (!moment.locale) moment.locale=moment.lang;
+		
+        moment.locale(this.detectLocale(this.testMomentLocale));
 
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
@@ -1134,7 +1155,7 @@
                 }
                 var message = template({
                     'sender': msg_dict.sender,
-                    'time': msg_time.format('hh:mm'),
+                    'time': msg_time.format('LT'),
                     'username': username,
                     'message': '',
                     'extra_classes': extra_classes
@@ -1171,8 +1192,8 @@
                     if (prev_date.isBefore(time, 'day')) {
                         this_date = moment(time);
                         this.$el.find('.chat-content').append(converse.templates.new_day({
-                            isodate: this_date.format("YYYY-MM-DD"),
-                            datestring: this_date.format("dddd MMM Do YYYY")
+                            isodate: this_date.format("LL"),
+                            datestring: this_date.format("LL")
                         }));
                     }
                 }

@@ -257,6 +257,8 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
+            auto_away: 0, //in seconds
+            auto_xa: 0, //in seconds
             allow_registration: true,
             animate: true,
             auto_list_rooms: false,
@@ -381,6 +383,65 @@
 
         // Module-level functions
         // ----------------------
+		
+        this.autoAwayReset=function(){
+            if (converse._idleCounter > 0) {
+                converse._idleCounter = 0;
+                if (converse._autoAway>0) {
+                    converse._autoAway=0;
+                    if (converse.HAS_CSI) {
+                        converse.connection.send($build("active", {xmlns: 'urn:xmpp:csi:0'}));
+                    }
+                    converse.xmppstatus.setStatus('online');
+                }
+            }
+        };
+        this.registerAutoAwayHandler = function (){
+		
+
+            if (converse.auto_away>0 || converse.auto_xa>0){
+				
+			    if (converse.features.findWhere({'var': 'urn:xmpp:csi'})) {
+                    // The server supports XEP-0352 Client State Indication
+			        converse.HAS_CSI=true;
+                }else {
+			        converse.HAS_CSI=false;
+			    }
+                if (converse.auto_xa>0 && converse.auto_xa<converse.auto_away) converse.auto_xa=converse.auto_away;
+                converse._idleCounter=0;
+                converse._autoAway=0;
+
+                $(window).on('click' , function(){converse.autoAwayReset()});
+                $(window).on('mousemove' , function(){converse.autoAwayReset()});
+                $(window).on('keypress' , function(){converse.autoAwayReset()});
+                $(window).on('focus' , function(){converse.autoAwayReset()});
+                $(window).on('beforeunload' , function(){converse.autoAwayReset()});
+
+                window.setInterval(function () {
+                    if ((converse._idleCounter <= converse.auto_away || (converse.auto_xa>0 && converse._idleCounter <= converse.auto_xa)) &&
+                        (converse.xmppstatus.get('status') == 'online' && converse._autoAway==0) || (converse.xmppstatus.get('status') == 'away' && converse._autoAway==1) ){
+                        converse._idleCounter++;
+                    }
+                    if (converse.auto_away>0 && converse._autoAway!=1 && converse._idleCounter > converse.auto_away && converse._idleCounter <= converse.auto_xa){
+                        if (converse.HAS_CSI) {
+                            converse.connection.send($build("inactive", {xmlns: 'urn:xmpp:csi:0'}));
+                        }
+                        converse._autoAway=1;
+                        converse.xmppstatus.setStatus('away');
+                    }
+                    else if (converse.auto_xa>0 && converse._autoAway!=2 && converse._idleCounter > converse.auto_xa){
+                        if (converse.HAS_CSI) {
+                            converse.connection.send($build("inactive", {xmlns: 'urn:xmpp:csi:0'}));
+                        }
+                        converse._autoAway=2;
+                        converse.xmppstatus.setStatus('xa');
+                    }
+                }, 1000); //every seconds
+                return true;
+            }
+        };
+
+		
         this.playNotification = function () {
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined"){
@@ -760,9 +821,9 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-
                 this.registerPingHandler();
                 this.registerPongHandler();
+                this.registerAutoAwayHandler();				
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {

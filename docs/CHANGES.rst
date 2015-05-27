@@ -17,6 +17,7 @@ Changelog
 * CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
 * Add offline pretty status to enable translation [thierrytiti]
 * Add Ping funcionnality and Pong Handler  (Fix to issue #144) [thierrytiti]
+* Add automatic Away mode and XEP-0352 support [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

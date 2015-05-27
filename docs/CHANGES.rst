@@ -16,6 +16,7 @@ Changelog
 * I18N: Autodetection of User Locale if no i18n setting is set. [thierrytiti]
 * CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
 * Add offline pretty status to enable translation [thierrytiti]
+* Add Ping funcionnality and Pong Handler  (Fix to issue #144) [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

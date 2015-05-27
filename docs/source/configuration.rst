@@ -368,6 +368,17 @@ Specify the locale/language. The language must be in the ``locales`` object. Ref
 
 .. _`play-sounds`:
 
+ping_interval
+-------------
+
+* Default:  ``300``
+
+Make ping to server in order to keep connection with server killing sessions after idle timeout.
+The ping are sent only if no messages are sent in the last ``ping_interval`` seconds
+You need to set the value to any positive value to enable this functionality.
+
+If you set this value to ``0`` or any negative value, il will disable this functionality.
+
 play_sounds
 -----------
 

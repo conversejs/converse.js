@@ -4820,6 +4820,8 @@
                     pretty_status = __('away for long');
                 } else if (stat === 'away') {
                     pretty_status = __('away');
+                } else if (stat === 'offline') {
+                    pretty_status = __('offline');
                 } else {
                     pretty_status = __(stat) || __('online');
                 }

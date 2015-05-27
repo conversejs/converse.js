@@ -386,7 +386,7 @@
         // ----------------------
 
         this.sendCSI = function (stat) {
-            if (converse.HAS_CSI) {
+            if (converse.features[Strophe.NS.CSI]) {
                 converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
             }
         };
@@ -403,7 +403,6 @@
         this.registerAutoAwayHandler = function () {
             // TODO: we should probably come up with a way to decouple CSI and auto-away
             if (this.auto_away > 0 || this.auto_xa > 0) {
-                this.HAS_CSI = this.features.findWhere({'var': Strophe.NS.CSI}) ? true : false;
                 if (this.auto_xa > 0 && this.auto_xa < this.auto_away) {
                     this.auto_xa = this.auto_away;
                 }
@@ -725,8 +724,10 @@
             // connection option due to pings.
             //
             // var feature = converse.features.findWhere({'var': Strophe.NS.PING});
-            converse.lastMessage = new Date();
-            if (typeof jid === 'undefined' || jid === null) { jid = converse.bare_jid; }
+            converse.lastStanzaDate = new Date();
+            if (typeof jid === 'undefined' || jid === null) {
+                jid = Strophe.getDomainFromJid(converse.bare_jid);
+            }
             if (typeof timeout === 'undefined' ) { timeout = null; }
             if (typeof success === 'undefined' ) { success = null; }
             if (typeof error === 'undefined' ) { error = null; }
@@ -738,29 +739,33 @@
         };
 		
         this.pong = function (ping) {
-            converse.lastMessage=new Date();
+            converse.lastStanzaDate = new Date();
             converse.connection.ping.pong(ping);
             return true;
         };
 
         this.registerPongHandler = function () {
-            if (converse.features.findWhere({'var': Strophe.NS.PING})) {
-                converse.connection.disco.addFeature(Strophe.NS.PING);
-                converse.connection.ping.addPingHandler(this.pong);
-            }
+            converse.connection.disco.addFeature(Strophe.NS.PING);
+            converse.connection.ping.addPingHandler(this.pong);
         };
 
         this.registerPingHandler = function () {
             if (this.ping_interval > 0) {
-                //handler on each message : save last message date in order to ping only when needed
-                converse.connection.addHandler(function () { converse.lastMessage = new Date();});
-                converse.connection.addTimedHandler(1000,function () {
+                this.registerPongHandler();
+                this.connection.addHandler(function () {
+                    /* Handler on each stanza, saves the received date
+                     * in order to ping only when needed.
+                     */
+                    this.lastStanzaDate = new Date();
+                    return true;
+                }.bind(converse));
+                this.connection.addTimedHandler(1000, function () {
                     now = new Date();
-                    if (!converse.lastMessage) {
-                        converse.lastMessage = now;
+                    if (!this.lastStanzaDate) {
+                        this.lastStanzaDate = now;
                     }
-                    if ((now - converse.lastMessage)/1000 > converse.ping_interval) {
-                        return converse.ping();
+                    if ((now - this.lastStanzaDate)/1000 > this.ping_interval) {
+                        return this.ping();
                     }
                     return true; 
                 });
@@ -771,7 +776,6 @@
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
-                this.registerPongHandler();
                 this.registerPingHandler();
                 this.rosterview.registerRosterXHandler();
                 this.rosterview.registerPresenceHandler();
@@ -819,7 +823,6 @@
             this.enableCarbons();
             this.initStatus($.proxy(function () {
                 this.registerPingHandler();
-                this.registerPongHandler();
                 this.registerAutoAwayHandler();				
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
@@ -5020,8 +5023,10 @@
                     return;
                 }
                 $stanza.find('feature').each($.proxy(function (idx, feature) {
+                    var namespace = $(feature).attr('var');
+                    this[namespace] = true;
                     this.create({
-                        'var': $(feature).attr('var'),
+                        'var': namespace,
                         'from': $stanza.attr('from')
                     });
                 }, this));

@@ -221,9 +221,9 @@
             oldlang=moment.locale();
             moment.locale(locale);
             newlang=moment.locale();
-            if (newlang != oldlang);
+            return (newlang != oldlang);
         }
-mc
+
 		//test for COnverseJS
         this.testConverseLocale = function (locale){
             return (locales[locale]);
@@ -255,7 +255,7 @@ mc
             else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage, testLocale);
             else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language, testLocale);
             else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage, testLocale);
-            if (!ret) { ret = 'en'; }
+            else { ret = 'en'; }
             return ret;
         };
 		

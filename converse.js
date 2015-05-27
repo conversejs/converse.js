@@ -215,35 +215,52 @@
 
         // Translation machinery
         // ---------------------
-        this.isAvailableLocale = function (locale) {
+        //test for MomentJS
+        this.testMomentLocale = function(locale){
+            oldlang=moment.locale();
+            newlang=moment.locale(locale);
+            return (newlang != oldlang);
+        }
+
+        //test for COnverseJS
+        this.testConverseLocale = function (locale){
+            return (locales[locale]);
+        }
+		
+        //Check locale and sub locale (e.g. locale: en-US  sublocale: en)
+        this.isAvailableLocale = function (locale,available) {
             ret = null;
-            if (locales[locale]) {
-                ret = locales[locale];
+            if (available(locale)) {
+                ret = locale;
             } else{
                 sublocale=locale.split("-")[0];
-                if (sublocale!=locale && locales[sublocale]) {
-                    ret=locales[sublocale];
+                if (sublocale!=locale && available(sublocale)) {
+                    ret=sublocale;
                 }
             }
+            return ret;
+        };
+
+        //Check Browser information
+        this.detectLocale = function (testLocale) {
+            ret = null;
+            if (window.navigator.userLanguage) ret = this.isAvailableLocale(window.navigator.userLanguage, testLocale);
+            else if (window.navigator.languages && !ret) {
+                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
+                    ret = this.isAvailableLocale(window.navigator.languages[i], testLocale);
+                }
+            }
+            else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage, testLocale);
+            else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language, testLocale);
+            else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage, testLocale);
+            if (!ret) { ret = 'en'; }
             return ret;
         };
 		
-        this.detectLocale = function () {
-            ret = null;
-            if (window.navigator.userLanguage) {
-                ret = this.isAvailableLocale(window.navigator.userLanguage);
-            } else if (window.navigator.languages && !ret) {
-                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
-                    ret = this.isAvailableLocale(window.navigator.languages[i]);
-                }
-            }
-            else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage);
-            else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language);
-            else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage);
-            else { ret = locales.en; }
-            return ret;
-        };
-        this.i18n = settings.i18n ? settings.i18n : this.detectLocale();
+        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.testConverseLocale)];
+		
+        if (!moment.locale) moment.locale=moment.lang; //moment.lang is deprecated after 2.8.1, use moment.locale instead
+        moment.locale(this.detectLocale(this.testMomentLocale));
 
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;

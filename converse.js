@@ -1192,7 +1192,7 @@
                     if (prev_date.isBefore(time, 'day')) {
                         this_date = moment(time);
                         this.$el.find('.chat-content').append(converse.templates.new_day({
-                            isodate: this_date.format("LL"),
+                            isodate: this_date.format("YYYY-MM-DD"),
                             datestring: this_date.format("LL")
                         }));
                     }

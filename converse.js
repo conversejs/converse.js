@@ -156,6 +156,7 @@
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
+        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 
         // Add Strophe Statuses
         var i = 0;
@@ -383,60 +384,53 @@
 
         // Module-level functions
         // ----------------------
-		
-        this.autoAwayReset=function(){
+
+        this.sendCSI = function (stat) {
+            if (converse.HAS_CSI) {
+                converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
+            }
+        };
+        this.autoAwayReset = function () {
             if (converse._idleCounter > 0) {
                 converse._idleCounter = 0;
-                if (converse._autoAway>0) {
-                    converse._autoAway=0;
-                    if (converse.HAS_CSI) {
-                        converse.connection.send($build("active", {xmlns: 'urn:xmpp:csi:0'}));
-                    }
+                if (converse._autoAway > 0) {
+                    converse._autoAway = 0;
+                    converse.sendCSI(ACTIVE);
                     converse.xmppstatus.setStatus('online');
                 }
             }
         };
-        this.registerAutoAwayHandler = function (){
-		
-
-            if (converse.auto_away>0 || converse.auto_xa>0){
-				
-			    if (converse.features.findWhere({'var': 'urn:xmpp:csi'})) {
-                    // The server supports XEP-0352 Client State Indication
-			        converse.HAS_CSI=true;
-                }else {
-			        converse.HAS_CSI=false;
-			    }
-                if (converse.auto_xa>0 && converse.auto_xa<converse.auto_away) converse.auto_xa=converse.auto_away;
-                converse._idleCounter=0;
-                converse._autoAway=0;
-
-                $(window).on('click' , function(){converse.autoAwayReset()});
-                $(window).on('mousemove' , function(){converse.autoAwayReset()});
-                $(window).on('keypress' , function(){converse.autoAwayReset()});
-                $(window).on('focus' , function(){converse.autoAwayReset()});
-                $(window).on('beforeunload' , function(){converse.autoAwayReset()});
+        this.registerAutoAwayHandler = function () {
+            // TODO: we should probably come up with a way to decouple CSI and auto-away
+            if (this.auto_away > 0 || this.auto_xa > 0) {
+                this.HAS_CSI = this.features.findWhere({'var': Strophe.NS.CSI}) ? true : false;
+                if (this.auto_xa > 0 && this.auto_xa < this.auto_away) {
+                    this.auto_xa = this.auto_away;
+                }
+                this._idleCounter = 0;
+                this._autoAway = 0;
+                $(window).on('click' , function () { converse.autoAwayReset(); });
+                $(window).on('mousemove' , function () { converse.autoAwayReset(); });
+                $(window).on('keypress' , function () { converse.autoAwayReset(); });
+                $(window).on('focus' , function () { converse.autoAwayReset(); });
+                $(window).on('beforeunload' , function () { converse.autoAwayReset(); });
 
                 window.setInterval(function () {
-                    if ((converse._idleCounter <= converse.auto_away || (converse.auto_xa>0 && converse._idleCounter <= converse.auto_xa)) &&
-                        (converse.xmppstatus.get('status') == 'online' && converse._autoAway==0) || (converse.xmppstatus.get('status') == 'away' && converse._autoAway==1) ){
-                        converse._idleCounter++;
+                    if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
+                        (this.xmppstatus.get('status') == 'online' && this._autoAway === 0) || (this.xmppstatus.get('status') == 'away' && this._autoAway == 1) ){
+                        this._idleCounter++;
                     }
-                    if (converse.auto_away>0 && converse._autoAway!=1 && converse._idleCounter > converse.auto_away && converse._idleCounter <= converse.auto_xa){
-                        if (converse.HAS_CSI) {
-                            converse.connection.send($build("inactive", {xmlns: 'urn:xmpp:csi:0'}));
-                        }
-                        converse._autoAway=1;
-                        converse.xmppstatus.setStatus('away');
+                    if (this.auto_away > 0 && this._autoAway != 1 && this._idleCounter > this.auto_away && this._idleCounter <= this.auto_xa){
+                        this.sendCSI(INACTIVE);
+                        this._autoAway = 1;
+                        this.xmppstatus.setStatus('away');
                     }
-                    else if (converse.auto_xa>0 && converse._autoAway!=2 && converse._idleCounter > converse.auto_xa){
-                        if (converse.HAS_CSI) {
-                            converse.connection.send($build("inactive", {xmlns: 'urn:xmpp:csi:0'}));
-                        }
-                        converse._autoAway=2;
-                        converse.xmppstatus.setStatus('xa');
+                    else if (this.auto_xa > 0 && this._autoAway != 2 && this._idleCounter > this.auto_xa){
+                        this.sendCSI(INACTIVE);
+                        this._autoAway = 2;
+                        this.xmppstatus.setStatus('xa');
                     }
-                }, 1000); //every seconds
+                }.bind(this), 1000); //every seconds
                 return true;
             }
         };
@@ -444,7 +438,7 @@
 		
         this.playNotification = function () {
             var audio;
-            if (converse.play_sounds && typeof Audio !== "undefined"){
+            if (converse.play_sounds && typeof Audio !== "undefined") {
                 audio = new Audio(converse.sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
@@ -725,44 +719,47 @@
             },this), 200));
         };
 
-        this.ping = function (jid, success, error, timeout){
-            //var feature = converse.features.findWhere({'var': Strophe.NS.PING});
-            //if (feature) {
-            converse.lastMessage=new Date();
-            if (typeof jid === 'undefined'     || jid == null)     { jid = converse.bare_jid; }
+        this.ping = function (jid, success, error, timeout) {
+            // XXX: We could first check here if the server advertised that it supports PING.
+            // However, some servers don't advertise while still keeping the
+            // connection option due to pings.
+            //
+            // var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+            converse.lastMessage = new Date();
+            if (typeof jid === 'undefined' || jid === null) { jid = converse.bare_jid; }
             if (typeof timeout === 'undefined' ) { timeout = null; }
             if (typeof success === 'undefined' ) { success = null; }
             if (typeof error === 'undefined' ) { error = null; }
             if (converse.connection) {
-                converse.connection.ping.ping( jid, success, error, timeout );
-                return true
-            };
-            //}
+                converse.connection.ping.ping(jid, success, error, timeout);
+                return true;
+            }
             return false;
         };
 		
-        this.pong = function (ping){
+        this.pong = function (ping) {
             converse.lastMessage=new Date();
             converse.connection.ping.pong(ping);
             return true;
         };
 
-        this.registerPongHandler = function (){
-            var feature = converse.features.findWhere({'var': Strophe.NS.PING});
-            if (feature) {
+        this.registerPongHandler = function () {
+            if (converse.features.findWhere({'var': Strophe.NS.PING})) {
                 converse.connection.disco.addFeature(Strophe.NS.PING);
-                converse.connection.ping.addPingHandler( this.pong );
+                converse.connection.ping.addPingHandler(this.pong);
             }
         };
 
-        this.registerPingHandler = function (){
-            if (this.ping_interval>0){
+        this.registerPingHandler = function () {
+            if (this.ping_interval > 0) {
                 //handler on each message : save last message date in order to ping only when needed
-                converse.connection.addHandler(function(){ converse.lastMessage=new Date();});
-                converse.connection.addTimedHandler(1000,function() {
+                converse.connection.addHandler(function () { converse.lastMessage = new Date();});
+                converse.connection.addTimedHandler(1000,function () {
                     now = new Date();
-                    if (!converse.lastMessage) converse.lastMessage=now;
-                    if ((now - converse.lastMessage)/1000 > converse.ping_interval){
+                    if (!converse.lastMessage) {
+                        converse.lastMessage = now;
+                    }
+                    if ((now - converse.lastMessage)/1000 > converse.ping_interval) {
                         return converse.ping();
                     }
                     return true; 
@@ -1144,7 +1141,7 @@
                 'mousedown .dragresize-tm': 'onDragResizeStart'
             },
 
-            initialize: function (){
+            initialize: function () {
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
@@ -1670,11 +1667,11 @@
                 var msgs = [];
                 if (data.otr_status == UNENCRYPTED) {
                     msgs.push(__("Your messages are not encrypted anymore"));
-                } else if (data.otr_status == UNVERIFIED){
+                } else if (data.otr_status == UNVERIFIED) {
                     msgs.push(__("Your messages are now encrypted but your contact's identity has not been verified."));
-                } else if (data.otr_status == VERIFIED){
+                } else if (data.otr_status == VERIFIED) {
                     msgs.push(__("Your contact's identify has been verified."));
-                } else if (data.otr_status == FINISHED){
+                } else if (data.otr_status == FINISHED) {
                     msgs.push(__("Your contact has ended encryption on their end, you should do the same."));
                 }
                 return this.showHelpMessages(msgs, 'info', false);
@@ -1685,11 +1682,11 @@
                     var data = this.model.toJSON();
                     if (data.otr_status == UNENCRYPTED) {
                         data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
-                    } else if (data.otr_status == UNVERIFIED){
+                    } else if (data.otr_status == UNVERIFIED) {
                         data.otr_tooltip = __('Your messages are encrypted, but your contact has not been verified.');
-                    } else if (data.otr_status == VERIFIED){
+                    } else if (data.otr_status == VERIFIED) {
                         data.otr_tooltip = __('Your messages are encrypted and your contact verified.');
-                    } else if (data.otr_status == FINISHED){
+                    } else if (data.otr_status == FINISHED) {
                         data.otr_tooltip = __('Your contact has closed their end of the private session, you should do the same');
                     }
                     this.$el.find('.chat-toolbar').html(
@@ -4820,7 +4817,7 @@
                 this.save({'status': value});
             },
 
-            getStatus: function() {
+            getStatus: function () {
                 return this.get('status') || 'online';
             },
 
@@ -4874,7 +4871,7 @@
                             'desc_change_status': __('Click to change your chat status')
                             }));
                 // iterate through all the <option> elements and add option values
-                options.each(function (){
+                options.each(function () {
                     options_list.push(converse.templates.status_option({
                         'value': $(this).val(),
                         'text': this.text

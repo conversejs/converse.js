@@ -18,6 +18,7 @@ Changelog
 * Add offline pretty status to enable translation [thierrytiti]
 * Add Ping funcionnality and Pong Handler  (Fix to issue #144) [thierrytiti]
 * Add automatic Away mode and XEP-0352 support [thierrytiti]
+* Add icon for XA status [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

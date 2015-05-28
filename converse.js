@@ -2429,14 +2429,6 @@
                 return this;
             },
 			
-            toggleCall: function (ev) {
-                ev.stopPropagation();
-                converse.emit('callButtonClicked', {
-                    connection: converse.connection,
-                    model: this.model
-                });
-            },
-			
             toggleOccupants: function (ev) {
                 if (ev) {
                     ev.preventDefault();

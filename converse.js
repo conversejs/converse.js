@@ -750,8 +750,8 @@
         };
 
         this.registerPingHandler = function () {
+            this.registerPongHandler();
             if (this.ping_interval > 0) {
-                this.registerPongHandler();
                 this.connection.addHandler(function () {
                     /* Handler on each stanza, saves the received date
                      * in order to ping only when needed.
@@ -767,7 +767,7 @@
                     if ((now - this.lastStanzaDate)/1000 > this.ping_interval) {
                         return this.ping();
                     }
-                    return true; 
+                    return true;
                 });
             }
         };

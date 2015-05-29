@@ -288,7 +288,8 @@
     content: "\2369"; }
   #conversejs .icon-wrench:before {
     content: "\e024"; }
-  #conversejs .icon-xa:before,
+  #conversejs .icon-xa:before {
+    content: "\e602"; }
   #conversejs .icon-unavailable:before,
   #conversejs .icon-offline:before {
     content: "\e002"; }

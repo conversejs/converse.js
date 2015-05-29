@@ -560,7 +560,7 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
     Provides a button with a picture of a telephone on it.
     When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
 
-        converse.on('callButtonClicked', function(event, data) {
+        converse.listen.on('callButtonClicked', function(event, data) {
             console.log('Strophe connection is', data.connection);
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...

@@ -20,6 +20,7 @@ Changelog
 * Add automatic Away mode and XEP-0352 support [thierrytiti]
 * MUC: missing toggle Call handler and function [thierrytiti]
 * Updated documentation about call [thierrytiti]
+* Add icon for XA status [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

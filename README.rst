@@ -26,15 +26,16 @@ It has the following features:
 * In-band registration `XEP 77 <http://xmpp.org/extensions/xep-0077.html>`_
 * Contact rosters and groups
 * Contact subscriptions
-* Accept or decline contact requests
 * Roster item exchange `XEP 144 <http://xmpp.org/extensions/tmp/xep-0144-1.1.html>`_
 * Chat statuses (online, busy, away, offline)
 * Custom status messages
+* Typing and state notifications `XEP 85 <http://xmpp.org/extensions/xep-0085.html>`_
 * Messages appear in all connnected chat clients `XEP 280 <http://xmpp.org/extensions/xep-0280.html>`_
-* Typing and chat state notifications `XEP 85 <http://xmpp.org/extensions/xep-0085.html>`_
-* Third person messages (/me )
-* Translated into 16 languages
+* Third person "/me" messages `XEP 245 <http://xmpp.org/extensions/xep-0245.html>`_
+* XMPP Ping `XEP 199 <http://xmpp.org/extensions/xep-0199.html>`_
+* Client state indication `XEP 352 <http://xmpp.org/extensions/xep-0352.html>`_
 * Off-the-record encryption
+* Translated into 16 languages
 
 -----------
 Screencasts

@@ -2469,6 +2469,7 @@
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearChatRoomMessages',
+                'click .toggle-call': 'toggleCall',
                 'click .toggle-participants a': 'toggleOccupants',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'mousedown .dragresize-tm': 'onDragResizeStart'
@@ -2538,7 +2539,7 @@
                 this.toggleOccupants();
                 return this;
             },
-
+			
             toggleOccupants: function (ev) {
                 if (ev) {
                     ev.preventDefault();

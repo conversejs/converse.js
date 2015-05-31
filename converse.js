@@ -3159,6 +3159,11 @@
                 this.fetch({
                     add: true,
                     success: $.proxy(function (collection, resp) {
+                        collection.each(function (chatbox) {
+                            if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
+                                chatbox.trigger('show');
+                            }
+                        });
                         if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
                             this.add({
                                 id: 'controlbox',

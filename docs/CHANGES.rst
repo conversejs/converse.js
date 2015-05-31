@@ -9,6 +9,7 @@ Changelog
 * Bugfix. clearSessions during unload event would throw an error when not logged in. [gbonvehi]
 * Bugfix. wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]
 * #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
+* #415 closeAllChatBoxes is giving ReferenceError when 2 chats are open [nevcos, jcbrand]
 * Add placeholder for "Insert a smiley" translation [thierrytiti]
 * Updated French translation [thierrytiti]
 * CSS fix: position and width of the div #conversejs [thierrytiti]

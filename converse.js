@@ -3411,17 +3411,19 @@
             },
 
             closeAllChatBoxes: function (include_controlbox) {
-                var i, chatbox;
                 // TODO: once Backbone.Overview has been refactored, we should
                 // be able to call .each on the views themselves.
-                this.model.each($.proxy(function (model) {
+                var ids = [];
+                this.model.each(function (model) {
                     var id = model.get('id');
                     if (include_controlbox || id !== 'controlbox') {
-                        if (this.get(id)) { // Should always resolve, but shit happens
-                            this.get(id).close();
-                        }
+                        ids.push(id);
                     }
-                }, this));
+                });
+                ids.forEach(function(id) {
+                    var chatbox = this.get(id);
+                    if (chatbox) { chatbox.close(); }
+                }, this);
                 return this;
             },
 

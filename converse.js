@@ -1626,8 +1626,13 @@
             },
 
             maximize: function () {
+                var chatboxviews = converse.chatboxviews;
                 // Restores a minimized chat box
-                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
+                this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
+                    /* Now that the chat box is visible, we can call trimChats
+                     * to make space available if need be.
+                     */
+                    chatboxviews.trimChats(this);
                     converse.refreshWebkit();
                     this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
@@ -3317,10 +3322,13 @@
             initialize: function () {
                 this.model.on("add", this.onChatBoxAdded, this);
                 this.model.on("change:minimized", function (item) {
-                    if (item.get('minimized') === false) {
-                         this.trimChats(this.get(item.get('id')));
+                    if (item.get('minimized') === true) {
+                        /* When a chat is minimized in trimChats, trimChats needs to be
+                        * called again (in case the minimized chats toggle is newly shown).
+                        */
+                        this.trimChats();
                     } else {
-                         this.trimChats();
+                        this.trimChats(this.get(item.get('id')));
                     }
                 }, this);
             },
@@ -3393,7 +3401,7 @@
                     }
                 });
 
-                if ((minimized_width + boxes_width + controlbox_width) > this.$el.outerWidth(true)) {
+                if ((minimized_width + boxes_width + controlbox_width) > $('body').outerWidth(true)) {
                     oldest_chat = this.getOldestMaximizedChat();
                     if (oldest_chat && oldest_chat.get('id') !== new_id) {
                         oldest_chat.minimize();

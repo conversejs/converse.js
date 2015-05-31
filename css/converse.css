@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /*!
  * Converse.js (Web-based XMPP instant messaging client)
  * http://conversejs.org
@@ -35,7 +34,7 @@
   height: 35px;
   left: auto;
   position: fixed;
-  right: 30px;
+  right: 15px;
   z-index: 30;
   display: block;
   width: auto;

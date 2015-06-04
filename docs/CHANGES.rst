@@ -6,20 +6,23 @@ Changelog
 
 * #144 Add Ping funcionnality and Pong Handler [thierrytiti]
 * #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
+* #396 Add automatic Away mode and XEP-0352 support [thierrytiti]
+* #400, #410 Allow offline pretty status and placeholder for "Insert a smiley" to be translated [thierrytiti]
+* #401 Updated French translation [thierrytiti]
+* #404 CSS fix: position and width of the div #conversejs [thierrytiti]
+* #407 CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
+* #408 MUC: missing toggle call handler and updated documentation about call. [thierrytiti]
 * #415 closeAllChatBoxes is giving ReferenceError when 2 chats are open [nevcos, jcbrand]
-* Add automatic Away mode and XEP-0352 support [thierrytiti]
-* Add icon for XA status [thierrytiti]
-* Allow offline pretty status and placeholder for "Insert a smiley" to be translated [thierrytiti]
+* #416 Add icon for XA status [thierrytiti]
+* #420 Updated German translation [1st8]
 * Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
-* Bugfix. clearSessions during unload event would throw an error when not logged in. [gbonvehi]
-* Bugfix. wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]
-* CSS fix: position and width of the div #conversejs [thierrytiti]
+* Bugfix. ClearSessions during unload event would throw an error when not logged in. [gbonvehi]
+* Bugfix. Wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]
 * CSS fix: room-info bug on hover after room description loaded [thierrytiti]
-* CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
 * I18N: Autodetection of User Locale if no i18n setting is set. [thierrytiti]
-* MUC: missing toggle call handler and updated documentation about call. [thierrytiti]
 * Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
-* Updated French translation [thierrytiti]
+* Refactored the plugin architecture. Add `overrides` convention for
+  automatically overriding converse.js's methods and Backbone views and models. [jcbrand]
 
 0.9.3 (2015-05-01)
 ------------------

@@ -175,6 +175,27 @@ It should be used either with ``authentication`` set to ``anonymous`` or to
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values.
 
+auto_away
+---------
+
+* Default:  ``0``
+
+This option can be used to let converse.js automatically change user presence
+
+This set the number a seconds before user presence become ``away``
+If the value if negative or ``0``, the function is disabled.
+
+auto_xa
+-------
+
+* Default:  ``0``
+
+This option can be used to let converse.js automatically change user presence
+
+This set the number a seconds before user presence become ``xa`` (eXtended Away)
+The value must be greater than ``auto_away``
+If the value if negative or ``0``, the function is disabled.
+
 auto_reconnect
 --------------
 
@@ -360,10 +381,24 @@ If set to ``true``, then don't show offline users.
 i18n
 ----
 
+* Default:  Auto-detection of the User/Browser language
+
+If no locale is matching available locales, the default is ``en``.
 Specify the locale/language. The language must be in the ``locales`` object. Refer to
 ``./locale/locales.js`` to see which locales are supported.
 
 .. _`play-sounds`:
+
+ping_interval
+-------------
+
+* Default:  ``300``
+
+Make ping to server in order to keep connection with server killing sessions after idle timeout.
+The ping are sent only if no messages are sent in the last ``ping_interval`` seconds
+You need to set the value to any positive value to enable this functionality.
+
+If you set this value to ``0`` or any negative value, il will disable this functionality.
 
 play_sounds
 -----------
@@ -525,7 +560,7 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
     Provides a button with a picture of a telephone on it.
     When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
 
-        converse.on('callButtonClicked', function(event, data) {
+        converse.listen.on('callButtonClicked', function(event, data) {
             console.log('Strophe connection is', data.connection);
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...

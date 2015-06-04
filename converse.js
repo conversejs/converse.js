@@ -156,6 +156,7 @@
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
+        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 
         // Add Strophe Statuses
         var i = 0;
@@ -215,7 +216,36 @@
 
         // Translation machinery
         // ---------------------
-        this.i18n = settings.i18n ? settings.i18n : locales.en;
+        this.isAvailableLocale = function (locale) {
+            ret = null;
+            if (locales[locale]) {
+                ret = locales[locale];
+            } else{
+                sublocale=locale.split("-")[0];
+                if (sublocale!=locale && locales[sublocale]) {
+                    ret=locales[sublocale];
+                }
+            }
+            return ret;
+        };
+		
+        this.detectLocale = function () {
+            ret = null;
+            if (window.navigator.userLanguage) {
+                ret = this.isAvailableLocale(window.navigator.userLanguage);
+            } else if (window.navigator.languages && !ret) {
+                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
+                    ret = this.isAvailableLocale(window.navigator.languages[i]);
+                }
+            }
+            else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage);
+            else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language);
+            else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage);
+            else { ret = locales.en; }
+            return ret;
+        };
+        this.i18n = settings.i18n ? settings.i18n : this.detectLocale();
+
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
 
@@ -228,6 +258,8 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
+            auto_away: 0, //in seconds
+            auto_xa: 0, //in seconds
             allow_registration: true,
             animate: true,
             auto_list_rooms: false,
@@ -247,6 +279,7 @@
             keepalive: false,
             message_carbons: false,
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            ping_interval: 180, //in seconds
             play_sounds: false,
             sounds_path: '/sounds/',
             password: undefined,
@@ -351,9 +384,60 @@
 
         // Module-level functions
         // ----------------------
+
+        this.sendCSI = function (stat) {
+            if (converse.features[Strophe.NS.CSI]) {
+                converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
+            }
+        };
+        this.autoAwayReset = function () {
+            if (converse._idleCounter > 0) {
+                converse._idleCounter = 0;
+                if (converse._autoAway > 0) {
+                    converse._autoAway = 0;
+                    converse.sendCSI(ACTIVE);
+                    converse.xmppstatus.setStatus('online');
+                }
+            }
+        };
+        this.registerAutoAwayHandler = function () {
+            // TODO: we should probably come up with a way to decouple CSI and auto-away
+            if (this.auto_away > 0 || this.auto_xa > 0) {
+                if (this.auto_xa > 0 && this.auto_xa < this.auto_away) {
+                    this.auto_xa = this.auto_away;
+                }
+                this._idleCounter = 0;
+                this._autoAway = 0;
+                $(window).on('click' , function () { converse.autoAwayReset(); });
+                $(window).on('mousemove' , function () { converse.autoAwayReset(); });
+                $(window).on('keypress' , function () { converse.autoAwayReset(); });
+                $(window).on('focus' , function () { converse.autoAwayReset(); });
+                $(window).on('beforeunload' , function () { converse.autoAwayReset(); });
+
+                window.setInterval(function () {
+                    if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
+                        (this.xmppstatus.get('status') == 'online' && this._autoAway === 0) || (this.xmppstatus.get('status') == 'away' && this._autoAway == 1) ){
+                        this._idleCounter++;
+                    }
+                    if (this.auto_away > 0 && this._autoAway != 1 && this._idleCounter > this.auto_away && this._idleCounter <= this.auto_xa){
+                        this.sendCSI(INACTIVE);
+                        this._autoAway = 1;
+                        this.xmppstatus.setStatus('away');
+                    }
+                    else if (this.auto_xa > 0 && this._autoAway != 2 && this._idleCounter > this.auto_xa){
+                        this.sendCSI(INACTIVE);
+                        this._autoAway = 2;
+                        this.xmppstatus.setStatus('xa');
+                    }
+                }.bind(this), 1000); //every seconds
+                return true;
+            }
+        };
+
+		
         this.playNotification = function () {
             var audio;
-            if (converse.play_sounds && typeof Audio !== "undefined"){
+            if (converse.play_sounds && typeof Audio !== "undefined") {
                 audio = new Audio(converse.sounds_path+"msg_received.ogg");
                 if (audio.canPlayType('/audio/ogg')) {
                     audio.play();
@@ -634,14 +718,69 @@
             },this), 200));
         };
 
+        this.ping = function (jid, success, error, timeout) {
+            // XXX: We could first check here if the server advertised that it supports PING.
+            // However, some servers don't advertise while still keeping the
+            // connection option due to pings.
+            //
+            // var feature = converse.features.findWhere({'var': Strophe.NS.PING});
+            converse.lastStanzaDate = new Date();
+            if (typeof jid === 'undefined' || jid === null) {
+                jid = Strophe.getDomainFromJid(converse.bare_jid);
+            }
+            if (typeof timeout === 'undefined' ) { timeout = null; }
+            if (typeof success === 'undefined' ) { success = null; }
+            if (typeof error === 'undefined' ) { error = null; }
+            if (converse.connection) {
+                converse.connection.ping.ping(jid, success, error, timeout);
+                return true;
+            }
+            return false;
+        };
+		
+        this.pong = function (ping) {
+            converse.lastStanzaDate = new Date();
+            converse.connection.ping.pong(ping);
+            return true;
+        };
+
+        this.registerPongHandler = function () {
+            converse.connection.disco.addFeature(Strophe.NS.PING);
+            converse.connection.ping.addPingHandler(this.pong);
+        };
+
+        this.registerPingHandler = function () {
+            this.registerPongHandler();
+            if (this.ping_interval > 0) {
+                this.connection.addHandler(function () {
+                    /* Handler on each stanza, saves the received date
+                     * in order to ping only when needed.
+                     */
+                    this.lastStanzaDate = new Date();
+                    return true;
+                }.bind(converse));
+                this.connection.addTimedHandler(1000, function () {
+                    now = new Date();
+                    if (!this.lastStanzaDate) {
+                        this.lastStanzaDate = now;
+                    }
+                    if ((now - this.lastStanzaDate)/1000 > this.ping_interval) {
+                        return this.ping();
+                    }
+                    return true;
+                });
+            }
+        };
+
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             this.initStatus($.proxy(function () {
-                this.registerRosterXHandler();
-                this.registerPresenceHandler();
+                this.registerPingHandler();
+                this.rosterview.registerRosterXHandler();
+                this.rosterview.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
-                converse.xmppstatus.sendPresence();
+                this.xmppstatus.sendPresence();
                 this.giveFeedback(__('Contacts'));
             }, this));
         };
@@ -683,7 +822,8 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus($.proxy(function () {
-
+                this.registerPingHandler();
+                this.registerAutoAwayHandler();				
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {
@@ -1004,7 +1144,7 @@
                 'mousedown .dragresize-tm': 'onDragResizeStart'
             },
 
-            initialize: function (){
+            initialize: function () {
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
@@ -1486,8 +1626,13 @@
             },
 
             maximize: function () {
+                var chatboxviews = converse.chatboxviews;
                 // Restores a minimized chat box
-                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
+                this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
+                    /* Now that the chat box is visible, we can call trimChats
+                     * to make space available if need be.
+                     */
+                    chatboxviews.trimChats(this);
                     converse.refreshWebkit();
                     this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
@@ -1530,11 +1675,11 @@
                 var msgs = [];
                 if (data.otr_status == UNENCRYPTED) {
                     msgs.push(__("Your messages are not encrypted anymore"));
-                } else if (data.otr_status == UNVERIFIED){
+                } else if (data.otr_status == UNVERIFIED) {
                     msgs.push(__("Your messages are now encrypted but your contact's identity has not been verified."));
-                } else if (data.otr_status == VERIFIED){
+                } else if (data.otr_status == VERIFIED) {
                     msgs.push(__("Your contact's identify has been verified."));
-                } else if (data.otr_status == FINISHED){
+                } else if (data.otr_status == FINISHED) {
                     msgs.push(__("Your contact has ended encryption on their end, you should do the same."));
                 }
                 return this.showHelpMessages(msgs, 'info', false);
@@ -1545,11 +1690,11 @@
                     var data = this.model.toJSON();
                     if (data.otr_status == UNENCRYPTED) {
                         data.otr_tooltip = __('Your messages are not encrypted. Click here to enable OTR encryption.');
-                    } else if (data.otr_status == UNVERIFIED){
+                    } else if (data.otr_status == UNVERIFIED) {
                         data.otr_tooltip = __('Your messages are encrypted, but your contact has not been verified.');
-                    } else if (data.otr_status == VERIFIED){
+                    } else if (data.otr_status == VERIFIED) {
                         data.otr_tooltip = __('Your messages are encrypted and your contact verified.');
-                    } else if (data.otr_status == FINISHED){
+                    } else if (data.otr_status == FINISHED) {
                         data.otr_tooltip = __('Your contact has closed their end of the private session, you should do the same');
                     }
                     this.$el.find('.chat-toolbar').html(
@@ -2329,6 +2474,7 @@
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearChatRoomMessages',
+                'click .toggle-call': 'toggleCall',
                 'click .toggle-participants a': 'toggleOccupants',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'mousedown .dragresize-tm': 'onDragResizeStart'
@@ -2398,7 +2544,7 @@
                 this.toggleOccupants();
                 return this;
             },
-
+			
             toggleOccupants: function (ev) {
                 if (ev) {
                     ev.preventDefault();
@@ -3018,6 +3164,11 @@
                 this.fetch({
                     add: true,
                     success: $.proxy(function (collection, resp) {
+                        collection.each(function (chatbox) {
+                            if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
+                                chatbox.trigger('show');
+                            }
+                        });
                         if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
                             this.add({
                                 id: 'controlbox',
@@ -3171,10 +3322,13 @@
             initialize: function () {
                 this.model.on("add", this.onChatBoxAdded, this);
                 this.model.on("change:minimized", function (item) {
-                    if (item.get('minimized') === false) {
-                         this.trimChats(this.get(item.get('id')));
+                    if (item.get('minimized') === true) {
+                        /* When a chat is minimized in trimChats, trimChats needs to be
+                        * called again (in case the minimized chats toggle is newly shown).
+                        */
+                        this.trimChats();
                     } else {
-                         this.trimChats();
+                        this.trimChats(this.get(item.get('id')));
                     }
                 }, this);
             },
@@ -3247,7 +3401,7 @@
                     }
                 });
 
-                if ((minimized_width + boxes_width + controlbox_width) > this.$el.outerWidth(true)) {
+                if ((minimized_width + boxes_width + controlbox_width) > $('body').outerWidth(true)) {
                     oldest_chat = this.getOldestMaximizedChat();
                     if (oldest_chat && oldest_chat.get('id') !== new_id) {
                         oldest_chat.minimize();
@@ -3270,17 +3424,19 @@
             },
 
             closeAllChatBoxes: function (include_controlbox) {
-                var i, chatbox;
                 // TODO: once Backbone.Overview has been refactored, we should
                 // be able to call .each on the views themselves.
-                this.model.each($.proxy(function (model) {
+                var ids = [];
+                this.model.each(function (model) {
                     var id = model.get('id');
                     if (include_controlbox || id !== 'controlbox') {
-                        if (this.get(id)) { // Should always resolve, but shit happens
-                            this.get(id).close();
-                        }
+                        ids.push(id);
                     }
-                }, this));
+                });
+                ids.forEach(function(id) {
+                    var chatbox = this.get(id);
+                    if (chatbox) { chatbox.close(); }
+                }, this);
                 return this;
             },
 
@@ -4687,7 +4843,7 @@
                 this.save({'status': value});
             },
 
-            getStatus: function() {
+            getStatus: function () {
                 return this.get('status') || 'online';
             },
 
@@ -4741,7 +4897,7 @@
                             'desc_change_status': __('Click to change your chat status')
                             }));
                 // iterate through all the <option> elements and add option values
-                options.each(function (){
+                options.each(function () {
                     options_list.push(converse.templates.status_option({
                         'value': $(this).val(),
                         'text': this.text
@@ -4798,6 +4954,8 @@
                     pretty_status = __('away for long');
                 } else if (stat === 'away') {
                     pretty_status = __('away');
+                } else if (stat === 'offline') {
+                    pretty_status = __('offline');
                 } else {
                     pretty_status = __(stat) || __('online');
                 }
@@ -4888,8 +5046,10 @@
                     return;
                 }
                 $stanza.find('feature').each($.proxy(function (idx, feature) {
+                    var namespace = $(feature).attr('var');
+                    this[namespace] = true;
                     this.create({
-                        'var': $(feature).attr('var'),
+                        'var': namespace,
                         'from': $stanza.attr('from')
                     });
                 }, this));
@@ -5852,6 +6012,9 @@
         },
         'send': function (stanza) {
             converse.connection.send(stanza);
+        },
+        'ping': function (jid) {
+            converse.ping(jid);
         },
         'plugins': {
             'add': function (name, plugin) {

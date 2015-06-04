@@ -16,7 +16,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./d
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs build dev-ruby
+.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs build
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
@@ -103,10 +103,10 @@ dev: stamp-bower stamp-bundler
 ########################################################################
 ## Builds
 
-css:: dev-ruby
+css:: stamp-bundler
 	$(SASS) -I .bundle/bin sass/converse.scss css/converse.css
 
-watch:: dev-ruby
+watch:: stamp-bundler
 	$(SASS) --watch -I .bundle/bin sass/converse.scss:css/converse.css
 
 jsmin:

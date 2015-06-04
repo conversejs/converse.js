@@ -15,7 +15,6 @@ analytics.js
 .sass-cache
 ruby
 bourbon
-Gemfile.lock
 
 Backbone.Overview
 tags
@@ -41,3 +40,11 @@ develop-eggs
 
 # OSX
 .DS_Store
+
+# Builds
+converse-no-locales-no-otr.js
+converse-no-locales-no-otr.min.js
+converse-no-otr.js
+converse-no-otr.min.js
+converse.nojquery.js
+converse.nojquery.min.js

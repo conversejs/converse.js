@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-01 12:26+0200\n"
-"PO-Revision-Date: 2015-05-01 12:25+0200\n"
+"PO-Revision-Date: 2015-06-04 10:11+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -30,11 +30,11 @@ msgstr "unverschlüsselt"
 
 #: converse.js:332
 msgid "unverified"
-msgstr "unbestätigt"
+msgstr "nicht verifiziert"
 
 #: converse.js:333
 msgid "verified"
-msgstr "bestätigt"
+msgstr "verifiziert"
 
 #: converse.js:334
 msgid "finished"
@@ -42,7 +42,7 @@ msgstr "erledigt"
 
 #: converse.js:337
 msgid "This contact is busy"
-msgstr "Dieser Kontakt ist beschäfticht"
+msgstr "Dieser Kontakt ist beschäftigt"
 
 #: converse.js:338
 msgid "This contact is online"
@@ -58,7 +58,7 @@ msgstr "Dieser Kontakt ist nicht verfügbar"
 
 #: converse.js:341
 msgid "This contact is away for an extended period"
-msgstr "Dieser Kontakt is für längere Zeit abwesend"
+msgstr "Dieser Kontakt ist für längere Zeit abwesend"
 
 #: converse.js:342
 msgid "This contact is away"
@@ -82,7 +82,7 @@ msgstr "Kontaktanfragen"
 
 #: converse.js:349
 msgid "Ungrouped"
-msgstr ""
+msgstr "Ungruppiert"
 
 #: converse.js:351 converse.js:648 converse.js:691
 msgid "Contacts"
@@ -90,12 +90,11 @@ msgstr "Kontakte"
 
 #: converse.js:352
 msgid "Groups"
-msgstr ""
+msgstr "Gruppen"
 
 #: converse.js:452
-#, fuzzy
 msgid "Reconnecting"
-msgstr "Verbindungsaufbau …"
+msgstr "Verbindung wiederherstellen …"
 
 #: converse.js:495
 msgid "Error"
@@ -115,15 +114,15 @@ msgstr "Authentifizierung gescheitert"
 
 #: converse.js:807
 msgid "Re-establishing encrypted session"
-msgstr ""
+msgstr "Verschlüsselte Sitzung wiederherstellen"
 
 #: converse.js:819
 msgid "Generating private key."
-msgstr ""
+msgstr "Generiere privaten Schlüssel."
 
 #: converse.js:820
 msgid "Your browser might become unresponsive."
-msgstr ""
+msgstr "Ihr Browser könnte langsam reagieren."
 
 #: converse.js:855
 msgid ""
@@ -134,42 +133,44 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
+"Authentifizierungsanfrage von %1$s\n"
+"\n"
+"Ihr Kontakt möchte durch die folgende Frage "
+"Ihre Identität verifizieren.\n"
+"\n"
+"%2$s"
 
 #: converse.js:864
 msgid "Could not verify this user's identify."
-msgstr ""
+msgstr "Die Identität des Benutzers konnte nicht verifiziert werden."
 
 #: converse.js:903
 msgid "Exchanging private key with contact."
-msgstr ""
+msgstr "Tausche private Schlüssel mit Kontakt aus."
 
 #: converse.js:1049
 msgid "Personal message"
 msgstr "Persönliche Nachricht"
 
 #: converse.js:1081
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Sie sind nicht auf der Mitgliederliste dieses Raums"
+msgstr "Sind Sie sicher, dass Sie alle Nachrichten in diesem Raum löschen möchten?"
 
 #: converse.js:1103
 msgid "me"
 msgstr "Ich"
 
 #: converse.js:1158
-#, fuzzy
 msgid "is typing"
 msgstr "%1$s tippt"
 
 #: converse.js:1161
-#, fuzzy
 msgid "has stopped typing"
-msgstr "%1$s tippt"
+msgstr "%1$s tippt nicht mehr"
 
 #: converse.js:1167 converse.js:1447
-#, fuzzy
 msgid "has gone away"
-msgstr "Dieser Kontakt ist abwesend"
+msgstr "ist jetzt abwesend"
 
 #: converse.js:1212 converse.js:2531
 msgid "Show this menu"
@@ -185,19 +186,19 @@ msgstr "Nachrichten entfernen"
 
 #: converse.js:1340
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie alle Nachrichten dieses Chats löschen möchten?"
 
 #: converse.js:1375
 msgid "Your message could not be sent"
-msgstr ""
+msgstr "Ihre Nachricht konnte nicht gesendet werden"
 
 #: converse.js:1378
 msgid "We received an unencrypted message"
-msgstr ""
+msgstr "Wir haben eine unverschlüsselte Nachricht empfangen"
 
 #: converse.js:1381
 msgid "We received an unreadable encrypted message"
-msgstr ""
+msgstr "Wir haben eine unlesbare Nachricht empfangen"
 
 #: converse.js:1407
 msgid ""
@@ -239,9 +240,8 @@ msgid "has gone offline"
 msgstr "Dieser Kontakt ist offline"
 
 #: converse.js:1449
-#, fuzzy
 msgid "is busy"
-msgstr "beschäfticht"
+msgstr "ist beschäftigt"
 
 #: converse.js:1537
 msgid "Your messages are not encrypted anymore"
@@ -280,9 +280,8 @@ msgid ""
 msgstr ""
 
 #: converse.js:1568
-#, fuzzy
 msgid "Clear all messages"
-msgstr "Persönliche Nachricht"
+msgstr "Alle Nachrichten löschen"
 
 #: converse.js:1569
 msgid "End encrypted conversation"
@@ -290,7 +289,7 @@ msgstr ""
 
 #: converse.js:1570
 msgid "Hide the list of participants"
-msgstr ""
+msgstr "Teilnehmerliste ausblenden"
 
 #: converse.js:1571
 msgid "Refresh encrypted conversation"
@@ -314,7 +313,7 @@ msgstr ""
 
 #: converse.js:1576
 msgid "What's this?"
-msgstr ""
+msgstr "Was ist das?"
 
 #: converse.js:1668
 msgid "Online"
@@ -322,7 +321,7 @@ msgstr "Online"
 
 #: converse.js:1669
 msgid "Busy"
-msgstr "Beschäfticht"
+msgstr "Beschäftigt"
 
 #: converse.js:1670
 msgid "Away"
@@ -333,9 +332,8 @@ msgid "Offline"
 msgstr "Abgemeldet"
 
 #: converse.js:1672
-#, fuzzy
 msgid "Log out"
-msgstr "Anmelden"
+msgstr "Abmelden"
 
 #: converse.js:1678
 msgid "Contact name"
@@ -355,11 +353,11 @@ msgstr "Hinzufügen"
 
 #: converse.js:1689
 msgid "Click to add new chat contacts"
-msgstr "Klicken Sie, um einen neuen Kontakt hinzuzufügen"
+msgstr "Hier klicken um neuen Kontakt hinzuzufügen"
 
 #: converse.js:1690
 msgid "Add a contact"
-msgstr "Kontakte hinzufügen"
+msgstr "Kontakt hinzufügen"
 
 #: converse.js:1714
 msgid "No users found"
@@ -382,9 +380,8 @@ msgid "Server"
 msgstr "Server"
 
 #: converse.js:1787
-#, fuzzy
 msgid "Join Room"
-msgstr "Beitreten"
+msgstr "Raum betreten"
 
 #: converse.js:1788
 msgid "Show rooms"
@@ -483,7 +480,7 @@ msgstr "Dieser Benutzer kann keine Nachrichten in diesem Raum verschicken"
 
 #: converse.js:2221
 msgid "Invite..."
-msgstr ""
+msgstr "Einladen..."
 
 #: converse.js:2222
 msgid "Occupants"
@@ -505,7 +502,7 @@ msgstr "Nachricht"
 
 #: converse.js:2452
 msgid "Error: could not execute the command"
-msgstr ""
+msgstr "Fehler: konnte den Befehl nicht ausführen"
 
 #: converse.js:2527
 msgid "Change user's affiliation to admin"
@@ -517,7 +514,7 @@ msgstr "Verbanne einen Benutzer aus dem Raum."
 
 #: converse.js:2530
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Benutzerrolle zu Teilnehmer ändern"
 
 #: converse.js:2532
 msgid "Kick user from room"
@@ -537,16 +534,15 @@ msgstr ""
 
 #: converse.js:2536
 msgid "Change your nickname"
-msgstr ""
+msgstr "Spitznamen ändern"
 
 #: converse.js:2537
 msgid "Grant moderator role to user"
 msgstr ""
 
 #: converse.js:2538
-#, fuzzy
 msgid "Grant ownership of this room"
-msgstr "Sie sind nicht auf der Mitgliederliste dieses Raums"
+msgstr "Besitzrechte an diesem Raum vergeben"
 
 #: converse.js:2539
 msgid "Revoke user's membership"
@@ -570,11 +566,11 @@ msgstr "Abbrechen"
 
 #: converse.js:2730
 msgid "An error occurred while trying to save the form."
-msgstr "Beim Speichern der Formular is ein Fehler aufgetreten."
+msgstr "Beim Speichern des Formulars ist ein Fehler aufgetreten."
 
 #: converse.js:2777
 msgid "This chatroom requires a password"
-msgstr "Passwort wird für die Anmeldung benötigt."
+msgstr "Dieser Raum erfordert ein Passwort"
 
 #: converse.js:2778
 msgid "Password: "
@@ -582,7 +578,7 @@ msgstr "Passwort: "
 
 #: converse.js:2779
 msgid "Submit"
-msgstr "Einreichen"
+msgstr "Abschicken"
 
 #: converse.js:2814
 msgid "This room is not anonymous"
@@ -590,25 +586,23 @@ msgstr "Dieser Raum ist nicht anonym"
 
 #: converse.js:2815
 msgid "This room now shows unavailable members"
-msgstr "Dieser Raum zeigt jetzt unferfügbare Mitglieder"
+msgstr "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder an"
 
 #: converse.js:2816
 msgid "This room does not show unavailable members"
-msgstr "Dieser Raum zeigt nicht unverfügbare Mitglieder"
+msgstr "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"
 
 #: converse.js:2817
 msgid "Non-privacy-related room configuration has changed"
-msgstr ""
-"Die Konfiguration, die nicht auf die Privatsphäre bezogen ist, hat sich "
-"geändert"
+msgstr "Raumkonfiguration, nicht Privatsphäre relevant, hat sich geändert"
 
 #: converse.js:2818
 msgid "Room logging is now enabled"
-msgstr "Zukünftige Nachrichten dieses Raums werden protokolliert."
+msgstr "Nachrichten in diesem Raums werden ab jetzt protokolliert."
 
 #: converse.js:2819
 msgid "Room logging is now disabled"
-msgstr "Zukünftige Nachrichten dieses Raums werden nicht protokolliert."
+msgstr "Nachrichten in diesem Raums werden nicht mehr protokolliert."
 
 #: converse.js:2820
 msgid "This room is now non-anonymous"
@@ -624,7 +618,7 @@ msgstr "Dieser Raum ist jetzt anonym"
 
 #: converse.js:2823
 msgid "A new room has been created"
-msgstr "Einen neuen Raum ist erstellen"
+msgstr "Einen neuer Raum wurde erstellt"
 
 #: converse.js:2827 converse.js:2926
 msgid "You have been banned from this room"
@@ -642,51 +636,47 @@ msgstr "Sie wurden wegen einer Zugehörigkeitsänderung entfernt"
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
-msgstr "Sie wurden aus diesem Raum entfernt da Sie kein Mitglied sind."
+msgstr "Sie wurden aus diesem Raum entfernt, da Sie kein Mitglied sind."
 
 #: converse.js:2831
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
 msgstr ""
-"Sie werden aus diesem Raum entfernt da der MUC (Muli-user chat) Dienst "
-"gerade abgeschalten wird."
+"Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst "
+"gerade heruntergefahren wird."
 
 #: converse.js:2845
 msgid "<strong>%1$s</strong> has been banned"
-msgstr "<strong>%1$s</strong> ist verbannt"
+msgstr "<strong>%1$s</strong> ist verbannt worden"
 
 #: converse.js:2846
-#, fuzzy
 msgid "<strong>%1$s</strong>'s nickname has changed"
-msgstr "<strong>%1$s</strong> ist verbannt"
+msgstr "<strong>%1$s</strong> hat den Spitznamen geändert"
 
 #: converse.js:2847
 msgid "<strong>%1$s</strong> has been kicked out"
-msgstr "<strong>%1$s</strong> ist hinausgeworfen"
+msgstr "<strong>%1$s</strong> wurde hinausgeworfen"
 
 #: converse.js:2848
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
-msgstr ""
-"<strong>%1$s</strong> wurde wegen einer Zugehörigkeitsänderung entfernt"
+msgstr "<strong>%1$s</strong> wurde wegen einer Zugehörigkeitsänderung entfernt"
 
 #: converse.js:2849
 msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "<strong>%1$s</strong> ist kein Mitglied und wurde daher entfernt"
 
 #: converse.js:2853
-#, fuzzy
 msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
-msgstr "Spitzname festgelegen"
+msgstr "Ihr Spitzname wurde automatisiert geändert zu: <strong>%1$s</strong>"
 
 #: converse.js:2854
-#, fuzzy
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
-msgstr "Spitzname festgelegen"
+msgstr "Ihr Spitzname wurde geändert zu: <strong>%1$s</strong>"
 
 #: converse.js:2902 converse.js:2912
 msgid "The reason given is: \""
-msgstr ""
+msgstr "Die angegebene Begründung lautet: \""
 
 #: converse.js:2924
 msgid "You are not on the member list of this room"
@@ -698,7 +688,7 @@ msgstr "Kein Spitzname festgelegt"
 
 #: converse.js:2934
 msgid "You are not allowed to create new rooms"
-msgstr "Es ist Ihnen nicht erlaubt, neue Räume anzulegen"
+msgstr "Es ist Ihnen nicht erlaubt neue Räume anzulegen"
 
 #: converse.js:2936
 msgid "Your nickname doesn't conform to this room's policies"
@@ -718,58 +708,55 @@ msgstr "Dieser Raum hat die maximale Mitgliederanzahl erreicht"
 
 #: converse.js:2988
 msgid "Topic set by %1$s to: %2$s"
-msgstr "%1$s hat das Thema zu \"%2$s\" abgeändert"
+msgstr "%1$s hat das Thema zu \"%2$s\" geändert"
 
 #: converse.js:3066
 msgid "%1$s has invited you to join a chat room: %2$s"
-msgstr ""
+msgstr "%1$s hat Sie in den Raum \"%2$s\" eingeladen"
 
 #: converse.js:3070
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
+"%1$s hat Sie in den Raum \"%2$s\" eingeladen. "
+"Begründung: \"%3$s\""
 
 #: converse.js:3339
-#, fuzzy
 msgid "Click to restore this chat"
-msgstr "Hier klicken um diesen Kontakt zu entfernen"
+msgstr "Hier klicken um diesen Chat wiederherzustellen"
 
 #: converse.js:3481
 msgid "Minimized"
-msgstr ""
+msgstr "Minimiert"
 
 #: converse.js:3582 converse.js:3600
 msgid "Click to remove this contact"
 msgstr "Hier klicken um diesen Kontakt zu entfernen"
 
 #: converse.js:3589
-#, fuzzy
 msgid "Click to accept this contact request"
-msgstr "Hier klicken um diesen Kontakt zu entfernen"
+msgstr "Hier klicken um diesen Kontaktanfrage zu akzeptieren"
 
 #: converse.js:3590
-#, fuzzy
 msgid "Click to decline this contact request"
-msgstr "Hier klicken um diesen Kontakt zu entfernen"
+msgstr "Hier klicken um diesen Kontaktanfrage zu abzulehnen"
 
 #: converse.js:3599
 msgid "Click to chat with this contact"
 msgstr "Hier klicken um mit diesem Kontakt zu chatten"
 
 #: converse.js:3616
-#, fuzzy
 msgid "Are you sure you want to remove this contact?"
-msgstr "Hier klicken um diesen Kontakt zu entfernen"
+msgstr "Wollen Sie diesen Kontakt wirklich entfernen?"
 
 #: converse.js:3639
-#, fuzzy
 msgid "Are you sure you want to decline this contact request?"
-msgstr "Hier klicken um diesen Kontakt zu entfernen"
+msgstr "Wollen Sie diese Kontaktanfrage wirklich ablehnen?"
 
 #: converse.js:4166
 msgid "Type to filter"
-msgstr ""
+msgstr "Tippen um zu filtern"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -779,11 +766,11 @@ msgstr "Ich bin %1$s"
 
 #: converse.js:4602 converse.js:4678
 msgid "Click here to write a custom status message"
-msgstr "Klicken Sie hier, um ihrer Status-Nachricht to ändern"
+msgstr "Hier klicken um Status-Nachricht zu ändern"
 
 #: converse.js:4603 converse.js:4679
 msgid "Click to change your chat status"
-msgstr "Klicken Sie, um ihrer Status to ändern"
+msgstr "Hier klicken um Status zu ändern"
 
 #: converse.js:4628
 msgid "Custom status"
@@ -795,7 +782,7 @@ msgstr "online"
 
 #: converse.js:4658
 msgid "busy"
-msgstr "beschäfticht"
+msgstr "beschäftigt"
 
 #: converse.js:4660
 msgid "away for long"
@@ -866,9 +853,8 @@ msgid "Password:"
 msgstr "Passwort:"
 
 #: converse.js:5202
-#, fuzzy
 msgid "Click here to log in anonymously"
-msgstr "Dieser Raum ist nicht anonym"
+msgstr "Hier klicken um anonym anzumelden"
 
 #: converse.js:5203
 msgid "Log In"
@@ -880,29 +866,4 @@ msgstr "Anmelden"
 
 #: converse.js:5291
 msgid "Toggle chat"
-msgstr ""
-
-#~ msgid "Online Contacts"
-#~ msgstr "Online-Kontakte"
-
-#~ msgid "Disconnected"
-#~ msgstr "Verbindung unterbrochen."
-
-#~ msgid "Connection Failed"
-#~ msgstr "Entfernte Verbindung fehlgeschlagen"
-
-#~ msgid "Disconnecting"
-#~ msgstr "Trenne Verbindung"
-
-#, fuzzy
-#~ msgid "Decline"
-#~ msgstr "Online"
-
-#~ msgid "BOSH Service URL:"
-#~ msgstr "BOSH "
-
-#~ msgid "Connected"
-#~ msgstr "Verbunden"
-
-#~ msgid "Attached"
-#~ msgstr "Angehängt"
+msgstr "Chat ein-/ausblenden"

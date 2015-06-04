@@ -4,12 +4,21 @@ Changelog
 0.9.4 (Unreleased)
 ------------------
 
-* Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
+* #144 Add Ping funcionnality and Pong Handler [thierrytiti]
+* #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
+* #415 closeAllChatBoxes is giving ReferenceError when 2 chats are open [nevcos, jcbrand]
+* Add automatic Away mode and XEP-0352 support [thierrytiti]
+* Add icon for XA status [thierrytiti]
+* Allow offline pretty status and placeholder for "Insert a smiley" to be translated [thierrytiti]
 * Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
 * Bugfix. clearSessions during unload event would throw an error when not logged in. [gbonvehi]
 * Bugfix. wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]
-* #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
-* Add placeholder for "Insert a smiley" translation [thierrytiti]
+* CSS fix: position and width of the div #conversejs [thierrytiti]
+* CSS fix: room-info bug on hover after room description loaded [thierrytiti]
+* CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
+* I18N: Autodetection of User Locale if no i18n setting is set. [thierrytiti]
+* MUC: missing toggle call handler and updated documentation about call. [thierrytiti]
+* Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
 * Updated French translation [thierrytiti]
 
 0.9.3 (2015-05-01)

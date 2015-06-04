@@ -5,6 +5,13 @@
  * Copyright (c) 2012-2014, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
  */
+/*!
+ * Converse.js (Web-based XMPP instant messaging client)
+ * http://conversejs.org
+ *
+ * Copyright (c) 2012-2014, JC Brand <jc@opkode.com>
+ * Licensed under the Mozilla Public License
+ */
 @font-face {
   font-family: 'Converse-js';
   src: url("../fonticons/fonts/icomoon.eot?-mnoxh0");
@@ -53,7 +60,10 @@
     box-sizing: border-box; }
   @media screen and (max-width: 480px) {
     #conversejs {
-      margin: 5px 10px; } }
+      margin: 0;
+      right: 10px;
+      left: 10px;
+      bottom: 5px; } }
   #conversejs a, #conversejs a:visited {
     text-decoration: none;
     color: #436F64;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-01 12:26+0200\n"
-"PO-Revision-Date: 2015-05-01 12:25+0200\n"
+"PO-Revision-Date: 2015-06-04 10:11+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -66,7 +66,7 @@ msgstr "Dieser Kontakt ist abwesend"
 
 #: converse.js:344
 msgid "Click to hide these contacts"
-msgstr "Hier klicken um diesen Kontakt zu verstecken"
+msgstr "Hier klicken um diesen Kontakte zu verstecken"
 
 #: converse.js:346
 msgid "My contacts"
@@ -240,9 +240,8 @@ msgid "has gone offline"
 msgstr "Dieser Kontakt ist offline"
 
 #: converse.js:1449
-#, fuzzy
 msgid "is busy"
-msgstr "beschäftigt"
+msgstr "ist beschäftigt"
 
 #: converse.js:1537
 msgid "Your messages are not encrypted anymore"
@@ -281,7 +280,6 @@ msgid ""
 msgstr ""
 
 #: converse.js:1568
-#, fuzzy
 msgid "Clear all messages"
 msgstr "Alle Nachrichten löschen"
 
@@ -334,9 +332,8 @@ msgid "Offline"
 msgstr "Abgemeldet"
 
 #: converse.js:1672
-#, fuzzy
 msgid "Log out"
-msgstr "Anmelden"
+msgstr "Abmelden"
 
 #: converse.js:1678
 msgid "Contact name"
@@ -383,7 +380,6 @@ msgid "Server"
 msgstr "Server"
 
 #: converse.js:1787
-#, fuzzy
 msgid "Join Room"
 msgstr "Raum betreten"
 
@@ -675,7 +671,6 @@ msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
 msgstr "Ihr Spitzname wurde automatisiert geändert zu: <strong>%1$s</strong>"
 
 #: converse.js:2854
-#, fuzzy
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
 msgstr "Ihr Spitzname wurde geändert zu: <strong>%1$s</strong>"
 
@@ -872,27 +867,3 @@ msgstr "Anmelden"
 #: converse.js:5291
 msgid "Toggle chat"
 msgstr "Chat ein-/ausblenden"
-
-#~ msgid "Online Contacts"
-#~ msgstr "Online-Kontakte"
-
-#~ msgid "Disconnected"
-#~ msgstr "Verbindung unterbrochen."
-
-#~ msgid "Connection Failed"
-#~ msgstr "Entfernte Verbindung fehlgeschlagen"
-
-#~ msgid "Disconnecting"
-#~ msgstr "Trenne Verbindung"
-
-#~ msgid "Decline"
-#~ msgstr "Ablehnen"
-
-#~ msgid "BOSH Service URL:"
-#~ msgstr "BOSH "
-
-#~ msgid "Connected"
-#~ msgstr "Verbunden"
-
-#~ msgid "Attached"
-#~ msgstr "Angehängt"

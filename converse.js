@@ -141,6 +141,16 @@
 
     converse.initialize = function (settings, callback) {
         var converse = this;
+        var unloadevent;
+        if ('onbeforeunload' in window) {
+            unloadevent = 'beforeunload';
+        } else if ('onunload' in window) {
+            unloadevent = 'unload';
+        } else if ('onpagehide' in window) {
+            // Mobile Safari (at least older versions) doesn't support unload or beforeunload.
+            // Apple recommends "pagehide" instead.
+            unloadevent = 'pagehide';
+        }
 
         // Logging
         Strophe.log = function (level, msg) { converse.log(level+' '+msg, level); };
@@ -412,7 +422,7 @@
                 $(window).on('mousemove' , function () { converse.autoAwayReset(); });
                 $(window).on('keypress' , function () { converse.autoAwayReset(); });
                 $(window).on('focus' , function () { converse.autoAwayReset(); });
-                $(window).on('beforeunload' , function () { converse.autoAwayReset(); });
+                $(window).on(unloadevent , function () { converse.autoAwayReset(); });
 
                 window.setInterval(function () {
                     if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
@@ -643,7 +653,7 @@
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
             this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.session.fetch();
-            $(window).on('beforeunload', $.proxy(function () {
+            $(window).on(unloadevent, $.proxy(function () {
                 if (converse.connection.authenticated) {
                     this.setSession();
                 } else {

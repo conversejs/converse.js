@@ -53,7 +53,7 @@
          ],
          "Click to hide these contacts": [
             null,
-            "Hier klicken um diesen Kontakt zu verstecken"
+            "Hier klicken um diese Kontakte zu verstecken"
          ],
          "My contacts": [
             null,
@@ -113,7 +113,7 @@
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            "Authentifizierungsanfrage von %1$s\n\nIhr Kontakt möchte durch die folgende Frage Ihre Identität verifizieren.\n\n%2$s"
+            "Authentifizierungsanfrage von %1$s\n\nIhr Kontakt möchte durch die folgende Frage Ihre Identität verifizieren:\n\n%2$s"
          ],
          "Could not verify this user's identify.": [
             null,
@@ -226,6 +226,10 @@
          "Your contact has closed their end of the private session, you should do the same": [
             null,
             ""
+         ],
+         "Clear all messages": [
+            null,
+            "Alle Nachrichten löschen"
          ],
          "End encrypted conversation": [
             null,
@@ -433,7 +437,7 @@
          ],
          "Error: could not execute the command": [
             null,
-            "Fehler: konnte den Befehl nicht ausführen"
+            "Fehler: Konnte den Befehl nicht ausführen"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -525,15 +529,15 @@
          ],
          "Non-privacy-related room configuration has changed": [
             null,
-            "Raumkonfiguration, nicht Privatsphäre relevant, hat sich geändert"
+            "Die Raumkonfiguration hat sich geändert (nicht Privatsphäre relevant)"
          ],
          "Room logging is now enabled": [
             null,
-            "Nachrichten in diesem Raums werden ab jetzt protokolliert."
+            "Nachrichten in diesem Raum werden ab jetzt protokolliert."
          ],
          "Room logging is now disabled": [
             null,
-            "Nachrichten in diesem Raums werden nicht mehr protokolliert."
+            "Nachrichten in diesem Raum werden nicht mehr protokolliert."
          ],
          "This room is now non-anonymous": [
             null,
@@ -549,7 +553,7 @@
          ],
          "A new room has been created": [
             null,
-            "Einen neuer Raum wurde erstellt"
+            "Ein neuer Raum wurde erstellt"
          ],
          "You have been banned from this room": [
             null,
@@ -653,11 +657,11 @@
          ],
          "Click to accept this contact request": [
             null,
-            "Hier klicken um diesen Kontaktanfrage zu akzeptieren"
+            "Hier klicken um diese Kontaktanfrage zu akzeptieren"
          ],
          "Click to decline this contact request": [
             null,
-            "Hier klicken um diesen Kontaktanfrage zu abzulehnen"
+            "Hier klicken um diese Kontaktanfrage zu abzulehnen"
          ],
          "Click to chat with this contact": [
             null,
@@ -681,7 +685,7 @@
          ],
          "Click here to write a custom status message": [
             null,
-            "Hier klicken um Status-Nachricht zu ändern"
+            "Hier klicken um Statusnachricht zu ändern"
          ],
          "Click to change your chat status": [
             null,
@@ -689,7 +693,7 @@
          ],
          "Custom status": [
             null,
-            "Status-Nachricht"
+            "Statusnachricht"
          ],
          "online": [
             null,

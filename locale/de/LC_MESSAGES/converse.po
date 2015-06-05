@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-01 12:26+0200\n"
-"PO-Revision-Date: 2015-06-04 10:11+0200\n"
+"PO-Revision-Date: 2015-06-05 12:50+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -66,7 +66,7 @@ msgstr "Dieser Kontakt ist abwesend"
 
 #: converse.js:344
 msgid "Click to hide these contacts"
-msgstr "Hier klicken um diesen Kontakte zu verstecken"
+msgstr "Hier klicken um diese Kontakte zu verstecken"
 
 #: converse.js:346
 msgid "My contacts"
@@ -136,7 +136,7 @@ msgstr ""
 "Authentifizierungsanfrage von %1$s\n"
 "\n"
 "Ihr Kontakt möchte durch die folgende Frage "
-"Ihre Identität verifizieren.\n"
+"Ihre Identität verifizieren:\n"
 "\n"
 "%2$s"
 
@@ -502,7 +502,7 @@ msgstr "Nachricht"
 
 #: converse.js:2452
 msgid "Error: could not execute the command"
-msgstr "Fehler: konnte den Befehl nicht ausführen"
+msgstr "Fehler: Konnte den Befehl nicht ausführen"
 
 #: converse.js:2527
 msgid "Change user's affiliation to admin"
@@ -594,15 +594,15 @@ msgstr "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"
 
 #: converse.js:2817
 msgid "Non-privacy-related room configuration has changed"
-msgstr "Raumkonfiguration, nicht Privatsphäre relevant, hat sich geändert"
+msgstr "Die Raumkonfiguration hat sich geändert (nicht Privatsphäre relevant)"
 
 #: converse.js:2818
 msgid "Room logging is now enabled"
-msgstr "Nachrichten in diesem Raums werden ab jetzt protokolliert."
+msgstr "Nachrichten in diesem Raum werden ab jetzt protokolliert."
 
 #: converse.js:2819
 msgid "Room logging is now disabled"
-msgstr "Nachrichten in diesem Raums werden nicht mehr protokolliert."
+msgstr "Nachrichten in diesem Raum werden nicht mehr protokolliert."
 
 #: converse.js:2820
 msgid "This room is now non-anonymous"
@@ -618,7 +618,7 @@ msgstr "Dieser Raum ist jetzt anonym"
 
 #: converse.js:2823
 msgid "A new room has been created"
-msgstr "Einen neuer Raum wurde erstellt"
+msgstr "Ein neuer Raum wurde erstellt"
 
 #: converse.js:2827 converse.js:2926
 msgid "You have been banned from this room"
@@ -736,11 +736,11 @@ msgstr "Hier klicken um diesen Kontakt zu entfernen"
 
 #: converse.js:3589
 msgid "Click to accept this contact request"
-msgstr "Hier klicken um diesen Kontaktanfrage zu akzeptieren"
+msgstr "Hier klicken um diese Kontaktanfrage zu akzeptieren"
 
 #: converse.js:3590
 msgid "Click to decline this contact request"
-msgstr "Hier klicken um diesen Kontaktanfrage zu abzulehnen"
+msgstr "Hier klicken um diese Kontaktanfrage zu abzulehnen"
 
 #: converse.js:3599
 msgid "Click to chat with this contact"
@@ -766,7 +766,7 @@ msgstr "Ich bin %1$s"
 
 #: converse.js:4602 converse.js:4678
 msgid "Click here to write a custom status message"
-msgstr "Hier klicken um Status-Nachricht zu ändern"
+msgstr "Hier klicken um Statusnachricht zu ändern"
 
 #: converse.js:4603 converse.js:4679
 msgid "Click to change your chat status"
@@ -774,7 +774,7 @@ msgstr "Hier klicken um Status zu ändern"
 
 #: converse.js:4628
 msgid "Custom status"
-msgstr "Status-Nachricht"
+msgstr "Statusnachricht"
 
 #: converse.js:4656 converse.js:4664
 msgid "online"

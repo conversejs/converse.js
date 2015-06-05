@@ -659,15 +659,18 @@
   a.configure-chatroom-button,
   a.toggle-chatbox-button,
   a.close-chatbox-button {
-    border-radius: 6px;
+    border-radius: 5px;
     border: 1px solid #888;
     color: white;
     cursor: pointer;
     display: inline-block;
     float: right;
-    font-size: 10px;
+    font-size: $box-close-font-size;
     margin: 0 0 0 3px;
-    padding: 3px 3px 2px 3px;
+    padding-top: $box-close-button-padding-top;
+    padding-bottom: $box-close-button-padding-bottom;
+    padding-left: $box-close-button-padding-left;
+    padding-right: $box-close-button-padding-right;
     text-decoration: none;
   }
 

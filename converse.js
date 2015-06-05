@@ -5671,8 +5671,66 @@
             });
         };
 
+        this.attemptPreboundSession = function (tokens) {
+            /* Handle session resumption or initialization when prebind is being used.
+             */
+            var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
+            if (this.keepalive) {
+                if (!this.jid) {
+                    throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                }
+                if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
+                    this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                    return this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
+                }
+            } else { // Not keepalive
+                if (this.jid && this.sid && this.rid) {
+                    return this.connection.attach(this.jid, this.sid, this.rid, this.onConnStatusChanged);
+                } else {
+                    throw new Error("initConnection: If you use prebind and not keepalive, "+
+                        "then you MUST supply JID, RID and SID values");
+                }
+            }
+            // We haven't been able to attach yet. Let's see if there
+            // is a prebind_url, otherwise there's nothing with which
+            // we can attach.
+            if (this.prebind_url) {
+                this.startNewBOSHSession();
+            } else {
+                delete this.connection;
+                this.emit('noResumeableSession');
+            }
+        };
+
+        this.attemptNonPreboundSession = function (tokens) {
+            /* Handle session resumption or initialization when prebind is not being used.
+             *
+             * Two potential options exist and are handled in this method:
+             *  1. keepalive
+             *  2. auto_login
+             */
+            var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
+            if (this.keepalive && rid && sid && jid) {
+                this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
+            } else if (this.auto_login) {
+                if (!this.jid) {
+                    throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
+                }
+                if (this.authentication === ANONYMOUS) {
+                    this.connection.connect(this.jid, null, this.onConnStatusChanged);
+                } else if (this.authentication === LOGIN) {
+                    if (!this.password) {
+                        throw new Error("initConnection: If you use auto_login and "+
+                            "authentication='login' then you also need to provide a password.");
+                    }
+                    this.connection.connect(this.jid, this.password, this.onConnStatusChanged);
+                }
+            }
+        };
+
         this.initConnection = function () {
-            var rid, sid, jid;
+            var tokens = {};
             if (this.connection && this.connection.connected) {
                 this.setUpXMLLogging();
                 this.onConnected();
@@ -5688,52 +5746,17 @@
                     throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
                 }
                 this.setUpXMLLogging();
-
                 if (this.keepalive) {
-                    if (!this.jid) {
-                        throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
-                    }
-                    rid = this.session.get('rid');
-                    sid = this.session.get('sid');
-                    jid = this.session.get('jid');
+                    tokens.rid = this.session.get('rid');
+                    tokens.sid = this.session.get('sid');
+                    tokens.jid = this.session.get('jid');
                 }
+                // We now try to resume or automatically set up a new session.
+                // Otherwise the user will be shown a login form.
                 if (this.authentication === PREBIND) {
-                    if (!this.keepalive) {
-                        if (this.jid && this.sid && this.rid) {
-                            this.connection.attach(this.jid, this.sid, this.rid, this.onConnStatusChanged);
-                        } else {
-                            throw new Error("initConnection: If you use prebind and not keepalive, "+
-                                "then you MUST supply JID, RID and SID values");
-                        }
-                    }
-                    if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
-                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                        this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
-                    } else if (this.prebind_url) {
-                        this.startNewBOSHSession();
-                    } else {
-                        delete this.connection;
-                        this.emit('noResumeableSession');
-                    }
+                    this.attemptPreboundSession(tokens);
                 } else {
-                    // Non-prebind case.
-                    if (this.keepalive && rid && sid && jid) {
-                        this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                        this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
-                    } else if (this.auto_login) {
-                        if (!this.jid) {
-                            throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
-                        }
-                        if (this.authentication === ANONYMOUS) {
-                            this.connection.connect(this.jid, null, this.onConnStatusChanged);
-                        } else if (this.authentication === LOGIN) {
-                            if (!this.password) {
-                                throw new Error("initConnection: If you use auto_login and "+
-                                    "authentication='login' then you also need to provide a password.");
-                            }
-                            this.connection.connect(this.jid, this.password, this.onConnStatusChanged);
-                        }
-                    }
+                    this.attemptNonPreboundSession(tokens);
                 }
             }
         };

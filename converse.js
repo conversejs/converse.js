@@ -550,24 +550,27 @@
             );
         };
 
-        this.reconnect = function () {
-            converse.giveFeedback(__('Reconnecting'), 'error');
-            if (converse.authentication !== "prebind") {
-                this.connection.connect(
-                    this.connection.jid,
-                    this.connection.pass,
-                    function (status, condition) {
-                        converse.onConnectStatusChanged(status, condition, true);
-                    },
-                    this.connection.wait,
-                    this.connection.hold,
-                    this.connection.route
-                );
-            } else if (converse.prebind_url) {
-                this.clearSession();
-                this._tearDown();
-                this.startNewBOSHSession();
-            }
+        this.reconnect = function (condition) {
+            converse.log('Attempting to reconnect in 5 seconds');
+            converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
+            setTimeout(function () {
+                if (converse.authentication !== "prebind") {
+                    this.connection.connect(
+                        this.connection.jid,
+                        this.connection.pass,
+                        function (status, condition) {
+                            this.onConnectStatusChanged(status, condition, true);
+                        }.bind(this),
+                        this.connection.wait,
+                        this.connection.hold,
+                        this.connection.route
+                    );
+                } else if (converse.prebind_url) {
+                    this.clearSession();
+                    this._tearDown();
+                    this.startNewBOSHSession();
+                }
+            }.bind(this), 5000);
         };
 
         this.renderLoginPanel = function () {

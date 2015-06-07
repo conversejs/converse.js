@@ -201,6 +201,19 @@
             'online':       1
         };
 
+        var PRETTY_CONNECTION_STATUS = {
+            0: 'ERROR',
+            1: 'CONNECTING',
+            2: 'CONNFAIL',
+            3: 'AUTHENTICATING',
+            4: 'AUTHFAIL',
+            5: 'CONNECTED',
+            6: 'DISCONNECTED',
+            7: 'DISCONNECTING',
+            8: 'ATTACHED',
+            9: 'REDIRECT'
+        };
+
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
         var INACTIVE = 'inactive';
@@ -544,7 +557,7 @@
                     this.connection.jid,
                     this.connection.pass,
                     function (status, condition) {
-                        converse.onConnStatusChanged(status, condition, true);
+                        converse.onConnectStatusChanged(status, condition, true);
                     },
                     this.connection.wait,
                     this.connection.hold,
@@ -564,7 +577,8 @@
             view.renderLoginPanel();
         };
 
-        this.onConnStatusChanged = function (status, condition, reconnect) {
+        this.onConnectStatusChanged = function (status, condition, reconnect) {
+            converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
@@ -579,7 +593,7 @@
                 } else {
                     converse.renderLoginPanel();
                 }
-            } else if (status === Strophe.Status.Error) {
+            } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
@@ -5249,7 +5263,7 @@
                             converse.connection.connect(
                                 that.fields.username+'@'+that.domain,
                                 that.fields.password,
-                                converse.onConnStatusChanged
+                                converse.onConnectStatusChanged
                             );
                             converse.chatboxviews.get('controlbox')
                                 .switchTab({target: that.$tabs.find('.current')})
@@ -5562,7 +5576,7 @@
                         jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
                     }
                 }
-                converse.connection.connect(jid, password, converse.onConnStatusChanged);
+                converse.connection.connect(jid, password, converse.onConnectStatusChanged);
             },
 
             remove: function () {
@@ -5661,7 +5675,7 @@
                             response.jid,
                             response.sid,
                             response.rid,
-                            this.onConnStatusChanged
+                            this.onConnectStatusChanged
                     );
                 }.bind(this),
                 error: function (response) {
@@ -5681,11 +5695,11 @@
                 }
                 if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
                     this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                    return this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
+                    return this.connection.attach(jid, sid, rid, this.onConnectStatusChanged);
                 }
             } else { // Not keepalive
                 if (this.jid && this.sid && this.rid) {
-                    return this.connection.attach(this.jid, this.sid, this.rid, this.onConnStatusChanged);
+                    return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
                 } else {
                     throw new Error("initConnection: If you use prebind and not keepalive, "+
                         "then you MUST supply JID, RID and SID values");
@@ -5712,19 +5726,19 @@
             var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
             if (this.keepalive && rid && sid && jid) {
                 this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                this.connection.attach(jid, sid, rid, this.onConnStatusChanged);
+                this.connection.attach(jid, sid, rid, this.onConnectStatusChanged);
             } else if (this.auto_login) {
                 if (!this.jid) {
                     throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
                 }
                 if (this.authentication === ANONYMOUS) {
-                    this.connection.connect(this.jid, null, this.onConnStatusChanged);
+                    this.connection.connect(this.jid, null, this.onConnectStatusChanged);
                 } else if (this.authentication === LOGIN) {
                     if (!this.password) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
-                    this.connection.connect(this.jid, this.password, this.onConnStatusChanged);
+                    this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
                 }
             }
         };

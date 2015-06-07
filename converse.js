@@ -583,6 +583,7 @@
         this.onConnectStatusChanged = function (status, condition, reconnect) {
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                delete converse.disconnection_cause;
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
@@ -591,8 +592,8 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                if (converse.auto_reconnect) {
-                    converse.reconnect();
+                if (converse.disconnection_cause == Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+                    converse.reconnect(condition);
                 } else {
                     converse.renderLoginPanel();
                 }
@@ -605,6 +606,9 @@
             } else if (status === Strophe.Status.AUTHFAIL) {
                 converse.giveFeedback(__('Authentication Failed'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
+                converse.disconnection_cause = Strophe.Status.AUTHFAIL;
+            } else if (status === Strophe.Status.CONNFAIL) {
+                converse.disconnection_cause = Strophe.Status.CONNFAIL;
             } else if (status === Strophe.Status.DISCONNECTING) {
                 // FIXME: what about prebind?
                 if (!converse.connection.connected) {
@@ -1363,6 +1367,9 @@
             },
 
             sendMessage: function (text) {
+                if (!converse.connection.authenticated) {
+                    return this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
+                }
                 var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
                     if (match[1] === "clear") {
@@ -4972,21 +4979,19 @@
             },
 
             getPrettyStatus: function (stat) {
-                var pretty_status;
                 if (stat === 'chat') {
-                    pretty_status = __('online');
+                    return __('online');
                 } else if (stat === 'dnd') {
-                    pretty_status = __('busy');
+                    return __('busy');
                 } else if (stat === 'xa') {
-                    pretty_status = __('away for long');
+                    return __('away for long');
                 } else if (stat === 'away') {
-                    pretty_status = __('away');
+                    return __('away');
                 } else if (stat === 'offline') {
-                    pretty_status = __('offline');
+                    return __('offline');
                 } else {
-                    pretty_status = __(stat) || __('online');
+                    return __(stat) || __('online');
                 }
-                return pretty_status;
             },
 
             updateStatusUI: function (model) {

@@ -195,6 +195,10 @@
             null,
             ""
          ],
+         "is busy": [
+            null,
+            "ist beschäftigt"
+         ],
          "Your messages are not encrypted anymore": [
             null,
             ""
@@ -279,6 +283,10 @@
             null,
             "Abgemeldet"
          ],
+         "Log out": [
+            null,
+            "Abmelden"
+         ],
          "Contact name": [
             null,
             "Name des Kontakts"
@@ -322,6 +330,10 @@
          "Server": [
             null,
             "Server"
+         ],
+         "Join Room": [
+            null,
+            "Raum betreten"
          ],
          "Show rooms": [
             null,
@@ -598,6 +610,10 @@
          "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
             null,
             "Ihr Spitzname wurde automatisiert geändert zu: <strong>%1$s</strong>"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Ihr Spitzname wurde geändert zu: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

@@ -137,11 +137,11 @@
          ],
          "is typing": [
             null,
-            "%1$s tippt"
+            "tippt"
          ],
          "has stopped typing": [
             null,
-            "%1$s tippt nicht mehr"
+            "tippt nicht mehr"
          ],
          "has gone away": [
             null,

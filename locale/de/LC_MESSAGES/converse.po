@@ -162,11 +162,11 @@ msgstr "Ich"
 
 #: converse.js:1158
 msgid "is typing"
-msgstr "%1$s tippt"
+msgstr "tippt"
 
 #: converse.js:1161
 msgid "has stopped typing"
-msgstr "%1$s tippt nicht mehr"
+msgstr "tippt nicht mehr"
 
 #: converse.js:1167 converse.js:1447
 msgid "has gone away"

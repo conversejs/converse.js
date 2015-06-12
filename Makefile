@@ -24,6 +24,7 @@ help:
 	@echo " all        A synonym for 'make dev'."
 	@echo " build      Create minified builds of converse.js and all its dependencies."
 	@echo " changes    Make an overview of all changed/added/deprecated items added to the documentation."
+	@echo " clean      Remove downloaded Node.js, bower and Ruby files."
 	@echo " css        Generate CSS from the Sass files."
 	@echo " cssmin     Minify the CSS files."
 	@echo " dev        Set up the development environment. To force a fresh start, run 'make clean' first."

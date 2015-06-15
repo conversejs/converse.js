@@ -18,6 +18,8 @@ make your changes and then submit a pull request.
 Before submitting a pull request
 --------------------------------
 
+Please read the `style guide <https://conversejs.org/docs/html/style_guide.html>`_ and make sure that your code follows it.
+
 Add tests for your bugfix or feature
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Add a test for any bug fixed or feature added. We use Jasmine
@@ -29,13 +31,7 @@ to see how tests are implemented.
 
 Check that the tests pass
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-Check that the Jasmine tests complete sucessfully. Open
-`tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
-in your browser, and the tests will run automatically.
+Check that all tests complete sucessfully.
 
-Check your code for errors or bad habits by running JSHint
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you haven't yet done so, run ``npm install`` to install all development
-dependencies.
-
-Then run ``grunt jshint`` and check the output.
+Run ``make check`` in your terminal or open `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
+in your browser.

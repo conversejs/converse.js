@@ -414,6 +414,7 @@ formatted sound files. We need both, because neither format is supported by all 
 You can set the URL where the sound files are hosted with the `sounds_path`_
 option.
 
+.. _`prebind_url`:
 
 prebind_url
 -----------

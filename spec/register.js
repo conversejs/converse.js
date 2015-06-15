@@ -238,7 +238,7 @@
                         .c('instructions').t('xform instructions').up()
                         .c('field', {'type': 'text-single', 'var': 'username'}).c('required').up().up()
                         .c('field', {'type': 'text-private', 'var': 'password'}).c('required').up().up()
-                        .c('field', {'type': 'text-single', 'var': 'email'}).c('required').up().up()
+                        .c('field', {'type': 'text-single', 'var': 'email'}).c('required').up().up();
             this.connection._dataRecv(test_utils.createRequest(stanza));
             expect(registerview.form_type).toBe('xform');
 

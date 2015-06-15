@@ -124,6 +124,7 @@ build:: stamp-npm
 ## Tests
 
 check:: stamp-npm
+	$(GRUNT) jshint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 
 ########################################################################

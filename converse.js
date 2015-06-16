@@ -416,7 +416,7 @@
         this.autoAwayReset = function () {
             if (converse._idleCounter > 0) {
                 converse._idleCounter = 0;
-                if (converse._autoAway > 0) {
+                if (converse._autoAway > 0 && converse.chatboxes.get('controlbox').connected) {
                     converse._autoAway = 0;
                     converse.sendCSI(ACTIVE);
                     converse.xmppstatus.setStatus('online');
@@ -438,19 +438,21 @@
                 $(window).on(unloadevent , function () { converse.autoAwayReset(); });
 
                 window.setInterval(function () {
-                    if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
-                        (this.xmppstatus.get('status') == 'online' && this._autoAway === 0) || (this.xmppstatus.get('status') == 'away' && this._autoAway == 1) ){
-                        this._idleCounter++;
-                    }
-                    if (this.auto_away > 0 && this._autoAway != 1 && this._idleCounter > this.auto_away && this._idleCounter <= this.auto_xa){
-                        this.sendCSI(INACTIVE);
-                        this._autoAway = 1;
-                        this.xmppstatus.setStatus('away');
-                    }
-                    else if (this.auto_xa > 0 && this._autoAway != 2 && this._idleCounter > this.auto_xa){
-                        this.sendCSI(INACTIVE);
-                        this._autoAway = 2;
-                        this.xmppstatus.setStatus('xa');
+                    if (converse.chatboxes.get('controlbox').connected){
+                        if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
+                            (this.xmppstatus.get('status') == 'online' && this._autoAway === 0) || (this.xmppstatus.get('status') == 'away' && this._autoAway == 1) ){
+                            this._idleCounter++;
+                        }
+                        if (this.auto_away > 0 && this._autoAway != 1 && this._idleCounter > this.auto_away && this._idleCounter <= this.auto_xa){
+                            this.sendCSI(INACTIVE);
+                            this._autoAway = 1;
+                            this.xmppstatus.setStatus('away');
+                        }
+                        else if (this.auto_xa > 0 && this._autoAway != 2 && this._idleCounter > this.auto_xa){
+                            this.sendCSI(INACTIVE);
+                            this._autoAway = 2;
+                            this.xmppstatus.setStatus('xa');
+                        }
                     }
                 }.bind(this), 1000); //every seconds
                 return true;

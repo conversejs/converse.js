@@ -15,6 +15,7 @@ Changelog
 * #415 closeAllChatBoxes is giving ReferenceError when 2 chats are open [nevcos, jcbrand]
 * #416 Add icon for XA status [thierrytiti]
 * #420 Updated German translation [1st8]
+* #426 AutoAway disabled while connection is lost [thierrytiti]
 * Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
 * Bugfix. ClearSessions during unload event would throw an error when not logged in. [gbonvehi]
 * Bugfix. Wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]

@@ -4050,8 +4050,8 @@
                 if (contact instanceof converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
-                    // XXX: I don't think this should ever happen
-                    this.addContact(jid, '', [], { 'subscription': 'from' }).done(function (contact) {
+                    // XXX: Happen when subscription retries or roster deleted
+                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
                         if (contact instanceof converse.RosterContact) {
                             contact.authorize().subscribe();
                         }

@@ -416,7 +416,7 @@
         this.autoAwayReset = function () {
             if (converse._idleCounter > 0) {
                 converse._idleCounter = 0;
-                if (converse._autoAway > 0 && converse.chatboxes.get('controlbox').connected) {
+                if (converse._autoAway > 0 && converse.connection.connected) {
                     converse._autoAway = 0;
                     converse.sendCSI(ACTIVE);
                     converse.xmppstatus.setStatus('online');
@@ -438,7 +438,7 @@
                 $(window).on(unloadevent , function () { converse.autoAwayReset(); });
 
                 window.setInterval(function () {
-                    if (converse.chatboxes.get('controlbox').connected){
+                    if (converse.connection.connected){
                         if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
                             (this.xmppstatus.get('status') == 'online' && this._autoAway === 0) || (this.xmppstatus.get('status') == 'away' && this._autoAway == 1) ){
                             this._idleCounter++;

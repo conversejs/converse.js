@@ -275,6 +275,7 @@
         // Default configuration values
         // ----------------------------
         this.default_settings = {
+            allow_chat_pending_contacts: false,
             allow_contact_removal: true,
             allow_contact_requests: true,
             allow_dragresize: true,
@@ -3855,7 +3856,8 @@
                     this.$el.addClass('pending-xmpp-contact');
                     this.$el.html(converse.templates.pending_contact(
                         _.extend(item.toJSON(), {
-                            'desc_remove': __('Click to remove this contact')
+                            'desc_remove': __('Click to remove this contact'),
+                            'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
                         })
                     ));
                 } else if (requesting === true) {
@@ -3863,7 +3865,8 @@
                     this.$el.html(converse.templates.requesting_contact(
                         _.extend(item.toJSON(), {
                             'desc_accept': __("Click to accept this contact request"),
-                            'desc_decline': __("Click to decline this contact request")
+                            'desc_decline': __("Click to decline this contact request"),
+                            'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
                         })
                     ));
                     converse.controlboxtoggle.showControlBox();

@@ -140,16 +140,19 @@
     };
 
     converse.initialize = function (settings, callback) {
+        "use strict";
         var converse = this;
         var unloadevent;
-        if ('onbeforeunload' in window) {
+        if ('onpagehide' in window) {
+            // Pagehide gets thrown in more cases than unload. Specifically it
+            // gets thrown when the page is cached and not just
+            // closed/destroyed. It's the only viable event on mobile Safari.
+            // https://www.webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
+            unloadevent = 'pagehide';
+        } else if ('onbeforeunload' in window) {
             unloadevent = 'beforeunload';
         } else if ('onunload' in window) {
             unloadevent = 'unload';
-        } else if ('onpagehide' in window) {
-            // Mobile Safari (at least older versions) doesn't support unload or beforeunload.
-            // Apple recommends "pagehide" instead.
-            unloadevent = 'pagehide';
         }
 
         // Logging
@@ -240,32 +243,35 @@
         // Translation machinery
         // ---------------------
         this.isAvailableLocale = function (locale) {
-            ret = null;
             if (locales[locale]) {
-                ret = locales[locale];
-            } else{
-                sublocale=locale.split("-")[0];
-                if (sublocale!=locale && locales[sublocale]) {
-                    ret=locales[sublocale];
+                return locales[locale];
+            } else {
+                var sublocale = locale.split("-")[0];
+                if (sublocale != locale && locales[sublocale]) {
+                    return locales[sublocale];
                 }
             }
-            return ret;
+            return null;
         };
 		
         this.detectLocale = function () {
-            ret = null;
+            var ret, i;
             if (window.navigator.userLanguage) {
-                ret = this.isAvailableLocale(window.navigator.userLanguage);
-            } else if (window.navigator.languages && !ret) {
-                for (var i = 0; i < window.navigator.languages.length && !ret; i++) {
+                return this.isAvailableLocale(window.navigator.userLanguage);
+            } else if (window.navigator.languages) {
+                for (i=0; i < window.navigator.languages.length && !ret; i++) {
                     ret = this.isAvailableLocale(window.navigator.languages[i]);
                 }
+                return ret || locales.en;
+            } else if (window.navigator.browserLanguage) {
+                return this.isAvailableLocale(window.navigator.browserLanguage);
+            } else if (window.navigator.language) {
+                return this.isAvailableLocale(window.navigator.language);
+            } else if (window.navigator.systemLanguage) {
+                return this.isAvailableLocale(window.navigator.systemLanguage);
+            } else {
+                return locales.en;
             }
-            else if (window.navigator.browserLanguage && !ret) ret = this.isAvailableLocale(window.navigator.browserLanguage);
-            else if (window.navigator.language && !ret) ret = this.isAvailableLocale(window.navigator.language);
-            else if (window.navigator.systemLanguage && !ret) ret = this.isAvailableLocale(window.navigator.systemLanguage);
-            else { ret = locales.en; }
-            return ret;
         };
         this.i18n = settings.i18n ? settings.i18n : this.detectLocale();
 
@@ -669,18 +675,11 @@
         };
 
         this.initSession = function () {
-            this.session = new this.BOSHSession();
+            this.session = new this.Session();
             var id = b64_sha1('converse.bosh-session');
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
             this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.session.fetch();
-            $(window).on(unloadevent, $.proxy(function () {
-                if (converse.connection.authenticated) {
-                    this.setSession();
-                } else {
-                    this.clearSession();
-                }
-            }, this));
         };
 
         this.clearSession = function () {
@@ -690,16 +689,6 @@
             this.session.browserStorage._clear();
             if (converse.connection.connected) {
                 converse.chatboxes.get('controlbox').save({'connected': false});
-            }
-        };
-
-        this.setSession = function () {
-            if (this.keepalive) {
-                this.session.save({
-                    jid: this.connection.jid,
-                    rid: this.connection._proto.rid,
-                    sid: this.connection._proto.sid
-                });
             }
         };
 
@@ -791,7 +780,7 @@
                     return true;
                 }.bind(converse));
                 this.connection.addTimedHandler(1000, function () {
-                    now = new Date();
+                    var now = new Date();
                     if (!this.lastStanzaDate) {
                         this.lastStanzaDate = now;
                     }
@@ -845,7 +834,6 @@
             // know whether these boxes are of the same account or not, so we
             // close them now.
             this.chatboxviews.closeAllChatBoxes();
-            this.setSession();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
@@ -5009,7 +4997,7 @@
             }
         });
 
-        this.BOSHSession = Backbone.Model;
+        this.Session = Backbone.Model; // General session settings to be saved to sessionStorage.
         this.Feature = Backbone.Model;
         this.Features = Backbone.Collection.extend({
             /* Service Discovery
@@ -5678,7 +5666,6 @@
                 url:  this.prebind_url,
                 type: 'GET',
                 success: function (response) {
-                    this.session.save({rid: response.rid});
                     this.connection.attach(
                             response.jid,
                             response.sid,
@@ -5696,14 +5683,14 @@
         this.attemptPreboundSession = function (tokens) {
             /* Handle session resumption or initialization when prebind is being used.
              */
-            var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
             if (this.keepalive) {
                 if (!this.jid) {
                     throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
                 }
-                if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
-                    this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                    return this.connection.attach(jid, sid, rid, this.onConnectStatusChanged);
+                try {
+                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
+                } catch (e) {
+                    converse.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
                 }
             } else { // Not keepalive
                 if (this.jid && this.sid && this.rid) {
@@ -5724,17 +5711,19 @@
             }
         };
 
-        this.attemptNonPreboundSession = function (tokens) {
+        this.attemptNonPreboundSession = function () {
             /* Handle session resumption or initialization when prebind is not being used.
              *
              * Two potential options exist and are handled in this method:
              *  1. keepalive
              *  2. auto_login
              */
-            var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
-            if (this.keepalive && rid && sid && jid) {
-                this.session.save({rid: rid}); // The RID needs to be increased with each request.
-                this.connection.attach(jid, sid, rid, this.onConnectStatusChanged);
+            if (this.keepalive) {
+                try {
+                    return this.connection.restore(null, this.onConnectStatusChanged);
+                } catch (e) {
+                    converse.log("Could not restore sessions. Error message: "+e.message);
+                }
             } else if (this.auto_login) {
                 if (!this.jid) {
                     throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
@@ -5752,7 +5741,6 @@
         };
 
         this.initConnection = function () {
-            var tokens = {};
             if (this.connection && this.connection.connected) {
                 this.setUpXMLLogging();
                 this.onConnected();
@@ -5761,24 +5749,19 @@
                     throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
                 }
                 if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                    this.connection = new Strophe.Connection(this.websocket_url);
+                    this.connection = new Strophe.Connection(this.websocket_url, {'keepalive': this.keepalive});
                 } else if (this.bosh_service_url) {
-                    this.connection = new Strophe.Connection(this.bosh_service_url);
+                    this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
                 } else {
                     throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
                 }
                 this.setUpXMLLogging();
-                if (this.keepalive) {
-                    tokens.rid = this.session.get('rid');
-                    tokens.sid = this.session.get('sid');
-                    tokens.jid = this.session.get('jid');
-                }
                 // We now try to resume or automatically set up a new session.
                 // Otherwise the user will be shown a login form.
                 if (this.authentication === PREBIND) {
-                    this.attemptPreboundSession(tokens);
+                    this.attemptPreboundSession();
                 } else {
-                    this.attemptNonPreboundSession(tokens);
+                    this.attemptNonPreboundSession();
                 }
             }
         };

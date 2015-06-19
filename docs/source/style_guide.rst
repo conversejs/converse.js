@@ -1,25 +1,22 @@
 Software Style Guide
 ====================
 
-.. note:: Converse.js currently does not use any of the new ES6 or ES7 features.
-    We don't use a transpiler and still support older browsers, so we only use ES5.
+.. note:: Converse.js doesn't yet use any of the new `ES2015
+    <https://babeljs.io/docs/learn-es2015/>`_ features, because we don't
+    rely on a transpiler and still support older browsers.
 
 Most of the style guide recommendations here come from Douglas Crockford's book
 "Javascript, the good parts".
 
 This style guide is fairly opinionated. Some of these opinions perhaps don't
-conform to your expectations on how Javascript should be written.
+conform to your expectations on how Javascript code should look like.
 I apologize for that. However, for the sake of sanity, consistency and having
 code that is pleasing to the eye, please stick to these guidelines.
 
 Tabs or spaces?
 ---------------
 
-We always indent 4 spaces.
-
-Proper indentation is very important for harmonious looking code.
-Poor indentation is distracting and causes irritation. When one is distracted and
-irritated, one is not in the relaxed, focused state of mind required for doing quality work.
+We always indent 4 spaces. Proper indentation is very important for readability.
 
 Underscores or camelCase?
 -------------------------
@@ -35,7 +32,31 @@ For example:
         ...
     }
 
-Constants are written in ALL CAPS
+Spaces around operators
+-----------------------
+
+In general, spaces are put around operators, such as the equals ``=`` or plus ``+`` signs.
+
+For example:
+
+.. code-block:: javascript 
+
+    if (sublocale != locale) {
+        // do something
+    }
+
+An exception is when they appear inside for-loop expressions, for example:
+
+.. code-block:: javascript 
+
+    for (i=0; i<msgs_length; i++) {
+        // do something
+    }
+
+Generally though, rather err on the side of adding spaces, since they make the
+code much more readable.
+
+Constants are written in ALL_CAPS
 ---------------------------------
 
 Identifiers that denote constant values should be written in
@@ -78,8 +99,26 @@ Checking for equality
 Javascript has a strict ``===`` and less strict ``==`` equality operator. To
 avoid subtle bugs when doing comparisons, always use the strict equality check.
 
+Curly brackets
+--------------
+
+Curly brackets come on the same lines as the ``if`` and ``else`` keywords.
+
+For example:
+
+.. code-block:: javascript 
+
+    if (locales[locale]) {
+        return locales[locale];
+    } else {
+        sublocale = locale.split("-")[0];
+        if (sublocale != locale && locales[sublocale]) {
+            return locales[sublocale];
+        }
+    }
+
 Always enclose blocks in curly brackets
----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When writing an a block such as an ``if`` or ``while`` statement, always use
 curly brackets around the block of code. Either when not strictly required by

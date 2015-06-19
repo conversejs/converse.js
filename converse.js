@@ -675,11 +675,18 @@
         };
 
         this.initSession = function () {
-            this.session = new this.Session();
+            this.session = new this.BOSHSession();
             var id = b64_sha1('converse.bosh-session');
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
             this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
             this.session.fetch();
+            $(window).on(unloadevent, $.proxy(function () {
+                if (converse.connection.authenticated) {
+                    this.setSession();
+                } else {
+                    this.clearSession();
+                }
+            }, this));
         };
 
         this.clearSession = function () {
@@ -689,6 +696,16 @@
             this.session.browserStorage._clear();
             if (converse.connection.connected) {
                 converse.chatboxes.get('controlbox').save({'connected': false});
+            }
+        };
+
+        this.setSession = function () {
+            if (this.keepalive) {
+                this.session.save({
+                    jid: this.connection.jid,
+                    rid: this.connection._proto.rid,
+                    sid: this.connection._proto.sid
+                });
             }
         };
 
@@ -834,6 +851,7 @@
             // know whether these boxes are of the same account or not, so we
             // close them now.
             this.chatboxviews.closeAllChatBoxes();
+            this.setSession();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
@@ -4997,7 +5015,7 @@
             }
         });
 
-        this.Session = Backbone.Model; // General session settings to be saved to sessionStorage.
+        this.BOSHSession = Backbone.Model;
         this.Feature = Backbone.Model;
         this.Features = Backbone.Collection.extend({
             /* Service Discovery
@@ -5666,6 +5684,7 @@
                 url:  this.prebind_url,
                 type: 'GET',
                 success: function (response) {
+                    this.session.save({rid: response.rid});
                     this.connection.attach(
                             response.jid,
                             response.sid,
@@ -5683,14 +5702,14 @@
         this.attemptPreboundSession = function (tokens) {
             /* Handle session resumption or initialization when prebind is being used.
              */
+            var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
             if (this.keepalive) {
                 if (!this.jid) {
                     throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
                 }
-                try {
-                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
-                } catch (e) {
-                    converse.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
+                if (rid && sid && jid && Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(this.jid)) {
+                    this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                    return this.connection.attach(jid, sid, rid, this.onConnectStatusChanged);
                 }
             } else { // Not keepalive
                 if (this.jid && this.sid && this.rid) {
@@ -5711,19 +5730,17 @@
             }
         };
 
-        this.attemptNonPreboundSession = function () {
+        this.attemptNonPreboundSession = function (tokens) {
             /* Handle session resumption or initialization when prebind is not being used.
              *
              * Two potential options exist and are handled in this method:
              *  1. keepalive
              *  2. auto_login
              */
-            if (this.keepalive) {
-                try {
-                    return this.connection.restore(null, this.onConnectStatusChanged);
-                } catch (e) {
-                    converse.log("Could not restore sessions. Error message: "+e.message);
-                }
+            var rid = tokens.rid, jid = tokens.jid, sid = tokens.sid;
+            if (this.keepalive && rid && sid && jid) {
+                this.session.save({rid: rid}); // The RID needs to be increased with each request.
+                this.connection.attach(jid, sid, rid, this.onConnectStatusChanged);
             } else if (this.auto_login) {
                 if (!this.jid) {
                     throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
@@ -5741,6 +5758,7 @@
         };
 
         this.initConnection = function () {
+            var tokens = {};
             if (this.connection && this.connection.connected) {
                 this.setUpXMLLogging();
                 this.onConnected();
@@ -5749,19 +5767,24 @@
                     throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
                 }
                 if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                    this.connection = new Strophe.Connection(this.websocket_url, {'keepalive': this.keepalive});
+                    this.connection = new Strophe.Connection(this.websocket_url);
                 } else if (this.bosh_service_url) {
-                    this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
+                    this.connection = new Strophe.Connection(this.bosh_service_url);
                 } else {
                     throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
                 }
                 this.setUpXMLLogging();
+                if (this.keepalive) {
+                    tokens.rid = this.session.get('rid');
+                    tokens.sid = this.session.get('sid');
+                    tokens.jid = this.session.get('jid');
+                }
                 // We now try to resume or automatically set up a new session.
                 // Otherwise the user will be shown a login form.
                 if (this.authentication === PREBIND) {
-                    this.attemptPreboundSession();
+                    this.attemptPreboundSession(tokens);
                 } else {
-                    this.attemptNonPreboundSession();
+                    this.attemptNonPreboundSession(tokens);
                 }
             }
         };

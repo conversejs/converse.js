@@ -23,6 +23,7 @@ Changelog
 * Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
 * Refactored the plugin architecture. Add `overrides` convention for
   automatically overriding converse.js's methods and Backbone views and models. [jcbrand]
+* Decouple automatic away and XEP-0352 support. [jcbrand]
 
 0.9.3 (2015-05-01)
 ------------------

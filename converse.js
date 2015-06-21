@@ -287,8 +287,8 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
-            auto_away: 0, //in seconds
-            auto_xa: 0, //in seconds
+            auto_away: 0, // Seconds after which user status is set to 'away'
+            auto_xa: 0, // Seconds after which user status is set to 'xa'
             allow_registration: true,
             animate: true,
             auto_list_rooms: false,
@@ -297,6 +297,7 @@
             auto_subscribe: false,
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
+            csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
             domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
@@ -306,7 +307,7 @@
             hide_offline_users: false,
             jid: undefined,
             keepalive: false,
-            message_carbons: false,
+            message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             ping_interval: 180, //in seconds
             play_sounds: false,
@@ -337,6 +338,8 @@
             xhr_user_search: false,
             xhr_user_search_url: ''
         };
+
+
         _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
@@ -415,54 +418,56 @@
         // ----------------------
 
         this.sendCSI = function (stat) {
-            if (converse.features[Strophe.NS.CSI]) {
+            /* Send out a Chat Status Notification (XEP-0352) */
+            if (converse.features[Strophe.NS.CSI] || true) {
                 converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-            }
-        };
-        this.autoAwayReset = function () {
-            if (converse._idleCounter > 0) {
-                converse._idleCounter = 0;
-                if (converse._autoAway > 0) {
-                    converse._autoAway = 0;
-                    converse.sendCSI(ACTIVE);
-                    converse.xmppstatus.setStatus('online');
-                }
-            }
-        };
-        this.registerAutoAwayHandler = function () {
-            // TODO: we should probably come up with a way to decouple CSI and auto-away
-            if (this.auto_away > 0 || this.auto_xa > 0) {
-                if (this.auto_xa > 0 && this.auto_xa < this.auto_away) {
-                    this.auto_xa = this.auto_away;
-                }
-                this._idleCounter = 0;
-                this._autoAway = 0;
-                $(window).on('click' , function () { converse.autoAwayReset(); });
-                $(window).on('mousemove' , function () { converse.autoAwayReset(); });
-                $(window).on('keypress' , function () { converse.autoAwayReset(); });
-                $(window).on('focus' , function () { converse.autoAwayReset(); });
-                $(window).on(unloadevent , function () { converse.autoAwayReset(); });
-
-                window.setInterval(function () {
-                    if ((this._idleCounter <= this.auto_away || (this.auto_xa > 0 && this._idleCounter <= this.auto_xa)) &&
-                        (this.xmppstatus.get('status') == 'online' && this._autoAway === 0) || (this.xmppstatus.get('status') == 'away' && this._autoAway == 1) ){
-                        this._idleCounter++;
-                    }
-                    if (this.auto_away > 0 && this._autoAway != 1 && this._idleCounter > this.auto_away && this._idleCounter <= this.auto_xa){
-                        this.sendCSI(INACTIVE);
-                        this._autoAway = 1;
-                        this.xmppstatus.setStatus('away');
-                    }
-                    else if (this.auto_xa > 0 && this._autoAway != 2 && this._idleCounter > this.auto_xa){
-                        this.sendCSI(INACTIVE);
-                        this._autoAway = 2;
-                        this.xmppstatus.setStatus('xa');
-                    }
-                }.bind(this), 1000); //every seconds
-                return true;
+                this.inactive = (stat === INACTIVE) ? true : false;
             }
         };
 
+        this.onUserActivity = function () {
+            /* Reset counters and flags relating to user activity. */
+            if (this.idle_seconds > 0) {
+                this.idle_seconds = 0;
+            }
+            if (this.inactive) {
+                this.sendCSI(ACTIVE);
+            }
+            if (this.auto_changed_status === true) {
+                this.auto_changed_status = false;
+                this.xmppstatus.setStatus('online');
+            }
+        };
+
+        this.onEverySecond = function () {
+            /* An interval handler running every second */
+            var stat = this.xmppstatus.getStatus();
+            this.idle_seconds++;
+            if (this.idle_seconds > this.csi_waiting_time && !this.inactive) {
+                this.sendCSI(INACTIVE);
+            }
+            if (this.auto_away > 0 && this.idle_seconds > this.auto_away && stat !== 'away' && stat !== 'xa') {
+                this.auto_changed_status = true;
+                this.xmppstatus.setStatus('away');
+            } else if (this.auto_xa > 0 && this.idle_seconds > this.auto_xa && stat !== 'xa') {
+                this.auto_changed_status = true;
+                this.xmppstatus.setStatus('xa');
+            }
+        };
+
+        this.registerIntervalHandler = function () {
+            /* Set an interval of one second and register a handler for it.
+             * Required for the auto_away, auto_xa and csi_waiting_time features.
+             */
+            if (this.auto_away < 1 && this.auto_xa < 1 && this.csi_waiting_time < 1) {
+                // Waiting time of less then one second means features aren't used.
+                return;
+            }
+            this.idle_seconds = 0;
+            this.auto_changed_status = false; // Was the user's status changed by converse.js?
+            $(window).on('click mousemove keypress focus'+unloadevent , this.onUserActivity.bind(this));
+            window.setInterval(this.onEverySecond.bind(this), 1000);
+        };
 		
         this.playNotification = function () {
             var audio;
@@ -842,7 +847,7 @@
             this.enableCarbons();
             this.initStatus($.proxy(function () {
                 this.registerPingHandler();
-                this.registerAutoAwayHandler();				
+                this.registerIntervalHandler();				
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (this.callback) {
@@ -1206,9 +1211,7 @@
                     );
                 this.renderToolbar().renderAvatar();
                 converse.emit('chatBoxOpened', this);
-                setTimeout(function () {
-                    converse.refreshWebkit();
-                }, 50);
+                setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
             },
 
@@ -2543,9 +2546,7 @@
                 this.$el.attr('id', this.model.get('box_id'))
                         .html(converse.templates.chatroom(this.model.toJSON()));
                 this.renderChatArea();
-                setTimeout(function () {
-                    converse.refreshWebkit();
-                }, 50);
+                setTimeout(converse.refreshWebkit, 50);
                 return this;
             },
 
@@ -5720,7 +5721,7 @@
              */
             if (this.keepalive) {
                 try {
-                    return this.connection.restore(null, this.onConnectStatusChanged);
+                    return this.connection.restore(undefined, this.onConnectStatusChanged);
                 } catch (e) {
                     converse.log("Could not restore sessions. Error message: "+e.message);
                 }
@@ -5749,7 +5750,7 @@
                     throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
                 }
                 if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                    this.connection = new Strophe.Connection(this.websocket_url, {'keepalive': this.keepalive});
+                    this.connection = new Strophe.Connection(this.websocket_url);
                 } else if (this.bosh_service_url) {
                     this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
                 } else {

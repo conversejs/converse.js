@@ -180,21 +180,22 @@ auto_away
 
 * Default:  ``0``
 
-This option can be used to let converse.js automatically change user presence
+The amount of seconds after which the user's presence status should
+automatically become ``away``.
 
-This set the number a seconds before user presence become ``away``
-If the value if negative or ``0``, the function is disabled.
+If the user's status is ``extended away``, it won't be changed to ``away``.
+
+If the given value is negative or ``0``, this option is disabled.
 
 auto_xa
 -------
 
 * Default:  ``0``
 
-This option can be used to let converse.js automatically change user presence
+The amount of seconds after which the user's presence status should
+automatically become ``extended away``.
 
-This set the number a seconds before user presence become ``xa`` (eXtended Away)
-The value must be greater than ``auto_away``
-If the value if negative or ``0``, the function is disabled.
+If the value is negative or ``0``, the function is disabled.
 
 auto_reconnect
 --------------
@@ -252,6 +253,20 @@ This setting can only be used together with ``allow_otr = true``.
     the same server (or somehow injected via an attacker), then they will be able
     to retrieve your private key and read your all the chat messages in your
     current session. Previous sessions however cannot be decrypted.
+
+csi_waiting_time
+----------------
+
+* Default: ``0``
+
+This option adds support for **XEP-0085 Chat State Indication**.
+
+If converse.js is idle for the configured amount of seconds, a chat state
+indication of ``inactive`` will be sent out to the XMPP server (if the server
+supports CSI).
+
+Afterwards, ss soon as there is any activity (for example, the mouse moves),
+a chat state indication of ``active`` will be sent out.
 
 debug
 -----

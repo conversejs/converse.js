@@ -57,6 +57,79 @@
             });
         });
 
+        describe("A chat state indication", function () {
+
+            it("are sent out when the client becomes or stops being idle", function () {
+                spyOn(converse, 'sendCSI').andCallThrough();
+                var sent_stanza;
+                spyOn(converse.connection, 'send').andCallFake(function (stanza) {
+                    sent_stanza = stanza;
+                });
+                var i = 0;
+                converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
+                converse.features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
+
+                converse.csi_waiting_time = 3; // The relevant config option
+                while (i <= converse.csi_waiting_time) {
+                    expect(converse.sendCSI).not.toHaveBeenCalled();
+                    converse.onEverySecond();
+                    i++;
+                }
+                expect(converse.sendCSI).toHaveBeenCalledWith('inactive');
+                expect(sent_stanza.toLocaleString()).toBe(
+                    "<inactive xmlns='urn:xmpp:csi:0'/>"
+                );
+                converse.onUserActivity();
+                expect(converse.sendCSI).toHaveBeenCalledWith('active');
+                expect(sent_stanza.toLocaleString()).toBe(
+                    "<active xmlns='urn:xmpp:csi:0'/>"
+                );
+
+                // Reset values
+                converse.csi_waiting_time = 0;
+                converse.features['urn:xmpp:csi:0'] = false;
+            });
+        });
+
+        describe("Automatic status change", function () {
+
+            it("happens when the client is idle for long enough", function () {
+                var i = 0;
+                // Usually initialized by registerIntervalHandler
+                converse.idle_seconds = 0; 
+                converse.auto_changed_status = false;
+
+                // The relevant config options
+                converse.auto_away = 3;
+                converse.auto_xa = 6;
+
+                expect(converse.xmppstatus.getStatus()).toBe('online');
+
+                while (i <= converse.auto_away) {
+                    converse.onEverySecond();
+                    i++;
+                }
+                expect(converse.auto_changed_status).toBe(true);
+
+                while (i <= converse.auto_xa) {
+                    expect(converse.xmppstatus.getStatus()).toBe('away');
+                    converse.onEverySecond();
+                    i++;
+                }
+                expect(converse.xmppstatus.getStatus()).toBe('xa');
+                expect(converse.auto_changed_status).toBe(true);
+
+                converse.onUserActivity();
+                expect(converse.xmppstatus.getStatus()).toBe('online');
+                expect(converse.auto_changed_status).toBe(false);
+
+                // Reset values
+                converse.auto_away = 0;
+                converse.auto_xa = 0;
+                converse.auto_changed_status = false;
+            });
+        });
+
         describe("The \"tokens\" API", $.proxy(function () {
             beforeEach(function () {
                 test_utils.closeAllChatBoxes();

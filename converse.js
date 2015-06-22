@@ -286,7 +286,7 @@
             if (window.navigator.systemLanguage && !locale) {
                 locale = this.isLocaleAvailable(window.navigator.systemLanguage, library_check);
             }
-            return locale || locales.en;
+            return locale || 'en';
         };
 		
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead

@@ -22,14 +22,14 @@ tags:
 You need to initialize Converse.js with configuration settings according to
 your requirements.
 
-Please refer to the :ref:`configuration-variables` section further below for info on
-all the available configuration settings.
+Please refer to the :ref:`configuration-variables` section for info on all the available configuration settings.
 
-To configure Converse.js, put the following inline Javascript code at the
+To configure and initialize Converse.js, put the following inline Javascript code at the
 bottom of your page (after the closing *</body>* element).
 
 .. code-block:: javascript
 
+    <script>
     require(['converse'], function (converse) {
         converse.initialize({
             bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
@@ -38,14 +38,15 @@ bottom of your page (after the closing *</body>* element).
             roster_groups: true
         });
     });
+    </script>
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
 Converse.js repository may serve as a nice usable example.
 
-These minified files provide the same demo-like functionality as is available
+These minified `.js` and `.css` files provide the same demo-like functionality as is available
 on the `conversejs.org <http://conversejs.org>`_ website. Useful for testing or demoing.
 
-You'll most likely want to implement some kind of single persistent session solution for
+You'll most likely want to implement some kind of persistent single-session solution for
 your website, where users authenticate once in your website and then stay
 logged in to their XMPP session upon the next page reload.
 

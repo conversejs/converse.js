@@ -240,41 +240,63 @@
         var OPENED = 'opened';
         var CLOSED = 'closed';
 
-        // Translation machinery
-        // ---------------------
-        this.isAvailableLocale = function (locale) {
-            if (locales[locale]) {
-                return locales[locale];
+        // Detect support for the user's locale
+        // ------------------------------------
+        this.isConverseLocale = function (locale) { return typeof locales[locale] !== "undefined"; };
+        this.isMomentLocale = function (locale) { return moment.locale() != moment.locale(locale); };
+
+        this.isLocaleAvailable = function (locale, available) {
+            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+             *
+             * Parameters:
+             *      (Function) available - returns a boolean indicating whether the locale is supported
+             */
+            if (available(locale)) {
+                return locale;
             } else {
                 var sublocale = locale.split("-")[0];
-                if (sublocale != locale && locales[sublocale]) {
-                    return locales[sublocale];
+                if (sublocale != locale && available(sublocale)) {
+                    return sublocale;
                 }
             }
-            return null;
         };
 		
-        this.detectLocale = function () {
-            var ret, i;
+        this.detectLocale = function (library_check) {
+            /* Determine which locale is supported by the user's system as well
+             * as by the relevant library (e.g. converse.js or moment.js).
+             *
+             * Parameters:
+             *      (Function) library_check - returns a boolean indicating whether the locale is supported
+             */
+            var locale, i;
             if (window.navigator.userLanguage) {
-                return this.isAvailableLocale(window.navigator.userLanguage);
-            } else if (window.navigator.languages) {
-                for (i=0; i < window.navigator.languages.length && !ret; i++) {
-                    ret = this.isAvailableLocale(window.navigator.languages[i]);
-                }
-                return ret || locales.en;
-            } else if (window.navigator.browserLanguage) {
-                return this.isAvailableLocale(window.navigator.browserLanguage);
-            } else if (window.navigator.language) {
-                return this.isAvailableLocale(window.navigator.language);
-            } else if (window.navigator.systemLanguage) {
-                return this.isAvailableLocale(window.navigator.systemLanguage);
-            } else {
-                return locales.en;
+                locale = this.isLocaleAvailable(window.navigator.userLanguage, library_check);
             }
+            if (window.navigator.languages && !locale) {
+                for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                    locale = this.isLocaleAvailable(window.navigator.languages[i], library_check);
+                }
+            }
+            if (window.navigator.browserLanguage && !locale) {
+                locale = this.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+            }
+            if (window.navigator.language && !locale) {
+                locale = this.isLocaleAvailable(window.navigator.language, library_check);
+            }
+            if (window.navigator.systemLanguage && !locale) {
+                locale = this.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+            }
+            return locale || locales.en;
         };
-        this.i18n = settings.i18n ? settings.i18n : this.detectLocale();
+		
+        if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
+            moment.locale = moment.lang;
+        }
+        moment.locale(this.detectLocale(this.isMomentLocale));
+        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)];
 
+        // Translation machinery
+        // ---------------------
         var __ = $.proxy(utils.__, this);
         var ___ = utils.___;
 

@@ -11,7 +11,8 @@ Changelog
 * #401 Updated French translation [thierrytiti]
 * #404 CSS fix: position and width of the div #conversejs [thierrytiti]
 * #407 CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
-* #408 MUC: missing toggle call handler and updated documentation about call. [thierrytiti]
+* #408 MUC: missing toggle call handler and updated documentation about call [thierrytiti]
+* #413 Auto-detect user's locale to show date and time in the right format [thierrytiti]
 * #415 closeAllChatBoxes is giving ReferenceError when 2 chats are open [nevcos, jcbrand]
 * #416 Add icon for XA status [thierrytiti]
 * #418 Logging out with `auto_reconnect=true` causes reconnection retries [jcbrand]
@@ -26,6 +27,8 @@ Changelog
 * Refactored the plugin architecture. Add `overrides` convention for
   automatically overriding converse.js's methods and Backbone views and models. [jcbrand]
 * Decouple automatic away and XEP-0352 support. [jcbrand]
+* CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
+* Add offline pretty status to enable translation [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

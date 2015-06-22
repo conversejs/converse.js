@@ -6126,14 +6126,15 @@
             }
         },
         'env': {
-            'jQuery': $,
-            'Strophe': Strophe,
             '$build': $build,
             '$iq': $iq,
-            '$pres': $pres,
             '$msg': $msg,
+            '$pres': $pres,
+            'Strophe': Strophe,
             '_': _,
-            'b64_sha1':  b64_sha1
+            'b64_sha1':  b64_sha1,
+            'jQuery': $,
+            'moment': moment
         }
     };
 }));

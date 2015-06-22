@@ -26,7 +26,7 @@ require.config({
         "jquery-private":           "src/jquery-private",
         "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
-        "moment":                   "components/momentjs/min/moment-with-langs",
+        "moment":                   "components/momentjs/min/moment.min",
         "strophe-base64":           "components/strophejs/src/base64",
         "strophe-bosh":             "components/strophejs/src/bosh",
         "strophe-core":             "components/strophejs/src/core",
@@ -82,6 +82,24 @@ require.config({
         "ru":        "locale/ru/LC_MESSAGES/converse.json",
         "uk":        "locale/uk/LC_MESSAGES/converse.json",
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
+
+        "moment_with_locales": "src/moment_locales",
+        'moment_af':        "components/momentjs/locale/af",
+        'moment_de':        "components/momentjs/locale/de",
+        'moment_es':        "components/momentjs/locale/es",
+        'moment_fr':        "components/momentjs/locale/fr",
+        'moment_he':        "components/momentjs/locale/he",
+        'moment_hu':        "components/momentjs/locale/hu",
+        'moment_id':        "components/momentjs/locale/id",
+        'moment_it':        "components/momentjs/locale/it",
+        'moment_ja':        "components/momentjs/locale/ja",
+        'moment_nb':        "components/momentjs/locale/nb",
+        'moment_nl':        "components/momentjs/locale/nl",
+        'moment_pl':        "components/momentjs/locale/pl",
+        'moment_pt-br':     "components/momentjs/locale/pt-br",
+        'moment_ru':        "components/momentjs/locale/ru",
+        'moment_uk':        "components/momentjs/locale/uk",
+        'moment_zh':        "components/momentjs/locale/zh-cn",
 
         // Templates
         "action":                   "src/templates/action",

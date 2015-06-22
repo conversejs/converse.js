@@ -3,6 +3,8 @@
  *
  * Translations take up a lot of space and you are therefore advised to remove
  * from here any languages that you don't need.
+ *
+ * See also src/moment_locales.js
  */
 (function (root, factory) {
     define("locales", ['jquery', 'jed', 

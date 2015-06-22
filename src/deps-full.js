@@ -2,7 +2,7 @@ define("converse-dependencies", [
     "jquery",
     "utils",
     "otr",
-    "moment",
+    "moment_with_locales",
     "strophe",
     "strophe.vcard",
     "strophe.disco",

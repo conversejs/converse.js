@@ -3,7 +3,7 @@ define("converse-dependencies", [
     "underscore",
     "utils",
     "otr",
-    "moment",
+    "moment_with_locales",
     "strophe",
     "strophe.vcard",
     "strophe.disco",

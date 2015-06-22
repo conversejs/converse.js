@@ -10,6 +10,7 @@
 } (this, function ($, mock, test_utils) {
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
+    var moment = converse_api.env.moment;
 
     return describe("Chatboxes", $.proxy(function(mock, test_utils) {
         describe("A Chatbox", $.proxy(function () {

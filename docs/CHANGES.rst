@@ -6,6 +6,7 @@ Changelog
 
 * #144 Add Ping funcionnality and Pong Handler [thierrytiti]
 * #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
+* #394 Option to allow chatting with pending contacts [thierrytiti]
 * #396 Add automatic Away mode and XEP-0352 support [thierrytiti]
 * #400, #410 Allow offline pretty status and placeholder for "Insert a smiley" to be translated [thierrytiti]
 * #401 Updated French translation [thierrytiti]

@@ -52,6 +52,7 @@ Integration into other frameworks
     `collective.xmpp.chat <http://github.com/collective/collective.xmpp.chat>`_ is an add-on for Plone that uses *Converse.js*. Together with `collective.xmpp.core <http://github.com/collective/collective.xmpp.core>`_, it provides for single-signon-support (SSO) and also enables you to manually or automatically register your Plone users onto your XMPP server.
 * `Django <http://www.djangoproject.com>`_: 
     `django-conversejs <https://pypi.python.org/pypi/django-conversejs>`_ is an app that makes it easer to integrate *Converse.js* into Django.
+    `django-xmpp <https://github.com/fpytloun/django-xmpp>`_ adds XMPP chat integration with converse.js by letting Ejabberd authenticate against your Django site.
 * `Roundcube <http://roundcube.net>`_: 
     `roundcube-converse.js-xmpp-plugin <https://github.com/priyadi/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
 * `Wordpress <http://wordpress.org>`_:

@@ -426,9 +426,14 @@
         };
 
         this.onUserActivity = function () {
-            /* Reset counters and flags relating to user activity. */
+            /* Resets counters and flags relating to CSI and auto_away/auto_xa */
             if (this.idle_seconds > 0) {
                 this.idle_seconds = 0;
+            }
+            if (!converse.connection.authenticated) {
+                // We can't send out any stanzas when there's no authenticated connection.
+                // This can happen when the connection reconnects.
+                return;
             }
             if (this.inactive) {
                 this.sendCSI(ACTIVE);
@@ -440,7 +445,15 @@
         };
 
         this.onEverySecond = function () {
-            /* An interval handler running every second */
+            /* An interval handler running every second.
+             * Used for CSI and the auto_away and auto_xa
+             * features.
+             */
+            if (!converse.connection.authenticated) {
+                // We can't send out any stanzas when there's no authenticated connection.
+                // This can happen when the connection reconnects.
+                return;
+            }
             var stat = this.xmppstatus.getStatus();
             this.idle_seconds++;
             if (this.idle_seconds > this.csi_waiting_time && !this.inactive) {

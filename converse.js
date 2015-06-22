@@ -4052,7 +4052,7 @@
                 if (contact instanceof converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
-                    // XXX: Happen when subscription retries or roster deleted
+                    // Can happen when a subscription is retried or roster was deleted
                     this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
                         if (contact instanceof converse.RosterContact) {
                             contact.authorize().subscribe();

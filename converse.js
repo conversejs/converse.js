@@ -297,7 +297,7 @@
 
         // Translation machinery
         // ---------------------
-        var __ = $.proxy(utils.__, this);
+        var __ = utils.__.bind(this);
         var ___ = utils.___;
 
         // Default configuration values
@@ -565,7 +565,7 @@
                 return;
             }
             converse.connection.vcard.get(
-                $.proxy(function (iq) { // Successful callback
+                function (iq) { // Successful callback
                     var $vcard = $(iq).find('vCard');
                     var fullname = $vcard.find('FN').text(),
                         img = $vcard.find('BINVAL').text(),
@@ -585,7 +585,7 @@
                         }
                     }
                     if (callback) { callback(iq, jid, fullname, img, img_type, url); }
-                }, this),
+                }.bind(this),
                 jid,
                 function (iq) { // Error callback
                     var contact = converse.roster.get(jid);
@@ -749,13 +749,13 @@
                 }
             });
 
-            $(document).on('mousemove', $.proxy(function (ev) {
+            $(document).on('mousemove', function (ev) {
                 if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
                 this.resized_chatbox.resizeChatBox(ev);
-            }, this));
+            }.bind(this));
 
-            $(document).on('mouseup', $.proxy(function (ev) {
+            $(document).on('mouseup', function (ev) {
                 if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
                 var height = this.applyHeightResistance(this.resized_chatbox.height);
@@ -765,18 +765,18 @@
                     this.resized_chatbox.model.set({'height': height});
                 }
                 this.resized_chatbox = null;
-            }, this));
+            }.bind(this));
 
-            $(window).on("blur focus", $.proxy(function (ev) {
+            $(window).on("blur focus", function (ev) {
                 if ((this.windowState != ev.type) && (ev.type == 'focus')) {
                     converse.clearMsgCounter();
                 }
                 this.windowState = ev.type;
-            },this));
+            }.bind(this));
 
-            $(window).on("resize", _.debounce($.proxy(function (ev) {
+            $(window).on("resize", _.debounce(function (ev) {
                 this.chatboxviews.trimChats();
-            },this), 200));
+            }.bind(this), 200));
         };
 
         this.ping = function (jid, success, error, timeout) {
@@ -836,14 +836,14 @@
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
-            this.initStatus($.proxy(function () {
+            this.initStatus(function () {
                 this.registerPingHandler();
                 this.rosterview.registerRosterXHandler();
                 this.rosterview.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 this.xmppstatus.sendPresence();
                 this.giveFeedback(__('Contacts'));
-            }, this));
+            }.bind(this));
         };
 
         this.enableCarbons = function () {
@@ -859,14 +859,14 @@
                 type: 'set'
               })
               .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
-            this.connection.addHandler($.proxy(function (iq) {
+            this.connection.addHandler(function (iq) {
                 if ($(iq).find('error').length > 0) {
                     converse.log('ERROR: An error occured while trying to enable message carbons.');
                 } else {
                     this.session.save({carbons_enabled: true});
                     converse.log('Message carbons have been enabled.');
                 }
-            }, this), null, "iq", null, "enablecarbons");
+            }.bind(this), null, "iq", null, "enablecarbons");
             this.connection.send(carbons_iq);
         };
 
@@ -881,7 +881,7 @@
             this.minimized_chats = new converse.MinimizedChats({model: this.chatboxes});
             this.features = new this.Features();
             this.enableCarbons();
-            this.initStatus($.proxy(function () {
+            this.initStatus(function () {
                 this.registerPingHandler();
                 this.registerIntervalHandler();				
                 this.chatboxes.onConnected();
@@ -897,7 +897,7 @@
                         this.callback();
                     }
                 }
-            }, this));
+            }.bind(this));
             converse.emit('ready');
         };
 
@@ -1076,7 +1076,7 @@
                 // query message from our contact. Otherwise, it is us who will
                 // send the query message to them.
                 this.save({'otr_status': UNENCRYPTED});
-                var session = this.getSession($.proxy(function (session) {
+                var session = this.getSession(function (session) {
                     this.otr = new OTR({
                         fragment_size: 140,
                         send_interval: 200,
@@ -1084,18 +1084,18 @@
                         instance_tag: session.instance_tag,
                         debug: this.debug
                     });
-                    this.otr.on('status', $.proxy(this.updateOTRStatus, this));
-                    this.otr.on('smp', $.proxy(this.onSMP, this));
+                    this.otr.on('status', this.updateOTRStatus.bind(this));
+                    this.otr.on('smp', this.onSMP.bind(this));
 
-                    this.otr.on('ui', $.proxy(function (msg) {
+                    this.otr.on('ui', function (msg) {
                         this.trigger('showReceivedOTRMessage', msg);
-                    }, this));
-                    this.otr.on('io', $.proxy(function (msg) {
+                    }.bind(this));
+                    this.otr.on('io', function (msg) {
                         this.trigger('sendMessageStanza', msg);
-                    }, this));
-                    this.otr.on('error', $.proxy(function (msg) {
+                    }.bind(this));
+                    this.otr.on('error', function (msg) {
                         this.trigger('showOTRError', msg);
-                    }, this));
+                    }.bind(this));
 
                     this.trigger('showHelpMessages', [__('Exchanging private key with contact.')]);
                     if (query_msg) {
@@ -1103,7 +1103,7 @@
                     } else {
                         this.otr.sendQueryMsg();
                     }
-                }, this));
+                }.bind(this));
             },
 
             endOTR: function () {
@@ -1463,10 +1463,10 @@
                 }
                 if (state === COMPOSING) {
                     this.chat_state_timeout = setTimeout(
-                            $.proxy(this.setChatState, this), converse.TIMEOUTS.PAUSED, PAUSED);
+                            this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, PAUSED);
                 } else if (state === PAUSED) {
                     this.chat_state_timeout = setTimeout(
-                            $.proxy(this.setChatState, this), converse.TIMEOUTS.INACTIVE, INACTIVE);
+                            this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, INACTIVE);
                 }
                 if (!no_save && this.model.get('chat_state') != state) {
                     this.model.set('chat_state', state);
@@ -1689,7 +1689,7 @@
             maximize: function () {
                 var chatboxviews = converse.chatboxviews;
                 // Restores a minimized chat box
-                this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', $.proxy(function () {
+                this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', function () {
                     /* Now that the chat box is visible, we can call trimChats
                      * to make space available if need be.
                      */
@@ -1697,7 +1697,7 @@
                     converse.refreshWebkit();
                     this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
-                }, this));
+                }.bind(this));
             },
 
             minimize: function (ev) {
@@ -1715,14 +1715,14 @@
                 if ((contact) && (!contact.get('vcard_updated'))) {
                     converse.getVCard(
                         jid,
-                        $.proxy(function (iq, jid, fullname, image, image_type, url) {
+                        function (iq, jid, fullname, image, image_type, url) {
                             this.model.save({
                                 'fullname' : fullname || jid,
                                 'url': url,
                                 'image_type': image_type,
                                 'image': image
                             });
-                        }, this),
+                        }.bind(this),
                         function () {
                             converse.log("ChatBoxView.initialize: An error occured while fetching vcard");
                         }
@@ -2084,7 +2084,7 @@
                     converse.connection.disco.info(
                         $(target).attr('data-room-jid'),
                         null,
-                        $.proxy(function (stanza) {
+                        function (stanza) {
                             var $stanza = $(stanza);
                             // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                             $dd.find('span.spinner').replaceWith(
@@ -2117,7 +2117,7 @@
                                     'label_temp_room':  _('Temporary room'),
                                     'label_unmoderated': __('Unmoderated')
                                 }));
-                        }, this));
+                        }.bind(this));
                 }
             },
 
@@ -2331,7 +2331,7 @@
             },
 
             show: function () {
-                converse.controlboxtoggle.hide($.proxy(function () {
+                converse.controlboxtoggle.hide(function () {
                     this.$el.show('fast', function () {
                         if (converse.rosterview) {
                             converse.rosterview.update();
@@ -2339,7 +2339,7 @@
                         converse.refreshWebkit();
                     }.bind(this));
                     converse.emit('controlBoxOpened', this);
-                }, this));
+                }.bind(this));
                 return this;
             },
 
@@ -2509,7 +2509,7 @@
                         suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
                     }
                 });
-                $el.on('typeahead:selected', $.proxy(function (ev, suggestion, dname) {
+                $el.on('typeahead:selected', function (ev, suggestion, dname) {
                     var reason = prompt(
                         __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
                         __("You may optionally include a message, explaining the reason for the invitation.")
@@ -2518,7 +2518,7 @@
                         this.chatroomview.directInvite(suggestion.jid, reason);
                     }
                     $(ev.target).typeahead('val', '');
-                }, this));
+                }.bind(this));
                 return this;
             }
 
@@ -2614,16 +2614,16 @@
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
                     this.$('form.sendXMPPMessage, .chat-area').animate({width: '100%'});
-                    this.$('div.participants').animate({width: 0}, $.proxy(function () {
+                    this.$('div.participants').animate({width: 0}, function () {
                         this.scrollDown();
-                    }, this));
+                    }.bind(this));
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
                     this.$('.chat-area, form.sendXMPPMessage').css({width: ''});
-                    this.$('div.participants').show().animate({width: 'auto'}, $.proxy(function () {
+                    this.$('div.participants').show().animate({width: 'auto'}, function () {
                         this.scrollDown();
-                    }, this));
+                    }.bind(this));
                 }
             },
 
@@ -2702,12 +2702,12 @@
                     case 'admin':
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'admin', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'ban':
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'outcast', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'clear':
                         this.clearChatRoomMessages();
@@ -2715,7 +2715,7 @@
                     case 'deop':
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'participant', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'help':
                         this.showHelpMessages([
@@ -2739,17 +2739,17 @@
                     case 'kick':
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'none', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'mute':
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'visitor', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'member':
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'member', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'nick':
                         converse.connection.send($pres({
@@ -2761,17 +2761,17 @@
                     case 'owner':
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'owner', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'op':
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'moderator', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'revoke':
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'none', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     case 'topic':
                         converse.connection.send(
@@ -2785,7 +2785,7 @@
                     case 'voice':
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'participant', args[1],
-                                undefined, $.proxy(this.onCommandError, this));
+                                undefined, this.onCommandError.bind(this));
                         break;
                     default:
                         this.createChatRoomMessage(text);
@@ -2841,7 +2841,7 @@
                     msg.up.cnode(extended_presence);
                 }
                 if (!this.handler) {
-                    this.handler = converse.connection.addHandler($.proxy(this.handleMUCStanza, this));
+                    this.handler = converse.connection.addHandler(this.handleMUCStanza.bind(this));
                 }
                 this.model.set('connection_status', Strophe.Status.CONNECTING);
                 return converse.connection.send(msg);
@@ -2859,7 +2859,7 @@
                     presence.c("status", exit_msg);
                 }
                 converse.connection.addHandler(
-                    $.proxy(function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }, this),
+                    function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }.bind(this),
                     null, "presence", null, presenceid);
                 converse.connection.send(presence);
             },
@@ -2881,7 +2881,7 @@
                 $form.append('<input type="submit" class="save-submit" value="'+__('Save')+'"/>');
                 $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
                 $form.on('submit', this.saveConfiguration.bind(this));
-                $form.find('input[type=button]').on('click', $.proxy(this.cancelConfiguration, this));
+                $form.find('input[type=button]').on('click', this.cancelConfiguration.bind(this));
             },
 
             sendConfiguration: function(config, onSuccess, onError) {
@@ -2904,8 +2904,8 @@
                     if (!--count) {
                         that.sendConfiguration(
                             configArray,
-                            $.proxy(that.onConfigSaved, that),
-                            $.proxy(that.onErrorConfigSaved, that)
+                            that.onConfigSaved.bind(that),
+                            that.onErrorConfigSaved.bind(that)
                         );
                     }
                 });
@@ -2973,7 +2973,7 @@
                         label_password: __('Password: '),
                         label_submit: __('Submit')
                     }));
-                this.$('.chatroom-form').on('submit', $.proxy(this.submitPassword, this));
+                this.$('.chatroom-form').on('submit', this.submitPassword.bind(this));
             },
 
             showDisconnectMessage: function (msg) {
@@ -3058,7 +3058,7 @@
                     disconnect_msgs = [],
                     msgs = [],
                     reasons = [];
-                $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each($.proxy(function (idx, x) {
+                $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each(function (idx, x) {
                     var $item = $(x).find('item');
                     if (Strophe.getBareJidFromJid($item.attr('jid')) === converse.bare_jid && $item.attr('affiliation') === 'owner') {
                         this.$el.find('a.configure-chatroom-button').show();
@@ -3068,7 +3068,7 @@
                             reasons.push($(reason).text());
                         }
                     });
-                    $(x).find('status').each($.proxy(function (idx, stat) {
+                    $(x).find('status').each(function (idx, stat) {
                         var code = stat.getAttribute('code');
                         var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')));
                         if (is_self && code === "210") {
@@ -3086,8 +3086,8 @@
                                 msgs.push($(stat).text()); // Sometimes the status contains human readable text and not a code.
                             }
                         }
-                    }, this));
-                }, this));
+                    }.bind(this));
+                }.bind(this));
 
                 if (disconnect_msgs.length > 0) {
                     for (i=0; i<disconnect_msgs.length; i++) {
@@ -3204,16 +3204,16 @@
 
             registerMessageHandler: function () {
                 converse.connection.addHandler(
-                    $.proxy(function (message) {
+                    function (message) {
                         this.onMessage(message);
                         return true;
-                    }, this), null, 'message', 'chat');
+                    }.bind(this), null, 'message', 'chat');
 
                 converse.connection.addHandler(
-                    $.proxy(function (message) {
+                    function (message) {
                         this.onInvite(message);
                         return true;
-                    }, this), 'jabber:x:conference', 'message');
+                    }.bind(this), 'jabber:x:conference', 'message');
             },
 
             onConnected: function () {
@@ -3222,7 +3222,7 @@
                 this.registerMessageHandler();
                 this.fetch({
                     add: true,
-                    success: $.proxy(function (collection, resp) {
+                    success: function (collection, resp) {
                         collection.each(function (chatbox) {
                             if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
                                 chatbox.trigger('show');
@@ -3235,7 +3235,7 @@
                             });
                         }
                         this.get('controlbox').save({connected:true});
-                    }, this)
+                    }.bind(this)
                 });
             },
 
@@ -4382,11 +4382,11 @@
                 var matches, rejects;
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
-                        this.model.contacts.each($.proxy(function (item) {
+                        this.model.contacts.each(function (item) {
                             if (item.showInRoster()) {
                                 this.get(item.get('id')).$el.show();
                             }
-                        }, this));
+                        }.bind(this));
                     }
                     this.showIfNecessary();
                 } else {
@@ -4395,12 +4395,12 @@
                     if (matches.length === this.model.contacts.length) { // hide the whole group
                         this.hide();
                     } else {
-                        _.each(matches, $.proxy(function (item) {
+                        _.each(matches, function (item) {
                             this.get(item.get('id')).$el.hide();
-                        }, this));
-                        _.each(this.model.contacts.reject(contains.not('fullname', q)), $.proxy(function (item) {
+                        }.bind(this));
+                        _.each(this.model.contacts.reject(contains.not('fullname', q)), function (item) {
                             this.get(item.get('id')).$el.show();
-                        }, this));
+                        }.bind(this));
                         this.showIfNecessary();
                     }
                 }
@@ -4546,7 +4546,7 @@
                     silent: true, // We use the success handler to handle groups that were added,
                                   // we need to first have all groups before positionFetchedGroups
                                   // will work properly.
-                    success: $.proxy(function (collection, resp, options) {
+                    success: function (collection, resp, options) {
                         if (collection.length !== 0) {
                             this.positionFetchedGroups(collection, resp, options);
                         }
@@ -4567,7 +4567,7 @@
                                 }
                             }
                         });
-                    }, this)
+                    }.bind(this)
                 });
                 return this;
             },
@@ -4671,7 +4671,7 @@
                         window.setTimeout(
                             function () {
                                 converse.connection.flush();
-                                $.proxy(converse.roster.subscribeToSuggestedItems, converse.roster)(msg);
+                                converse.roster.subscribeToSuggestedItems.bind(converse.roster)(msg);
                             },
                             t
                         );
@@ -4684,10 +4684,10 @@
 
             registerPresenceHandler: function () {
                 converse.connection.addHandler(
-                    $.proxy(function (presence) {
+                    function (presence) {
                         converse.roster.presenceHandler(presence);
                         return true;
-                    }, this), null, 'presence', null);
+                    }.bind(this), null, 'presence', null);
             },
 
             onGroupAdd: function (group) {
@@ -4749,7 +4749,7 @@
                  * roster DOM element.
                  */
                 model.sort();
-                model.each($.proxy(function (group, idx) {
+                model.each(function (group, idx) {
                     var view = this.get(group.get('name'));
                     if (!view) {
                         view = new converse.RosterGroupView({model: group});
@@ -4760,7 +4760,7 @@
                     } else {
                         this.appendGroup(view);
                     }
-                }, this));
+                }.bind(this));
             },
 
             positionGroup: function (view) {
@@ -4817,9 +4817,7 @@
                 } else {
                     groups = [HEADER_CURRENT_CONTACTS];
                 }
-                _.each(groups, $.proxy(function (name) {
-                    this.addContactToGroup(contact, name);
-                }, this));
+                _.each(groups, _.bind(this.addContactToGroup, this, contact));
             },
 
             addRosterContact: function (contact) {
@@ -4841,13 +4839,13 @@
                 this.set({
                     'status' : this.getStatus()
                 });
-                this.on('change', $.proxy(function (item) {
+                this.on('change', function (item) {
                     if (this.get('fullname') === undefined) {
                         converse.getVCard(
                             null, // No 'to' attr when getting one's own vCard
-                            $.proxy(function (iq, jid, fullname, image, image_type, url) {
+                            function (iq, jid, fullname, image, image_type, url) {
                                 this.save({'fullname': fullname});
-                            }, this)
+                            }.bind(this)
                         );
                     }
                     if (_.has(item.changed, 'status')) {
@@ -4856,7 +4854,7 @@
                     if (_.has(item.changed, 'status_message')) {
                         converse.emit('statusMessageChanged', this.get('status_message'));
                     }
-                }, this));
+                }.bind(this));
             },
 
             constructPresence: function (type, status_message) {
@@ -5054,8 +5052,8 @@
                 if (this.browserStorage.records.length === 0) {
                     // browserStorage is empty, so we've likely never queried this
                     // domain for features yet
-                    converse.connection.disco.info(converse.domain, null, $.proxy(this.onInfo, this));
-                    converse.connection.disco.items(converse.domain, null, $.proxy(this.onItems, this));
+                    converse.connection.disco.info(converse.domain, null, this.onInfo.bind(this));
+                    converse.connection.disco.items(converse.domain, null, this.onItems.bind(this));
                 } else {
                     this.fetch({add:true});
                 }
@@ -5089,12 +5087,12 @@
             },
 
             onItems: function (stanza) {
-                $(stanza).find('query item').each($.proxy(function (idx, item) {
+                $(stanza).find('query item').each(function (idx, item) {
                     converse.connection.disco.info(
                         $(item).attr('jid'),
                         null,
-                        $.proxy(this.onInfo, this));
-                }, this));
+                        this.onInfo.bind(this));
+                }(this));
             },
 
             onInfo: function (stanza) {
@@ -5104,14 +5102,14 @@
                     // This isn't an IM server component
                     return;
                 }
-                $stanza.find('feature').each($.proxy(function (idx, feature) {
+                $stanza.find('feature').each(function (idx, feature) {
                     var namespace = $(feature).attr('var');
                     this[namespace] = true;
                     this.create({
                         'var': namespace,
                         'from': $stanza.attr('from')
                     });
-                }, this));
+                }(this));
             }
         });
 
@@ -5151,7 +5149,7 @@
                  */
                 var conn = converse.connection;
                 var connect_cb = conn._connect_cb.bind(conn);
-                conn._connect_cb = $.proxy(function (req, callback, raw) {
+                conn._connect_cb = function (req, callback, raw) {
                     if (!this._registering) {
                         connect_cb(req, callback, raw);
                     } else {
@@ -5159,7 +5157,7 @@
                             this._registering = false;
                         }
                     }
-                }, this);
+                }.bind(this);
             },
 
             getRegistrationFields: function (req, _callback, raw) {
@@ -5250,12 +5248,12 @@
                         cancel: __('Cancel'),
                         info_message: __('Requesting a registration form from the XMPP server')
                     }));
-                $form.find('button.cancel').on('click', $.proxy(this.cancelRegistration, this));
+                $form.find('button.cancel').on('click', this.cancelRegistration.bind(this));
                 this.reset({
                     domain: Strophe.getDomainFromJid(domain),
                     _registering: true
                 });
-                converse.connection.connect(this.domain, "", $.proxy(this.onRegistering, this));
+                converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
                 return false;
             },
 
@@ -5335,7 +5333,7 @@
                     }.bind(this));
                 } else {
                     // Show fields
-                    _.each(Object.keys(this.fields), $.proxy(function (key) {
+                    _.each(Object.keys(this.fields), function (key) {
                         if (key == "username") {
                             $input = templates.form_username({
                                 domain: ' @'+this.domain,
@@ -5353,20 +5351,20 @@
                             }
                         }
                         $form.append($input);
-                    }, this));
+                    }.bind(this));
                     // Show urls
-                    _.each(this.urls, $.proxy(function (url) {
+                    _.each(this.urls, function (url) {
                         $form.append($('<a target="blank"></a>').attr('href', url).text(url));
-                    }, this));
+                    }.bind(this));
                 }
                 if (this.fields) {
                     $form.append('<input type="submit" class="save-submit" value="'+__('Register')+'"/>');
-                    $form.on('submit', $.proxy(this.submitRegistrationForm, this));
+                    $form.on('submit', this.submitRegistrationForm.bind(this));
                     $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
-                    $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
+                    $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                 } else {
                     $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');
-                    $form.find('input[type=button]').on('click', $.proxy(this.cancelRegistration, this));
+                    $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                 }
             },
 
@@ -5463,28 +5461,28 @@
             },
 
             _setFieldsFromLegacy: function ($query) {
-                $query.children().each($.proxy(function (idx, field) {
+                $query.children().each(function (idx, field) {
                     var $field = $(field);
                     if (field.tagName.toLowerCase() === 'instructions') {
                         this.instructions = Strophe.getText(field);
                         return;
                     } else if (field.tagName.toLowerCase() === 'x') {
                         if ($field.attr('xmlns') === 'jabber:x:oob') {
-                            $field.find('url').each($.proxy(function (idx, url) {
+                            $field.find('url').each(function (idx, url) {
                                 this.urls.push($(url).text());
-                            }, this));
+                            }.bind(this));
                         }
                         return;
                     }
                     this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
-                }, this));
+                }.bind(this));
                 this.form_type = 'legacy';
             },
 
             _setFieldsFromXForm: function ($xform) {
                 this.title = $xform.find('title').text();
                 this.instructions = $xform.find('instructions').text();
-                $xform.find('field').each($.proxy(function (idx, field) {
+                $xform.find('field').each(function (idx, field) {
                     var _var = field.getAttribute('var');
                     if (_var) {
                         this.fields[_var.toLowerCase()] = $(field).children('value').text();
@@ -5492,7 +5490,7 @@
                         // TODO: other option seems to be type="fixed"
                         console.log("WARNING: Found field we couldn't parse");
                     }
-                }, this));
+                }.bind(this));
                 this.form_type = 'xform';
             },
 
@@ -5876,7 +5874,7 @@
         };
 
         this._initializePlugins = function () {
-            _.each(this.plugins, $.proxy(function (plugin) {
+            _.each(this.plugins, function (plugin) {
                 plugin.converse = converse;
                 _.each(Object.keys(plugin.overrides), function (key) {
                     /* We automatically override all methods and Backbone views and
@@ -5894,9 +5892,9 @@
                     plugin.initialize.bind(plugin)(this);
                 } else {
                     // This will be deprecated in 0.10
-                    $.proxy(plugin, this)(this);
+                    plugin.bind(this)(this);
                 }
-            }, this));
+            }.bind(this));
         };
 
         // Initialization
@@ -5914,15 +5912,15 @@
     var wrappedChatBox = function (chatbox) {
         var view = converse.chatboxviews.get(chatbox.get('jid'));
         return {
-            'open': $.proxy(view.show, view),
-            'close': $.proxy(view.close, view),
-            'endOTR': $.proxy(chatbox.endOTR, chatbox),
-            'focus': $.proxy(view.focus, view),
-            'get': $.proxy(chatbox.get, chatbox),
-            'initiateOTR': $.proxy(chatbox.initiateOTR, chatbox),
-            'maximize': $.proxy(chatbox.maximize, chatbox),
-            'minimize': $.proxy(chatbox.minimize, chatbox),
-            'set': $.proxy(chatbox.set, chatbox)
+            'open': view.show.bind(view),
+            'close': view.close.bind(view),
+            'endOTR': chatbox.endOTR.bind(chatbox),
+            'focus': view.focus.bind(view),
+            'get': chatbox.get.bind(chatbox),
+            'initiateOTR': chatbox.initiateOTR.bind(chatbox),
+            'maximize': chatbox.maximize.bind(chatbox),
+            'minimize': chatbox.minimize.bind(chatbox),
+            'set': chatbox.set.bind(chatbox)
         };
     };
 

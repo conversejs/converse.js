@@ -618,3 +618,102 @@ Here are the different events that are emitted:
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **contactStatusMessageChanged** | When a chat buddy's custom status message has changed.                                            | ``converse.listen.on('contactStatusMessageChanged', function (event, buddy, messageText) { ... });`` |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+
+
+Writing a converse.js plugin
+============================
+
+Converse.js exposes a plugin mechanism which allows developers to extend and
+override its functionality.
+
+You register a plugin as follows:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        // Your plugin code goes in here
+    });
+
+Security and access to the inner workings
+-----------------------------------------
+
+The globally available ``converse`` object, which exposes the API methods, such
+as ``initialize`` and ``plugins.add``, is a wrapper that encloses and protects
+a sensitive inner object.
+
+This inner object contains all the Backbone models and views, as well as
+various other attributes and functions.
+
+Within a plugin, you will have access to this internal
+`"closured" <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_
+converse object, which is normally not exposed in the global variable scope. The
+hiding of this inner object is due to the fact that it contains sensitive information,
+such as the user's JID and password (if they logged in manually). You should
+therefore make sure NOT to expose this object globally.
+
+An example plugin
+-----------------
+
+.. code-block:: javascript
+
+    (function (root, factory) {
+        if (typeof define === 'function' && define.amd) {
+            define("myplugin", ["jquery", "strophe", "utils", "converse"], factory);
+        }
+    }(this, function ($, strophe, utils, converse_api) {
+
+        // Wrap your UI strings with the __ function for translation support.
+        var __ = $.proxy(utils.__, this); 
+
+        // Strophe methods for building stanzas
+        var Strophe = strophe.Strophe;
+        $iq = strophe.$iq;
+        $msg = strophe.$msg;
+        $build = strophe.$build;
+
+        // The following line registers your plugin.
+        converse_api.plugins.add('myplugin', {
+
+            myFunction: function () {
+                // This is a function which does not override anything in
+                // converse.js itself, but in which you still have access to
+                // the protected "inner" converse object.
+                var converse = this.converse;
+                // Custom code comes here
+                // ...
+            },
+
+            overrides: {
+                // If you want to override some function or a Backbone model or
+                // view defined inside converse, then you do that under this
+                // "overrides" namespace.
+
+                // For example, the inner protected *converse* object has a
+                // method "onConnected". You can override that method as follows:
+                onConnected: function () {
+                    // Override the onConnected method in converse.js
+                    // You have access to the protected converse object via the
+                    // _super attribute.
+                    var converse = this._super.converse;
+
+                    // Your custom code comes here.
+                    // ...
+
+                    // You can access the original function being overridden
+                    // vai the _super attribute.
+                    this._super.onConnected();
+                },
+
+                XMPPStatus: {
+                    // Override converse.js's XMPPStatus Backbone model so that we can override the
+                    // function that sends out the presence stanza.
+                    sendPresence: function (type, status_message, jid) {
+                        var converse = this._super.converse;
+                        // Custom code can come here
+                        // ...
+                        this._super.sendPresence(type, status_message, jid);
+                    }
+                },
+            }
+        });
+    }));

@@ -203,8 +203,76 @@ Example:
         });
 
 
-"contacts" grouping
+The "user" grouping
 -------------------
+
+This grouping collects API functions related to the current logged in user.
+
+logout
+~~~~~~
+
+Log the user out of the current XMPP session.
+
+.. code-block:: javascript 
+
+    converse.user.logout();
+
+
+The "status" sub-grouping
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set and get the user's chat status, also called their *availability*.
+
+get
+^^^
+
+Return the current user's availability status:
+
+.. code-block:: javascript 
+
+    converse.user.status.get(); // Returns for example "dnd"
+
+set
+^^^
+
+The user's status can be set to one of the following values:
+
+* **away**
+* **dnd**
+* **offline**
+* **online**
+* **unavailable**
+* **xa**
+
+For example:
+
+.. code-block:: javascript 
+
+    converse.user.status.set('dnd');
+
+Because the user's availability is often set together with a custom status
+message, this method also allows you to pass in a status message as a
+second parameter:
+
+.. code-block:: javascript 
+
+    converse.user.status.set('dnd', 'In a meeting');
+
+The "message" sub-grouping
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``user.status.message`` sub-grouping exposes methods for setting and
+retrieving the user's custom status message.
+
+.. code-block:: javascript 
+
+    converse.user.status.message.set('In a meeting');
+
+    converse.user.status.message.get(); // Returns "In a meeting"
+
+
+The "contacts" grouping
+-----------------------
 
 get
 ~~~
@@ -213,68 +281,78 @@ This method is used to retrieve roster contacts.
 
 To get a single roster contact, call the method with the contact's JID (Jabber ID):
 
+.. code-block:: javascript
+
     converse.contacts.get('buddy@example.com')
 
-To get multiple contacts, pass in an array of JIDs::
+To get multiple contacts, pass in an array of JIDs:
+
+.. code-block:: javascript
 
     converse.contacts.get(['buddy1@example.com', 'buddy2@example.com'])
 
-To return all contacts, simply call ``get`` without any parameters::
+To return all contacts, simply call ``get`` without any parameters:
+
+.. code-block:: javascript
 
     converse.contacts.get()
 
 
 The returned roster contact objects have these attributes:
 
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| Attribute      |                                                                                                                                      |
-+================+======================================================================================================================================+
-| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                                         |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| fullname       | The person's full name.                                                                                                              |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| jid            | The person's Jabber/XMPP username.                                                                                                   |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| requesting     | If true, then this person is asking to be our chat buddy.                                                                            |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| subscription   | The subscription state between the current user and this chat buddy. Can be `none`, `to`, `from` or `both`.                          |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| id             | A unique id, same as the jid.                                                                                                        |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| chat_status    | The person's chat status. Can be `online`, `offline`, `busy`, `xa` (extended away) or `away`.                                        |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| user_id        | The user id part of the JID (the part before the `@`).                                                                               |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| resources      | The known resources for this chat buddy. Each resource denotes a separate and connected chat client.                                 |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| groups         | The roster groups in which this chat buddy was placed.                                                                               |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| status         | Their human readable custom status message.                                                                                          |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| image_type     | The image's file type.                                                                                                               |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| image          | The Base64 encoded image data.                                                                                                       |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| url            | The buddy's website URL, as specified in their VCard data.                                                                           |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| vcard_updated  | When last the buddy's VCard was updated.                                                                                             |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| Attribute      |                                                                                                                 |
++================+=================================================================================================================+
+| ask            | If ask === 'subscribe', then we have asked this person to be our chat buddy.                                    |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| fullname       | The person's full name.                                                                                         |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| jid            | The person's Jabber/XMPP username.                                                                              |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| requesting     | If true, then this person is asking to be our chat buddy.                                                       |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| subscription   | The subscription state between the current user and this chat buddy. Can be `none`, `to`, `from` or `both`.     |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| id             | A unique id, same as the jid.                                                                                   |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| chat_status    | The person's chat status. Can be `online`, `offline`, `busy`, `xa` (extended away) or `away`.                   |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| user_id        | The user id part of the JID (the part before the `@`).                                                          |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| resources      | The known resources for this chat buddy. Each resource denotes a separate and connected chat client.            |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| groups         | The roster groups in which this chat buddy was placed.                                                          |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| status         | Their human readable custom status message.                                                                     |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| image_type     | The image's file type.                                                                                          |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| image          | The Base64 encoded image data.                                                                                  |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| url            | The buddy's website URL, as specified in their VCard data.                                                      |
++----------------+-----------------------------------------------------------------------------------------------------------------+
+| vcard_updated  | When last the buddy's VCard was updated.                                                                        |
++----------------+-----------------------------------------------------------------------------------------------------------------+
 
 add
 ~~~
 
 Add a contact.
 
-Provide the JID of the contact you want to add::
+Provide the JID of the contact you want to add:
+
+    .. code-block:: javascript
 
     converse.contacts.add('buddy@example.com')
     
-You may also provide the fullname. If not present, we use the jid as fullname::
+You may also provide the fullname. If not present, we use the jid as fullname:
+
+    .. code-block:: javascript
 
     converse.contacts.add('buddy@example.com', 'Buddy')
 
-"chats" grouping
-----------------
+The "chats" grouping
+--------------------
 
 get
 ~~~
@@ -282,11 +360,15 @@ get
 Returns an object representing a chat box.
 
 To return a single chat box, provide the JID of the contact you're chatting
-with in that chat box::
+with in that chat box:
+
+    .. code-block:: javascript
 
     converse.chats.get('buddy@example.com')
 
-To return an array of chat boxes, provide an array of JIDs::
+To return an array of chat boxes, provide an array of JIDs:
+
+    .. code-block:: javascript
 
     converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
 
@@ -299,11 +381,15 @@ open
 
 Opens a chat box and returns an object representing a chat box.
 
-To open a single chat box, provide the JID of the contact::
+To open a single chat box, provide the JID of the contact:
+
+    .. code-block:: javascript
 
     converse.chats.open('buddy@example.com')
 
-To return an array of chat boxes, provide an array of JIDs::
+To return an array of chat boxes, provide an array of JIDs:
+
+    .. code-block:: javascript
 
     converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
 
@@ -340,8 +426,8 @@ To return an array of chat boxes, provide an array of JIDs::
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
-"rooms" grouping
-----------------
+The "rooms" grouping
+--------------------
 
 get
 ~~~
@@ -356,39 +442,51 @@ open
 Opens a multi user chat box and returns an object representing it.
 Similar to chats.get API
 
-To open a single multi user chat box, provide the JID of the room::
+To open a single multi user chat box, provide the JID of the room:
+
+    .. code-block:: javascript
 
     converse.rooms.open('group@muc.example.com')
 
-To return an array of rooms, provide an array of room JIDs::
+To return an array of rooms, provide an array of room JIDs:
+
+    .. code-block:: javascript
 
     converse.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
 
-To setup a custom nickname when joining the room, provide the optional nick argument::
+To setup a custom nickname when joining the room, provide the optional nick argument:
+
+    .. code-block:: javascript
 
     converse.rooms.open('group@muc.example.com', 'mycustomnick')
 
 
-"settings" grouping
--------------------
+The "settings" grouping
+-----------------------
 
 This grouping allows you to get or set the configuration settings of converse.js.
 
 get(key)
 ~~~~~~~~
 
-Returns the value of a configuration settings. For example::
+Returns the value of a configuration settings. For example:
+
+.. code-block:: javascript
 
     converse.settings.get("play_sounds"); // default value returned would be false;
 
 set(key, value) or set(object)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Set one or many configuration settings. For example::
+Set one or many configuration settings. For example:
+
+.. code-block:: javascript
 
     converse.settings.set("play_sounds", true);
 
-or ::
+or :
+
+.. code-block:: javascript
 
     converse.settings.set({
         "play_sounds", true,
@@ -399,20 +497,22 @@ Note, this is not an alternative to calling ``converse.initialize``, which still
 to be called. Generally, you'd use this method after converse.js is already
 running and you want to change the configuration on-the-fly.
 
-"tokens" grouping
------------------
+The "tokens" grouping
+---------------------
 
 get
 ~~~
 
 Returns a token, either the RID or SID token depending on what's asked for.
 
-Example::
+Example:
+
+    .. code-block:: javascript
 
     converse.tokens.get('rid')
 
-"listen" grouping
------------------
+The "listen" grouping
+---------------------
 
 Converse.js emits events to which you can subscribe from your own Javascript.
 
@@ -430,7 +530,9 @@ grouping:
     * ``eventName`` is the event name as a string.
     * ``callback`` is the callback method to be called when the event is emitted.
 
-    For example::
+    For example:
+
+    .. code-block:: javascript
 
         converse.listen.on('message', function (event, messageXML) { ... });
 
@@ -444,7 +546,9 @@ grouping:
     * ``eventName`` is the event name as a string.
     * ``callback`` is the callback method to be called when the event is emitted.
 
-    For example::
+    For example:
+
+    .. code-block:: javascript
 
         converse.listen.once('message', function (event, messageXML) { ... });
 
@@ -457,7 +561,9 @@ grouping:
     * ``eventName`` is the event name as a string.
     * ``callback`` refers to the function that is to be no longer executed.
 
-    For example::
+    For example:
+
+    .. code-block:: javascript
 
         converse.listen.not('message', function (event, messageXML) { ... });
 

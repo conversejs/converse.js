@@ -223,6 +223,8 @@
     content: "\e01f"; }
   #conversejs .icon-online:before {
     content: "\25fc"; }
+  #conversejs .icon-chat:before {
+    content: "\25fc"; }
   #conversejs .icon-opened:before {
     content: "\25bc"; }
   #conversejs .icon-pencil:before {

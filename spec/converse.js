@@ -130,6 +130,57 @@
             });
         });
 
+        describe("The \"user\" grouping", function () {
+
+            describe("The \"status\" API", function () {
+                beforeEach(function () {
+                    test_utils.closeAllChatBoxes();
+                    test_utils.clearBrowserStorage();
+                    converse.rosterview.model.reset();
+                });
+
+                it("has a method for getting the user's availability", function () {
+                    converse.xmppstatus.set('status', 'online');
+                    expect(converse_api.user.status.get()).toBe('online');
+                    converse.xmppstatus.set('status', 'dnd');
+                    expect(converse_api.user.status.get()).toBe('dnd');
+                });
+
+                it("has a method for setting the user's availability", function () {
+                    converse_api.user.status.set('away');
+                    expect(converse.xmppstatus.get('status')).toBe('away');
+                    converse_api.user.status.set('dnd');
+                    expect(converse.xmppstatus.get('status')).toBe('dnd');
+                    converse_api.user.status.set('xa');
+                    expect(converse.xmppstatus.get('status')).toBe('xa');
+                    converse_api.user.status.set('chat');
+                    expect(converse.xmppstatus.get('status')).toBe('chat');
+                    expect(_.partial(converse_api.user.status.set, 'invalid')).toThrow(
+                        new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1')
+                    );
+                });
+
+                it("allows setting the status message as well", function () {
+                    converse_api.user.status.set('away', "I'm in a meeting");
+                    expect(converse.xmppstatus.get('status')).toBe('away');
+                    expect(converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
+                });
+
+                it("has a method for getting the user's status message", function () {
+                    converse.xmppstatus.set('status_message', undefined);
+                    expect(converse_api.user.status.message.get()).toBe(undefined);
+                    converse.xmppstatus.set('status_message', "I'm in a meeting");
+                    expect(converse_api.user.status.message.get()).toBe("I'm in a meeting");
+                });
+
+                it("has a method for setting the user's status message", function () {
+                    converse.xmppstatus.set('status_message', undefined);
+                    converse_api.user.status.message.set("I'm in a meeting");
+                    expect(converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
+                });
+            });
+        });
+
         describe("The \"tokens\" API", $.proxy(function () {
             beforeEach(function () {
                 test_utils.closeAllChatBoxes();

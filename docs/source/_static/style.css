@@ -6,6 +6,15 @@ h1 {
     font-size: 50px;
 }
 
+h4 {
+    font-weight: bold;
+}
+
+h5 {
+    font-size: 16px;
+    font-weight: bold;
+}
+
 .navbar-brand {
     padding-top: 7px;
 }

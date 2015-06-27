@@ -139,6 +139,16 @@
         }
     };
 
+    var STATUS_WEIGHTS = {
+        'offline':      6,
+        'unavailable':  5,
+        'xa':           4,
+        'away':         3,
+        'dnd':          2,
+        'chat':         1, // We currently don't differentiate between "chat" and "online"
+        'online':       1
+    };
+
     converse.initialize = function (settings, callback) {
         "use strict";
         var converse = this;
@@ -194,14 +204,6 @@
         var KEY = {
             ENTER: 13,
             FORWARD_SLASH: 47
-        };
-        var STATUS_WEIGHTS = {
-            'offline':      6,
-            'unavailable':  5,
-            'xa':           4,
-            'away':         3,
-            'dnd':          2,
-            'online':       1
         };
 
         var PRETTY_CONNECTION_STATUS = {
@@ -4241,8 +4243,9 @@
                     contact = this.get(bare_jid);
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
-                        // Another resource has changed it's status, we'll update ours as well.
+                        // Another resource has changed its status, we'll update ours as well.
                         converse.xmppstatus.save({'status': chat_status});
+                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message}); }
                     }
                     return;
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
@@ -5938,8 +5941,37 @@
               converse.connection.disconnect();
         },
         'account': {
+            // XXX: Deprecated, will be removed with next non-minor release
             'logout': function () {
                 converse.logOut();
+            }
+        },
+        'user': {
+            'logout': function () {
+                converse.logOut();
+            },
+            'status': {
+                'get': function () {
+                    return converse.xmppstatus.get('status');
+                },
+                'set': function (value, message) {
+                    var data = {'status': value};
+                    if (!_.contains(_.keys(STATUS_WEIGHTS), value)) {
+                        throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
+                    }
+                    if (typeof message == "string") {
+                        data.status_message = message;
+                    }
+                    converse.xmppstatus.save(data);
+                },
+                'message': {
+                    'get': function () {
+                        return converse.xmppstatus.get('status_message');
+                    },
+                    'set': function (stat) {
+                        converse.xmppstatus.save({'status_message': stat});
+                    }
+                }
             },
         },
         'settings': {

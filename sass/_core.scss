@@ -1313,9 +1313,10 @@
   .chat-toolbar {
     font-size: $font-size;
     margin: 0;
-    padding: 0 4px;
+    padding: 5px;
     height: $toolbar-height;
     display: block;
+    background-color: $light-background-color;
 
     a {
       color: $link-color;
@@ -1356,7 +1357,7 @@
     ul {
       background: #fff;
       bottom: 100%;
-      box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+      box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
       display: none;
       font-size: 12px;
       margin: 0 0 1px 0;
@@ -1373,6 +1374,7 @@
     }
 
     .toggle-smiley {
+      color: $link-color;
       padding-left: 5px;
       ul {
         li {
@@ -1389,6 +1391,7 @@
     .toggle-otr {
       ul { 
         li {
+          padding: 7px;
           background-color: white;
           display: block;
           z-index: 99;
@@ -1401,6 +1404,9 @@
             text-decoration: none;
           }
         }
+        li:hover {
+          background-color: $highlight-color;
+        }
       }
     }
   }
@@ -1408,6 +1414,7 @@
   .chat-toolbar-text {
     font-size: 12px;
     padding-right: 3px;
+    text-shadow: 0 1px 0 white
   }
 
   #set-custom-xmpp-status {

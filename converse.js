@@ -5896,14 +5896,15 @@
     var wrappedChatBox = function (chatbox) {
         var view = converse.chatboxviews.get(chatbox.get('jid'));
         return {
-            'open': view.show.bind(view),
             'close': view.close.bind(view),
             'endOTR': chatbox.endOTR.bind(chatbox),
             'focus': view.focus.bind(view),
             'get': chatbox.get.bind(chatbox),
             'initiateOTR': chatbox.initiateOTR.bind(chatbox),
+            'is_chatroom': chatbox.is_chatroom,
             'maximize': chatbox.maximize.bind(chatbox),
             'minimize': chatbox.minimize.bind(chatbox),
+            'open': view.show.bind(view),
             'set': chatbox.set.bind(chatbox)
         };
     };

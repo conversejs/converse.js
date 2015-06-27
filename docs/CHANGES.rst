@@ -31,6 +31,7 @@ Changelog
 * CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
 * Add offline pretty status to enable translation [thierrytiti]
 * With keepalive, don't send out a presence stanza on each page load [jcbrand]
+* Chat boxes returned by the API now have an ``is_chatroom`` attribute [jcbrand]
 
 0.9.3 (2015-05-01)
 ------------------

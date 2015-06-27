@@ -1191,8 +1191,6 @@
                 'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'minimize',
                 'keypress textarea.chat-textarea': 'keyPressed',
-                'focus textarea.chat-textarea': 'chatBoxFocused',
-                'blur textarea.chat-textarea': 'chatBoxBlurred',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearMessages',
@@ -1496,16 +1494,6 @@
                     // (which would imply an internal command and not a message).
                     this.setChatState(COMPOSING, ev.keyCode==KEY.FORWARD_SLASH);
                 }
-            },
-
-            chatBoxFocused: function (ev) {
-                ev.preventDefault();
-                this.setChatState(ACTIVE);
-            },
-
-            chatBoxBlurred: function (ev) {
-                ev.preventDefault();
-                this.setChatState(INACTIVE);
             },
 
             onDragResizeStart: function (ev) {

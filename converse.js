@@ -4555,10 +4555,6 @@
                             success: function (collection) {
                                 if (collection.length > 0) {
                                     converse.initial_presence_sent = 1;
-                                    // XXX: Should we actually send the presence here?
-                                    // This means the presence is sent on every
-                                    // page load.
-                                    converse.xmppstatus.sendPresence();
                                 } else {
                                     // We don't have any roster contacts stored
                                     // in sessionStorage, so lets fetch the

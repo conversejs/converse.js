@@ -105,10 +105,10 @@ dev: stamp-bower stamp-bundler
 ## Builds
 
 css:: stamp-bundler
-	$(SASS) -I .bundle/bin sass/converse.scss css/converse.css
+	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
 watch:: stamp-bundler
-	$(SASS) --watch -I .bundle/bin sass/converse.scss:css/converse.css
+	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css
 
 jsmin:
 	./node_modules/requirejs/bin/r.js -o src/build.js && ./node_modules/requirejs/bin/r.js -o src/build-no-locales-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-no-otr.js && ./node_modules/requirejs/bin/r.js -o src/build-website.js

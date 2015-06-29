@@ -5680,8 +5680,8 @@
 
         this.setUpXMLLogging = function () {
             if (this.debug) {
-                this.connection.xmlInput = function (body) { console.log(body); };
-                this.connection.xmlOutput = function (body) { console.log(body); };
+                this.connection.xmlInput = function (body) { console.log(body.outerHTML); };
+                this.connection.xmlOutput = function (body) { console.log(body.outerHTML); };
             }
         };
 

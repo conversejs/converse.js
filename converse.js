@@ -879,6 +879,7 @@
             this.chatboxviews.closeAllChatBoxes();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
+            this.resource = Strophe.getResourceFromJid(this.connection.jid);
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.minimized_chats = new converse.MinimizedChats({model: this.chatboxes});
             this.features = new this.Features();
@@ -3283,14 +3284,18 @@
             onMessage: function (message) {
                 /* Handler method for all incoming single-user chat "message" stanzas.
                  */
-                var $message = $(message);
-                var contact_jid, $forwarded, $received, $sent,
+                var $message = $(message),
+                    contact_jid, $forwarded, $received, $sent,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
                     message_from = $message.attr('from'),
-                    message_to = $message.attr('to');
+                    from_bare_jid = Strophe.getBareJidFromJid(message_from),
+                    from_resource = Strophe.getResourceFromJid(message_from),
+                    to_jid = $message.attr('to'),
+                    to_resource = Strophe.getResourceFromJid(to_jid),
+                    is_me = from_bare_jid == converse.bare_jid;
 
-                if(!_.contains([converse.connection.jid, converse.bare_jid], message_to)) {
+                if (to_resource && to_resource !== converse.resource) { 
                     // Ignore messages sent to a different resource
                     return true;
                 }
@@ -3313,15 +3318,13 @@
                     message_from = $message.attr('from');
                 }
 
-                var from = Strophe.getBareJidFromJid(message_from),
-                    to = Strophe.getBareJidFromJid($message.attr('to'));
-                if (from == converse.bare_jid) {
+                if (is_me) {
                     // I am the sender, so this must be a forwarded message...
-                    contact_jid = to;
-                    resource = Strophe.getResourceFromJid($message.attr('to'));
+                    contact_jid = Strophe.getBareJidFromJid(to_jid);
+                    resource = Strophe.getResourceFromJid(to_jid);
                 } else {
-                    contact_jid = from; // XXX: Should we add toLowerCase here? See ticket #234
-                    resource = Strophe.getResourceFromJid(message_from);
+                    contact_jid = from_bare_jid;
+                    resource = from_resource;
                 }
 
                 roster_item = converse.roster.get(contact_jid);
@@ -3356,7 +3359,7 @@
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                if (!this.isOnlyChatStateNotification($message) && from !== converse.bare_jid) {
+                if (!this.isOnlyChatStateNotification($message) && !is_me) {
                     converse.playNotification();
                 }
                 chatbox.receiveMessage($message);
@@ -5281,7 +5284,7 @@
                         if (that.fields.password && that.fields.username) {
                             // automatically log the user in
                             converse.connection.connect(
-                                that.fields.username+'@'+that.domain,
+                                that.fields.username.toLowerCase()+'@'+that.domain.toLowerCase(),
                                 that.fields.password,
                                 converse.onConnectStatusChanged
                             );
@@ -5593,7 +5596,9 @@
                 if (jid) {
                     resource = Strophe.getResourceFromJid(jid);
                     if (!resource) {
-                        jid += '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                        jid = jid.toLowerCase() + '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                    } else {
+                        jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+Strophe.getResourceFromJid(jid);
                     }
                 }
                 converse.connection.connect(jid, password, converse.onConnectStatusChanged);
@@ -5753,12 +5758,13 @@
                     throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
                 }
                 if (this.authentication === ANONYMOUS) {
-                    this.connection.connect(this.jid, null, this.onConnectStatusChanged);
+                    this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
                 } else if (this.authentication === LOGIN) {
                     if (!this.password) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
+                    this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+Strophe.getResourceFromJid(this.jid);
                     this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
                 }
             }

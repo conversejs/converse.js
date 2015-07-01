@@ -36,7 +36,6 @@ require.config({
         "strophe-websocket":        "components/strophejs/src/websocket",
         "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
-        "strophe.roster":           "src/strophe.roster",
         "strophe.vcard":            "src/strophe.vcard",
         "strophe.ping":             "src/strophe.ping",
         "text":                     'components/requirejs-text/text',
@@ -188,7 +187,6 @@ require.config({
         'bigint':               { deps: ['crypto'] },
         'strophe.disco':        { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
-        'strophe.roster':       { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] },
         'strophe.ping':         { deps: ['strophe'] }
     }

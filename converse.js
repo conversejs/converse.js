@@ -5079,7 +5079,7 @@
                         $(item).attr('jid'),
                         null,
                         this.onInfo.bind(this));
-                }(this));
+                }.bind(this));
             },
 
             onInfo: function (stanza) {
@@ -5096,7 +5096,7 @@
                         'var': namespace,
                         'from': $stanza.attr('from')
                     });
-                }(this));
+                }.bind(this));
             }
         });
 

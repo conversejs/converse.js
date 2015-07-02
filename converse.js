@@ -3285,21 +3285,18 @@
                 /* Handler method for all incoming single-user chat "message" stanzas.
                  */
                 var $message = $(message),
-                    contact_jid, $forwarded, $received, $sent,
+                    contact_jid, $forwarded, $received, $sent, from_bare_jid, from_resource, is_me,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
-                    message_from = $message.attr('from'),
-                    from_bare_jid = Strophe.getBareJidFromJid(message_from),
-                    from_resource = Strophe.getResourceFromJid(message_from),
+                    from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
-                    to_resource = Strophe.getResourceFromJid(to_jid),
-                    is_me = from_bare_jid == converse.bare_jid;
+                    to_resource = Strophe.getResourceFromJid(to_jid);
 
                 if (to_resource && to_resource !== converse.resource) { 
-                    converse.log('Ignore incoming message intended for a different resource: '+from_jid, 'info');
+                    converse.log('Ignore incoming message intended for a different resource: '+to_jid, 'info');
                     return true;
                 }
-                if (message_from === converse.connection.jid) {
+                if (from_jid === converse.connection.jid) {
                     // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
                     converse.log("Ignore incoming message sent from this client's JID: "+from_jid, 'info');
                     return true;
@@ -3312,11 +3309,14 @@
                     $message = $forwarded.children('message');
                 } else if ($received.length) {
                     $message = $received.children('forwarded').children('message');
-                    message_from = $message.attr('from');
+                    from_jid = $message.attr('from');
                 } else if ($sent.length) {
                     $message = $sent.children('forwarded').children('message');
-                    message_from = $message.attr('from');
+                    from_jid = $message.attr('from');
                 }
+                from_bare_jid = Strophe.getBareJidFromJid(from_jid);
+                from_resource = Strophe.getResourceFromJid(from_jid);
+                is_me = from_bare_jid == converse.bare_jid;
 
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...

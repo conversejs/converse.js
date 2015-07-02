@@ -481,7 +481,7 @@
             }
             var stat = this.xmppstatus.getStatus();
             this.idle_seconds++;
-            if (this.idle_seconds > this.csi_waiting_time && !this.inactive) {
+            if (this.csi_waiting_time > 0 && this.idle_seconds > this.csi_waiting_time && !this.inactive) {
                 this.sendCSI(INACTIVE);
             }
             if (this.auto_away > 0 && this.idle_seconds > this.auto_away && stat !== 'away' && stat !== 'xa') {

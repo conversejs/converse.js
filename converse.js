@@ -3296,12 +3296,12 @@
                     is_me = from_bare_jid == converse.bare_jid;
 
                 if (to_resource && to_resource !== converse.resource) { 
-                    // Ignore messages sent to a different resource
+                    converse.log('Ignore incoming message intended for a different resource: '+from_jid, 'info');
                     return true;
                 }
                 if (message_from === converse.connection.jid) {
-                    // FIXME: Forwarded messages should be sent to specific resources,
-                    // not broadcasted
+                    // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
+                    converse.log("Ignore incoming message sent from this client's JID: "+from_jid, 'info');
                     return true;
                 }
                 $forwarded = $message.children('forwarded');

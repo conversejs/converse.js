@@ -28,7 +28,7 @@ serve:
 
 stamp-npm: package.json
 	npm install
-    $(GRUNT) touch:npm
+	$(GRUNT) touch:npm
 
 stamp-bower: stamp-npm bower.json
 	$(BOWER) install
@@ -43,7 +43,7 @@ clean::
 dev: clean
 	npm install
 	$(BOWER) update
-    bundler install --path=.
+	bundler install --path=.
 
 ########################################################################
 ## Builds

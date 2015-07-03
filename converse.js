@@ -1382,7 +1382,13 @@
                 var bare_jid = this.model.get('jid');
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
                     .c('body').t(text).up()
-                    .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES});
+                    .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+
+                if (this.model.get('otr_status') != UNENCRYPTED) {
+                    // OTR messages aren't carbon copied
+                    message.c('private', {'xmlns': 'urn:xmpp:carbons:2'});
+                }
+
                 converse.connection.send(message);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.

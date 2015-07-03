@@ -20,20 +20,20 @@ Changelog
 * #418 Logging out with `auto_reconnect=true` causes reconnection retries [jcbrand]
 * #420 Updated German translation [1st8]
 * #427 Converse.js does not subscribe back to a contact not in the roster. [emmanuel-florent]
-* Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
+* Add offline pretty status to enable translation [thierrytiti]
 * Bugfix. ClearSessions during unload event would throw an error when not logged in. [gbonvehi]
+* Bugfix. Manual login doesn't work when only websocket_url is set and not bosh_service_url. [jcbrand]
 * Bugfix. Wrong callback argument mapping in XmppStatus initialize: fullname is null [thierrytiti]
 * CSS fix: room-info bug on hover after room description loaded [thierrytiti]
+* CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
+* Chat boxes returned by the API now have an `is_chatroom` attribute [jcbrand]
+* Decouple automatic away and XEP-0352 support. [jcbrand]
+* Don't carbon copy OTR messages. [jcbrand]
 * I18N: Autodetection of User Locale if no i18n setting is set. [thierrytiti]
 * Refactored in order to remove the strophe.roster.js dependency. [jcbrand]
 * Refactored the plugin architecture. Add `overrides` convention for
   automatically overriding converse.js's methods and Backbone views and models. [jcbrand]
-* Decouple automatic away and XEP-0352 support. [jcbrand]
-* CSS: Fonts Path: editabable $font-path via sass/variables.scss [thierrytiti]
-* Add offline pretty status to enable translation [thierrytiti]
 * With keepalive, don't send out a presence stanza on each page load [jcbrand]
-* Chat boxes returned by the API now have an `is_chatroom` attribute [jcbrand]
-* Cleanup references to strophe.roster.js [thierrytiti]
 
 0.9.3 (2015-05-01)
 ------------------

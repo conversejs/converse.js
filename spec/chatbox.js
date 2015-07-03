@@ -731,6 +731,23 @@
 
             }, converse));
 
+            describe("An OTR Chat Message", function () {
+
+                it("will not be carbon copied when it's sent out", function () {
+                    var msgtext = "?OTR,1,3,?OTR:AAIDAAAAAAEAAAABAAAAwCQ8HKsag0y0DGKsneo0kzKu1ua5L93M4UKTkCf1I2kbm2RgS5kIxDTxrTj3wVRB+H5Si86E1fKtuBgsDf/bKkGTM0h/49vh5lOD9HkE8cnSrFEn5GN,";
+                    var sender_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    converse_api.chats.open(sender_jid);
+                    var chatbox = converse.chatboxes.get(sender_jid);
+                    spyOn(converse.connection, 'send');
+                    chatbox.set('otr_status', 1); // Set OTR status to UNVERIFIED, to mock an encrypted session
+                    chatbox.trigger('sendMessageStanza', msgtext);
+                    var $sent = $(converse.connection.send.argsForCall[0][0].tree());
+                    expect($sent.find('body').siblings('private').length).toBe(1);
+                    expect($sent.find('private').length).toBe(1);
+                    expect($sent.find('private').attr('xmlns')).toBe('urn:xmpp:carbons:2');
+                });
+            });
+
             describe("A Chat Status Notification", $.proxy(function () {
 
                 it("does not open automatically if a chat state notification is received", $.proxy(function () {

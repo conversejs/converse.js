@@ -473,6 +473,47 @@
                             "Ignore incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
                 });
 
+                it("can be a carbon message, as defined in XEP-0280", function () {
+                    // Send a message from a different resource
+                    spyOn(converse, 'log');
+                    var msgtext = 'This is a carbon message';
+                    var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var msg = $msg({
+                            'from': converse.bare_jid,
+                            'id': (new Date()).getTime(),
+                            'to': converse.connection.jid,
+                            'type': 'chat',
+                            'xmlns': 'jabber:client'
+                        }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
+                          .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                          .c('message', {
+                                'xmlns': 'jabber:client',
+                                'from': sender_jid,
+                                'to': converse.bare_jid+'/another-resource',
+                                'type': 'chat'
+                        }).c('body').t(msgtext).tree();
+                    converse.chatboxes.onMessage(msg);
+
+                    // Check that the chatbox and its view now exist
+                    var chatbox = converse.chatboxes.get(sender_jid);
+                    var chatboxview = converse.chatboxviews.get(sender_jid);
+                    expect(chatbox).toBeDefined();
+                    expect(chatboxview).toBeDefined();
+                    // Check that the message was received and check the message parameters
+                    expect(chatbox.messages.length).toEqual(1);
+                    var msg_obj = chatbox.messages.models[0];
+                    expect(msg_obj.get('message')).toEqual(msgtext);
+                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1].split(' ')[0]);
+                    expect(msg_obj.get('sender')).toEqual('them');
+                    expect(msg_obj.get('delayed')).toEqual(false);
+                    // Now check that the message appears inside the chatbox in the DOM
+                    var $chat_content = chatboxview.$el.find('.chat-content');
+                    var msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                    expect(msg_txt).toEqual(msgtext);
+                    var sender_txt = $chat_content.find('span.chat-message-them').text();
+                    expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
+                });
+
                 it("received for a minimized chat box will increment a counter on its header", $.proxy(function () {
                     var contact_name = mock.cur_names[0];
                     var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';

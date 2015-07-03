@@ -3319,6 +3319,7 @@
                 } else if ($sent.length) {
                     $message = $sent.children('forwarded').children('message');
                     from_jid = $message.attr('from');
+                    to_jid = $message.attr('to');
                 }
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);

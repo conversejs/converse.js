@@ -78,9 +78,9 @@
             null,
             "Groepe"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Herkonnekteer"
+            ""
          ],
          "Error": [
             null,
@@ -242,6 +242,10 @@
             null,
             "Beëindig versleutelde gesprek"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             "Verskuil die lys van deelnemers"
@@ -298,9 +302,9 @@
             null,
             "Soek"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Konak gebruikersnaam"
+            ""
          ],
          "Add": [
             null,
@@ -686,13 +690,29 @@
             null,
             "Kliek om met hierdie kontak te klets"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "Is u seker u wil hierdie gespreksmaat verwyder?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "Is u seker dat u hierdie persoon se versoek wil afkeur?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -793,6 +813,10 @@
          "Log In": [
             null,
             "Meld aan"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

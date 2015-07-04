@@ -13,19 +13,19 @@
          ],
          "unencrypted": [
             null,
-            "unencrypted"
+            ""
          ],
          "unverified": [
             null,
-            "unverified"
+            ""
          ],
          "verified": [
             null,
-            "verified"
+            ""
          ],
          "finished": [
             null,
-            "finished"
+            ""
          ],
          "This contact is busy": [
             null,
@@ -51,17 +51,21 @@
             null,
             ""
          ],
+         "Click to hide these contacts": [
+            null,
+            ""
+         ],
          "My contacts": [
             null,
-            "My contacts"
+            ""
          ],
          "Pending contacts": [
             null,
-            "Pending contacts"
+            ""
          ],
          "Contact requests": [
             null,
-            "Contact requests"
+            ""
          ],
          "Ungrouped": [
             null,
@@ -69,31 +73,35 @@
          ],
          "Contacts": [
             null,
-            "Contacts"
+            ""
          ],
          "Groups": [
             null,
             ""
          ],
+         "Attempting to reconnect in 5 seconds": [
+            null,
+            ""
+         ],
          "Error": [
             null,
-            "Error"
+            ""
          ],
          "Connecting": [
             null,
-            "Connecting"
+            ""
          ],
          "Authenticating": [
             null,
-            "Authenticating"
+            ""
          ],
          "Authentication Failed": [
             null,
-            "Authentication Failed"
+            ""
          ],
          "Re-establishing encrypted session": [
             null,
-            "Re-establishing encrypted session"
+            ""
          ],
          "Generating private key.": [
             null,
@@ -117,7 +125,11 @@
          ],
          "Personal message": [
             null,
-            "Personal message"
+            ""
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            ""
          ],
          "me": [
             null,
@@ -187,6 +199,10 @@
             null,
             ""
          ],
+         "is busy": [
+            null,
+            ""
+         ],
          "Your messages are not encrypted anymore": [
             null,
             ""
@@ -219,7 +235,15 @@
             null,
             ""
          ],
+         "Clear all messages": [
+            null,
+            ""
+         ],
          "End encrypted conversation": [
+            null,
+            ""
+         ],
+         "Insert a smiley": [
             null,
             ""
          ],
@@ -253,75 +277,83 @@
          ],
          "Online": [
             null,
-            "Online"
+            ""
          ],
          "Busy": [
             null,
-            "Busy"
+            ""
          ],
          "Away": [
             null,
-            "Away"
+            ""
          ],
          "Offline": [
             null,
-            "Offline"
+            ""
+         ],
+         "Log out": [
+            null,
+            ""
          ],
          "Contact name": [
             null,
-            "Contact name"
+            ""
          ],
          "Search": [
             null,
-            "Search"
+            ""
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Contact username"
+            ""
          ],
          "Add": [
             null,
-            "Add"
+            ""
          ],
          "Click to add new chat contacts": [
             null,
-            "Click to add new chat contacts"
+            ""
          ],
          "Add a contact": [
             null,
-            "Add a contact"
+            ""
          ],
          "No users found": [
             null,
-            "No users found"
+            ""
          ],
          "Click to add as a chat contact": [
             null,
-            "Click to add as a chat contact"
+            ""
          ],
          "Room name": [
             null,
-            "Room name"
+            ""
          ],
          "Nickname": [
             null,
-            "Nickname"
+            ""
          ],
          "Server": [
             null,
             "Server"
          ],
+         "Join Room": [
+            null,
+            ""
+         ],
          "Show rooms": [
             null,
-            "Show rooms"
+            ""
          ],
          "Rooms": [
             null,
-            "Rooms"
+            ""
          ],
          "No rooms on %1$s": [
             null,
-            "No rooms on %1$s"
+            ""
          ],
          "Rooms on %1$s": [
             null,
@@ -407,6 +439,10 @@
             null,
             ""
          ],
+         "Occupants": [
+            null,
+            ""
+         ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
             ""
@@ -427,7 +463,19 @@
             null,
             ""
          ],
+         "Ban user from room": [
+            null,
+            ""
+         ],
          "Change user role to participant": [
+            null,
+            ""
+         ],
+         "Kick user from room": [
+            null,
+            ""
+         ],
+         "Write in 3rd person": [
             null,
             ""
          ],
@@ -447,7 +495,15 @@
             null,
             ""
          ],
+         "Grant ownership of this room": [
+            null,
+            ""
+         ],
          "Revoke user's membership": [
+            null,
+            ""
+         ],
+         "Set room topic": [
             null,
             ""
          ],
@@ -543,6 +599,10 @@
             null,
             "<strong>%1$s</strong> has been banned"
          ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            ""
+         ],
          "<strong>%1$s</strong> has been kicked out": [
             null,
             "<strong>%1$s</strong> has been kicked out"
@@ -554,6 +614,14 @@
          "<strong>%1$s</strong> has been removed for not being a member": [
             null,
             "<strong>%1$s</strong> has been removed for not being a member"
+         ],
+         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
+            null,
+            ""
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            ""
          ],
          "The reason given is: \"": [
             null,
@@ -599,6 +667,10 @@
             null,
             ""
          ],
+         "Click to restore this chat": [
+            null,
+            ""
+         ],
          "Minimized": [
             null,
             ""
@@ -607,9 +679,41 @@
             null,
             "Click to remove this contact"
          ],
+         "Click to accept this contact request": [
+            null,
+            ""
+         ],
+         "Click to decline this contact request": [
+            null,
+            ""
+         ],
          "Click to chat with this contact": [
             null,
             "Click to chat with this contact"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -695,13 +799,25 @@
             null,
             ""
          ],
+         "XMPP Username:": [
+            null,
+            ""
+         ],
          "Password:": [
             null,
             "Password:"
          ],
+         "Click here to log in anonymously": [
+            null,
+            "This room is not anonymous"
+         ],
          "Log In": [
             null,
             "Log In"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

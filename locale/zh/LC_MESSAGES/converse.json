@@ -74,6 +74,10 @@
             null,
             ""
          ],
+         "Attempting to reconnect in 5 seconds": [
+            null,
+            ""
+         ],
          "Error": [
             null,
             "错误"
@@ -178,6 +182,10 @@
             null,
             "结束加密的会话"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             ""
@@ -230,9 +238,9 @@
             null,
             "搜索"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "联系人姓名"
+            ""
          ],
          "Add": [
             null,
@@ -566,6 +574,22 @@
             null,
             "点击与对方交谈"
          ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
          "Type to filter": [
             null,
             ""
@@ -657,6 +681,10 @@
          "Log In": [
             null,
             "登录"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

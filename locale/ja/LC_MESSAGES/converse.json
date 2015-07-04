@@ -75,6 +75,10 @@
             null,
             ""
          ],
+         "Attempting to reconnect in 5 seconds": [
+            null,
+            ""
+         ],
          "Error": [
             null,
             "エラー"
@@ -183,6 +187,10 @@
             null,
             "暗号化された会話を終了"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             ""
@@ -235,9 +243,9 @@
             null,
             "検索"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "相手先の名前"
+            ""
          ],
          "Add": [
             null,
@@ -571,6 +579,22 @@
             null,
             "クリックしてこの相手先とチャット"
          ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
          "Type to filter": [
             null,
             ""
@@ -662,6 +686,10 @@
          "Log In": [
             null,
             "ログイン"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

@@ -71,6 +71,10 @@
             null,
             ""
          ],
+         "Attempting to reconnect in 5 seconds": [
+            null,
+            ""
+         ],
          "Error": [
             null,
             "Errore"
@@ -219,6 +223,10 @@
             null,
             ""
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             ""
@@ -271,9 +279,9 @@
             null,
             "Cerca"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Nome utente del contatto"
+            ""
          ],
          "Add": [
             null,
@@ -607,6 +615,22 @@
             null,
             "Clicca per parlare con questo contatto"
          ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
          "Type to filter": [
             null,
             ""
@@ -698,6 +722,10 @@
          "Log In": [
             null,
             "Entra"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

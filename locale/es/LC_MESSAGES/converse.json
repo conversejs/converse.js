@@ -75,9 +75,9 @@
             null,
             ""
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Reconectando"
+            ""
          ],
          "Error": [
             null,
@@ -187,6 +187,10 @@
             null,
             "Finalizar sesión cifrada"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             ""
@@ -239,9 +243,9 @@
             null,
             "Búsqueda"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Nombre de usuario de contacto"
+            ""
          ],
          "Add": [
             null,
@@ -579,9 +583,25 @@
             null,
             "Haga click para conversar con este contacto"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "¿Esta seguro de querer eliminar este contacto?"
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -674,6 +694,10 @@
          "Log In": [
             null,
             "Iniciar sesión"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

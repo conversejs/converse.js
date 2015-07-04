@@ -79,9 +79,9 @@
             null,
             "קבוצות"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "כעת מתחבר"
+            ""
          ],
          "Error": [
             null,
@@ -231,6 +231,10 @@
             null,
             "סיים ישיבה מוצפנת"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             "הסתר רשימת משתתפים"
@@ -287,9 +291,9 @@
             null,
             "חיפוש"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "שם משתמש איש קשר"
+            ""
          ],
          "Add": [
             null,
@@ -663,13 +667,29 @@
             null,
             "לחץ כדי לשוחח עם איש קשר זה"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -766,6 +786,10 @@
          "Log In": [
             null,
             "כניסה"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

@@ -78,9 +78,9 @@
             null,
             "Csoportok"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Kapcsolódás"
+            ""
          ],
          "Error": [
             null,
@@ -230,6 +230,10 @@
             null,
             "Titkosított kapcsolat vége"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             "A jelenlevők listájának elrejtése"
@@ -286,9 +290,9 @@
             null,
             "Keresés"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Felhasználónév"
+            ""
          ],
          "Add": [
             null,
@@ -658,13 +662,29 @@
             null,
             "Csevegés indítása ezzel a partnerünkkel"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "Valóban törölni szeretné a csevegő partnerét?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "Valóban elutasítja ezt a kapcsolat felvételi kérést?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -761,6 +781,10 @@
          "Log In": [
             null,
             "Belépés"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

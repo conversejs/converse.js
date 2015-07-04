@@ -74,6 +74,10 @@
             null,
             ""
          ],
+         "Attempting to reconnect in 5 seconds": [
+            null,
+            ""
+         ],
          "Error": [
             null,
             "Kesalahan"
@@ -182,6 +186,10 @@
             null,
             "Sudahi percakapan terenkripsi"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             ""
@@ -234,9 +242,9 @@
             null,
             "Cari"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Username teman"
+            ""
          ],
          "Add": [
             null,
@@ -570,6 +578,22 @@
             null,
             "Klik untuk mulai perbinjangan dengan teman ini"
          ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
          "Type to filter": [
             null,
             ""
@@ -661,6 +685,10 @@
          "Log In": [
             null,
             "Masuk"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

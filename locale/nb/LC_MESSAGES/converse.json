@@ -79,9 +79,9 @@
             null,
             "Grupper"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Kobler til igjen"
+            ""
          ],
          "Error": [
             null,
@@ -231,6 +231,10 @@
             null,
             "Avslutt kryptert økt"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             "Skjul deltakerlisten"
@@ -287,9 +291,9 @@
             null,
             "Søk"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Brukernavnet til Kontakt"
+            ""
          ],
          "Add": [
             null,
@@ -663,13 +667,29 @@
             null,
             "Klikk for å chatte med denne kontakten"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "Er du sikker på at du vil fjerne denne kontakten?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "Er du sikker på at du vil avslå denne kontaktforespørselen?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -766,6 +786,10 @@
          "Log In": [
             null,
             "Logg inn"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

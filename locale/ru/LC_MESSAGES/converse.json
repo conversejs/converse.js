@@ -74,6 +74,10 @@
             null,
             ""
          ],
+         "Attempting to reconnect in 5 seconds": [
+            null,
+            ""
+         ],
          "Error": [
             null,
             "Ошибка"
@@ -198,6 +202,10 @@
             null,
             ""
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             ""
@@ -250,9 +258,9 @@
             null,
             "Поиск"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Имя пользователя"
+            ""
          ],
          "Add": [
             null,
@@ -590,6 +598,22 @@
             null,
             "Начать общение"
          ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
          "Type to filter": [
             null,
             ""
@@ -681,6 +705,10 @@
          "Log In": [
             null,
             "Войти"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

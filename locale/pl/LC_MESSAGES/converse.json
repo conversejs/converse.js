@@ -79,9 +79,9 @@
             null,
             "Grupy"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Przywracam połączenie"
+            ""
          ],
          "Error": [
             null,
@@ -231,6 +231,10 @@
             null,
             "Zakończ szyfrowaną rozmowę"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             "Ukryj listę rozmówców"
@@ -287,9 +291,9 @@
             null,
             "Szukaj"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Ksywka kontaktu"
+            ""
          ],
          "Add": [
             null,
@@ -663,13 +667,29 @@
             null,
             "Kliknij aby porozmawiać z kontaktem"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "Czy potwierdzasz zamiar usnunięcia tego kontaktu?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "Czy potwierdzasz odrzucenie chęci nawiązania kontaktu?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -766,6 +786,10 @@
          "Log In": [
             null,
             "Zaloguj się"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.9.4 (Unreleased)
+0.9.4 (2015-07-04)
 ------------------
 
 * #144 Add Ping functionality and Pong handler [thierrytiti]
+* #234, #431 Messages aren't received when the user logs in with a mixed-case JID. [jcbrand]
 * #367 API methods for changing chat status (online, busy, away etc.) and status message [jcbrand]
 * #389 Allow login panel placeholders and roster item 'Name' translations. [gbonvehi]
 * #394 Option to allow chatting with pending contacts [thierrytiti]

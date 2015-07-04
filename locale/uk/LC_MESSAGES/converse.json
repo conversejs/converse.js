@@ -79,9 +79,9 @@
             null,
             "Групи"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Перепід'єднуюсь"
+            ""
          ],
          "Error": [
             null,
@@ -243,6 +243,10 @@
             null,
             "Завершити криптовану розмову"
          ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
          "Hide the list of participants": [
             null,
             "Сховати список учасників"
@@ -299,9 +303,9 @@
             null,
             "Пошук"
          ],
-         "Contact username": [
+         "e.g. user@example.com": [
             null,
-            "Логін контакту"
+            ""
          ],
          "Add": [
             null,
@@ -687,13 +691,29 @@
             null,
             "Клацніть, щоб почати розмову з цим контактом"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "Ви впевнені, що хочете видалити цей контакт?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "Ви впевнені, що хочете відхилити цей запит контакту?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -790,6 +810,10 @@
          "Log In": [
             null,
             "Ввійти"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

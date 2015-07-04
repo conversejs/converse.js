@@ -1094,7 +1094,7 @@
                         this.trigger('showReceivedOTRMessage', msg);
                     }.bind(this));
                     this.otr.on('io', function (msg) {
-                        this.trigger('sendMessageStanza', msg);
+                        this.trigger('sendMessage', msg);
                     }.bind(this));
                     this.otr.on('error', function (msg) {
                         this.trigger('showOTRError', msg);
@@ -1218,7 +1218,7 @@
                 this.model.on('change:status', this.onStatusChanged, this);
                 this.model.on('showOTRError', this.showOTRError, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
-                this.model.on('sendMessageStanza', this.sendMessageStanza, this);
+                this.model.on('sendMessage', this.sendMessage, this);
                 this.model.on('showSentOTRMessage', function (text) {
                     this.showMessage({'message': text, 'sender': 'me'});
                 }, this);
@@ -1372,12 +1372,14 @@
                 }
             },
 
-            sendMessageStanza: function (text) {
-                /* Sends the actual XML stanza to the XMPP server.
+            sendMessage: function (text) {
+                /* Responsible for sending off a text message.
+                 *
+                 *  Parameters:
+                 *    (string) text - The chat message text.
                  */
-                // TODO: Look in ChatPartners to see what resources we have for the recipient.
-                // if we have one resource, we sent to only that resources, if we have multiple
-                // we send to the bare jid.
+                // TODO: We might want to send to specfic resources. Especially
+                // in the OTR case.
                 var timestamp = (new Date()).getTime();
                 var bare_jid = this.model.get('jid');
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
@@ -1388,7 +1390,6 @@
                     // OTR messages aren't carbon copied
                     message.c('private', {'xmlns': 'urn:xmpp:carbons:2'});
                 }
-
                 converse.connection.send(message);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
@@ -1400,7 +1401,13 @@
                 }
             },
 
-            sendMessage: function (text) {
+            onMessageSubmitted: function (text) {
+                /* This method gets called once the user has typed a message
+                 * and then pressed enter in a chat box.
+                 *
+                 *  Parameters:
+                 *    (string) text - The chat message text.
+                 */
                 if (!converse.connection.authenticated) {
                     return this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
                 }
@@ -1437,7 +1444,7 @@
                         time: moment().format(),
                         message: text
                     });
-                    this.sendMessageStanza(text);
+                    this.sendMessage(text);
                 }
             },
 
@@ -1491,9 +1498,9 @@
                     $textarea.val('').focus();
                     if (message !== '') {
                         if (this.model.get('chatroom')) {
-                            this.sendChatRoomMessage(message);
+                            this.onChatRoomMessageSubmitted(message);
                         } else {
-                            this.sendMessage(message);
+                            this.onMessageSubmitted(message);
                         }
                         converse.emit('messageSend', message);
                     }
@@ -2644,7 +2651,7 @@
                 this.showStatusNotification(__("Error: could not execute the command"), true);
             },
 
-            createChatRoomMessage: function (text) {
+            sendChatRoomMessage: function (text) {
                 var msgid = converse.connection.getUniqueId();
                 var msg = $msg({
                     to: this.model.get('jid'),
@@ -2692,7 +2699,13 @@
                 return this.setAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
             },
 
-            sendChatRoomMessage: function (text) {
+            onChatRoomMessageSubmitted: function (text) {
+                /* Gets called when the user presses enter to send off a
+                 * message in a chat room.
+                 *
+                 * Parameters:
+                 *    (String) text - The message text.
+                 */
                 var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''];
                 var args = match[2].splitOnce(' ');
                 switch (match[1]) {
@@ -2785,7 +2798,7 @@
                                 undefined, this.onCommandError.bind(this));
                         break;
                     default:
-                        this.createChatRoomMessage(text);
+                        this.sendChatRoomMessage(text);
                     break;
                 }
             },
@@ -3718,6 +3731,7 @@
 
            subscribe: function (message) {
                 /* Send a presence subscription request to this roster contact
+                 *
                  * Parameters:
                  *    (String) message - An optional message to explain the
                  *      reason for the subscription request.

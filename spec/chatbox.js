@@ -779,11 +779,12 @@
                     var chatbox = converse.chatboxes.get(sender_jid);
                     spyOn(converse.connection, 'send');
                     chatbox.set('otr_status', 1); // Set OTR status to UNVERIFIED, to mock an encrypted session
-                    chatbox.trigger('sendMessageStanza', msgtext);
+                    chatbox.trigger('sendMessage', msgtext);
                     var $sent = $(converse.connection.send.argsForCall[0][0].tree());
                     expect($sent.find('body').siblings('private').length).toBe(1);
                     expect($sent.find('private').length).toBe(1);
                     expect($sent.find('private').attr('xmlns')).toBe('urn:xmpp:carbons:2');
+                    chatbox.set('otr_status', 0); // Reset again to UNENCRYPTED
                 });
             });
 
@@ -1090,13 +1091,13 @@
 
                 message = '/clear';
                 var old_length = view.model.messages.length;
-                spyOn(view, 'sendMessage').andCallThrough();
+                spyOn(view, 'onMessageSubmitted').andCallThrough();
                 spyOn(view, 'clearMessages').andCallThrough();
                 spyOn(window, 'confirm').andCallFake(function () {
                     return true;
                 });
                 test_utils.sendMessage(view, message);
-                expect(view.sendMessage).toHaveBeenCalled();
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.clearMessages).toHaveBeenCalled();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox

@@ -160,6 +160,7 @@
         Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
         // Add Strophe Statuses
@@ -6104,6 +6105,47 @@
                     return getWrappedChatBox(jids);
                 }
                 return _.map(jids, getWrappedChatBox);
+            }
+        },
+        'archive': {
+            'query': function (options, callback, errback) {
+                var date;
+                // Available options are jid, limit, start, end, after, before
+                if (typeof options == "function") {
+                    callback = options;
+                    errback = callback;
+                }
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    throw new Error('This server does not support XEP-0313, Message Archive Management');
+                }
+                var stanza = $iq({'type':'set'}).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':converse.connection.getUniqueId()});
+                if (typeof options != "undefined") {
+                    stanza.c('x', {'xmlns':'jabber:x:data'})
+                            .c('field', {'var':'FORM_TYPE'})
+                            .c('value').t(Strophe.NS.MAM).up().up();
+
+                    if (options.jid) {
+                        stanza.c('field', {'var':'with'}).c('value').t(options.jid).up().up();
+                    }
+                    _.each(['start', 'end'], function (t) {
+                        if (options[t]) {
+                            date = moment(options[t]);
+                            if (date.isValid()) {
+                                stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
+                            } else {
+                                throw new TypeError('archive.query: invalid date provided for: '+t);
+                            }
+                        }
+                    });
+                    stanza.up();
+                    if (options.limit) {
+                        stanza.c('set', {'xmlns':Strophe.NS.RSM}).c('max').t(options.limit).up();
+                    }
+                    if (options.after) {
+                        stanza.c('after').t(options.after).up();
+                    }
+                }
+                converse.connection.sendIQ(stanza, callback, errback);
             }
         },
         'rooms': {

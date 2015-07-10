@@ -26,7 +26,7 @@ require.config({
         "jquery-private":           "src/jquery-private",
         "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
-        "moment":                   "components/momentjs/min/moment.min",
+        "moment":                   "components/momentjs/moment",
         "strophe-base64":           "components/strophejs/src/base64",
         "strophe-bosh":             "components/strophejs/src/bosh",
         "strophe-core":             "components/strophejs/src/core",

@@ -313,6 +313,7 @@
             hide_offline_users: false,
             jid: undefined,
             keepalive: false,
+            message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
             message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             ping_interval: 180, //in seconds
@@ -5041,6 +5042,7 @@
                 this.addClientIdentities().addClientFeatures();
                 this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.features'+converse.bare_jid));
+                this.on('add', this.onFeatureAdded, this);
                 if (this.browserStorage.records.length === 0) {
                     // browserStorage is empty, so we've likely never queried this
                     // domain for features yet
@@ -5048,6 +5050,58 @@
                     converse.connection.disco.items(converse.domain, null, this.onItems.bind(this));
                 } else {
                     this.fetch({add:true});
+                }
+            },
+
+            onFeatureAdded: function (feature) {
+                if (feature.get('var') == Strophe.NS.MAM) {
+                    // Ask the server for archiving preferences
+                    converse.connection.sendIQ(
+                        $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),
+                        _.bind(this.onMAMPreferences, this, feature),
+                        _.bind(this.onMAMError, this, feature)
+                    );
+                }
+            },
+
+            onMAMPreferences: function (feature, iq) {
+                /* Handle returned IQ stanza containing Message Archive
+                 * Management (XEP-0313) preferences.
+                 *
+                 * XXX: For now we only handle the global default preference.
+                 * The XEP also provides for per-JID preferences, which is
+                 * currently not supported in converse.js.
+                 *
+                 * Per JID preferences will be set in chat boxes, so it'll
+                 * probbaly be handled elsewhere in any case.
+                 */
+                var $prefs = $(iq).find('prefs[xmlns="'+Strophe.NS.MAM+'"]');
+                var default_pref = $prefs.attr('default');
+                var stanza;
+                if (default_pref !== converse.message_archiving) {
+                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':converse.message_archiving});
+                    $prefs.children().each(function (idx, child) {
+                        stanza.cnode(child).up();
+                    });
+                    converse.connection.sendIQ(stanza, _.bind(function (feature, iq) {
+                            // XXX: Strictly speaking, the server should respond with the updated prefs
+                            // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
+                            // but Prosody doesn't do this, so we don't rely on it.
+                            feature.save({'preferences': {'default':converse.message_archiving}});
+                        }, this, feature),
+                        _.bind(this.onMAMError, this, feature)
+                    );
+                } else {
+                    feature.save({'preferences': {'default':converse.message_archiving}});
+                }
+            },
+
+            onMAMError: function (iq) {
+                if ($(iq).find('feature-not-implemented').length) {
+                    converse.log("Message Archive Management (XEP-0313) not supported by this browser");
+                } else {
+                    converse.log("An error occured while trying to set archiving preferences.");
+                    converse.log(iq);
                 }
             },
 

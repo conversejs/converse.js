@@ -327,6 +327,19 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+
+message_archives
+----------------
+
+* Default:  ``never``
+
+Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_
+
+This sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
+
+``roster`` means that only messages to and from JIDs in your roster will be
+archived. The other two values are self-explanatory.
+
 message_carbons
 ---------------
 

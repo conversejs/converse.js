@@ -1,14 +1,22 @@
-/*!
- * Converse.js (Web-based XMPP instant messaging client)
- * http://conversejs.org
- *
- * Copyright (c) 2012, Jan-Carel Brand <jc@opkode.com>
- * Licensed under the Mozilla Public License (MPL)
- */
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2015, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
 
-// AMD/global registrations
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
+        // AMD module loading
+        // ------------------
+        // When using require.js, two modules are loaded as dependencies.
+        //
+        // * **converse-dependencies**: A list of dependencies on which converse.js
+        // depends. The path to this module is in main.js and the module itself can
+        //
+        // * **converse-templates**: The HTML templates used by converse.js.
+        //
+        // The dependencies are then split up and  passed into the factory function, which
+        // contains and instantiates converse.js.
         define("converse",
               ["converse-dependencies", "converse-templates"],
             function (dependencies, templates) {
@@ -30,20 +38,26 @@
             }
         );
     } else {
+        // When not using a module loader
+        // -------------------------------
+        // In this case, the dependencies need to be available already as
+        // global variables, and should be loaded separately via *script* tags.
+        // See the file **non_amd.html** for an example of this usecase.
         root.converse = factory(templates, jQuery, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1);
     }
 }(this, function (templates, $, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1) {
-    // "use strict";
-    // Cannot use this due to Safari bug.
-    // See https://github.com/jcbrand/converse.js/issues/196
+    /* "use strict";
+     * Cannot use this due to Safari bug.
+     * See https://github.com/jcbrand/converse.js/issues/196
+     */
     if (typeof console === "undefined" || typeof console.log === "undefined") {
         console = { log: function () {}, error: function () {} };
     }
 
-    // Configuration of underscore templates (this config is distict to the
-    // config of requirejs-tpl in main.js). This one is for normal inline
-    // templates.
     // Use Mustache style syntax for variable interpolation
+    /* Configuration of underscore templates (this config is distinct to the
+     * config of requirejs-tpl in main.js). This one is for normal inline templates.
+     */
     _.templateSettings = {
         evaluate : /\{\[([\s\S]+?)\]\}/g,
         interpolate : /\{\{([\s\S]+?)\}\}/g
@@ -3311,7 +3325,7 @@
                     to_jid = $message.attr('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
-                if (to_resource && to_resource !== converse.resource) { 
+                if (to_resource && to_resource !== converse.resource) {
                     converse.log('Ignore incoming message intended for a different resource: '+to_jid, 'info');
                     return true;
                 }

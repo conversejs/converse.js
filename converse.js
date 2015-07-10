@@ -149,7 +149,10 @@
         Strophe.error = function (msg) { converse.log(msg, 'error'); };
 
         // Add Strophe Namespaces
+        Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+        Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
         Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
         Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
         Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
@@ -158,7 +161,6 @@
         Strophe.addNamespace('REGISTER', 'jabber:iq:register');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
-        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
 
         // Add Strophe Statuses
         var i = 0;
@@ -839,7 +841,7 @@
                 id: 'enablecarbons',
                 type: 'set'
               })
-              .c('enable', {xmlns: 'urn:xmpp:carbons:2'});
+              .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler(function (iq) {
                 if ($(iq).find('error').length > 0) {
                     converse.log('ERROR: An error occured while trying to enable message carbons.');
@@ -1367,7 +1369,7 @@
 
                 if (this.model.get('otr_status') != UNENCRYPTED) {
                     // OTR messages aren't carbon copied
-                    message.c('private', {'xmlns': 'urn:xmpp:carbons:2'});
+                    message.c('private', {'xmlns': Strophe.NS.CARBONS});
                 }
                 converse.connection.send(message);
                 if (converse.forward_messages) {
@@ -5061,19 +5063,23 @@
                  * it will advertise to any #info queries made to it.
                  *
                  * See: http://xmpp.org/extensions/xep-0030.html#info
-                 *
-                 * TODO: these features need to be added in the relevant
-                 * feature-providing Models, not here
                  */
-                 converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                 converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
-                 converse.connection.disco.addFeature('jabber:x:conference');
-                 converse.connection.disco.addFeature('urn:xmpp:carbons:2');
-                 converse.connection.disco.addFeature(Strophe.NS.VCARD);
-                 converse.connection.disco.addFeature(Strophe.NS.BOSH);
-                 converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                 converse.connection.disco.addFeature(Strophe.NS.MUC);
-                 return this;
+                converse.connection.disco.addFeature('jabber:x:conference');
+                converse.connection.disco.addFeature(Strophe.NS.BOSH);
+                converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
+                converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+                converse.connection.disco.addFeature(Strophe.NS.MAM);
+                converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+                if (converse.use_vcards) {
+                    converse.connection.disco.addFeature(Strophe.NS.VCARD);
+                }
+                if (converse.allow_muc) {
+                    converse.connection.disco.addFeature(Strophe.NS.MUC);
+                }
+                if (converse.message_carbons) {
+                    converse.connection.disco.addFeature(Strophe.NS.CARBONS);
+                }
+                return this;
             },
 
             onItems: function (stanza) {

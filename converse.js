@@ -5858,7 +5858,8 @@
                 } catch (e) {
                     converse.log("Could not restore sessions. Error message: "+e.message);
                 }
-            } else if (this.auto_login) {
+            }
+            if (this.auto_login) {
                 if (!this.jid) {
                     throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
                 }

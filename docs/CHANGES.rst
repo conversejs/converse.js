@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.9.5 (Unreleased)
+------------------
+
+* #439 auto_login and keepalive not working [jcbrand]
+
 0.9.4 (2015-07-04)
 ------------------
 

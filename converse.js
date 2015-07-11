@@ -1297,7 +1297,12 @@
                     'message': '',
                     'extra_classes': extra_classes
                 });
-                $content.append($(message).children('.chat-message-content').first().text(text).addHyperlinks().addEmoticons().parent());
+                $content.append(
+                    $(message).children('.chat-message-content').first().text(text)
+                        .addHyperlinks()
+                        .addEmoticons(converse.visible_toolbar_buttons.emoticons)
+                    .parent()
+                );
                 this.scrollDown();
             },
 
@@ -6148,6 +6153,7 @@
                     }
                 }
                 converse.connection.sendIQ(stanza, function (iq) {
+                    debugger;
                     var rsm = new Strophe.RSM({xml: iq.getElementsByTagName('set')[0]});
                     return _.bind(callback, this, arguments)(rsm);
                 }, errback);

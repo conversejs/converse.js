@@ -50,8 +50,8 @@
         return this;
     };
 
-    $.fn.addEmoticons = function () {
-        if (converse.visible_toolbar_buttons.emoticons) {
+    $.fn.addEmoticons = function (allowed) {
+        if (allowed) {
             if (this.length > 0) {
                 this.each(function (i, obj) {
                     var text = $(obj).html();

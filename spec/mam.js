@@ -45,7 +45,7 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                converse_api.archive.query({'jid':'juliet@capulet.lit'});
+                converse_api.archive.query({'with':'juliet@capulet.lit'});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+

@@ -122,6 +122,8 @@
 
     // XEP-0059 Result Set Management
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
+    // XEP-0313 Message Archive Management
+    var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
     var STATUS_WEIGHTS = {
         'offline':      6,
@@ -542,12 +544,13 @@
             converse.connection.send(pres);
         };
 
-        this.onMAMQueryResult = function (iq, queryid, callback) {
+        this.onMAMQueryResult = function (iq, options, queryid, callback) {
             /* Handle the IQ stanza and potential message stanzas returned as
              * a result of a MAM (XEP-0313) query.
              *
              * Parameters:
              *    (XMLElement) iq - The IQ stanza returned from the XMPP server.
+             *    (Object) options - The MAM-specific options of the query ('with', 'start' and 'end')
              *    (String) queryid - A unique ID sent with the MAM query.
              *    (Function) callback - A function to call whenever we receive query-relevant stanza.
              */
@@ -556,7 +559,9 @@
                     var rsm, $msg = $(message);
                     var $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
                     if ($fin.length) {
-                        rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
+                        rsm = new Strophe.RSM(
+                            _.extend({xml: $fin.find('set')[0]}, _.pick(options, MAM_ATTRIBUTES))
+                        );
                         callback(message, rsm);
                         return false; // We've received all messages, decommission this handler
                     }
@@ -6154,8 +6159,24 @@
         },
         'archive': {
             'query': function (options, callback, errback) {
+                /* Do a MAM (XEP-0313) query for archived messages.
+                 *
+                 * Parameters:
+                 *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
+                 *    (Function) callback - A function to call whenever we receive query-relevant stanza.
+                 *    (Function) errback - A function to call when an error stanza is received.
+                 *
+                 * The options parameter can also be an instance of
+                 * Strophe.RSM to enable easy querying between results pages.
+                 *
+                 * The callback function may be called multiple times, first
+                 * for the initial IQ result and then for each message
+                 * returned. The last time the callback is called, a
+                 * Strophe.RSM object is returned on which "next" or "previous"
+                 * can be called before passing it in again to this method, to
+                 * get the next or previous page in the result set.
+                 */
                 var date;
-                // Available options are jid, limit, start, end, after, before
                 if (typeof options == "function") {
                     callback = options;
                     errback = callback;
@@ -6170,8 +6191,8 @@
                             .c('field', {'var':'FORM_TYPE'})
                             .c('value').t(Strophe.NS.MAM).up().up();
 
-                    if (options.jid) {
-                        stanza.c('field', {'var':'with'}).c('value').t(options.jid).up().up();
+                    if (options['with']) {
+                        stanza.c('field', {'var':'with'}).c('value').t(options['with']).up().up();
                     }
                     _.each(['start', 'end'], function (t) {
                         if (options[t]) {
@@ -6184,11 +6205,16 @@
                         }
                     });
                     stanza.up();
-                    if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+
+                    if (Strophe.RSM.isPrototypeOf(options)) {
+                        stanza.cnode(options.toXML());
+                    } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
                         stanza.cnode(new Strophe.RSM(options).toXML());
                     }
                 }
-                converse.connection.sendIQ(stanza, _.partial(converse.onMAMQueryResult, _, queryid, callback), errback);
+                converse.connection.sendIQ(stanza,
+                    _.partial(converse.onMAMQueryResult, _, options, queryid, callback),
+                    errback);
             }
         },
         'rooms': {

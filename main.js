@@ -27,17 +27,18 @@ require.config({
         "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
+        "strophe":                  "components/strophejs/src/wrapper",
         "strophe-base64":           "components/strophejs/src/base64",
         "strophe-bosh":             "components/strophejs/src/bosh",
         "strophe-core":             "components/strophejs/src/core",
-        "strophe":                  "components/strophejs/src/wrapper",
         "strophe-md5":              "components/strophejs/src/md5",
+        "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe-sha1":             "components/strophejs/src/sha1",
         "strophe-websocket":        "components/strophejs/src/websocket",
-        "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
-        "strophe.vcard":            "src/strophe.vcard",
         "strophe.ping":             "src/strophe.ping",
+        "strophe.rsm":              "components/strophejs-plugins/rsm/strophe.rsm",
+        "strophe.vcard":            "src/strophe.vcard",
         "text":                     'components/requirejs-text/text',
         "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
         "typeahead":                "components/typeahead.js/index",
@@ -185,10 +186,9 @@ require.config({
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
         'bigint':               { deps: ['crypto'] },
-        'strophe.disco':        { deps: ['strophe'] },
+        'strophe.ping':         { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
-        'strophe.vcard':        { deps: ['strophe'] },
-        'strophe.ping':         { deps: ['strophe'] }
+        'strophe.vcard':        { deps: ['strophe'] }
     }
 });
 

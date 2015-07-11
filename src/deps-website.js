@@ -5,9 +5,10 @@ define("converse-dependencies", [
     "otr",
     "moment_with_locales",
     "strophe",
-    "strophe.vcard",
     "strophe.disco",
     "strophe.ping",
+    "strophe.rsm",
+    "strophe.vcard",
     "bootstrapJS", // XXX: Only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",

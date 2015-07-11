@@ -118,6 +118,11 @@
         }
     };
 
+    // Global constants
+
+    // XEP-0059 Result Set Management
+    var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
+
     var STATUS_WEIGHTS = {
         'offline':      6,
         'unavailable':  5,
@@ -6138,14 +6143,14 @@
                         }
                     });
                     stanza.up();
-                    if (options.limit) {
-                        stanza.c('set', {'xmlns':Strophe.NS.RSM}).c('max').t(options.limit).up();
-                    }
-                    if (options.after) {
-                        stanza.c('after').t(options.after).up();
+                    if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+                        stanza.cnode(new Strophe.RSM(options).toXML());
                     }
                 }
-                converse.connection.sendIQ(stanza, callback, errback);
+                converse.connection.sendIQ(stanza, function (iq) {
+                    var rsm = new Strophe.RSM({xml: iq.getElementsByTagName('set')[0]});
+                    return _.bind(callback, this, arguments)(rsm);
+                }, errback);
             }
         },
         'rooms': {

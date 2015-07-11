@@ -161,7 +161,7 @@
                 Date.prototype.getTimezoneOffset = function () {
                     return -120;
                 };
-                converse_api.archive.query({'start': '2010-06-07T00:00:00Z', 'limit':10});
+                converse_api.archive.query({'start': '2010-06-07T00:00:00Z', 'max':10});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -202,7 +202,7 @@
                 converse_api.archive.query({
                     'start': '2010-06-07T00:00:00Z',
                     'after': '09af3-cc343-b409f',
-                    'limit':10
+                    'max':10
                 });
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(

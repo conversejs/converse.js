@@ -542,9 +542,43 @@
             converse.connection.send(pres);
         };
 
+        this.onMAMQueryResult = function (iq, queryid, callback) {
+            /* Handle the IQ stanza and potential message stanzas returned as
+             * a result of a MAM (XEP-0313) query.
+             *
+             * Parameters:
+             *    (XMLElement) iq - The IQ stanza returned from the XMPP server.
+             *    (String) queryid - A unique ID sent with the MAM query.
+             *    (Function) callback - A function to call whenever we receive query-relevant stanza.
+             */
+            converse.connection.addHandler(
+                function (message) {
+                    var rsm, $msg = $(message);
+                    var $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
+                    if ($fin.length) {
+                        rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
+                        callback(message, rsm);
+                        return false; // We've received all messages, decommission this handler
+                    }
+                    if (typeof callback == "function") {
+                        if (queryid == $msg.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('queryid')) {
+                            callback(message);
+                        }
+                        return true;
+                    } else {
+                        return false; // There's no callback, so no use in continuing this handler.
+                    }
+                }, null, 'message');
+
+            if (typeof callback == "function") {
+                return callback.apply(arguments);
+            }
+        };
+
         this.getVCard = function (jid, callback, errback) {
             /* Request the VCard of another user.
-             *  Parameters:
+             *
+             * Parameters:
              *    (String) jid - The Jabber ID of the user whose VCard is being requested.
              *    (Function) callback - A function to call once the VCard is returned
              *    (Function) errback - A function to call if an error occured
@@ -6128,7 +6162,8 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     throw new Error('This server does not support XEP-0313, Message Archive Management');
                 }
-                var stanza = $iq({'type':'set'}).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':converse.connection.getUniqueId()});
+                var queryid = converse.connection.getUniqueId();
+                var stanza = $iq({'type':'set'}).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (typeof options != "undefined") {
                     stanza.c('x', {'xmlns':'jabber:x:data'})
                             .c('field', {'var':'FORM_TYPE'})
@@ -6152,11 +6187,7 @@
                         stanza.cnode(new Strophe.RSM(options).toXML());
                     }
                 }
-                converse.connection.sendIQ(stanza, function (iq) {
-                    debugger;
-                    var rsm = new Strophe.RSM({xml: iq.getElementsByTagName('set')[0]});
-                    return _.bind(callback, this, arguments)(rsm);
-                }, errback);
+                converse.connection.sendIQ(stanza, _.partial(converse.onMAMQueryResult, _, queryid, callback), errback);
             }
         },
         'rooms': {

@@ -227,6 +227,35 @@
                 Date.prototype.getTimezoneOffset = getTimezoneOffset;
            });
 
+           it("accepts \"before\" with an empty string as value to reverse the order", function () {
+                var sent_stanza, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    converse.features.create({'var': Strophe.NS.MAM});
+                }
+                converse_api.archive.query({'before': '', 'max':10});
+                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                expect(sent_stanza.toString()).toBe(
+                    "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
+                            "<x xmlns='jabber:x:data'>"+
+                                "<field var='FORM_TYPE'>"+
+                                    "<value>urn:xmpp:mam:0</value>"+
+                                "</field>"+
+                            "</x>"+
+                            "<set xmlns='http://jabber.org/protocol/rsm'>"+
+                                "<max>10</max>"+
+                                "<before></before>"+
+                            "</set>"+
+                        "</query>"+
+                    "</iq>"
+                );
+           });
+
         }, converse, mock, test_utils));
 
         describe("The default preference", $.proxy(function (mock, test_utils) {

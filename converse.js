@@ -552,32 +552,29 @@
              *    (XMLElement) iq - The IQ stanza returned from the XMPP server.
              *    (Object) options - The MAM-specific options of the query ('with', 'start' and 'end')
              *    (String) queryid - A unique ID sent with the MAM query.
-             *    (Function) callback - A function to call whenever we receive query-relevant stanza.
+             *    (Function) callback - A function to call after we've received all the archived messages.
+             *      If should expect an array of messages and a Strophe.RSM (result set management) object.
              */
+            var messages = [];
             converse.connection.addHandler(
                 function (message) {
-                    var rsm, $msg = $(message);
-                    var $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
-                    if ($fin.length) {
-                        rsm = new Strophe.RSM(
-                            _.extend({xml: $fin.find('set')[0]}, _.pick(options, MAM_ATTRIBUTES))
-                        );
-                        callback(message, rsm);
-                        return false; // We've received all messages, decommission this handler
-                    }
+                    var $msg = $(message), $fin;
                     if (typeof callback == "function") {
-                        if (queryid == $msg.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('queryid')) {
-                            callback(message);
+                        $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
+                        if ($fin.length) {
+                            callback(
+                                messages,
+                                new Strophe.RSM(_.extend({xml: $fin.find('set')[0]}, _.pick(options, MAM_ATTRIBUTES)))
+                            );
+                            return false; // We've received all messages, decommission this handler
+                        } else if (queryid == $msg.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('queryid')) {
+                            messages.push(message);
                         }
                         return true;
                     } else {
                         return false; // There's no callback, so no use in continuing this handler.
                     }
                 }, null, 'message');
-
-            if (typeof callback == "function") {
-                return callback.apply(arguments);
-            }
         };
 
         this.getVCard = function (jid, callback, errback) {

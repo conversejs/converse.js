@@ -558,23 +558,23 @@
             var messages = [];
             converse.connection.addHandler(
                 function (message) {
-                    var $msg = $(message), $fin;
+                    var $msg = $(message), $fin, rsm, i;
                     if (typeof callback == "function") {
                         $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
                         if ($fin.length) {
-                            callback(
-                                messages,
-                                new Strophe.RSM(_.extend({xml: $fin.find('set')[0]}, _.pick(options, MAM_ATTRIBUTES)))
-                            );
+                            rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
+                            _.extend(rsm, _.pick(options, ['max', 'after', 'before']));
+                            _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
+                            callback(messages, rsm);
                             return false; // We've received all messages, decommission this handler
-                        } else if (queryid == $msg.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('queryid')) {
+                        } else if (queryid == $msg.find('result').attr('queryid')) {
                             messages.push(message);
                         }
                         return true;
                     } else {
                         return false; // There's no callback, so no use in continuing this handler.
                     }
-                }, null, 'message');
+                }, Strophe.NS.MAM, 'message');
         };
 
         this.getVCard = function (jid, callback, errback) {

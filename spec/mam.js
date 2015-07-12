@@ -12,6 +12,7 @@
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var $pres = converse_api.env.$pres;
+    var $msg = converse_api.env.$msg;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
     describe("Message Archive Management", $.proxy(function (mock, test_utils) {
@@ -261,15 +262,15 @@
                 // and pass it in. However, in the callback method an RSM object is
                 // returned which can be reused for easy paging. This test is
                 // more for that usecase.
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    converse.features.create({'var': Strophe.NS.MAM});
+                }
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    converse.features.create({'var': Strophe.NS.MAM});
-                }
                 // Mock the browser's method for returning the timezone
                 var getTimezoneOffset = Date.prototype.getTimezoneOffset;
                 Date.prototype.getTimezoneOffset = function () {
@@ -303,6 +304,55 @@
                 );
                 // Restore
                 Date.prototype.getTimezoneOffset = getTimezoneOffset;
+           });
+
+           it("accepts a callback function, which it passes the messages and a Strophe.RSM object", function () {
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    converse.features.create({'var': Strophe.NS.MAM});
+                }
+                var sent_stanza, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                spyOn(converse, 'onMAMQueryResult').andCallThrough();
+                var callback = jasmine.createSpy('callback');
+
+                converse_api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
+                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+
+                // Send the result stanza, so that the callback is called.
+                var stanza = $iq({'type': 'result', 'id': IQ_id});
+                converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(converse.onMAMQueryResult).toHaveBeenCalled();
+
+                /* Send a <fin> message to indicate the end of the result set.
+                 *
+                 * <message>
+                 *     <fin xmlns='urn:xmpp:mam:0' complete='true'>
+                 *         <set xmlns='http://jabber.org/protocol/rsm'>
+                 *             <first index='0'>23452-4534-1</first>
+                 *             <last>390-2342-22</last>
+                 *             <count>16</count>
+                 *         </set>
+                 *     </fin>
+                 * </message>
+                 */
+                stanza = $msg().c('fin', {'xmlns': 'urn:xmpp:mam:0', 'complete': 'true'})
+                            .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                                .c('first', {'index': '0'}).t('23452-4534-1').up()
+                                .c('last').t('390-2342-22').up()
+                                .c('count').t('16');
+                converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(callback).toHaveBeenCalled();
+                var args = callback.argsForCall[0];
+                expect(args[1]['with']).toBe('romeo@capulet.lit');
+                expect(args[1].max).toBe('10');
+                expect(args[1].count).toBe('16');
+                expect(args[1].first).toBe('23452-4534-1');
+                expect(args[1].last).toBe('390-2342-22');
            });
 
         }, converse, mock, test_utils));

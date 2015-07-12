@@ -256,6 +256,55 @@
                 );
            });
 
+           it("accepts a Strophe.RSM object for the query options", function () {
+                // Normally the user wouldn't manually make a Strophe.RSM object
+                // and pass it in. However, in the callback method an RSM object is
+                // returned which can be reused for easy paging. This test is
+                // more for that usecase.
+                var sent_stanza, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    converse.features.create({'var': Strophe.NS.MAM});
+                }
+                // Mock the browser's method for returning the timezone
+                var getTimezoneOffset = Date.prototype.getTimezoneOffset;
+                Date.prototype.getTimezoneOffset = function () {
+                    return -120;
+                };
+                var rsm =  new Strophe.RSM({'max': '10'});
+                rsm['with'] = 'romeo@montague.lit';
+                rsm.start = '2010-06-07T00:00:00Z';
+                converse_api.archive.query(rsm);
+
+                var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
+                expect(sent_stanza.toString()).toBe(
+                    "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
+                            "<x xmlns='jabber:x:data'>"+
+                                "<field var='FORM_TYPE'>"+
+                                    "<value>urn:xmpp:mam:0</value>"+
+                                "</field>"+
+                                "<field var='with'>"+
+                                    "<value>romeo@montague.lit</value>"+
+                                "</field>"+
+                                "<field var='start'>"+
+                                    "<value>2010-06-07T02:00:00+02:00</value>"+
+                                "</field>"+
+                            "</x>"+
+                            "<set xmlns='http://jabber.org/protocol/rsm'>"+
+                                "<max>10</max>"+
+                            "</set>"+
+                        "</query>"+
+                    "</iq>"
+                );
+                // Restore
+                Date.prototype.getTimezoneOffset = getTimezoneOffset;
+           });
+
         }, converse, mock, test_utils));
 
         describe("The default preference", $.proxy(function (mock, test_utils) {

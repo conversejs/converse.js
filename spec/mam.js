@@ -327,6 +327,45 @@
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect(converse.onMAMQueryResult).toHaveBeenCalled();
 
+                /* <message id='aeb213' to='juliet@capulet.lit/chamber'>
+                 *   <result xmlns='urn:xmpp:mam:0' queryid='f27' id='28482-98726-73623'>
+                 *     <forwarded xmlns='urn:xmpp:forward:0'>
+                 *       <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+                 *       <message
+                 *         to='juliet@capulet.lit/balcony'
+                 *         from='romeo@montague.lit/orchard'
+                 *         type='chat'
+                 *         xmlns='jabber:client'>
+                 *         <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+                 *       </message>
+                 *     </forwarded>
+                 *   </result>
+                 * </message>
+                 */
+                var msg1 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:0', 'queryid':queryid, 'id':'28482-98726-73623'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to':'juliet@capulet.lit/balcony',
+                                        'from':'romeo@montague.lit/orchard',
+                                        'type':'chat' })
+                                    .c('body').t("Call me but love, and I'll be new baptized;");
+                converse.connection._dataRecv(test_utils.createRequest(msg1));
+
+                var msg2 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:0', 'queryid':queryid, 'id':'28482-98726-73624'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to':'juliet@capulet.lit/balcony',
+                                        'from':'romeo@montague.lit/orchard',
+                                        'type':'chat' })
+                                    .c('body').t("Henceforth I never will be Romeo.");
+                converse.connection._dataRecv(test_utils.createRequest(msg2));
+
                 /* Send a <fin> message to indicate the end of the result set.
                  *
                  * <message>
@@ -348,6 +387,9 @@
 
                 expect(callback).toHaveBeenCalled();
                 var args = callback.argsForCall[0];
+                expect(args[0].length).toBe(2);
+                expect(args[0][0].outerHTML).toBe(msg1.nodeTree.outerHTML);
+                expect(args[0][1].outerHTML).toBe(msg2.nodeTree.outerHTML);
                 expect(args[1]['with']).toBe('romeo@capulet.lit');
                 expect(args[1].max).toBe('10');
                 expect(args[1].count).toBe('16');

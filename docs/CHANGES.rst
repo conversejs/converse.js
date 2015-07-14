@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * #439 auto_login and keepalive not working [jcbrand]
+* #440 null added as resource to contact [jcbrand]
 
 0.9.4 (2015-07-04)
 ------------------

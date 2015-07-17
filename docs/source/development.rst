@@ -209,6 +209,9 @@ Converse.js supports the *Message Archive Management*
 (`XEP-0313 <https://xmpp.org/extensions/xep-0313.html>`_) protocol,
 through which it is able to query an XMPP server for archived messages.
 
+See also the **message_archiving** option in the :ref:`configuration-variables` section, which you'll usually
+want to  in conjunction with this API.
+
 query
 ~~~~~
 
@@ -751,7 +754,7 @@ Here are the different events that are emitted:
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **statusMessageChanged**        | When own custom status message has changed.                                                       | ``converse.listen.on('statusMessageChanged', function (event, message) { ... });``                   |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **serviceDiscovered**           | When converse.js has learned of a service provided by the XMPP server. See XEP-0030.              | ``converse.listen.on('serviceDiscovered', function (service) { ... });``                             |
+| **serviceDiscovered**           | When converse.js has learned of a service provided by the XMPP server. See XEP-0030.              | ``converse.listen.on('serviceDiscovered', function (event, service) { ... });``                      |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 
 

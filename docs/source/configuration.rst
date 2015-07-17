@@ -328,8 +328,8 @@ See also:
     with regards to "stream resumption".
 
 
-message_archives
-----------------
+message_archiving
+-----------------
 
 * Default:  ``never``
 

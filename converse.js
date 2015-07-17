@@ -564,8 +564,7 @@
                         $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
                         if ($fin.length) {
                             rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
-                            if (typeof options.before !== "undefined") { messages.reverse(); }
-                            _.extend(rsm, _.pick(options, ['max', 'after', 'before']));
+                            _.extend(rsm, _.pick(options, ['max']));
                             _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
                             callback(messages, rsm);
                             return false; // We've received all messages, decommission this handler
@@ -1237,7 +1236,7 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 // TODO check for changed fullname as well
-                this.model.on('change:archived_count', this.fetchArchivedMessages, this);
+                this.model.on('change:archived_count', this.maybeFetchArchivedMessages.bind(this));
                 this.model.on('change:chat_state', this.sendChatState, this);
                 this.model.on('change:chat_status', this.onChatStatusChanged, this);
                 this.model.on('change:image', this.renderAvatar, this);
@@ -1253,7 +1252,7 @@
                 this.model.on('showReceivedOTRMessage', function (text) {
                     this.showMessage({'message': text, 'sender': 'them'});
                 }, this);
-                this.updateVCard().insertIntoPage().fetchMessages();
+                this.updateVCard().render().fetchMessages().insertIntoPage().hide();
 
                 if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
@@ -1271,9 +1270,20 @@
                         )
                     );
                 this.renderToolbar().renderAvatar();
+                this.$el.find('.chat-content').on('scroll', _.debounce(this.onScroll.bind(this), 100));
                 converse.emit('chatBoxOpened', this);
                 setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
+            },
+
+            onScroll: function (ev) {
+                var rsm = this.model.get('rsm');
+                if (rsm && $(ev.target).scrollTop() === 0) {
+                    if (! (rsm instanceof Strophe.RSM)) {
+                        rsm = new Strophe.RSM(rsm);
+                    }
+                    this.fetchArchivedMessages(rsm.previous());
+                }
             },
 
             fetchMessages: function () {
@@ -1282,10 +1292,11 @@
                  * fetchArchivedMessages, which fetches from the XMPP server if
                  * applicable.
                  */
-                this.hide().render().model.messages.fetch({
+                this.model.messages.fetch({
                     'add': true,
                     'success': this.afterFetchingCachedMessages.bind(this)
                 });
+                return this;
             },
 
             afterFetchingCachedMessages: function () {
@@ -1316,30 +1327,35 @@
                         }.bind(this)
                     );
                 } else {
+                    this.maybeFetchArchivedMessages();
+                }
+            },
+
+            maybeFetchArchivedMessages: function () {
+                if (this.model.messages.length < this.model.get('archived_count') &&
+                        this.model.messages.length < converse.archived_messages_batch_size) {
                     this.fetchArchivedMessages();
                 }
             },
 
-            fetchArchivedMessages: function () {
-                /* Fetch archived chat messages if we know that there are more
-                 * than zero of them.
+            fetchArchivedMessages: function (rsm) {
+                /* Fetch archived chat messages from the XMPP server.
                  *
                  * Then, upon receiving them, call onMessage on the chat box,
                  * so that they are displayed inside it.
                  */
-                if (this.model.messages.length < this.model.get('archived_count') &&
-                    this.model.messages.length < converse.archived_messages_batch_size) {
-
-                    // TODO: fetch only messages we don't yet have
-                    API.archive.query({
-                            'before': '', // Page backwards from the most recent message
-                            'with': this.model.get('jid'),
-                            'max': converse.archived_messages_batch_size
-                        },
-                        _.partial(_.map, _, converse.chatboxes.onMessage.bind(converse.chatboxes)),
-                        _.partial(converse.log, "Error while trying to fetch archived messages", "error")
-                    );
-                }
+                API.archive.query(
+                    rsm instanceof Strophe.RSM ? rsm : {
+                        'before': '', // Page backwards from the most recent message
+                        'with': this.model.get('jid'),
+                        'max': converse.archived_messages_batch_size
+                    },
+                    function (messages, rsm) {
+                        this.model.save({'rsm': rsm});
+                        _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                    }.bind(this),
+                    _.partial(converse.log, "Error while trying to fetch archived messages", "error")
+                );
             },
 
             insertIntoPage: function () {
@@ -1380,7 +1396,13 @@
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     fullname = this.model.get('fullname') || msg_dict.fullname,
                     extra_classes = msg_dict.delayed && 'delayed' || '',
-                    template, username;
+                    template, username, insertMessage;
+
+                if (this.model.messages.length && moment(msg_time).isBefore(this.model.messages.at(0).get('time'))) {
+                    insertMessage = $content.prepend.bind($content);
+                } else {
+                    insertMessage = _.compose(this.scrollDown.bind(this), $content.append.bind($content));
+                }
 
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
@@ -1404,13 +1426,12 @@
                     'message': '',
                     'extra_classes': extra_classes
                 });
-                $content.append(
+                insertMessage(
                     $(message).children('.chat-message-content').first().text(text)
                         .addHyperlinks()
                         .addEmoticons(converse.visible_toolbar_buttons.emoticons)
                     .parent()
                 );
-                this.scrollDown();
             },
 
             showHelpMessages: function (msgs, type, spinner) {
@@ -1428,9 +1449,6 @@
             },
 
             onMessageAdded: function (message) {
-                // TODO: properly insert messages in the right place, indicate
-                // messages from different days (current code doesn't go far
-                // enough).
                 var time = message.get('time'),
                     times = this.model.messages.pluck('time'),
                     previous_message, idx, this_date, prev_date, text, match;
@@ -1469,7 +1487,6 @@
                 if ((message.get('sender') != 'me') && (converse.windowState == 'blur')) {
                     converse.incrementMsgCounter();
                 }
-                this.scrollDown();
                 if (!this.model.get('minimized') && !this.$el.is(':visible')) {
                     this.show();
                 }
@@ -6253,7 +6270,7 @@
                     });
                     stanza.up();
 
-                    if (Strophe.RSM.isPrototypeOf(options)) {
+                    if (options instanceof Strophe.RSM) {
                         stanza.cnode(options.toXML());
                     } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
                         stanza.cnode(new Strophe.RSM(options).toXML());

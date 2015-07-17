@@ -1313,7 +1313,7 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     return;
                 }
-                if (typeof this.model.get('archived_count') == 'undefined') {
+                if (this.model.messages.length < converse.archived_messages_batch_size) {
                     // Get the amount of archived messages
                     // Refer to: https://xmpp.org/extensions/xep-0059.html#count
                     API.archive.query({
@@ -1321,25 +1321,18 @@
                             'max': 0
                         },
                         function (messages, attrs) { // On Success
-                            // Whenever the archived_count attribute changes,
-                            // fetchArchivedMessages will be called.
-                            this.model.save({'archived_count': Number(attrs.count)});
-                            this.maybeFetchArchivedMessages();
+                            if (this.model.messages.length < Number(attrs.count)) {
+                                this.fetchArchivedMessages({
+                                    'before': '', // Page backwards from the most recent message
+                                    'with': this.model.get('jid'),
+                                    'max': converse.archived_messages_batch_size
+                                });
+                            }
                         }.bind(this),
                         function (iq) { // On Error
                             converse.log("Error occured while trying to fetch the archived messages count", "error");
-                            this.model.save({'archived_count': 0});
                         }.bind(this)
                     );
-                } else {
-                    this.maybeFetchArchivedMessages();
-                }
-            },
-
-            maybeFetchArchivedMessages: function () {
-                if (this.model.messages.length < this.model.get('archived_count') &&
-                        this.model.messages.length < converse.archived_messages_batch_size) {
-                    this.fetchArchivedMessages();
                 }
             },
 
@@ -1349,12 +1342,7 @@
                  * Then, upon receiving them, call onMessage on the chat box,
                  * so that they are displayed inside it.
                  */
-                API.archive.query(
-                    options || {
-                        'before': '', // Page backwards from the most recent message
-                        'with': this.model.get('jid'),
-                        'max': converse.archived_messages_batch_size
-                    },
+                API.archive.query(options,
                     _.partial(_.map, _, converse.chatboxes.onMessage.bind(converse.chatboxes)),
                     _.partial(converse.log, "Error while trying to fetch archived messages", "error")
                 );

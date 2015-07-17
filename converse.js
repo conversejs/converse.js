@@ -1399,6 +1399,7 @@
                     fullname = this.model.get('fullname') || msg_dict.fullname,
                     extra_classes = msg_dict.delayed && 'delayed' || '',
                     num_messages = this.model.messages.length,
+                    has_scrollbar = $content.get(0).scrollHeight > $content[0].clientHeight,
                     template, username, insertMessage;
 
                 // FIXME: A better approach here is probably to look at what is
@@ -1407,7 +1408,11 @@
                 // That way we could probably also better show day indicators.
                 // That code should perhaps go into onMessageAdded
                 if (num_messages && msg_time.isBefore(this.model.messages.at(0).get('time'))) {
-                    insertMessage = $content.prepend.bind($content);
+                    if (! has_scrollbar || $content.scrollTop() !== 0) {
+                        insertMessage = _.compose(this.scrollDown.bind(this), $content.prepend.bind($content)); 
+                    } else {
+                        insertMessage = $content.prepend.bind($content);
+                    }
                 } else {
                     insertMessage = _.compose(this.scrollDown.bind(this), $content.append.bind($content));
                 }
@@ -1495,7 +1500,7 @@
                     converse.incrementMsgCounter();
                 }
                 if (!this.model.get('minimized') && !this.$el.is(':visible')) {
-                    this.show();
+                    _.debounce(this.show, 100);
                 }
             },
 
@@ -1959,15 +1964,21 @@
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                     return this.focus();
                 }
-                this.$el.fadeIn(callback);
-                if (converse.connection.connected) {
-                    // Without a connection, we haven't yet initialized
-                    // localstorage
-                    this.model.save();
-                    this.initDragResize();
-                }
-                this.setChatState(ACTIVE);
-                return this.scrollDown().focus();
+                this.$el.fadeIn(function () {
+                    if (typeof callback == "function") {
+                        callback.apply(this, arguments);
+                    }
+                    if (converse.connection.connected) {
+                        // Without a connection, we haven't yet initialized
+                        // localstorage
+                        this.model.save();
+                        this.initDragResize();
+                    }
+                    this.setChatState(ACTIVE);
+                    this.scrollDown().focus();
+                    }.bind(this)
+                );
+                return this;
             },
 
             scrollDown: function () {

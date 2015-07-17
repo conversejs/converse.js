@@ -1141,7 +1141,7 @@
                 this.save({'otr_status': UNENCRYPTED});
             },
 
-            createMessage: function ($message, $delay) {
+            createMessage: function ($message, $delay, archive_id) {
                 $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
                     delayed = $delay.length > 0,
@@ -1179,15 +1179,16 @@
                     message: body || undefined,
                     msgid: msgid,
                     sender: sender,
-                    time: time
+                    time: time,
+                    archive_id: archive_id
                 });
             },
 
-            receiveMessage: function ($message, $delay) {
+            receiveMessage: function ($message, $delay, archive_id) {
                 var $body = $message.children('body');
                 var text = ($body.length > 0 ? $body.text() : undefined);
                 if ((!text) || (!converse.allow_otr)) {
-                    return this.createMessage($message, $delay);
+                    return this.createMessage($message, $delay, archive_id);
                 }
                 if (text.match(/^\?OTRv23?/)) {
                     this.initiateOTR(text);
@@ -1203,7 +1204,7 @@
                             }
                         } else {
                             // Normal unencrypted message.
-                            this.createMessage($message, $delay);
+                            this.createMessage($message, $delay, archive_id);
                         }
                     }
                 }
@@ -1236,7 +1237,6 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 // TODO check for changed fullname as well
-                this.model.on('change:archived_count', this.maybeFetchArchivedMessages.bind(this));
                 this.model.on('change:chat_state', this.sendChatState, this);
                 this.model.on('change:chat_status', this.onChatStatusChanged, this);
                 this.model.on('change:image', this.renderAvatar, this);
@@ -1277,12 +1277,16 @@
             },
 
             onScroll: function (ev) {
-                var rsm = this.model.get('rsm');
-                if (rsm && $(ev.target).scrollTop() === 0) {
-                    if (! (rsm instanceof Strophe.RSM)) {
-                        rsm = new Strophe.RSM(rsm);
+                var oldest;
+                if ($(ev.target).scrollTop() === 0) {
+                    oldest = this.model.messages.where({'time': this.model.messages.pluck('time').sort()[0]});
+                    if (oldest) {
+                        this.fetchArchivedMessages({
+                            'before': oldest[0].get('archive_id'),
+                            'with': this.model.get('jid'),
+                            'max': converse.archived_messages_batch_size
+                        });
                     }
-                    this.fetchArchivedMessages(rsm.previous());
                 }
             },
 
@@ -1320,6 +1324,7 @@
                             // Whenever the archived_count attribute changes,
                             // fetchArchivedMessages will be called.
                             this.model.save({'archived_count': Number(attrs.count)});
+                            this.maybeFetchArchivedMessages();
                         }.bind(this),
                         function (iq) { // On Error
                             converse.log("Error occured while trying to fetch the archived messages count", "error");
@@ -1338,22 +1343,19 @@
                 }
             },
 
-            fetchArchivedMessages: function (rsm) {
+            fetchArchivedMessages: function (options) {
                 /* Fetch archived chat messages from the XMPP server.
                  *
                  * Then, upon receiving them, call onMessage on the chat box,
                  * so that they are displayed inside it.
                  */
                 API.archive.query(
-                    rsm instanceof Strophe.RSM ? rsm : {
+                    options || {
                         'before': '', // Page backwards from the most recent message
                         'with': this.model.get('jid'),
                         'max': converse.archived_messages_batch_size
                     },
-                    function (messages, rsm) {
-                        this.model.save({'rsm': rsm});
-                        _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
-                    }.bind(this),
+                    _.partial(_.map, _, converse.chatboxes.onMessage.bind(converse.chatboxes)),
                     _.partial(converse.log, "Error while trying to fetch archived messages", "error")
                 );
             },
@@ -1396,14 +1398,19 @@
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     fullname = this.model.get('fullname') || msg_dict.fullname,
                     extra_classes = msg_dict.delayed && 'delayed' || '',
+                    num_messages = this.model.messages.length,
                     template, username, insertMessage;
 
-                if (this.model.messages.length && moment(msg_time).isBefore(this.model.messages.at(0).get('time'))) {
+                // FIXME: A better approach here is probably to look at what is
+                // already inside the content area, and from the determine if
+                // the message must be prepended or appended.
+                // That way we could probably also better show day indicators.
+                // That code should perhaps go into onMessageAdded
+                if (num_messages && msg_time.isBefore(this.model.messages.at(0).get('time'))) {
                     insertMessage = $content.prepend.bind($content);
                 } else {
                     insertMessage = _.compose(this.scrollDown.bind(this), $content.append.bind($content));
                 }
-
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
                     template = converse.templates.action;
@@ -1960,7 +1967,7 @@
                     this.initDragResize();
                 }
                 this.setChatState(ACTIVE);
-                return this.focus();
+                return this.scrollDown().focus();
             },
 
             scrollDown: function () {
@@ -3429,7 +3436,8 @@
                     chatbox, resource, roster_item,
                     from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
-                    to_resource = Strophe.getResourceFromJid(to_jid);
+                    to_resource = Strophe.getResourceFromJid(to_jid),
+                    archive_id = $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id');
 
                 if (to_resource && to_resource !== converse.resource) {
                     converse.log('Ignore incoming message intended for a different resource: '+to_jid, 'info');
@@ -3468,7 +3476,7 @@
                 if (!this.isOnlyChatStateNotification($message) && !is_me) {
                     converse.playNotification();
                 }
-                chatbox.receiveMessage($message, $delay);
+                chatbox.receiveMessage($message, $delay, archive_id);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;

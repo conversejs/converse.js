@@ -301,6 +301,7 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
+            archived_messages_batch_size: '20',
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             allow_registration: true,
@@ -1140,9 +1141,10 @@
                 this.save({'otr_status': UNENCRYPTED});
             },
 
-            createMessage: function ($message) {
+            createMessage: function ($message, $delay) {
+                $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
-                    delayed = $message.find('delay').length > 0,
+                    delayed = $delay.length > 0,
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
                     msgid = $message.attr('id'),
@@ -1160,7 +1162,7 @@
                 }
                 fullname = (_.isEmpty(fullname) ? from: fullname).split(' ')[0];
                 if (delayed) {
-                    stamp = $message.find('delay').attr('stamp');
+                    stamp = $delay.attr('stamp');
                     time = stamp;
                 } else {
                     time = moment().format();
@@ -1181,11 +1183,11 @@
                 });
             },
 
-            receiveMessage: function ($message) {
+            receiveMessage: function ($message, $delay) {
                 var $body = $message.children('body');
                 var text = ($body.length > 0 ? $body.text() : undefined);
                 if ((!text) || (!converse.allow_otr)) {
-                    return this.createMessage($message);
+                    return this.createMessage($message, $delay);
                 }
                 if (text.match(/^\?OTRv23?/)) {
                     this.initiateOTR(text);
@@ -1201,7 +1203,7 @@
                             }
                         } else {
                             // Normal unencrypted message.
-                            this.createMessage($message);
+                            this.createMessage($message, $delay);
                         }
                     }
                 }
@@ -1234,6 +1236,7 @@
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 // TODO check for changed fullname as well
+                this.model.on('change:archived_count', this.fetchArchivedMessages, this);
                 this.model.on('change:chat_state', this.sendChatState, this);
                 this.model.on('change:chat_status', this.onChatStatusChanged, this);
                 this.model.on('change:image', this.renderAvatar, this);
@@ -1249,8 +1252,8 @@
                 this.model.on('showReceivedOTRMessage', function (text) {
                     this.showMessage({'message': text, 'sender': 'them'});
                 }, this);
-                this.updateVCard().insertIntoPage();
-                this.hide().render().model.messages.fetch({add: true});
+                this.updateVCard().insertIntoPage().fetchMessages();
+
                 if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                     this.model.initiateOTR();
                 }
@@ -1270,6 +1273,71 @@
                 converse.emit('chatBoxOpened', this);
                 setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
+            },
+
+            fetchMessages: function () {
+                /* Responsible for fetching previously sent messages, first
+                 * from session storage, and then once that's done by calling
+                 * fetchArchivedMessages, which fetches from the XMPP server if
+                 * applicable.
+                 */
+                this.hide().render().model.messages.fetch({
+                    'add': true,
+                    'success': this.afterFetchingCachedMessages.bind(this)
+                });
+            },
+
+            afterFetchingCachedMessages: function () {
+                /* Handler method, called after messages cached in
+                 * sessionStorage have been fetched.
+                 *
+                 * The goal of this method is to determine how many archived
+                 * messages exist and whether we should fetch them or not.
+                 */
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    return;
+                }
+                if (typeof this.model.get('archived_count') == 'undefined') {
+                    // Get the amount of archived messages
+                    // Refer to: https://xmpp.org/extensions/xep-0059.html#count
+                    API.archive.query({
+                            'with': this.model.get('jid'),
+                            'max': 0
+                        },
+                        function (messages, attrs) { // On Success
+                            // Whenever the archived_count attribute changes,
+                            // fetchArchivedMessages will be called.
+                            this.model.save({'archived_count': Number(attrs.count)});
+                        }.bind(this),
+                        function (iq) { // On Error
+                            converse.log("Error occured while trying to fetch the archived messages count", "error");
+                            this.model.save({'archived_count': 0});
+                        }.bind(this)
+                    );
+                } else {
+                    this.fetchArchivedMessages();
+                }
+            },
+
+            fetchArchivedMessages: function () {
+                /* Fetch archived chat messages if we know that there are more
+                 * than zero of them.
+                 *
+                 * Then, upon receiving them, call onMessage on the chat box,
+                 * so that they are displayed inside it.
+                 */
+                if (this.model.messages.length < this.model.get('archived_count') &&
+                    this.model.messages.length < converse.archived_messages_batch_size) {
+
+                    // TODO: fetch only messages we don't yet have
+                    API.archive.query({
+                            'with': this.model.get('jid'),
+                            'max': converse.archived_messages_batch_size
+                        },
+                        _.partial(_.map, _, converse.chatboxes.onMessage.bind(converse.chatboxes)),
+                        _.partial(converse.log, "Error while trying to fetch archived messages", "error")
+                    );
+                }
             },
 
             insertIntoPage: function () {
@@ -1358,6 +1426,9 @@
             },
 
             onMessageAdded: function (message) {
+                // TODO: properly insert messages in the right place, indicate
+                // messages from different days (current code doesn't go far
+                // enough).
                 var time = message.get('time'),
                     times = this.model.messages.pluck('time'),
                     previous_message, idx, this_date, prev_date, text, match;
@@ -3334,7 +3405,7 @@
                 /* Handler method for all incoming single-user chat "message" stanzas.
                  */
                 var $message = $(message),
-                    contact_jid, $forwarded, $received, $sent, from_bare_jid, from_resource, is_me,
+                    contact_jid, $forwarded, $delay, from_bare_jid, from_resource, is_me,
                     msgid = $message.attr('id'),
                     chatbox, resource, roster_item,
                     from_jid = $message.attr('from'),
@@ -3350,17 +3421,10 @@
                     converse.log("Ignore incoming message sent from this client's JID: "+from_jid, 'info');
                     return true;
                 }
-                $forwarded = $message.children('forwarded');
-                $received = $message.children('received[xmlns="urn:xmpp:carbons:2"]');
-                $sent = $message.children('sent[xmlns="urn:xmpp:carbons:2"]');
-
+                $forwarded = $message.find('forwarded');
                 if ($forwarded.length) {
                     $message = $forwarded.children('message');
-                } else if ($received.length) {
-                    $message = $received.children('forwarded').children('message');
-                    from_jid = $message.attr('from');
-                } else if ($sent.length) {
-                    $message = $sent.children('forwarded').children('message');
+                    $delay = $forwarded.children('delay');
                     from_jid = $message.attr('from');
                     to_jid = $message.attr('to');
                 }
@@ -3376,46 +3440,47 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
+                // Get chat box, but only create a new one when the message has a body.
+                chatbox = this.getChatBox(contact_jid, $message.find('body').length > 0);
 
-                roster_item = converse.roster.get(contact_jid);
-                if (roster_item === undefined) {
-                    // The contact was likely removed
-                    converse.log('Could not get roster item for JID '+contact_jid, 'error');
-                    return true;
-                }
-
-                chatbox = this.get(contact_jid);
-                if (!chatbox) {
-                    /* If chat state notifications (because a roster contact
-                     * closed a chat box of yours they had open) are received
-                     * and we don't have a chat with the user, then we do not
-                     * want to open a chat box. We only open a new chat box when
-                     * the message has a body.
-                     */
-                    if ($message.find('body').length === 0) {
-                        return true;
-                    }
-                    var fullname = roster_item.get('fullname');
-                    fullname = _.isEmpty(fullname)? contact_jid: fullname;
-                    chatbox = this.create({
-                        'id': contact_jid,
-                        'jid': contact_jid,
-                        'fullname': fullname,
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url')
-                    });
-                }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
                 if (!this.isOnlyChatStateNotification($message) && !is_me) {
                     converse.playNotification();
                 }
-                chatbox.receiveMessage($message);
+                chatbox.receiveMessage($message, $delay);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;
+            },
+
+            getChatBox: function (jid, create) {
+                /* Returns a chat box or optionally return a newly
+                 * created one if one doesn't exist.
+                 *
+                 * Parameters:
+                 *    (String) jid - The JID of the user whose chat box we want
+                 *    (Boolean) create - Should a new chat box be created if none exists?
+                 */
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var chatbox = this.get(bare_jid);
+                if (!chatbox && create) {
+                    var roster_item = converse.roster.get(bare_jid);
+                    if (roster_item === undefined) {
+                        converse.log('Could not get roster item for JID '+bare_jid, 'error');
+                        return;
+                    }
+                    chatbox = this.create({
+                        'id': bare_jid,
+                        'jid': bare_jid,
+                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                        'image_type': roster_item.get('image_type'),
+                        'image': roster_item.get('image'),
+                        'url': roster_item.get('url')
+                    });
+                }
+                return chatbox;
             }
         });
 
@@ -6014,6 +6079,7 @@
     };
 
     var wrappedChatBox = function (chatbox) {
+        if (!chatbox) { return; }
         var view = converse.chatboxviews.get(chatbox.get('jid'));
         return {
             'close': view.close.bind(view),
@@ -6029,28 +6095,7 @@
         };
     };
 
-    var getWrappedChatBox = function (jid) {
-        var bare_jid = Strophe.getBareJidFromJid(jid);
-        var chatbox = converse.chatboxes.get(bare_jid);
-        if (!chatbox) {
-            var roster_item = converse.roster.get(bare_jid);
-            if (roster_item === undefined) {
-                converse.log('Could not get roster item for JID '+bare_jid, 'error');
-                return null;
-            }
-            chatbox = converse.chatboxes.create({
-                'id': bare_jid,
-                'jid': bare_jid,
-                'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                'image_type': roster_item.get('image_type'),
-                'image': roster_item.get('image'),
-                'url': roster_item.get('url')
-            });
-        }
-        return wrappedChatBox(chatbox);
-    };
-
-    return {
+    var API = {
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
@@ -6137,12 +6182,12 @@
                     converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
-                    chatbox = getWrappedChatBox(jids);
+                    chatbox = wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                     chatbox.open();
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    var chatbox = getWrappedChatBox(jid);
+                    chatbox = wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
                     chatbox.open();
                     return chatbox;
                 });
@@ -6152,9 +6197,9 @@
                     converse.log("chats.get: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
-                    return getWrappedChatBox(jids);
+                    return wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                 }
-                return _.map(jids, getWrappedChatBox);
+                return _.map(jids, _.partial(_.compose(wrappedChatBox, converse.chatboxes.getChatBox.bind(converse.chatboxes)), _, true));
             }
         },
         'archive': {
@@ -6238,7 +6283,7 @@
                             'box_id' : b64_sha1(jid)
                         });
                     }
-                    return wrappedChatBox(chatroom);
+                    return wrappedChatBox(converse.chatboxes.getChatBox(chatroom, true));
                 };
                 if (typeof jids === "undefined") {
                     throw new TypeError('rooms.open: You need to provide at least one JID');
@@ -6251,9 +6296,10 @@
                 if (typeof jids === "undefined") {
                     throw new TypeError("rooms.get: You need to provide at least one JID");
                 } else if (typeof jids === "string") {
-                    return getWrappedChatBox(jids);
+                    return wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                 }
-                return _.map(jids, getWrappedChatBox);
+                return _.map(jids, _.partial(wrappedChatBox, _.bind(converse.chatboxes.getChatBox, converse.chatboxes, _, true)));
+
             }
         },
         'tokens': {
@@ -6329,4 +6375,5 @@
             'moment': moment
         }
     };
+    return API;
 }));

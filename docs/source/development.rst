@@ -319,11 +319,11 @@ archived messages.
 To page backwards through the archive, you need to know the UID of the message
 which you'd like to page backwards from and then pass that as value for the
 ``before`` parameter. If you simply want to page backwards from the most recent
-message, pass in the ``before`` parameter with a value of ``null``.
+message, pass in the ``before`` parameter with an empty string value ``''``.
 
 .. code-block:: javascript
 
-    converse.archive.query({'before': null, 'max':5}, function (message, rsm) {
+    converse.archive.query({'before': '', 'max':5}, function (message, rsm) {
         // Do something with the messages, like showing them in your webpage.
         // ...
         // You can now use the returned "rsm" object, to fetch the previous batch of messages:

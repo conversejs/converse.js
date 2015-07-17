@@ -564,6 +564,7 @@
                         $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
                         if ($fin.length) {
                             rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
+                            if (typeof options.before !== "undefined") { messages.reverse(); }
                             _.extend(rsm, _.pick(options, ['max', 'after', 'before']));
                             _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
                             callback(messages, rsm);
@@ -1331,6 +1332,7 @@
 
                     // TODO: fetch only messages we don't yet have
                     API.archive.query({
+                            'before': '', // Page backwards from the most recent message
                             'with': this.model.get('jid'),
                             'max': converse.archived_messages_batch_size
                         },

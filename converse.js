@@ -5188,6 +5188,7 @@
 
             onFeatureAdded: function (feature) {
                 var prefs = feature.get('preferences') || {};
+                converse.emit('serviceDiscovered', feature);
                 if (feature.get('var') == Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
                     // Ask the server for archiving preferences
                     converse.connection.sendIQ(

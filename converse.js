@@ -1256,10 +1256,6 @@
                 }
             },
 
-            insertIntoPage: function () {
-                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-            },
-
             render: function () {
                 this.$el.attr('id', this.model.get('box_id'))
                     .html(converse.templates.chatbox(
@@ -1274,6 +1270,11 @@
                 converse.emit('chatBoxOpened', this);
                 setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
+            },
+
+            insertIntoPage: function () {
+                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                return this;
             },
 
             initDragResize: function () {
@@ -2927,7 +2928,7 @@
                 // Send an IQ stanza with the room configuration.
                 var iq = $iq({to: this.model.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
-                    .c("x", {xmlns: "jabber:x:data", type: "submit"});
+                    .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
                 _.each(config, function (node) { iq.cnode(node).up(); });
                 return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
             },
@@ -6185,7 +6186,7 @@
                 var queryid = converse.connection.getUniqueId();
                 var stanza = $iq({'type':'set'}).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (typeof options != "undefined") {
-                    stanza.c('x', {'xmlns':'jabber:x:data'})
+                    stanza.c('x', {'xmlns':Strophe.NS.XFORM})
                             .c('field', {'var':'FORM_TYPE'})
                             .c('value').t(Strophe.NS.MAM).up().up();
 

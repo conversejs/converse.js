@@ -5103,7 +5103,8 @@
             },
 
             onFeatureAdded: function (feature) {
-                if (feature.get('var') == Strophe.NS.MAM) {
+                var prefs = feature.get('preferences') || {};
+                if (feature.get('var') == Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
                     // Ask the server for archiving preferences
                     converse.connection.sendIQ(
                         $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),

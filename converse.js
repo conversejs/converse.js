@@ -1281,6 +1281,7 @@
                 if ($(ev.target).scrollTop() === 0) {
                     oldest = this.model.messages.where({'time': this.model.messages.pluck('time').sort()[0]});
                     if (oldest) {
+                        this.$el.find('.chat-content').prepend('<span class="spinner"/>');
                         this.fetchArchivedMessages({
                             'before': oldest[0].get('archive_id'),
                             'with': this.model.get('jid'),
@@ -1343,7 +1344,12 @@
                  * so that they are displayed inside it.
                  */
                 API.archive.query(options,
-                    _.partial(_.map, _, converse.chatboxes.onMessage.bind(converse.chatboxes)),
+                    function (messages) {
+                        this.clearSpinner();
+                        if (messages.length) {
+                            _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                        }
+                    }.bind(this),
                     _.partial(converse.log, "Error while trying to fetch archived messages", "error")
                 );
             },
@@ -1377,6 +1383,13 @@
                     this.$el.find('.chat-content').empty();
                 }
                 return this;
+            },
+
+            clearSpinner: function () {
+                var $content = this.$el.find('.chat-content');
+                if ($content.children(':first').is('span.spinner')) {
+                    $content.children(':first').first().remove();
+                }
             },
 
             showMessage: function (msg_dict) {

@@ -1396,13 +1396,15 @@
                 // That way we could probably also better show day indicators.
                 // That code should perhaps go into onMessageAdded
                 if (num_messages && msg_time.isBefore(this.model.messages.at(0).get('time'))) {
-                    if (! has_scrollbar || $content.scrollTop() !== 0) {
-                        insertMessage = _.compose(this.scrollDown.bind(this), $content.prepend.bind($content)); 
-                    } else {
-                        insertMessage = $content.prepend.bind($content);
-                    }
+                    insertMessage = _.compose(
+                        this.scrollDownMessageHeight.bind(this),
+                        function ($el) {
+                            $content.prepend($el);
+                            return $el;
+                        }
+                    );
                 } else {
-                    insertMessage = _.compose(this.scrollDown.bind(this), $content.append.bind($content));
+                    insertMessage = _.compose(_.debounce(this.scrollDown.bind(this), 50), $content.append.bind($content));
                 }
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
@@ -1966,6 +1968,14 @@
                     this.scrollDown().focus();
                     }.bind(this)
                 );
+                return this;
+            },
+
+            scrollDownMessageHeight: function ($message) {
+                var $content = this.$('.chat-content');
+                if ($content.is(':visible')) {
+                    $content.scrollTop($content.scrollTop() + $message[0].scrollHeight);
+                }
                 return this;
             },
 

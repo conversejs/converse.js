@@ -968,7 +968,8 @@
 
         this.Message = Backbone.Model;
         this.Messages = Backbone.Collection.extend({
-            model: converse.Message
+            model: converse.Message,
+            comparator: 'time'
         });
 
         this.ChatBox = Backbone.Model.extend({
@@ -1233,7 +1234,7 @@
             },
 
             initialize: function () {
-                this.model.messages.on('add', _.compose(this.onMessageAdded, this.showNewDay), this);
+                this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 // TODO check for changed fullname as well
@@ -1278,17 +1279,13 @@
             },
 
             onScroll: function (ev) {
-                var oldest;
-                if ($(ev.target).scrollTop() === 0) {
-                    oldest = this.model.messages.where({'time': this.model.messages.pluck('time').sort()[0]});
-                    if (oldest) {
-                        this.$content.prepend('<span class="spinner"/>');
-                        this.fetchArchivedMessages({
-                            'before': oldest[0].get('archive_id'),
-                            'with': this.model.get('jid'),
-                            'max': converse.archived_messages_batch_size
-                        });
-                    }
+                if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
+                    this.$content.prepend('<span class="spinner"/>');
+                    this.fetchArchivedMessages({
+                        'before': this.model.messages.at(0).get('archive_id'),
+                        'with': this.model.get('jid'),
+                        'max': converse.archived_messages_batch_size
+                    });
                 }
             },
 
@@ -1391,59 +1388,123 @@
                 }
             },
 
-            showMessage: function (msg_dict) {
-                var msg_time = moment(msg_dict.time) || moment,
-                    text = msg_dict.message,
-                    match = text.match(/^\/(.*?)(?: (.*))?$/),
-                    fullname = this.model.get('fullname') || msg_dict.fullname,
-                    extra_classes = msg_dict.delayed && 'delayed' || '',
-                    num_messages = this.model.messages.length,
-                    has_scrollbar = this.$content.get(0).scrollHeight > this.$content[0].clientHeight,
-                    template, username, insertMessage;
+            prependDayIndicator: function (date) {
+                /* Prepends an indicator into the chat area, showing the day as
+                 * given by the passed in date.
+                 *
+                 * Parameters:
+                 *  (String) date - An ISO8601 date string.
+                 */
+                var day_date = moment(date).startOf('day');
+                this.$content.prepend(converse.templates.new_day({
+                    isodate: day_date.format(),
+                    datestring: day_date.format("dddd MMM Do YYYY")
+                }));
+            },
 
-                // TODO: A better approach here is probably to look at what is
-                // already inside the content area, and from that determine if
-                // the message must be prepended or appended. Similar to showNewDay
-                if (num_messages && msg_time.isBefore(this.model.messages.at(0).get('time'))) {
-                    insertMessage = _.compose(
-                        this.scrollDownMessageHeight.bind(this),
-                        function ($el) {
-                            this.$content.prepend($el);
-                            return $el;
-                        }.bind(this)
-                    );
-                } else {
-                    insertMessage = _.compose(_.debounce(this.scrollDown.bind(this), 50), this.$content.append.bind(this.$content));
+            showMessage: function (attrs) {
+                /* Inserts a chat message into the content area of the chat box.
+                 * Will also insert a new day indicator if the message is on a
+                 * different day.
+                 *
+                 * The message to show may either be newer than the newest
+                 * message, or older than the oldest message.
+                 *
+                 * Parameters:
+                 *  (Object) attrs: An object containing the message attributes.
+                 */
+                var current_msg_date = moment(attrs.time) || moment,
+                    $first_msg = this.$content.children('.chat-message:first'),
+                    first_msg_date = $first_msg.data('isodate'),
+                    last_msg_date = this.$content.children(':last').data('isodate'),
+                    day_date;
+
+                if (typeof first_msg_date !== "undefined" &&
+                        (current_msg_date.isBefore(first_msg_date) || 
+                            (current_msg_date.isSame(first_msg_date) && !current_msg_date.isSame(last_msg_date)))) {
+
+                    if ($first_msg.prev().length === 0) {
+                        // There's no day indicator before the first message, so we prepend one.
+                        this.prependDayIndicator(first_msg_date);
+                    }
+                    if (current_msg_date.isBefore(first_msg_date, 'day')) {
+                        _.compose(
+                                this.scrollDownMessageHeight.bind(this),
+                                function ($el) {
+                                    this.$content.prepend($el);
+                                    return $el;
+                                }.bind(this)
+                            )(this.renderMessage(attrs));
+                        // This message is on a different day, so we add a day indicator.
+                        this.prependDayIndicator(current_msg_date);
+                    } else {
+                        // The message is before the first, but on the same day.
+                        // We need to prepend the message immediately before the
+                        // first message (so that it'll still be after the day indicator).
+                        _.compose(
+                                this.scrollDownMessageHeight.bind(this),
+                                function ($el) {
+                                    $el.insertBefore($first_msg);
+                                    return $el;
+                                }
+                            )(this.renderMessage(attrs));
+                    }
+                    return;
+                } else if (current_msg_date.isAfter(last_msg_date, 'day')) {
+                    // Append a new day indicator
+                    day_date = moment(current_msg_date).startOf('day');
+                    this.$content.append(converse.templates.new_day({
+                        isodate: current_msg_date.format(),
+                        datestring: current_msg_date.format("dddd MMM Do YYYY")
+                    }));
                 }
+                _.compose(
+                    _.debounce(this.scrollDown.bind(this), 50),
+                    this.$content.append.bind(this.$content)
+                )(this.renderMessage(attrs));
+            },
+
+            renderMessage: function (attrs) {
+                /* Renders a chat message based on the passed in attributes.
+                 *
+                 * Parameters:
+                 *  (Object) attrs: An object containing the message attributes.
+                 *
+                 *  Returns:
+                 *      The DOM element representing the message.
+                 */
+                var msg_time = moment(attrs.time) || moment,
+                    text = attrs.message,
+                    match = text.match(/^\/(.*?)(?: (.*))?$/),
+                    fullname = this.model.get('fullname') || attrs.fullname,
+                    extra_classes = attrs.delayed && 'delayed' || '',
+                    template, username;
+
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
                     template = converse.templates.action;
                     username = fullname;
                 } else  {
                     template = converse.templates.message;
-                    username = msg_dict.sender === 'me' && __('me') || fullname;
+                    username = attrs.sender === 'me' && __('me') || fullname;
                 }
                 this.$content.find('div.chat-event').remove();
 
-                if (this.is_chatroom && msg_dict.sender == 'them' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(text)) {
+                if (this.is_chatroom && attrs.sender == 'them' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(text)) {
                     // Add special class to mark groupchat messages in which we
                     // are mentioned.
                     extra_classes += ' mentioned';
                 }
-                var message = template({
-                    'sender': msg_dict.sender,
-                    'time': msg_time.format('hh:mm'),
-                    'isodate': msg_time.format(),
-                    'username': username,
-                    'message': '',
-                    'extra_classes': extra_classes
-                });
-                insertMessage(
-                    $(message).children('.chat-message-content').first().text(text)
+                return $(template({
+                        'sender': attrs.sender,
+                        'time': msg_time.format('hh:mm'),
+                        'isodate': msg_time.format(),
+                        'username': username,
+                        'message': '',
+                        'extra_classes': extra_classes
+                    })).children('.chat-message-content').first().text(text)
                         .addHyperlinks()
-                        .addEmoticons(converse.visible_toolbar_buttons.emoticons)
-                    .parent()
-                );
+                        .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
             },
 
             showHelpMessages: function (msgs, type, spinner) {
@@ -1459,41 +1520,12 @@
                 return this.scrollDown();
             },
 
-            showNewDay: function (message) {
-                /* Messages may be received chronologically, from old to new or
-                 * new to old.
-                 *
-                 * If this message is older than the oldest, or newer then the
-                 * newest, we show a new day indication in the chat content
-                 * area.
+            onMessageAdded: function (message) {
+                /* Handler that gets called when a new message object is created.
                  *
                  * Parameters:
-                 *    (XMLElement) message - The message stanza received from the XMPP server.
+                 *    (Object) message - The message Backbone object that was added.
                  */
-                var first_message_date = this.$content.children(':first').data('isodate');
-                if (typeof(first_message_date) == "undefined") {
-                    return message;
-                }
-                var last_message_date = this.$content.children(':last').data('isodate');
-                var this_date = moment(message.get('time'));
-                var day_date;
-                if (this_date.isBefore(first_message_date, 'day')) {
-                    day_date = moment(first_message_date).startOf('day');
-                    this.$content.prepend(converse.templates.new_day({
-                        isodate: day_date.format(),
-                        datestring: day_date.format("dddd MMM Do YYYY")
-                    }));
-                } else if (this_date.isAfter(last_message_date, 'day')) {
-                    day_date = moment(this_date).startOf('day');
-                    this.$content.append(converse.templates.new_day({
-                        isodate: this_date.format(),
-                        datestring: this_date.format("dddd MMM Do YYYY")
-                    }));
-                }
-                return message;
-            },
-
-            onMessageAdded: function (message) {
                 if (!message.get('message')) {
                     if (message.get('chat_state') === COMPOSING) {
                         this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
@@ -1615,7 +1647,7 @@
                  *
                  *  Parameters:
                  *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-                 *    (no_save) no_save - Just do the cleanup or setup but don't actually save the state.
+                 *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
                  */
                 if (typeof this.chat_state_timeout !== 'undefined') {
                     clearTimeout(this.chat_state_timeout);
@@ -2705,7 +2737,7 @@
             is_chatroom: true,
 
             initialize: function () {
-                this.model.messages.on('add', _.compose(this.onMessageAdded, this.showNewDay), this);
+                this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('change:minimized', function (item) {
                     if (item.get('minimized')) {
                         this.hide();

@@ -304,7 +304,8 @@ as two utility methods ``next``, and ``previous``.
 
 When you call one of these utility methods on the returned RSM object, and then
 pass the result into a new query, you'll receive the next or previous batch of
-archived messages.
+archived messages. Please note, when calling these methods, pass in an integer
+to limit your results.
 
 .. code-block:: javascript
 
@@ -312,7 +313,7 @@ archived messages.
         // Do something with the messages, like showing them in your webpage.
         // ...
         // You can now use the returned "rsm" object, to fetch the next batch of messages:
-        converse.archive.query(rsm.next(), callback, errback))
+        converse.archive.query(rsm.next(10), callback, errback))
 
     }
     converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
@@ -330,10 +331,8 @@ message, pass in the ``before`` parameter with an empty string value ``''``.
         // Do something with the messages, like showing them in your webpage.
         // ...
         // You can now use the returned "rsm" object, to fetch the previous batch of messages:
-        rsm.previous(); // Call previous method, to update the object
-                        // parameters so that the previous batch of messages will be returned.
-        rsm.count = 10; // Increase the page size (currently it's set to 1,
-                        // because that was what we specified in our last query.
+        rsm.previous(5); // Call previous method, to update the object's parameters,
+                         // passing in a limit value of 5.
         // Now we query again, to get the previous batch.
         converse.archive.query(rsm, callback, errback);
     }

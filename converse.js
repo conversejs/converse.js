@@ -1387,7 +1387,7 @@
 
             clearSpinner: function () {
                 if (this.$content.children(':first').is('span.spinner')) {
-                    this.$content.children(':first').first().remove();
+                    this.$content.children(':first').remove();
                 }
             },
 
@@ -1401,11 +1401,9 @@
                     has_scrollbar = this.$content.get(0).scrollHeight > this.$content[0].clientHeight,
                     template, username, insertMessage;
 
-                // FIXME: A better approach here is probably to look at what is
-                // already inside the content area, and from the determine if
-                // the message must be prepended or appended.
-                // That way we could probably also better show day indicators.
-                // That code should perhaps go into onMessageAdded
+                // TODO: A better approach here is probably to look at what is
+                // already inside the content area, and from that determine if
+                // the message must be prepended or appended. Similar to showNewDay
                 if (num_messages && msg_time.isBefore(this.model.messages.at(0).get('time'))) {
                     insertMessage = _.compose(
                         this.scrollDownMessageHeight.bind(this),
@@ -1435,7 +1433,7 @@
                 var message = template({
                     'sender': msg_dict.sender,
                     'time': msg_time.format('hh:mm'),
-                    'isodate': msg_time,
+                    'isodate': msg_time.format(),
                     'username': username,
                     'message': '',
                     'extra_classes': extra_classes
@@ -1462,21 +1460,35 @@
             },
 
             showNewDay: function (message) {
-                /* If this message is on a different day than the one received
-                 * prior, then indicate it on the chatbox.
+                /* Messages may be received chronologically, from old to new or
+                 * new to old.
+                 *
+                 * If this message is older than the oldest, or newer then the
+                 * newest, we show a new day indication in the chat content
+                 * area.
+                 *
+                 * Parameters:
+                 *    (XMLElement) message - The message stanza received from the XMPP server.
                  */
-                var time = message.get('time'),
-                    idx = _.indexOf(this.model.messages.pluck('time'), time)-1,
-                    this_date, prev_date;
-                if (idx >= 0) {
-                    prev_date = moment(this.model.messages.at(idx).get('time'));
-                    if (prev_date.isBefore(time, 'day')) {
-                        this_date = moment(time);
-                        this.$content.append(converse.templates.new_day({
-                            isodate: this_date.format("YYYY-MM-DD"),
-                            datestring: this_date.format("dddd MMM Do YYYY")
-                        }));
-                    }
+                var first_message_date = this.$content.children(':first').data('isodate');
+                if (typeof(first_message_date) == "undefined") {
+                    return message;
+                }
+                var last_message_date = this.$content.children(':last').data('isodate');
+                var this_date = moment(message.get('time'));
+                var day_date;
+                if (this_date.isBefore(first_message_date, 'day')) {
+                    day_date = moment(first_message_date).startOf('day');
+                    this.$content.prepend(converse.templates.new_day({
+                        isodate: day_date.format(),
+                        datestring: day_date.format("dddd MMM Do YYYY")
+                    }));
+                } else if (this_date.isAfter(last_message_date, 'day')) {
+                    day_date = moment(this_date).startOf('day');
+                    this.$content.append(converse.templates.new_day({
+                        isodate: this_date.format(),
+                        datestring: this_date.format("dddd MMM Do YYYY")
+                    }));
                 }
                 return message;
             },
@@ -1513,8 +1525,7 @@
                  *  Parameters:
                  *    (string) text - The chat message text.
                  */
-                // TODO: We might want to send to specfic resources. Especially
-                // in the OTR case.
+                // TODO: We might want to send to specfic resources. Especially in the OTR case.
                 var timestamp = (new Date()).getTime();
                 var bare_jid = this.model.get('jid');
                 var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
@@ -4258,6 +4269,7 @@
             onRosterPush: function (iq) {
                 /* Handle roster updates from the XMPP server.
                  * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                 *
                  * Parameters:
                  *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
                  */

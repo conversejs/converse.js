@@ -1435,6 +1435,7 @@
                 var message = template({
                     'sender': msg_dict.sender,
                     'time': msg_time.format('hh:mm'),
+                    'isodate': msg_time,
                     'username': username,
                     'message': '',
                     'extra_classes': extra_classes

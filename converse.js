@@ -3527,11 +3527,13 @@
                 }
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, $message.find('body').length > 0);
-
+                if (!chatbox) {
+                    return true;
+                }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                if (!this.isOnlyChatStateNotification($message) && !is_me) {
+                if (!this.isOnlyChatStateNotification($message) && !is_me && !$forwarded.length) {
                     converse.playNotification();
                 }
                 chatbox.receiveMessage($message, $delay, archive_id);

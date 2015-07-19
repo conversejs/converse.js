@@ -1233,7 +1233,7 @@
             },
 
             initialize: function () {
-                this.model.messages.on('add', this.onMessageAdded, this);
+                this.model.messages.on('add', _.compose(this.onMessageAdded, this.showNewDay), this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 // TODO check for changed fullname as well
@@ -1461,17 +1461,15 @@
                 return this.scrollDown();
             },
 
-            onMessageAdded: function (message) {
+            showNewDay: function (message) {
+                /* If this message is on a different day than the one received
+                 * prior, then indicate it on the chatbox.
+                 */
                 var time = message.get('time'),
-                    times = this.model.messages.pluck('time'),
-                    previous_message, idx, this_date, prev_date, text, match;
-
-                // If this message is on a different day than the one received
-                // prior, then indicate it on the chatbox.
-                idx = _.indexOf(times, time)-1;
+                    idx = _.indexOf(this.model.messages.pluck('time'), time)-1,
+                    this_date, prev_date;
                 if (idx >= 0) {
-                    previous_message = this.model.messages.at(idx);
-                    prev_date = moment(previous_message.get('time'));
+                    prev_date = moment(this.model.messages.at(idx).get('time'));
                     if (prev_date.isBefore(time, 'day')) {
                         this_date = moment(time);
                         this.$content.append(converse.templates.new_day({
@@ -1480,6 +1478,10 @@
                         }));
                     }
                 }
+                return message;
+            },
+
+            onMessageAdded: function (message) {
                 if (!message.get('message')) {
                     if (message.get('chat_state') === COMPOSING) {
                         this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
@@ -2692,7 +2694,7 @@
             is_chatroom: true,
 
             initialize: function () {
-                this.model.messages.on('add', this.onMessageAdded, this);
+                this.model.messages.on('add', _.compose(this.onMessageAdded, this.showNewDay), this);
                 this.model.on('change:minimized', function (item) {
                     if (item.get('minimized')) {
                         this.hide();

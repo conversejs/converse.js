@@ -1269,8 +1269,9 @@
                             )
                         )
                     );
+                this.$content = this.$el.find('.chat-content');
                 this.renderToolbar().renderAvatar();
-                this.$el.find('.chat-content').on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                 converse.emit('chatBoxOpened', this);
                 setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
@@ -1281,7 +1282,7 @@
                 if ($(ev.target).scrollTop() === 0) {
                     oldest = this.model.messages.where({'time': this.model.messages.pluck('time').sort()[0]});
                     if (oldest) {
-                        this.$el.find('.chat-content').prepend('<span class="spinner"/>');
+                        this.$content.prepend('<span class="spinner"/>');
                         this.fetchArchivedMessages({
                             'before': oldest[0].get('archive_id'),
                             'with': this.model.get('jid'),
@@ -1368,11 +1369,10 @@
             },
 
             showStatusNotification: function (message, keep_old) {
-                var $chat_content = this.$el.find('.chat-content');
                 if (!keep_old) {
-                    $chat_content.find('div.chat-event').remove();
+                    this.$content.find('div.chat-event').remove();
                 }
-                $chat_content.append($('<div class="chat-event"></div>').text(message));
+                this.$content.append($('<div class="chat-event"></div>').text(message));
                 this.scrollDown();
             },
 
@@ -1380,27 +1380,25 @@
                 if (typeof ev !== "undefined") { ev.stopPropagation(); }
                 var result = confirm(__("Are you sure you want to clear the messages from this room?"));
                 if (result === true) {
-                    this.$el.find('.chat-content').empty();
+                    this.$content.empty();
                 }
                 return this;
             },
 
             clearSpinner: function () {
-                var $content = this.$el.find('.chat-content');
-                if ($content.children(':first').is('span.spinner')) {
-                    $content.children(':first').first().remove();
+                if (this.$content.children(':first').is('span.spinner')) {
+                    this.$content.children(':first').first().remove();
                 }
             },
 
             showMessage: function (msg_dict) {
-                var $content = this.$el.find('.chat-content'),
-                    msg_time = moment(msg_dict.time) || moment,
+                var msg_time = moment(msg_dict.time) || moment,
                     text = msg_dict.message,
                     match = text.match(/^\/(.*?)(?: (.*))?$/),
                     fullname = this.model.get('fullname') || msg_dict.fullname,
                     extra_classes = msg_dict.delayed && 'delayed' || '',
                     num_messages = this.model.messages.length,
-                    has_scrollbar = $content.get(0).scrollHeight > $content[0].clientHeight,
+                    has_scrollbar = this.$content.get(0).scrollHeight > this.$content[0].clientHeight,
                     template, username, insertMessage;
 
                 // FIXME: A better approach here is probably to look at what is
@@ -1412,12 +1410,12 @@
                     insertMessage = _.compose(
                         this.scrollDownMessageHeight.bind(this),
                         function ($el) {
-                            $content.prepend($el);
+                            this.$content.prepend($el);
                             return $el;
-                        }
+                        }.bind(this)
                     );
                 } else {
-                    insertMessage = _.compose(_.debounce(this.scrollDown.bind(this), 50), $content.append.bind($content));
+                    insertMessage = _.compose(_.debounce(this.scrollDown.bind(this), 50), this.$content.append.bind(this.$content));
                 }
                 if ((match) && (match[1] === 'me')) {
                     text = text.replace(/^\/me/, '');
@@ -1427,7 +1425,7 @@
                     template = converse.templates.message;
                     username = msg_dict.sender === 'me' && __('me') || fullname;
                 }
-                $content.find('div.chat-event').remove();
+                this.$content.find('div.chat-event').remove();
 
                 if (this.is_chatroom && msg_dict.sender == 'them' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(text)) {
                     // Add special class to mark groupchat messages in which we
@@ -1450,15 +1448,14 @@
             },
 
             showHelpMessages: function (msgs, type, spinner) {
-                var $chat_content = this.$el.find('.chat-content'), i,
-                    msgs_length = msgs.length;
+                var i, msgs_length = msgs.length;
                 for (i=0; i<msgs_length; i++) {
-                    $chat_content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
+                    this.$content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
                 }
                 if (spinner === true) {
-                    $chat_content.append('<span class="spinner"/>');
+                    this.$content.append('<span class="spinner"/>');
                 } else if (spinner === false) {
-                    $chat_content.find('span.spinner').remove();
+                    this.$content.find('span.spinner').remove();
                 }
                 return this.scrollDown();
             },
@@ -1476,7 +1473,7 @@
                     prev_date = moment(previous_message.get('time'));
                     if (prev_date.isBefore(time, 'day')) {
                         this_date = moment(time);
-                        this.$el.find('.chat-content').append(converse.templates.new_day({
+                        this.$content.append(converse.templates.new_day({
                             isodate: this_date.format("YYYY-MM-DD"),
                             datestring: this_date.format("dddd MMM Do YYYY")
                         }));
@@ -1490,7 +1487,7 @@
                         this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         return;
                     } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
-                        this.$el.find('.chat-content div.chat-event').remove();
+                        this.$content.find('div.chat-event').remove();
                         return;
                     } else if (message.get('chat_state') === GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
@@ -1673,7 +1670,7 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                 if (result === true) {
-                    this.$el.find('.chat-content').empty();
+                    this.$content.empty();
                     this.model.messages.reset();
                     this.model.messages.browserStorage._clear();
                 }
@@ -1985,17 +1982,15 @@
             },
 
             scrollDownMessageHeight: function ($message) {
-                var $content = this.$('.chat-content');
-                if ($content.is(':visible')) {
-                    $content.scrollTop($content.scrollTop() + $message[0].scrollHeight);
+                if (this.$content.is(':visible')) {
+                    this.$content.scrollTop(this.$content.scrollTop() + $message[0].scrollHeight);
                 }
                 return this;
             },
 
             scrollDown: function () {
-                var $content = this.$('.chat-content');
-                if ($content.is(':visible')) {
-                    $content.scrollTop($content[0].scrollHeight);
+                if (this.$content.is(':visible')) {
+                    this.$content.scrollTop(this.$content[0].scrollHeight);
                 }
                 return this;
             }
@@ -2749,6 +2744,7 @@
                             }))
                         .append(this.occupantsview.render().$el);
                     this.renderToolbar();
+                    this.$content = this.$el.find('.chat-content');
                 }
                 // XXX: This is a bit of a hack, to make sure that the
                 // sidebar's state is remembered.
@@ -2767,16 +2763,12 @@
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
                     this.$('form.sendXMPPMessage, .chat-area').animate({width: '100%'});
-                    this.$('div.participants').animate({width: 0}, function () {
-                        this.scrollDown();
-                    }.bind(this));
+                    this.$('div.participants').animate({width: 0}, this.scrollDown.bind(this));
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
                     this.$('.chat-area, form.sendXMPPMessage').css({width: ''});
-                    this.$('div.participants').show().animate({width: 'auto'}, function () {
-                        this.scrollDown();
-                    }.bind(this));
+                    this.$('div.participants').show().animate({width: 'auto'}, this.scrollDown.bind(this));
                 }
             },
 
@@ -3213,8 +3205,7 @@
                  * Allow user to configure chat room if they are the owner.
                  * See: http://xmpp.org/registrar/mucstatus.html
                  */
-                var $chat_content,
-                    disconnect_msgs = [],
+                var disconnect_msgs = [],
                     msgs = [],
                     reasons = [];
                 $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each(function (idx, x) {
@@ -3258,9 +3249,8 @@
                     this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                     return;
                 }
-                $chat_content = this.$el.find('.chat-content');
                 for (i=0; i<msgs.length; i++) {
-                    $chat_content.append(converse.templates.info({message: msgs[i]}));
+                    this.$content.append(converse.templates.info({message: msgs[i]}));
                 }
                 for (i=0; i<reasons.length; i++) {
                     this.showStatusNotification(__('The reason given is: "'+reasons[i]+'"'), true);
@@ -3337,7 +3327,7 @@
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                     // # For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
                     // # Example: Topic set by JC Brand to: Hello World!
-                    this.$el.find('.chat-content').append(
+                    this.$content.append(
                         converse.templates.info({
                             'message': __('Topic set by %1$s to: %2$s', sender, subject)
                         }));

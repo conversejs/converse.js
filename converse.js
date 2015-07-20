@@ -3466,8 +3466,7 @@
                 /* Handler method for all incoming single-user chat "message" stanzas.
                  */
                 var $message = $(message),
-                    contact_jid, $forwarded, $delay, from_bare_jid, from_resource, is_me,
-                    msgid = $message.attr('id'),
+                    contact_jid, $forwarded, $delay, from_bare_jid, from_resource, is_me, msgid,
                     chatbox, resource, roster_item,
                     from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
@@ -3493,6 +3492,7 @@
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);
                 is_me = from_bare_jid == converse.bare_jid;
+                msgid = $message.attr('id');
 
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...

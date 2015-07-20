@@ -1547,7 +1547,7 @@
                     converse.incrementMsgCounter();
                 }
                 if (!this.model.get('minimized') && !this.$el.is(':visible')) {
-                    _.debounce(this.show, 100);
+                    _.debounce(this.show.bind(this), 100)();
                 }
             },
 
@@ -2022,8 +2022,7 @@
                     }
                     this.setChatState(ACTIVE);
                     this.scrollDown().focus();
-                    }.bind(this)
-                );
+                }.bind(this));
                 return this;
             },
 

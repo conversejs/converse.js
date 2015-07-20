@@ -1297,42 +1297,20 @@
                  */
                 this.model.messages.fetch({
                     'add': true,
-                    'success': this.afterFetchingCachedMessages.bind(this)
-                });
-                return this;
-            },
-
-            afterFetchingCachedMessages: function () {
-                /* Handler method, called after messages cached in
-                 * sessionStorage have been fetched.
-                 *
-                 * The goal of this method is to determine how many archived
-                 * messages exist and whether we should fetch them or not.
-                 */
-                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    return;
-                }
-                if (this.model.messages.length < converse.archived_messages_batch_size) {
-                    // Get the amount of archived messages
-                    // Refer to: https://xmpp.org/extensions/xep-0059.html#count
-                    API.archive.query({
-                            'with': this.model.get('jid'),
-                            'max': 0
-                        },
-                        function (messages, attrs) { // On Success
-                            if (this.model.messages.length < Number(attrs.count)) {
+                    'success': function () {
+                            if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                                return;
+                            }
+                            if (this.model.messages.length < converse.archived_messages_batch_size) {
                                 this.fetchArchivedMessages({
                                     'before': '', // Page backwards from the most recent message
                                     'with': this.model.get('jid'),
                                     'max': converse.archived_messages_batch_size
                                 });
                             }
-                        }.bind(this),
-                        function (iq) { // On Error
-                            converse.log("Error occured while trying to fetch the archived messages count", "error");
                         }.bind(this)
-                    );
-                }
+                });
+                return this;
             },
 
             fetchArchivedMessages: function (options) {

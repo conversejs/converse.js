@@ -1380,6 +1380,19 @@
                 }));
             },
 
+            appendMessage: function (attrs) {
+                /* Helper method which appends a message to the end of the chat
+                 * box's content area.
+                 *
+                 * Parameters:
+                 *  (Object) attrs: An object containing the message attributes.
+                 */
+                _.compose(
+                    _.debounce(this.scrollDown.bind(this), 50),
+                    this.$content.append.bind(this.$content)
+                )(this.renderMessage(attrs));
+            },
+
             showMessage: function (attrs) {
                 /* Inserts a chat message into the content area of the chat box.
                  * Will also insert a new day indicator if the message is on a
@@ -1391,15 +1404,34 @@
                  * Parameters:
                  *  (Object) attrs: An object containing the message attributes.
                  */
-                var current_msg_date = moment(attrs.time) || moment,
-                    $first_msg = this.$content.children('.chat-message:first'),
+                var $first_msg = this.$content.children('.chat-message:first'),
                     first_msg_date = $first_msg.data('isodate'),
-                    last_msg_date = this.$content.children(':last').data('isodate'),
-                    day_date;
+                    last_msg_date, current_msg_date, day_date, $msgs, msg_dates, idx;
+                if (typeof first_msg_date === "undefined") {
+                    this.appendMessage(attrs);
+                    return;
+                }
+                current_msg_date = moment(attrs.time) || moment;
+                last_msg_date = this.$content.children(':last').data('isodate');
+
+                if (typeof last_msg_date !== "undefined" && (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date))) {
+                    // The new message is after the last message
+                    if (current_msg_date.isAfter(last_msg_date, 'day')) {
+                        // Append a new day indicator
+                        day_date = moment(current_msg_date).startOf('day');
+                        this.$content.append(converse.templates.new_day({
+                            isodate: current_msg_date.format(),
+                            datestring: current_msg_date.format("dddd MMM Do YYYY")
+                        }));
+                    }
+                    this.appendMessage(attrs);
+                    return;
+                }
 
                 if (typeof first_msg_date !== "undefined" &&
-                        (current_msg_date.isBefore(first_msg_date) || 
+                        (current_msg_date.isBefore(first_msg_date) ||
                             (current_msg_date.isSame(first_msg_date) && !current_msg_date.isSame(last_msg_date)))) {
+                    // The new message is before the first message
 
                     if ($first_msg.prev().length === 0) {
                         // There's no day indicator before the first message, so we prepend one.
@@ -1427,19 +1459,24 @@
                                 }
                             )(this.renderMessage(attrs));
                     }
-                    return;
-                } else if (current_msg_date.isAfter(last_msg_date, 'day')) {
-                    // Append a new day indicator
-                    day_date = moment(current_msg_date).startOf('day');
-                    this.$content.append(converse.templates.new_day({
-                        isodate: current_msg_date.format(),
-                        datestring: current_msg_date.format("dddd MMM Do YYYY")
-                    }));
+                } else {
+                    // We need to find the correct place to position the message
+                    current_msg_date = current_msg_date.format();
+                    $msgs = this.$content.children('.chat-message');
+                    msg_dates = _.map($msgs, function (el) {
+                        return $(el).data('isodate');
+                    });
+                    msg_dates.push(current_msg_date);
+                    msg_dates.sort();
+                    idx = msg_dates.indexOf(current_msg_date)-1;
+                    _.compose(
+                            this.scrollDownMessageHeight.bind(this),
+                            function ($el) {
+                                $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
+                                return $el;
+                            }.bind(this)
+                        )(this.renderMessage(attrs));
                 }
-                _.compose(
-                    _.debounce(this.scrollDown.bind(this), 50),
-                    this.$content.append.bind(this.$content)
-                )(this.renderMessage(attrs));
             },
 
             renderMessage: function (attrs) {

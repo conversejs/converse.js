@@ -229,6 +229,7 @@ It accepts the following optional parameters:
 Examples
 ^^^^^^^^
 
+
 **Requesting all archived messages**
 
 The simplest query that can be made is to simply not pass in any parameters.
@@ -249,6 +250,29 @@ the returned messages.
     }
     converse.archive.query(callback, errback))
 
+**Waiting until server support has been determined**
+
+The query method will only work if converse.js has been able to determine that
+the server supports MAM queries, otherwise the following error will be raised:
+
+- *This server does not support XEP-0313, Message Archive Management*
+
+The very first time converse.js loads in a browser tab, if you call the query
+API too quickly, the above error might appear because service discovery has not
+yet been completed.
+
+To work solve this problem, you can first listen for the ``serviceDiscovered`` event,
+through which you can be informed once support for MAM has been determined.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.listen.on('serviceDiscovered', function (event, feature) {
+        if (feature.get('var') === converse.env.Strophe.NS.MAM) {
+            converse.archive.query()
+        }
+    });
 
 **Requesting all archived messages for a particular contact or room**
 

@@ -1320,7 +1320,7 @@
                  * Then, upon receiving them, call onMessage on the chat box,
                  * so that they are displayed inside it.
                  */
-                API.archive.query(options,
+                API.archive.query(_.extend(options, {'groupchat': this.is_chatroom}),
                     function (messages) {
                         this.clearSpinner();
                         if (messages.length) {
@@ -2779,7 +2779,6 @@
                 converse.emit('chatRoomOpened', this);
 
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                this.model.messages.fetch({add: true});
                 if (this.model.get('minimized')) {
                     this.hide();
                 } else {
@@ -3037,26 +3036,26 @@
             },
 
             join: function (password, history_attrs, extended_presence) {
-                var msg = $pres({
+                var stanza = $pres({
                     from: converse.connection.jid,
                     to: this.getRoomJIDAndNick()
                 }).c("x", {
                     xmlns: Strophe.NS.MUC
                 });
-                if (typeof history_attrs === "object" && history_attrs.length) {
-                    msg = msg.c("history", history_attrs).up();
+                if (typeof history_attrs === "object" && Object.keys(history_attrs).length) {
+                    stanza = stanza.c("history", history_attrs).up();
                 }
                 if (password) {
-                    msg.cnode(Strophe.xmlElement("password", [], password));
+                    stanza.cnode(Strophe.xmlElement("password", [], password));
                 }
                 if (typeof extended_presence !== "undefined" && extended_presence !== null) {
-                    msg.up.cnode(extended_presence);
+                    stanza.up.cnode(extended_presence);
                 }
                 if (!this.handler) {
                     this.handler = converse.connection.addHandler(this.handleMUCStanza.bind(this));
                 }
                 this.model.set('connection_status', Strophe.Status.CONNECTING);
-                return converse.connection.send(msg);
+                return converse.connection.send(stanza);
             },
 
             leave: function(exit_msg) {
@@ -3362,6 +3361,7 @@
                         ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));
                     if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
                         this.model.set('connection_status', Strophe.Status.CONNECTED);
+                        this.fetchMessages();
                         this.$('span.centered.spinner').remove();
                         this.$el.find('.chat-body').children().show();
                     }
@@ -6334,13 +6334,21 @@
                     throw new Error('This server does not support XEP-0313, Message Archive Management');
                 }
                 var queryid = converse.connection.getUniqueId();
-                var stanza = $iq({'type':'set'}).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
+
+                var attrs = {'type':'set'};
+                if (typeof options != "undefined" && options.groupchat) {
+                    if (!options['with']) {
+                        throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
+                    }
+                    attrs.to = options['with'];
+                }
+                var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (typeof options != "undefined") {
                     stanza.c('x', {'xmlns':Strophe.NS.XFORM})
                             .c('field', {'var':'FORM_TYPE'})
                             .c('value').t(Strophe.NS.MAM).up().up();
 
-                    if (options['with']) {
+                    if (options['with'] && !options.groupchat) {
                         stanza.c('field', {'var':'with'}).c('value').t(options['with']).up().up();
                     }
                     _.each(['start', 'end'], function (t) {

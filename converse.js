@@ -1248,7 +1248,9 @@
 
             onScroll: function (ev) {
                 if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
-                    this.$content.prepend('<span class="spinner"/>');
+                    if (!this.$content.first().hasClass('spinner')) {
+                        this.$content.prepend('<span class="spinner"/>');
+                    }
                     this.fetchArchivedMessages({
                         'before': this.model.messages.at(0).get('archive_id'),
                         'with': this.model.get('jid'),
@@ -1298,7 +1300,10 @@
                             }
                         }
                     }.bind(this),
-                    _.partial(converse.log, "Error while trying to fetch archived messages", "error")
+                    function (iq) {
+                        this.clearSpinner();
+                        converse.log("Error while trying to fetch archived messages", "error");
+                    }.bind(this)
                 );
             },
 
@@ -1384,7 +1389,7 @@
                     return;
                 }
                 current_msg_date = moment(attrs.time) || moment;
-                last_msg_date = this.$content.children(':last').data('isodate');
+                last_msg_date = this.$content.children('.chat-message:last').data('isodate');
 
                 if (typeof last_msg_date !== "undefined" && (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date))) {
                     // The new message is after the last message

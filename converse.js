@@ -546,39 +546,6 @@
             converse.connection.send(pres);
         };
 
-        this.onMAMQueryResult = function (iq, options, queryid, callback) {
-            /* Handle the IQ stanza and potential message stanzas returned as
-             * a result of a MAM (XEP-0313) query.
-             *
-             * Parameters:
-             *    (XMLElement) iq - The IQ stanza returned from the XMPP server.
-             *    (Object) options - The MAM-specific options of the query ('with', 'start' and 'end')
-             *    (String) queryid - A unique ID sent with the MAM query.
-             *    (Function) callback - A function to call after we've received all the archived messages.
-             *      If should expect an array of messages and a Strophe.RSM (result set management) object.
-             */
-            var messages = [];
-            converse.connection.addHandler(
-                function (message) {
-                    var $msg = $(message), $fin, rsm, i;
-                    if (typeof callback == "function") {
-                        $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
-                        if ($fin.length) {
-                            rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
-                            _.extend(rsm, _.pick(options, ['max']));
-                            _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
-                            callback(messages, rsm);
-                            return false; // We've received all messages, decommission this handler
-                        } else if (queryid == $msg.find('result').attr('queryid')) {
-                            messages.push(message);
-                        }
-                        return true;
-                    } else {
-                        return false; // There's no callback, so no use in continuing this handler.
-                    }
-                }, Strophe.NS.MAM, 'message');
-        };
-
         this.getVCard = function (jid, callback, errback) {
             /* Request the VCard of another user.
              *
@@ -1324,7 +1291,11 @@
                     function (messages) {
                         this.clearSpinner();
                         if (messages.length) {
-                            _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                            if (this.is_chatroom) {
+                                _.map(messages, this.onChatRoomMessage.bind(this));
+                            } else {
+                                _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                            }
                         }
                     }.bind(this),
                     _.partial(converse.log, "Error while trying to fetch archived messages", "error")
@@ -2776,6 +2747,7 @@
                 this.render();
                 this.occupantsview.model.fetch({add:true});
                 this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                this.fetchMessages();
                 converse.emit('chatRoomOpened', this);
 
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
@@ -2790,6 +2762,7 @@
                 this.$el.attr('id', this.model.get('box_id'))
                         .html(converse.templates.chatroom(this.model.toJSON()));
                 this.renderChatArea();
+                this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                 setTimeout(converse.refreshWebkit, 50);
                 return this;
             },
@@ -3361,7 +3334,6 @@
                         ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));
                     if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
                         this.model.set('connection_status', Strophe.Status.CONNECTED);
-                        this.fetchMessages();
                         this.$('span.centered.spinner').remove();
                         this.$el.find('.chat-body').children().show();
                     }
@@ -3372,12 +3344,21 @@
 
             onChatRoomMessage: function (message) {
                 var $message = $(message),
-                    body = $message.children('body').text(),
+                    archive_id = $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id'),
+                    delayed = $message.find('delay').length > 0,
+                    $forwarded = $message.find('forwarded'),
+                    $delay;
+
+                if ($forwarded.length) {
+                    $message = $forwarded.children('message');
+                    $delay = $forwarded.children('delay');
+                    delayed = $delay.length > 0;
+                }
+                var body = $message.children('body').text(),
                     jid = $message.attr('from'),
                     msgid = $message.attr('id'),
                     resource = Strophe.getResourceFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '',
-                    delayed = $message.find('delay').length > 0,
                     subject = $message.children('subject').text();
 
                 if (msgid && this.model.messages.findWhere({msgid: msgid})) {
@@ -3396,7 +3377,7 @@
                 if (sender === '') {
                     return true;
                 }
-                this.model.createMessage($message);
+                this.model.createMessage($message, $delay, archive_id);
                 if (!delayed && sender !== this.model.get('nick') && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
                     converse.playNotification();
                 }
@@ -6325,7 +6306,7 @@
                  * can be called before passing it in again to this method, to
                  * get the next or previous page in the result set.
                  */
-                var date;
+                var date, messages = [];
                 if (typeof options == "function") {
                     callback = options;
                     errback = callback;
@@ -6334,7 +6315,6 @@
                     throw new Error('This server does not support XEP-0313, Message Archive Management');
                 }
                 var queryid = converse.connection.getUniqueId();
-
                 var attrs = {'type':'set'};
                 if (typeof options != "undefined" && options.groupchat) {
                     if (!options['with']) {
@@ -6362,16 +6342,31 @@
                         }
                     });
                     stanza.up();
-
                     if (options instanceof Strophe.RSM) {
                         stanza.cnode(options.toXML());
                     } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
                         stanza.cnode(new Strophe.RSM(options).toXML());
                     }
                 }
-                converse.connection.sendIQ(stanza,
-                    _.partial(converse.onMAMQueryResult, _, options, queryid, callback),
-                    errback);
+                converse.connection.addHandler(function (message) {
+                    var $msg = $(message), $fin, rsm, i;
+                    if (typeof callback == "function") {
+                        $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
+                        if ($fin.length) {
+                            rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
+                            _.extend(rsm, _.pick(options, ['max']));
+                            _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
+                            callback(messages, rsm);
+                            return false; // We've received all messages, decommission this handler
+                        } else if (queryid == $msg.find('result').attr('queryid')) {
+                            messages.push(message);
+                        }
+                        return true;
+                    } else {
+                        return false; // There's no callback, so no use in continuing this handler.
+                    }
+                }, Strophe.NS.MAM);
+                converse.connection.sendIQ(stanza, null, errback);
             }
         },
         'rooms': {

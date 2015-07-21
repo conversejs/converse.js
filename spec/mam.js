@@ -316,7 +316,6 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                spyOn(converse, 'onMAMQueryResult').andCallThrough();
                 var callback = jasmine.createSpy('callback');
 
                 converse_api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
@@ -325,7 +324,6 @@
                 // Send the result stanza, so that the callback is called.
                 var stanza = $iq({'type': 'result', 'id': IQ_id});
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect(converse.onMAMQueryResult).toHaveBeenCalled();
 
                 /* <message id='aeb213' to='juliet@capulet.lit/chamber'>
                  *   <result xmlns='urn:xmpp:mam:0' queryid='f27' id='28482-98726-73623'>

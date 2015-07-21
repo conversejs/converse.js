@@ -7,6 +7,7 @@ Changelog
 * #439 auto_login and keepalive not working [jcbrand]
 * #440 null added as resource to contact [jcbrand]
 * Add new event serviceDiscovered [jcbrand]
+* Add a new configuration setting `muc_history_max_stanzas`. [jcbrand]
 
 0.9.4 (2015-07-04)
 ------------------

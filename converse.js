@@ -324,6 +324,7 @@
             keepalive: false,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
             message_carbons: false, // Support for XEP-280
+            muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             ping_interval: 180, //in seconds
             play_sounds: false,
@@ -2774,7 +2775,7 @@
                 this.occupantsview.chatroomview = this;
                 this.render();
                 this.occupantsview.model.fetch({add:true});
-                this.join(null);
+                this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                 converse.emit('chatRoomOpened', this);
 
                 this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);

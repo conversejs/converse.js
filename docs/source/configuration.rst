@@ -361,6 +361,23 @@ Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
+muc_history_max_stanzas
+-----------------------
+
+* Default:  ``undefined``
+
+This option allows you to specify the maximum amount of messages to be shown in a
+chat room when you enter it. By default, the amount specified in the room
+configuration or determined by the server will be returned.
+
+Please note, this option is not related to
+`XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
+which also allows you to show archived chat room messages, but follows a
+different approach.
+
+If you're using MAM for archiving chat room messages, you might want to set
+this option to zero.
+
 expose_rid_and_sid
 ------------------
 

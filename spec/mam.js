@@ -13,6 +13,7 @@
     var $iq = converse_api.env.$iq;
     var $pres = converse_api.env.$pres;
     var $msg = converse_api.env.$msg;
+    var moment = converse_api.env.moment;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
     describe("Message Archive Management", $.proxy(function (mock, test_utils) {
@@ -74,14 +75,11 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                // Mock the browser's method for returning the timezone
-                var getTimezoneOffset = Date.prototype.getTimezoneOffset;
-                Date.prototype.getTimezoneOffset = function () {
-                    return -120;
-                };
+                var start = '2010-06-07T00:00:00Z';
+                var end = '2010-07-07T13:23:54Z';
                 converse_api.archive.query({
-                    'start': '2010-06-07T00:00:00Z',
-                    'end': '2010-07-07T13:23:54Z'
+                    'start': start,
+                    'end': end
 
                 });
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
@@ -93,17 +91,15 @@
                                 "<value>urn:xmpp:mam:0</value>"+
                             "</field>"+
                             "<field var='start'>"+
-                                "<value>2010-06-07T02:00:00+02:00</value>"+
+                                "<value>"+moment(start).format()+"</value>"+
                             "</field>"+
                             "<field var='end'>"+
-                                "<value>2010-07-07T15:23:54+02:00</value>"+
+                                "<value>"+moment(end).format()+"</value>"+
                             "</field>"+
                             "</x>"+
                         "</query>"+
                     "</iq>"
                 );
-                // Restore
-                Date.prototype.getTimezoneOffset = getTimezoneOffset;
            });
 
            it("throws a TypeError if an invalid date is provided", function () {
@@ -122,12 +118,8 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                // Mock the browser's method for returning the timezone
-                var getTimezoneOffset = Date.prototype.getTimezoneOffset;
-                Date.prototype.getTimezoneOffset = function () {
-                    return -120;
-                };
-                converse_api.archive.query({'start': '2010-06-07T00:00:00Z'});
+                var start = '2010-06-07T00:00:00Z';
+                converse_api.archive.query({'start': start});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -137,14 +129,12 @@
                                 "<value>urn:xmpp:mam:0</value>"+
                             "</field>"+
                             "<field var='start'>"+
-                                "<value>2010-06-07T02:00:00+02:00</value>"+
+                                "<value>"+moment(start).format()+"</value>"+
                             "</field>"+
                             "</x>"+
                         "</query>"+
                     "</iq>"
                 );
-                // Restore
-                Date.prototype.getTimezoneOffset = getTimezoneOffset;
            });
 
            it("can be used to query for a limited set of results", function () {
@@ -157,12 +147,8 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                // Mock the browser's method for returning the timezone
-                var getTimezoneOffset = Date.prototype.getTimezoneOffset;
-                Date.prototype.getTimezoneOffset = function () {
-                    return -120;
-                };
-                converse_api.archive.query({'start': '2010-06-07T00:00:00Z', 'max':10});
+                var start = '2010-06-07T00:00:00Z';
+                converse_api.archive.query({'start': start, 'max':10});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -172,7 +158,7 @@
                                     "<value>urn:xmpp:mam:0</value>"+
                                 "</field>"+
                                 "<field var='start'>"+
-                                    "<value>2010-06-07T02:00:00+02:00</value>"+
+                                    "<value>"+moment(start).format()+"</value>"+
                                 "</field>"+
                             "</x>"+
                             "<set xmlns='http://jabber.org/protocol/rsm'>"+
@@ -181,8 +167,6 @@
                         "</query>"+
                     "</iq>"
                 );
-                // Restore
-                Date.prototype.getTimezoneOffset = getTimezoneOffset;
            });
 
            it("can be used to page through results", function () {
@@ -195,13 +179,9 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                // Mock the browser's method for returning the timezone
-                var getTimezoneOffset = Date.prototype.getTimezoneOffset;
-                Date.prototype.getTimezoneOffset = function () {
-                    return -120;
-                };
+                var start = '2010-06-07T00:00:00Z';
                 converse_api.archive.query({
-                    'start': '2010-06-07T00:00:00Z',
+                    'start': start,
                     'after': '09af3-cc343-b409f',
                     'max':10
                 });
@@ -214,7 +194,7 @@
                                     "<value>urn:xmpp:mam:0</value>"+
                                 "</field>"+
                                 "<field var='start'>"+
-                                    "<value>2010-06-07T02:00:00+02:00</value>"+
+                                    "<value>"+moment(start).format()+"</value>"+
                                 "</field>"+
                             "</x>"+
                             "<set xmlns='http://jabber.org/protocol/rsm'>"+
@@ -224,8 +204,6 @@
                         "</query>"+
                     "</iq>"
                 );
-                // Restore
-                Date.prototype.getTimezoneOffset = getTimezoneOffset;
            });
 
            it("accepts \"before\" with an empty string as value to reverse the order", function () {
@@ -271,11 +249,6 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                // Mock the browser's method for returning the timezone
-                var getTimezoneOffset = Date.prototype.getTimezoneOffset;
-                Date.prototype.getTimezoneOffset = function () {
-                    return -120;
-                };
                 var rsm =  new Strophe.RSM({'max': '10'});
                 rsm['with'] = 'romeo@montague.lit';
                 rsm.start = '2010-06-07T00:00:00Z';
@@ -293,7 +266,7 @@
                                     "<value>romeo@montague.lit</value>"+
                                 "</field>"+
                                 "<field var='start'>"+
-                                    "<value>2010-06-07T02:00:00+02:00</value>"+
+                                    "<value>"+moment(rsm.start).format()+"</value>"+
                                 "</field>"+
                             "</x>"+
                             "<set xmlns='http://jabber.org/protocol/rsm'>"+
@@ -302,8 +275,6 @@
                         "</query>"+
                     "</iq>"
                 );
-                // Restore
-                Date.prototype.getTimezoneOffset = getTimezoneOffset;
            });
 
            it("accepts a callback function, which it passes the messages and a Strophe.RSM object", function () {

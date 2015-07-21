@@ -2980,11 +2980,12 @@
             handleMUCStanza: function (stanza) {
                 var xmlns, xquery, i;
                 var from = stanza.getAttribute('from');
-                if (!from || (this.model.get('id') !== from.split("/")[0])) {
+                var is_mam = $(stanza).find('[xmlns="'+Strophe.NS.MAM+'"]').length > 0;
+                if (!from || (this.model.get('id') !== from.split("/")[0])  || is_mam) {
                     return true;
                 }
                 if (stanza.nodeName === "message") {
-                    this.onChatRoomMessage(stanza);
+                    _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
                 } else if (stanza.nodeName === "presence") {
                     xquery = stanza.getElementsByTagName("x");
                     if (xquery.length > 0) {
@@ -3233,12 +3234,13 @@
                 303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
             },
 
-            showStatusMessages: function ($el, is_self) {
+            showStatusMessages: function (el, is_self) {
                 /* Check for status codes and communicate their purpose to the user.
                  * Allow user to configure chat room if they are the owner.
                  * See: http://xmpp.org/registrar/mucstatus.html
                  */
-                var disconnect_msgs = [],
+                var $el = $(el),
+                    disconnect_msgs = [],
                     msgs = [],
                     reasons = [];
                 $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each(function (idx, x) {
@@ -3288,7 +3290,8 @@
                 for (i=0; i<reasons.length; i++) {
                     this.showStatusNotification(__('The reason given is: "'+reasons[i]+'"'), true);
                 }
-                return this.scrollDown();
+                this.scrollDown();
+                return el;
             },
 
             showErrorMessage: function ($error) {
@@ -3337,7 +3340,7 @@
                         this.$('span.centered.spinner').remove();
                         this.$el.find('.chat-body').children().show();
                     }
-                    this.showStatusMessages($presence, is_self);
+                    this.showStatusMessages(pres, is_self);
                 }
                 this.occupantsview.updateOccupantsOnPresence(pres);
             },
@@ -3364,7 +3367,6 @@
                 if (msgid && this.model.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                this.showStatusMessages($message);
                 if (subject) {
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                     // # For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively

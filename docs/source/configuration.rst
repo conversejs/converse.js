@@ -53,6 +53,23 @@ This enables anonymous login if the XMPP server supports it. This option can be
 used together with `auto_login`_ to automatically and anonymously log a user in
 as soon as the page loads.
 
+archived_messages_page_size
+---------------------------
+
+* Default:  ``20``
+
+See also: `message_archiving`
+
+This feature applies to `XEP-0313: Message Archive Management (MAM) <https://xmpp.org/extensions/xep-0313.html>`_
+and will only take effect if your server supports MAM.
+
+It allows you to specify the maximum amount of archived messages to be returned per query.
+When you open a chat box or room, archived messages will be displayed (if
+available) and the amount returned will be no more than the page size.
+
+You will be able to query for even older messages by scrolling upwards in the chat box or room
+(the so-called infinite scrolling pattern).
+
 prebind
 ~~~~~~~
 

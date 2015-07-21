@@ -301,7 +301,7 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
-            archived_messages_batch_size: '20',
+            archived_messages_page_size: '20',
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             allow_registration: true,
@@ -1254,7 +1254,7 @@
                     this.fetchArchivedMessages({
                         'before': this.model.messages.at(0).get('archive_id'),
                         'with': this.model.get('jid'),
-                        'max': converse.archived_messages_batch_size
+                        'max': converse.archived_messages_page_size
                     });
                 }
             },
@@ -1271,11 +1271,11 @@
                             if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                                 return;
                             }
-                            if (this.model.messages.length < converse.archived_messages_batch_size) {
+                            if (this.model.messages.length < converse.archived_messages_page_size) {
                                 this.fetchArchivedMessages({
                                     'before': '', // Page backwards from the most recent message
                                     'with': this.model.get('jid'),
-                                    'max': converse.archived_messages_batch_size
+                                    'max': converse.archived_messages_page_size
                                 });
                             }
                         }.bind(this)

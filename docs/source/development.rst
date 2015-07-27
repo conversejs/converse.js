@@ -51,14 +51,14 @@ directory:
 On Windows you need to specify Makefile.win to be used by running: ::
 
     make -f Makefile.win dev
-    
+
 Or alternatively, if you don't have GNU Make:
 
 ::
 
     npm install
     bower update
-    
+
 This will first install the Node.js development tools (like Grunt and Bower)
 and then use Bower to install all of Converse.js's front-end dependencies.
 
@@ -125,7 +125,7 @@ Please read the `style guide </docs/html/style_guide.html>`_ and make sure that 
 Add tests for your bugfix or feature
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Add a test for any bug fixed or feature added. We use Jasmine
-for testing. 
+for testing.
 
 Take a look at `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
 and the `spec files <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
@@ -146,7 +146,7 @@ Developer API
         Earlier versions of Converse.js might have different API methods or none at all.
 
 In the Converse.js API, you traverse towards a logical grouping, from
-which you can then call certain standardised accessors and mutators, like::
+which you can then call certain standardised accessors and mutators, such as::
 
     .get
     .set
@@ -202,6 +202,165 @@ Example:
             roster_groups: true
         });
 
+The "archive" grouping
+----------------------
+
+Converse.js supports the *Message Archive Management*
+(`XEP-0313 <https://xmpp.org/extensions/xep-0313.html>`_) protocol,
+through which it is able to query an XMPP server for archived messages.
+
+See also the **message_archiving** option in the :ref:`configuration-variables` section, which you'll usually
+want to  in conjunction with this API.
+
+query
+~~~~~
+
+The ``query`` method is used to query for archived messages.
+
+It accepts the following optional parameters:
+
+* **options** an object containing the query parameters. Valid query parameters
+  are ``with``, ``start``, ``end``, ``first``, ``last``, ``after``, ``before``, ``index`` and ``count``.
+* **callback** is the callback method that will be called when all the messages
+  have been received.
+* **errback** is the callback method to be called when an error is returned by
+  the XMPP server, for example when it doesn't support message archiving.
+
+Examples
+^^^^^^^^
+
+
+**Requesting all archived messages**
+
+The simplest query that can be made is to simply not pass in any parameters.
+Such a query will return all archived messages for the current user.
+
+Generally, you'll however always want to pass in a callback method, to receive
+the returned messages.
+
+.. code-block:: javascript
+
+    var errback = function (iq) {
+        // The query was not successful, perhaps inform the user?
+        // The IQ stanza returned by the XMPP server is passed in, so that you
+        // may inspect it and determine what the problem was.
+    }
+    var callback = function (messages) {
+        // Do something with the messages, like showing them in your webpage.
+    }
+    converse.archive.query(callback, errback))
+
+**Waiting until server support has been determined**
+
+The query method will only work if converse.js has been able to determine that
+the server supports MAM queries, otherwise the following error will be raised:
+
+- *This server does not support XEP-0313, Message Archive Management*
+
+The very first time converse.js loads in a browser tab, if you call the query
+API too quickly, the above error might appear because service discovery has not
+yet been completed.
+
+To work solve this problem, you can first listen for the ``serviceDiscovered`` event,
+through which you can be informed once support for MAM has been determined.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.listen.on('serviceDiscovered', function (event, feature) {
+        if (feature.get('var') === converse.env.Strophe.NS.MAM) {
+            converse.archive.query()
+        }
+    });
+
+**Requesting all archived messages for a particular contact or room**
+
+To query for messages sent between the current user and another user or room,
+the query options need to contain the the JID (Jabber ID) of the user or
+room under the  ``with`` key.
+
+.. code-block:: javascript
+
+    // For a particular user
+    converse.archive.query({'with': 'john@doe.net'}, callback, errback);)
+
+    // For a particular room
+    converse.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+
+
+**Requesting all archived messages before or after a certain date**
+
+The ``start`` and ``end`` parameters are used to query for messages
+within a certain timeframe. The passed in date values may either be ISO8601
+formatted date strings, or Javascript Date objects.
+
+.. code-block:: javascript
+
+    var options = {
+        'with': 'john@doe.net',
+        'start': '2010-06-07T00:00:00Z',
+        'end': '2010-07-07T13:23:54Z'
+    };
+    converse.archive.query(options, callback, errback);
+
+
+**Limiting the amount of messages returned**
+
+The amount of returned messages may be limited with the ``max`` parameter.
+By default, the messages are returned from oldest to newest.
+
+.. code-block:: javascript
+
+    // Return maximum 10 archived messages
+    converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+
+
+**Paging forwards through a set of archived messages**
+
+When limiting the amount of messages returned per query, you might want to
+repeatedly make a further query to fetch the next batch of messages.
+
+To simplify this usecase for you, the callback method receives not only an array
+with the returned archived messages, but also a special RSM (*Result Set
+Management*) object which contains the query parameters you passed in, as well
+as two utility methods ``next``, and ``previous``.
+
+When you call one of these utility methods on the returned RSM object, and then
+pass the result into a new query, you'll receive the next or previous batch of
+archived messages. Please note, when calling these methods, pass in an integer
+to limit your results.
+
+.. code-block:: javascript
+
+    var callback = function (messages, rsm) {
+        // Do something with the messages, like showing them in your webpage.
+        // ...
+        // You can now use the returned "rsm" object, to fetch the next batch of messages:
+        converse.archive.query(rsm.next(10), callback, errback))
+
+    }
+    converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+
+**Paging backwards through a set of archived messages**
+
+To page backwards through the archive, you need to know the UID of the message
+which you'd like to page backwards from and then pass that as value for the
+``before`` parameter. If you simply want to page backwards from the most recent
+message, pass in the ``before`` parameter with an empty string value ``''``.
+
+.. code-block:: javascript
+
+    converse.archive.query({'before': '', 'max':5}, function (message, rsm) {
+        // Do something with the messages, like showing them in your webpage.
+        // ...
+        // You can now use the returned "rsm" object, to fetch the previous batch of messages:
+        rsm.previous(5); // Call previous method, to update the object's parameters,
+                         // passing in a limit value of 5.
+        // Now we query again, to get the previous batch.
+        converse.archive.query(rsm, callback, errback);
+    }
+
 
 The "user" grouping
 -------------------
@@ -213,7 +372,7 @@ logout
 
 Log the user out of the current XMPP session.
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     converse.user.logout();
 
@@ -228,7 +387,7 @@ get
 
 Return the current user's availability status:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     converse.user.status.get(); // Returns for example "dnd"
 
@@ -246,7 +405,7 @@ The user's status can be set to one of the following values:
 
 For example:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     converse.user.status.set('dnd');
 
@@ -254,7 +413,7 @@ Because the user's availability is often set together with a custom status
 message, this method also allows you to pass in a status message as a
 second parameter:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     converse.user.status.set('dnd', 'In a meeting');
 
@@ -264,7 +423,7 @@ The "message" sub-grouping
 The ``user.status.message`` sub-grouping exposes methods for setting and
 retrieving the user's custom status message.
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     converse.user.status.message.set('In a meeting');
 
@@ -344,7 +503,7 @@ Provide the JID of the contact you want to add:
     .. code-block:: javascript
 
     converse.contacts.add('buddy@example.com')
-    
+
 You may also provide the fullname. If not present, we use the jid as fullname:
 
     .. code-block:: javascript
@@ -580,20 +739,6 @@ Here are the different events that are emitted:
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | Event Type                      | When is it triggered?                                                                             | Example                                                                                              |
 +=================================+===================================================================================================+======================================================================================================+
-| **initialized**                 | Once converse.js has been initialized.                                                            | ``converse.listen.on('initialized', function (event) { ... });``                                     |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **ready**                       | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.listen.on('ready', function (event) { ... });``                                           |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **reconnect**                   | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.listen.on('reconnect', function (event) { ... });``                                       |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **message**                     | When a message is received.                                                                       | ``converse.listen.on('message', function (event, messageXML) { ... });``                             |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **messageSend**                 | When a message will be sent out.                                                                  | ``storage_memoryconverse.listen.on('messageSend', function (event, messageText) { ... });``          |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **noResumeableSession**         | When keepalive=true but there aren't any stored prebind tokens.                                   | ``converse.listen.on('noResumeableSession', function (event) { ... });``                             |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **roster**                      | When the roster is updated.                                                                       | ``converse.listen.on('roster', function (event, items) { ... });``                                   |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **callButtonClicked**           | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.listen.on('callButtonClicked', function (event, connection, model) { ... });``            |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **chatBoxOpened**               | When a chat box has been opened.                                                                  | ``converse.listen.on('chatBoxOpened', function (event, chatbox) { ... });``                          |
@@ -606,17 +751,33 @@ Here are the different events that are emitted:
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **chatBoxToggled**              | When a chat box has been minimized or maximized.                                                  | ``converse.listen.on('chatBoxToggled', function (event, chatbox) { ... });``                         |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **contactStatusChanged**        | When a chat buddy's chat status has changed.                                                      | ``converse.listen.on('contactStatusChanged', function (event, buddy, status) { ... });``             |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **contactStatusMessageChanged** | When a chat buddy's custom status message has changed.                                            | ``converse.listen.on('contactStatusMessageChanged', function (event, buddy, messageText) { ... });`` |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **message**                     | When a message is received.                                                                       | ``converse.listen.on('message', function (event, messageXML) { ... });``                             |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **messageSend**                 | When a message will be sent out.                                                                  | ``storage_memoryconverse.listen.on('messageSend', function (event, messageText) { ... });``          |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **noResumeableSession**         | When keepalive=true but there aren't any stored prebind tokens.                                   | ``converse.listen.on('noResumeableSession', function (event) { ... });``                             |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **initialized**                 | Once converse.js has been initialized.                                                            | ``converse.listen.on('initialized', function (event) { ... });``                                     |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **ready**                       | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.listen.on('ready', function (event) { ... });``                                           |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **reconnect**                   | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.listen.on('reconnect', function (event) { ... });``                                       |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **roomInviteSent**              | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.listen.on('roomInvite', function (event, roomview, invitee_jid, reason) { ... });``       |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **roomInviteReceived**          | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.listen.on('roomInvite', function (event, roomview, invitee_jid, reason) { ... });``       |
++---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+| **roster**                      | When the roster is updated.                                                                       | ``converse.listen.on('roster', function (event, items) { ... });``                                   |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **statusChanged**               | When own chat status has changed.                                                                 | ``converse.listen.on('statusChanged', function (event, status) { ... });``                           |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 | **statusMessageChanged**        | When own custom status message has changed.                                                       | ``converse.listen.on('statusMessageChanged', function (event, message) { ... });``                   |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **contactStatusChanged**        | When a chat buddy's chat status has changed.                                                      | ``converse.listen.on('contactStatusChanged', function (event, buddy, status) { ... });``             |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **contactStatusMessageChanged** | When a chat buddy's custom status message has changed.                                            | ``converse.listen.on('contactStatusMessageChanged', function (event, buddy, messageText) { ... });`` |
+| **serviceDiscovered**           | When converse.js has learned of a service provided by the XMPP server. See XEP-0030.              | ``converse.listen.on('serviceDiscovered', function (event, service) { ... });``                      |
 +---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
 
 
@@ -663,7 +824,7 @@ An example plugin
     }(this, function ($, strophe, utils, converse_api) {
 
         // Wrap your UI strings with the __ function for translation support.
-        var __ = $.proxy(utils.__, this); 
+        var __ = $.proxy(utils.__, this);
 
         // Strophe methods for building stanzas
         var Strophe = strophe.Strophe;

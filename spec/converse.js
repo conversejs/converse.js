@@ -299,6 +299,10 @@
                 var box = converse_api.chats.open(jid);
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
+                expect(
+                    Object.keys(box),
+                    ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
+                );
                 var chatboxview = this.chatboxviews.get(jid);
                 expect(chatboxview.$el.is(':visible')).toBeTruthy();
 

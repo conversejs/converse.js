@@ -3,9 +3,10 @@ define("converse-dependencies", [
     "utils",
     "moment_with_locales",
     "strophe",
-    "strophe.vcard",
     "strophe.disco",
     "strophe.ping",
+    "strophe.rsm",
+    "strophe.vcard",
     "bootstrapJS", // XXX: Can be removed, only for https://conversejs.org
     "backbone.browserStorage",
     "backbone.overview",

@@ -60,7 +60,9 @@ require([
             require([
                 "console-runner",
                 "spec/converse",
+                "spec/disco",
                 "spec/protocol",
+                "spec/mam",
                 "spec/otr",
                 "spec/eventemitter",
                 "spec/controlbox",

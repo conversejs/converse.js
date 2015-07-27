@@ -53,6 +53,23 @@ This enables anonymous login if the XMPP server supports it. This option can be
 used together with `auto_login`_ to automatically and anonymously log a user in
 as soon as the page loads.
 
+archived_messages_page_size
+---------------------------
+
+* Default:  ``20``
+
+See also: `message_archiving`
+
+This feature applies to `XEP-0313: Message Archive Management (MAM) <https://xmpp.org/extensions/xep-0313.html>`_
+and will only take effect if your server supports MAM.
+
+It allows you to specify the maximum amount of archived messages to be returned per query.
+When you open a chat box or room, archived messages will be displayed (if
+available) and the amount returned will be no more than the page size.
+
+You will be able to query for even older messages by scrolling upwards in the chat box or room
+(the so-called infinite scrolling pattern).
+
 prebind
 ~~~~~~~
 
@@ -327,6 +344,19 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+
+message_archiving
+-----------------
+
+* Default:  ``never``
+
+Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_
+
+This sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
+
+``roster`` means that only messages to and from JIDs in your roster will be
+archived. The other two values are self-explanatory.
+
 message_carbons
 ---------------
 
@@ -347,6 +377,23 @@ in two different ways.
 Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+
+muc_history_max_stanzas
+-----------------------
+
+* Default:  ``undefined``
+
+This option allows you to specify the maximum amount of messages to be shown in a
+chat room when you enter it. By default, the amount specified in the room
+configuration or determined by the server will be returned.
+
+Please note, this option is not related to
+`XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
+which also allows you to show archived chat room messages, but follows a
+different approach.
+
+If you're using MAM for archiving chat room messages, you might want to set
+this option to zero.
 
 expose_rid_and_sid
 ------------------

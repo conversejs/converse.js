@@ -52,8 +52,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                            "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                            "<field var='FORM_TYPE' type='hidden'>"+
                                 "<value>urn:xmpp:mam:0</value>"+
                             "</field>"+
                             "<field var='with'>"+
@@ -86,8 +86,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                            "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                            "<field var='FORM_TYPE' type='hidden'>"+
                                 "<value>urn:xmpp:mam:0</value>"+
                             "</field>"+
                             "<field var='start'>"+
@@ -124,8 +124,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                            "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                            "<field var='FORM_TYPE' type='hidden'>"+
                                 "<value>urn:xmpp:mam:0</value>"+
                             "</field>"+
                             "<field var='start'>"+
@@ -153,8 +153,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                                "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                                "<field var='FORM_TYPE' type='hidden'>"+
                                     "<value>urn:xmpp:mam:0</value>"+
                                 "</field>"+
                                 "<field var='start'>"+
@@ -189,8 +189,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                                "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                                "<field var='FORM_TYPE' type='hidden'>"+
                                     "<value>urn:xmpp:mam:0</value>"+
                                 "</field>"+
                                 "<field var='start'>"+
@@ -221,8 +221,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                                "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                                "<field var='FORM_TYPE' type='hidden'>"+
                                     "<value>urn:xmpp:mam:0</value>"+
                                 "</field>"+
                             "</x>"+
@@ -258,8 +258,8 @@
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'>"+
-                            "<x xmlns='jabber:x:data'>"+
-                                "<field var='FORM_TYPE'>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                                "<field var='FORM_TYPE' type='hidden'>"+
                                     "<value>urn:xmpp:mam:0</value>"+
                                 "</field>"+
                                 "<field var='with'>"+

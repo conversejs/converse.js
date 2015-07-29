@@ -6331,8 +6331,8 @@
                 }
                 var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (typeof options != "undefined") {
-                    stanza.c('x', {'xmlns':Strophe.NS.XFORM})
-                            .c('field', {'var':'FORM_TYPE'})
+                    stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
+                            .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                             .c('value').t(Strophe.NS.MAM).up().up();
 
                     if (options['with'] && !options.groupchat) {

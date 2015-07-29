@@ -4,6 +4,7 @@ Changelog
 0.9.5 (Unreleased)
 ------------------
 
+* #306 XEP-0313: Message Archive Management [jcbrand]
 * #439 auto_login and keepalive not working [jcbrand]
 * #440 null added as resource to contact [jcbrand]
 * Add new event serviceDiscovered [jcbrand]

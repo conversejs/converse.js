@@ -33,6 +33,7 @@ It has the following features:
 * Messages appear in all connnected chat clients `XEP 280 <http://xmpp.org/extensions/xep-0280.html>`_
 * Third person "/me" messages `XEP 245 <http://xmpp.org/extensions/xep-0245.html>`_
 * XMPP Ping `XEP 199 <http://xmpp.org/extensions/xep-0199.html>`_
+* Server-side archiving of messages `XEP 313 <http://xmpp.org/extensions/xep-0313.html>`_
 * Client state indication `XEP 352 <http://xmpp.org/extensions/xep-0352.html>`_
 * Off-the-record encryption
 * Translated into 16 languages

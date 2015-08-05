@@ -619,6 +619,11 @@
                     null,
                     "Anexado"
                 ]
+                ,
+                "Type to filter": [
+                    null,
+                    "Escreva para filtrar"
+                ]
             }
         }
     };

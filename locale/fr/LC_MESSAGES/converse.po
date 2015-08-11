@@ -282,7 +282,7 @@ msgstr "Vos messges ne sont pas cryptés. Cliquez ici pour activer le cryptage O
 
 #: converse.js:1554
 msgid "Your messages are encrypted, but your contact has not been verified."
-msgstr "Vos messges sont cryptés, mais votre contact n'a pas été vérifié""
+msgstr "Vos messges sont cryptés, mais votre contact n'a pas été vérifié"
 
 #: converse.js:1556
 msgid "Your messages are encrypted and your contact verified."

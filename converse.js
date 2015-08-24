@@ -4581,7 +4581,7 @@
                  * If all contacts are filtered out (i.e. hidden), then the
                  * group must be filtered out as well.
                  */
-                var matches, rejects;
+                var matches;
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
                         this.model.contacts.each(function (item) {
@@ -4790,7 +4790,6 @@
             },
 
             filter: function (query, type) {
-                var matches;
                 query = query.toLowerCase();
                 if (type === 'groups') {
                     _.each(this.getAll(), function (view, idx) {

@@ -49,6 +49,5 @@ builds/converse-no-otr.min.js
 builds/converse.js
 builds/converse.nojquery.js
 builds/converse.nojquery.min.js
-builds/converse.website-no-otr.min.js
 
 css/converse.css.map

@@ -17,9 +17,7 @@ require.config({
         "backbone":                 "components/backbone/backbone",
         "backbone.browserStorage":  "components/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "components/backbone.overview/backbone.overview",
-        "bootstrap":                "components/bootstrap/dist/js/bootstrap",           // XXX: Only required for https://conversejs.org website
-        "bootstrapJS":              "components/bootstrapJS/index",                     // XXX: Only required for https://conversejs.org website
-        "converse-dependencies":    "src/deps-website",
+        "converse-dependencies":    "src/deps-full",
         "converse-templates":       "src/templates",
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",

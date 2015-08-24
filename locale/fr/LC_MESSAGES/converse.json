@@ -79,9 +79,9 @@
             null,
             "Groupes"
          ],
-         "Reconnecting": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Reconnexion"
+            ""
          ],
          "Error": [
             null,
@@ -225,7 +225,226 @@
          ],
          "Your messages are encrypted, but your contact has not been verified.": [
             null,
-            "Vos messges sont cryptés, mais votre contact n'a pas été vérifié\n\n#: converse.js:1556\nmsgid ",
+            "Vos messges sont cryptés, mais votre contact n'a pas été vérifié"
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            "Vos messages sont cryptés et votre contact est vérifié"
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"
+         ],
+         "Clear all messages": [
+            null,
+            "Supprimer tous les messages"
+         ],
+         "End encrypted conversation": [
+            null,
+            "Terminer la conversation cryptée"
+         ],
+         "Insert a smiley": [
+            null,
+            ""
+         ],
+         "Hide the list of participants": [
+            null,
+            "Cacher la liste des participants"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "Actualiser la conversation cryptée"
+         ],
+         "Start a call": [
+            null,
+            "Démarrer un appel"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "Démarrer une conversation cryptée"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "Vérifier par empreintes de sécurité"
+         ],
+         "Verify with SMP": [
+            null,
+            "Vérifier par Question/Réponse"
+         ],
+         "What's this?": [
+            null,
+            "Qu'est-ce qu'une conversation cryptée?"
+         ],
+         "Online": [
+            null,
+            "En ligne"
+         ],
+         "Busy": [
+            null,
+            "Occupé"
+         ],
+         "Away": [
+            null,
+            "Absent"
+         ],
+         "Offline": [
+            null,
+            "Déconnecté"
+         ],
+         "Log out": [
+            null,
+            "Se déconnecter"
+         ],
+         "Contact name": [
+            null,
+            "Nom du contact"
+         ],
+         "Search": [
+            null,
+            "Rechercher"
+         ],
+         "e.g. user@example.com": [
+            null,
+            ""
+         ],
+         "Add": [
+            null,
+            "Ajouter"
+         ],
+         "Click to add new chat contacts": [
+            null,
+            "Cliquez pour ajouter de nouveaux contacts"
+         ],
+         "Add a contact": [
+            null,
+            "Ajouter un contact"
+         ],
+         "No users found": [
+            null,
+            "Aucun utilisateur trouvé"
+         ],
+         "Click to add as a chat contact": [
+            null,
+            "Cliquer pour ajouter aux contacts"
+         ],
+         "Room name": [
+            null,
+            "Nom du salon"
+         ],
+         "Nickname": [
+            null,
+            "Alias"
+         ],
+         "Server": [
+            null,
+            "Serveur"
+         ],
+         "Join Room": [
+            null,
+            "Rejoindre"
+         ],
+         "Show rooms": [
+            null,
+            "Afficher les salons"
+         ],
+         "Rooms": [
+            null,
+            "Salons"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "Aucun salon dans %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "Salons dans %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Cliquer pour ouvrir ce salon"
+         ],
+         "Show more information on this room": [
+            null,
+            "Afficher davantage d'informations sur ce salon"
+         ],
+         "Description:": [
+            null,
+            "Description:"
+         ],
+         "Occupants:": [
+            null,
+            "Participants:"
+         ],
+         "Features:": [
+            null,
+            "Caractéristiques:"
+         ],
+         "Requires authentication": [
+            null,
+            "Nécessite une authentification"
+         ],
+         "Hidden": [
+            null,
+            "Masqué"
+         ],
+         "Requires an invitation": [
+            null,
+            "Nécessite une invitation"
+         ],
+         "Moderated": [
+            null,
+            "Modéré"
+         ],
+         "Non-anonymous": [
+            null,
+            "Non-anonyme"
+         ],
+         "Open room": [
+            null,
+            "Ouvrir un salon"
+         ],
+         "Permanent room": [
+            null,
+            "Salon permanent"
+         ],
+         "Public": [
+            null,
+            "Public"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi-anonyme"
+         ],
+         "Temporary room": [
+            null,
+            "Salon temporaire"
+         ],
+         "Unmoderated": [
+            null,
+            "Non modéré"
+         ],
+         "This user is a moderator": [
+            null,
+            "Cet utilisateur est modérateur"
+         ],
+         "This user can send messages in this room": [
+            null,
+            "Cet utilisateur peut envoyer des messages dans ce salon"
+         ],
+         "This user can NOT send messages in this room": [
+            null,
+            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon"
+         ],
+         "Invite...": [
+            null,
+            "Inviter..."
+         ],
+         "Occupants": [
+            null,
+            "Participants:"
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
             "Vous vous apprêtez à inviter %1$s dans le salon \"%2$s\". "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
@@ -472,13 +691,29 @@
             null,
             "Cliquez pour discuter avec ce contact"
          ],
+         "Name": [
+            null,
+            ""
+         ],
          "Are you sure you want to remove this contact?": [
             null,
             "Êtes-vous sûr de vouloir supprimer ce contact?"
          ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
          "Are you sure you want to decline this contact request?": [
             null,
             "Êtes-vous sûr de vouloir refuser la demande de ce contact?"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
          ],
          "Type to filter": [
             null,
@@ -579,6 +814,10 @@
          "Log In": [
             null,
             "Se connecter"
+         ],
+         "user@server": [
+            null,
+            ""
          ],
          "Sign in": [
             null,

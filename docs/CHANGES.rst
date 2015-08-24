@@ -1,14 +1,14 @@
 Changelog
 =========
 
-0.9.5 (Unreleased)
+0.9.5 (2015-08-24)
 ------------------
 
 * #306 XEP-0313: Message Archive Management [jcbrand]
 * #439 auto_login and keepalive not working [jcbrand]
 * #440 null added as resource to contact [jcbrand]
 * Add new event serviceDiscovered [jcbrand]
-* Add a new configuration setting `muc_history_max_stanzas`. [jcbrand]
+* Add a new configuration setting `muc_history_max_stanzas <https://conversejs.org/docs/html/configuration.html#muc_history_max_stanzas>`_. [jcbrand]
 
 0.9.4 (2015-07-04)
 ------------------

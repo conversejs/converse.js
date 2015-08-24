@@ -17,10 +17,10 @@
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <!-- Only for development: <script data-main="main" src="components/requirejs/require.js"></script> -->
     <![if gte IE 9]>
-        <script src="builds/converse.website.min.js"></script>
+        <script src="builds/converse.min.js"></script>
     <![endif]>
     <!--[if lt IE 9]>
-        <script src="builds/converse.website-no-otr.min.js"></script>
+        <script src="builds/converse-no-otr.min.js"></script>
     <![endif]-->
 </head>
 
@@ -239,6 +239,15 @@
             * website and converse.js itself is NOT dependent on it.
             */
             var $ = converse.env.jQuery;
+            $.extend( $.easing, {
+                easeInOutExpo: function (x, t, b, c, d) {
+                    if (t==0) return b;
+                    if (t==d) return b+c;
+                    if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
+                    return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
+                },
+            });
+
             $(window).scroll(function() {
                 if ($(".navbar").offset().top > 50) {
                     $(".navbar-fixed-top").addClass("top-nav-collapse");

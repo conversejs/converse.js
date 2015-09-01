@@ -1384,7 +1384,7 @@
                 var $first_msg = this.$content.children('.chat-message:first'),
                     first_msg_date = $first_msg.data('isodate'),
                     last_msg_date, current_msg_date, day_date, $msgs, msg_dates, idx;
-                if (typeof first_msg_date === "undefined") {
+                if (!first_msg_date) {
                     this.appendMessage(attrs);
                     return;
                 }

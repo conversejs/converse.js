@@ -2319,15 +2319,16 @@
                 else { $nick.removeClass('error'); }
 
                 if (ev.type === 'click') {
+                    name = $(ev.target).text();
                     jid = $(ev.target).attr('data-room-jid');
                 } else {
                     $name = this.$el.find('input.new-chatroom-name');
                     $server= this.$el.find('input.new-chatroom-server');
                     server = $server.val();
-                    name = $name.val().trim().toLowerCase();
+                    name = $name.val().trim();
                     $name.val(''); // Clear the input
                     if (name && server) {
-                        jid = Strophe.escapeNode(name) + '@' + server;
+                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server;
                         $name.removeClass('error');
                         $server.removeClass('error');
                         this.model.save({muc_domain: server});
@@ -2341,7 +2342,7 @@
                 chatroom = converse.chatboxviews.showChat({
                     'id': jid,
                     'jid': jid,
-                    'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                    'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                     'nick': nick,
                     'chatroom': true,
                     'box_id' : b64_sha1(jid)
@@ -3009,7 +3010,7 @@
             getRoomJIDAndNick: function (nick) {
                 nick = nick || this.model.get('nick');
                 var room = this.model.get('jid');
-                var node = Strophe.escapeNode(Strophe.getNodeFromJid(room));
+                var node = Strophe.getNodeFromJid(room);
                 var domain = Strophe.getDomainFromJid(room);
                 return node + "@" + domain + (nick !== null ? "/" + nick : "");
             },

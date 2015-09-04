@@ -18,7 +18,10 @@ h5 {
 .navbar-brand {
     padding-top: 7px;
 }
-
+.navbar-brand img {
+    float: left;
+    margin-right: 0.5em;
+}
 
 /*
 Copyright (c) 2012 Terrence Ryan

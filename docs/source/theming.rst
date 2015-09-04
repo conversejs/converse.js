@@ -13,20 +13,27 @@ Theming
 Setting up your environment
 ===========================
 
-In order to theme converse.js, you'll first need to set up a `development_` environment.
+In order to theme converse.js, you first need to set up a :ref:`development` environment.
 
-You'll also want to preview the changes you make in the browser.
+You'll also want to preview the changes you make in your browser, for which a
+webserver will be useful.
 
-To set up the development environment and also start up a web browser which
-will serve the files for you, simply run::
+To both set up the development environment and also start up a web browser to 
+serve the files for you, simply run::
 
     make serve
 
-You can now open http://localhost:8000 in your webbrowser to see the
-converse.js website.
+.. note::
+    To run the "make" commands, you'll need `GNUMake <https://www.gnu.org/software/make>`_
+    installed on your computer. If you use GNU/Linux or \*BSD, it should be installed or
+    available via your package manager. For Mac, I think you need to install XCode and in
+    Windows you can use `Chocolatey <https://chocolatey.org/>`_.
+
+After running ``make serve`` you can open http://localhost:8000 in your webbrowser you'll
+see the converse.js website.
 
 However, when developing or changing the theme, you'll want to load all the
-unminified JS and CSS resources. To do this, open http://localhost:8000/dev.html
+unminified JS and CSS resources as separate files. To do this, open http://localhost:8000/dev.html
 instead.
 
 Mockups
@@ -44,14 +51,15 @@ To see it in your browser, simply open: http://localhost:8000/mockup
 Modifying the HTML templates of Converse.js
 ===========================================
 
-The HTML markup of converse.js is contained small ``.html`` files in the
+The HTML markup of converse.js is contained in small ``.html`` files in the
 ``./src/templates`` directory.
+
+You can modify HTML markup that converse.js generates by modifying these files.
 
 Modifying the CSS
 =================
 
-The CSS files are generated from `Sass <http://sass-lang.com>`_ files in
-the ``./sass`` directory.
+The CSS files are generated from `Sass <http://sass-lang.com>`_ files in the ``./sass`` directory.
 
 To generate the CSS you can run::
 

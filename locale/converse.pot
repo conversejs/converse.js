@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-24 17:05+0200\n"
+"POT-Creation-Date: 2015-09-04 22:48+1000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -851,7 +851,9 @@ msgid "Return"
 msgstr ""
 
 #: converse.js:5654
-msgid "The provider rejected your registration attempt. "
+msgid ""
+"The provider rejected your registration attempt. Please check the values you "
+"entered for correctness."
 msgstr ""
 
 #: converse.js:5810

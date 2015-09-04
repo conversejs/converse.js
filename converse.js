@@ -1384,7 +1384,7 @@
                 var $first_msg = this.$content.children('.chat-message:first'),
                     first_msg_date = $first_msg.data('isodate'),
                     last_msg_date, current_msg_date, day_date, $msgs, msg_dates, idx;
-                if (!first_msg_date) {
+                if (typeof first_msg_date === "undefined") {
                     this.appendMessage(attrs);
                     return;
                 }
@@ -4581,7 +4581,7 @@
                  * If all contacts are filtered out (i.e. hidden), then the
                  * group must be filtered out as well.
                  */
-                var matches;
+                var matches, rejects;
                 if (q.length === 0) {
                     if (this.model.get('state') === OPENED) {
                         this.model.contacts.each(function (item) {
@@ -4790,6 +4790,7 @@
             },
 
             filter: function (query, type) {
+                var matches;
                 query = query.toLowerCase();
                 if (type === 'groups') {
                     _.each(this.getAll(), function (view, idx) {

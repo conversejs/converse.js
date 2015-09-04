@@ -6,8 +6,6 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="chat-message ' +
 ((__t = (extra_classes)) == null ? '' : __t) +
-'" data-isodate="' +
-((__t = (isodate)) == null ? '' : __t) +
 '">\n    <span class="chat-message-' +
 ((__t = (sender)) == null ? '' : __t) +
 '">' +
@@ -542,8 +540,6 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="chat-message ' +
 ((__t = (extra_classes)) == null ? '' : __t) +
-'" data-isodate="' +
-((__t = (isodate)) == null ? '' : __t) +
 '">\n    <span class="chat-message-' +
 ((__t = (sender)) == null ? '' : __t) +
 '">' +
@@ -562,7 +558,7 @@ this["templates"]["new_day"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<time class="chat-date" data-isodate="' +
+__p += '<time class="chat-date" datetime="' +
 ((__t = (isodate)) == null ? '' : __t) +
 '">' +
 ((__t = (datestring)) == null ? '' : __t) +

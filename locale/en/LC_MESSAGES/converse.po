@@ -870,7 +870,7 @@ msgstr "Password:"
 
 #: converse.js:5812
 msgid "Click here to log in anonymously"
-msgstr "This room is not anonymous"
+msgstr "Click here to log in anonymously"
 
 #: converse.js:5813
 msgid "Log In"

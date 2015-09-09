@@ -4457,7 +4457,7 @@
                     if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
                         // Another resource has changed its status, we'll update ours as well.
                         converse.xmppstatus.save({'status': chat_status});
-                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message}); }
+                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message.text()}); }
                     }
                     return;
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {

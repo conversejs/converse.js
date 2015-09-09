@@ -11,6 +11,7 @@
 } (this, function ($, mock, test_utils, utils) {
     var $pres = converse_api.env.$pres;
     var $msg = converse_api.env.$msg;
+    var Strophe = converse_api.env.Strophe;
 
     return describe("ChatRooms", $.proxy(function (mock, test_utils) {
         describe("A Chat Room", $.proxy(function () {
@@ -19,6 +20,13 @@
                     test_utils.closeAllChatBoxes();
                     test_utils.clearBrowserStorage();
                 });
+            });
+
+            it("can have spaces and special characters in its name", function () {
+                test_utils.openChatRoom('lounge & leisure', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get(
+                        Strophe.escapeNode('lounge & leisure')+'@localhost');
+                expect(view instanceof converse.ChatRoomView).toBe(true);
             });
 
             it("shows users currently present in the room", $.proxy(function () {

@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * #462 Fix MUC rooms with names containing special characters not working [1st8]
+* #468 Fix [object Object] being sometimes shown as status [1st8]
 
 0.9.5 (2015-08-24)
 ------------------

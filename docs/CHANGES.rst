@@ -9,6 +9,7 @@ Changelog
 * #440 null added as resource to contact [jcbrand]
 * Add new event serviceDiscovered [jcbrand]
 * Add a new configuration setting `muc_history_max_stanzas <https://conversejs.org/docs/html/configuration.html#muc_history_max_stanzas>`_. [jcbrand]
+* #462 Fix MUC rooms with names containing special characters not working [1st8]
 
 0.9.4 (2015-07-04)
 ------------------

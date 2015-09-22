@@ -107,8 +107,8 @@
         },
         refreshWebkit: function () {
             /* This works around a webkit bug. Refresh the browser's viewport,
-            * otherwise chatboxes are not moved along when one is closed.
-            */
+             * otherwise chatboxes are not moved along when one is closed.
+             */
             if ($.browser.webkit) {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';

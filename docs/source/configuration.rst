@@ -122,6 +122,15 @@ Allow users to add one another as contacts. If this is set to false, the
 sections will all not appear. Additionally, all incoming contact requests will be
 ignored.
 
+allow_dragresize
+----------------
+
+* Default: ``true``
+
+Allow users to resize chats by dragging the edges. Currently only supports
+vertical resizing, horizontal resizing coming soon.
+
+
 allow_muc
 ---------
 

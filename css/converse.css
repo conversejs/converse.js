@@ -1279,14 +1279,30 @@
   #conversejs .minimized-chats-flyout.minimized {
     height: auto; }
   #conversejs .dragresize {
-    position: absolute;
-    width: 200px;
-    height: 5px;
     background: transparent;
     border: 0;
+    margin: 0;
+    position: absolute;
     top: 0;
-    margin-left: 0;
-    cursor: n-resize;
-    z-index: 20; }
+    z-index: 20;
+  }
+  #conversejs .dragresize-top {
+        cursor: n-resize;
+        height: 5px;
+        width: 100%;
+}
+  #conversejs .dragresize-left {
+        cursor: w-resize;
+        width: 5px;
+        height: 100%;
+        left: 0;
+}
+  #conversejs .dragresize-topleft {
+        cursor: nw-resize;
+        width: 15px;
+        height: 15px;
+        top: 0;
+        left: 0;
+}
 
 /*# sourceMappingURL=converse.css.map */

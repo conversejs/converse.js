@@ -248,7 +248,7 @@
 
   .left {
       float: left;
-   } 
+   }
    .right {
        float: right;
    }
@@ -344,7 +344,7 @@
       height: 100%;
       text-align: center;
     }
-    
+
     .unread-message-count,
     .chat-head-message-count {
       font-weight: bold;
@@ -1183,7 +1183,7 @@
     height: auto;
     margin: 4px;
   }
-  
+
   form.add-chatroom {
     background: none;
     padding: 0.5em;
@@ -1391,7 +1391,7 @@
     }
 
     .toggle-otr {
-      ul { 
+      ul {
         li {
           padding: 7px;
           background-color: white;
@@ -1504,48 +1504,60 @@
     }
   }
 
-  .minimized-chats-flyout,
-  .box-flyout {
-    border-radius: 4px;
-    bottom: 6px;
-    box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
-    display: block;
-    height: $chat-height;
-    @media screen and (max-width: $mobile-landscape-length) {
-      height: $mobile-chat-height;
-    }
-    position: absolute;
-  }
-
-  .minimized-chats-flyout {
+  .flyout {
     border-radius: 4px;
     bottom: $bottom-gutter-height;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
     position: absolute;
+  }
+
+  .box-flyout {
+    height: $chat-height;
+    @media screen and (max-width: $mobile-landscape-length) {
+      height: $mobile-chat-height;
+    }
+  }
+
+  .minimized-chats-flyout {
     height: auto;
-    width: 130px;
+    width: $minimized-chats-width;;
     .chat-head-chatroom,
     .chat-head {
       border-radius: 4px;
-      width: 130px;
+      width: $minimized-chats-width;
       height: 35px;
       margin-bottom: 1px;
     }
-  }
-  .minimized-chats-flyout.minimized {
-    height: auto;
+    &.minimized {
+      height: auto;
+    }
   }
 
   .dragresize {
-    position: absolute;
-    width: $chat-width;
-    height: 5px;
     background: transparent;
     border: 0;
+    margin: 0;
+    position: absolute;
     top: 0;
-    margin-left: 0;
-    cursor: n-resize;
     z-index: 20;
+    &-top {
+        cursor: n-resize;
+        height: 5px;
+        width: 100%;
+    }
+    &-left {
+        cursor: w-resize;
+        width: 5px;
+        height: 100%;
+        left: 0;
+    }
+    &-topleft {
+        cursor: nw-resize;
+        width: 15px;
+        height: 15px;
+        top: 0;
+        left: 0;
+    }
   }
 }

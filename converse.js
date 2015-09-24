@@ -660,20 +660,22 @@
             }
         };
 
-        this.applyHeightResistance = function (height) {
-            /* This method applies some resistance/gravity around the
-             * "default_box_height". If "height" is close enough to
-             * default_box_height, then that is returned instead.
+        this.applyDragResistance = function (value, default_value) {
+            /* This method applies some resistance around the
+             * default_value. If value is close enough to
+             * default_value, then default_value is returned instead.
              */
-            if (typeof height === 'undefined') {
-                return converse.default_box_height;
+            if (typeof value === 'undefined') {
+                return undefined;
+            } else if (typeof default_value === 'undefined') {
+                return value;
             }
             var resistance = 10;
-            if ((height !== converse.default_box_height) &&
-                (Math.abs(height - converse.default_box_height) < resistance)) {
-                return converse.default_box_height;
+            if ((value !== default_value) &&
+                (Math.abs(value- default_value) < resistance)) {
+                return default_value;
             }
-            return height;
+            return value;
         };
 
         this.updateMsgCounter = function () {
@@ -743,21 +745,30 @@
             });
 
             $(document).on('mousemove', function (ev) {
-                if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
+                if (!this.resizing || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
-                this.resized_chatbox.resizeChatBox(ev);
+                this.resizing.chatbox.resizeChatBox(ev);
             }.bind(this));
 
             $(document).on('mouseup', function (ev) {
-                if (!this.resized_chatbox || !this.allow_dragresize) { return true; }
+                if (!this.resizing || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
-                var height = this.applyHeightResistance(this.resized_chatbox.height);
+                var height = this.applyDragResistance(
+                        this.resizing.chatbox.height,
+                        this.resizing.chatbox.model.get('default_height')
+                );
+                var width = this.applyDragResistance(
+                        this.resizing.chatbox.width,
+                        this.resizing.chatbox.model.get('default_width')
+                );
                 if (this.connection.connected) {
-                    this.resized_chatbox.model.save({'height': height});
+                    this.resizing.chatbox.model.save({'height': height});
+                    this.resizing.chatbox.model.save({'width': width});
                 } else {
-                    this.resized_chatbox.model.set({'height': height});
+                    this.resizing.chatbox.model.set({'height': height});
+                    this.resizing.chatbox.model.set({'width': width});
                 }
-                this.resized_chatbox = null;
+                this.resizing = null;
             }.bind(this));
 
             $(window).on("blur focus", function (ev) {
@@ -948,31 +959,31 @@
         this.ChatBox = Backbone.Model.extend({
 
             initialize: function () {
-                var height = this.get('height');
+                var height = this.get('height'),
+                    width = this.get('width'),
+                    settings = {
+                    'height': converse.applyDragResistance(height, this.get('default_height')),
+                    'width': converse.applyDragResistance(width, this.get('default_width')),
+                    'num_unread': this.get('num_unread') || 0
+                };
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
-                    this.save({
+                    this.save(_.extend(settings, {
                         // The chat_state will be set to ACTIVE once the chat box is opened
                         // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
                         'chat_state': undefined,
                         'box_id' : b64_sha1(this.get('jid')),
-                        'height': height ? converse.applyHeightResistance(height) : undefined,
                         'minimized': this.get('minimized') || false,
-                        'num_unread': this.get('num_unread') || 0,
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'time_minimized': this.get('time_minimized') || moment(),
                         'time_opened': this.get('time_opened') || moment().valueOf(),
                         'url': '',
                         'user_id' : Strophe.getNodeFromJid(this.get('jid'))
-                    });
+                    }));
                 } else {
-                    this.set({
-                        'height': height ? converse.applyHeightResistance(height) : undefined,
-                        'time_opened': moment(0).valueOf(),
-                        'num_unread': this.get('num_unread') || 0
-                    });
+                    this.set(_.extend(settings, { 'time_opened': moment(0).valueOf() }));
                 }
             },
 
@@ -1204,7 +1215,9 @@
                 'click .end-otr': 'endOTR',
                 'click .auth-otr': 'authOTR',
                 'click .toggle-call': 'toggleCall',
-                'mousedown .dragresize': 'onDragResizeStart'
+                'mousedown .dragresize-top': 'onStartVerticalResize',
+                'mousedown .dragresize-left': 'onStartHorizontalResize',
+                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
             },
 
             initialize: function () {
@@ -1244,8 +1257,10 @@
                             )
                         )
                     );
-                if (typeof this.model.get('height') == 'undefined') {
-                    this.model.set('height', this.$el.find('.box-flyout').height());
+                if (this.model.get('width')) {
+                    // If a custom width is applied (due to drag-resizing),
+                    // then we need to set the width of the .chatbox element as well.
+                    this.$el.css('width', this.model.get('width'));
                 }
                 this.$content = this.$el.find('.chat-content');
                 this.renderToolbar().renderAvatar();
@@ -1323,18 +1338,25 @@
                 return this;
             },
 
-            initHeight: function () {
-                if (typeof this.model.get('height') == 'undefined') {
-                    this.model.set('height', this.$el.find('.box-flyout').height());
-                }
-                return this;
-            },
-
             initDragResize: function () {
-                this.initHeight();
-                this.prev_pageY = 0; // To store last known mouse position
+                /* Determine and store the default box size.
+                 * We need this information for the drag-resizing feature.
+                 */
+                if (typeof this.model.get('height') == 'undefined') {
+                    var $flyout = this.$el.find('.box-flyout');
+                    var height = $flyout.height();
+                    var width = $flyout.width();
+                    this.model.set('height', height);
+                    this.model.set('default_height', height);
+                    this.model.set('width', width);
+                    this.model.set('default_width', width);
+                }
+                // Initialize last known mouse position
+                this.prev_pageY = 0;
+                this.prev_pageX = 0;
                 if (converse.connection.connected) {
                     this.height = this.model.get('height');
+                    this.width = this.model.get('width');
                 }
                 return this;
             },
@@ -1707,26 +1729,66 @@
                 }
             },
 
-            onDragResizeStart: function (ev) {
+            onStartVerticalResize: function (ev) {
                 if (!converse.allow_dragresize) { return true; }
                 // Record element attributes for mouseMove().
                 this.height = this.$el.children('.box-flyout').height();
-                converse.resized_chatbox = this;
+                converse.resizing = {
+                    'chatbox': this,
+                    'direction': 'top'
+                };
                 this.prev_pageY = ev.pageY;
+            },
+
+            onStartHorizontalResize: function (ev) {
+                if (!converse.allow_dragresize) { return true; }
+                this.width = this.$el.children('.box-flyout').width();
+                converse.resizing = {
+                    'chatbox': this,
+                    'direction': 'left'
+                };
+                this.prev_pageX = ev.pageX;
+            },
+
+            onStartDiagonalResize: function (ev) {
+                this.onStartHorizontalResize(ev);
+                this.onStartVerticalResize(ev);
+                converse.resizing.direction = 'topleft';
             },
 
             setChatBoxHeight: function (height) {
                 if (!this.model.get('minimized')) {
-                    this.$el.children('.box-flyout')[0].style.height = converse.applyHeightResistance(height)+'px';
+                    height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    this.$el.children('.box-flyout')[0].style.height = height;
+                }
+            },
+
+            setChatBoxWidth: function (width) {
+                if (!this.model.get('minimized')) {
+                    width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    this.$el[0].style.width = width;
+                    this.$el.children('.box-flyout')[0].style.width = width;
                 }
             },
 
             resizeChatBox: function (ev) {
-                var diff = ev.pageY - this.prev_pageY;
-                if (!diff) { return; }
-                this.height -= diff;
-                this.prev_pageY = ev.pageY;
-                this.setChatBoxHeight(this.height);
+                var diff;
+                if (converse.resizing.direction.indexOf('top') === 0) {
+                    diff = ev.pageY - this.prev_pageY;
+                    if (diff) {
+                        this.height -= diff;
+                        this.prev_pageY = ev.pageY;
+                        this.setChatBoxHeight(this.height);
+                    }
+                }
+                if (converse.resizing.direction.indexOf('left') !== -1) {
+                    diff = this.prev_pageX - ev.pageX;
+                    if (diff) {
+                        this.width += diff;
+                        this.prev_pageX = ev.pageX;
+                        this.setChatBoxWidth(this.width);
+                    }
+                }
             },
 
             clearMessages: function (ev) {
@@ -2027,14 +2089,15 @@
                 if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                     return this.focus();
                 }
+                this.initDragResize();
                 this.$el.fadeIn(function () {
                     if (typeof callback == "function") {
                         callback.apply(this, arguments);
                     }
                     if (converse.connection.connected) {
-                        // Without a connection, we haven't yet initialized localstorage
+                        // Without a connection, we haven't yet initialized
+                        // localstorage
                         this.model.save();
-                        this.initDragResize();
                     }
                     this.setChatState(ACTIVE);
                     this.scrollDown().focus();
@@ -2389,7 +2452,9 @@
             events: {
                 'click a.close-chatbox-button': 'close',
                 'click ul#controlbox-tabs li a': 'switchTab',
-                'mousedown .dragresize': 'onDragResizeStart'
+                'mousedown .dragresize-top': 'onStartVerticalResize',
+                'mousedown .dragresize-left': 'onStartHorizontalResize',
+                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
             },
 
             initialize: function () {
@@ -2748,7 +2813,9 @@
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-participants a': 'toggleOccupants',
                 'keypress textarea.chat-textarea': 'keyPressed',
-                'mousedown .dragresize': 'onDragResizeStart'
+                'mousedown .dragresize-top': 'onStartVerticalResize',
+                'mousedown .dragresize-left': 'onStartHorizontalResize',
+                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
             },
             is_chatroom: true,
 

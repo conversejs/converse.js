@@ -1,5 +1,7 @@
-<div class="box-flyout" {[ if (height) { ]} style="height: {{height}}px" {[ } ]}>
-    <div class="dragresize"></div>
+<div class="box-flyout" style="{[ if (height) { ]} height: {{height}}px; {[ } ]} {[ if (width) { ]} width: {{width}}px; {[ } ]}">
+    <div class="dragresize dragresize-top"></div>
+    <div class="dragresize dragresize-topleft"></div>
+    <div class="dragresize dragresize-left"></div>
     <div class="chat-head controlbox-head">
         <ul id="controlbox-tabs"></ul>
         <a class="close-chatbox-button icon-close"></a>

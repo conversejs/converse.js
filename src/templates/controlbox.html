@@ -1,5 +1,5 @@
-<div class="box-flyout" style="height: {{height}}px">
-    <div class="dragresize dragresize-tm"></div>
+<div class="box-flyout" {[ if (height) { ]} style="height: {{height}}px" {[ } ]}>
+    <div class="dragresize"></div>
     <div class="chat-head controlbox-head">
         <ul id="controlbox-tabs"></ul>
         <a class="close-chatbox-button icon-close"></a>

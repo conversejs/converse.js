@@ -1197,7 +1197,7 @@
                 'click .end-otr': 'endOTR',
                 'click .auth-otr': 'authOTR',
                 'click .toggle-call': 'toggleCall',
-                'mousedown .dragresize-tm': 'onDragResizeStart'
+                'mousedown .dragresize': 'onDragResizeStart'
             },
 
             initialize: function () {
@@ -2017,8 +2017,7 @@
                         callback.apply(this, arguments);
                     }
                     if (converse.connection.connected) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
+                        // Without a connection, we haven't yet initialized localstorage
                         this.model.save();
                         this.initDragResize();
                     }
@@ -2375,7 +2374,7 @@
             events: {
                 'click a.close-chatbox-button': 'close',
                 'click ul#controlbox-tabs li a': 'switchTab',
-                'mousedown .dragresize-tm': 'onDragResizeStart'
+                'mousedown .dragresize': 'onDragResizeStart'
             },
 
             initialize: function () {
@@ -2734,7 +2733,7 @@
                 'click .toggle-call': 'toggleCall',
                 'click .toggle-participants a': 'toggleOccupants',
                 'keypress textarea.chat-textarea': 'keyPressed',
-                'mousedown .dragresize-tm': 'onDragResizeStart'
+                'mousedown .dragresize': 'onDragResizeStart'
             },
             is_chatroom: true,
 

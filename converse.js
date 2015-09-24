@@ -315,7 +315,6 @@
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
             domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
-            default_box_height: 400, // The default height, in pixels, for the control box, chat boxes and chatrooms.
             expose_rid_and_sid: false,
             forward_messages: false,
             hide_muc_server: false,
@@ -355,7 +354,6 @@
             xhr_user_search: false,
             xhr_user_search_url: ''
         };
-
 
         _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -941,8 +939,9 @@
         });
 
         this.ChatBox = Backbone.Model.extend({
+
             initialize: function () {
-                var height = converse.applyHeightResistance(this.get('height'));
+                var height = this.get('height');
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
@@ -952,7 +951,7 @@
                         // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
                         'chat_state': undefined,
                         'box_id' : b64_sha1(this.get('jid')),
-                        'height': height,
+                        'height': height ? converse.applyHeightResistance(height) : undefined,
                         'minimized': this.get('minimized') || false,
                         'num_unread': this.get('num_unread') || 0,
                         'otr_status': this.get('otr_status') || UNENCRYPTED,
@@ -963,7 +962,7 @@
                     });
                 } else {
                     this.set({
-                        'height': height,
+                        'height': height ? converse.applyHeightResistance(height) : undefined,
                         'time_opened': moment(0).valueOf(),
                         'num_unread': this.get('num_unread') || 0
                     });
@@ -1238,6 +1237,9 @@
                             )
                         )
                     );
+                if (typeof this.model.get('height') == 'undefined') {
+                    this.model.set('height', this.$el.find('.box-flyout').height());
+                }
                 this.$content = this.$el.find('.chat-content');
                 this.renderToolbar().renderAvatar();
                 this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
@@ -1312,7 +1314,15 @@
                 return this;
             },
 
+            initHeight: function () {
+                if (typeof this.model.get('height') == 'undefined') {
+                    this.model.set('height', this.$el.find('.box-flyout').height());
+                }
+                return this;
+            },
+
             initDragResize: function () {
+                this.initHeight();
                 this.prev_pageY = 0; // To store last known mouse position
                 if (converse.connection.connected) {
                     this.height = this.model.get('height');
@@ -2386,6 +2396,16 @@
                 }
             },
 
+            render: function () {
+                if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
+                    // TODO: we might need to take prebinding into consideration here.
+                    this.renderLoginPanel();
+                } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
+                    this.renderContactsPanel();
+                }
+                return this;
+            },
+
             giveFeedback: function (message, klass) {
                 var $el = this.$('.conn-feedback');
                 $el.addClass('conn-feedback').text(message);
@@ -2421,16 +2441,6 @@
                 converse.rosterview = new converse.RosterView({model: rostergroups});
                 this.contactspanel.$el.append(converse.rosterview.$el);
                 converse.rosterview.render().fetch().update();
-                return this;
-            },
-
-            render: function () {
-                if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
-                    // TODO: we might need to take prebinding into consideration here.
-                    this.renderLoginPanel();
-                } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
-                    this.renderContactsPanel();
-                }
                 return this;
             },
 
@@ -5945,7 +5955,6 @@
             return this.chatboxes.add({
                 id: 'controlbox',
                 box_id: 'controlbox',
-                height: this.default_box_height,
                 closed: !this.show_controlbox_by_default
             });
         };

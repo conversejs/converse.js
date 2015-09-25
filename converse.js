@@ -1251,17 +1251,21 @@
                             )
                         )
                     );
-                if (this.model.get('width')) {
-                    // If a custom width is applied (due to drag-resizing),
-                    // then we need to set the width of the .chatbox element as well.
-                    this.$el.css('width', this.model.get('width'));
-                }
+                this.setWidth();
                 this.$content = this.$el.find('.chat-content');
                 this.renderToolbar().renderAvatar();
                 this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                 converse.emit('chatBoxOpened', this);
                 setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
+            },
+
+            setWidth: function () {
+                // If a custom width is applied (due to drag-resizing),
+                // then we need to set the width of the .chatbox element as well.
+                if (this.model.get('width')) {
+                    this.$el.css('width', this.model.get('width'));
+                }
             },
 
             onScroll: function (ev) {
@@ -2858,6 +2862,7 @@
                         .html(converse.templates.chatroom(this.model.toJSON()));
                 this.renderChatArea();
                 this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                this.setWidth();
                 setTimeout(converse.refreshWebkit, 50);
                 return this;
             },

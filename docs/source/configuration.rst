@@ -127,9 +127,9 @@ allow_dragresize
 
 * Default: ``true``
 
-Allow users to resize chats by dragging the edges. Currently only supports
-vertical resizing, horizontal resizing coming soon.
-
+Allow users to resize chats by dragging the edges. The min-height and min-width
+CSS properties set on a chat boxes (specifically on the ``#converse.js .chatbox > .box-flyout`` element)
+will be honored, IF they are set in pixels.
 
 allow_muc
 ---------

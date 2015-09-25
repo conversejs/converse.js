@@ -42,6 +42,7 @@ require.config({
         "typeahead":                "components/typeahead.js/index",
         "underscore":               "components/underscore/underscore",
         "utils":                    "src/utils",
+        "polyfill":                 "src/polyfill",
 
         // Off-the-record-encryption
         "bigint":               "src/bigint",

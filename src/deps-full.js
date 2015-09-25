@@ -1,5 +1,6 @@
 define("converse-dependencies", [
     "jquery",
+    "polyfill",
     "utils",
     "otr",
     "moment_with_locales",
@@ -12,7 +13,7 @@ define("converse-dependencies", [
     "backbone.overview",
     "jquery.browser",
     "typeahead"
-], function($, utils, otr, moment, Strophe) {
+], function($, dummy, utils, otr, moment, Strophe) {
     return _.extend({
         'underscore': _,
         'jQuery': $,

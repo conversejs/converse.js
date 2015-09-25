@@ -903,7 +903,7 @@
     #conversejs .chatroom .chat-area {
       float: left;
       height: 100%;
-      width: 200px; }
+      min-width: 200px; }
     #conversejs .chatroom .invited-contact {
       margin: -1px 0 0 -1px;
       width: 100px;
@@ -1111,7 +1111,7 @@
     padding: 0;
     position: relative;
     height: 87px;
-    width: 200px; }
+    min-width: 200px; }
     @media screen and (max-width: 480px) {
       #conversejs form.sendXMPPMessage {
         width: 100%; } }
@@ -1250,24 +1250,18 @@
     padding: 0.75em 0.5em 0.5em 0.5em; }
     #conversejs .set-xmpp-status .dropdown dd ul {
       z-index: 22; }
-  #conversejs .minimized-chats-flyout,
-  #conversejs .box-flyout {
+  #conversejs .flyout {
     border-radius: 4px;
     bottom: 6px;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
-    height: 400px;
     position: absolute; }
+  #conversejs .box-flyout {
+    height: 400px; }
     @media screen and (max-width: 480px) {
-      #conversejs .minimized-chats-flyout,
       #conversejs .box-flyout {
         height: 400px; } }
   #conversejs .minimized-chats-flyout {
-    border-radius: 4px;
-    bottom: 35px;
-    box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
-    display: block;
-    position: absolute;
     height: auto;
     width: 130px; }
     #conversejs .minimized-chats-flyout .chat-head-chatroom,
@@ -1276,33 +1270,29 @@
       width: 130px;
       height: 35px;
       margin-bottom: 1px; }
-  #conversejs .minimized-chats-flyout.minimized {
-    height: auto; }
+    #conversejs .minimized-chats-flyout.minimized {
+      height: auto; }
   #conversejs .dragresize {
     background: transparent;
     border: 0;
     margin: 0;
     position: absolute;
     top: 0;
-    z-index: 20;
-  }
-  #conversejs .dragresize-top {
-        cursor: n-resize;
-        height: 5px;
-        width: 100%;
-}
-  #conversejs .dragresize-left {
-        cursor: w-resize;
-        width: 5px;
-        height: 100%;
-        left: 0;
-}
-  #conversejs .dragresize-topleft {
-        cursor: nw-resize;
-        width: 15px;
-        height: 15px;
-        top: 0;
-        left: 0;
-}
+    z-index: 20; }
+    #conversejs .dragresize-top {
+      cursor: n-resize;
+      height: 5px;
+      width: 100%; }
+    #conversejs .dragresize-left {
+      cursor: w-resize;
+      width: 5px;
+      height: 100%;
+      left: 0; }
+    #conversejs .dragresize-topleft {
+      cursor: nw-resize;
+      width: 15px;
+      height: 15px;
+      top: 0;
+      left: 0; }
 
 /*# sourceMappingURL=converse.css.map */

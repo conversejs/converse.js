@@ -297,8 +297,8 @@
 
   .toggle-controlbox,
   #minimized-chats {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: $chatbox-border-radius;
+    border-top-right-radius: $chatbox-border-radius;
     float: right;
     margin: 0 $chat-gutter;
     font-weight: bold;
@@ -334,8 +334,8 @@
     width: 130px;
 
     #toggle-minimized-chats {
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
+      border-top-left-radius: $chatbox-border-radius;
+      border-top-right-radius: $chatbox-border-radius;
       background-color: ivory;
       position: relative;
       padding: 10px 0 0 0;
@@ -370,7 +370,7 @@
 
       .chat-head {
         font-size: 100%;
-        border-radius: 4px;
+        border-radius: $chatbox-border-radius;
         padding: 3px 0 0 5px;
         margin: 0 0 1px 0;
         box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
@@ -382,8 +382,8 @@
 
   .chat-body {
     background-color: white;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: $chatbox-border-radius;
+    border-bottom-left-radius: $chatbox-border-radius;
     height: 289px;
     @include calc(height, '100% - #{$chat-head-height}');
     border-top: 0;
@@ -423,8 +423,8 @@
     overflow-y: auto;
     text-overflow: ellipsis;
     background: #27774A;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: $chatbox-border-radius;
+    border-bottom-left-radius: $chatbox-border-radius;
   }
 
   .chat-blink {
@@ -686,8 +686,8 @@
     height: 100%;
     color: $text-color;
     overflow-y: auto;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: $chatbox-border-radius;
+    border-bottom-left-radius: $chatbox-border-radius;
   }
 
   .chatroom-form {
@@ -1027,7 +1027,7 @@
     .chat-area {
       float: left;
       height: 100%;
-      width: $chat-width;
+      min-width: $chat-width;
     }
     .invited-contact {
       margin: -1px 0 0 -1px;
@@ -1043,7 +1043,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       border-left: 1px solid #AAA;
-      border-bottom-right-radius: 4px;
+      border-bottom-right-radius: $chatbox-border-radius;
       width: 100px;
       height: 100%;
       label {
@@ -1058,8 +1058,8 @@
   .chatroom-form,
   .controlbox-pane {
     background-color: white;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: $chatbox-border-radius;
+    border-bottom-right-radius: $chatbox-border-radius;
     border: 0;
     font-size: $font-size;
     overflow-y: auto;
@@ -1214,16 +1214,16 @@
 
   /* @group Tabs */
   .chat-head {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: $chatbox-border-radius;
+    border-top-right-radius: $chatbox-border-radius;
     color: #ffffff;
     font-size: 100%;
     margin: 0;
     padding: 6px;
     &.controlbox-head {
       background-color: $chat-head-color;
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
+      border-top-left-radius: $chatbox-border-radius;
+      border-top-right-radius: $chatbox-border-radius;
       color: $chat-head-inverse-text-color;
       height: $chat-head-height;
       margin: 0;
@@ -1259,8 +1259,8 @@
         a {
           background-color: white;
           border-bottom: 1px solid $border-color;
-          border-top-left-radius: 4px;
-          border-top-right-radius: 4px;
+          border-top-left-radius: $chatbox-border-radius;
+          border-top-right-radius: $chatbox-border-radius;
           box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
           color: #888;
           display: block;
@@ -1284,12 +1284,12 @@
 
   form.sendXMPPMessage {
     -moz-background-clip: padding;
-    -moz-border-radius: 4px;
+    -moz-border-radius: $chatbox-border-radius;
     -webkit-background-clip: padding-box;
-    -webkit-border-radius: 4px;
+    -webkit-border-radius: $chatbox-border-radius;
     background-clip: padding-box;
     background: white;
-    border-radius: 4px;
+    border-radius: $chatbox-border-radius;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-top: 1px solid #BBB;
@@ -1298,7 +1298,7 @@
     padding: 0;
     position: relative;
     height: #{$chat-textarea-height + $toolbar-height};
-    width: $chat-width;
+    min-width: $chat-width;
     @media screen and (max-width: $mobile-landscape-length) {
         width: 100%;
     }
@@ -1505,8 +1505,8 @@
   }
 
   .flyout {
-    border-radius: 4px;
-    bottom: $bottom-gutter-height;
+    border-radius: $chatbox-border-radius;
+    bottom: $chatbox-hover-height;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
     position: absolute;
@@ -1524,7 +1524,7 @@
     width: $minimized-chats-width;;
     .chat-head-chatroom,
     .chat-head {
-      border-radius: 4px;
+      border-radius: $chatbox-border-radius;
       width: $minimized-chats-width;
       height: 35px;
       margin-bottom: 1px;

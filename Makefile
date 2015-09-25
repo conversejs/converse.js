@@ -13,57 +13,60 @@ HTTPSERVE		?= ./node_modules/.bin/http-server
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
-# the i18n builder cannot share the environment and doctrees with the others
-I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
 
-.PHONY: all help clean html epub changes linkcheck gettext po pot po2json merge release css minjs build
-
+.PHONY: help
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all        A synonym for 'make dev'."
-	@echo " build      Create minified builds of converse.js and all its dependencies."
-	@echo " changes    Make an overview of all changed/added/deprecated items added to the documentation."
-	@echo " clean      Remove downloaded Node.js, bower and Ruby files."
-	@echo " css        Generate CSS from the Sass files."
-	@echo " cssmin     Minify the CSS files."
-	@echo " dev        Set up the development environment. To force a fresh start, run 'make clean' first."
-	@echo " epub       Export the documentation to epub."
-	@echo " gettext    Make PO message catalogs of the documentation."
-	@echo " html       Make standalone HTML files of the documentation."
-	@echo " linkcheck  Check all documentation external links for integrity."
-	@echo " po         Generate gettext PO files for each i18n language."
-	@echo " po2json    Generate JSON files from the language PO files."
-	@echo " pot        Generate a gettext POT file to be used for translations."
-	@echo " release    Make a new minified release."
-	@echo " serve      Serve this directory via a webserver on port 8000."
-	@echo " watch      Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
+	@echo " all           A synonym for 'make dev'."
+	@echo " build         Create minified builds of converse.js and all its dependencies."
+	@echo " changes       Make an overview of all changed/added/deprecated items added to the documentation."
+	@echo " clean         Remove downloaded the stamp-* guard files as well as all NPM, bower and Ruby packages."
+	@echo " css           Generate CSS from the Sass files."
+	@echo " cssmin        Minify the CSS files."
+	@echo " dev           Set up the development environment. To force a fresh start, run 'make clean' first."
+	@echo " epub          Export the documentation to epub."
+	@echo " html          Make standalone HTML files of the documentation."
+	@echo " linkcheck     Check all documentation external links for integrity."
+	@echo " po            Generate gettext PO files for each i18n language."
+	@echo " po2json       Generate JSON files from the language PO files."
+	@echo " pot           Generate a gettext POT file to be used for translations."
+	@echo " release       Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
+	@echo " serve         Serve this directory via a webserver on port 8000."
+	@echo " stamp-bower   Install bower dependencies and create the guard file stamp-bower which will prevent those dependencies from being installed again."
+	@echo " stamp-npm     Install NPM dependencies and create the guard file stamp-npm which will prevent those dependencies from being installed again."
+	@echo " stamp-bundler Install Bundler (Ruby) dependencies and create the guard file stamp-bundler which will prevent those dependencies from being installed again."
+	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
 
+.PHONY: all
 all: dev
 
 ########################################################################
 ## Miscellaneous
 
+.PHONY: serve
 serve: stamp-npm
 	$(HTTPSERVE) -p 8000
 
 ########################################################################
 ## Translation machinery
 
+.PHONY: pot
 pot:
 	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.7.0 -c --language="python";
 
+.PHONY: po
 po:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec msgmerge {}/LC_MESSAGES/converse.po ./locale/converse.pot -U \;
 
-merge: po
-
+.PHONY: po2json
 po2json:
 	find ./locale -maxdepth 1 -mindepth 1 -type d -exec $(PO2JSON) -p -f jed -d converse {}/LC_MESSAGES/converse.po {}/LC_MESSAGES/converse.json \;
 
 ########################################################################
 ## Release management
 
+.PHONY: release
 release:
 	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\.[0-9]\.[0-9]/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
@@ -95,29 +98,36 @@ stamp-bundler:
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
 	touch stamp-bundler
 
+.PHONY: clean
 clean::
 	rm -f stamp-npm stamp-bower stamp-bundler
 	rm -rf node_modules components .bundle
 
+.PHONY: dev
 dev: stamp-bower stamp-bundler
 
 ########################################################################
 ## Builds
 
-sass::
+.PHONY: css
+css: converse.css
+
+converse.css:: stamp-bundler
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
-css:: stamp-bundler sass cssmin
-
-watch:: stamp-bundler
+.PHONY: watch
+watch: stamp-bundler
 	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css
 
+.PHONY: jsmin
 jsmin:
 	$(GRUNT) jsmin
 
+.PHONY: watch
 cssmin: stamp-npm
 	$(GRUNT) cssmin
 
+.PHONY: build
 build:: stamp-npm
 	$(GRUNT) jst
 	$(GRUNT) minify
@@ -125,34 +135,34 @@ build:: stamp-npm
 ########################################################################
 ## Tests
 
-check:: stamp-npm
+.PHONY: watch
+check: stamp-npm
 	$(GRUNT) jshint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 
 ########################################################################
 ## Documentation
 
+.PHONY: html
 html:
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
+.PHONY: epub
 epub:
 	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(BUILDDIR)/epub
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-gettext:
-	$(SPHINXBUILD) -b gettext $(I18NSPHINXOPTS) $(BUILDDIR)/locale
-	@echo
-	@echo "Build finished. The message catalogs are in $(BUILDDIR)/locale."
-
+.PHONY: changes
 changes:
 	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(BUILDDIR)/changes
 	@echo
 	@echo "The overview file is in $(BUILDDIR)/changes."
 
+.PHONY: linkcheck
 linkcheck:
 	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
 	@echo

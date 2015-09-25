@@ -2541,7 +2541,7 @@
                     this.registerpanel.render().$el.hide();
                 }
                 this.initDragResize();
-                if ($feedback.length) {
+                if ($feedback.length && $feedback.text() !== __('Connecting')) {
                     this.$('.conn-feedback').replaceWith($feedback);
                 }
                 return this;

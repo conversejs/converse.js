@@ -1255,7 +1255,9 @@
     bottom: 6px;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
-    position: absolute; }
+    position: absolute;
+    min-width: 200px;
+    min-height: 200px; }
   #conversejs .box-flyout {
     height: 400px; }
     @media screen and (max-width: 480px) {

@@ -1336,8 +1336,8 @@
                 /* Determine and store the default box size.
                  * We need this information for the drag-resizing feature.
                  */
+                var $flyout = this.$el.find('.box-flyout');
                 if (typeof this.model.get('height') == 'undefined') {
-                    var $flyout = this.$el.find('.box-flyout');
                     var height = $flyout.height();
                     var width = $flyout.width();
                     this.model.set('height', height);
@@ -1345,6 +1345,10 @@
                     this.model.set('width', width);
                     this.model.set('default_width', width);
                 }
+                var min_width = $flyout.css('min-width');
+                var min_height = $flyout.css('min-height');
+                this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
+                this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;
@@ -1770,7 +1774,7 @@
                 if (converse.resizing.direction.indexOf('top') === 0) {
                     diff = ev.pageY - this.prev_pageY;
                     if (diff) {
-                        this.height -= diff;
+                        this.height = ((this.height-diff) > this.model.get('min_height')) ? (this.height-diff) : this.model.get('min_height');
                         this.prev_pageY = ev.pageY;
                         this.setChatBoxHeight(this.height);
                     }
@@ -1778,7 +1782,7 @@
                 if (converse.resizing.direction.indexOf('left') !== -1) {
                     diff = this.prev_pageX - ev.pageX;
                     if (diff) {
-                        this.width += diff;
+                        this.width = ((this.width+diff) > this.model.get('min_width')) ? (this.width+diff) : this.model.get('min_width');
                         this.prev_pageX = ev.pageX;
                         this.setChatBoxWidth(this.width);
                     }

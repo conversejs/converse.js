@@ -1774,7 +1774,7 @@
                 if (converse.resizing.direction.indexOf('top') === 0) {
                     diff = ev.pageY - this.prev_pageY;
                     if (diff) {
-                        this.height = ((this.height-diff) > this.model.get('min_height')) ? (this.height-diff) : this.model.get('min_height');
+                        this.height = ((this.height-diff) > (this.model.get('min_height') || 0)) ? (this.height-diff) : this.model.get('min_height');
                         this.prev_pageY = ev.pageY;
                         this.setChatBoxHeight(this.height);
                     }
@@ -1782,7 +1782,7 @@
                 if (converse.resizing.direction.indexOf('left') !== -1) {
                     diff = this.prev_pageX - ev.pageX;
                     if (diff) {
-                        this.width = ((this.width+diff) > this.model.get('min_width')) ? (this.width+diff) : this.model.get('min_width');
+                        this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
                         this.prev_pageX = ev.pageX;
                         this.setChatBoxWidth(this.width);
                     }
@@ -2839,7 +2839,7 @@
                 this.occupantsview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
 
                 this.occupantsview.chatroomview = this;
-                this.render();
+                this.render().$el.hide();
                 this.occupantsview.model.fetch({add:true});
                 this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                 this.fetchMessages();

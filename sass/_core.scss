@@ -1507,15 +1507,15 @@
   .flyout {
     border-radius: $chatbox-border-radius;
     bottom: $chatbox-hover-height;
-    box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
     position: absolute;
-    min-width: $chat-width;
-    min-height: $chat-height/2;
   }
 
   .box-flyout {
+    box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     height: $chat-height;
+    min-width: $chat-width;
+    min-height: $chat-height/2;
     @media screen and (max-width: $mobile-landscape-length) {
       height: $mobile-chat-height;
     }
@@ -1523,13 +1523,14 @@
 
   .minimized-chats-flyout {
     height: auto;
-    width: $minimized-chats-width;;
+    width: $minimized-chats-width;
+    bottom: $bottom-gutter-height;
     .chat-head-chatroom,
     .chat-head {
       border-radius: $chatbox-border-radius;
       width: $minimized-chats-width;
       height: 35px;
-      margin-bottom: 1px;
+      margin-bottom: 0.2em;
     }
     &.minimized {
       height: auto;

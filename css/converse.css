@@ -1253,25 +1253,26 @@
   #conversejs .flyout {
     border-radius: 4px;
     bottom: 6px;
-    box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     display: block;
-    position: absolute;
+    position: absolute; }
+  #conversejs .box-flyout {
+    box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
+    height: 400px;
     min-width: 200px;
     min-height: 200px; }
-  #conversejs .box-flyout {
-    height: 400px; }
     @media screen and (max-width: 480px) {
       #conversejs .box-flyout {
         height: 400px; } }
   #conversejs .minimized-chats-flyout {
     height: auto;
-    width: 130px; }
+    width: 130px;
+    bottom: 35px; }
     #conversejs .minimized-chats-flyout .chat-head-chatroom,
     #conversejs .minimized-chats-flyout .chat-head {
       border-radius: 4px;
       width: 130px;
       height: 35px;
-      margin-bottom: 1px; }
+      margin-bottom: 0.2em; }
     #conversejs .minimized-chats-flyout.minimized {
       height: auto; }
   #conversejs .dragresize {

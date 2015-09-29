@@ -8,11 +8,11 @@
             <input name="jid" placeholder="{{placeholder_username}}">
             <label>{{label_password}}</label>
             <input type="password" name="password" placeholder="{{placeholder_password}}">
-            <input class="submit" type="submit" value="{{label_login}}">
+            <button class="submit" type="submit">{{label_login}}</button>
             <span class="conn-feedback"></span>
         {[ } ]}
         {[ if (authentication == ANONYMOUS) { ]}
-            <input type="submit" class="submit login-anon" value="{{label_anon_login}}"/>
+            <button type="submit" class="submit login-anon">{{label_anon_login}}</button>
         {[ } ]}
         {[ if (authentication == PREBIND) { ]}
             <p>Disconnected.</p>

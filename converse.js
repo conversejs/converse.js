@@ -4313,7 +4313,7 @@
                  */
                 var id = iq.getAttribute('id');
                 var from = iq.getAttribute('from');
-                if (from && from !== "" && from != converse.bare_jid) {
+                if (from && from !== "" && Strophe.getNodeFromJid(from) != converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
                     converse.connection.send(
                         $iq({type: 'error', id: id, from: converse.connection.jid})

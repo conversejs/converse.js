@@ -932,7 +932,14 @@
             }
         });
 
-        this.Message = Backbone.Model;
+        this.Message = Backbone.Model.extend({
+            idAttribute: 'msgid',
+            defaults: function(){
+                return {
+                    msgid: converse.connection.getUniqueId()
+                };
+            }
+        });
         this.Messages = Backbone.Collection.extend({
             model: converse.Message,
             comparator: 'time'
@@ -1087,7 +1094,7 @@
                         this.trigger('showReceivedOTRMessage', msg);
                     }.bind(this));
                     this.otr.on('io', function (msg) {
-                        this.trigger('sendMessage', msg);
+                        this.trigger('sendMessage', new converse.Message({ message: msg }));
                     }.bind(this));
                     this.otr.on('error', function (msg) {
                         this.trigger('showOTRError', msg);
@@ -1498,6 +1505,7 @@
                     extra_classes += ' mentioned';
                 }
                 return $(template({
+                        msgid: attrs.msgid,
                         'sender': attrs.sender,
                         'time': msg_time.format('hh:mm'),
                         'isodate': msg_time.format(),
@@ -1553,30 +1561,29 @@
                 }
             },
 
-            sendMessage: function (text) {
+            sendMessage: function (message) {
                 /* Responsible for sending off a text message.
                  *
                  *  Parameters:
-                 *    (string) text - The chat message text.
+                 *    (Message) message - The chat message
                  */
                 // TODO: We might want to send to specfic resources. Especially in the OTR case.
-                var timestamp = (new Date()).getTime();
                 var bare_jid = this.model.get('jid');
-                var message = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: timestamp})
-                    .c('body').t(text).up()
+                var messageStanza = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: message.get('msgid')})
+                    .c('body').t(message.get('message')).up()
                     .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
 
                 if (this.model.get('otr_status') != UNENCRYPTED) {
                     // OTR messages aren't carbon copied
-                    message.c('private', {'xmlns': Strophe.NS.CARBONS});
+                    messageStanza.c('private', {'xmlns': Strophe.NS.CARBONS});
                 }
-                converse.connection.send(message);
+                converse.connection.send(messageStanza);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
-                    var forwarded = $msg({to:converse.bare_jid, type:'chat', id:timestamp})
+                    var forwarded = $msg({ to: converse.bare_jid, type: 'chat', id: message.get('msgid') })
                                     .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                                     .c('delay', {xmns:'urn:xmpp:delay',stamp:timestamp}).up()
-                                    .cnode(message.tree());
+                                    .cnode(messageStanza.tree());
                     converse.connection.send(forwarded);
                 }
             },
@@ -1618,13 +1625,13 @@
                     // We only save unencrypted messages.
                     var fullname = converse.xmppstatus.get('fullname');
                     fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
-                    this.model.messages.create({
+                    var message = this.model.messages.create({
                         fullname: fullname,
                         sender: 'me',
                         time: moment().format(),
                         message: text
                     });
-                    this.sendMessage(text);
+                    this.sendMessage(message);
                 }
             },
 

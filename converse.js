@@ -822,7 +822,7 @@
                         return this.ping();
                     }
                     return true;
-                });
+                }.bind(converse));
             }
         };
 

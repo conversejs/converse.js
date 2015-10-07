@@ -13,8 +13,8 @@
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
 
-    return describe("ChatRooms", $.proxy(function (mock, test_utils) {
-        describe("A Chat Room", $.proxy(function () {
+    return describe("ChatRooms", function (mock, test_utils) {
+        describe("A Chat Room", function () {
             beforeEach(function () {
                 runs(function () {
                     test_utils.closeAllChatBoxes();
@@ -29,7 +29,7 @@
                 expect(view instanceof converse.ChatRoomView).toBe(true);
             });
 
-            it("shows users currently present in the room", $.proxy(function () {
+            it("shows users currently present in the room", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 var name;
                 var view = this.chatboxviews.get('lounge@localhost'),
@@ -79,9 +79,9 @@
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
                     expect($participants.find('li').length).toBe(i);
                 }
-            }, converse));
+            }.bind(converse));
 
-            it("indicates moderators by means of a special css class and tooltip", $.proxy(function () {
+            it("indicates moderators by means of a special css class and tooltip", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 var view = this.chatboxviews.get('lounge@localhost');
 
@@ -102,9 +102,9 @@
                 expect($(occupant).text()).toBe("moderatorman");
                 expect($(occupant).attr('class')).toBe('moderator');
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
-            }, converse));
+            }.bind(converse));
 
-            it("allows the user to invite their roster contacts to enter the chat room", $.proxy(function () {
+            it("allows the user to invite their roster contacts to enter the chat room", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 spyOn(window, 'prompt').andCallFake(function () {
@@ -132,9 +132,9 @@
                     $sugg.trigger('click');
                     expect(window.prompt).toHaveBeenCalled();
                 });
-            }, converse));
+            }.bind(converse));
 
-            it("can be joined automatically, based upon a received invite", $.proxy(function () {
+            it("can be joined automatically, based upon a received invite", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(window, 'confirm').andCallFake(function () {
                     return true;
@@ -162,9 +162,9 @@
                 expect(converse.chatboxes.models.length).toBe(2);
                 expect(converse.chatboxes.models[0].id).toBe('controlbox');
                 expect(converse.chatboxes.models[1].id).toBe(room_jid);
-            }, converse));
+            }.bind(converse));
 
-            it("shows received groupchat messages", $.proxy(function () {
+            it("shows received groupchat messages", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 var view = this.chatboxviews.get('lounge@localhost');
@@ -182,9 +182,9 @@
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-message-content').text()).toBe(text);
                 expect(converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
-            }, converse));
+            }.bind(converse));
 
-            it("plays a sound when the current user is mentioned (if configured)", $.proxy(function () {
+            it("plays a sound when the current user is mentioned (if configured)", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 converse.play_sounds = true;
@@ -223,9 +223,9 @@
                 view.onChatRoomMessage(message.nodeTree);
                 expect(converse.playNotification, 1);
                 converse.play_sounds = false;
-            }, converse));
+            }.bind(converse));
 
-            it("shows sent groupchat messages", $.proxy(function () {
+            it("shows sent groupchat messages", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 var view = this.chatboxviews.get('lounge@localhost');
@@ -248,9 +248,9 @@
                 expect($chat_content.find('.chat-message-content').last().text()).toBe(text);
                 // We don't emit an event if it's our own message
                 expect(converse.emit.callCount, 1);
-            }, converse));
+            }.bind(converse));
 
-            it("informs users if their nicknames has been changed.", $.proxy(function () {
+            it("informs users if their nicknames has been changed.", function () {
                 /* The service then sends two presence stanzas to the full JID
                  * of each occupant (including the occupant who is changing his
                  * or her room nickname), one of type "unavailable" for the old
@@ -286,7 +286,7 @@
                  *  </x>
                  *  </presence>
                  */
-                var __ = $.proxy(utils.__, converse);
+                var __ = utils.__.bind(converse);
                 test_utils.openChatRoom('lounge', 'localhost', 'oldnick');
                 var view = this.chatboxviews.get('lounge@localhost');
                 var $chat_content = view.$el.find('.chat-content');
@@ -360,9 +360,9 @@
                 $participants = view.$('.participant-list');
                 expect($participants.children().length).toBe(1);
                 expect($participants.children().first(0).text()).toBe("newnick");
-            }, converse));
+            }.bind(converse));
 
-            it("informs users if they have been kicked out of the chat room", $.proxy(function () {
+            it("informs users if they have been kicked out of the chat room", function () {
                 /*  <presence
                  *      from='harfleur@chat.shakespeare.lit/pistol'
                  *      to='pistol@shakespeare.lit/harfleur'
@@ -399,9 +399,9 @@
                 expect(view.$('.participants').is(':visible')).toBeFalsy();
                 var $chat_body = view.$('.chat-body');
                 expect($chat_body.html().trim().indexOf('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>')).not.toBe(-1);
-            }, converse));
+            }.bind(converse));
 
-            it("can be saved to, and retrieved from, browserStorage", $.proxy(function () {
+            it("can be saved to, and retrieved from, browserStorage", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 // We instantiate a new ChatBoxes collection, which by default
                 // will be empty.
@@ -425,7 +425,7 @@
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
                 }
                 this.rosterview.render();
-            }, converse));
+            }.bind(converse));
 
             it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
@@ -460,7 +460,7 @@
             }.bind(converse));
 
 
-            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", $.proxy(function () {
+            it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 var view = this.chatboxviews.get('lounge@localhost'), chatroom = view.model, $el;
                 spyOn(view, 'close').andCallThrough();
@@ -476,11 +476,11 @@
                     expect(view.leave).toHaveBeenCalled();
                     expect(this.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 }.bind(converse));
-            }, converse));
-        }, converse));
+            }.bind(converse));
+        }.bind(converse));
 
-        describe("When attempting to enter a chatroom", $.proxy(function () {
-            beforeEach($.proxy(function () {
+        describe("When attempting to enter a chatroom", function () {
+            beforeEach(function () {
                 var roomspanel = this.chatboxviews.get('controlbox').roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');
                 var $nick = roomspanel.$el.find('input.new-chatroom-nick');
@@ -489,14 +489,14 @@
                 $nick.val('dummy');
                 $server.val('muc.localhost');
                 roomspanel.$el.find('form').submit();
-            }, converse));
+            }.bind(converse));
 
-            afterEach($.proxy(function () {
+            afterEach(function () {
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 view.close();
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the room requires a password", $.proxy(function () {
+            it("will show an error message if the room requires a password", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -518,9 +518,9 @@
                     expect($chat_body.find('form.chatroom-form').length).toBe(1);
                     expect($chat_body.find('legend').text()).toBe('This chatroom requires a password');
                 });
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the room is members-only and the user not included", $.proxy(function () {
+            it("will show an error message if the room is members-only and the user not included", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -533,9 +533,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('You are not on the member list of this room');
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the user has been banned", $.proxy(function () {
+            it("will show an error message if the user has been banned", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -548,9 +548,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('You have been banned from this room');
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if no nickname was specified for the user", $.proxy(function () {
+            it("will show an error message if no nickname was specified for the user", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -563,9 +563,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('No nickname was specified');
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the user is not allowed to have created the room", $.proxy(function () {
+            it("will show an error message if the user is not allowed to have created the room", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -578,9 +578,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe('You are not allowed to create new rooms');
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the user's nickname doesn't conform to room policy", $.proxy(function () {
+            it("will show an error message if the user's nickname doesn't conform to room policy", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -593,9 +593,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("Your nickname doesn't conform to this room's policies");
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the user's nickname is already taken", $.proxy(function () {
+            it("will show an error message if the user's nickname is already taken", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -608,9 +608,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("Your nickname is already taken");
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the room doesn't yet exist", $.proxy(function () {
+            it("will show an error message if the room doesn't yet exist", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -623,9 +623,9 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("This room does not (yet) exist");
-            }, converse));
+            }.bind(converse));
 
-            it("will show an error message if the room has reached it's maximum number of occupants", $.proxy(function () {
+            it("will show an error message if the room has reached it's maximum number of occupants", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -638,7 +638,7 @@
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
                 expect(view.$el.find('.chat-body p').text()).toBe("This room has reached it's maximum number of occupants");
-            }, converse));
-        }, converse));
-    }, converse, mock, test_utils));
+            }.bind(converse));
+        }.bind(converse));
+    }.bind(converse, mock, test_utils));
 }));

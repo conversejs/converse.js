@@ -96,7 +96,7 @@ your browser.
 Websockets provide long-lived, bidirectional connections which do not rely on
 HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
 
-`Prosody <prosody.im>`_ (from version 0.10) supports websocket connections, as
+`Prosody <http://prosody.im>`_ (from version 0.10) supports websocket connections, as
 does the node-xmpp-bosh connection manager.
 
 Overcoming cross-domain request restrictions

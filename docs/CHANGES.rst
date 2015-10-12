@@ -10,6 +10,7 @@ Changelog
 * #472 Fix "Cannot read property 'splitOnce' of undefined" when typing /clear in a chat room. [jcbrand]
 * #493 Roster wasn't being updated after a Roster push update [teseo, jcbrand]
 * #496 Bugfix. Pings weren't being sent out. [teseo, jcbrand]
+* #467 Fix outgoing chat messages not having a msgid when being put into sessionStorage [1st8]
 
 0.9.5 (2015-08-24)
 ------------------

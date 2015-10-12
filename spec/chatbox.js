@@ -779,7 +779,7 @@
                     var chatbox = converse.chatboxes.get(sender_jid);
                     spyOn(converse.connection, 'send');
                     chatbox.set('otr_status', 1); // Set OTR status to UNVERIFIED, to mock an encrypted session
-                    chatbox.trigger('sendMessage', msgtext);
+                    chatbox.trigger('sendMessage', new converse.Message({ message: msgtext }));
                     var $sent = $(converse.connection.send.argsForCall[0][0].tree());
                     expect($sent.find('body').siblings('private').length).toBe(1);
                     expect($sent.find('private').length).toBe(1);

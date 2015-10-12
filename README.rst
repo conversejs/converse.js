@@ -75,7 +75,7 @@ Tests
 
 We use behavior-driven tests written with `jasmine.js <http://pivotal.github.io/jasmine>`_.
 
-Open `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
+Run `LANG=en_EN make check` or open `tests.html <https://github.com/jcbrand/converse.js/blob/master/tests.html>`_
 in your browser, and the tests will run automatically.
 
 -------------

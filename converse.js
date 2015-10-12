@@ -1250,9 +1250,6 @@
 
             onScroll: function (ev) {
                 if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
-                    if (!this.$content.first().hasClass('spinner')) {
-                        this.$content.prepend('<span class="spinner"/>');
-                    }
                     this.fetchArchivedMessages({
                         'before': this.model.messages.at(0).get('archive_id'),
                         'with': this.model.get('jid'),
@@ -1291,6 +1288,11 @@
                  * Then, upon receiving them, call onMessage on the chat box,
                  * so that they are displayed inside it.
                  */
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
+                    return;
+                }
+                this.addSpinner();
                 API.archive.query(_.extend(options, {'groupchat': this.is_chatroom}),
                     function (messages) {
                         this.clearSpinner();
@@ -1345,6 +1347,12 @@
                     this.$content.empty();
                 }
                 return this;
+            },
+
+            addSpinner: function () {
+                if (!this.$content.first().hasClass('spinner')) {
+                    this.$content.prepend('<span class="spinner"/>');
+                }
             },
 
             clearSpinner: function () {

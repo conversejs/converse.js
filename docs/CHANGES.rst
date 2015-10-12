@@ -8,6 +8,7 @@ Changelog
 * #468 Fix [object Object] being sometimes shown as status [1st8]
 * #493 Roster wasn't being updated after a Roster push update [teseo, jcbrand]
 * #496 Bugfix. Pings weren't being sent out. [teseo, jcbrand]
+* Bugfix. Spinner doesn't disappear when scrolling up (when server doesn't support XEP-0313). [jcbrand]
 
 0.9.5 (2015-08-24)
 ------------------

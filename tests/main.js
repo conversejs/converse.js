@@ -42,6 +42,7 @@ require([
         window.sessionStorage.clear();
 
         converse.initialize({
+            i18n: window.locales.en,
             auto_subscribe: false,
             animate: false,
             connection: mock.mock_connection,

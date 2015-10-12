@@ -18,6 +18,7 @@
             connection.connected = false;
             converse._tearDown();
             converse.initialize({
+                i18n: window.locales.en,
                 bosh_service_url: 'localhost',
                 allow_registration: true,
                 auto_subscribe: false,
@@ -41,6 +42,7 @@
             connection.connected = false;
             converse._tearDown();
             converse.initialize({
+                i18n: window.locales.en,
                 animate: false,
                 auto_subscribe: false,
                 bosh_service_url: 'localhost',
@@ -57,6 +59,7 @@
             connection.connected = false;
             converse._tearDown();
             converse.initialize({
+                i18n: window.locales.en,
                 bosh_service_url: 'localhost',
                 allow_registration: true,
                 auto_subscribe: false,

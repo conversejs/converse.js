@@ -14,6 +14,13 @@
     var Strophe = converse_api.env.Strophe;
 
     return describe("ChatRooms", function (mock, test_utils) {
+        beforeEach(function () {
+            runs(function () {
+                test_utils.closeAllChatBoxes();
+                test_utils.clearBrowserStorage();
+            });
+        });
+
         describe("A Chat Room", function () {
             beforeEach(function () {
                 runs(function () {
@@ -477,6 +484,62 @@
                     expect(this.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 }.bind(converse));
             }.bind(converse));
+        }.bind(converse));
+        
+        
+        describe("Each chat room can take special commands", function () {
+            beforeEach(function () {
+                runs(function () {
+                    test_utils.closeAllChatBoxes();
+                    test_utils.clearBrowserStorage();
+                });
+            });
+
+            it("to clear messages", function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost'),
+                    chatroom = view.model,
+                    $chat_content = view.$el.find('.chat-content');
+
+                spyOn(view, 'onChatRoomMessageSubmitted').andCallThrough();
+                spyOn(view, 'clearChatRoomMessages');
+                view.$el.find('.chat-textarea').text('/clear');
+                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                expect(view.onChatRoomMessageSubmitted).toHaveBeenCalled();
+                expect(view.clearChatRoomMessages).toHaveBeenCalled();
+
+            });
+
+            it("to ban a user", function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost'),
+                    chatroom = view.model,
+                    $chat_content = view.$el.find('.chat-content');
+
+                spyOn(view, 'onChatRoomMessageSubmitted').andCallThrough();
+                spyOn(view, 'setAffiliation').andCallThrough();
+                spyOn(view, 'showStatusNotification').andCallThrough();
+                spyOn(view, 'validateRoleChangeCommand').andCallThrough();
+                view.$el.find('.chat-textarea').text('/ban');
+                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                expect(view.onChatRoomMessageSubmitted).toHaveBeenCalled();
+                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.showStatusNotification).toHaveBeenCalledWith(
+                    "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
+                    true
+                );
+                expect(view.setAffiliation).not.toHaveBeenCalled();
+
+                // Call now with the correct amount of arguments.
+                // XXX: Calling onChatRoomMessageSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                view.onChatRoomMessageSubmitted('/ban jid This is the reason');
+                expect(view.validateRoleChangeCommand.callCount).toBe(2);
+                expect(view.showStatusNotification.callCount).toBe(1);
+                expect(view.setAffiliation).toHaveBeenCalled();
+            });
+
         }.bind(converse));
 
         describe("When attempting to enter a chatroom", function () {

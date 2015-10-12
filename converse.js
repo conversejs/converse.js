@@ -2896,6 +2896,21 @@
                 return this.setAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
             },
 
+            validateRoleChangeCommand: function (command, args) {
+                /* Check that a command to change a chat room user's role or
+                 * affiliation has anough arguments.
+                 */
+                // TODO check if first argument is valid
+                if (args.length < 1 || args.length > 2) {
+                    this.showStatusNotification(
+                        __("Error: the \""+command+"\" command takes two arguments, the user's nickname and optionally a reason."),
+                        true
+                    );
+                    return false;
+                }
+                return true;
+            },
+
             onChatRoomMessageSubmitted: function (text) {
                 /* Gets called when the user presses enter to send off a
                  * message in a chat room.
@@ -2903,15 +2918,17 @@
                  * Parameters:
                  *    (String) text - The message text.
                  */
-                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''];
-                var args = match[2].splitOnce(' ');
+                var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
+                    args = match[2] && match[2].splitOnce(' ') || [];
                 switch (match[1]) {
                     case 'admin':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'admin', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     case 'ban':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'outcast', args[1],
                                 undefined, this.onCommandError.bind(this));
@@ -2920,6 +2937,7 @@
                         this.clearChatRoomMessages();
                         break;
                     case 'deop':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'participant', args[1],
                                 undefined, this.onCommandError.bind(this));
@@ -2944,16 +2962,19 @@
                         ]);
                         break;
                     case 'kick':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'none', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     case 'mute':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'visitor', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     case 'member':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'member', args[1],
                                 undefined, this.onCommandError.bind(this));
@@ -2966,16 +2987,19 @@
                         }).tree());
                         break;
                     case 'owner':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'owner', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     case 'op':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'moderator', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     case 'revoke':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.setAffiliation(
                                 this.model.get('jid'), args[0], 'none', args[1],
                                 undefined, this.onCommandError.bind(this));
@@ -2990,6 +3014,7 @@
                         );
                         break;
                     case 'voice':
+                        if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
                                 this.model.get('jid'), args[0], 'participant', args[1],
                                 undefined, this.onCommandError.bind(this));

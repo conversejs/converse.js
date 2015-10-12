@@ -110,9 +110,13 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="box-flyout" style="height: ' +
+__p += '<div class="box-flyout" ';
+ if (height) { ;
+__p += ' style="height: ' +
 ((__t = (height)) == null ? '' : __t) +
-'px">\n    <div class="dragresize dragresize-tm"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <div class="chat-title">\n            ';
+'px" ';
+ } ;
+__p += '>\n    <div class="dragresize"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <div class="chat-title">\n            ';
  if (url) { ;
 __p += '\n                <a href="' +
 ((__t = (url)) == null ? '' : __t) +
@@ -141,14 +145,14 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="box-flyout" style="height: ' +
+__p += '<div class="box-flyout" ';
+ if (height) { ;
+__p += ' style="height: ' +
 ((__t = (height)) == null ? '' : __t) +
-'px"\n    ';
- if (minimized) { ;
-__p += ' style="display:none" ';
+'px" ';
  } ;
-__p += '>\n    <div class="dragresize dragresize-tm"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <a class="configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
-((__t = ( name )) == null ? '' : __t) +
+__p += '>\n    <div class="dragresize"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <a class="configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
+((__t = ( _.escape(name) )) == null ? '' : __t) +
 ' </div>\n        <p class="chatroom-topic"><p/>\n    </div>\n    <div class="chat-body"><span class="spinner centered"/></div>\n</div>\n';
 
 }
@@ -256,11 +260,16 @@ return __p
 
 this["templates"]["controlbox"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="box-flyout" style="height: ' +
+__p += '<div class="box-flyout" ';
+ if (height) { ;
+__p += ' style="height: ' +
 ((__t = (height)) == null ? '' : __t) +
-'px">\n    <div class="dragresize dragresize-tm"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        <a class="close-chatbox-button icon-close"></a>\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+'px" ';
+ } ;
+__p += '>\n    <div class="dragresize"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        <a class="close-chatbox-button icon-close"></a>\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 
 }
 return __p
@@ -544,6 +553,8 @@ __p += '<div class="chat-message ' +
 ((__t = (extra_classes)) == null ? '' : __t) +
 '" data-isodate="' +
 ((__t = (isodate)) == null ? '' : __t) +
+'" data-msgid="' +
+((__t = (msgid)) == null ? '' : __t) +
 '">\n    <span class="chat-message-' +
 ((__t = (sender)) == null ? '' : __t) +
 '">' +
@@ -857,7 +868,7 @@ __p += '<dd class="available-chatroom">\n<a class="open-room" data-room-jid="' +
 '"\n   title="' +
 ((__t = (open_title)) == null ? '' : __t) +
 '" href="#">' +
-((__t = (name)) == null ? '' : __t) +
+((__t = (_.escape(name))) == null ? '' : __t) +
 '</a>\n<a class="room-info icon-room-info" data-room-jid="' +
 ((__t = (jid)) == null ? '' : __t) +
 '"\n   title="' +

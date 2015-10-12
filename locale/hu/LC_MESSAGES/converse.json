@@ -438,6 +438,10 @@
             null,
             "Hiba: A parancs nem értelmezett"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             ""
@@ -765,10 +769,6 @@
          "Return": [
             null,
             "Visza"
-         ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "A szolgáltató visszautasította a regisztrációs kérelmet."
          ],
          "XMPP Username:": [
             null,

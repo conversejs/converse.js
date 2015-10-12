@@ -459,6 +459,10 @@
             null,
             "Erreur: la commande ne peut pas être exécutée"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             "Changer le rôle  de l'utilisateur en administrateur"
@@ -794,10 +798,6 @@
          "Return": [
             null,
             "Retourner"
-         ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "Le fournisseur a rejeté votre demande d'enregistrement. "
          ],
          "XMPP Username:": [
             null,

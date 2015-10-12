@@ -458,6 +458,10 @@
             null,
             "Fout: kon nie die opdrag uitvoer nie"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             ""
@@ -793,10 +797,6 @@
          "Return": [
             null,
             "Terug"
-         ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "Die verskaffer het u registrasieversoek verwerp."
          ],
          "XMPP Username:": [
             null,

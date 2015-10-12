@@ -443,6 +443,10 @@
             null,
             "Feil: kunne ikke utføre kommandoen"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             ""
@@ -770,10 +774,6 @@
          "Return": [
             null,
             "Tilbake"
-         ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "Tilbyderen avviste ditt registreringsforsøk."
          ],
          "XMPP Username:": [
             null,

@@ -443,6 +443,10 @@
             null,
             "Błąd: nie potrafię uruchomić polecenia"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             ""
@@ -770,10 +774,6 @@
          "Return": [
             null,
             "Powrót"
-         ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "Dostawca odrzucił twoją próbę rejestracji. "
          ],
          "XMPP Username:": [
             null,

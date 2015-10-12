@@ -459,6 +459,10 @@
             null,
             "Помилка: Не можу виконати команду"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             "Призначити користувача адміністратором"
@@ -794,10 +798,6 @@
          "Return": [
             null,
             "Вернутися"
-         ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "Провайдер відхилив Вашу спробу реєстрації."
          ],
          "XMPP Username:": [
             null,

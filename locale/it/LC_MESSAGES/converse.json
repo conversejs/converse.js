@@ -9,43 +9,51 @@
          },
          " e.g. conversejs.org": [
             null,
-            ""
+            "es. conversejs.org"
          ],
          "unencrypted": [
             null,
-            ""
+            "non criptato"
          ],
          "unverified": [
             null,
-            ""
+            "non verificato"
          ],
          "verified": [
             null,
-            ""
+            "verificato"
          ],
          "finished": [
             null,
-            ""
+            "finito"
          ],
          "This contact is busy": [
             null,
-            ""
+            "Questo contatto è occupato"
          ],
          "This contact is online": [
             null,
-            ""
+            "Questo contatto è online"
          ],
          "This contact is offline": [
             null,
-            ""
+            "Questo contatto è offline"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Questo contatto non è disponibile"
          ],
          "This contact is away for an extended period": [
             null,
-            ""
+            "Il contatto è away da un lungo periodo"
          ],
          "This contact is away": [
             null,
-            ""
+            "Questo contatto è away"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Clicca per nascondere questi contatti"
          ],
          "My contacts": [
             null,
@@ -61,7 +69,7 @@
          ],
          "Ungrouped": [
             null,
-            ""
+            "Senza Gruppo"
          ],
          "Contacts": [
             null,
@@ -69,11 +77,11 @@
          ],
          "Groups": [
             null,
-            ""
+            "Gruppi"
          ],
          "Attempting to reconnect in 5 seconds": [
             null,
-            ""
+            "Attendi riconversione in 5 secondi"
          ],
          "Error": [
             null,
@@ -119,17 +127,21 @@
             null,
             "Messaggio personale"
          ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Sei sicuro di voler pulire i messaggi da questa stanza?"
+         ],
          "me": [
             null,
-            ""
+            "me"
          ],
          "is typing": [
             null,
-            ""
+            "sta scrivendo"
          ],
          "has stopped typing": [
             null,
-            ""
+            "ha smesso di scrivere"
          ],
          "has gone away": [
             null,
@@ -187,6 +199,10 @@
             null,
             ""
          ],
+         "is busy": [
+            null,
+            "è occupato"
+         ],
          "Your messages are not encrypted anymore": [
             null,
             ""
@@ -218,6 +234,10 @@
          "Your contact has closed their end of the private session, you should do the same": [
             null,
             ""
+         ],
+         "Clear all messages": [
+            null,
+            "Pulisci tutti i messaggi"
          ],
          "End encrypted conversation": [
             null,
@@ -271,6 +291,10 @@
             null,
             "Non in linea"
          ],
+         "Log out": [
+            null,
+            "Logo out"
+         ],
          "Contact name": [
             null,
             "Nome del contatto"
@@ -281,7 +305,7 @@
          ],
          "e.g. user@example.com": [
             null,
-            ""
+            "es. user@example.com"
          ],
          "Add": [
             null,
@@ -314,6 +338,10 @@
          "Server": [
             null,
             "Server"
+         ],
+         "Join Room": [
+            null,
+            "Entra nella Stanza"
          ],
          "Show rooms": [
             null,
@@ -409,7 +437,11 @@
          ],
          "Invite...": [
             null,
-            ""
+            "Invita…"
+         ],
+         "Occupants": [
+            null,
+            "Occupanti"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -427,13 +459,29 @@
             null,
             ""
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             ""
          ],
+         "Ban user from room": [
+            null,
+            "Bandisci utente dalla stanza"
+         ],
          "Change user role to participant": [
             null,
             ""
+         ],
+         "Kick user from room": [
+            null,
+            "Espelli utente dalla stanza"
+         ],
+         "Write in 3rd person": [
+            null,
+            "Scrivi in terza persona"
          ],
          "Grant membership to a user": [
             null,
@@ -454,6 +502,10 @@
          "Revoke user's membership": [
             null,
             ""
+         ],
+         "Set room topic": [
+            null,
+            "Cambia oggetto della stanza"
          ],
          "Allow muted user to post messages": [
             null,
@@ -547,6 +599,10 @@
             null,
             "<strong>%1$s</strong> è stato bandito"
          ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "<strong>%1$s</strong> nickname è cambiato"
+         ],
          "<strong>%1$s</strong> has been kicked out": [
             null,
             "<strong>%1$s</strong> è stato espulso"
@@ -558,6 +614,14 @@
          "<strong>%1$s</strong> has been removed for not being a member": [
             null,
             "<strong>%1$s</strong> è stato rimosso in quanto non membro"
+         ],
+         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
+            null,
+            "Il tuo nickname è stato cambiato automaticamente in: <strong>%1$s</strong>"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Il tuo nickname è stato cambiato: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,
@@ -597,19 +661,31 @@
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
-            ""
+            "%1$s ti ha invitato a partecipare a una chat room: %2$s"
          ],
          "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
             null,
-            ""
+            "%1$s ti ha invitato a partecipare a una chat room: %2$s, e ha lasciato il seguente motivo: “%3$s”"
+         ],
+         "Click to restore this chat": [
+            null,
+            "Clicca per ripristinare questa chat"
          ],
          "Minimized": [
             null,
-            ""
+            "Ridotto"
          ],
          "Click to remove this contact": [
             null,
             "Clicca per rimuovere questo contatto"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "Clicca per accettare questa richiesta di contatto"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "Clicca per rifiutare questa richiesta di contatto"
          ],
          "Click to chat with this contact": [
             null,
@@ -617,19 +693,27 @@
          ],
          "Name": [
             null,
-            ""
+            "Nome"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Sei sicuro di voler rimuovere questo contatto?"
          ],
          "Sorry, there was an error while trying to remove ": [
             null,
-            ""
+            "Si è verificato un errore durante il tentativo di rimozione"
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Sei sicuro dirifiutare questa richiesta di contatto?"
          ],
          "Sorry, there was an error while trying to add ": [
             null,
-            ""
+            "Si è verificato un errore durante il tentativo di aggiunta"
          ],
          "This client does not allow presence subscriptions": [
             null,
-            ""
+            "Questo client non consente sottoscrizioni di presenza"
          ],
          "Type to filter": [
             null,
@@ -667,37 +751,41 @@
             null,
             "assente"
          ],
+         "offline": [
+            null,
+            "offline"
+         ],
          "Your XMPP provider's domain name:": [
             null,
-            ""
+            "Nome del dominio del provider XMPP:"
          ],
          "Fetch registration form": [
             null,
-            ""
+            "Recupero il modulo di registrazione"
          ],
          "Tip: A list of public XMPP providers is available": [
             null,
-            ""
+            "Suggerimento: È disponibile un elenco di provider XMPP pubblici"
          ],
          "here": [
             null,
-            ""
+            "qui"
          ],
          "Register": [
             null,
-            ""
+            "Registra"
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
-            ""
+            "Siamo spiacenti, il provider specificato non supporta la registrazione di account. Si prega di provare con un altro provider."
          ],
          "Requesting a registration form from the XMPP server": [
             null,
-            ""
+            "Sto richiedendo un modulo di registrazione al server XMPP"
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
             null,
-            ""
+            "Qualcosa è andato storto durante la connessione con “%1$s”. Sei sicuro che esiste?"
          ],
          "Now logging you in": [
             null,
@@ -705,19 +793,23 @@
          ],
          "Registered successfully": [
             null,
-            ""
+            "Registrazione riuscita"
          ],
          "Return": [
             null,
             ""
          ],
-         "The provider rejected your registration attempt. ": [
+         "XMPP Username:": [
             null,
-            ""
+            "XMPP Username:"
          ],
          "Password:": [
             null,
             "Password:"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Clicca per entrare anonimo"
          ],
          "Log In": [
             null,
@@ -725,7 +817,11 @@
          ],
          "user@server": [
             null,
-            ""
+            "user@server"
+         ],
+         "password": [
+            null,
+            "Password"
          ],
          "Sign in": [
             null,
@@ -733,7 +829,7 @@
          ],
          "Toggle chat": [
             null,
-            ""
+            "Attiva/disattiva chat"
          ]
       }
    }

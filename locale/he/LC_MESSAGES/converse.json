@@ -9,7 +9,7 @@
          },
          " e.g. conversejs.org": [
             null,
-            ""
+            " למשל conversejs.org"
          ],
          "unencrypted": [
             null,
@@ -37,7 +37,7 @@
          ],
          "This contact is offline": [
             null,
-            "איש קשר זה לא מקוון"
+            "איש קשר זה אינו מקוון"
          ],
          "This contact is unavailable": [
             null,
@@ -81,7 +81,7 @@
          ],
          "Attempting to reconnect in 5 seconds": [
             null,
-            ""
+            "מנסה להתחבר בעוד 5 שניות"
          ],
          "Error": [
             null,
@@ -137,11 +137,15 @@
          ],
          "is typing": [
             null,
-            "מקליד/ה כעת"
+            "מקליד(ה) כעת"
          ],
          "has stopped typing": [
             null,
-            "חדל/ה מלהקליד"
+            "חדל(ה) להקליד"
+         ],
+         "has gone away": [
+            null,
+            "נעדר(ת)"
          ],
          "Show this menu": [
             null,
@@ -191,6 +195,14 @@
             null,
             "סופקה סכימת אימות שגויה"
          ],
+         "has gone offline": [
+            null,
+            "כבר לא מקוון"
+         ],
+         "is busy": [
+            null,
+            "עסוק(ה) כעת"
+         ],
          "Your messages are not encrypted anymore": [
             null,
             "ההודעות שלך אינן מוצפנות עוד"
@@ -233,7 +245,7 @@
          ],
          "Insert a smiley": [
             null,
-            ""
+            "הכנס סמיילי"
          ],
          "Hide the list of participants": [
             null,
@@ -277,7 +289,7 @@
          ],
          "Offline": [
             null,
-            "בלתי מקוון"
+            "לא מקוון"
          ],
          "Log out": [
             null,
@@ -293,7 +305,7 @@
          ],
          "e.g. user@example.com": [
             null,
-            ""
+            "למשל user@example.com"
          ],
          "Add": [
             null,
@@ -326,6 +338,10 @@
          "Server": [
             null,
             "שרת"
+         ],
+         "Join Room": [
+            null,
+            "הצטרף לחדר"
          ],
          "Show rooms": [
             null,
@@ -381,7 +397,7 @@
          ],
          "Non-anonymous": [
             null,
-            "לא אנונימי"
+            "לא-אנונימי"
          ],
          "Open room": [
             null,
@@ -397,7 +413,7 @@
          ],
          "Semi-anonymous": [
             null,
-            "אנונימי למחצה"
+            "אנונימי-למחצה"
          ],
          "Temporary room": [
             null,
@@ -443,13 +459,21 @@
             null,
             "שגיאה: לא היתה אפשרות לבצע פקודה"
          ],
-         "Change user's affiliation to admin": [
+         "Error: the \"": [
             null,
             ""
+         ],
+         "Change user's affiliation to admin": [
+            null,
+            "שנה סינוף משתמש למנהל"
          ],
          "Ban user from room": [
             null,
             "אסור משתמש מתוך חדר"
+         ],
+         "Change user role to participant": [
+            null,
+            "שנה תפקיד משתמש למשתתף"
          ],
          "Kick user from room": [
             null,
@@ -461,7 +485,7 @@
          ],
          "Grant membership to a user": [
             null,
-            ""
+            "הענק חברות למשתמש"
          ],
          "Remove user's ability to post messages": [
             null,
@@ -473,11 +497,15 @@
          ],
          "Grant moderator role to user": [
             null,
-            ""
+            "הענק תפקיד אחראי למשתמש"
+         ],
+         "Grant ownership of this room": [
+            null,
+            "הענק בעלות על חדר זה"
          ],
          "Revoke user's membership": [
             null,
-            ""
+            "שלול חברות משתמש"
          ],
          "Set room topic": [
             null,
@@ -541,11 +569,11 @@
          ],
          "This room is now semi-anonymous": [
             null,
-            "חדר זה הינו אנונימי למחצה כעת"
+            "חדר זה הינו אנונימי-למחצה כעת"
          ],
          "This room is now fully-anonymous": [
             null,
-            "חדר זה הינו אנונימי לחלוטין כעת"
+            "חדר זה הינו אנונימי-לחלוטין כעת"
          ],
          "A new room has been created": [
             null,
@@ -669,7 +697,7 @@
          ],
          "Name": [
             null,
-            ""
+            "שם"
          ],
          "Are you sure you want to remove this contact?": [
             null,
@@ -677,7 +705,7 @@
          ],
          "Sorry, there was an error while trying to remove ": [
             null,
-            ""
+            "מצטערים, היתה שגיאה במהלך ניסיון להסיר את "
          ],
          "Are you sure you want to decline this contact request?": [
             null,
@@ -685,11 +713,11 @@
          ],
          "Sorry, there was an error while trying to add ": [
             null,
-            ""
+            "מצטערים, היתה שגיאה במהלך ניסיון הוספת "
          ],
          "This client does not allow presence subscriptions": [
             null,
-            ""
+            "לקוח זה לא מתיר הרשמות נוכחות"
          ],
          "Type to filter": [
             null,
@@ -727,6 +755,10 @@
             null,
             "נעדר"
          ],
+         "offline": [
+            null,
+            "לא מקוון"
+         ],
          "Your XMPP provider's domain name:": [
             null,
             "שם מתחם של ספק XMPP שלך:"
@@ -749,7 +781,7 @@
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
-            "מצטערים, הספק שניתן לא תומך ברישום חשבונות in band. אנא נסה ספק אחר."
+            "מצטערים, הספק שניתן לא תומך ברישום חשבונות in band. אנא נסה עם ספק אחר."
          ],
          "Requesting a registration form from the XMPP server": [
             null,
@@ -771,10 +803,6 @@
             null,
             "חזור"
          ],
-         "The provider rejected your registration attempt. ": [
-            null,
-            "הספק דחה את ניסיון הרישום שלך. "
-         ],
          "XMPP Username:": [
             null,
             "שם משתמש XMPP:"
@@ -783,6 +811,10 @@
             null,
             "סיסמה:"
          ],
+         "Click here to log in anonymously": [
+            null,
+            "לחץ כאן כדי להתחבר באופן אנונימי"
+         ],
          "Log In": [
             null,
             "כניסה"
@@ -790,6 +822,10 @@
          "user@server": [
             null,
             ""
+         ],
+         "password": [
+            null,
+            "סיסמה"
          ],
          "Sign in": [
             null,

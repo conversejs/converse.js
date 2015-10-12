@@ -455,6 +455,10 @@
             null,
             "Fehler: Konnte den Befehl nicht ausführen"
          ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
          "Change user's affiliation to admin": [
             null,
             ""
@@ -791,7 +795,7 @@
             null,
             "Zurück"
          ],
-         "The provider rejected your registration attempt. ": [
+         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
          ],

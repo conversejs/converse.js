@@ -104,8 +104,10 @@ dev: stamp-bower stamp-bundler
 ########################################################################
 ## Builds
 
-css:: stamp-bundler
+sass::
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
+
+css:: stamp-bundler sass cssmin
 
 watch:: stamp-bundler
 	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css

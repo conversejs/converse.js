@@ -686,6 +686,7 @@
     height: 194px;
     height: calc(100% - 50px - 20px);
     overflow: hidden;
+    padding-bottom: 1em;
     /* (jQ addClass:) if input has value: */
     /* (jQ addClass:) if mouse is over the 'x' input area*/ }
     #conversejs #converse-roster.no-contact-requests {
@@ -693,11 +694,13 @@
     #conversejs #converse-roster .filter-type {
       display: table-cell;
       float: right;
-      font-size: 14px;
+      font-size: calc(14px - 2px);
       height: 25px;
       margin: 0 0 0.5em -1px;
       padding: 0;
-      width: 84px; }
+      width: 84px;
+      border-radius: 0;
+      border: 1px solid; }
     #conversejs #converse-roster .roster-filter {
       float: left;
       background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg==) no-repeat right -20px center;

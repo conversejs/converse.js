@@ -731,6 +731,7 @@
     height: $roster-height;
     height: calc(100% - #{$controlbox-dropdown-height*2} - 20px);
     overflow: hidden;
+    padding-bottom: 1em;
 
     &.no-contact-requests {
         height: calc(100% - #{$controlbox-dropdown-height} - 20px);
@@ -739,11 +740,13 @@
     .filter-type {
       display: table-cell;
       float: right;
-      font-size: $font-size;
+      font-size: calc(#{$font-size} - 2px);
       height: $controlbox-dropdown-height;
       margin: 0 0 0.5em -1px;
       padding: 0;
       width: 84px;
+      border-radius: 0;
+      border: 1px solid;
     }
     .roster-filter {
       float: left;

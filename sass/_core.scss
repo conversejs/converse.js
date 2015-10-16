@@ -731,7 +731,7 @@
     height: $roster-height;
     height: calc(100% - #{$controlbox-dropdown-height*2} - 20px);
     overflow: hidden;
-    padding-bottom: 1em;
+    padding-bottom: 3em;
 
     &.no-contact-requests {
         height: calc(100% - #{$controlbox-dropdown-height} - 20px);
@@ -769,10 +769,9 @@
     }
     .roster-contacts {
       margin: 0;
-      max-height: 100%;
+      height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
-      padding-bottom: 41px;
     }
     .group-toggle {
       color: $text-color;

@@ -686,7 +686,7 @@
     height: 194px;
     height: calc(100% - 50px - 20px);
     overflow: hidden;
-    padding-bottom: 1em;
+    padding-bottom: 3em;
     /* (jQ addClass:) if input has value: */
     /* (jQ addClass:) if mouse is over the 'x' input area*/ }
     #conversejs #converse-roster.no-contact-requests {
@@ -717,10 +717,9 @@
       cursor: pointer; }
     #conversejs #converse-roster .roster-contacts {
       margin: 0;
-      max-height: 100%;
+      height: 100%;
       overflow-x: hidden;
-      overflow-y: auto;
-      padding-bottom: 41px; }
+      overflow-y: auto; }
     #conversejs #converse-roster .group-toggle {
       color: #6C4C44;
       display: block;

@@ -717,11 +717,10 @@
       cursor: pointer; }
     #conversejs #converse-roster .roster-contacts {
       margin: 0;
-      max-height: 195px;
-      max-height: calc(100% - 26px);
+      max-height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
-      padding-bottom: 15px; }
+      padding-bottom: 41px; }
     #conversejs #converse-roster .group-toggle {
       color: #6C4C44;
       display: block;

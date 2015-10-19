@@ -4362,7 +4362,7 @@
                  */
                 var id = iq.getAttribute('id');
                 var from = iq.getAttribute('from');
-                if (from && from !== "" && Strophe.getNodeFromJid(from) != converse.bare_jid) {
+                if (from && from !== "" && from != converse.connection.jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
                     converse.connection.send(
                         $iq({type: 'error', id: id, from: converse.connection.jid})
@@ -4375,7 +4375,10 @@
                 $(iq).children('query').find('item').each(function (idx, item) {
                     this.updateContact(item);
                 }.bind(this));
-                return true;
+
+                converse.emit('rosterPush', iq);
+
+		return true;
             },
 
             fetchFromServer: function (callback, errback) {

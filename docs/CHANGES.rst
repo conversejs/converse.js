@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.9.7 (Unreleased)
+------------------
+
+* #493 Refactor previous bugfix and now an event is emitted when a roster push event from server happens. [teseo]
+
 0.9.6 (2015-10-12)
 ------------------
 

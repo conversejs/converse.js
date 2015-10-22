@@ -2322,8 +2322,8 @@
                                     'label_open_room': __('Open room'),
                                     'label_permanent_room': __('Permanent room'),
                                     'label_public': __('Public'),
-                                    'label_semi_anon':  _('Semi-anonymous'),
-                                    'label_temp_room':  _('Temporary room'),
+                                    'label_semi_anon':  __('Semi-anonymous'),
+                                    'label_temp_room':  __('Temporary room'),
                                     'label_unmoderated': __('Unmoderated')
                                 }));
                         }.bind(this));

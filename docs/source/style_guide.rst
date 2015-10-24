@@ -6,7 +6,7 @@ Software Style Guide
     rely on a transpiler and still support older browsers.
 
 Most of the style guide recommendations here come from Douglas Crockford's book
-"Javascript, the good parts".
+`Javascript, the good parts <http://shop.oreilly.com/product/9780596517748.do>`_
 
 This style guide is fairly opinionated. Some of these opinions perhaps don't
 conform to your expectations on how Javascript code should look like.
@@ -92,17 +92,18 @@ between:
 This is to make a more explicit visual distinction between method declarations
 and method invocations.
 
-
 Checking for equality
 ---------------------
 
-Javascript has a strict ``===`` and less strict ``==`` equality operator. To
-avoid subtle bugs when doing comparisons, always use the strict equality check.
+Javascript has a strict ``===`` and less strict ``==`` equality operator. The
+stricter equality operator also does type checking. To avoid subtle bugs when
+doing comparisons, always use the strict equality check.
 
 Curly brackets
 --------------
 
-Curly brackets come on the same lines as the ``if`` and ``else`` keywords.
+Curly brackets must appear on the same lines as the ``if`` and ``else`` keywords.
+The closing curly bracket appears on its own line.
 
 For example:
 
@@ -121,8 +122,8 @@ Always enclose blocks in curly brackets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When writing an a block such as an ``if`` or ``while`` statement, always use
-curly brackets around the block of code. Either when not strictly required by
-the compiler.
+curly brackets around that block of code. Even when not strictly required by
+the compiler (for example if its only one line inside the ``if`` statement).
 
 For example, like this:
 

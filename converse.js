@@ -2869,7 +2869,7 @@
 
             renderChatArea: function () {
                 if (!this.$('.chat-area').length) {
-                    this.$('.chat-body').empty()
+                    this.$('.chatroom-body').empty()
                         .append(
                             converse.templates.chatarea({
                                 'show_toolbar': converse.show_toolbar,
@@ -2895,13 +2895,13 @@
                 if (!this.model.get('hidden_occupants')) {
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                    this.$('form.sendXMPPMessage, .chat-area').animate({width: '100%'});
-                    this.$('div.participants').animate({width: 0}, this.scrollDown.bind(this));
+                    this.$('div.participants').addClass('hidden');
+                    this.scrollDown();
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
-                    this.$('.chat-area, form.sendXMPPMessage').css({width: ''});
-                    this.$('div.participants').show().animate({width: 'auto'}, this.scrollDown.bind(this));
+                    this.$('div.participants').removeClass('hidden');
+                    this.scrollDown();
                 }
             },
 
@@ -3223,7 +3223,7 @@
                     function () {
                         $(this).remove();
                         that.$el.find('.chat-area').show();
-                        that.$el.find('.participants').show();
+                        that.$el.find('.participants').removeClass('hidden');
                     });
             },
 
@@ -3242,7 +3242,7 @@
                     function () {
                         $(this).remove();
                         that.$el.find('.chat-area').show();
-                        that.$el.find('.participants').show();
+                        that.$el.find('.participants').removeClass('hidden');
                     });
             },
 
@@ -3251,8 +3251,8 @@
                 if (this.$el.find('div.chatroom-form-container').length) {
                     return;
                 }
-                this.$('.chat-body').children().hide();
-                this.$('.chat-body').append(
+                this.$('.chatroom-body').children().hide();
+                this.$('.chatroom-body').append(
                     $('<div class="chatroom-form-container">'+
                         '<form class="chatroom-form">'+
                         '<span class="spinner centered"/>'+
@@ -3275,9 +3275,9 @@
             },
 
             renderPasswordForm: function () {
-                this.$('.chat-body').children().hide();
+                this.$('.chatroom-body').children().hide();
                 this.$('span.centered.spinner').remove();
-                this.$('.chat-body').append(
+                this.$('.chatroom-body').append(
                     converse.templates.chatroom_password_form({
                         heading: __('This chatroom requires a password'),
                         label_password: __('Password: '),
@@ -3290,7 +3290,7 @@
                 this.$('.chat-area').hide();
                 this.$('.participants').hide();
                 this.$('span.centered.spinner').remove();
-                this.$('.chat-body').append($('<p>'+msg+'</p>'));
+                this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
             },
 
             /* http://xmpp.org/extensions/xep-0045.html
@@ -3462,8 +3462,6 @@
                         ($presence.attr('from') == this.model.get('id')+'/'+Strophe.escapeNode(nick));
                     if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
                         this.model.set('connection_status', Strophe.Status.CONNECTED);
-                        this.$('span.centered.spinner').remove();
-                        this.$el.find('.chat-body').children().show();
                     }
                     this.showStatusMessages(pres, is_self);
                 }
@@ -6073,8 +6071,8 @@
 
         this.setUpXMLLogging = function () {
             if (this.debug) {
-                this.connection.xmlInput = function (body) { console.log(body.outerHTML); };
-                this.connection.xmlOutput = function (body) { console.log(body.outerHTML); };
+                this.connection.xmlInput = function (body) { console.log(body); };
+                this.connection.xmlOutput = function (body) { console.log(body); };
             }
         };
 

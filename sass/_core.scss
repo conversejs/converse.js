@@ -31,7 +31,6 @@
 }
 
 #conversejs {
-  @import "variables";
   ::selection {
     background-color: $highlight-color;
   }
@@ -678,42 +677,6 @@
     top: 1px;
   }
 
-  .chatroom-form-container {
-    height: 100%;
-    color: $text-color;
-    overflow-y: auto;
-    border-bottom-right-radius: $chatbox-border-radius;
-    border-bottom-left-radius: $chatbox-border-radius;
-  }
-
-  .chatroom-form {
-    padding: 1em;
-    .instructions {
-      color: gray;
-      font-size: 95%;
-    }
-    input {
-      width: 100%;
-      padding: 5px;
-      text-align: center;
-    }
-    legend {
-      font-size: $legend-font-size;
-      font-weight: bold;
-      margin: 10px 0 15px 0;
-    }
-    label {
-      height: 30px;
-      font-weight: bold;
-      display: block;
-      clear: both;
-
-      label input, label select {
-        float: right;
-      }
-    }
-  }
-
   .requesting-xmpp-contact .request-actions {
     margin-left: 0.5em;
     float: right;
@@ -985,94 +948,6 @@
     }
   }
 
-    .chatroom {
-        width: $chatroom-width;
-        @media screen and (max-width: $mobile-landscape-length) {
-            width: $mobile-chat-width;
-            .box-flyout {
-                min-width: $mobile-chat-width;
-                width: $mobile-chat-width;
-            }
-        }
-        .box-flyout {
-            min-width: $chatroom-width;
-            width: $chatroom-width;
-            .chatroom-body {
-                height: 289px;
-                @include border-bottom-radius($chatbox-border-radius);
-                @include calc(height, '100% - #{$chat-head-height}');
-                background-color: white;
-                border-top: 0;
-                display: table;
-                table-layout: fixed;
-                width: 100%;
-                .chat-area {
-                    word-wrap: break-word; 
-                    display: table-cell;
-                    height: 100%;
-                    min-width: $chat-width;
-                    .chat-content {
-                        padding: 0.5em 0.5em 0 0.5em; // Work around a weird box-sizing issue in Chromium related to bottom padding.
-                    }
-                }
-                .participants {
-                    display: table-cell;
-                    vertical-align: top;
-                    background-color: white;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    border-left: 1px solid #AAA;
-                    border-bottom-right-radius: $chatbox-border-radius;
-                    width: 100px;
-                    height: 100%;
-                    &.hidden {
-                        display: none;
-                    }
-                    .participant-list {
-                        list-style: none;
-                        li {
-                            cursor: default;
-                            display: block;
-                            font-size: 12px;
-                            font-weight: bold;
-                            overflow: hidden;
-                            padding: 2px 5px;
-                            text-overflow: ellipsis;
-                            white-space: nowrap;
-                            width: 100px;
-                            &.moderator {
-                                color: #8f2831;
-                            }
-                        }
-                    }
-                    label {
-                        font-size: 12px;
-                        font-style: italic;
-                        margin: 5px;
-                        display: block;
-                    }
-                }
-            }
-        }
-
-        label {
-            margin-left: 2px;
-            font-size: 12px;
-        }
-        .chat-textarea {
-            border-bottom-right-radius: 0;
-        }
-        .invited-contact {
-            margin: -1px 0 0 -1px;
-            width: 100px;
-            border: 1px solid #999;
-        }
-        .invited-contact.tt-input {
-            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkBCjE0uzKkOgAAAidJREFUKM+N0k+IEnEUB/D3cyscdagkWpHV0WGWREXm0AgOGkSJ07kh2UXYU5cOewm6Bp0KXG/tpSCv6hyEFQIhMEaE3yERYfwTOoqKGLQxDAbqYadLgu7J7/XxeY/3ez8EACDLsgljfMfj8ZxUKhXXYDAAnueBoqgyAMipVOovXAuSZdnUaDQeDofDs16vFyUIAjRNUwmCoG02G1AUdZ5IJN7GYrHfm3AvEAjcnUwmX0ajUdRqtV74fL6sruufKYoa6bp+fzabPUMI7ZfL5eImNHk8npNerxc1m80XHMe98fv9H3K5XDkSibxjWfb1arWaYoyPMMbCFqxUKi6CIODw8LDmdDq7oigaAACiKK5omv7KcdylpmlIkiTHFlRVFTRNUxVFqa/ROqIoGoqi5A3DgFartfU4Jp7ngSAI2uVyPZIk6dZmUZKk2w6H4xghBPF4HK7vWLbZbDCdTp+rqvpUkiS0RvV6/bTf7x8wDHMViURqm/AGAMgURZ232+1X1Wr102KxuEwmk3lZlo/7/f7BcrkkSZKs2e12tHXH/x/gHsY4jTE+0jQNGYYBCCFgGOaKJMkfjUaDZximGQ6HXzSbzZ+ZTMbY6oIxFgqFgqPT6YAgCMBxXM1ut6N0Op0fj8chi8XyjWXZ98Fg8DuCHZLNZh+USqWP8/n8idvt/hUKhV7u7QK9Xu8fmqanAJBQVXUfAGY7TQQAKBaLN8fjsdDtdh/run72Dzhf7XLe2UevAAAAAElFTkSuQmCC ) no-repeat right 3px center;
-        }
-    }
-
-    .chatroom-form,
     .controlbox-pane {
         background-color: white;
         border-bottom-left-radius: $chatbox-border-radius;

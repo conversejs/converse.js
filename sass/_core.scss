@@ -624,126 +624,11 @@
     float: right;
   }
 
-  #converse-roster {
-    text-align: left;
-    width: 100%;
-    position: relative;
-    margin: 0.5em 0 0 0;
-    height: $roster-height;
-    height: calc(100% - #{$controlbox-dropdown-height*2} - 20px);
-    overflow: hidden;
-    padding-bottom: 3em;
-
-    &.no-contact-requests {
-        height: calc(100% - #{$controlbox-dropdown-height} - 20px);
-    }
-
-    .filter-type {
-      display: table-cell;
-      float: right;
-      font-size: calc(#{$font-size} - 2px);
-      height: $controlbox-dropdown-height;
-      margin: 0 0 0.5em -1px;
-      padding: 0;
-      width: 84px;
-      border-radius: 0;
-      border: 1px solid;
-    }
-    .roster-filter {
-      float: left;
-      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg== ) no-repeat right -20px center;
-      border: 1px solid #999;
-      font-size: $font-size;
-      height: $controlbox-dropdown-height;
-      margin: 0 0 0.5em 7px;
-      padding: 0;
-      padding: 2px;
-      width: 103px;
-    }
-    /* (jQ addClass:) if input has value: */
-    .roster-filter.x {
-      background-position: right 3px center;
-    }
-    /* (jQ addClass:) if mouse is over the 'x' input area*/
-    .roster-filter.onX {
-      cursor: pointer;
-    }
-    .roster-contacts {
-      margin: 0;
-      height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-    .group-toggle {
-      color: $text-color;
-      display: block;
-      width: 100%;
-    }
-    dt {
-      display: none;
-    }
-    dd {
-      line-height: 16px;
-      padding: 4px 2px 0 4px;
-      height: 24px;
-      a, span {
-        text-shadow: 0 1px 0 $link-shadow-color;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-left: 3px;
-      }
-      span {
-        padding: 0 5px 0 0;
-      }
-      a {
-         &.decline-xmpp-request {
-            margin-left: 5px;
-        }
-        &.remove-xmpp-contact {
-            float: right;
-            width: 22px;
-            margin: 0;
-            display: none;
-            color: $text-color;
-        }
-      }
-    }
-    dd:hover a.remove-xmpp-contact {
-      display: inline-block;
-    }
-    dd {
-      &.odd {
-        background-color: #DCEAC5;
-        /* Make this difference */
-      }
-      &.current-xmpp-contact span {
-        font-size: 16px;
-        float: left;
-        color: $link-color;
-      }
-      a.open-chat {
-        width: 80%;
-      }
-    }
-    span {
-      &.pending-contact-name {
-        width: 80%;
-      }
-      &.req-contact-name {
-        width: 69%;
-        padding: 0;
-      }
-    }
-  }
-
   #available-chatrooms {
     text-align: left;
   }
 
-  #available-chatrooms dt,
-  #converse-roster dt {
+  #available-chatrooms dt {
     font-weight: normal;
     color: $text-color;
     border: none;
@@ -809,21 +694,6 @@
         font-size: 14px;
       }
     }
-  }
-
-  #converse-roster dd {
-    border: none;
-    clear: both;
-    color: $text-color;
-    display: block;
-    font-weight: bold;
-    overflow-y: hidden;
-    text-shadow: 0 1px 0 $text-shadow-color;
-  }
-
-  .roster-group:hover,
-  #converse-roster dd:hover {
-    background-color: $highlight-color;
   }
 
   .chatbox,

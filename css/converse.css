@@ -604,95 +604,9 @@
   #conversejs .requesting-xmpp-contact .request-actions {
     margin-left: 0.5em;
     float: right; }
-  #conversejs #converse-roster {
-    text-align: left;
-    width: 100%;
-    position: relative;
-    margin: 0.5em 0 0 0;
-    height: 194px;
-    height: calc(100% - 50px - 20px);
-    overflow: hidden;
-    padding-bottom: 3em;
-    /* (jQ addClass:) if input has value: */
-    /* (jQ addClass:) if mouse is over the 'x' input area*/ }
-    #conversejs #converse-roster.no-contact-requests {
-      height: calc(100% - 25px - 20px); }
-    #conversejs #converse-roster .filter-type {
-      display: table-cell;
-      float: right;
-      font-size: calc(14px - 2px);
-      height: 25px;
-      margin: 0 0 0.5em -1px;
-      padding: 0;
-      width: 84px;
-      border-radius: 0;
-      border: 1px solid; }
-    #conversejs #converse-roster .roster-filter {
-      float: left;
-      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg==) no-repeat right -20px center;
-      border: 1px solid #999;
-      font-size: 14px;
-      height: 25px;
-      margin: 0 0 0.5em 7px;
-      padding: 0;
-      padding: 2px;
-      width: 103px; }
-    #conversejs #converse-roster .roster-filter.x {
-      background-position: right 3px center; }
-    #conversejs #converse-roster .roster-filter.onX {
-      cursor: pointer; }
-    #conversejs #converse-roster .roster-contacts {
-      margin: 0;
-      height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto; }
-    #conversejs #converse-roster .group-toggle {
-      color: #6C4C44;
-      display: block;
-      width: 100%; }
-    #conversejs #converse-roster dt {
-      display: none; }
-    #conversejs #converse-roster dd {
-      line-height: 16px;
-      padding: 4px 2px 0 4px;
-      height: 24px; }
-      #conversejs #converse-roster dd a, #conversejs #converse-roster dd span {
-        text-shadow: 0 1px 0 #FAFAFA;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-left: 3px; }
-      #conversejs #converse-roster dd span {
-        padding: 0 5px 0 0; }
-      #conversejs #converse-roster dd a.decline-xmpp-request {
-        margin-left: 5px; }
-      #conversejs #converse-roster dd a.remove-xmpp-contact {
-        float: right;
-        width: 22px;
-        margin: 0;
-        display: none;
-        color: #6C4C44; }
-    #conversejs #converse-roster dd:hover a.remove-xmpp-contact {
-      display: inline-block; }
-    #conversejs #converse-roster dd.odd {
-      background-color: #DCEAC5;
-      /* Make this difference */ }
-    #conversejs #converse-roster dd.current-xmpp-contact span {
-      font-size: 16px;
-      float: left;
-      color: #436F64; }
-    #conversejs #converse-roster dd a.open-chat {
-      width: 80%; }
-    #conversejs #converse-roster span.pending-contact-name {
-      width: 80%; }
-    #conversejs #converse-roster span.req-contact-name {
-      width: 69%;
-      padding: 0; }
   #conversejs #available-chatrooms {
     text-align: left; }
-  #conversejs #available-chatrooms dt,
-  #conversejs #converse-roster dt {
+  #conversejs #available-chatrooms dt {
     font-weight: normal;
     color: #6C4C44;
     border: none;
@@ -740,17 +654,6 @@
       #conversejs dd.available-chatroom:hover .room-info {
         display: block;
         font-size: 14px; }
-  #conversejs #converse-roster dd {
-    border: none;
-    clear: both;
-    color: #6C4C44;
-    display: block;
-    font-weight: bold;
-    overflow-y: hidden;
-    text-shadow: 0 1px 0 #FAFAFA; }
-  #conversejs .roster-group:hover,
-  #conversejs #converse-roster dd:hover {
-    background-color: #E1E6E5; }
   #conversejs .chatbox,
   #conversejs .chatroom {
     height: 35px;
@@ -1156,6 +1059,108 @@
       height: 15px;
       top: 0;
       left: 0; }
+
+#conversejs #converse-roster {
+  text-align: left;
+  width: 100%;
+  position: relative;
+  margin: 0.5em 0 0 0;
+  height: 194px;
+  height: calc(100% - 50px - 20px);
+  overflow: hidden;
+  padding-bottom: 3em;
+  /* (jQ addClass:) if input has value: */
+  /* (jQ addClass:) if mouse is over the 'x' input area*/ }
+  #conversejs #converse-roster.no-contact-requests {
+    height: calc(100% - 25px - 20px); }
+  #conversejs #converse-roster .filter-type {
+    display: table-cell;
+    float: right;
+    font-size: calc(14px - 2px);
+    height: 25px;
+    margin: 0 0 0.5em -1px;
+    padding: 0;
+    width: 84px;
+    border-radius: 0;
+    border: 1px solid; }
+  #conversejs #converse-roster .roster-filter {
+    float: left;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABNSURBVHjaXI7BDcAwCAMvyQjMyQ6dAbZiKfqoUK34g2zJh1dENIC7M8pMAPYdzAVY3d0ajNz9aypS/b5R6o+ZPdqoKgCq6h80KH3xDgBqNR97p8oAGQAAAABJRU5ErkJggg==) no-repeat right -20px center;
+    border: 1px solid #999;
+    font-size: 14px;
+    height: 25px;
+    margin: 0 0 0.5em 7px;
+    padding: 0;
+    padding: 2px;
+    width: 103px; }
+  #conversejs #converse-roster .roster-filter.x {
+    background-position: right 3px center; }
+  #conversejs #converse-roster .roster-filter.onX {
+    cursor: pointer; }
+  #conversejs #converse-roster .roster-contacts {
+    margin: 0;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto; }
+  #conversejs #converse-roster .group-toggle {
+    color: #6C4C44;
+    display: block;
+    width: 100%; }
+  #conversejs #converse-roster .roster-group:hover {
+    background-color: #E1E6E5; }
+  #conversejs #converse-roster dt {
+    border: none;
+    color: #6C4C44;
+    display: none;
+    font-weight: normal;
+    padding: 0.5em;
+    text-shadow: 0 1px 0 #FAFAFA; }
+  #conversejs #converse-roster dd {
+    border: none;
+    clear: both;
+    color: #6C4C44;
+    display: block;
+    font-weight: bold;
+    height: 24px;
+    line-height: 16px;
+    overflow-y: hidden;
+    padding: 4px 2px 0 4px;
+    text-shadow: 0 1px 0 #FAFAFA; }
+    #conversejs #converse-roster dd:hover {
+      background-color: #E1E6E5; }
+    #conversejs #converse-roster dd a, #conversejs #converse-roster dd span {
+      text-shadow: 0 1px 0 #FAFAFA;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-left: 3px; }
+    #conversejs #converse-roster dd span {
+      padding: 0 5px 0 0; }
+    #conversejs #converse-roster dd a.decline-xmpp-request {
+      margin-left: 5px; }
+    #conversejs #converse-roster dd a.remove-xmpp-contact {
+      float: right;
+      width: 22px;
+      margin: 0;
+      display: none;
+      color: #6C4C44; }
+  #conversejs #converse-roster dd:hover a.remove-xmpp-contact {
+    display: inline-block; }
+  #conversejs #converse-roster dd.odd {
+    background-color: #DCEAC5;
+    /* Make this difference */ }
+  #conversejs #converse-roster dd.current-xmpp-contact span {
+    font-size: 16px;
+    float: left;
+    color: #436F64; }
+  #conversejs #converse-roster dd a.open-chat {
+    width: 80%; }
+  #conversejs #converse-roster span.pending-contact-name {
+    width: 80%; }
+  #conversejs #converse-roster span.req-contact-name {
+    width: 69%;
+    padding: 0; }
 
 #conversejs .chatroom {
   width: 300px; }

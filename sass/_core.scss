@@ -244,7 +244,6 @@
   .emoticon {
     font-size: $font-size;
   }
-
   .left {
       float: left;
    }
@@ -254,7 +253,6 @@
   .hidden {
     display: none;
   }
-
   .locked {
     padding-right: 22px;
   }
@@ -273,7 +271,6 @@
     font-family: 'Converse-js' !important;
     content: "\231b";
   }
-
   .spinner {
     @include animation(spin 2s infinite, linear);
     display: block;
@@ -286,27 +283,11 @@
     display: block;
     margin: 5em auto;
   }
-
   .hor_centered {
     text-align: center;
     display: block;
     margin: 0 auto;
     clear: both;
-  }
-
-  .toggle-controlbox {
-    background-color: $link-color;
-    border-top-left-radius: $chatbox-border-radius;
-    border-top-right-radius: $chatbox-border-radius;
-    color: #0a0a0a;
-    float: right;
-    font-weight: bold;
-    height: 100%;
-    margin: 0 $chat-gutter;
-    padding: 10px 8px 0 8px;
-    span {
-      color: $inverse-link-color;
-    }
   }
 
   .button-group,
@@ -545,53 +526,9 @@
     margin: 0 0.5em 0.75em 0.5em;
   }
 
-  .fancy-dropdown {
-    border: 1px solid $light-background-border-color;
-    height: $controlbox-dropdown-height;
-    text-align: left;
-    .choose-xmpp-status {
-      width: 155px;
-      span {
-        padding-right: 5px;
-        padding-left: 5px;
-        float: left;
-      }
-    }
-    .choose-xmpp-status,
-    .toggle-xmpp-contact-form {
-      text-shadow: 0 1px 0 #ffffff;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      display: inline;
-    }
-    .toggle-xmpp-contact-form span {
-      float: left;
-    }
-  }
-
-
-  #fancy-xmpp-status-select a.change-xmpp-status-message {
-    float: right;
-    clear: right;
-    height: 22px;
-    width: 12px;
-    margin: 0px 5px 0 0;
-    color: $link-color;
-  }
-
-  ul#found-users {
+  #found-users {
     padding: 10px 0 5px 5px;
     border: 0;
-  }
-
-  form.search-xmpp-contact {
-    margin: 0;
-    padding-left: 5px;
-    padding: 0 0 5px 5px;
-    input {
-      width: 8em;
-    }
   }
 
   a.configure-chatroom-button,
@@ -626,14 +563,13 @@
 
   #available-chatrooms {
     text-align: left;
-  }
-
-  #available-chatrooms dt {
-    font-weight: normal;
-    color: $text-color;
-    border: none;
-    padding: 0.5em;
-    text-shadow: 0 1px 0 $text-shadow-color;
+    dt {
+      font-weight: normal;
+      color: $text-color;
+      border: none;
+      padding: 0.5em;
+      text-shadow: 0 1px 0 $text-shadow-color;
+    }
   }
 
   .room-info {
@@ -715,157 +651,9 @@
     .box-flyout {
       z-index: 1;
       width: $chat-width;
-        @media screen and (max-width: $mobile-landscape-length) {
-            width: $mobile-chat-width;
-        }
-    }
-    .dropdown {
-      a {
-        width: 148px;
-        display: inline-block;
-        line-height: $controlbox-dropdown-height;
+      @media screen and (max-width: $mobile-landscape-length) {
+        width: $mobile-chat-width;
       }
-      li {
-        list-style: none;
-        padding-left: 0;
-      }
-      dd {
-        ul {
-          padding: 0;
-          list-style: none;
-          position: absolute;
-          left: 0;
-          top: 0;
-          border: 1px solid $light-background-border-color;
-          width: 100%;
-          z-index: 21;
-          background-color: $light-background-color;
-          li:hover {
-            background-color: $highlight-color;
-          }
-        }
-      }
-      dd.search-xmpp ul {
-        box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
-
-        li:hover {
-            background-color: $light-background-color;
-        }
-      }
-      dt a span {
-        cursor: pointer;
-        display: block;
-        padding: 4px 7px 0 5px;
-      }
-    }
-  }
-
-    .controlbox-pane {
-        background-color: white;
-        border-bottom-left-radius: $chatbox-border-radius;
-        border-bottom-right-radius: $chatbox-border-radius;
-        border: 0;
-        font-size: $font-size;
-        overflow-y: auto;
-        position: absolute;
-        text-align: center;
-        width: 100%;
-        height: 289px;
-        @include calc(height, '100% - #{$chat-head-height}');
-    }
-
-    .controlbox-pane {
-        overflow-y: hidden;
-        overflow-x: hidden;
-        dd {
-            margin-left: 0;
-            margin-bottom: 0;
-            &.odd {
-                background-color: #DCEAC5;
-            }
-        }
-    }
-
-  #converse-register {
-    background: white;
-    .title {
-      font-weight: bold;
-    }
-    .info {
-      font-style: italic;
-      color: green;
-      font-size: 85%;
-      margin: 5px 0;
-    }
-    .form-errors {
-      color: red;
-      display: none;
-    }
-    .provider-title {
-      font-size: 22px;
-    }
-    .provider-score {
-      width: 178px;
-      margin-bottom: 8px;
-    }
-    .form-help .url {
-      font-weight: bold;
-      color: $link-color;
-    }
-    .input-group {
-      display: table;
-      margin: auto;
-      width: 100%;
-      span {
-          overflow-x: hidden;
-          text-overflow: ellipsis;
-          max-width: 110px;
-      }
-      span, input[name=username] {
-          display: table-cell;
-          text-align: left;
-      }
-    }
-    .instructions {
-      color: gray;
-      font-size: 85%;
-      &:hover {
-        color: $text-color;
-      }
-    }
-  }
-
-  #converse-register, #converse-login {
-    margin: 2em 1em 1em 1em;
-    background: white;
-
-    .login-submit, .submit {
-      height: 30px;
-      padding: 0px;
-      font-size: $font-size;
-    }
-    .submit {
-      margin: 1em 0;
-    }
-    .login-anon {
-      height: auto;
-      white-space: normal;
-    }
-    .cancel-submit, .save-submit {
-      width: 45%;
-      margin: 5px 3px 5px 3px;
-    }
-    .cancel, .cancel-submit {
-      color: $warning-color;
-    }
-    .save-submit {
-      color: $save-button-color;
-    }
-    input {
-      width: 100%;
-      height: 30px;
-      margin: 5px 0 10px 0;
-      padding-left: 0.5em;
     }
   }
 
@@ -888,34 +676,6 @@
     margin: 4px;
   }
 
-  form.add-chatroom {
-    background: none;
-    padding: 0.5em;
-
-    input[type=button],
-    input[type=submit],
-    input[type=text] {
-      margin: 0;
-      width: 100%;
-      padding: 0.25em;
-    }
-    span.spinner,
-    input[type=button],
-    input[type=submit] {
-      margin-top: 0.5em;
-      display: table-cell;
-      width: auto;
-    }
-    input[type=submit] {
-      color: $save-button-color;
-    }
-  }
-
-  select#select-xmpp-status {
-    float: right;
-    margin-right: 0.5em;
-  }
-
   /* @group Tabs */
   .chat-head {
     border-top-left-radius: $chatbox-border-radius;
@@ -935,50 +695,6 @@
     }
     .avatar {
       float: left;
-    }
-    #controlbox-tabs {
-      text-align: center;
-      display: inline;
-      overflow: hidden;
-      font-size: 12px;
-      list-style-type: none;
-
-      a.current,
-      a.current:hover {
-        box-shadow: none;
-        border-bottom: 0;
-        height: $chat-head-height;
-        cursor: default;
-        color: $text-color;
-      }
-
-      /* single tab */
-      li {
-        float: left;
-        list-style: none;
-        padding-left: 0;
-        text-shadow: white 0 1px 0;
-        width: 38%;
-
-        a {
-          background-color: white;
-          border-bottom: 1px solid $border-color;
-          border-top-left-radius: $chatbox-border-radius;
-          border-top-right-radius: $chatbox-border-radius;
-          box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
-          color: #888;
-          display: block;
-          font-size: 12px;
-          height: $chat-head-height - 1px;
-          line-height: $chat-head-height - 1px;
-          margin: 0;
-          text-align: center;
-          text-decoration: none;
-        }
-        a:hover {
-          color: $text-color;
-        }
-      }
     }
   }
 
@@ -1109,21 +825,6 @@
     text-shadow: 0 1px 0 white
   }
 
-  #set-custom-xmpp-status {
-    float: left;
-    padding: 0;
-    input {
-      height: $controlbox-dropdown-height + 1px;
-      @include calc(width, '100% - 40px');
-      padding: 0 0 0 0.5em;
-    }
-    button {
-      height: $controlbox-dropdown-height + 1px;
-      width: 40px;
-      padding: 1px;
-    }
-  }
-
   .chat-textarea-chatbox-selected {
     border: 1px solid #578308;
     margin: 0;
@@ -1132,13 +833,6 @@
   .chat-textarea-chatroom-selected {
     border: 2px solid $link-color;
     margin: 0;
-  }
-
-  #controlbox {
-    display: none;
-    div.xmpp-status {
-      display: inline;
-    }
   }
 
   /* status dropdown styles */
@@ -1156,42 +850,6 @@
   .dropdown ul {
     margin: 0;
     padding: 0;
-  }
-
-  .add-xmpp-contact {
-    background: none;
-    padding: 5px;
-    input {
-      margin: 0 0 1rem;
-      width: 100%;
-    }
-    button {
-      width: 100%;
-    }
-  }
-
-  .xmpp-status-menu {
-    text-align: left;
-    box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
-    li {
-      padding: 2px;
-      a {
-        width: 100%;
-        padding: 0 8px;
-      }
-    }
-  }
-  .xmpp-status-menu li a.logout,
-  .xmpp-status-menu li a.logout span {
-    color: $warning-color;
-  }
-
-  .set-xmpp-status {
-    background: none;
-    padding: 0.75em 0.5em 0.5em 0.5em;
-    .dropdown dd ul {
-      z-index: 22;
-    }
   }
 
   .flyout {

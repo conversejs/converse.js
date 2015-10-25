@@ -547,10 +547,10 @@
     float: right;
     font-size: 10px;
     margin: 0 0 0 3px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    padding-left: 2px;
-    padding-right: 3px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
     text-decoration: none; }
   #conversejs a.configure-chatroom-button:active,
   #conversejs a.toggle-chatbox-button:active,

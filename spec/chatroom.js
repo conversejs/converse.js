@@ -1,14 +1,16 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "mock",
         "test_utils",
         "utils"
-        ], function ($, mock, test_utils, utils) {
-            return factory($, mock, test_utils, utils);
+        ], function ($, _, mock, test_utils, utils) {
+            return factory($, _, mock, test_utils, utils);
         }
     );
-} (this, function ($, mock, test_utils, utils) {
+} (this, function ($, _, mock, test_utils, utils) {
     var $pres = converse_api.env.$pres;
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
@@ -42,8 +44,8 @@
                 var view = this.chatboxviews.get('lounge@localhost'),
                     $participants = view.$('.participant-list');
                 spyOn(view, 'onChatRoomPresence').andCallThrough();
-                var presence, room = {}, i, role;
-                for (i=0; i<mock.chatroom_names.length; i++) {
+                var presence, role;
+                for (var i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
                     // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
@@ -117,13 +119,13 @@
                 spyOn(window, 'prompt').andCallFake(function () {
                     return null;
                 });
-                var roster = {}, $input;
+                var $input;
                 var view = this.chatboxviews.get('lounge@localhost');
                 view.$el.find('.chat-area').remove();
                 view.renderChatArea(); // Will init the widget
                 test_utils.createContacts('current'); // We need roster contacts, so that we have someone to invite
                 $input = view.$el.find('input.invited-contact.tt-input');
-                $hint = view.$el.find('input.invited-contact.tt-hint');
+                var $hint = view.$el.find('input.invited-contact.tt-hint');
                 runs (function () {
                     expect($input.length).toBe(1);
                     expect($input.attr('placeholder')).toBe('Invite...');
@@ -198,7 +200,6 @@
                 spyOn(converse, 'playNotification');
                 var view = this.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                var nick = mock.chatroom_names[0];
                 var text = 'This message will play a sound because it mentions dummy';
                 var message = $msg({
                     from: 'lounge@localhost/otheruser',
@@ -237,7 +238,6 @@
                 spyOn(converse, 'emit');
                 var view = this.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                var nick = mock.chatroom_names[0];
                 var text = 'This is a sent message';
                 view.$el.find('.chat-textarea').text(text);
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
@@ -318,7 +318,7 @@
 
                 this.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
-                $participants = view.$('.participant-list');
+                var $participants = view.$('.participant-list');
                 expect($participants.children().length).toBe(1);
                 expect($participants.children().first(0).text()).toBe("oldnick");
                 expect($chat_content.find('div.chat-info').length).toBe(1);
@@ -421,8 +421,9 @@
                 expect(newchatboxes.length).toEqual(2);
                 // Check that the chatrooms retrieved from browserStorage
                 // have the same attributes values as the original ones.
-                attrs = ['id', 'box_id', 'visible'];
-                for (i=0; i<attrs.length; i++) {
+                var attrs = ['id', 'box_id', 'visible'];
+                var new_attrs, old_attrs;
+                for (var i=0; i<attrs.length; i++) {
                     new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
                     old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
                     // FIXME: should have have to sort here? Order must
@@ -453,7 +454,7 @@
                     expect(view.$el.is(':visible')).toBeFalsy();
                     expect(view.model.get('minimized')).toBeTruthy();
                     expect(view.minimize).toHaveBeenCalled();
-                    trimmedview = trimmed_chatboxes.get(view.model.get('id'));
+                    var trimmedview = trimmed_chatboxes.get(view.model.get('id'));
                     trimmedview.$("a.restore-chat").click();
                 });
                 waits(250);
@@ -469,7 +470,7 @@
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var view = this.chatboxviews.get('lounge@localhost'), chatroom = view.model, $el;
+                var view = this.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'close').andCallThrough();
                 spyOn(converse, 'emit');
                 spyOn(view, 'leave');
@@ -497,10 +498,7 @@
 
             it("to clear messages", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var view = converse.chatboxviews.get('lounge@localhost'),
-                    chatroom = view.model,
-                    $chat_content = view.$el.find('.chat-content');
-
+                var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'onChatRoomMessageSubmitted').andCallThrough();
                 spyOn(view, 'clearChatRoomMessages');
                 view.$el.find('.chat-textarea').text('/clear');
@@ -512,10 +510,7 @@
 
             it("to ban a user", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var view = converse.chatboxviews.get('lounge@localhost'),
-                    chatroom = view.model,
-                    $chat_content = view.$el.find('.chat-content');
-
+                var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'onChatRoomMessageSubmitted').andCallThrough();
                 spyOn(view, 'setAffiliation').andCallThrough();
                 spyOn(view, 'showStatusNotification').andCallThrough();

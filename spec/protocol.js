@@ -1,3 +1,4 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
@@ -9,7 +10,6 @@
     );
 } (this, function ($, mock, test_utils) {
     "use strict";
-    var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var $pres = converse_api.env.$pres;
     // See:
@@ -355,7 +355,7 @@
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
-                var contact, stanza, sent_stanza, sent_IQ, IQ_id;
+                var contact, stanza, sent_stanza, sent_IQ;
                 runs($.proxy(function () {
                     // Add a new roster contact via roster push
                     stanza = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
@@ -373,11 +373,9 @@
                     expect(this.roster.get('contact@example.org') instanceof this.RosterContact).toBeTruthy();
                     spyOn(contact, "ackUnsubscribe").andCallThrough();
 
-                    var send = this.connection.send;
                     spyOn(converse.connection, 'send').andCallFake(function (stanza) {
                         sent_stanza = stanza;
                     });
-                    var sendIQ = this.connection.sendIQ;
                     spyOn(this.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                         sent_IQ = iq;
                     });

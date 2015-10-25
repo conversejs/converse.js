@@ -1,17 +1,18 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "mock",
         "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        ], function ($, _, mock, test_utils) {
+            return factory($, _, mock, test_utils);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($, _, mock, test_utils) {
     "use strict";
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
-    var $pres = converse_api.env.$pres;
     var $msg = converse_api.env.$msg;
     var moment = converse_api.env.moment;
     // See: https://xmpp.org/rfcs/rfc3921.html

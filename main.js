@@ -4,7 +4,7 @@ if (typeof(require) === 'undefined') {
      * We want to save the configuration in a variable so that we can reuse it in
      * tests/main.js.
      */
-    require = {
+    require = { // jshint ignore:line
         config: function (c) {
             config = c;
         }

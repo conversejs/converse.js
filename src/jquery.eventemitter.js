@@ -1,7 +1,5 @@
+/*global $ */
 (function (root, factory) {
-    if (typeof console === "undefined" || typeof console.log === "undefined") {
-        console = { log: function () {}, error: function () {} };
-    }
     if (typeof define === 'function' && define.amd) {
         define("converse", ["jquery"], function($) {
             return factory($);

@@ -1,13 +1,15 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "mock",
         "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        ], function ($, _, mock, test_utils) {
+            return factory($, _, mock, test_utils);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($, _, mock, test_utils) {
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
     var moment = converse_api.env.moment;
@@ -27,7 +29,7 @@
             });
 
             it("is created when you click on a roster item", function () {
-                var i, $el, click, jid, chatboxview;
+                var i, $el, jid, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
@@ -50,7 +52,7 @@
             }.bind(converse));
 
             it("can be trimmed to conserve space", function () {
-                var i, $el, click, jid, key, chatbox, chatboxview;
+                var i, $el, jid, chatbox, chatboxview, trimmedview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 var trimmed_chatboxes = converse.minimized_chats;
@@ -99,7 +101,7 @@
 
             it("is focused if its already open and you click on its corresponding roster item", function () {
                 var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var i, $el, click, jid, chatboxview, chatbox;
+                var $el, jid, chatboxview, chatbox;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(this.chatboxes.length).toEqual(1);
@@ -141,8 +143,9 @@
                     expect(newchatboxes.length).toEqual(7);
                     // Check that the chatboxes items retrieved from browserStorage
                     // have the same attributes values as the original ones.
-                    attrs = ['id', 'box_id', 'visible'];
-                    for (i=0; i<attrs.length; i++) {
+                    var attrs = ['id', 'box_id', 'visible'];
+                    var new_attrs, old_attrs;
+                    for (var i=0; i<attrs.length; i++) {
                         new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
                         old_attrs = _.pluck(_.pluck(this.chatboxes.models, 'attributes'), attrs[i]);
                         expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
@@ -565,7 +568,7 @@
                     expect(chatview.model.get('minimized')).toBeTruthy();
                     var message = 'This message is sent to a minimized chatbox';
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    msg = $msg({
+                    var msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,
                         type: 'chat',
@@ -945,7 +948,7 @@
                         spyOn(converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
-                        msg = $msg({
+                        var msg = $msg({
                                 from: sender_jid,
                                 to: this.connection.jid,
                                 type: 'chat',
@@ -954,7 +957,7 @@
                         this.chatboxes.onMessage(msg);
                         expect(converse.emit).toHaveBeenCalledWith('message', msg);
                         var chatboxview = this.chatboxviews.get(sender_jid);
-                        $events = chatboxview.$el.find('.chat-event');
+                        var $events = chatboxview.$el.find('.chat-event');
                         expect($events.length).toBe(1);
                         expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has stopped typing');
                     }.bind(converse));
@@ -1030,7 +1033,7 @@
                         expect(view.$el.find('.chat-event').length).toBe(0);
                         view.showStatusNotification(sender_jid+' '+'is typing');
                         expect(view.$el.find('.chat-event').length).toBe(1);
-                        msg = $msg({
+                        var msg = $msg({
                                 from: sender_jid,
                                 to: this.connection.jid,
                                 type: 'chat',
@@ -1048,7 +1051,7 @@
                         spyOn(converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
-                        msg = $msg({
+                        var msg = $msg({
                                 from: sender_jid,
                                 to: this.connection.jid,
                                 type: 'chat',
@@ -1057,7 +1060,7 @@
                         this.chatboxes.onMessage(msg);
                         expect(converse.emit).toHaveBeenCalledWith('message', msg);
                         var chatboxview = this.chatboxviews.get(sender_jid);
-                        $events = chatboxview.$el.find('.chat-event');
+                        var $events = chatboxview.$el.find('.chat-event');
                         expect($events.length).toBe(1);
                         expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has gone away');
                     }.bind(converse));
@@ -1090,7 +1093,6 @@
                 expect(converse.emit).toHaveBeenCalledWith('messageSend', message);
 
                 message = '/clear';
-                var old_length = view.model.messages.length;
                 spyOn(view, 'onMessageSubmitted').andCallThrough();
                 spyOn(view, 'clearMessages').andCallThrough();
                 spyOn(window, 'confirm').andCallFake(function () {
@@ -1118,7 +1120,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('blur');
                 var message = 'This message will increment the message counter';
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,
@@ -1149,7 +1151,7 @@
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
                 $(window).trigger('focus');
                 var message = 'This message will not increment the message counter';
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({
                         from: sender_jid,
                         to: this.connection.jid,

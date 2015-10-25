@@ -1,10 +1,11 @@
+/*global jQuery, templates, escape, Jed, _ */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(["jquery", "converse-templates", "locales"], factory);
+        define(["jquery", "underscore", "converse-templates", "locales"], factory);
     } else {
-        root.utils = factory(jQuery, templates);
+        root.utils = factory(jQuery, _, templates);
     }
-}(this, function ($, templates, locales) {
+}(this, function ($, _, templates, locales) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -156,7 +157,7 @@
             // FIXME: take <required> into consideration
             var options = [], j, $options, $values, value, values;
 
-            if ($field.attr('type') == 'list-single' || $field.attr('type') == 'list-multi') {
+            if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
                 values = [];
                 $values = $field.children('value');
                 for (j=0; j<$values.length; j++) {
@@ -176,19 +177,19 @@
                     name: $field.attr('var'),
                     label: $field.attr('label'),
                     options: options.join(''),
-                    multiple: ($field.attr('type') == 'list-multi'),
+                    multiple: ($field.attr('type') === 'list-multi'),
                     required: $field.find('required').length
                 });
-            } else if ($field.attr('type') == 'fixed') {
+            } else if ($field.attr('type') === 'fixed') {
                 return $('<p class="form-help">').text($field.find('value').text());
-            } else if ($field.attr('type') == 'jid-multi') {
+            } else if ($field.attr('type') === 'jid-multi') {
                 return templates.form_textarea({
                     name: $field.attr('var'),
                     label: $field.attr('label') || '',
                     value: $field.find('value').text(),
                     required: $field.find('required').length
                 });
-            } else if ($field.attr('type') == 'boolean') {
+            } else if ($field.attr('type') === 'boolean') {
                 return templates.form_checkbox({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],

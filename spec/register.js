@@ -1,3 +1,4 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
@@ -14,7 +15,7 @@
     describe("The Registration Panel", $.proxy(function (mock, test_utils) {
         beforeEach(function () {
             test_utils.closeControlBox();
-            connection = mock.mock_connection;
+            var connection = mock.mock_connection;
             connection.connected = false;
             converse._tearDown();
             converse.initialize({

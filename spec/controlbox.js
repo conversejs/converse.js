@@ -1,13 +1,15 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "mock",
         "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        ], function ($, _, mock, test_utils) {
+            return factory($, _, mock, test_utils);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($, _, mock, test_utils) {
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;
 
@@ -138,7 +140,7 @@
                 var names = mock.cur_names;
                 expect($filter.length).toBe(1);
                 expect($filter.is(':visible')).toBeFalsy();
-                for (i=0; i<names.length; i++) {
+                for (var i=0; i<names.length; i++) {
                     converse.roster.create({
                         ask: null,
                         fullname: names[i],
@@ -255,7 +257,6 @@
                 _clearContacts();
                 utils.createGroupedContacts();
                 var $filter = converse.rosterview.$('.roster-filter');
-                var $roster = converse.rosterview.$roster;
                 runs (function () {
                     $filter.val("xxx");
                     $filter.trigger('keydown');
@@ -316,7 +317,7 @@
                 var groups = ['colleagues', 'friends'];
                 runs($.proxy(function () {
                     _clearContacts();
-                    var i=0, j=0;
+                    var i=0;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
                     converse.rosterview.render();
@@ -484,7 +485,7 @@
                 }, this));
                 waits(50);
                 runs($.proxy(function () {
-                    contact = this.roster.create({
+                    this.roster.create({
                         jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
@@ -508,7 +509,7 @@
                 _addContacts();
                 var name;
                 spyOn(window, 'confirm').andReturn(true);
-                for (i=0; i<mock.pend_names.length; i++) {
+                for (var i=0; i<mock.pend_names.length; i++) {
                     name = mock.pend_names[i];
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
                         .siblings('.remove-xmpp-contact').click();
@@ -661,7 +662,7 @@
                     var jid, t;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
-                    for (i=0; i<mock.cur_names.length; i++) {
+                    for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'online');
                         expect(this.rosterview.update).toHaveBeenCalled();
@@ -681,7 +682,7 @@
                     var jid, t;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
-                    for (i=0; i<mock.cur_names.length; i++) {
+                    for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'dnd');
                         expect(this.rosterview.update).toHaveBeenCalled();
@@ -701,7 +702,7 @@
                     var jid, t;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
-                    for (i=0; i<mock.cur_names.length; i++) {
+                    for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'away');
                         expect(this.rosterview.update).toHaveBeenCalled();
@@ -721,7 +722,7 @@
                     var jid, t;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
-                    for (i=0; i<mock.cur_names.length; i++) {
+                    for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'xa');
                         expect(this.rosterview.update).toHaveBeenCalled();
@@ -741,7 +742,7 @@
                     var jid, t;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
-                    for (i=0; i<mock.cur_names.length; i++) {
+                    for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'unavailable');
                         expect(this.rosterview.update).toHaveBeenCalled();
@@ -758,7 +759,7 @@
                 });
                 waits(50);
                 runs($.proxy(function () {
-                    var i;
+                    var i, jid;
                     for (i=0; i<3; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'online');
@@ -1010,7 +1011,7 @@
             it("are saved to, and can be retrieved from, browserStorage", $.proxy(function () {
                 var new_attrs, old_attrs, attrs;
                 var num_contacts = this.roster.length;
-                new_roster = new this.RosterContacts();
+                var new_roster = new this.RosterContacts();
                 // Roster items are yet to be fetched from browserStorage
                 expect(new_roster.length).toEqual(0);
                 new_roster.browserStorage = this.roster.browserStorage;
@@ -1019,7 +1020,7 @@
                 // Check that the roster items retrieved from browserStorage
                 // have the same attributes values as the original ones.
                 attrs = ['jid', 'fullname', 'subscription', 'ask'];
-                for (i=0; i<attrs.length; i++) {
+                for (var i=0; i<attrs.length; i++) {
                     new_attrs = _.pluck(_.pluck(new_roster.models, 'attributes'), attrs[i]);
                     old_attrs = _.pluck(_.pluck(this.roster.models, 'attributes'), attrs[i]);
                     // Roster items in storage are not necessarily sorted,
@@ -1030,7 +1031,7 @@
             }, converse));
 
             it("will show fullname and jid properties on tooltip", $.proxy(function () {
-                var jid, name, i, t;
+                var jid, name, i;
                 for (i=0; i<mock.cur_names.length; i++) {
                     name = mock.cur_names[i];
                     jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';

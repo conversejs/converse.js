@@ -1,6 +1,6 @@
+/*global __dirname, process */
 module.exports = function(grunt) {
     var path = require('path');
-    var cfg = require('./package.json');
     grunt.initConfig({
         jst: {
             compile: {
@@ -36,20 +36,6 @@ module.exports = function(grunt) {
             }
         },
 
-        jshint: {
-            options: {
-                trailing: true
-            },
-            target: {
-                src : [
-                    'converse.js',
-                    'mock.js',
-                    'main.js',
-                    'tests_main.js',
-                    'spec/*.js'
-                ]
-            }
-        },
         cssmin: {
             options: {
                 banner: "/*"+
@@ -70,7 +56,6 @@ module.exports = function(grunt) {
         }
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jst');
     grunt.loadNpmTasks('grunt-json');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
@@ -131,13 +116,9 @@ module.exports = function(grunt) {
              rjs + ' -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js && ' +
              rjs + ' -o src/build-no-otr.js &&' +
              rjs + ' -o src/build-no-otr.js optimize=none out=builds/converse-no-otr.js', callback);
-        // XXX: It might be possible to not have separate build config files. For example:
-        // 'r.js -o src/build.js paths.converse-dependencies=src/deps-no-otr paths.locales=locale/nolocales out=builds/converse-no-locales-no-otr.min.js'
+            // XXX: It might be possible to not have separate build config files. For example:
+            // 'r.js -o src/build.js paths.converse-dependencies=src/deps-no-otr paths.locales=locale/nolocales out=builds/converse-no-locales-no-otr.min.js'
     });
 
     grunt.registerTask('minify', 'Create a new minified builds', ['cssmin', 'jsmin']);
-
-    grunt.registerTask('check', 'Perform all checks (e.g. before releasing)', function () {
-        grunt.task.run('jshint', 'test');
-    });
 };

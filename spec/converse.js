@@ -1,13 +1,15 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "mock",
         "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        ], function ($, _, mock, test_utils) {
+            return factory($, _, mock, test_utils);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($, _, mock, test_utils) {
     var b64_sha1 = converse_api.env.b64_sha1;
 
     return describe("Converse", $.proxy(function(mock, test_utils) {

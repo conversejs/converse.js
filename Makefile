@@ -1,18 +1,29 @@
 # You can set these variables from the command line.
 BOWER           ?= node_modules/.bin/bower
 BUILDDIR        = ./docs
-PAPER           =
-PHANTOMJS       ?= ./node_modules/.bin/phantomjs
-SPHINXBUILD     ?= ./bin/sphinx-build
-SPHINXOPTS      =
-PO2JSON         ?= ./node_modules/.bin/po2json
-SASS            ?= ./.bundle/bin/sass
 BUNDLE          ?= ./.bundle/bin/bundle
 GRUNT           ?= ./node_modules/.bin/grunt
 HTTPSERVE		?= ./node_modules/.bin/http-server
+JSHINT 			?= ./node_modules/.bin/jshint
+PAPER           =
+PHANTOMJS       ?= ./node_modules/.bin/phantomjs
+PO2JSON         ?= ./node_modules/.bin/po2json
+SASS            ?= ./.bundle/bin/sass
+SPHINXBUILD     ?= ./bin/sphinx-build
+SPHINXOPTS      =
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
+SOURCES	= $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
+JSHINTEXCEPTIONS = $(GENERATED) \
+		   src/otr.js \
+		   src/crypto.js \
+		   src/build-no-jquery.js \
+		   src/build-no-locales-no-otr.js \
+		   src/build-no-otr.js \
+		   src/build.js \
+		   src/bigint.js
+CHECKSOURCES	= $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
 
 .PHONY: help
 help:
@@ -135,9 +146,12 @@ build:: stamp-npm
 ########################################################################
 ## Tests
 
+.PHONY: jshint
+jshint: stamp-npm
+	$(JSHINT) --config jshintrc $(CHECKSOURCES)
+
 .PHONY: watch
-check: stamp-npm
-	$(GRUNT) jshint
+check: stamp-npm jshint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 
 ########################################################################

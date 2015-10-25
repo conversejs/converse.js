@@ -1,3 +1,4 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",

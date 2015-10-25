@@ -1,13 +1,15 @@
+/*global converse */
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "mock",
         "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        ], function ($, _, mock, test_utils) {
+            return factory($, _, mock, test_utils);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($, _, mock, test_utils) {
     var $msg = converse_api.env.$msg;
 
     return describe("The Minimized Chats Widget", $.proxy(function(mock, test_utils) {
@@ -67,7 +69,6 @@
 
         it("shows the number messages received to minimized chats",  $.proxy(function () {
             var i, contact_jid, chatview, msg;
-            var sender_jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@localhost';
             this.minimized_chats.toggleview.model.set({'collapsed': true});
             expect(this.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeFalsy();
             for (i=0; i<3; i++) {

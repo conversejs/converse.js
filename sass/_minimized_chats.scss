@@ -1,0 +1,76 @@
+#conversejs {
+    #minimized-chats {
+        border-top-left-radius: $chatbox-border-radius;
+        border-top-right-radius: $chatbox-border-radius;
+        color: $inverse-link-color;
+        display: none;
+        float: right;
+        font-weight: bold;
+        height: 100%;
+        margin: 0 $chat-gutter;
+        padding: 0;
+        width: 130px;
+
+        #toggle-minimized-chats {
+            border-top-left-radius: $chatbox-border-radius;
+            border-top-right-radius: $chatbox-border-radius;
+            background-color: ivory;
+            position: relative;
+            padding: 10px 0 0 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        .minimized-chats-flyout {
+            height: auto;
+            width: $minimized-chats-width;
+            bottom: $bottom-gutter-height;
+            .chat-head-chatroom,
+            .chat-head {
+                border-radius: $chatbox-border-radius;
+                width: $minimized-chats-width;
+                height: 35px;
+                margin-bottom: 0.2em;
+            }
+            &.minimized {
+                height: auto;
+            }
+        }
+
+        .unread-message-count,
+        .chat-head-message-count {
+            font-weight: bold;
+            @include linear-gradient(#f6f6f6 5%, #808080 100%);
+            border: 1px solid;
+            text-shadow: 1px 1px 0 $text-shadow-color;
+            color: $warning-color;
+            border-radius: 5px;
+            padding: 2px 4px;
+            font-size: 16px;
+            text-align: center;
+            position: absolute;
+            right: 116px;
+            bottom: 10px;
+        }
+
+        .box-flyout {
+            position: absolute;
+            display: block;
+            height: auto;
+            bottom: $bottom-gutter-height;
+            margin-left: 0;
+
+            .chat-head {
+                font-size: 100%;
+                border-radius: $chatbox-border-radius;
+                padding: 3px 0 0 5px;
+                margin: 0 0 1px 0;
+                box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
+                height: 24px;
+                width: 130px;
+            }
+        }
+    }
+}

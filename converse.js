@@ -2810,7 +2810,7 @@
         this.ChatRoomView = converse.ChatBoxView.extend({
             length: 300,
             tagName: 'div',
-            className: 'chatroom',
+            className: 'chatbox chatroom',
             events: {
                 'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'minimize',

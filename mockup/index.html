@@ -27,13 +27,15 @@
 
     <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
         <div class="flyout box-flyout">
-            <div class="dragresize"></div>
+            <div class="dragresize dragresize-top"></div>
+            <div class="dragresize dragresize-topleft"></div>
+            <div class="dragresize dragresize-left"></div>
             <div class="chat-head controlbox-head">
                 <ul id="controlbox-tabs">
                     <li><a class="current" href="#login-dialog">Sign in</a></li>
                     <li><a class="s" href="#register">Register</a></li>
                 </ul>
-                <a class="close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
             </div>
             <div class="controlbox-panes">
                 <div id="login-dialog" class="controlbox-pane"><form id="converse-login" method="post">
@@ -63,13 +65,15 @@
 
     <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
         <div class="flyout box-flyout">
-            <div class="dragresize"></div>
+            <div class="dragresize dragresize-top"></div>
+            <div class="dragresize dragresize-topleft"></div>
+            <div class="dragresize dragresize-left"></div>
             <div class="chat-head controlbox-head">
                 <ul id="controlbox-tabs">
                     <li><a class="s current" href="#users">Contacts</a></li>
                     <li><a class="s" href="#chatrooms">Rooms</a></li>
                 </ul>
-                <a class="close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
             </div>
             <div id="users" class="controlbox-pane" style="display: block;">
                 <form class="set-xmpp-status" action="" method="post">
@@ -138,14 +142,13 @@
                             <option value="groups">Groups</option>
                         </select>
                     </span>
+
                     <dl class="roster-contacts" style="display: block;">
                         <dt class="roster-group" style="display: block;">
                             <a href="#" data-group="Colleagues" class="group-toggle icon-opened" title="Click to hide these contacts">Colleagues</a>
                         </dt>
                         <dd class="online current-xmpp-contact">
-                            <a class="open-chat" title="Name: Victor Matfield
-JID: victor.matfield@localhost
-Click to chat with this contact" href="#">
+                            <a class="open-chat" title="Name: Victor Matfield JID: victor.matfield@localhost Click to chat with this contact" href="#">
                                 <span class="icon-online" title="This contact is online"></span>
                                 Victor Matfield
                             </a>
@@ -165,7 +168,6 @@ Click to chat with this contact" href="#">
                             </a>
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
-
                         <dt class="roster-group" style="display: block;">
                             <a href="#" data-group="Family" class="group-toggle icon-opened" title="Click to hide these contacts">Family</a>
                         </dt>
@@ -183,7 +185,6 @@ Click to chat with this contact" href="#">
                             </a>
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
-
                         <dt class="roster-group" style="display: block;">
                             <a href="#" data-group="Friends" class="group-toggle icon-opened" title="Click to hide these contacts">Friends</a>
                         </dt>
@@ -201,7 +202,6 @@ Click to chat with this contact" href="#">
                             </a>
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
-
                         <dt class="roster-group" style="display: block;">
                             <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Ungrouped</a>
                         </dt>
@@ -212,13 +212,11 @@ Click to chat with this contact" href="#">
                             </a>
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
-
-                        <dt id="xmpp-contact-requests" style="display: block;">
+                        <dt class="roster-group" id="xmpp-contact-requests" style="display: block;">
                             <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Contact Requests</a>
                         </dt>
                         <dd class="offline requesting-xmpp-contact">
-                            <span class="req-contact-name" title="Name: Bob Skinstad
-JID: bob.skinstad@localhost">Bob Skinstad</span>
+                            <span class="req-contact-name" title="Name: Bob Skinstad JID: bob.skinstad@localhost">Bob Skinstad</span>
                             <span class="request-actions">
                                 <a class="accept-xmpp-request icon-checkmark" title="Click here to accept this contact's request" href="#"></a>
                                 <a class="decline-xmpp-request icon-close" title="Click here to decline this contact's request" href="#"></a>
@@ -232,11 +230,10 @@ JID: bob.skinstad@localhost">Bob Skinstad</span>
                             </span>
                         </dd>
 
-                        <dt id="pending-xmpp-contacts" style="display: block;">
+                        <dt class="roster-group" id="pending-xmpp-contacts" style="display: block;">
                             <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Pending Contacts</a>
                         </dt>
-                        <dd class="offline pending-xmpp-contact"><span class="pending-contact-name" title="Name: Rassie Erasmus
-JID: rassie.erasmus@localhost">Rassie Erasmus</span>
+                        <dd class="offline pending-xmpp-contact"><span class="pending-contact-name" title="Name: Rassie Erasmus JID: rassie.erasmus@localhost">Rassie Erasmus</span>
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
                         <dd class="offline pending-xmpp-contact"><span class="pending-contact-name">Victor Matfield</span>
@@ -282,10 +279,12 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
 
     <div class="chatbox" id="37c0c87392010303765fe36b05c0967d62c6b70f">
         <div class="flyout box-flyout">
-            <div class="dragresize"></div>
+            <div class="dragresize dragresize-top"></div>
+            <div class="dragresize dragresize-topleft"></div>
+            <div class="dragresize dragresize-left"></div>
             <div class="chat-head chat-head-chatbox">
-                <a class="close-chatbox-button icon-close"></a>
-                <a class="toggle-chatbox-button icon-minus"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn toggle-chatbox-button icon-minus"></a>
                 <canvas height="31px" width="31px" class="avatar" style="background-color: black"></canvas>
                 <div class="chat-title">
                     <a href="http://opkode.com" target="_blank" class="user">
@@ -359,15 +358,15 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
         </div>
     </div>
 
-    <div class="chatroom" id="4a77380f1cd9d392627b0e1469688f9ca44e9392">
+    <div class="chatbox chatroom" id="4a77380f1cd9d392627b0e1469688f9ca44e9392">
         <div class="flyout box-flyout">
             <div class="dragresize dragresize-top"></div>
             <div class="dragresize dragresize-topleft"></div>
             <div class="dragresize dragresize-left"></div>
             <div class="chat-head chat-head-chatroom">
-                <a class="close-chatbox-button icon-close"></a>
-                <a class="toggle-chatbox-button icon-minus"></a>
-                <a class="configure-chatroom-button icon-wrench" style=""></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn toggle-chatbox-button icon-minus"></a>
+                <a class="chatbox-btn configure-chatroom-button icon-wrench"></a>
                 <div class="chat-title"> Chatroom </div>
                 <p class="chatroom-topic">May the force be with you</p>
             </div>
@@ -439,13 +438,15 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
         </div>
     </div>
 
-    <div class="chatroom" id="6d8627960a0cb066d9216742f3edccc3dbbf85a9">
+    <div class="chatbox chatroom" id="6d8627960a0cb066d9216742f3edccc3dbbf85a9">
         <div class="flyout box-flyout">
-            <div class="dragresize"></div>
+            <div class="dragresize dragresize-top"></div>
+            <div class="dragresize dragresize-topleft"></div>
+            <div class="dragresize dragresize-left"></div>
             <div class="chat-head chat-head-chatroom">
-                <a class="close-chatbox-button icon-close"></a>
-                <a class="toggle-chatbox-button icon-minus"></a>
-                <a class="configure-chatroom-button" style="display:none">&nbsp;</a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn toggle-chatbox-button icon-minus"></a>
+                <a class="chatbox-btn configure-chatroom-button icon-wrench"></a>
                 <div class="chat-title"> Restricted Chatroom</div>
                 <p class="chatroom-topic"></p>
                 <p></p>
@@ -470,7 +471,7 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
         </a>
         <div class="flyout minimized-chats-flyout">
             <div class="chat-head chat-head-chatroom">
-                <a class="close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <a class="chat-head-message-count" href="#" style="display:block">3</a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
@@ -479,7 +480,7 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
                 </div>
             </div>
             <div class="chat-head chat-head-chatbox">
-                <a class="close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <a class="chat-head-message-count" href="#" style="display:block">42</a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
@@ -488,14 +489,14 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
                 </div>
             </div>
             <div class="chat-head chat-head-chatroom">
-                <a class="close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
                         My Chatroom
                     </a>
                 </div>
             </div>
-            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+            <div class="chat-head chat-head-chatbox"><a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
                         Annegreet Gomez
@@ -503,7 +504,7 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
                 </div>
             </div>
             <div class="chat-head chat-head-chatbox">
-                <a class="close-chatbox-button icon-close"></a>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <a class="chat-head-message-count" href="#" style="display:block">842</a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
@@ -511,21 +512,21 @@ JID: rassie.erasmus@localhost">Rassie Erasmus</span>
                     </a>
                 </div>
             </div>
-            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+            <div class="chat-head chat-head-chatbox"><a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
                         Candice van der Knijff
                     </a>
                 </div>
             </div>
-            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+            <div class="chat-head chat-head-chatbox"><a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat" title="Click to maximize this chat">
                         Laura Grunewald
                     </a>
                 </div>
             </div>
-            <div class="chat-head chat-head-chatbox"><a class="close-chatbox-button icon-close"></a>
+            <div class="chat-head chat-head-chatbox"><a class="chatbox-btn close-chatbox-button icon-close"></a>
                 <div class="chat-title">
                     <a href="#" class="restore-chat">
                         Lena Grunewald

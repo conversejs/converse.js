@@ -48,78 +48,80 @@
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
-    }
-    .group-toggle {
-        color: $text-color;
-        display: block;
-        width: 100%;
-    }
-    .roster-group:hover {
-        background-color: $highlight-color;
-    }
-    dt {
-        border: none;
-        color: $text-color;
-        display: none;
-        font-weight: normal;
-        padding: 0.5em;
-        text-shadow: 0 1px 0 $text-shadow-color;
-    }
-    dd {
-        border: none;
-        clear: both;
-        color: $text-color;
-        display: block;
-        font-weight: bold;
-        height: 24px;
-        line-height: 16px;
-        overflow-y: hidden;
-        padding: 4px 2px 0 4px;
-        text-shadow: 0 1px 0 $text-shadow-color;
-
-        &:hover {
-            background-color: $highlight-color;
-        }
-
-        a, span {
-            text-shadow: 0 1px 0 $link-shadow-color;
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            margin-left: 3px;
-        }
-        span {
-            padding: 0 5px 0 0;
-        }
-        a {
-            &.decline-xmpp-request {
-                margin-left: 5px;
+        dt.roster-group {
+            border: none;
+            color: $text-color;
+            display: none;
+            font-weight: normal;
+            padding: 0.5em;
+            text-shadow: 0 1px 0 $text-shadow-color;
+            &:hover {
+                background-color: $highlight-color;
             }
-            &.remove-xmpp-contact {
-                float: right;
-                width: 22px;
-                margin: 0;
-                display: none;
+            .group-toggle {
                 color: $text-color;
+                display: block;
+                width: 100%;
             }
         }
-    }
-    dd {
-        &:hover a.remove-xmpp-contact {
-            display: inline-block;
-        }
-        &.odd {
-            background-color: #DCEAC5;
-            /* Make this difference */
-        }
-        &.current-xmpp-contact span {
-            font-size: 16px;
-            float: left;
-            color: $link-color;
-        }
-        a.open-chat {
-            width: 80%;
+        dd {
+            border: none;
+            clear: both;
+            color: $text-color;
+            display: block;
+            font-weight: bold;
+            height: 24px;
+            line-height: 16px;
+            overflow-y: hidden;
+            padding: 4px 2px 0 4px;
+            text-shadow: 0 1px 0 $text-shadow-color;
+            &:hover {
+                background-color: $highlight-color;
+                a.remove-xmpp-contact {
+                    display: inline-block;
+                }
+            }
+            &.requesting-xmpp-contact {
+                &.request-actions {
+                    margin-left: 0.5em;
+                    float: right;
+                }
+            }
+            &.current-xmpp-contact span {
+                font-size: 16px;
+                float: left;
+                color: $link-color;
+            }
+            &.odd {
+                background-color: #DCEAC5;
+                /* Make this difference */
+            }
+            a, span {
+                text-shadow: 0 1px 0 $link-shadow-color;
+                display: inline-block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                margin-left: 3px;
+            }
+            span {
+                padding: 0 5px 0 0;
+            }
+            a {
+                &.decline-xmpp-request {
+                    margin-left: 5px;
+                }
+                &.remove-xmpp-contact {
+                    float: right;
+                    width: 22px;
+                    margin: 0;
+                    display: none;
+                    color: $text-color;
+                }
+                .open-chat {
+                    width: 80%;
+                }
+            }
         }
     }
     span {

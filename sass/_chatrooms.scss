@@ -122,6 +122,11 @@
                 }
             }
         }
+
+        .chat-head-chatroom {
+            background-color: $chatroom-head-color;
+        }
+
         .chat-textarea {
             border-bottom-right-radius: 0;
         }

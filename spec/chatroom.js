@@ -71,7 +71,6 @@
                 // http://xmpp.org/extensions/xep-0045.html#exit
                 for (i=mock.chatroom_names.length-1; i>-1; i--) {
                     name = mock.chatroom_names[i];
-                    console.log(name);
                     role = mock.chatroom_roles[name].role;
                     // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
                     presence = $pres({

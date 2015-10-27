@@ -1,4 +1,4 @@
-/*global __dirname, process */
+/*global process */
 module.exports = function(grunt) {
     var path = require('path');
     grunt.initConfig({
@@ -21,21 +21,6 @@ module.exports = function(grunt) {
                 },
             }
         },
-
-        json: {
-            main: {
-                options: {
-                    namespace: 'locales',
-                    includePath: true,
-                    processName: function(filename) {
-                        return filename.toLowerCase().match(/^locale\/(.*)\/lc_messages/)[1];
-                    }
-                },
-                src: ['locale/**/LC_MESSAGES/*.json'],
-                dest: 'builds/locales.js'
-            }
-        },
-
         cssmin: {
             options: {
                 banner: "/*"+
@@ -49,49 +34,12 @@ module.exports = function(grunt) {
                 dest: 'css/converse.min.css',
                 src: ['css/converse.css']
             }
-        },
-        touch: {
-            npm: ['stamp-npm'],
-            bower: ['stamp-bower']
         }
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jst');
     grunt.loadNpmTasks('grunt-json');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-touch');
-
-    grunt.registerTask('test', 'Run Tests', function () {
-        var done = this.async();
-        var child_process = require('child_process');
-        var exec = child_process.exec;
-        exec('./node_modules/.bin/phantomjs '+
-             'node_modules/jasmine-reporters/test/phantomjs-testrunner.js '+
-             __dirname+'/tests.html',
-             function (err, stdout, stderr) {
-                if (err) {
-                    grunt.log.write('Tests failed with error code '+err.code);
-                    grunt.log.write(stderr);
-                }
-                grunt.log.write(stdout);
-                done();
-        });
-    });
-
-    grunt.registerTask('fetch', 'Set up the development environment', function () {
-        var done = this.async();
-        var child_process = require('child_process');
-        var exec = child_process.exec;
-        exec('./node_modules/.bin/bower update',
-             function (err, stdout, stderr) {
-                if (err) {
-                    grunt.log.write('build failed with error code '+err.code);
-                    grunt.log.write(stderr);
-                }
-                grunt.log.write(stdout);
-                done();
-        });
-    });
 
     grunt.registerTask('jsmin', 'Create a new release', function () {
         var done = this.async();

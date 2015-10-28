@@ -654,7 +654,7 @@
                     var $time = $chat_content.find('time');
                     var message_date = new Date();
                     expect($time.length).toEqual(1);
-                    expect($time.attr('class')).toEqual('chat-date');
+                    expect($time.attr('class')).toEqual('chat-info chat-date');
                     expect($time.data('isodate')).toEqual(moment(message_date).format());
                     expect($time.text()).toEqual(moment(message_date).format("dddd MMM Do YYYY"));
 

@@ -85,7 +85,6 @@
     .tt-highlight {
         background-color: #00230F;
     }
-
     .tt-suggestion {
         p {
             color: white;
@@ -101,7 +100,6 @@
             }
         }
     }
-
     .tt-dropdown-menu {
         margin: 0 1px 0 1px;
         width: 96px;
@@ -112,30 +110,6 @@
         background: #27774A;
         border-bottom-right-radius: $chatbox-border-radius;
         border-bottom-left-radius: $chatbox-border-radius;
-    }
-    .chat-blink {
-        background-color: #176679;
-        border-right: 1px solid #176679;
-        border-left: 1px solid #176679;
-    }
-
-    li.chat-info {
-        padding-left: 10px;
-    }
-
-    .not-implemented {
-        margin-top: 3em;
-        margin-left: 0.3em;
-        color: #808080;
-    }
-
-    .delayed {
-        .chat-message-them {
-            color: #FB5D50;
-        }
-        .chat-message-me {
-            color: #7EABBB;
-        }
     }
 
     .error {
@@ -154,12 +128,6 @@
         display: block;
         text-align: center;
         width: 100%;
-    }
-
-    .chat-message-error {
-        color: #76797C;
-        font-size: 90%;
-        font-weight: normal;
     }
 
     a.restore-chat,

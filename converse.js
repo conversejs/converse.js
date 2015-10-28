@@ -1374,7 +1374,7 @@
                 if (!keep_old) {
                     this.$content.find('div.chat-event').remove();
                 }
-                this.$content.append($('<div class="chat-event"></div>').text(message));
+                this.$content.append($('<div class="chat-info chat-event"></div>').text(message));
                 this.scrollDown();
             },
 

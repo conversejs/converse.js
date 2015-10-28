@@ -12,6 +12,14 @@
         height: calc(100% - #{$controlbox-dropdown-height} - 20px);
     }
 
+    .search-xmpp {
+        ul {
+            li.chat-info {
+                padding-left: 10px;
+            }
+        }
+    }
+
     .filter-type {
         display: table-cell;
         float: right;

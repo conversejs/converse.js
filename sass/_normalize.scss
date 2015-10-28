@@ -67,4 +67,16 @@
         text-shadow: none;
     }
 
+    form {
+        &.pure-form.converse-form {
+            padding: 1.5em;
+            label {
+                margin-top: 1em;
+            }
+            input {
+                margin-bottom: 1em;
+            }
+        }
+    }
+
 }

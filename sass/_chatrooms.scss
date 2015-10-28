@@ -67,13 +67,6 @@
                         }
                     }
                 }
-                label {
-                    display: block;
-                    font-size: 12px;
-                    font-style: italic;
-                    margin-left: 2px;
-                    margin: 0.5em;
-                }
                 .chatroom-form-container {
                     background-color: white;
                     border-bottom-left-radius: $chatbox-border-radius;
@@ -85,46 +78,6 @@
                     @include calc(height, '100% - #{$chat-head-height}');
                     overflow-y: auto;
                     position: absolute;
-                    text-align: center;
-                    width: 100%;
-
-                    .chatroom-form {
-                        padding: 1em;
-
-                        .instructions {
-                            color: gray;
-                            font-size: 95%;
-                        }
-                        input {
-                            width: 100%;
-                            padding: 0.5em;
-                            text-align: left;
-                        }
-                        input[type=checkbox] {
-                            width: auto;
-                            margin: auto;
-                        }
-                        input[type=submit], input[type=button] {
-                            width: 50%;
-                            margin-top: 1em;
-                            text-align: center;
-                        }
-                        legend {
-                            font-size: $legend-font-size;
-                            font-weight: bold;
-                            margin: 10px 0 15px 0;
-                        }
-                        label {
-                            font-weight: bold;
-                            display: block;
-                            clear: both;
-                            margin-top: 1em;
-
-                            label input, label select {
-                                float: right;
-                            }
-                        }
-                    }
                 }
             }
         }

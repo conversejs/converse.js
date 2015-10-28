@@ -1782,10 +1782,16 @@
     text-decoration: none;
     color: #436F64;
     text-shadow: none; }
+  #conversejs form.pure-form.converse-form {
+    padding: 1.5em; }
+    #conversejs form.pure-form.converse-form label {
+      margin-top: 1em; }
+    #conversejs form.pure-form.converse-form input {
+      margin-bottom: 1em; }
 
 #conversejs {
   bottom: 0;
-  color: #6C4C44;
+  color: #777;
   direction: ltr;
   display: block;
   font-size: 14px;
@@ -1925,17 +1931,18 @@
     padding: 1px 0 1px 5px; }
   #conversejs .activated {
     display: block !important; }
-  #conversejs form label {
-    font-size: 14px;
-    font-weight: bold;
-    height: auto;
-    margin: 4px; }
-  #conversejs form .form-help {
-    color: gray;
-    font-size: 85%;
-    padding-top: 5px; }
-    #conversejs form .form-help:hover {
-      color: #6C4C44; }
+  #conversejs form.pure-form.converse-form {
+    padding: 1.5em; }
+    #conversejs form.pure-form.converse-form label {
+      margin-top: 1em; }
+    #conversejs form.pure-form.converse-form input {
+      margin-bottom: 1em; }
+    #conversejs form.pure-form.converse-form .form-help {
+      color: gray;
+      font-size: 85%;
+      padding-top: 5px; }
+      #conversejs form.pure-form.converse-form .form-help:hover {
+        color: #777; }
   #conversejs .chat-textarea-chatbox-selected {
     border: 1px solid #578308;
     margin: 0; }
@@ -2000,12 +2007,12 @@
     height: -webkit-calc(100% - 44px);
     height: calc(100% - 44px); }
     #conversejs .chatbox .chat-body p {
-      color: #6C4C44;
+      color: #777;
       font-size: 14px;
       margin: 0;
       padding: 5px; }
     #conversejs .chatbox .chat-body .chat-info {
-      color: #6C4C44;
+      color: #777;
       color: #808080;
       margin: 0.3em; }
       #conversejs .chatbox .chat-body .chat-info.chat-event {
@@ -2042,7 +2049,7 @@
     position: relative;
     padding: 0.5em;
     font-size: 13px;
-    color: #6C4C44;
+    color: #777;
     overflow-y: auto;
     border: 0;
     background-color: #ffffff;
@@ -2247,7 +2254,7 @@
       color: gray;
       font-size: 85%; }
       #conversejs #controlbox #converse-register .instructions:hover {
-        color: #6C4C44; }
+        color: #777; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
     margin: 2em 1em 1em 1em;
     background: white; }
@@ -2290,14 +2297,14 @@
       text-align: left; }
       #conversejs #controlbox #chatrooms #available-chatrooms dt {
         font-weight: normal;
-        color: #6C4C44;
+        color: #777;
         border: none;
         padding: 0.5em;
         text-shadow: 0 1px 0 #FAFAFA; }
       #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom {
         border: none;
         clear: both;
-        color: #6C4C44;
+        color: #777;
         display: block;
         font-weight: bold;
         overflow: hidden;
@@ -2390,7 +2397,7 @@
       border-bottom: 0;
       height: 44px;
       cursor: default;
-      color: #6C4C44; }
+      color: #777; }
     #conversejs #controlbox #controlbox-tabs li {
       float: left;
       list-style: none;
@@ -2412,7 +2419,7 @@
         text-align: center;
         text-decoration: none; }
       #conversejs #controlbox #controlbox-tabs li a:hover {
-        color: #6C4C44; }
+        color: #777; }
   #conversejs #controlbox .xmpp-status {
     display: inline; }
   #conversejs #controlbox .fancy-dropdown {
@@ -2548,7 +2555,7 @@
     overflow-y: auto; }
     #conversejs #converse-roster .roster-contacts dt.roster-group {
       border: none;
-      color: #6C4C44;
+      color: #777;
       display: none;
       font-weight: normal;
       padding: 0.5em;
@@ -2556,13 +2563,13 @@
       #conversejs #converse-roster .roster-contacts dt.roster-group:hover {
         background-color: #E1E6E5; }
       #conversejs #converse-roster .roster-contacts dt.roster-group .group-toggle {
-        color: #6C4C44;
+        color: #777;
         display: block;
         width: 100%; }
     #conversejs #converse-roster .roster-contacts dd {
       border: none;
       clear: both;
-      color: #6C4C44;
+      color: #777;
       display: block;
       font-weight: bold;
       height: 24px;
@@ -2600,7 +2607,7 @@
         width: 22px;
         margin: 0;
         display: none;
-        color: #6C4C44; }
+        color: #777; }
       #conversejs #converse-roster .roster-contacts dd a .open-chat {
         width: 80%; }
   #conversejs #converse-roster span.pending-contact-name {
@@ -2668,53 +2675,18 @@
             width: 100px; }
             #conversejs .chatroom .box-flyout .chatroom-body .participants .participant-list li.moderator {
               color: #8f2831; }
-      #conversejs .chatroom .box-flyout .chatroom-body label {
-        display: block;
-        font-size: 12px;
-        font-style: italic;
-        margin-left: 2px;
-        margin: 0.5em; }
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
         background-color: white;
         border-bottom-left-radius: 4px;
         border-bottom-right-radius: 4px;
         border: 0;
-        color: #6C4C44;
+        color: #777;
         font-size: 14px;
         height: 289px;
         height: -webkit-calc(100% - 44px);
         height: calc(100% - 44px);
         overflow-y: auto;
-        position: absolute;
-        text-align: center;
-        width: 100%; }
-        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form {
-          padding: 1em; }
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form .instructions {
-            color: gray;
-            font-size: 95%; }
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input {
-            width: 100%;
-            padding: 0.5em;
-            text-align: left; }
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=checkbox] {
-            width: auto;
-            margin: auto; }
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=submit], #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=button] {
-            width: 50%;
-            margin-top: 1em;
-            text-align: center; }
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form legend {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 10px 0 15px 0; }
-          #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label {
-            font-weight: bold;
-            display: block;
-            clear: both;
-            margin-top: 1em; }
-            #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label label input, #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label label select {
-              float: right; }
+        position: absolute; }
   #conversejs .chatroom .chat-head-chatroom {
     background-color: #346121; }
   #conversejs .chatroom .chat-textarea {

@@ -165,18 +165,21 @@
     }
 
     form {
-        label {
-            font-size: $font-size;
-            font-weight: bold;
-            height: auto;
-            margin: 4px;
-        }
-        .form-help {
-            color: gray;
-            font-size: 85%;
-            padding-top: 5px;
-            &:hover {
-                color: $text-color;
+        &.pure-form.converse-form {
+            padding: 1.5em;
+            label {
+                margin-top: 1em;
+            }
+            input {
+                margin-bottom: 1em;
+            }
+            .form-help {
+                color: gray;
+                font-size: 85%;
+                padding-top: 5px;
+                &:hover {
+                    color: $text-color;
+                }
             }
         }
     }

@@ -33,46 +33,59 @@
             </div>
             <div class="chat-body chatroom-body">
                 <div class="chatroom-form-container">
-                    <form class="chatroom-form">
-                        <legend>Configuration for discuss@conference.conversejs.com</legend>
-                        <p class="instructions">Complete and submit this form to configure the room.</p>
-                        <input name="FORM_TYPE" type="hidden" value="http://jabber.org/protocol/muc#roomconfig">
-                        <label>Name</label>
-                        <input name="muc#roomconfig_roomname" type="textline" value="xxx">
+                    <form class="pure-form pure-form-stacked converse-form chatroom-form">
+                        <fieldset>
+                            <legend>Configuration for discuss@conference.conversejs.com</legend>
+                            <p class="form-help">Complete and submit this form to configure the room.</p>
 
-                        <label>Description</label>
-                        <input name="muc#roomconfig_roomdesc" type="textline">
-                        <div class="input-group cb-input-group">
-                            <label>Make Room Persistent?</label>
-                            <input name="muc#roomconfig_persistentroom" type="checkbox">
-                        </div>
-                        <div class="input-group cb-input-group">
-                            <label>Make Room Publicly Searchable?</label>
-                            <input name="muc#roomconfig_publicroom" type="checkbox" checked="1">
-                        </div>
-                        <div class="input-group cb-input-group">
-                            <label>Allow Occupants to Change Subject?</label>
-                            <input name="muc#roomconfig_changesubject" type="checkbox">
-                        </div>
-                        <label>Who May Discover Real JIDs?</label>
-                        <select name="muc#roomconfig_whois"><option value="moderators" selected="selected">Moderators Only</option>
-                            <option value="anyone">Anyone</option>
-                        </select>
+                            <input name="FORM_TYPE" type="hidden" value="http://jabber.org/protocol/muc#roomconfig">
+                            
+                            <label>Name</label>
+                            <input name="muc#roomconfig_roomname" type="text" value="xxx">
 
-                        <label>Password</label>
-                        <input name="muc#roomconfig_roomsecret" type="password">
-                        <div class="input-group cb-input-group">
-                            <label>Make Room Moderated?</label>
-                            <input name="muc#roomconfig_moderatedroom" type="checkbox">
-                        </div>
-                        <div class="input-group cb-input-group">
-                            <label>Make Room Members-Only?</label>
-                            <input name="muc#roomconfig_membersonly" type="checkbox">
-                        </div>
+                            <label>Description</label>
+                            <input name="muc#roomconfig_roomdesc" type="text">
+
+                            <label for="foo" class="pure-checkbox">
+                                Make Room Persistent?
+                                <input id="foo" name="muc#roomconfig_persistentroom" type="checkbox">
+                            </label>
+
+                            <label for="bar" class="pure-checkbox">
+                                Make Room Publicly Searchable?
+                                <input id="bar" name="muc#roomconfig_publicroom" type="checkbox" checked="1">
+                            </label>
+
+                            <label for="baz" class="pure-checkbox">
+                                Allow Occupants to Change Subject?
+                                <input id="baz" name="muc#roomconfig_changesubject" type="checkbox">
+                            </label>
+
+                            <label>Who May Discover Real JIDs?</label>
+                            <select name="muc#roomconfig_whois"><option value="moderators" selected="selected">Moderators Only</option>
+                                <option value="anyone">Anyone</option>
+                            </select>
+
+                            <label>Password</label>
+                            <input name="muc#roomconfig_roomsecret" type="password">
+
+                            <label for="buz" class="pure-checkbox">
+                                Make Room Moderated?
+                                <input id="buz" name="muc#roomconfig_moderatedroom" type="checkbox">
+                            </label>
+
+                            <label for="blah" class="pure-checkbox">
+                                Make Room Members-Only?
+                                <input id="blah" name="muc#roomconfig_membersonly" type="checkbox">
+                            </label>
+
                             <label>Maximum Number of History Messages Returned by Room</label>
-                        <input name="muc#roomconfig_historylength" type="textline" value="20">
-                        <input type="submit" class="save-submit" value="Save">
-                        <input type="button" class="cancel-submit" value="Cancel"></form>
+                            <input name="muc#roomconfig_historylength" type="number" value="20">
+                        </fieldset>
+                        <fieldset>
+                            <input type="submit" class="pure-button save-submit" value="Save">
+                            <input type="button" class="pure-button cancel-submit" value="Cancel"></form>
+                        </fieldset>
                 </div>
             </div>
         </div>

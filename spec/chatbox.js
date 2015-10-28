@@ -453,9 +453,9 @@
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the chatbox in the DOM
                         var $chat_content = chatboxview.$el.find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                        var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                         expect(msg_txt).toEqual(message);
-                        var sender_txt = $chat_content.find('span.chat-message-them').text();
+                        var sender_txt = $chat_content.find('span.chat-msg-them').text();
                         expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                     }.bind(converse));
                 }.bind(converse));
@@ -511,9 +511,9 @@
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var $chat_content = chatboxview.$el.find('.chat-content');
-                    var msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                    var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                     expect(msg_txt).toEqual(msgtext);
-                    var sender_txt = $chat_content.find('span.chat-message-them').text();
+                    var sender_txt = $chat_content.find('span.chat-msg-them').text();
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                 });
 
@@ -552,7 +552,7 @@
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
                     var $chat_content = chatboxview.$el.find('.chat-content');
-                    var msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                    var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                     expect(msg_txt).toEqual(msgtext);
                 });
 
@@ -634,9 +634,9 @@
                     expect(msg_obj.get('fullname')).toEqual(contact_name.split(' ')[0]);
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('delayed')).toEqual(true);
-                    msg_txt = $chat_content.find('.chat-message').find('.chat-message-content').text();
+                    msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                     expect(msg_txt).toEqual(message);
-                    sender_txt = $chat_content.find('span.chat-message-them').text();
+                    sender_txt = $chat_content.find('span.chat-msg-them').text();
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
 
                     message = 'This is a current message';
@@ -665,9 +665,9 @@
                     expect(msg_obj.get('fullname')).toEqual(contact_name.split(' ')[0]);
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('delayed')).toEqual(false);
-                    msg_txt = $chat_content.find('.chat-message').last().find('.chat-message-content').text();
+                    msg_txt = $chat_content.find('.chat-message').last().find('.chat-msg-content').text();
                     expect(msg_txt).toEqual(message);
-                    sender_txt = $chat_content.find('span.chat-message-them').last().text();
+                    sender_txt = $chat_content.find('span.chat-msg-them').last().text();
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                 }.bind(converse));
 
@@ -683,7 +683,7 @@
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
                     expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
-                    expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content').text()).toEqual(message);
+                    expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content').text()).toEqual(message);
                 }.bind(converse));
 
                 it("is sanitized to prevent Javascript injection attacks", function () {
@@ -694,7 +694,7 @@
                     spyOn(view, 'sendMessage').andCallThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
                 }.bind(converse));
@@ -707,7 +707,7 @@
                     spyOn(view, 'sendMessage').andCallThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" href="http://www.opkode.com">www.opkode.com</a>');
                 }.bind(converse));
@@ -731,7 +731,7 @@
                         var message = messages[i];
                         test_utils.sendMessage(view, message);
                         expect(view.sendMessage).toHaveBeenCalled();
-                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(emoticons[i]);
                     }
                 }.bind(converse));
@@ -745,28 +745,28 @@
                     var message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
                     message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
 
                     message = "https://en.wikipedia.org/wiki/Ender's_Game";
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
 
                     message = "https://en.wikipedia.org/wiki/Ender%27s_Game";
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-message-content');
+                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                     expect(msg.text()).toEqual(message);
                     expect(msg.html()).toEqual('<a target="_blank" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
                 }.bind(converse));

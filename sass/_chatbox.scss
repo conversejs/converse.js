@@ -88,29 +88,29 @@
                     max-width: 100px;
                     display: inline-block;
                     padding-right: 3px;
-                    &.chat-message-author {
+                    &.chat-msg-author {
                         font-weight: bold;
                         white-space: nowrap;
                         float: left;
                         text-overflow: ellipsis;
                         overflow: hidden;
                     }
-                    &.chat-message-them {
+                    &.chat-msg-them {
                         color: $message-them-color;
                     }
-                    &.chat-message-me {
+                    &.chat-msg-me {
                         color: $link-color;
                     }
-                    &.chat-message-content {
+                    &.chat-msg-content {
                         word-wrap: break-word;
                     }
                 }
             }
             .delayed {
-                .chat-message-them {
+                .chat-msg-them {
                     color: #FB5D50;
                 }
-                .chat-message-me {
+                .chat-msg-me {
                     color: #7EABBB;
                 }
             }

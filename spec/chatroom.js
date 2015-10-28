@@ -188,7 +188,7 @@
                 view.onChatRoomMessage(message.nodeTree);
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
-                expect($chat_content.find('.chat-message-content').text()).toBe(text);
+                expect($chat_content.find('.chat-msg-content').text()).toBe(text);
                 expect(converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
             }.bind(converse));
 
@@ -251,7 +251,7 @@
                 view.onChatRoomMessage(message.nodeTree);
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
-                expect($chat_content.find('.chat-message-content').last().text()).toBe(text);
+                expect($chat_content.find('.chat-msg-content').last().text()).toBe(text);
                 // We don't emit an event if it's our own message
                 expect(converse.emit.callCount, 1);
             }.bind(converse));

@@ -1551,7 +1551,7 @@
                         'username': username,
                         'message': '',
                         'extra_classes': extra_classes
-                    })).children('.chat-message-content').first().text(text)
+                    })).children('.chat-msg-content').first().text(text)
                         .addHyperlinks()
                         .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
             },

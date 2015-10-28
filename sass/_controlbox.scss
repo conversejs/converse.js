@@ -75,15 +75,6 @@
         #converse-register, #converse-login {
             margin: 2em 1em 1em 1em;
             background: white;
-
-            .login-submit, .submit {
-                height: 30px;
-                padding: 0px;
-                font-size: $font-size;
-            }
-            .submit {
-                margin: 1em 0;
-            }
             .login-anon {
                 height: auto;
                 white-space: normal;
@@ -101,8 +92,7 @@
             input {
                 width: 100%;
                 height: 30px;
-                margin: 5px 0 10px 0;
-                padding-left: 0.5em;
+                margin: 1em 0;
             }
         }
         #users {

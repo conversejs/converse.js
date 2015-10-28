@@ -86,7 +86,7 @@
                 span {
                     display: inline-block;
                     &.chat-msg-author {
-                        max-width: 100px;
+                        max-width: 100%;
                         font-weight: bold;
                         white-space: nowrap;
                         float: left;

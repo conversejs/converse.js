@@ -239,9 +239,1504 @@
   -moz-osx-font-smoothing: grayscale; }
 
 #conversejs {
+  /*!
+  Pure v0.6.1-pre
+  Copyright 2014 Yahoo! Inc. All rights reserved.
+  Licensed under the BSD License.
+  https://github.com/yahoo/pure/blob/master/LICENSE.md
+  */
+  /*!
+  normalize.css v^3.0 | MIT License | git.io/normalize
+  Copyright (c) Nicolas Gallagher and Jonathan Neal
+  */
+  /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+  /**
+   * 1. Set default font family to sans-serif.
+   * 2. Prevent iOS and IE text size adjust after device orientation change,
+   *    without disabling user zoom.
+   */
+  /**
+   * Remove default margin.
+   */
+  /* HTML5 display definitions
+     ========================================================================== */
+  /**
+   * Correct `block` display not defined for any HTML5 element in IE 8/9.
+   * Correct `block` display not defined for `details` or `summary` in IE 10/11
+   * and Firefox.
+   * Correct `block` display not defined for `main` in IE 11.
+   */
+  /**
+   * 1. Correct `inline-block` display not defined in IE 8/9.
+   * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
+   */
+  /**
+   * Prevent modern browsers from displaying `audio` without controls.
+   * Remove excess height in iOS 5 devices.
+   */
+  /**
+   * Address `[hidden]` styling not present in IE 8/9/10.
+   * Hide the `template` element in IE 8/9/10/11, Safari, and Firefox < 22.
+   */
+  /* Links
+     ========================================================================== */
+  /**
+   * Remove the gray background color from active links in IE 10.
+   */
+  /**
+   * Improve readability of focused elements when they are also in an
+   * active/hover state.
+   */
+  /* Text-level semantics
+     ========================================================================== */
+  /**
+   * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
+   */
+  /**
+   * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
+   */
+  /**
+   * Address styling not present in Safari and Chrome.
+   */
+  /**
+   * Address variable `h1` font-size and margin within `section` and `article`
+   * contexts in Firefox 4+, Safari, and Chrome.
+   */
+  /**
+   * Address styling not present in IE 8/9.
+   */
+  /**
+   * Address inconsistent and variable font size in all browsers.
+   */
+  /**
+   * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+   */
+  /* Embedded content
+     ========================================================================== */
+  /**
+   * Remove border when inside `a` element in IE 8/9/10.
+   */
+  /**
+   * Correct overflow not hidden in IE 9/10/11.
+   */
+  /* Grouping content
+     ========================================================================== */
+  /**
+   * Address margin not present in IE 8/9 and Safari.
+   */
+  /**
+   * Address differences between Firefox and other browsers.
+   */
+  /**
+   * Contain overflow in all browsers.
+   */
+  /**
+   * Address odd `em`-unit font size rendering in all browsers.
+   */
+  /* Forms
+     ========================================================================== */
+  /**
+   * Known limitation: by default, Chrome and Safari on OS X allow very limited
+   * styling of `select`, unless a `border` property is set.
+   */
+  /**
+   * 1. Correct color not being inherited.
+   *    Known issue: affects color of disabled elements.
+   * 2. Correct font properties not being inherited.
+   * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
+   */
+  /**
+   * Address `overflow` set to `hidden` in IE 8/9/10/11.
+   */
+  /**
+   * Address inconsistent `text-transform` inheritance for `button` and `select`.
+   * All other form control elements do not inherit `text-transform` values.
+   * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
+   * Correct `select` style inheritance in Firefox.
+   */
+  /**
+   * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+   *    and `video` controls.
+   * 2. Correct inability to style clickable `input` types in iOS.
+   * 3. Improve usability and consistency of cursor style between image-type
+   *    `input` and others.
+   */
+  /**
+   * Re-set default cursor for disabled elements.
+   */
+  /**
+   * Remove inner padding and border in Firefox 4+.
+   */
+  /**
+   * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+   * the UA stylesheet.
+   */
+  /**
+   * It's recommended that you don't attempt to style these elements.
+   * Firefox's implementation doesn't respect box-sizing, padding, or width.
+   *
+   * 1. Address box sizing set to `content-box` in IE 8/9/10.
+   * 2. Remove excess padding in IE 8/9/10.
+   */
+  /**
+   * Fix the cursor style for Chrome's increment/decrement buttons. For certain
+   * `font-size` values of the `input`, it causes the cursor style of the
+   * decrement button to change from `default` to `text`.
+   */
+  /**
+   * 1. Address `appearance` set to `searchfield` in Safari and Chrome.
+   * 2. Address `box-sizing` set to `border-box` in Safari and Chrome.
+   */
+  /**
+   * Remove inner padding and search cancel button in Safari and Chrome on OS X.
+   * Safari (but not Chrome) clips the cancel button when the search input has
+   * padding (and `textfield` appearance).
+   */
+  /**
+   * Define consistent border, margin, and padding.
+   */
+  /**
+   * 1. Correct `color` not being inherited in IE 8/9/10/11.
+   * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+   */
+  /**
+   * Remove default vertical scrollbar in IE 8/9/10/11.
+   */
+  /**
+   * Don't inherit the `font-weight` (applied by a rule above).
+   * NOTE: the default cannot safely be changed in Chrome and Safari on OS X.
+   */
+  /* Tables
+     ========================================================================== */
+  /**
+   * Remove most spacing between table cells.
+   */
+  /*csslint important:false*/
+  /* ==========================================================================
+     Pure Base Extras
+     ========================================================================== */
+  /**
+   * Extra rules that Pure adds on top of Normalize.css
+   */
+  /**
+   * Always hide an element when it has the `hidden` HTML attribute.
+   */
+  /**
+   * Add this class to an image to make it fit within it's fluid parent wrapper while maintaining
+   * aspect ratio.
+   */
+  /*!
+  Pure v0.6.1-pre
+  Copyright 2014 Yahoo! Inc. All rights reserved.
+  Licensed under the BSD License.
+  https://github.com/yahoo/pure/blob/master/LICENSE.md
+  */
+  /*!
+  Pure v0.6.1-pre
+  Copyright 2014 Yahoo! Inc. All rights reserved.
+  Licensed under the BSD License.
+  https://github.com/yahoo/pure/blob/master/LICENSE.md
+  */
+  /*csslint box-model:false*/
+  /*
+  Box-model set to false because we're setting a height on select elements, which
+  also have border and padding. This is done because some browsers don't render
+  the padding. We explicitly set the box-model for select elements to border-box,
+  so we can ignore the csslint warning.
+  */
+  /*
+  Need to separate out the :not() selector from the rest of the CSS 2.1 selectors
+  since IE8 won't execute CSS that contains a CSS3 selector.
+  */
+  /* Chrome (as of v.32/34 on OS X) needs additional room for color to display. */
+  /* May be able to remove this tweak as color inputs become more standardized across browsers. */
+  /*
+  Need to separate out the :not() selector from the rest of the CSS 2.1 selectors
+  since IE8 won't execute CSS that contains a CSS3 selector.
+  */
+  /*
+  Need to separate out the :not() selector from the rest of the CSS 2.1 selectors
+  since IE8 won't execute CSS that contains a CSS3 selector.
+  */
+  /*
+  Need to separate out the :not() selector from the rest of the CSS 2.1 selectors
+  since IE8 won't execute CSS that contains a CSS3 selector.
+  */
+  /* Aligned Forms */
+  /* Rounded Inputs */
+  /* Grouped Inputs */
+  /* Inline help for forms */
+  /* NOTE: pure-help-inline is deprecated. Use .pure-form-message-inline instead. */
+  /* Block help for forms */
+  /*!
+  Pure v0.6.1-pre
+  Copyright 2014 Yahoo! Inc. All rights reserved.
+  Licensed under the BSD License.
+  https://github.com/yahoo/pure/blob/master/LICENSE.md
+  */
+  /* Firefox: Get rid of the inner focus border */
+  /*csslint outline-none:false*/
+  /* Firefox: Get rid of the inner focus border */
+  /*!
+  Pure v0.6.1-pre
+  Copyright 2014 Yahoo! Inc. All rights reserved.
+  Licensed under the BSD License.
+  https://github.com/yahoo/pure/blob/master/LICENSE.md
+  */
+  /*csslint adjoining-classes: false, box-model:false*/
+  /* HORIZONTAL MENU */
+  /* Initial menus should be inline-block so that they are horizontal */
+  /* Submenus should still be display: block; */
+  /* Vertical Menus - show the dropdown arrow */
+  /* Horizontal Menus - show the dropdown arrow */
+  /* scrollable menus */
+  /* misc default styling */
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
+  #conversejs html {
+    font-family: sans-serif;
+    /* 1 */
+    -ms-text-size-adjust: 100%;
+    /* 2 */
+    -webkit-text-size-adjust: 100%;
+    /* 2 */ }
+  #conversejs body {
+    margin: 0; }
+  #conversejs article,
+  #conversejs aside,
+  #conversejs details,
+  #conversejs figcaption,
+  #conversejs figure,
+  #conversejs footer,
+  #conversejs header,
+  #conversejs hgroup,
+  #conversejs main,
+  #conversejs menu,
+  #conversejs nav,
+  #conversejs section,
+  #conversejs summary {
+    display: block; }
+  #conversejs audio,
+  #conversejs canvas,
+  #conversejs progress,
+  #conversejs video {
+    display: inline-block;
+    /* 1 */
+    vertical-align: baseline;
+    /* 2 */ }
+  #conversejs audio:not([controls]) {
+    display: none;
+    height: 0; }
+  #conversejs [hidden],
+  #conversejs template {
+    display: none; }
+  #conversejs a {
+    background-color: transparent; }
+  #conversejs a:active,
+  #conversejs a:hover {
+    outline: 0; }
+  #conversejs abbr[title] {
+    border-bottom: 1px dotted; }
+  #conversejs b,
+  #conversejs strong {
+    font-weight: bold; }
+  #conversejs dfn {
+    font-style: italic; }
+  #conversejs h1 {
+    font-size: 2em;
+    margin: 0.67em 0; }
+  #conversejs mark {
+    background: #ff0;
+    color: #000; }
+  #conversejs small {
+    font-size: 80%; }
+  #conversejs sub,
+  #conversejs sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline; }
+  #conversejs sup {
+    top: -0.5em; }
+  #conversejs sub {
+    bottom: -0.25em; }
+  #conversejs img {
+    border: 0; }
+  #conversejs svg:not(:root) {
+    overflow: hidden; }
+  #conversejs figure {
+    margin: 1em 40px; }
+  #conversejs hr {
+    box-sizing: content-box;
+    height: 0; }
+  #conversejs pre {
+    overflow: auto; }
+  #conversejs code,
+  #conversejs kbd,
+  #conversejs pre,
+  #conversejs samp {
+    font-family: monospace, monospace;
+    font-size: 1em; }
+  #conversejs button,
+  #conversejs input,
+  #conversejs optgroup,
+  #conversejs select,
+  #conversejs textarea {
+    color: inherit;
+    /* 1 */
+    font: inherit;
+    /* 2 */
+    margin: 0;
+    /* 3 */ }
+  #conversejs button {
+    overflow: visible; }
+  #conversejs button,
+  #conversejs select {
+    text-transform: none; }
+  #conversejs button,
+  #conversejs html input[type="button"],
+  #conversejs input[type="reset"],
+  #conversejs input[type="submit"] {
+    -webkit-appearance: button;
+    /* 2 */
+    cursor: pointer;
+    /* 3 */ }
+  #conversejs button[disabled],
+  #conversejs html input[disabled] {
+    cursor: default; }
+  #conversejs button::-moz-focus-inner,
+  #conversejs input::-moz-focus-inner {
+    border: 0;
+    padding: 0; }
+  #conversejs input {
+    line-height: normal; }
+  #conversejs input[type="checkbox"],
+  #conversejs input[type="radio"] {
+    box-sizing: border-box;
+    /* 1 */
+    padding: 0;
+    /* 2 */ }
+  #conversejs input[type="number"]::-webkit-inner-spin-button,
+  #conversejs input[type="number"]::-webkit-outer-spin-button {
+    height: auto; }
+  #conversejs input[type="search"] {
+    -webkit-appearance: textfield;
+    /* 1 */
+    box-sizing: content-box;
+    /* 2 */ }
+  #conversejs input[type="search"]::-webkit-search-cancel-button,
+  #conversejs input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none; }
+  #conversejs fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em; }
+  #conversejs legend {
+    border: 0;
+    /* 1 */
+    padding: 0;
+    /* 2 */ }
+  #conversejs textarea {
+    overflow: auto; }
+  #conversejs optgroup {
+    font-weight: bold; }
+  #conversejs table {
+    border-collapse: collapse;
+    border-spacing: 0; }
+  #conversejs td,
+  #conversejs th {
+    padding: 0; }
+  #conversejs .hidden,
+  #conversejs [hidden] {
+    display: none !important; }
+  #conversejs .pure-img {
+    max-width: 100%;
+    height: auto;
+    display: block; }
+  @media screen and (min-width: 35.5em) {
+    #conversejs .pure-u-sm-1,
+    #conversejs .pure-u-sm-1-1,
+    #conversejs .pure-u-sm-1-2,
+    #conversejs .pure-u-sm-1-3,
+    #conversejs .pure-u-sm-2-3,
+    #conversejs .pure-u-sm-1-4,
+    #conversejs .pure-u-sm-3-4,
+    #conversejs .pure-u-sm-1-5,
+    #conversejs .pure-u-sm-2-5,
+    #conversejs .pure-u-sm-3-5,
+    #conversejs .pure-u-sm-4-5,
+    #conversejs .pure-u-sm-5-5,
+    #conversejs .pure-u-sm-1-6,
+    #conversejs .pure-u-sm-5-6,
+    #conversejs .pure-u-sm-1-8,
+    #conversejs .pure-u-sm-3-8,
+    #conversejs .pure-u-sm-5-8,
+    #conversejs .pure-u-sm-7-8,
+    #conversejs .pure-u-sm-1-12,
+    #conversejs .pure-u-sm-5-12,
+    #conversejs .pure-u-sm-7-12,
+    #conversejs .pure-u-sm-11-12,
+    #conversejs .pure-u-sm-1-24,
+    #conversejs .pure-u-sm-2-24,
+    #conversejs .pure-u-sm-3-24,
+    #conversejs .pure-u-sm-4-24,
+    #conversejs .pure-u-sm-5-24,
+    #conversejs .pure-u-sm-6-24,
+    #conversejs .pure-u-sm-7-24,
+    #conversejs .pure-u-sm-8-24,
+    #conversejs .pure-u-sm-9-24,
+    #conversejs .pure-u-sm-10-24,
+    #conversejs .pure-u-sm-11-24,
+    #conversejs .pure-u-sm-12-24,
+    #conversejs .pure-u-sm-13-24,
+    #conversejs .pure-u-sm-14-24,
+    #conversejs .pure-u-sm-15-24,
+    #conversejs .pure-u-sm-16-24,
+    #conversejs .pure-u-sm-17-24,
+    #conversejs .pure-u-sm-18-24,
+    #conversejs .pure-u-sm-19-24,
+    #conversejs .pure-u-sm-20-24,
+    #conversejs .pure-u-sm-21-24,
+    #conversejs .pure-u-sm-22-24,
+    #conversejs .pure-u-sm-23-24,
+    #conversejs .pure-u-sm-24-24 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      letter-spacing: normal;
+      word-spacing: normal;
+      vertical-align: top;
+      text-rendering: auto; }
+    #conversejs .pure-u-sm-1-24 {
+      width: 4.1667%;
+      *width: 4.1357%; }
+    #conversejs .pure-u-sm-1-12,
+    #conversejs .pure-u-sm-2-24 {
+      width: 8.3333%;
+      *width: 8.3023%; }
+    #conversejs .pure-u-sm-1-8,
+    #conversejs .pure-u-sm-3-24 {
+      width: 12.5000%;
+      *width: 12.4690%; }
+    #conversejs .pure-u-sm-1-6,
+    #conversejs .pure-u-sm-4-24 {
+      width: 16.6667%;
+      *width: 16.6357%; }
+    #conversejs .pure-u-sm-1-5 {
+      width: 20%;
+      *width: 19.9690%; }
+    #conversejs .pure-u-sm-5-24 {
+      width: 20.8333%;
+      *width: 20.8023%; }
+    #conversejs .pure-u-sm-1-4,
+    #conversejs .pure-u-sm-6-24 {
+      width: 25%;
+      *width: 24.9690%; }
+    #conversejs .pure-u-sm-7-24 {
+      width: 29.1667%;
+      *width: 29.1357%; }
+    #conversejs .pure-u-sm-1-3,
+    #conversejs .pure-u-sm-8-24 {
+      width: 33.3333%;
+      *width: 33.3023%; }
+    #conversejs .pure-u-sm-3-8,
+    #conversejs .pure-u-sm-9-24 {
+      width: 37.5000%;
+      *width: 37.4690%; }
+    #conversejs .pure-u-sm-2-5 {
+      width: 40%;
+      *width: 39.9690%; }
+    #conversejs .pure-u-sm-5-12,
+    #conversejs .pure-u-sm-10-24 {
+      width: 41.6667%;
+      *width: 41.6357%; }
+    #conversejs .pure-u-sm-11-24 {
+      width: 45.8333%;
+      *width: 45.8023%; }
+    #conversejs .pure-u-sm-1-2,
+    #conversejs .pure-u-sm-12-24 {
+      width: 50%;
+      *width: 49.9690%; }
+    #conversejs .pure-u-sm-13-24 {
+      width: 54.1667%;
+      *width: 54.1357%; }
+    #conversejs .pure-u-sm-7-12,
+    #conversejs .pure-u-sm-14-24 {
+      width: 58.3333%;
+      *width: 58.3023%; }
+    #conversejs .pure-u-sm-3-5 {
+      width: 60%;
+      *width: 59.9690%; }
+    #conversejs .pure-u-sm-5-8,
+    #conversejs .pure-u-sm-15-24 {
+      width: 62.5000%;
+      *width: 62.4690%; }
+    #conversejs .pure-u-sm-2-3,
+    #conversejs .pure-u-sm-16-24 {
+      width: 66.6667%;
+      *width: 66.6357%; }
+    #conversejs .pure-u-sm-17-24 {
+      width: 70.8333%;
+      *width: 70.8023%; }
+    #conversejs .pure-u-sm-3-4,
+    #conversejs .pure-u-sm-18-24 {
+      width: 75%;
+      *width: 74.9690%; }
+    #conversejs .pure-u-sm-19-24 {
+      width: 79.1667%;
+      *width: 79.1357%; }
+    #conversejs .pure-u-sm-4-5 {
+      width: 80%;
+      *width: 79.9690%; }
+    #conversejs .pure-u-sm-5-6,
+    #conversejs .pure-u-sm-20-24 {
+      width: 83.3333%;
+      *width: 83.3023%; }
+    #conversejs .pure-u-sm-7-8,
+    #conversejs .pure-u-sm-21-24 {
+      width: 87.5000%;
+      *width: 87.4690%; }
+    #conversejs .pure-u-sm-11-12,
+    #conversejs .pure-u-sm-22-24 {
+      width: 91.6667%;
+      *width: 91.6357%; }
+    #conversejs .pure-u-sm-23-24 {
+      width: 95.8333%;
+      *width: 95.8023%; }
+    #conversejs .pure-u-sm-1,
+    #conversejs .pure-u-sm-1-1,
+    #conversejs .pure-u-sm-5-5,
+    #conversejs .pure-u-sm-24-24 {
+      width: 100%; } }
+  @media screen and (min-width: 48em) {
+    #conversejs .pure-u-md-1,
+    #conversejs .pure-u-md-1-1,
+    #conversejs .pure-u-md-1-2,
+    #conversejs .pure-u-md-1-3,
+    #conversejs .pure-u-md-2-3,
+    #conversejs .pure-u-md-1-4,
+    #conversejs .pure-u-md-3-4,
+    #conversejs .pure-u-md-1-5,
+    #conversejs .pure-u-md-2-5,
+    #conversejs .pure-u-md-3-5,
+    #conversejs .pure-u-md-4-5,
+    #conversejs .pure-u-md-5-5,
+    #conversejs .pure-u-md-1-6,
+    #conversejs .pure-u-md-5-6,
+    #conversejs .pure-u-md-1-8,
+    #conversejs .pure-u-md-3-8,
+    #conversejs .pure-u-md-5-8,
+    #conversejs .pure-u-md-7-8,
+    #conversejs .pure-u-md-1-12,
+    #conversejs .pure-u-md-5-12,
+    #conversejs .pure-u-md-7-12,
+    #conversejs .pure-u-md-11-12,
+    #conversejs .pure-u-md-1-24,
+    #conversejs .pure-u-md-2-24,
+    #conversejs .pure-u-md-3-24,
+    #conversejs .pure-u-md-4-24,
+    #conversejs .pure-u-md-5-24,
+    #conversejs .pure-u-md-6-24,
+    #conversejs .pure-u-md-7-24,
+    #conversejs .pure-u-md-8-24,
+    #conversejs .pure-u-md-9-24,
+    #conversejs .pure-u-md-10-24,
+    #conversejs .pure-u-md-11-24,
+    #conversejs .pure-u-md-12-24,
+    #conversejs .pure-u-md-13-24,
+    #conversejs .pure-u-md-14-24,
+    #conversejs .pure-u-md-15-24,
+    #conversejs .pure-u-md-16-24,
+    #conversejs .pure-u-md-17-24,
+    #conversejs .pure-u-md-18-24,
+    #conversejs .pure-u-md-19-24,
+    #conversejs .pure-u-md-20-24,
+    #conversejs .pure-u-md-21-24,
+    #conversejs .pure-u-md-22-24,
+    #conversejs .pure-u-md-23-24,
+    #conversejs .pure-u-md-24-24 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      letter-spacing: normal;
+      word-spacing: normal;
+      vertical-align: top;
+      text-rendering: auto; }
+    #conversejs .pure-u-md-1-24 {
+      width: 4.1667%;
+      *width: 4.1357%; }
+    #conversejs .pure-u-md-1-12,
+    #conversejs .pure-u-md-2-24 {
+      width: 8.3333%;
+      *width: 8.3023%; }
+    #conversejs .pure-u-md-1-8,
+    #conversejs .pure-u-md-3-24 {
+      width: 12.5000%;
+      *width: 12.4690%; }
+    #conversejs .pure-u-md-1-6,
+    #conversejs .pure-u-md-4-24 {
+      width: 16.6667%;
+      *width: 16.6357%; }
+    #conversejs .pure-u-md-1-5 {
+      width: 20%;
+      *width: 19.9690%; }
+    #conversejs .pure-u-md-5-24 {
+      width: 20.8333%;
+      *width: 20.8023%; }
+    #conversejs .pure-u-md-1-4,
+    #conversejs .pure-u-md-6-24 {
+      width: 25%;
+      *width: 24.9690%; }
+    #conversejs .pure-u-md-7-24 {
+      width: 29.1667%;
+      *width: 29.1357%; }
+    #conversejs .pure-u-md-1-3,
+    #conversejs .pure-u-md-8-24 {
+      width: 33.3333%;
+      *width: 33.3023%; }
+    #conversejs .pure-u-md-3-8,
+    #conversejs .pure-u-md-9-24 {
+      width: 37.5000%;
+      *width: 37.4690%; }
+    #conversejs .pure-u-md-2-5 {
+      width: 40%;
+      *width: 39.9690%; }
+    #conversejs .pure-u-md-5-12,
+    #conversejs .pure-u-md-10-24 {
+      width: 41.6667%;
+      *width: 41.6357%; }
+    #conversejs .pure-u-md-11-24 {
+      width: 45.8333%;
+      *width: 45.8023%; }
+    #conversejs .pure-u-md-1-2,
+    #conversejs .pure-u-md-12-24 {
+      width: 50%;
+      *width: 49.9690%; }
+    #conversejs .pure-u-md-13-24 {
+      width: 54.1667%;
+      *width: 54.1357%; }
+    #conversejs .pure-u-md-7-12,
+    #conversejs .pure-u-md-14-24 {
+      width: 58.3333%;
+      *width: 58.3023%; }
+    #conversejs .pure-u-md-3-5 {
+      width: 60%;
+      *width: 59.9690%; }
+    #conversejs .pure-u-md-5-8,
+    #conversejs .pure-u-md-15-24 {
+      width: 62.5000%;
+      *width: 62.4690%; }
+    #conversejs .pure-u-md-2-3,
+    #conversejs .pure-u-md-16-24 {
+      width: 66.6667%;
+      *width: 66.6357%; }
+    #conversejs .pure-u-md-17-24 {
+      width: 70.8333%;
+      *width: 70.8023%; }
+    #conversejs .pure-u-md-3-4,
+    #conversejs .pure-u-md-18-24 {
+      width: 75%;
+      *width: 74.9690%; }
+    #conversejs .pure-u-md-19-24 {
+      width: 79.1667%;
+      *width: 79.1357%; }
+    #conversejs .pure-u-md-4-5 {
+      width: 80%;
+      *width: 79.9690%; }
+    #conversejs .pure-u-md-5-6,
+    #conversejs .pure-u-md-20-24 {
+      width: 83.3333%;
+      *width: 83.3023%; }
+    #conversejs .pure-u-md-7-8,
+    #conversejs .pure-u-md-21-24 {
+      width: 87.5000%;
+      *width: 87.4690%; }
+    #conversejs .pure-u-md-11-12,
+    #conversejs .pure-u-md-22-24 {
+      width: 91.6667%;
+      *width: 91.6357%; }
+    #conversejs .pure-u-md-23-24 {
+      width: 95.8333%;
+      *width: 95.8023%; }
+    #conversejs .pure-u-md-1,
+    #conversejs .pure-u-md-1-1,
+    #conversejs .pure-u-md-5-5,
+    #conversejs .pure-u-md-24-24 {
+      width: 100%; } }
+  @media screen and (min-width: 64em) {
+    #conversejs .pure-u-lg-1,
+    #conversejs .pure-u-lg-1-1,
+    #conversejs .pure-u-lg-1-2,
+    #conversejs .pure-u-lg-1-3,
+    #conversejs .pure-u-lg-2-3,
+    #conversejs .pure-u-lg-1-4,
+    #conversejs .pure-u-lg-3-4,
+    #conversejs .pure-u-lg-1-5,
+    #conversejs .pure-u-lg-2-5,
+    #conversejs .pure-u-lg-3-5,
+    #conversejs .pure-u-lg-4-5,
+    #conversejs .pure-u-lg-5-5,
+    #conversejs .pure-u-lg-1-6,
+    #conversejs .pure-u-lg-5-6,
+    #conversejs .pure-u-lg-1-8,
+    #conversejs .pure-u-lg-3-8,
+    #conversejs .pure-u-lg-5-8,
+    #conversejs .pure-u-lg-7-8,
+    #conversejs .pure-u-lg-1-12,
+    #conversejs .pure-u-lg-5-12,
+    #conversejs .pure-u-lg-7-12,
+    #conversejs .pure-u-lg-11-12,
+    #conversejs .pure-u-lg-1-24,
+    #conversejs .pure-u-lg-2-24,
+    #conversejs .pure-u-lg-3-24,
+    #conversejs .pure-u-lg-4-24,
+    #conversejs .pure-u-lg-5-24,
+    #conversejs .pure-u-lg-6-24,
+    #conversejs .pure-u-lg-7-24,
+    #conversejs .pure-u-lg-8-24,
+    #conversejs .pure-u-lg-9-24,
+    #conversejs .pure-u-lg-10-24,
+    #conversejs .pure-u-lg-11-24,
+    #conversejs .pure-u-lg-12-24,
+    #conversejs .pure-u-lg-13-24,
+    #conversejs .pure-u-lg-14-24,
+    #conversejs .pure-u-lg-15-24,
+    #conversejs .pure-u-lg-16-24,
+    #conversejs .pure-u-lg-17-24,
+    #conversejs .pure-u-lg-18-24,
+    #conversejs .pure-u-lg-19-24,
+    #conversejs .pure-u-lg-20-24,
+    #conversejs .pure-u-lg-21-24,
+    #conversejs .pure-u-lg-22-24,
+    #conversejs .pure-u-lg-23-24,
+    #conversejs .pure-u-lg-24-24 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      letter-spacing: normal;
+      word-spacing: normal;
+      vertical-align: top;
+      text-rendering: auto; }
+    #conversejs .pure-u-lg-1-24 {
+      width: 4.1667%;
+      *width: 4.1357%; }
+    #conversejs .pure-u-lg-1-12,
+    #conversejs .pure-u-lg-2-24 {
+      width: 8.3333%;
+      *width: 8.3023%; }
+    #conversejs .pure-u-lg-1-8,
+    #conversejs .pure-u-lg-3-24 {
+      width: 12.5000%;
+      *width: 12.4690%; }
+    #conversejs .pure-u-lg-1-6,
+    #conversejs .pure-u-lg-4-24 {
+      width: 16.6667%;
+      *width: 16.6357%; }
+    #conversejs .pure-u-lg-1-5 {
+      width: 20%;
+      *width: 19.9690%; }
+    #conversejs .pure-u-lg-5-24 {
+      width: 20.8333%;
+      *width: 20.8023%; }
+    #conversejs .pure-u-lg-1-4,
+    #conversejs .pure-u-lg-6-24 {
+      width: 25%;
+      *width: 24.9690%; }
+    #conversejs .pure-u-lg-7-24 {
+      width: 29.1667%;
+      *width: 29.1357%; }
+    #conversejs .pure-u-lg-1-3,
+    #conversejs .pure-u-lg-8-24 {
+      width: 33.3333%;
+      *width: 33.3023%; }
+    #conversejs .pure-u-lg-3-8,
+    #conversejs .pure-u-lg-9-24 {
+      width: 37.5000%;
+      *width: 37.4690%; }
+    #conversejs .pure-u-lg-2-5 {
+      width: 40%;
+      *width: 39.9690%; }
+    #conversejs .pure-u-lg-5-12,
+    #conversejs .pure-u-lg-10-24 {
+      width: 41.6667%;
+      *width: 41.6357%; }
+    #conversejs .pure-u-lg-11-24 {
+      width: 45.8333%;
+      *width: 45.8023%; }
+    #conversejs .pure-u-lg-1-2,
+    #conversejs .pure-u-lg-12-24 {
+      width: 50%;
+      *width: 49.9690%; }
+    #conversejs .pure-u-lg-13-24 {
+      width: 54.1667%;
+      *width: 54.1357%; }
+    #conversejs .pure-u-lg-7-12,
+    #conversejs .pure-u-lg-14-24 {
+      width: 58.3333%;
+      *width: 58.3023%; }
+    #conversejs .pure-u-lg-3-5 {
+      width: 60%;
+      *width: 59.9690%; }
+    #conversejs .pure-u-lg-5-8,
+    #conversejs .pure-u-lg-15-24 {
+      width: 62.5000%;
+      *width: 62.4690%; }
+    #conversejs .pure-u-lg-2-3,
+    #conversejs .pure-u-lg-16-24 {
+      width: 66.6667%;
+      *width: 66.6357%; }
+    #conversejs .pure-u-lg-17-24 {
+      width: 70.8333%;
+      *width: 70.8023%; }
+    #conversejs .pure-u-lg-3-4,
+    #conversejs .pure-u-lg-18-24 {
+      width: 75%;
+      *width: 74.9690%; }
+    #conversejs .pure-u-lg-19-24 {
+      width: 79.1667%;
+      *width: 79.1357%; }
+    #conversejs .pure-u-lg-4-5 {
+      width: 80%;
+      *width: 79.9690%; }
+    #conversejs .pure-u-lg-5-6,
+    #conversejs .pure-u-lg-20-24 {
+      width: 83.3333%;
+      *width: 83.3023%; }
+    #conversejs .pure-u-lg-7-8,
+    #conversejs .pure-u-lg-21-24 {
+      width: 87.5000%;
+      *width: 87.4690%; }
+    #conversejs .pure-u-lg-11-12,
+    #conversejs .pure-u-lg-22-24 {
+      width: 91.6667%;
+      *width: 91.6357%; }
+    #conversejs .pure-u-lg-23-24 {
+      width: 95.8333%;
+      *width: 95.8023%; }
+    #conversejs .pure-u-lg-1,
+    #conversejs .pure-u-lg-1-1,
+    #conversejs .pure-u-lg-5-5,
+    #conversejs .pure-u-lg-24-24 {
+      width: 100%; } }
+  @media screen and (min-width: 80em) {
+    #conversejs .pure-u-xl-1,
+    #conversejs .pure-u-xl-1-1,
+    #conversejs .pure-u-xl-1-2,
+    #conversejs .pure-u-xl-1-3,
+    #conversejs .pure-u-xl-2-3,
+    #conversejs .pure-u-xl-1-4,
+    #conversejs .pure-u-xl-3-4,
+    #conversejs .pure-u-xl-1-5,
+    #conversejs .pure-u-xl-2-5,
+    #conversejs .pure-u-xl-3-5,
+    #conversejs .pure-u-xl-4-5,
+    #conversejs .pure-u-xl-5-5,
+    #conversejs .pure-u-xl-1-6,
+    #conversejs .pure-u-xl-5-6,
+    #conversejs .pure-u-xl-1-8,
+    #conversejs .pure-u-xl-3-8,
+    #conversejs .pure-u-xl-5-8,
+    #conversejs .pure-u-xl-7-8,
+    #conversejs .pure-u-xl-1-12,
+    #conversejs .pure-u-xl-5-12,
+    #conversejs .pure-u-xl-7-12,
+    #conversejs .pure-u-xl-11-12,
+    #conversejs .pure-u-xl-1-24,
+    #conversejs .pure-u-xl-2-24,
+    #conversejs .pure-u-xl-3-24,
+    #conversejs .pure-u-xl-4-24,
+    #conversejs .pure-u-xl-5-24,
+    #conversejs .pure-u-xl-6-24,
+    #conversejs .pure-u-xl-7-24,
+    #conversejs .pure-u-xl-8-24,
+    #conversejs .pure-u-xl-9-24,
+    #conversejs .pure-u-xl-10-24,
+    #conversejs .pure-u-xl-11-24,
+    #conversejs .pure-u-xl-12-24,
+    #conversejs .pure-u-xl-13-24,
+    #conversejs .pure-u-xl-14-24,
+    #conversejs .pure-u-xl-15-24,
+    #conversejs .pure-u-xl-16-24,
+    #conversejs .pure-u-xl-17-24,
+    #conversejs .pure-u-xl-18-24,
+    #conversejs .pure-u-xl-19-24,
+    #conversejs .pure-u-xl-20-24,
+    #conversejs .pure-u-xl-21-24,
+    #conversejs .pure-u-xl-22-24,
+    #conversejs .pure-u-xl-23-24,
+    #conversejs .pure-u-xl-24-24 {
+      display: inline-block;
+      *display: inline;
+      zoom: 1;
+      letter-spacing: normal;
+      word-spacing: normal;
+      vertical-align: top;
+      text-rendering: auto; }
+    #conversejs .pure-u-xl-1-24 {
+      width: 4.1667%;
+      *width: 4.1357%; }
+    #conversejs .pure-u-xl-1-12,
+    #conversejs .pure-u-xl-2-24 {
+      width: 8.3333%;
+      *width: 8.3023%; }
+    #conversejs .pure-u-xl-1-8,
+    #conversejs .pure-u-xl-3-24 {
+      width: 12.5000%;
+      *width: 12.4690%; }
+    #conversejs .pure-u-xl-1-6,
+    #conversejs .pure-u-xl-4-24 {
+      width: 16.6667%;
+      *width: 16.6357%; }
+    #conversejs .pure-u-xl-1-5 {
+      width: 20%;
+      *width: 19.9690%; }
+    #conversejs .pure-u-xl-5-24 {
+      width: 20.8333%;
+      *width: 20.8023%; }
+    #conversejs .pure-u-xl-1-4,
+    #conversejs .pure-u-xl-6-24 {
+      width: 25%;
+      *width: 24.9690%; }
+    #conversejs .pure-u-xl-7-24 {
+      width: 29.1667%;
+      *width: 29.1357%; }
+    #conversejs .pure-u-xl-1-3,
+    #conversejs .pure-u-xl-8-24 {
+      width: 33.3333%;
+      *width: 33.3023%; }
+    #conversejs .pure-u-xl-3-8,
+    #conversejs .pure-u-xl-9-24 {
+      width: 37.5000%;
+      *width: 37.4690%; }
+    #conversejs .pure-u-xl-2-5 {
+      width: 40%;
+      *width: 39.9690%; }
+    #conversejs .pure-u-xl-5-12,
+    #conversejs .pure-u-xl-10-24 {
+      width: 41.6667%;
+      *width: 41.6357%; }
+    #conversejs .pure-u-xl-11-24 {
+      width: 45.8333%;
+      *width: 45.8023%; }
+    #conversejs .pure-u-xl-1-2,
+    #conversejs .pure-u-xl-12-24 {
+      width: 50%;
+      *width: 49.9690%; }
+    #conversejs .pure-u-xl-13-24 {
+      width: 54.1667%;
+      *width: 54.1357%; }
+    #conversejs .pure-u-xl-7-12,
+    #conversejs .pure-u-xl-14-24 {
+      width: 58.3333%;
+      *width: 58.3023%; }
+    #conversejs .pure-u-xl-3-5 {
+      width: 60%;
+      *width: 59.9690%; }
+    #conversejs .pure-u-xl-5-8,
+    #conversejs .pure-u-xl-15-24 {
+      width: 62.5000%;
+      *width: 62.4690%; }
+    #conversejs .pure-u-xl-2-3,
+    #conversejs .pure-u-xl-16-24 {
+      width: 66.6667%;
+      *width: 66.6357%; }
+    #conversejs .pure-u-xl-17-24 {
+      width: 70.8333%;
+      *width: 70.8023%; }
+    #conversejs .pure-u-xl-3-4,
+    #conversejs .pure-u-xl-18-24 {
+      width: 75%;
+      *width: 74.9690%; }
+    #conversejs .pure-u-xl-19-24 {
+      width: 79.1667%;
+      *width: 79.1357%; }
+    #conversejs .pure-u-xl-4-5 {
+      width: 80%;
+      *width: 79.9690%; }
+    #conversejs .pure-u-xl-5-6,
+    #conversejs .pure-u-xl-20-24 {
+      width: 83.3333%;
+      *width: 83.3023%; }
+    #conversejs .pure-u-xl-7-8,
+    #conversejs .pure-u-xl-21-24 {
+      width: 87.5000%;
+      *width: 87.4690%; }
+    #conversejs .pure-u-xl-11-12,
+    #conversejs .pure-u-xl-22-24 {
+      width: 91.6667%;
+      *width: 91.6357%; }
+    #conversejs .pure-u-xl-23-24 {
+      width: 95.8333%;
+      *width: 95.8023%; }
+    #conversejs .pure-u-xl-1,
+    #conversejs .pure-u-xl-1-1,
+    #conversejs .pure-u-xl-5-5,
+    #conversejs .pure-u-xl-24-24 {
+      width: 100%; } }
+  #conversejs .pure-form input[type="text"],
+  #conversejs .pure-form input[type="password"],
+  #conversejs .pure-form input[type="email"],
+  #conversejs .pure-form input[type="url"],
+  #conversejs .pure-form input[type="date"],
+  #conversejs .pure-form input[type="month"],
+  #conversejs .pure-form input[type="time"],
+  #conversejs .pure-form input[type="datetime"],
+  #conversejs .pure-form input[type="datetime-local"],
+  #conversejs .pure-form input[type="week"],
+  #conversejs .pure-form input[type="number"],
+  #conversejs .pure-form input[type="search"],
+  #conversejs .pure-form input[type="tel"],
+  #conversejs .pure-form input[type="color"],
+  #conversejs .pure-form select,
+  #conversejs .pure-form textarea {
+    padding: 0.5em 0.6em;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+    vertical-align: middle;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  #conversejs .pure-form input:not([type]) {
+    padding: 0.5em 0.6em;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  #conversejs .pure-form input[type="color"] {
+    padding: 0.2em 0.5em; }
+  #conversejs .pure-form input[type="text"]:focus,
+  #conversejs .pure-form input[type="password"]:focus,
+  #conversejs .pure-form input[type="email"]:focus,
+  #conversejs .pure-form input[type="url"]:focus,
+  #conversejs .pure-form input[type="date"]:focus,
+  #conversejs .pure-form input[type="month"]:focus,
+  #conversejs .pure-form input[type="time"]:focus,
+  #conversejs .pure-form input[type="datetime"]:focus,
+  #conversejs .pure-form input[type="datetime-local"]:focus,
+  #conversejs .pure-form input[type="week"]:focus,
+  #conversejs .pure-form input[type="number"]:focus,
+  #conversejs .pure-form input[type="search"]:focus,
+  #conversejs .pure-form input[type="tel"]:focus,
+  #conversejs .pure-form input[type="color"]:focus,
+  #conversejs .pure-form select:focus,
+  #conversejs .pure-form textarea:focus {
+    outline: 0;
+    border-color: #129FEA; }
+  #conversejs .pure-form input:not([type]):focus {
+    outline: 0;
+    border-color: #129FEA; }
+  #conversejs .pure-form input[type="file"]:focus,
+  #conversejs .pure-form input[type="radio"]:focus,
+  #conversejs .pure-form input[type="checkbox"]:focus {
+    outline: thin solid #129FEA;
+    outline: 1px auto #129FEA; }
+  #conversejs .pure-form .pure-checkbox,
+  #conversejs .pure-form .pure-radio {
+    margin: 0.5em 0;
+    display: block; }
+  #conversejs .pure-form input[type="text"][disabled],
+  #conversejs .pure-form input[type="password"][disabled],
+  #conversejs .pure-form input[type="email"][disabled],
+  #conversejs .pure-form input[type="url"][disabled],
+  #conversejs .pure-form input[type="date"][disabled],
+  #conversejs .pure-form input[type="month"][disabled],
+  #conversejs .pure-form input[type="time"][disabled],
+  #conversejs .pure-form input[type="datetime"][disabled],
+  #conversejs .pure-form input[type="datetime-local"][disabled],
+  #conversejs .pure-form input[type="week"][disabled],
+  #conversejs .pure-form input[type="number"][disabled],
+  #conversejs .pure-form input[type="search"][disabled],
+  #conversejs .pure-form input[type="tel"][disabled],
+  #conversejs .pure-form input[type="color"][disabled],
+  #conversejs .pure-form select[disabled],
+  #conversejs .pure-form textarea[disabled] {
+    cursor: not-allowed;
+    background-color: #eaeded;
+    color: #cad2d3; }
+  #conversejs .pure-form input:not([type])[disabled] {
+    cursor: not-allowed;
+    background-color: #eaeded;
+    color: #cad2d3; }
+  #conversejs .pure-form input[readonly],
+  #conversejs .pure-form select[readonly],
+  #conversejs .pure-form textarea[readonly] {
+    background-color: #eee;
+    /* menu hover bg color */
+    color: #777;
+    /* menu text color */
+    border-color: #ccc; }
+  #conversejs .pure-form input:focus:invalid,
+  #conversejs .pure-form textarea:focus:invalid,
+  #conversejs .pure-form select:focus:invalid {
+    color: #b94a48;
+    border-color: #e9322d; }
+  #conversejs .pure-form input[type="file"]:focus:invalid:focus,
+  #conversejs .pure-form input[type="radio"]:focus:invalid:focus,
+  #conversejs .pure-form input[type="checkbox"]:focus:invalid:focus {
+    outline-color: #e9322d; }
+  #conversejs .pure-form select {
+    /* Normalizes the height; padding is not sufficient. */
+    height: 2.25em;
+    border: 1px solid #ccc;
+    background-color: white; }
+  #conversejs .pure-form select[multiple] {
+    height: auto; }
+  #conversejs .pure-form label {
+    margin: 0.5em 0 0.2em; }
+  #conversejs .pure-form fieldset {
+    margin: 0;
+    padding: 0.35em 0 0.75em;
+    border: 0; }
+  #conversejs .pure-form legend {
+    display: block;
+    width: 100%;
+    padding: 0.3em 0;
+    margin-bottom: 0.3em;
+    color: #333;
+    border-bottom: 1px solid #e5e5e5; }
+  #conversejs .pure-form-stacked input[type="text"],
+  #conversejs .pure-form-stacked input[type="password"],
+  #conversejs .pure-form-stacked input[type="email"],
+  #conversejs .pure-form-stacked input[type="url"],
+  #conversejs .pure-form-stacked input[type="date"],
+  #conversejs .pure-form-stacked input[type="month"],
+  #conversejs .pure-form-stacked input[type="time"],
+  #conversejs .pure-form-stacked input[type="datetime"],
+  #conversejs .pure-form-stacked input[type="datetime-local"],
+  #conversejs .pure-form-stacked input[type="week"],
+  #conversejs .pure-form-stacked input[type="number"],
+  #conversejs .pure-form-stacked input[type="search"],
+  #conversejs .pure-form-stacked input[type="tel"],
+  #conversejs .pure-form-stacked input[type="color"],
+  #conversejs .pure-form-stacked input[type="file"],
+  #conversejs .pure-form-stacked select,
+  #conversejs .pure-form-stacked label,
+  #conversejs .pure-form-stacked textarea {
+    display: block;
+    margin: 0.25em 0; }
+  #conversejs .pure-form-stacked input:not([type]) {
+    display: block;
+    margin: 0.25em 0; }
+  #conversejs .pure-form-aligned input,
+  #conversejs .pure-form-aligned textarea,
+  #conversejs .pure-form-aligned select,
+  #conversejs .pure-form-aligned .pure-help-inline,
+  #conversejs .pure-form-message-inline {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: middle; }
+  #conversejs .pure-form-aligned textarea {
+    vertical-align: top; }
+  #conversejs .pure-form-aligned .pure-control-group {
+    margin-bottom: 0.5em; }
+  #conversejs .pure-form-aligned .pure-control-group label {
+    text-align: right;
+    display: inline-block;
+    vertical-align: middle;
+    width: 10em;
+    margin: 0 1em 0 0; }
+  #conversejs .pure-form-aligned .pure-controls {
+    margin: 1.5em 0 0 11em; }
+  #conversejs .pure-form input.pure-input-rounded,
+  #conversejs .pure-form .pure-input-rounded {
+    border-radius: 2em;
+    padding: 0.5em 1em; }
+  #conversejs .pure-form .pure-group fieldset {
+    margin-bottom: 10px; }
+  #conversejs .pure-form .pure-group input,
+  #conversejs .pure-form .pure-group textarea {
+    display: block;
+    padding: 10px;
+    margin: 0 0 -1px;
+    border-radius: 0;
+    position: relative;
+    top: -1px; }
+  #conversejs .pure-form .pure-group input:focus,
+  #conversejs .pure-form .pure-group textarea:focus {
+    z-index: 3; }
+  #conversejs .pure-form .pure-group input:first-child,
+  #conversejs .pure-form .pure-group textarea:first-child {
+    top: 1px;
+    border-radius: 4px 4px 0 0;
+    margin: 0; }
+  #conversejs .pure-form .pure-group input:first-child:last-child,
+  #conversejs .pure-form .pure-group textarea:first-child:last-child {
+    top: 1px;
+    border-radius: 4px;
+    margin: 0; }
+  #conversejs .pure-form .pure-group input:last-child,
+  #conversejs .pure-form .pure-group textarea:last-child {
+    top: -2px;
+    border-radius: 0 0 4px 4px;
+    margin: 0; }
+  #conversejs .pure-form .pure-group button {
+    margin: 0.35em 0; }
+  #conversejs .pure-form .pure-input-1 {
+    width: 100%; }
+  #conversejs .pure-form .pure-input-3-4 {
+    width: 75%; }
+  #conversejs .pure-form .pure-input-2-3 {
+    width: 66%; }
+  #conversejs .pure-form .pure-input-1-2 {
+    width: 50%; }
+  #conversejs .pure-form .pure-input-1-3 {
+    width: 33%; }
+  #conversejs .pure-form .pure-input-1-4 {
+    width: 25%; }
+  #conversejs .pure-form .pure-help-inline,
+  #conversejs .pure-form-message-inline {
+    display: inline-block;
+    padding-left: 0.3em;
+    color: #666;
+    vertical-align: middle;
+    font-size: 0.875em; }
+  #conversejs .pure-form-message {
+    display: block;
+    color: #666;
+    font-size: 0.875em; }
+  @media only screen and (max-width: 480px) {
+    #conversejs {
+      /* NOTE: pure-help-inline is deprecated. Use .pure-form-message-inline instead. */ }
+      #conversejs .pure-form button[type="submit"] {
+        margin: 0.7em 0 0; }
+      #conversejs .pure-form input:not([type]),
+      #conversejs .pure-form input[type="text"],
+      #conversejs .pure-form input[type="password"],
+      #conversejs .pure-form input[type="email"],
+      #conversejs .pure-form input[type="url"],
+      #conversejs .pure-form input[type="date"],
+      #conversejs .pure-form input[type="month"],
+      #conversejs .pure-form input[type="time"],
+      #conversejs .pure-form input[type="datetime"],
+      #conversejs .pure-form input[type="datetime-local"],
+      #conversejs .pure-form input[type="week"],
+      #conversejs .pure-form input[type="number"],
+      #conversejs .pure-form input[type="search"],
+      #conversejs .pure-form input[type="tel"],
+      #conversejs .pure-form input[type="color"],
+      #conversejs .pure-form label {
+        margin-bottom: 0.3em;
+        display: block; }
+      #conversejs .pure-group input:not([type]),
+      #conversejs .pure-group input[type="text"],
+      #conversejs .pure-group input[type="password"],
+      #conversejs .pure-group input[type="email"],
+      #conversejs .pure-group input[type="url"],
+      #conversejs .pure-group input[type="date"],
+      #conversejs .pure-group input[type="month"],
+      #conversejs .pure-group input[type="time"],
+      #conversejs .pure-group input[type="datetime"],
+      #conversejs .pure-group input[type="datetime-local"],
+      #conversejs .pure-group input[type="week"],
+      #conversejs .pure-group input[type="number"],
+      #conversejs .pure-group input[type="search"],
+      #conversejs .pure-group input[type="tel"],
+      #conversejs .pure-group input[type="color"] {
+        margin-bottom: 0; }
+      #conversejs .pure-form-aligned .pure-control-group label {
+        margin-bottom: 0.3em;
+        text-align: left;
+        display: block;
+        width: 100%; }
+      #conversejs .pure-form-aligned .pure-controls {
+        margin: 1.5em 0 0 0; }
+      #conversejs .pure-form .pure-help-inline,
+      #conversejs .pure-form-message-inline,
+      #conversejs .pure-form-message {
+        display: block;
+        font-size: 0.75em;
+        /* Increased bottom padding to make it group with its related input element. */
+        padding: 0.2em 0 0.8em; } }
+  #conversejs .pure-button {
+    /* Structure */
+    display: inline-block;
+    zoom: 1;
+    line-height: normal;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  #conversejs .pure-button::-moz-focus-inner {
+    padding: 0;
+    border: 0; }
+  #conversejs .pure-button {
+    font-family: inherit;
+    font-size: 100%;
+    padding: 0.5em 1em;
+    color: #444;
+    /* rgba not supported (IE 8) */
+    color: rgba(0, 0, 0, 0.8);
+    /* rgba supported */
+    border: 1px solid #999;
+    /*IE 6/7/8*/
+    border: none transparent;
+    /*IE9 + everything else*/
+    background-color: #E6E6E6;
+    text-decoration: none;
+    border-radius: 2px; }
+  #conversejs .pure-button-hover,
+  #conversejs .pure-button:hover,
+  #conversejs .pure-button:focus {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000',GradientType=0);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.1)));
+    background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
+    background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.1));
+    background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
+    background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1)); }
+  #conversejs .pure-button:focus {
+    outline: 0; }
+  #conversejs .pure-button-active,
+  #conversejs .pure-button:active {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 6px rgba(0, 0, 0, 0.2) inset;
+    border-color: #000 \9; }
+  #conversejs .pure-button[disabled],
+  #conversejs .pure-button-disabled,
+  #conversejs .pure-button-disabled:hover,
+  #conversejs .pure-button-disabled:focus,
+  #conversejs .pure-button-disabled:active {
+    border: none;
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    filter: alpha(opacity=40);
+    -khtml-opacity: 0.40;
+    -moz-opacity: 0.40;
+    opacity: 0.40;
+    cursor: not-allowed;
+    box-shadow: none; }
+  #conversejs .pure-button-hidden {
+    display: none; }
+  #conversejs .pure-button::-moz-focus-inner {
+    padding: 0;
+    border: 0; }
+  #conversejs .pure-button-primary,
+  #conversejs .pure-button-selected,
+  #conversejs a.pure-button-primary,
+  #conversejs a.pure-button-selected {
+    background-color: #0078e7;
+    color: #fff; }
+  #conversejs .pure-menu {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  #conversejs .pure-menu-fixed {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 3; }
+  #conversejs .pure-menu-list,
+  #conversejs .pure-menu-item {
+    position: relative; }
+  #conversejs .pure-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0; }
+  #conversejs .pure-menu-item {
+    padding: 0;
+    margin: 0;
+    height: 100%; }
+  #conversejs .pure-menu-link,
+  #conversejs .pure-menu-heading {
+    display: block;
+    text-decoration: none;
+    white-space: nowrap; }
+  #conversejs .pure-menu-horizontal {
+    width: 100%;
+    white-space: nowrap; }
+  #conversejs .pure-menu-horizontal .pure-menu-list {
+    display: inline-block; }
+  #conversejs .pure-menu-horizontal .pure-menu-item,
+  #conversejs .pure-menu-horizontal .pure-menu-heading,
+  #conversejs .pure-menu-horizontal .pure-menu-separator {
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    vertical-align: middle; }
+  #conversejs .pure-menu-item .pure-menu-item {
+    display: block; }
+  #conversejs .pure-menu-children {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 3; }
+  #conversejs .pure-menu-horizontal .pure-menu-children {
+    left: 0;
+    top: auto;
+    width: inherit; }
+  #conversejs .pure-menu-allow-hover:hover > .pure-menu-children,
+  #conversejs .pure-menu-active > .pure-menu-children {
+    display: block;
+    position: absolute; }
+  #conversejs .pure-menu-has-children > .pure-menu-link:after {
+    padding-left: 0.5em;
+    content: "\25B8";
+    font-size: small; }
+  #conversejs .pure-menu-horizontal .pure-menu-has-children > .pure-menu-link:after {
+    content: "\25BE"; }
+  #conversejs .pure-menu-scrollable {
+    overflow-y: scroll;
+    overflow-x: hidden; }
+  #conversejs .pure-menu-scrollable .pure-menu-list {
+    display: block; }
+  #conversejs .pure-menu-horizontal.pure-menu-scrollable .pure-menu-list {
+    display: inline-block; }
+  #conversejs .pure-menu-horizontal.pure-menu-scrollable {
+    white-space: nowrap;
+    overflow-y: hidden;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    /* a little extra padding for this style to allow for scrollbars */
+    padding: .5em 0; }
+  #conversejs .pure-menu-horizontal.pure-menu-scrollable::-webkit-scrollbar {
+    display: none; }
+  #conversejs .pure-menu-separator {
+    background-color: #ccc;
+    height: 1px;
+    margin: .3em 0; }
+  #conversejs .pure-menu-horizontal .pure-menu-separator {
+    width: 1px;
+    height: 1.3em;
+    margin: 0 0.3em; }
+  #conversejs .pure-menu-heading {
+    text-transform: uppercase;
+    color: #565d64; }
+  #conversejs .pure-menu-link {
+    color: #777; }
+  #conversejs .pure-menu-children {
+    background-color: #fff; }
+  #conversejs .pure-menu-link,
+  #conversejs .pure-menu-disabled,
+  #conversejs .pure-menu-heading {
+    padding: .5em 1em; }
+  #conversejs .pure-menu-disabled {
+    opacity: .5; }
+  #conversejs .pure-menu-disabled .pure-menu-link:hover {
+    background-color: transparent; }
+  #conversejs .pure-menu-active > .pure-menu-link,
+  #conversejs .pure-menu-link:hover,
+  #conversejs .pure-menu-link:focus {
+    background-color: #eee; }
+  #conversejs .pure-menu-selected .pure-menu-link,
+  #conversejs .pure-menu-selected .pure-menu-link:visited {
+    color: #000; }
   #conversejs *, #conversejs *:before, #conversejs *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -526,7 +2021,7 @@
       #conversejs .chatbox .chat-body .chat-message span {
         display: inline-block; }
         #conversejs .chatbox .chat-body .chat-message span.chat-msg-author {
-          max-width: 100px;
+          max-width: 100%;
           font-weight: bold;
           white-space: nowrap;
           float: left;
@@ -756,12 +2251,6 @@
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
     margin: 2em 1em 1em 1em;
     background: white; }
-    #conversejs #controlbox #converse-register .login-submit, #conversejs #controlbox #converse-register .submit, #conversejs #controlbox #converse-login .login-submit, #conversejs #controlbox #converse-login .submit {
-      height: 30px;
-      padding: 0px;
-      font-size: 14px; }
-    #conversejs #controlbox #converse-register .submit, #conversejs #controlbox #converse-login .submit {
-      margin: 1em 0; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
       height: auto;
       white-space: normal; }
@@ -775,8 +2264,7 @@
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
       width: 100%;
       height: 30px;
-      margin: 5px 0 10px 0;
-      padding-left: 0.5em; }
+      margin: 1em 0; }
   #conversejs #controlbox #users .add-converse-contact {
     margin: 0 0.5em 0.75em 0.5em; }
   #conversejs #controlbox #chatrooms {

@@ -1,4 +1,10 @@
 #conversejs {
+    @import "pure/base";
+    @import "pure/grids";
+    @import "pure/forms";
+    @import "pure/buttons";
+    @import "pure/menus";
+
     @include box-sizing(border-box);
     *, *:before, *:after {
         @include box-sizing(border-box);

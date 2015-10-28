@@ -68,7 +68,7 @@
             .chat-info {
                 color: $text-color;
                 color: #808080;
-                margin: 0.2em 0;
+                margin: 0.3em;
                 &.chat-event {
                     clear: left;
                 }
@@ -78,17 +78,15 @@
                 }
                 &.chat-date {
                     display: inline-block;
-                    padding-top: 10px;
+                    margin-top: 2em;
                 }
             }
             .chat-message {
-                height: 1.5em;
-                padding: 0.2em 0;
+                margin: 0.3em;
                 span {
-                    max-width: 100px;
                     display: inline-block;
-                    padding-right: 3px;
                     &.chat-msg-author {
+                        max-width: 100px;
                         font-weight: bold;
                         white-space: nowrap;
                         float: left;
@@ -102,6 +100,7 @@
                         color: $link-color;
                     }
                     &.chat-msg-content {
+                        max-width: 100%;
                         word-wrap: break-word;
                     }
                 }

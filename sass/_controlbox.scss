@@ -18,6 +18,10 @@
                 width: 8em;
             }
         }
+        a.subscribe-to-user {
+            padding-left: 2em;
+            font-weight: bold;
+        }
 
         #converse-register {
             background: white;
@@ -349,7 +353,12 @@
             @include calc(height, '100% - #{$chat-head-height}');
             overflow-y: hidden;
             overflow-x: hidden;
-
+            label {
+                font-size: $font-size;
+                font-weight: bold;
+                height: auto;
+                margin: 4px;
+            }
             dd {
                 margin-left: 0;
                 margin-bottom: 0;

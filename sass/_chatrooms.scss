@@ -30,6 +30,12 @@
                         padding: 0.5em 0.5em 0 0.5em; // Work around a weird box-sizing issue in Chromium related to bottom padding.
                     }
                 }
+                .mentioned {
+                    font-weight: bold;
+                }
+                .chat-message-room {
+                    color: $message-them-color;
+                }
                 .participants {
                     display: table-cell;
                     vertical-align: top;

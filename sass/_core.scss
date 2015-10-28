@@ -118,65 +118,15 @@
         border-right: 1px solid #176679;
         border-left: 1px solid #176679;
     }
-    .chat-info {
-        color: $text-color;
-    }
-    .chat-error {
-        color: $warning-color;
-        font-weight: bold;
-    }
-    .chat-error,
-    .chat-info,
-    .chat-message {
-        padding: 2px 0;
-    }
-    .chat-message-room,
-    .chat-message-them,
-    .chat-message-me {
-        font-weight: bold;
-        white-space: nowrap;
-        max-width: 100px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        display: inline-block;
-        float: left;
-        padding-right: 3px;
-    }
-
-    .chat-message-content {
-        word-wrap: break-word;
-    }
-    .chat-message-room,
-    .chat-message-them {
-        color: $message-them-color;
-    }
-    .chat-message-me {
-        color: $link-color;
-    }
-
-    .chat-event,
-    .chat-date,
-    .chat-info {
-        color: #808080;
-    }
 
     li.chat-info {
         padding-left: 10px;
-    }
-
-    .chat-date {
-        display: inline-block;
-        padding-top: 10px;
     }
 
     .not-implemented {
         margin-top: 3em;
         margin-left: 0.3em;
         color: #808080;
-    }
-
-    .mentioned {
-        font-weight: bold;
     }
 
     .delayed {
@@ -246,40 +196,27 @@
         display: block !important;
     }
 
-    a.subscribe-to-user {
-        padding-left: 2em;
-        font-weight: bold;
-    }
-
-    #found-users {
-        padding: 10px 0 5px 5px;
-        border: 0;
-    }
-
-    .form-help {
-        color: gray;
-        font-size: 85%;
-        padding-top: 5px;
-        &:hover {
-            color: $text-color;
+    form {
+        label {
+            font-size: $font-size;
+            font-weight: bold;
+            height: auto;
+            margin: 4px;
         }
-    }
-
-    .chatroom-form label,
-    .controlbox-pane label,
-    #converse-register label,
-    #converse-login label {
-        font-size: $font-size;
-        font-weight: bold;
-        height: auto;
-        margin: 4px;
+        .form-help {
+            color: gray;
+            font-size: 85%;
+            padding-top: 5px;
+            &:hover {
+                color: $text-color;
+            }
+        }
     }
 
     .chat-textarea-chatbox-selected {
         border: 1px solid #578308;
         margin: 0;
     }
-
     .chat-textarea-chatroom-selected {
         border: 2px solid $link-color;
         margin: 0;

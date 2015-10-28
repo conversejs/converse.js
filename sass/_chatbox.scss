@@ -65,6 +65,48 @@
                 margin: 0;
                 padding: 5px;
             }
+            .chat-event,
+            .chat-date,
+            .chat-info {
+                color: #808080;
+            }
+            .chat-date {
+                display: inline-block;
+                padding-top: 10px;
+            }
+            .chat-error,
+            .chat-info,
+            .chat-message {
+                padding: 2px 0;
+            }
+            .chat-message {
+                span {
+                    font-weight: bold;
+                    white-space: nowrap;
+                    max-width: 100px;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    display: inline-block;
+                    float: left;
+                    padding-right: 3px;
+                    &.chat-message-them {
+                        color: $message-them-color;
+                    }
+                    &.chat-message-me {
+                        color: $link-color;
+                    }
+                }
+                .chat-message-content {
+                    word-wrap: break-word;
+                }
+            }
+            .chat-info {
+                color: $text-color;
+            }
+            .chat-error {
+                color: $warning-color;
+                font-weight: bold;
+            }
         }
         .chat-content {
             position: relative;

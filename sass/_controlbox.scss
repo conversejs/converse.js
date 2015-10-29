@@ -2,7 +2,7 @@
     #controlbox {
         display: none;
         .controlbox-head {
-            background-color: $chat-head-color;
+            background-color: $controlbox-head-color;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
             color: $chat-head-inverse-text-color;
@@ -242,15 +242,6 @@
             font-size: 12px;
             list-style-type: none;
 
-            a.current,
-            a.current:hover {
-                box-shadow: none;
-                border-bottom: 0;
-                height: $chat-head-height;
-                cursor: default;
-                color: $text-color;
-            }
-
             /* single tab */
             li {
                 float: left;
@@ -258,14 +249,13 @@
                 padding-left: 0;
                 text-shadow: white 0 1px 0;
                 width: 38%;
-
                 a {
                     background-color: white;
                     border-bottom: 1px solid $border-color;
                     border-top-left-radius: $chatbox-border-radius;
                     border-top-right-radius: $chatbox-border-radius;
                     box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
-                    color: #888;
+                    color: $text-color;
                     display: block;
                     font-size: 12px;
                     height: $chat-head-height - 1px;
@@ -273,9 +263,17 @@
                     margin: 0;
                     text-align: center;
                     text-decoration: none;
-                }
-                a:hover {
-                    color: $text-color;
+                    &:hover {
+                        color: $text-color;
+                    }
+                    &.current,
+                    &.current:hover {
+                        box-shadow: none;
+                        border-bottom: 0;
+                        height: $chat-head-height;
+                        cursor: default;
+                        color: $text-color;
+                    }
                 }
             }
         }

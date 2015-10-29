@@ -1917,6 +1917,8 @@
           padding: 0.3em;
           font-weight: bold; }
         #conversejs .chatroom .box-flyout .chatroom-body .participants .participant-list {
+          height: 100%;
+          overflow-y: scroll;
           list-style: none; }
           #conversejs .chatroom .box-flyout .chatroom-body .participants .participant-list li {
             cursor: default;

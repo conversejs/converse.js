@@ -58,6 +58,8 @@
                         font-weight: bold;
                     }
                     .participant-list {
+                        height: 100%;
+                        overflow-y: scroll;
                         list-style: none;
                         li {
                             cursor: default;

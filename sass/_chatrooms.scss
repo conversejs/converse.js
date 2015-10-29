@@ -1,4 +1,8 @@
 #conversejs {
+    .chat-head-chatroom {
+        background-color: $chatroom-head-color;
+    }
+
     .chatroom {
         width: $chatroom-width;
         @media screen and (max-width: $mobile-landscape-length) {
@@ -80,10 +84,6 @@
                     position: absolute;
                 }
             }
-        }
-
-        .chat-head-chatroom {
-            background-color: $chatroom-head-color;
         }
 
         .chat-textarea {

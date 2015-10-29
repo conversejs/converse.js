@@ -1215,6 +1215,41 @@
     margin: 0;
     padding: 0; }
 
+#conversejs .flyout {
+  border-radius: 4px;
+  bottom: 6px;
+  display: block;
+  position: absolute; }
+#conversejs .chat-head {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  color: #ffffff;
+  font-size: 100%;
+  height: 44px;
+  margin: 0;
+  padding: 5px;
+  position: relative; }
+  #conversejs .chat-head .avatar {
+    float: left; }
+  #conversejs .chat-head.chat-head-chatbox {
+    background-color: #436F64; }
+#conversejs .chatbox-btn {
+  border-radius: 5px;
+  border: 1px solid #888;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  float: right;
+  font-size: 10px;
+  margin: 0 0 0 3px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 4px;
+  text-decoration: none; }
+  #conversejs .chatbox-btn:active {
+    position: relative;
+    top: 1px; }
 #conversejs .chatbox {
   display: block;
   float: right;
@@ -1225,11 +1260,6 @@
     #conversejs .chatbox {
       margin: 0;
       width: 100%; } }
-  #conversejs .chatbox .flyout {
-    border-radius: 4px;
-    bottom: 6px;
-    display: block;
-    position: absolute; }
   #conversejs .chatbox .box-flyout {
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     height: 450px;
@@ -1241,19 +1271,6 @@
       #conversejs .chatbox .box-flyout {
         height: 400px;
         width: 100%; } }
-  #conversejs .chatbox .chat-head {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    color: #ffffff;
-    font-size: 100%;
-    height: 44px;
-    margin: 0;
-    padding: 5px;
-    position: relative; }
-    #conversejs .chatbox .chat-head .avatar {
-      float: left; }
-  #conversejs .chatbox .chat-head-chatbox {
-    background-color: #436F64; }
   #conversejs .chatbox .chat-title a {
     color: white;
     width: 100%;
@@ -1443,23 +1460,6 @@
       height: 15px;
       top: 0;
       left: 0; }
-  #conversejs .chatbox .chatbox-btn {
-    border-radius: 5px;
-    border: 1px solid #888;
-    color: white;
-    cursor: pointer;
-    display: inline-block;
-    float: right;
-    font-size: 10px;
-    margin: 0 0 0 3px;
-    padding-bottom: 4px;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 4px;
-    text-decoration: none; }
-    #conversejs .chatbox .chatbox-btn:active {
-      position: relative;
-      top: 1px; }
 
 #conversejs #controlbox {
   display: none; }
@@ -1863,6 +1863,8 @@
     width: 69%;
     padding: 0; }
 
+#conversejs .chat-head-chatroom {
+  background-color: #346121; }
 #conversejs .chatroom {
   width: 300px; }
   @media screen and (max-width: 480px) {
@@ -1934,8 +1936,6 @@
         height: calc(100% - 44px);
         overflow-y: auto;
         position: absolute; }
-  #conversejs .chatroom .chat-head-chatroom {
-    background-color: #346121; }
   #conversejs .chatroom .chat-textarea {
     border-bottom-right-radius: 0; }
   #conversejs .chatroom .invited-contact {
@@ -1959,7 +1959,8 @@
   #conversejs #minimized-chats #toggle-minimized-chats {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    background-color: ivory;
+    background-color: #436F64;
+    color: white;
     position: relative;
     padding: 10px 0 0 0;
     display: block;
@@ -1968,14 +1969,14 @@
     text-align: center; }
   #conversejs #minimized-chats .minimized-chats-flyout {
     height: auto;
-    width: 130px;
     bottom: 35px; }
-    #conversejs #minimized-chats .minimized-chats-flyout .chat-head-chatroom,
     #conversejs #minimized-chats .minimized-chats-flyout .chat-head {
+      padding: 0.3em;
       border-radius: 4px;
       width: 130px;
       height: 35px;
-      margin-bottom: 0.2em; }
+      margin-bottom: 0.2em;
+      box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4); }
     #conversejs #minimized-chats .minimized-chats-flyout.minimized {
       height: auto; }
   #conversejs #minimized-chats .unread-message-count,
@@ -1994,19 +1995,5 @@
     position: absolute;
     right: 116px;
     bottom: 10px; }
-  #conversejs #minimized-chats .box-flyout {
-    position: absolute;
-    display: block;
-    height: auto;
-    bottom: 35px;
-    margin-left: 0; }
-    #conversejs #minimized-chats .box-flyout .chat-head {
-      font-size: 100%;
-      border-radius: 4px;
-      padding: 3px 0 0 5px;
-      margin: 0 0 1px 0;
-      box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
-      height: 24px;
-      width: 130px; }
 
 /*# sourceMappingURL=converse.css.map */

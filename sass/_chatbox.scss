@@ -1,4 +1,45 @@
 #conversejs {
+    .flyout {
+        border-radius: $chatbox-border-radius;
+        bottom: $chatbox-hover-height;
+        display: block;
+        position: absolute;
+    }
+    .chat-head {
+        border-top-left-radius: $chatbox-border-radius;
+        border-top-right-radius: $chatbox-border-radius;
+        color: #ffffff;
+        font-size: 100%;
+        height: $chat-head-height;
+        margin: 0;
+        padding: 5px;
+        position: relative;
+        .avatar {
+            float: left;
+        }
+        &.chat-head-chatbox {
+            background-color: $chat-head-color;
+        }
+    }
+    .chatbox-btn {
+        border-radius: 5px;
+        border: 1px solid #888;
+        color: white;
+        cursor: pointer;
+        display: inline-block;
+        float: right;
+        font-size: $box-close-font-size;
+        margin: 0 0 0 3px;
+        padding-bottom: $box-close-button-padding-bottom;
+        padding-left: $box-close-button-padding-left;
+        padding-right: $box-close-button-padding-right;
+        padding-top: $box-close-button-padding-top;
+        text-decoration: none;
+        &:active {
+            position: relative;
+            top: 1px;
+        }
+    }
     .chatbox {
         display: block;
         float: right;
@@ -8,12 +49,6 @@
         @media screen and (max-width: $mobile-landscape-length) {
             margin: 0;
             width: $mobile-chat-width;
-        }
-        .flyout {
-            border-radius: $chatbox-border-radius;
-            bottom: $chatbox-hover-height;
-            display: block;
-            position: absolute;
         }
         .box-flyout {
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
@@ -26,23 +61,6 @@
                 height: $mobile-chat-height;
                 width: $mobile-chat-width;
             }
-        }
-
-        .chat-head {
-            border-top-left-radius: $chatbox-border-radius;
-            border-top-right-radius: $chatbox-border-radius;
-            color: #ffffff;
-            font-size: 100%;
-            height: $chat-head-height;
-            margin: 0;
-            padding: 5px;
-            position: relative;
-            .avatar {
-                float: left;
-            }
-        }
-        .chat-head-chatbox {
-            background-color: $chat-head-color;
         }
         .chat-title {
             a {
@@ -280,25 +298,6 @@
                 height: 15px;
                 top: 0;
                 left: 0;
-            }
-        }
-        .chatbox-btn {
-            border-radius: 5px;
-            border: 1px solid #888;
-            color: white;
-            cursor: pointer;
-            display: inline-block;
-            float: right;
-            font-size: $box-close-font-size;
-            margin: 0 0 0 3px;
-            padding-bottom: $box-close-button-padding-bottom;
-            padding-left: $box-close-button-padding-left;
-            padding-right: $box-close-button-padding-right;
-            padding-top: $box-close-button-padding-top;
-            text-decoration: none;
-            &:active {
-                position: relative;
-                top: 1px;
             }
         }
     }

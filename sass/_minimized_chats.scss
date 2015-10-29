@@ -14,7 +14,8 @@
         #toggle-minimized-chats {
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
-            background-color: ivory;
+            background-color: $link-color;
+            color: white;
             position: relative;
             padding: 10px 0 0 0;
             display: block;
@@ -25,14 +26,14 @@
 
         .minimized-chats-flyout {
             height: auto;
-            width: $minimized-chats-width;
             bottom: $bottom-gutter-height;
-            .chat-head-chatroom,
             .chat-head {
+                padding: 0.3em;
                 border-radius: $chatbox-border-radius;
                 width: $minimized-chats-width;
                 height: 35px;
                 margin-bottom: 0.2em;
+                box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             }
             &.minimized {
                 height: auto;
@@ -53,24 +54,6 @@
             position: absolute;
             right: 116px;
             bottom: 10px;
-        }
-
-        .box-flyout {
-            position: absolute;
-            display: block;
-            height: auto;
-            bottom: $bottom-gutter-height;
-            margin-left: 0;
-
-            .chat-head {
-                font-size: 100%;
-                border-radius: $chatbox-border-radius;
-                padding: 3px 0 0 5px;
-                margin: 0 0 1px 0;
-                box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
-                height: 24px;
-                width: 130px;
-            }
         }
     }
 }

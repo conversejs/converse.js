@@ -1180,10 +1180,13 @@
     display: block !important; }
   #conversejs .pure-button {
     border-radius: 4px; }
-  #conversejs .button-success {
+  #conversejs .button-primary {
     color: white;
     background-color: #2AC611; }
-  #conversejs .button-warn {
+  #conversejs .button-secondary {
+    color: white;
+    background-color: #83A0D6; }
+  #conversejs .button-cancel {
     color: white;
     background-color: #D24E2B; }
   #conversejs form.pure-form.converse-form {
@@ -1529,11 +1532,6 @@
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
       height: auto;
       white-space: normal; }
-    #conversejs #controlbox #converse-register .cancel-submit, #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .cancel-submit, #conversejs #controlbox #converse-login .save-submit {
-      width: 45%;
-      margin: 5px 3px 5px 3px; }
-    #conversejs #controlbox #converse-register .cancel, #conversejs #controlbox #converse-register .cancel-submit, #conversejs #controlbox #converse-login .cancel, #conversejs #controlbox #converse-login .cancel-submit {
-      color: #D24E2B; }
     #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
       color: #436F64; }
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {

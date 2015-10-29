@@ -161,11 +161,15 @@
     .pure-button {
         border-radius: $chatbox-border-radius;
     }
-    .button-success {
+    .button-primary {
         color: white;
-        background-color: $success-color;
+        background-color: $primary-color;
     }
-    .button-warn {
+    .button-secondary {
+        color: white;
+        background-color: $secondary-color;
+    }
+    .button-cancel {
         color: white;
         background-color: $warning-color;
     }

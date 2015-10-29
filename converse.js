@@ -3193,8 +3193,8 @@
                 _.each($fields, function (field) {
                     $form.append(utils.xForm2webForm($(field), $stanza));
                 });
-                $form.append('<input type="submit" class="save-submit" value="'+__('Save')+'"/>');
-                $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
+                $form.append('<input type="submit" class="pure-button button-primary" value="'+__('Save')+'"/>');
+                $form.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
                 $form.on('submit', this.saveConfiguration.bind(this));
                 $form.find('input[type=button]').on('click', this.cancelConfiguration.bind(this));
             },
@@ -5737,9 +5737,9 @@
                     }.bind(this));
                 }
                 if (this.fields) {
-                    $form.append('<input type="submit" class="save-submit" value="'+__('Register')+'"/>');
+                    $form.append('<input type="submit" class="pure-button button-primary" value="'+__('Register')+'"/>');
                     $form.on('submit', this.submitRegistrationForm.bind(this));
-                    $form.append('<input type="button" class="cancel-submit" value="'+__('Cancel')+'"/>');
+                    $form.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
                     $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                 } else {
                     $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');

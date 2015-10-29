@@ -78,13 +78,6 @@
                 height: auto;
                 white-space: normal;
             }
-            .cancel-submit, .save-submit {
-                width: 45%;
-                margin: 5px 3px 5px 3px;
-            }
-            .cancel, .cancel-submit {
-                color: $warning-color;
-            }
             .save-submit {
                 color: $save-button-color;
             }

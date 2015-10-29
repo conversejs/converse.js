@@ -115,10 +115,6 @@
     .error {
         color: red;
     }
-    input.error {
-        border: 1px solid red;
-    }
-
     .reg-feedback {
         font-size: 85%;
     }
@@ -164,14 +160,35 @@
         display: block !important;
     }
 
+    .pure-button {
+        border-radius: $chatbox-border-radius;
+    }
+
     form {
         &.pure-form.converse-form {
-            padding: 1.5em;
+            background: white;
+            margin: 1em;
+            legend {
+                color: $text-color;
+            }
             label {
                 margin-top: 1em;
             }
-            input {
-                margin-bottom: 1em;
+            input[type=text],
+            input[type=password],
+            input[type=number],
+            input[type=button],
+            input[type=submit] {
+                height: 2.2em;
+            }
+            input[type=button],
+            input[type=submit] {
+                padding-left: 1em;
+                padding-right: 1em;
+            }
+            input.error {
+                border: 1px solid red;
+                color: $text-color;
             }
             .form-help {
                 color: gray;

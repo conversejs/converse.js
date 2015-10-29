@@ -431,12 +431,6 @@
   Licensed under the BSD License.
   https://github.com/yahoo/pure/blob/master/LICENSE.md
   */
-  /*!
-  Pure v0.6.1-pre
-  Copyright 2014 Yahoo! Inc. All rights reserved.
-  Licensed under the BSD License.
-  https://github.com/yahoo/pure/blob/master/LICENSE.md
-  */
   /*csslint box-model:false*/
   /*
   Box-model set to false because we're setting a height on select elements, which
@@ -477,20 +471,6 @@
   /* Firefox: Get rid of the inner focus border */
   /*csslint outline-none:false*/
   /* Firefox: Get rid of the inner focus border */
-  /*!
-  Pure v0.6.1-pre
-  Copyright 2014 Yahoo! Inc. All rights reserved.
-  Licensed under the BSD License.
-  https://github.com/yahoo/pure/blob/master/LICENSE.md
-  */
-  /*csslint adjoining-classes: false, box-model:false*/
-  /* HORIZONTAL MENU */
-  /* Initial menus should be inline-block so that they are horizontal */
-  /* Submenus should still be display: block; */
-  /* Vertical Menus - show the dropdown arrow */
-  /* Horizontal Menus - show the dropdown arrow */
-  /* scrollable menus */
-  /* misc default styling */
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
@@ -654,626 +634,6 @@
     max-width: 100%;
     height: auto;
     display: block; }
-  @media screen and (min-width: 35.5em) {
-    #conversejs .pure-u-sm-1,
-    #conversejs .pure-u-sm-1-1,
-    #conversejs .pure-u-sm-1-2,
-    #conversejs .pure-u-sm-1-3,
-    #conversejs .pure-u-sm-2-3,
-    #conversejs .pure-u-sm-1-4,
-    #conversejs .pure-u-sm-3-4,
-    #conversejs .pure-u-sm-1-5,
-    #conversejs .pure-u-sm-2-5,
-    #conversejs .pure-u-sm-3-5,
-    #conversejs .pure-u-sm-4-5,
-    #conversejs .pure-u-sm-5-5,
-    #conversejs .pure-u-sm-1-6,
-    #conversejs .pure-u-sm-5-6,
-    #conversejs .pure-u-sm-1-8,
-    #conversejs .pure-u-sm-3-8,
-    #conversejs .pure-u-sm-5-8,
-    #conversejs .pure-u-sm-7-8,
-    #conversejs .pure-u-sm-1-12,
-    #conversejs .pure-u-sm-5-12,
-    #conversejs .pure-u-sm-7-12,
-    #conversejs .pure-u-sm-11-12,
-    #conversejs .pure-u-sm-1-24,
-    #conversejs .pure-u-sm-2-24,
-    #conversejs .pure-u-sm-3-24,
-    #conversejs .pure-u-sm-4-24,
-    #conversejs .pure-u-sm-5-24,
-    #conversejs .pure-u-sm-6-24,
-    #conversejs .pure-u-sm-7-24,
-    #conversejs .pure-u-sm-8-24,
-    #conversejs .pure-u-sm-9-24,
-    #conversejs .pure-u-sm-10-24,
-    #conversejs .pure-u-sm-11-24,
-    #conversejs .pure-u-sm-12-24,
-    #conversejs .pure-u-sm-13-24,
-    #conversejs .pure-u-sm-14-24,
-    #conversejs .pure-u-sm-15-24,
-    #conversejs .pure-u-sm-16-24,
-    #conversejs .pure-u-sm-17-24,
-    #conversejs .pure-u-sm-18-24,
-    #conversejs .pure-u-sm-19-24,
-    #conversejs .pure-u-sm-20-24,
-    #conversejs .pure-u-sm-21-24,
-    #conversejs .pure-u-sm-22-24,
-    #conversejs .pure-u-sm-23-24,
-    #conversejs .pure-u-sm-24-24 {
-      display: inline-block;
-      *display: inline;
-      zoom: 1;
-      letter-spacing: normal;
-      word-spacing: normal;
-      vertical-align: top;
-      text-rendering: auto; }
-    #conversejs .pure-u-sm-1-24 {
-      width: 4.1667%;
-      *width: 4.1357%; }
-    #conversejs .pure-u-sm-1-12,
-    #conversejs .pure-u-sm-2-24 {
-      width: 8.3333%;
-      *width: 8.3023%; }
-    #conversejs .pure-u-sm-1-8,
-    #conversejs .pure-u-sm-3-24 {
-      width: 12.5000%;
-      *width: 12.4690%; }
-    #conversejs .pure-u-sm-1-6,
-    #conversejs .pure-u-sm-4-24 {
-      width: 16.6667%;
-      *width: 16.6357%; }
-    #conversejs .pure-u-sm-1-5 {
-      width: 20%;
-      *width: 19.9690%; }
-    #conversejs .pure-u-sm-5-24 {
-      width: 20.8333%;
-      *width: 20.8023%; }
-    #conversejs .pure-u-sm-1-4,
-    #conversejs .pure-u-sm-6-24 {
-      width: 25%;
-      *width: 24.9690%; }
-    #conversejs .pure-u-sm-7-24 {
-      width: 29.1667%;
-      *width: 29.1357%; }
-    #conversejs .pure-u-sm-1-3,
-    #conversejs .pure-u-sm-8-24 {
-      width: 33.3333%;
-      *width: 33.3023%; }
-    #conversejs .pure-u-sm-3-8,
-    #conversejs .pure-u-sm-9-24 {
-      width: 37.5000%;
-      *width: 37.4690%; }
-    #conversejs .pure-u-sm-2-5 {
-      width: 40%;
-      *width: 39.9690%; }
-    #conversejs .pure-u-sm-5-12,
-    #conversejs .pure-u-sm-10-24 {
-      width: 41.6667%;
-      *width: 41.6357%; }
-    #conversejs .pure-u-sm-11-24 {
-      width: 45.8333%;
-      *width: 45.8023%; }
-    #conversejs .pure-u-sm-1-2,
-    #conversejs .pure-u-sm-12-24 {
-      width: 50%;
-      *width: 49.9690%; }
-    #conversejs .pure-u-sm-13-24 {
-      width: 54.1667%;
-      *width: 54.1357%; }
-    #conversejs .pure-u-sm-7-12,
-    #conversejs .pure-u-sm-14-24 {
-      width: 58.3333%;
-      *width: 58.3023%; }
-    #conversejs .pure-u-sm-3-5 {
-      width: 60%;
-      *width: 59.9690%; }
-    #conversejs .pure-u-sm-5-8,
-    #conversejs .pure-u-sm-15-24 {
-      width: 62.5000%;
-      *width: 62.4690%; }
-    #conversejs .pure-u-sm-2-3,
-    #conversejs .pure-u-sm-16-24 {
-      width: 66.6667%;
-      *width: 66.6357%; }
-    #conversejs .pure-u-sm-17-24 {
-      width: 70.8333%;
-      *width: 70.8023%; }
-    #conversejs .pure-u-sm-3-4,
-    #conversejs .pure-u-sm-18-24 {
-      width: 75%;
-      *width: 74.9690%; }
-    #conversejs .pure-u-sm-19-24 {
-      width: 79.1667%;
-      *width: 79.1357%; }
-    #conversejs .pure-u-sm-4-5 {
-      width: 80%;
-      *width: 79.9690%; }
-    #conversejs .pure-u-sm-5-6,
-    #conversejs .pure-u-sm-20-24 {
-      width: 83.3333%;
-      *width: 83.3023%; }
-    #conversejs .pure-u-sm-7-8,
-    #conversejs .pure-u-sm-21-24 {
-      width: 87.5000%;
-      *width: 87.4690%; }
-    #conversejs .pure-u-sm-11-12,
-    #conversejs .pure-u-sm-22-24 {
-      width: 91.6667%;
-      *width: 91.6357%; }
-    #conversejs .pure-u-sm-23-24 {
-      width: 95.8333%;
-      *width: 95.8023%; }
-    #conversejs .pure-u-sm-1,
-    #conversejs .pure-u-sm-1-1,
-    #conversejs .pure-u-sm-5-5,
-    #conversejs .pure-u-sm-24-24 {
-      width: 100%; } }
-  @media screen and (min-width: 48em) {
-    #conversejs .pure-u-md-1,
-    #conversejs .pure-u-md-1-1,
-    #conversejs .pure-u-md-1-2,
-    #conversejs .pure-u-md-1-3,
-    #conversejs .pure-u-md-2-3,
-    #conversejs .pure-u-md-1-4,
-    #conversejs .pure-u-md-3-4,
-    #conversejs .pure-u-md-1-5,
-    #conversejs .pure-u-md-2-5,
-    #conversejs .pure-u-md-3-5,
-    #conversejs .pure-u-md-4-5,
-    #conversejs .pure-u-md-5-5,
-    #conversejs .pure-u-md-1-6,
-    #conversejs .pure-u-md-5-6,
-    #conversejs .pure-u-md-1-8,
-    #conversejs .pure-u-md-3-8,
-    #conversejs .pure-u-md-5-8,
-    #conversejs .pure-u-md-7-8,
-    #conversejs .pure-u-md-1-12,
-    #conversejs .pure-u-md-5-12,
-    #conversejs .pure-u-md-7-12,
-    #conversejs .pure-u-md-11-12,
-    #conversejs .pure-u-md-1-24,
-    #conversejs .pure-u-md-2-24,
-    #conversejs .pure-u-md-3-24,
-    #conversejs .pure-u-md-4-24,
-    #conversejs .pure-u-md-5-24,
-    #conversejs .pure-u-md-6-24,
-    #conversejs .pure-u-md-7-24,
-    #conversejs .pure-u-md-8-24,
-    #conversejs .pure-u-md-9-24,
-    #conversejs .pure-u-md-10-24,
-    #conversejs .pure-u-md-11-24,
-    #conversejs .pure-u-md-12-24,
-    #conversejs .pure-u-md-13-24,
-    #conversejs .pure-u-md-14-24,
-    #conversejs .pure-u-md-15-24,
-    #conversejs .pure-u-md-16-24,
-    #conversejs .pure-u-md-17-24,
-    #conversejs .pure-u-md-18-24,
-    #conversejs .pure-u-md-19-24,
-    #conversejs .pure-u-md-20-24,
-    #conversejs .pure-u-md-21-24,
-    #conversejs .pure-u-md-22-24,
-    #conversejs .pure-u-md-23-24,
-    #conversejs .pure-u-md-24-24 {
-      display: inline-block;
-      *display: inline;
-      zoom: 1;
-      letter-spacing: normal;
-      word-spacing: normal;
-      vertical-align: top;
-      text-rendering: auto; }
-    #conversejs .pure-u-md-1-24 {
-      width: 4.1667%;
-      *width: 4.1357%; }
-    #conversejs .pure-u-md-1-12,
-    #conversejs .pure-u-md-2-24 {
-      width: 8.3333%;
-      *width: 8.3023%; }
-    #conversejs .pure-u-md-1-8,
-    #conversejs .pure-u-md-3-24 {
-      width: 12.5000%;
-      *width: 12.4690%; }
-    #conversejs .pure-u-md-1-6,
-    #conversejs .pure-u-md-4-24 {
-      width: 16.6667%;
-      *width: 16.6357%; }
-    #conversejs .pure-u-md-1-5 {
-      width: 20%;
-      *width: 19.9690%; }
-    #conversejs .pure-u-md-5-24 {
-      width: 20.8333%;
-      *width: 20.8023%; }
-    #conversejs .pure-u-md-1-4,
-    #conversejs .pure-u-md-6-24 {
-      width: 25%;
-      *width: 24.9690%; }
-    #conversejs .pure-u-md-7-24 {
-      width: 29.1667%;
-      *width: 29.1357%; }
-    #conversejs .pure-u-md-1-3,
-    #conversejs .pure-u-md-8-24 {
-      width: 33.3333%;
-      *width: 33.3023%; }
-    #conversejs .pure-u-md-3-8,
-    #conversejs .pure-u-md-9-24 {
-      width: 37.5000%;
-      *width: 37.4690%; }
-    #conversejs .pure-u-md-2-5 {
-      width: 40%;
-      *width: 39.9690%; }
-    #conversejs .pure-u-md-5-12,
-    #conversejs .pure-u-md-10-24 {
-      width: 41.6667%;
-      *width: 41.6357%; }
-    #conversejs .pure-u-md-11-24 {
-      width: 45.8333%;
-      *width: 45.8023%; }
-    #conversejs .pure-u-md-1-2,
-    #conversejs .pure-u-md-12-24 {
-      width: 50%;
-      *width: 49.9690%; }
-    #conversejs .pure-u-md-13-24 {
-      width: 54.1667%;
-      *width: 54.1357%; }
-    #conversejs .pure-u-md-7-12,
-    #conversejs .pure-u-md-14-24 {
-      width: 58.3333%;
-      *width: 58.3023%; }
-    #conversejs .pure-u-md-3-5 {
-      width: 60%;
-      *width: 59.9690%; }
-    #conversejs .pure-u-md-5-8,
-    #conversejs .pure-u-md-15-24 {
-      width: 62.5000%;
-      *width: 62.4690%; }
-    #conversejs .pure-u-md-2-3,
-    #conversejs .pure-u-md-16-24 {
-      width: 66.6667%;
-      *width: 66.6357%; }
-    #conversejs .pure-u-md-17-24 {
-      width: 70.8333%;
-      *width: 70.8023%; }
-    #conversejs .pure-u-md-3-4,
-    #conversejs .pure-u-md-18-24 {
-      width: 75%;
-      *width: 74.9690%; }
-    #conversejs .pure-u-md-19-24 {
-      width: 79.1667%;
-      *width: 79.1357%; }
-    #conversejs .pure-u-md-4-5 {
-      width: 80%;
-      *width: 79.9690%; }
-    #conversejs .pure-u-md-5-6,
-    #conversejs .pure-u-md-20-24 {
-      width: 83.3333%;
-      *width: 83.3023%; }
-    #conversejs .pure-u-md-7-8,
-    #conversejs .pure-u-md-21-24 {
-      width: 87.5000%;
-      *width: 87.4690%; }
-    #conversejs .pure-u-md-11-12,
-    #conversejs .pure-u-md-22-24 {
-      width: 91.6667%;
-      *width: 91.6357%; }
-    #conversejs .pure-u-md-23-24 {
-      width: 95.8333%;
-      *width: 95.8023%; }
-    #conversejs .pure-u-md-1,
-    #conversejs .pure-u-md-1-1,
-    #conversejs .pure-u-md-5-5,
-    #conversejs .pure-u-md-24-24 {
-      width: 100%; } }
-  @media screen and (min-width: 64em) {
-    #conversejs .pure-u-lg-1,
-    #conversejs .pure-u-lg-1-1,
-    #conversejs .pure-u-lg-1-2,
-    #conversejs .pure-u-lg-1-3,
-    #conversejs .pure-u-lg-2-3,
-    #conversejs .pure-u-lg-1-4,
-    #conversejs .pure-u-lg-3-4,
-    #conversejs .pure-u-lg-1-5,
-    #conversejs .pure-u-lg-2-5,
-    #conversejs .pure-u-lg-3-5,
-    #conversejs .pure-u-lg-4-5,
-    #conversejs .pure-u-lg-5-5,
-    #conversejs .pure-u-lg-1-6,
-    #conversejs .pure-u-lg-5-6,
-    #conversejs .pure-u-lg-1-8,
-    #conversejs .pure-u-lg-3-8,
-    #conversejs .pure-u-lg-5-8,
-    #conversejs .pure-u-lg-7-8,
-    #conversejs .pure-u-lg-1-12,
-    #conversejs .pure-u-lg-5-12,
-    #conversejs .pure-u-lg-7-12,
-    #conversejs .pure-u-lg-11-12,
-    #conversejs .pure-u-lg-1-24,
-    #conversejs .pure-u-lg-2-24,
-    #conversejs .pure-u-lg-3-24,
-    #conversejs .pure-u-lg-4-24,
-    #conversejs .pure-u-lg-5-24,
-    #conversejs .pure-u-lg-6-24,
-    #conversejs .pure-u-lg-7-24,
-    #conversejs .pure-u-lg-8-24,
-    #conversejs .pure-u-lg-9-24,
-    #conversejs .pure-u-lg-10-24,
-    #conversejs .pure-u-lg-11-24,
-    #conversejs .pure-u-lg-12-24,
-    #conversejs .pure-u-lg-13-24,
-    #conversejs .pure-u-lg-14-24,
-    #conversejs .pure-u-lg-15-24,
-    #conversejs .pure-u-lg-16-24,
-    #conversejs .pure-u-lg-17-24,
-    #conversejs .pure-u-lg-18-24,
-    #conversejs .pure-u-lg-19-24,
-    #conversejs .pure-u-lg-20-24,
-    #conversejs .pure-u-lg-21-24,
-    #conversejs .pure-u-lg-22-24,
-    #conversejs .pure-u-lg-23-24,
-    #conversejs .pure-u-lg-24-24 {
-      display: inline-block;
-      *display: inline;
-      zoom: 1;
-      letter-spacing: normal;
-      word-spacing: normal;
-      vertical-align: top;
-      text-rendering: auto; }
-    #conversejs .pure-u-lg-1-24 {
-      width: 4.1667%;
-      *width: 4.1357%; }
-    #conversejs .pure-u-lg-1-12,
-    #conversejs .pure-u-lg-2-24 {
-      width: 8.3333%;
-      *width: 8.3023%; }
-    #conversejs .pure-u-lg-1-8,
-    #conversejs .pure-u-lg-3-24 {
-      width: 12.5000%;
-      *width: 12.4690%; }
-    #conversejs .pure-u-lg-1-6,
-    #conversejs .pure-u-lg-4-24 {
-      width: 16.6667%;
-      *width: 16.6357%; }
-    #conversejs .pure-u-lg-1-5 {
-      width: 20%;
-      *width: 19.9690%; }
-    #conversejs .pure-u-lg-5-24 {
-      width: 20.8333%;
-      *width: 20.8023%; }
-    #conversejs .pure-u-lg-1-4,
-    #conversejs .pure-u-lg-6-24 {
-      width: 25%;
-      *width: 24.9690%; }
-    #conversejs .pure-u-lg-7-24 {
-      width: 29.1667%;
-      *width: 29.1357%; }
-    #conversejs .pure-u-lg-1-3,
-    #conversejs .pure-u-lg-8-24 {
-      width: 33.3333%;
-      *width: 33.3023%; }
-    #conversejs .pure-u-lg-3-8,
-    #conversejs .pure-u-lg-9-24 {
-      width: 37.5000%;
-      *width: 37.4690%; }
-    #conversejs .pure-u-lg-2-5 {
-      width: 40%;
-      *width: 39.9690%; }
-    #conversejs .pure-u-lg-5-12,
-    #conversejs .pure-u-lg-10-24 {
-      width: 41.6667%;
-      *width: 41.6357%; }
-    #conversejs .pure-u-lg-11-24 {
-      width: 45.8333%;
-      *width: 45.8023%; }
-    #conversejs .pure-u-lg-1-2,
-    #conversejs .pure-u-lg-12-24 {
-      width: 50%;
-      *width: 49.9690%; }
-    #conversejs .pure-u-lg-13-24 {
-      width: 54.1667%;
-      *width: 54.1357%; }
-    #conversejs .pure-u-lg-7-12,
-    #conversejs .pure-u-lg-14-24 {
-      width: 58.3333%;
-      *width: 58.3023%; }
-    #conversejs .pure-u-lg-3-5 {
-      width: 60%;
-      *width: 59.9690%; }
-    #conversejs .pure-u-lg-5-8,
-    #conversejs .pure-u-lg-15-24 {
-      width: 62.5000%;
-      *width: 62.4690%; }
-    #conversejs .pure-u-lg-2-3,
-    #conversejs .pure-u-lg-16-24 {
-      width: 66.6667%;
-      *width: 66.6357%; }
-    #conversejs .pure-u-lg-17-24 {
-      width: 70.8333%;
-      *width: 70.8023%; }
-    #conversejs .pure-u-lg-3-4,
-    #conversejs .pure-u-lg-18-24 {
-      width: 75%;
-      *width: 74.9690%; }
-    #conversejs .pure-u-lg-19-24 {
-      width: 79.1667%;
-      *width: 79.1357%; }
-    #conversejs .pure-u-lg-4-5 {
-      width: 80%;
-      *width: 79.9690%; }
-    #conversejs .pure-u-lg-5-6,
-    #conversejs .pure-u-lg-20-24 {
-      width: 83.3333%;
-      *width: 83.3023%; }
-    #conversejs .pure-u-lg-7-8,
-    #conversejs .pure-u-lg-21-24 {
-      width: 87.5000%;
-      *width: 87.4690%; }
-    #conversejs .pure-u-lg-11-12,
-    #conversejs .pure-u-lg-22-24 {
-      width: 91.6667%;
-      *width: 91.6357%; }
-    #conversejs .pure-u-lg-23-24 {
-      width: 95.8333%;
-      *width: 95.8023%; }
-    #conversejs .pure-u-lg-1,
-    #conversejs .pure-u-lg-1-1,
-    #conversejs .pure-u-lg-5-5,
-    #conversejs .pure-u-lg-24-24 {
-      width: 100%; } }
-  @media screen and (min-width: 80em) {
-    #conversejs .pure-u-xl-1,
-    #conversejs .pure-u-xl-1-1,
-    #conversejs .pure-u-xl-1-2,
-    #conversejs .pure-u-xl-1-3,
-    #conversejs .pure-u-xl-2-3,
-    #conversejs .pure-u-xl-1-4,
-    #conversejs .pure-u-xl-3-4,
-    #conversejs .pure-u-xl-1-5,
-    #conversejs .pure-u-xl-2-5,
-    #conversejs .pure-u-xl-3-5,
-    #conversejs .pure-u-xl-4-5,
-    #conversejs .pure-u-xl-5-5,
-    #conversejs .pure-u-xl-1-6,
-    #conversejs .pure-u-xl-5-6,
-    #conversejs .pure-u-xl-1-8,
-    #conversejs .pure-u-xl-3-8,
-    #conversejs .pure-u-xl-5-8,
-    #conversejs .pure-u-xl-7-8,
-    #conversejs .pure-u-xl-1-12,
-    #conversejs .pure-u-xl-5-12,
-    #conversejs .pure-u-xl-7-12,
-    #conversejs .pure-u-xl-11-12,
-    #conversejs .pure-u-xl-1-24,
-    #conversejs .pure-u-xl-2-24,
-    #conversejs .pure-u-xl-3-24,
-    #conversejs .pure-u-xl-4-24,
-    #conversejs .pure-u-xl-5-24,
-    #conversejs .pure-u-xl-6-24,
-    #conversejs .pure-u-xl-7-24,
-    #conversejs .pure-u-xl-8-24,
-    #conversejs .pure-u-xl-9-24,
-    #conversejs .pure-u-xl-10-24,
-    #conversejs .pure-u-xl-11-24,
-    #conversejs .pure-u-xl-12-24,
-    #conversejs .pure-u-xl-13-24,
-    #conversejs .pure-u-xl-14-24,
-    #conversejs .pure-u-xl-15-24,
-    #conversejs .pure-u-xl-16-24,
-    #conversejs .pure-u-xl-17-24,
-    #conversejs .pure-u-xl-18-24,
-    #conversejs .pure-u-xl-19-24,
-    #conversejs .pure-u-xl-20-24,
-    #conversejs .pure-u-xl-21-24,
-    #conversejs .pure-u-xl-22-24,
-    #conversejs .pure-u-xl-23-24,
-    #conversejs .pure-u-xl-24-24 {
-      display: inline-block;
-      *display: inline;
-      zoom: 1;
-      letter-spacing: normal;
-      word-spacing: normal;
-      vertical-align: top;
-      text-rendering: auto; }
-    #conversejs .pure-u-xl-1-24 {
-      width: 4.1667%;
-      *width: 4.1357%; }
-    #conversejs .pure-u-xl-1-12,
-    #conversejs .pure-u-xl-2-24 {
-      width: 8.3333%;
-      *width: 8.3023%; }
-    #conversejs .pure-u-xl-1-8,
-    #conversejs .pure-u-xl-3-24 {
-      width: 12.5000%;
-      *width: 12.4690%; }
-    #conversejs .pure-u-xl-1-6,
-    #conversejs .pure-u-xl-4-24 {
-      width: 16.6667%;
-      *width: 16.6357%; }
-    #conversejs .pure-u-xl-1-5 {
-      width: 20%;
-      *width: 19.9690%; }
-    #conversejs .pure-u-xl-5-24 {
-      width: 20.8333%;
-      *width: 20.8023%; }
-    #conversejs .pure-u-xl-1-4,
-    #conversejs .pure-u-xl-6-24 {
-      width: 25%;
-      *width: 24.9690%; }
-    #conversejs .pure-u-xl-7-24 {
-      width: 29.1667%;
-      *width: 29.1357%; }
-    #conversejs .pure-u-xl-1-3,
-    #conversejs .pure-u-xl-8-24 {
-      width: 33.3333%;
-      *width: 33.3023%; }
-    #conversejs .pure-u-xl-3-8,
-    #conversejs .pure-u-xl-9-24 {
-      width: 37.5000%;
-      *width: 37.4690%; }
-    #conversejs .pure-u-xl-2-5 {
-      width: 40%;
-      *width: 39.9690%; }
-    #conversejs .pure-u-xl-5-12,
-    #conversejs .pure-u-xl-10-24 {
-      width: 41.6667%;
-      *width: 41.6357%; }
-    #conversejs .pure-u-xl-11-24 {
-      width: 45.8333%;
-      *width: 45.8023%; }
-    #conversejs .pure-u-xl-1-2,
-    #conversejs .pure-u-xl-12-24 {
-      width: 50%;
-      *width: 49.9690%; }
-    #conversejs .pure-u-xl-13-24 {
-      width: 54.1667%;
-      *width: 54.1357%; }
-    #conversejs .pure-u-xl-7-12,
-    #conversejs .pure-u-xl-14-24 {
-      width: 58.3333%;
-      *width: 58.3023%; }
-    #conversejs .pure-u-xl-3-5 {
-      width: 60%;
-      *width: 59.9690%; }
-    #conversejs .pure-u-xl-5-8,
-    #conversejs .pure-u-xl-15-24 {
-      width: 62.5000%;
-      *width: 62.4690%; }
-    #conversejs .pure-u-xl-2-3,
-    #conversejs .pure-u-xl-16-24 {
-      width: 66.6667%;
-      *width: 66.6357%; }
-    #conversejs .pure-u-xl-17-24 {
-      width: 70.8333%;
-      *width: 70.8023%; }
-    #conversejs .pure-u-xl-3-4,
-    #conversejs .pure-u-xl-18-24 {
-      width: 75%;
-      *width: 74.9690%; }
-    #conversejs .pure-u-xl-19-24 {
-      width: 79.1667%;
-      *width: 79.1357%; }
-    #conversejs .pure-u-xl-4-5 {
-      width: 80%;
-      *width: 79.9690%; }
-    #conversejs .pure-u-xl-5-6,
-    #conversejs .pure-u-xl-20-24 {
-      width: 83.3333%;
-      *width: 83.3023%; }
-    #conversejs .pure-u-xl-7-8,
-    #conversejs .pure-u-xl-21-24 {
-      width: 87.5000%;
-      *width: 87.4690%; }
-    #conversejs .pure-u-xl-11-12,
-    #conversejs .pure-u-xl-22-24 {
-      width: 91.6667%;
-      *width: 91.6357%; }
-    #conversejs .pure-u-xl-23-24 {
-      width: 95.8333%;
-      *width: 95.8023%; }
-    #conversejs .pure-u-xl-1,
-    #conversejs .pure-u-xl-1-1,
-    #conversejs .pure-u-xl-5-5,
-    #conversejs .pure-u-xl-24-24 {
-      width: 100%; } }
   #conversejs .pure-form input[type="text"],
   #conversejs .pure-form input[type="password"],
   #conversejs .pure-form input[type="email"],
@@ -1629,114 +989,6 @@
   #conversejs a.pure-button-selected {
     background-color: #0078e7;
     color: #fff; }
-  #conversejs .pure-menu {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box; }
-  #conversejs .pure-menu-fixed {
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 3; }
-  #conversejs .pure-menu-list,
-  #conversejs .pure-menu-item {
-    position: relative; }
-  #conversejs .pure-menu-list {
-    list-style: none;
-    margin: 0;
-    padding: 0; }
-  #conversejs .pure-menu-item {
-    padding: 0;
-    margin: 0;
-    height: 100%; }
-  #conversejs .pure-menu-link,
-  #conversejs .pure-menu-heading {
-    display: block;
-    text-decoration: none;
-    white-space: nowrap; }
-  #conversejs .pure-menu-horizontal {
-    width: 100%;
-    white-space: nowrap; }
-  #conversejs .pure-menu-horizontal .pure-menu-list {
-    display: inline-block; }
-  #conversejs .pure-menu-horizontal .pure-menu-item,
-  #conversejs .pure-menu-horizontal .pure-menu-heading,
-  #conversejs .pure-menu-horizontal .pure-menu-separator {
-    display: inline-block;
-    *display: inline;
-    zoom: 1;
-    vertical-align: middle; }
-  #conversejs .pure-menu-item .pure-menu-item {
-    display: block; }
-  #conversejs .pure-menu-children {
-    display: none;
-    position: absolute;
-    left: 100%;
-    top: 0;
-    margin: 0;
-    padding: 0;
-    z-index: 3; }
-  #conversejs .pure-menu-horizontal .pure-menu-children {
-    left: 0;
-    top: auto;
-    width: inherit; }
-  #conversejs .pure-menu-allow-hover:hover > .pure-menu-children,
-  #conversejs .pure-menu-active > .pure-menu-children {
-    display: block;
-    position: absolute; }
-  #conversejs .pure-menu-has-children > .pure-menu-link:after {
-    padding-left: 0.5em;
-    content: "\25B8";
-    font-size: small; }
-  #conversejs .pure-menu-horizontal .pure-menu-has-children > .pure-menu-link:after {
-    content: "\25BE"; }
-  #conversejs .pure-menu-scrollable {
-    overflow-y: scroll;
-    overflow-x: hidden; }
-  #conversejs .pure-menu-scrollable .pure-menu-list {
-    display: block; }
-  #conversejs .pure-menu-horizontal.pure-menu-scrollable .pure-menu-list {
-    display: inline-block; }
-  #conversejs .pure-menu-horizontal.pure-menu-scrollable {
-    white-space: nowrap;
-    overflow-y: hidden;
-    overflow-x: auto;
-    -ms-overflow-style: none;
-    -webkit-overflow-scrolling: touch;
-    /* a little extra padding for this style to allow for scrollbars */
-    padding: .5em 0; }
-  #conversejs .pure-menu-horizontal.pure-menu-scrollable::-webkit-scrollbar {
-    display: none; }
-  #conversejs .pure-menu-separator {
-    background-color: #ccc;
-    height: 1px;
-    margin: .3em 0; }
-  #conversejs .pure-menu-horizontal .pure-menu-separator {
-    width: 1px;
-    height: 1.3em;
-    margin: 0 0.3em; }
-  #conversejs .pure-menu-heading {
-    text-transform: uppercase;
-    color: #565d64; }
-  #conversejs .pure-menu-link {
-    color: #777; }
-  #conversejs .pure-menu-children {
-    background-color: #fff; }
-  #conversejs .pure-menu-link,
-  #conversejs .pure-menu-disabled,
-  #conversejs .pure-menu-heading {
-    padding: .5em 1em; }
-  #conversejs .pure-menu-disabled {
-    opacity: .5; }
-  #conversejs .pure-menu-disabled .pure-menu-link:hover {
-    background-color: transparent; }
-  #conversejs .pure-menu-active > .pure-menu-link,
-  #conversejs .pure-menu-link:hover,
-  #conversejs .pure-menu-link:focus {
-    background-color: #eee; }
-  #conversejs .pure-menu-selected .pure-menu-link,
-  #conversejs .pure-menu-selected .pure-menu-link:visited {
-    color: #000; }
   #conversejs *, #conversejs *:before, #conversejs *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -1782,12 +1034,6 @@
     text-decoration: none;
     color: #436F64;
     text-shadow: none; }
-  #conversejs form.pure-form.converse-form {
-    padding: 1.5em; }
-    #conversejs form.pure-form.converse-form label {
-      margin-top: 1em; }
-    #conversejs form.pure-form.converse-form input {
-      margin-bottom: 1em; }
 
 #conversejs {
   bottom: 0;
@@ -1896,8 +1142,6 @@
     border-bottom-left-radius: 4px; }
   #conversejs .error {
     color: red; }
-  #conversejs input.error {
-    border: 1px solid red; }
   #conversejs .reg-feedback {
     font-size: 85%; }
   #conversejs .reg-feedback,
@@ -1931,12 +1175,28 @@
     padding: 1px 0 1px 5px; }
   #conversejs .activated {
     display: block !important; }
+  #conversejs .pure-button {
+    border-radius: 4px; }
   #conversejs form.pure-form.converse-form {
-    padding: 1.5em; }
+    background: white;
+    margin: 1em; }
+    #conversejs form.pure-form.converse-form legend {
+      color: #777; }
     #conversejs form.pure-form.converse-form label {
       margin-top: 1em; }
-    #conversejs form.pure-form.converse-form input {
-      margin-bottom: 1em; }
+    #conversejs form.pure-form.converse-form input[type=text],
+    #conversejs form.pure-form.converse-form input[type=password],
+    #conversejs form.pure-form.converse-form input[type=number],
+    #conversejs form.pure-form.converse-form input[type=button],
+    #conversejs form.pure-form.converse-form input[type=submit] {
+      height: 2.2em; }
+    #conversejs form.pure-form.converse-form input[type=button],
+    #conversejs form.pure-form.converse-form input[type=submit] {
+      padding-left: 1em;
+      padding-right: 1em; }
+    #conversejs form.pure-form.converse-form input.error {
+      border: 1px solid red;
+      color: #777; }
     #conversejs form.pure-form.converse-form .form-help {
       color: gray;
       font-size: 85%;
@@ -2256,8 +1516,7 @@
       #conversejs #controlbox #converse-register .instructions:hover {
         color: #777; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
-    margin: 2em 1em 1em 1em;
-    background: white; }
+    margin-top: 2em; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
       height: auto;
       white-space: normal; }
@@ -2270,78 +1529,66 @@
       color: #436F64; }
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
       width: 100%;
-      height: 30px;
-      margin: 1em 0; }
+      margin: 0.5em 0; }
   #conversejs #controlbox #users .add-converse-contact {
     margin: 0 0.5em 0.75em 0.5em; }
-  #conversejs #controlbox #chatrooms {
-    overflow-y: auto; }
-    #conversejs #controlbox #chatrooms form.add-chatroom {
-      background: none;
-      padding: 0.5em; }
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=button],
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit],
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=text] {
-        margin: 0;
-        width: 100%;
-        padding: 0.25em; }
-      #conversejs #controlbox #chatrooms form.add-chatroom span.spinner,
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=button],
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit] {
-        margin-top: 0.5em;
-        display: table-cell;
-        width: auto; }
-      #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit] {
-        color: #436F64; }
-    #conversejs #controlbox #chatrooms #available-chatrooms {
-      text-align: left; }
-      #conversejs #controlbox #chatrooms #available-chatrooms dt {
-        font-weight: normal;
-        color: #777;
-        border: none;
-        padding: 0.5em;
-        text-shadow: 0 1px 0 #FAFAFA; }
-      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom {
-        border: none;
-        clear: both;
-        color: #777;
-        display: block;
-        font-weight: bold;
-        overflow: hidden;
-        padding: 0.25em 0.5em;
+  #conversejs #controlbox #chatrooms form.add-chatroom input[type=button],
+  #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit],
+  #conversejs #controlbox #chatrooms form.add-chatroom input[type=text] {
+    width: 100%; }
+  #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit] {
+    color: #436F64; }
+  #conversejs #controlbox #chatrooms #available-chatrooms {
+    padding: 0 1em 2em 1em;
+    text-align: left; }
+    #conversejs #controlbox #chatrooms #available-chatrooms dt {
+      border: none;
+      color: #777;
+      font-weight: normal;
+      padding: 0;
+      text-shadow: 0 1px 0 #FAFAFA; }
+    #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom {
+      border: none;
+      clear: both;
+      color: #777;
+      display: block;
+      font-weight: bold;
+      overflow: hidden;
+      padding: 0;
+      padding-top: 0.5em;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 0 #FAFAFA;
+      white-space: nowrap; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom:hover {
+        background-color: #E1E6E5; }
+        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom:hover .room-info {
+          display: block;
+          font-size: 14px; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.room-info {
+        width: 15px;
+        display: none;
+        clear: right; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.open-room {
+        float: left;
+        overflow-x: hidden;
         text-overflow: ellipsis;
-        text-shadow: 0 1px 0 #FAFAFA;
-        white-space: nowrap; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom:hover {
-          background-color: #E1E6E5; }
-          #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom:hover .room-info {
-            display: block;
-            font-size: 14px; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.room-info {
-          width: 15px;
-          display: none;
-          clear: right; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.open-room {
-          float: left;
-          overflow-x: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          width: 150px; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom .room-info {
-          font-size: 11px;
-          font-style: normal;
-          font-weight: normal; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom li.room-info {
-          display: block;
-          margin-left: 5px; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom p.room-info {
-          margin: 0;
-          padding: 0;
-          display: block;
-          white-space: normal; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom div.room-info {
-          clear: left;
-          width: 100%; }
+        white-space: nowrap;
+        width: 150px; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom .room-info {
+        font-size: 11px;
+        font-style: normal;
+        font-weight: normal; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom li.room-info {
+        display: block;
+        margin-left: 5px; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom p.room-info {
+        margin: 0;
+        padding: 0;
+        display: block;
+        white-space: normal; }
+      #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom div.room-info {
+        clear: left;
+        width: 100%; }
   #conversejs #controlbox .dropdown a {
     width: 148px;
     display: inline-block;
@@ -2460,7 +1707,7 @@
     height: 289px;
     height: -webkit-calc(100% - 44px);
     height: calc(100% - 44px);
-    overflow-y: hidden;
+    overflow-y: scroll;
     overflow-x: hidden; }
     #conversejs #controlbox .controlbox-pane label {
       font-size: 14px;

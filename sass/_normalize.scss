@@ -1,9 +1,7 @@
 #conversejs {
     @import "pure/base";
-    @import "pure/grids";
     @import "pure/forms";
     @import "pure/buttons";
-    @import "pure/menus";
 
     @include box-sizing(border-box);
     *, *:before, *:after {
@@ -66,17 +64,4 @@
         color: $link-color;
         text-shadow: none;
     }
-
-    form {
-        &.pure-form.converse-form {
-            padding: 1.5em;
-            label {
-                margin-top: 1em;
-            }
-            input {
-                margin-bottom: 1em;
-            }
-        }
-    }
-
 }

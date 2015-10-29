@@ -10,7 +10,7 @@
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
-        'text-single': 'textline',
+        'text-single': 'text',
         'fixed': 'label',
         'boolean': 'checkbox',
         'hidden': 'hidden',

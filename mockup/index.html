@@ -25,6 +25,222 @@
         <span style="display: none" id="online-count">(0)</span>
     </a>
 
+    <div id="controlbox" class="chatbox" style="opacity: 1; display: inline;">
+        <div class="flyout box-flyout">
+            <div class="dragresize dragresize-top"></div>
+            <div class="dragresize dragresize-topleft"></div>
+            <div class="dragresize dragresize-left"></div>
+            <div class="chat-head controlbox-head">
+                <ul id="controlbox-tabs">
+                    <li><a class="s current" href="#users">Contacts</a></li>
+                    <li><a class="s" href="#chatrooms">Rooms</a></li>
+                </ul>
+                <a class="chatbox-btn close-chatbox-button icon-close"></a>
+            </div>
+            <div id="users" class="controlbox-pane" style="display: block;">
+                <form class="set-xmpp-status" action="" method="post">
+                    <span id="xmpp-status-holder">
+                    <dl id="target" class="dropdown">
+                        <dt id="fancy-xmpp-status-select" class="fancy-dropdown">
+                            <div class="xmpp-status">
+                                <a class="choose-xmpp-status online" data-value="I am online" href="#" title="Click to change your chat status">
+                                    <span class="icon-online"></span>
+                                    I am online
+                                </a>
+                                <a class="change-xmpp-status-message icon-pencil" href="#" title="Click here to write a custom status message"></a>
+                            </div>
+                        </dt>
+                        <dd>
+                            <ul style="display: none;" class="xmpp-status-menu">
+                                <li>
+                                    <a href="#" class="online" data-value="online">
+                                    <span class="icon-online"></span>
+                                    Online</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dnd" data-value="dnd">
+                                    <span class="icon-dnd"></span>
+                                    Busy</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="away" data-value="away">
+                                    <span class="icon-away"></span>
+                                    Away</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="offline" data-value="offline">
+                                    <span class="icon-offline"></span>
+                                    Offline</a>
+                                </li>
+                            </ul>
+                        </dd>
+                    </dl>
+                    </span>
+                </form>
+                <dl class="add-converse-contact dropdown">
+                    <dt id="xmpp-contact-search" class="fancy-dropdown">
+                        <a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">
+                            <span class="icon-plus"></span>
+                            Add a contact
+                        </a>
+                    </dt>
+                    <dd class="search-xmpp" style="display:none">
+                        <ul>
+                            <li>
+                                <form class="add-xmpp-contact">
+                                    <input type="text" name="identifier" class="username" placeholder="Contact username">
+                                    <button type="submit">Add</button>
+                                </form>
+                            </li>
+                            <li></li>
+                        </ul>
+                    </dd>
+                </dl>
+                <div id="converse-roster">
+                    <span class="input-button-group">
+                        <input class="roster-filter" placeholder="Type to filter">
+                        <select class="filter-type">
+                            <option value="contacts">Contacts</option>
+                            <option value="groups">Groups</option>
+                        </select>
+                    </span>
+
+                    <dl class="roster-contacts" style="display: block;">
+                        <dt class="roster-group" style="display: block;">
+                            <a href="#" data-group="Colleagues" class="group-toggle icon-opened" title="Click to hide these contacts">Colleagues</a>
+                        </dt>
+                        <dd class="online current-xmpp-contact">
+                            <a class="open-chat" title="Name: Victor Matfield JID: victor.matfield@localhost Click to chat with this contact" href="#">
+                                <span class="icon-online" title="This contact is online"></span>
+                                Victor Matfield
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dd class="away current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-away" title="this contact is away"></span>
+                                William Winterbottom
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dd class="dnd current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-dnd" title="This contact is busy"></span>
+                                Gary Teichmann
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dt class="roster-group" style="display: block;">
+                            <a href="#" data-group="Family" class="group-toggle icon-opened" title="Click to hide these contacts">Family</a>
+                        </dt>
+                        <dd class="away current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-away" title="this contact is away"></span>
+                                Allan Donald 
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dd class="offline current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-offline" title="This contact is offline"></span>
+                                Corné Krige
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dt class="roster-group" style="display: block;">
+                            <a href="#" data-group="Friends" class="group-toggle icon-opened" title="Click to hide these contacts">Friends</a>
+                        </dt>
+                        <dd class="online current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-online" title="This contact is online"></span>
+                                John Smit
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dd class="online current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-online" title="This contact is online"></span>
+                                Bakkies Botha
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dt class="roster-group" style="display: block;">
+                            <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Ungrouped</a>
+                        </dt>
+                        <dd class="online current-xmpp-contact">
+                            <a class="open-chat" title="Click to chat with this contact" href="#">
+                                <span class="icon-online" title="This contact is online"></span>
+                                James Small 
+                            </a>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dt class="roster-group" id="xmpp-contact-requests" style="display: block;">
+                            <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Contact Requests</a>
+                        </dt>
+                        <dd class="offline requesting-xmpp-contact">
+                            <span class="req-contact-name" title="Name: Bob Skinstad JID: bob.skinstad@localhost">Bob Skinstad</span>
+                            <span class="request-actions">
+                                <a class="accept-xmpp-request icon-checkmark" title="Click here to accept this contact's request" href="#"></a>
+                                <a class="decline-xmpp-request icon-close" title="Click here to decline this contact's request" href="#"></a>
+                            </span>
+                        </dd>
+                        <dd class="offline requesting-xmpp-contact">
+                            <span class="req-contact-name">André Vos</span>
+                            <span class="request-actions">
+                                <a class="accept-xmpp-request icon-checkmark" title="Click here to accept this contact's request" href="#"></a>
+                                <a class="decline-xmpp-request icon-close" title="Click here to decline this contact's request" href="#"></a>
+                            </span>
+                        </dd>
+
+                        <dt class="roster-group" id="pending-xmpp-contacts" style="display: block;">
+                            <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Pending Contacts</a>
+                        </dt>
+                        <dd class="offline pending-xmpp-contact"><span class="pending-contact-name" title="Name: Rassie Erasmus JID: rassie.erasmus@localhost">Rassie Erasmus</span>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                        <dd class="offline pending-xmpp-contact"><span class="pending-contact-name">Victor Matfield</span>
+                            <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
+                        </dd>
+                    </dl>
+                </div>
+              </div>
+
+                <div id="chatrooms" class="controlbox-pane" style="">
+                    <form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">
+                        <fieldset>
+                            <legend>Join an existing room or create a new one</legend>
+                            <label>Room name</label>
+                            <input type="text" name="chatroom" class="new-chatroom-name" placeholder="Room name">
+                            <label>Nickname</label>
+                            <input type="text" name="nick" class="new-chatroom-nick" placeholder="Nickname">
+                            <input type="submit" class="pure-button button-success" name="join" value="Open Room">
+                        </fieldset>
+
+                        <fieldset>
+                            <label>Server</label>
+                            <!-- TODO: this must be a tooltip
+                            <p class="form-help">Rooms are hosted on XMPP servers. You need to specify a server on which the room you want to join is hosted. </p>
+                            -->
+                            <input type="text" name="server" class="new-chatroom-server" placeholder="Server">
+                            <input type="button" class="pure-button button-success" name="show" id="show-rooms" value="Show rooms">
+                        </fieldset>
+                    </form>
+                    <dl id="available-chatrooms">
+                        <dt>Rooms on conference.myserver.com</dt>
+                        <dd class="available-chatroom">
+                            <a class="open-room" data-room-jid="eee@conference.opkode.com" title="Click to open this room" href="#">Current Events</a>
+                            <a class="room-info icon-room-info" data-room-jid="eee@conference.opkode.com" title="Show more information on this room" href="#">&nbsp;</a>
+                        </dd>
+                        <dd class="available-chatroom">
+                            <a class="open-room" data-room-jid="hello@conference.opkode.com" title="Click to open this room" href="#">Software Development</a>
+                            <a class="room-info icon-room-info" data-room-jid="hello@conference.opkode.com" title="Show more information on this room" href="#">&nbsp;</a>
+                        </dd>
+                    </dl>
+                  </dl>
+            </div>
+        </div>
+    </div>
+
     <div class="chatbox" id="37c0c87392010303765fe36b05c0967d62c6b70f">
         <div class="flyout box-flyout">
             <div class="dragresize dragresize-top"></div>
@@ -171,10 +387,10 @@
                     </form>
                 </div>
                 <div class="participants">
-                    <form class="room-invite">
+                    <form class="pure-form room-invite">
                         <span class="twitter-typeahead" style="position: relative; display: inline-block; direction: ltr;"><input class="invited-contact tt-hint" type="text" readonly="" autocomplete="off" spellcheck="false" tabindex="-1" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1;"><input class="invited-contact tt-input" placeholder="Invite..." type="text" autocomplete="off" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre;"></pre><span class="tt-dropdown-menu" style="position: absolute; top: 100%; z-index: 100; display: none; left: 0px; right: auto;"><div class="tt-dataset-contacts-dataset"></div></span></span>
                     </form>
-                    <label>Occupants:</label>
+                    <p class="participants-heading">Occupants:</strong>
                     <ul class="participant-list">
                         <li class="participant" title="This user can send messages in this room">Obi-wan Kenobi, Jedi Master</li>
                         <li class="participant" title="This user can send messages in this room">jabber the hut</li>
@@ -201,11 +417,12 @@
             </div>
             <div class="chat-body chatroom-body">
                 <div class="chatroom-form-container">
-                    <form class="chatroom-form">
-                        <!-- TODO: Make this a long form that scrolls -->
-                        <legend>This chatroom requires a password</legend>
-                        <label>Password:</label>
-                        <input type="password" name="password">
+                    <form class="pure-form converse-form chatroom-form">
+                        <fieldset>
+                            <legend>This chatroom requires a password</legend>
+                            <label>Password:</label>
+                            <input type="password" name="password">
+                        </fieldset>
                     </form>
                 </div>
             </div>

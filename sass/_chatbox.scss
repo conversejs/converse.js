@@ -23,7 +23,7 @@
     }
     .chatbox-btn {
         border-radius: 5px;
-        border: 1px solid #888;
+        border: 1px solid white;
         color: white;
         cursor: pointer;
         display: inline-block;
@@ -84,11 +84,11 @@
                 padding: 5px;
             }
             .chat-info {
-                color: $text-color;
-                color: #808080;
+                color: $warning-color;
                 margin: 0.3em;
                 &.chat-event {
                     clear: left;
+                    font-style: italic;
                 }
                 &.chat-error {
                     color: $warning-color;
@@ -183,7 +183,7 @@
                 padding: 5px;
                 height: $toolbar-height;
                 display: block;
-                background-color: $light-background-color;
+                background-color: $toolbar-color;
                 a {
                     color: $link-color;
                 }
@@ -194,7 +194,7 @@
                 }
                 .unencrypted a,
                 .unencrypted {
-                    color: #8f2831;
+                    color: $warning-color;
                 }
                 .unverified a,
                 .unverified {

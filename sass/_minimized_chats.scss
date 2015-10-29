@@ -43,7 +43,7 @@
         .unread-message-count,
         .chat-head-message-count {
             font-weight: bold;
-            @include linear-gradient(#f6f6f6 5%, #808080 100%);
+            background-color: white;
             border: 1px solid;
             text-shadow: 1px 1px 0 $text-shadow-color;
             color: $warning-color;

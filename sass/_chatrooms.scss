@@ -53,20 +53,23 @@
                     &.hidden {
                         display: none;
                     }
+                    .participants-heading {
+                        padding: 0.3em;
+                        font-weight: bold;
+                    }
                     .participant-list {
                         list-style: none;
                         li {
                             cursor: default;
                             display: block;
                             font-size: 12px;
-                            font-weight: bold;
                             overflow: hidden;
                             padding: 2px 5px;
                             text-overflow: ellipsis;
                             white-space: nowrap;
                             width: 100px;
                             &.moderator {
-                                color: #8f2831;
+                                color: $moderator-color;
                             }
                         }
                     }

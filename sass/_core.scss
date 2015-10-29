@@ -130,13 +130,11 @@
     .chat-title {
         padding: 1px 0 1px 5px;
         color: $chat-head-text-color;
-        font-weight: bold;
         line-height: 15px;
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        text-shadow: rgba(0, 0, 0, 0.51) 0 -1px 0;
     }
 
     a.restore-chat:visited {
@@ -162,6 +160,14 @@
 
     .pure-button {
         border-radius: $chatbox-border-radius;
+    }
+    .button-success {
+        color: white;
+        background-color: $success-color;
+    }
+    .button-warn {
+        color: white;
+        background-color: $warning-color;
     }
 
     form {

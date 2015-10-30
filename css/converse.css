@@ -1053,9 +1053,9 @@
   width: auto;
   z-index: 30; }
   #conversejs ::selection {
-    background-color: #E1E6E5; }
+    background-color: #DCF9F6; }
   #conversejs ::-moz-selection {
-    background-color: #E1E6E5; }
+    background-color: #DCF9F6; }
   #conversejs .no-text-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -1435,7 +1435,7 @@
           padding: 5px;
           z-index: 98; }
         #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul li:hover {
-          background-color: #E1E6E5; }
+          background-color: #DCF9F6; }
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-otr ul li {
         padding: 7px;
         background-color: white;
@@ -1449,7 +1449,7 @@
           padding: 1px;
           text-decoration: none; }
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-otr ul li:hover {
-        background-color: #E1E6E5; }
+        background-color: #DCF9F6; }
   #conversejs .chatbox .dragresize {
     background: transparent;
     border: 0;
@@ -1552,34 +1552,28 @@
       color: #818479;
       font-weight: normal;
       padding: 0;
+      padding-bottom: 0.5em;
       text-shadow: 0 1px 0 #FAFAFA; }
     #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom {
       border: none;
       clear: both;
       color: #818479;
       display: block;
-      font-weight: bold;
       overflow: hidden;
-      padding: 0;
-      padding-top: 0.5em;
-      text-overflow: ellipsis;
+      padding: 0.4em;
       text-shadow: 0 1px 0 #FAFAFA;
-      white-space: nowrap; }
+      word-wrap: break-word; }
       #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom:hover {
-        background-color: #E1E6E5; }
-        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom:hover .room-info {
-          display: block;
-          font-size: 14px; }
+        background-color: #DCF9F6; }
       #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.room-info {
-        width: 15px;
         display: none;
-        clear: right; }
+        clear: right;
+        display: block; }
+        #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.room-info:before {
+          font-size: 15px; }
       #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom a.open-room {
         float: left;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 150px; }
+        width: 85%; }
       #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom .room-info {
         font-size: 11px;
         font-style: normal;
@@ -1613,7 +1607,7 @@
     z-index: 21;
     background-color: #FCFDFD; }
     #conversejs #controlbox .dropdown dd ul li:hover {
-      background-color: #E1E6E5; }
+      background-color: #DCF9F6; }
   #conversejs #controlbox .dropdown dd.search-xmpp ul {
     box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
     #conversejs #controlbox .dropdown dd.search-xmpp ul li:hover {
@@ -1754,7 +1748,6 @@
   border-top-right-radius: 4px;
   color: #0a0a0a;
   float: right;
-  font-weight: bold;
   height: 100%;
   margin: 0 7px;
   padding: 10px 8px 0 8px; }
@@ -1779,9 +1772,8 @@
   #conversejs #converse-roster .filter-type {
     display: table-cell;
     float: right;
-    font-size: calc(14px - 2px);
+    font-size: calc(14px - 1px);
     height: 25px;
-    margin: 0 0 0.5em -1px;
     padding: 0;
     width: 84px;
     border-radius: 0;
@@ -1813,7 +1805,7 @@
       padding: 0.5em;
       text-shadow: 0 1px 0 #FAFAFA; }
       #conversejs #converse-roster .roster-contacts dt.roster-group:hover {
-        background-color: #E1E6E5; }
+        background-color: #DCF9F6; }
       #conversejs #converse-roster .roster-contacts dt.roster-group .group-toggle {
         color: #818479;
         display: block;
@@ -1829,7 +1821,7 @@
       padding: 4px 2px 0 4px;
       text-shadow: 0 1px 0 #FAFAFA; }
       #conversejs #converse-roster .roster-contacts dd:hover {
-        background-color: #E1E6E5; }
+        background-color: #DCF9F6; }
         #conversejs #converse-roster .roster-contacts dd:hover a.remove-xmpp-contact {
           display: inline-block; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact.request-actions {

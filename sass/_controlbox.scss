@@ -108,6 +108,7 @@
                     color: $text-color;
                     font-weight: normal;
                     padding: 0;
+                    padding-bottom: 0.5em;
                     text-shadow: 0 1px 0 $text-shadow-color;
                 }
                 dd.available-chatroom {
@@ -115,32 +116,25 @@
                     clear: both;
                     color: $text-color;
                     display: block;
-                    font-weight: bold;
                     overflow: hidden;
-                    padding: 0;
-                    padding-top: 0.5em;
-                    text-overflow: ellipsis;
+                    padding: 0.4em;
                     text-shadow: 0 1px 0 $text-shadow-color;
-                    white-space: nowrap;
+                    word-wrap: break-word;
                     &:hover {
                         background-color: $highlight-color;
-                        .room-info {
-                            display: block;
-                            font-size: 14px;
-                        }
                     }
                     a {
                         &.room-info {
-                            width: 15px;
                             display: none;
                             clear: right;
+                            display: block;
+                            &:before {
+                                font-size: 15px;
+                            }
                         }
                         &.open-room {
                             float: left;
-                            overflow-x: hidden;
-                            text-overflow: ellipsis;
-                            white-space: nowrap;
-                            width: 150px;
+                            width: 85%;
                         }
                     }
                     .room-info {
@@ -377,7 +371,6 @@
         border-top-right-radius: $chatbox-border-radius;
         color: #0a0a0a;
         float: right;
-        font-weight: bold;
         height: 100%;
         margin: 0 $chat-gutter;
         padding: 10px 8px 0 8px;

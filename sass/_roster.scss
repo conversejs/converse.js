@@ -23,9 +23,8 @@
     .filter-type {
         display: table-cell;
         float: right;
-        font-size: calc(#{$font-size} - 2px);
+        font-size: calc(#{$font-size} - 1px);
         height: $controlbox-dropdown-height;
-        margin: 0 0 0.5em -1px;
         padding: 0;
         width: 84px;
         border-radius: 0;

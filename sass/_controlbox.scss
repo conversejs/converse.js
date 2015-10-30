@@ -88,7 +88,7 @@
         }
         #users {
             .add-converse-contact {
-                margin: 0 0.5em 0.75em 0.5em;
+                margin: 0 1em 0.75em 1em;
             }
         }
 
@@ -328,6 +328,10 @@
             }
         }
 
+        #users {
+            overflow-y: hidden;
+        }
+
         .add-xmpp-contact {
             background: none;
             padding: 1em;
@@ -358,7 +362,7 @@
 
         .set-xmpp-status {
             background: none;
-            padding: 0.75em 0.5em 0.5em 0.5em;
+            margin: 0.75em 1em 0.5em 1em;
             .dropdown dd ul {
                 z-index: 22;
             }

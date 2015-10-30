@@ -268,6 +268,7 @@
         .fancy-dropdown {
             border: 1px solid $light-background-border-color;
             height: $controlbox-dropdown-height;
+            border-radius: 4px;
             text-align: left;
             .choose-xmpp-status {
                 width: 155px;
@@ -362,7 +363,7 @@
 
         .set-xmpp-status {
             background: none;
-            margin: 0.75em 1em 0.5em 1em;
+            margin: 1em 1em 0.5em 1em;
             .dropdown dd ul {
                 z-index: 22;
             }

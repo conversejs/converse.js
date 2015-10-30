@@ -1246,7 +1246,7 @@
   #conversejs .chat-head.chat-head-chatbox {
     background-color: #F4A261; }
 #conversejs .chatbox-btn {
-  border-radius: 5px;
+  border-radius: 4px;
   border: 1px solid white;
   color: white;
   cursor: pointer;
@@ -1671,6 +1671,7 @@
   #conversejs #controlbox .fancy-dropdown {
     border: 1px solid #B1BFC4;
     height: 25px;
+    border-radius: 4px;
     text-align: left; }
     #conversejs #controlbox .fancy-dropdown .choose-xmpp-status {
       width: 155px; }
@@ -1741,7 +1742,7 @@
     color: #D24E2B; }
   #conversejs #controlbox .set-xmpp-status {
     background: none;
-    margin: 0.75em 1em 0.5em 1em; }
+    margin: 1em 1em 0.5em 1em; }
     #conversejs #controlbox .set-xmpp-status .dropdown dd ul {
       z-index: 22; }
 #conversejs .toggle-controlbox {
@@ -1822,14 +1823,15 @@
       color: #818479;
       display: block;
       height: 24px;
-      line-height: 16px;
       overflow-y: hidden;
-      padding: 0.5em 1em;
+      padding: 0.3em 1em;
       text-shadow: 0 1px 0 #FAFAFA; }
       #conversejs #converse-roster .roster-contacts dd:hover {
         background-color: #DCF9F6; }
-        #conversejs #converse-roster .roster-contacts dd:hover a.remove-xmpp-contact {
+        #conversejs #converse-roster .roster-contacts dd:hover .remove-xmpp-contact {
           display: inline-block; }
+        #conversejs #converse-roster .roster-contacts dd:hover .open-chat {
+          width: 80%; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact.request-actions {
         margin-left: 0.5em;
         float: right; }
@@ -1856,8 +1858,6 @@
         margin: 0;
         display: none;
         color: #818479; }
-      #conversejs #converse-roster .roster-contacts dd a .open-chat {
-        width: 80%; }
   #conversejs #converse-roster span.pending-contact-name {
     width: 80%; }
   #conversejs #converse-roster span.req-contact-name {

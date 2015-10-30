@@ -23,7 +23,7 @@
         }
     }
     .chatbox-btn {
-        border-radius: 5px;
+        border-radius: $chatbox-border-radius;
         border: 1px solid white;
         color: white;
         cursor: pointer;

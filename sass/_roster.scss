@@ -82,14 +82,16 @@
             color: $text-color;
             display: block;
             height: 24px;
-            line-height: 16px;
             overflow-y: hidden;
-            padding: 0.5em 1em;
+            padding: 0.3em 1em;
             text-shadow: 0 1px 0 $text-shadow-color;
             &:hover {
                 background-color: $highlight-color;
-                a.remove-xmpp-contact {
+                .remove-xmpp-contact {
                     display: inline-block;
+                }
+                .open-chat {
+                    width: 80%;
                 }
             }
             &.requesting-xmpp-contact {
@@ -127,9 +129,6 @@
                     margin: 0;
                     display: none;
                     color: $text-color;
-                }
-                .open-chat {
-                    width: 80%;
                 }
             }
         }

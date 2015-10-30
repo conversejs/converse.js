@@ -1720,7 +1720,7 @@
         background-color: #DCEAC5; }
   #conversejs #controlbox .add-xmpp-contact {
     background: none;
-    padding: 5px; }
+    padding: 1em; }
     #conversejs #controlbox .add-xmpp-contact input {
       margin: 0 0 1rem;
       width: 100%; }
@@ -1786,7 +1786,7 @@
     height: 25px;
     margin: 0 0 0.5em 7px;
     padding: 0;
-    padding: 2px;
+    padding-left: 0.4em;
     width: 103px; }
   #conversejs #converse-roster .roster-filter.x {
     background-position: right 3px center; }

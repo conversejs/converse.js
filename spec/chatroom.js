@@ -589,7 +589,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe('You are not on the member list of this room');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room');
             }.bind(converse));
 
             it("will show an error message if the user has been banned", function () {
@@ -604,7 +604,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe('You have been banned from this room');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You have been banned from this room');
             }.bind(converse));
 
             it("will show an error message if no nickname was specified for the user", function () {
@@ -619,7 +619,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe('No nickname was specified');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('No nickname was specified');
             }.bind(converse));
 
             it("will show an error message if the user is not allowed to have created the room", function () {
@@ -634,7 +634,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe('You are not allowed to create new rooms');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms');
             }.bind(converse));
 
             it("will show an error message if the user's nickname doesn't conform to room policy", function () {
@@ -649,7 +649,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe("Your nickname doesn't conform to this room's policies");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies");
             }.bind(converse));
 
             it("will show an error message if the user's nickname is already taken", function () {
@@ -664,7 +664,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe("Your nickname is already taken");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("Your nickname is already taken");
             }.bind(converse));
 
             it("will show an error message if the room doesn't yet exist", function () {
@@ -679,7 +679,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe("This room does not (yet) exist");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist");
             }.bind(converse));
 
             it("will show an error message if the room has reached it's maximum number of occupants", function () {
@@ -694,7 +694,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p').text()).toBe("This room has reached it's maximum number of occupants");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached it's maximum number of occupants");
             }.bind(converse));
         }.bind(converse));
     }.bind(converse, mock, test_utils));

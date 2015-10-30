@@ -2074,7 +2074,12 @@
                 var img = new Image();   // Create new Image object
                 img.onload = function () {
                     var ratio = img.width/img.height;
-                    ctx.drawImage(img, 0,0, 35*ratio, 35);
+                    if (ratio < 1) {
+                        ctx.drawImage(img, 0,0, 32, 32*(1/ratio));
+                    } else {
+                        ctx.drawImage(img, 0,0, 32, 32*ratio);
+                    }
+
                 };
                 img.src = img_src;
                 this.$el.find('.chat-title').before(canvas);

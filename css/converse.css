@@ -1241,6 +1241,7 @@
   padding: 5px;
   position: relative; }
   #conversejs .chat-head .avatar {
+    border-radius: 50%;
     float: left; }
   #conversejs .chat-head.chat-head-chatbox {
     background-color: #F4A261; }

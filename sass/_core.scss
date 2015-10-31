@@ -82,36 +82,6 @@
         display: table-cell;
     }
 
-    .tt-highlight {
-        background-color: #00230F;
-    }
-    .tt-suggestion {
-        p {
-            color: white;
-            text-shadow: rgba(0, 0, 0, 0.51) 0 -1px 0;
-            cursor: pointer;
-            font-size: 11px;
-        }
-        p:hover {
-            background-color: #00230F;
-            .tt-highlight {
-                background-color: #00230F;
-                background: #27774A;
-            }
-        }
-    }
-    .tt-dropdown-menu {
-        margin: 0 1px 0 1px;
-        width: 96px;
-        max-height: 250px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        text-overflow: ellipsis;
-        background: #27774A;
-        border-bottom-right-radius: $chatbox-border-radius;
-        border-bottom-left-radius: $chatbox-border-radius;
-    }
-
     .error {
         color: red;
     }
@@ -157,7 +127,6 @@
     .activated {
         display: block !important;
     }
-
     .pure-button {
         border-radius: $chatbox-border-radius;
     }

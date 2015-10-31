@@ -1370,9 +1370,13 @@
                 return this;
             },
 
+            clearStatusNotification: function () {
+                this.$content.find('div.chat-event').remove();
+            },
+
             showStatusNotification: function (message, keep_old) {
                 if (!keep_old) {
-                    this.$content.find('div.chat-event').remove();
+                    this.clearStatusNotification();
                 }
                 this.$content.append($('<div class="chat-info chat-event"></div>').text(message));
                 this.scrollDown();
@@ -1575,9 +1579,14 @@
                  * Parameters:
                  *    (Object) message - The message Backbone object that was added.
                  */
+                if (typeof this.clear_status_timeout !== 'undefined') {
+                    clearTimeout(this.clear_status_timeout);
+                    delete this.clear_status_timeout;
+                }
                 if (!message.get('message')) {
                     if (message.get('chat_state') === COMPOSING) {
                         this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                        this.clear_status_timeout = setTimeout(this.clearStatusNotification.bind(this), 10000);
                         return;
                     } else if (message.get('chat_state') === PAUSED) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));

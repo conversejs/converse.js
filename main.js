@@ -109,6 +109,7 @@ require.config({
         "chatarea":                 "src/templates/chatarea",
         "chatbox":                  "src/templates/chatbox",
         "chatroom":                 "src/templates/chatroom",
+        "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_password_form":   "src/templates/chatroom_password_form",
         "chatroom_sidebar":         "src/templates/chatroom_sidebar",
         "chatrooms_tab":            "src/templates/chatrooms_tab",

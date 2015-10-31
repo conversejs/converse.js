@@ -3185,7 +3185,7 @@
             },
 
             renderConfigurationForm: function (stanza) {
-                var $form= this.$el.find('form.chatroom-form'),
+                var $form = this.$el.find('form.chatroom-form'),
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
                     title = $stanza.find('title').text(),
@@ -3262,12 +3262,7 @@
                     return;
                 }
                 this.$('.chatroom-body').children().hide();
-                this.$('.chatroom-body').append(
-                    $('<div class="chatroom-form-container">'+
-                        '<form class="chatroom-form">'+
-                        '<span class="spinner centered"/>'+
-                        '</form>'+
-                    '</div>'));
+                this.$('.chatroom-body').append(converse.templates.chatroom_form());
                 converse.connection.sendIQ(
                         $iq({
                             to: this.model.get('jid'),

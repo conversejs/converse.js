@@ -3186,22 +3186,25 @@
 
             renderConfigurationForm: function (stanza) {
                 var $form = this.$el.find('form.chatroom-form'),
+                    $fieldset = $form.children('fieldset:first'),
                     $stanza = $(stanza),
                     $fields = $stanza.find('field'),
                     title = $stanza.find('title').text(),
                     instructions = $stanza.find('instructions').text();
-                $form.find('span.spinner').remove();
-                $form.append($('<legend>').text(title));
+                $fieldset.find('span.spinner').remove();
+                $fieldset.append($('<legend>').text(title));
                 if (instructions && instructions !== title) {
-                    $form.append($('<p class="instructions">').text(instructions));
+                    $fieldset.append($('<p class="instructions">').text(instructions));
                 }
                 _.each($fields, function (field) {
-                    $form.append(utils.xForm2webForm($(field), $stanza));
+                    $fieldset.append(utils.xForm2webForm($(field), $stanza));
                 });
-                $form.append('<input type="submit" class="pure-button button-primary" value="'+__('Save')+'"/>');
-                $form.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
+                $form.append('<fieldset></fieldset>');
+                $fieldset = $form.children('fieldset:last');
+                $fieldset.append('<input type="submit" class="pure-button button-primary" value="'+__('Save')+'"/>');
+                $fieldset.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
+                $fieldset.find('input[type=button]').on('click', this.cancelConfiguration.bind(this));
                 $form.on('submit', this.saveConfiguration.bind(this));
-                $form.find('input[type=button]').on('click', this.cancelConfiguration.bind(this));
             },
 
             sendConfiguration: function(config, onSuccess, onError) {

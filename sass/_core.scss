@@ -164,6 +164,7 @@
             input[type=submit] {
                 padding-left: 1em;
                 padding-right: 1em;
+                margin-right: 1em;
             }
             input.error {
                 border: 1px solid red;
@@ -172,7 +173,7 @@
             .form-help {
                 color: gray;
                 font-size: 85%;
-                padding-top: 5px;
+                padding-top: 0.5em;
                 &:hover {
                     color: $text-color;
                 }

@@ -1183,14 +1183,15 @@
     #conversejs form.pure-form.converse-form input[type=button],
     #conversejs form.pure-form.converse-form input[type=submit] {
       padding-left: 1em;
-      padding-right: 1em; }
+      padding-right: 1em;
+      margin-right: 1em; }
     #conversejs form.pure-form.converse-form input.error {
       border: 1px solid red;
       color: #818479; }
     #conversejs form.pure-form.converse-form .form-help {
       color: gray;
       font-size: 85%;
-      padding-top: 5px; }
+      padding-top: 0.5em; }
       #conversejs form.pure-form.converse-form .form-help:hover {
         color: #818479; }
   #conversejs .chat-textarea-chatbox-selected {
@@ -1922,37 +1923,37 @@
         position: absolute; }
   #conversejs .chatroom .chat-textarea {
     border-bottom-right-radius: 0; }
-  #conversejs .chatroom .invited-contact {
-    margin: -1px 0 0 -1px;
-    width: 100px;
-    border: 1px solid #999; }
-    #conversejs .chatroom .invited-contact.tt-input {
-      margin: 1px;
-      width: 97px;
-      width: calc(100% - 2px);
-      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkBCjE0uzKkOgAAAidJREFUKM+N0k+IEnEUB/D3cyscdagkWpHV0WGWREXm0AgOGkSJ07kh2UXYU5cOewm6Bp0KXG/tpSCv6hyEFQIhMEaE3yERYfwTOoqKGLQxDAbqYadLgu7J7/XxeY/3ez8EACDLsgljfMfj8ZxUKhXXYDAAnueBoqgyAMipVOovXAuSZdnUaDQeDofDs16vFyUIAjRNUwmCoG02G1AUdZ5IJN7GYrHfm3AvEAjcnUwmX0ajUdRqtV74fL6sruufKYoa6bp+fzabPUMI7ZfL5eImNHk8npNerxc1m80XHMe98fv9H3K5XDkSibxjWfb1arWaYoyPMMbCFqxUKi6CIODw8LDmdDq7oigaAACiKK5omv7KcdylpmlIkiTHFlRVFTRNUxVFqa/ROqIoGoqi5A3DgFartfU4Jp7ngSAI2uVyPZIk6dZmUZKk2w6H4xghBPF4HK7vWLbZbDCdTp+rqvpUkiS0RvV6/bTf7x8wDHMViURqm/AGAMgURZ232+1X1Wr102KxuEwmk3lZlo/7/f7BcrkkSZKs2e12tHXH/x/gHsY4jTE+0jQNGYYBCCFgGOaKJMkfjUaDZximGQ6HXzSbzZ+ZTMbY6oIxFgqFgqPT6YAgCMBxXM1ut6N0Op0fj8chi8XyjWXZ98Fg8DuCHZLNZh+USqWP8/n8idvt/hUKhV7u7QK9Xu8fmqanAJBQVXUfAGY7TQQAKBaLN8fjsdDtdh/run72Dzhf7XLe2UevAAAAAElFTkSuQmCC) no-repeat right 3px center; }
-      #conversejs .chatroom .invited-contact.tt-input:focus {
-        border-color: #E76F51; }
-    #conversejs .chatroom .invited-contact.tt-hint {
-      color: transparent; }
-  #conversejs .chatroom .tt-dropdown-menu {
-    margin: 0 1px 0 1px;
-    width: 96px;
-    max-height: 250px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    text-overflow: ellipsis;
-    background: #E76F51;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px; }
-    #conversejs .chatroom .tt-dropdown-menu .tt-suggestion p {
-      color: white;
-      cursor: pointer;
-      font-size: 11px; }
-    #conversejs .chatroom .tt-dropdown-menu .tt-suggestion .tt-highlight {
-      background-color: #D24E2B; }
-    #conversejs .chatroom .tt-dropdown-menu .tt-suggestion p:hover {
-      background-color: #FF977C; }
+  #conversejs .chatroom .room-invite {
+    margin: 0.3em; }
+    #conversejs .chatroom .room-invite .invited-contact {
+      margin: -1px 0 0 -1px;
+      width: 100px;
+      border: 1px solid #999; }
+      #conversejs .chatroom .room-invite .invited-contact.tt-input {
+        width: 100%;
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkBCjE0uzKkOgAAAidJREFUKM+N0k+IEnEUB/D3cyscdagkWpHV0WGWREXm0AgOGkSJ07kh2UXYU5cOewm6Bp0KXG/tpSCv6hyEFQIhMEaE3yERYfwTOoqKGLQxDAbqYadLgu7J7/XxeY/3ez8EACDLsgljfMfj8ZxUKhXXYDAAnueBoqgyAMipVOovXAuSZdnUaDQeDofDs16vFyUIAjRNUwmCoG02G1AUdZ5IJN7GYrHfm3AvEAjcnUwmX0ajUdRqtV74fL6sruufKYoa6bp+fzabPUMI7ZfL5eImNHk8npNerxc1m80XHMe98fv9H3K5XDkSibxjWfb1arWaYoyPMMbCFqxUKi6CIODw8LDmdDq7oigaAACiKK5omv7KcdylpmlIkiTHFlRVFTRNUxVFqa/ROqIoGoqi5A3DgFartfU4Jp7ngSAI2uVyPZIk6dZmUZKk2w6H4xghBPF4HK7vWLbZbDCdTp+rqvpUkiS0RvV6/bTf7x8wDHMViURqm/AGAMgURZ232+1X1Wr102KxuEwmk3lZlo/7/f7BcrkkSZKs2e12tHXH/x/gHsY4jTE+0jQNGYYBCCFgGOaKJMkfjUaDZximGQ6HXzSbzZ+ZTMbY6oIxFgqFgqPT6YAgCMBxXM1ut6N0Op0fj8chi8XyjWXZ98Fg8DuCHZLNZh+USqWP8/n8idvt/hUKhV7u7QK9Xu8fmqanAJBQVXUfAGY7TQQAKBaLN8fjsdDtdh/run72Dzhf7XLe2UevAAAAAElFTkSuQmCC) no-repeat right 3px center; }
+        #conversejs .chatroom .room-invite .invited-contact.tt-input:focus {
+          border-color: #E76F51; }
+      #conversejs .chatroom .room-invite .invited-contact.tt-hint {
+        color: transparent;
+        background-color: white; }
+    #conversejs .chatroom .room-invite .tt-dropdown-menu {
+      width: 96%;
+      max-height: 250px;
+      background: #E76F51;
+      border-bottom-right-radius: 4px;
+      border-bottom-left-radius: 4px;
+      overflow-y: auto; }
+      #conversejs .chatroom .room-invite .tt-dropdown-menu .tt-suggestion p {
+        color: white;
+        cursor: pointer;
+        font-size: 11px;
+        text-overflow: ellipsis;
+        overflow-x: hidden; }
+        #conversejs .chatroom .room-invite .tt-dropdown-menu .tt-suggestion p:hover {
+          background-color: #FF977C; }
+      #conversejs .chatroom .room-invite .tt-dropdown-menu .tt-suggestion .tt-highlight {
+        background-color: #D24E2B; }
 
 #conversejs #minimized-chats {
   border-top-left-radius: 4px;

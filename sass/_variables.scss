@@ -11,7 +11,6 @@ $text-color: #818479 !default;
 $border-color: #CCC !default;
 $icon-color: #114327 !default;
 $chat-head-color: #F4A261 !default;
-$chatroom-head-color: #E76F51 !default;
 $chat-head-text-color: white !default;
 $chat-head-inverse-text-color: white !default;
 $chat-head-height: 44px !default;
@@ -47,7 +46,6 @@ $mobile_landscape_length: 480px !default;
 $font-size: 14px !default;
 $legend-font-size: 16px !default;
 
-$chatroom-width: 300px !default;
 $chat-width: 200px !default;
 $chat-height: 450px !default;
 $chat-gutter: 7px !default;
@@ -58,6 +56,11 @@ $mobile-chat-height: 400px !default;
 $small-mobile-chat-height: 300px !default;
 
 $font-path: "../fonticons/fonts/" !default;
+
+$chatroom-width: 300px !default;
+$chatroom-head-color: #E76F51 !default;
+$chatroom-color-light: #FF977C !default;
+$chatroom-color-dark: #D24E2B !default;
 
 $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;

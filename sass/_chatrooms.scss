@@ -47,7 +47,7 @@
                     background-color: white;
                     overflow-y: auto;
                     overflow-x: hidden;
-                    border-left: 1px solid #AAA;
+                    border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
                     width: 100px;
                     height: 100%;
@@ -129,11 +129,11 @@
                         text-overflow: ellipsis;
                         overflow-x: hidden;
                         &:hover {
-                            background-color: #FF977C;
+                            background-color: $chatroom-color-light;
                         }
                     }
                     .tt-highlight {
-                        background-color: #D24E2B;
+                        background-color: $chatroom-color-dark;
                     }
                 }
             }

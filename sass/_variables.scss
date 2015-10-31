@@ -10,14 +10,15 @@ $text-shadow-color: #FAFAFA !default;
 $text-color: #818479 !default;
 $border-color: #CCC !default;
 $icon-color: #114327 !default;
-$chat-head-color: #F4A261 !default;
-$chat-head-text-color: white !default;
-$chat-head-inverse-text-color: white !default;
-$chat-head-height: 44px !default;
 $save-button-color: #436F64 !default;
 $chat-textarea-height: 70px !default;
 $message-them-color: #1A9707 !default;
 $roster-height: 194px !default;
+
+$chat-head-color: #F4A261 !default;
+$chat-head-text-color: white !default;
+$chat-head-inverse-text-color: white !default;
+$chat-head-height: 55px !default;
 
 $input-focus-color: #1A9707 !default;
 $highlight-color: #DCF9F6 !default;
@@ -66,4 +67,4 @@ $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;
 $box-close-button-padding-left: 4px !default;
 $box-close-button-padding-right: 4px !default;
-$box-close-font-size: 10px !default;
+$box-close-font-size: 9px !default;

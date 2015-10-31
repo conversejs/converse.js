@@ -15,26 +15,36 @@
         padding: 5px;
         position: relative;
         .avatar {
+            margin-right: 0.5em;
             border-radius: 50%;
             float: left;
         }
         &.chat-head-chatbox {
             background-color: $chat-head-color;
         }
+        .user-custom-message {
+            clear: left;
+            color: white;
+            font-size: 80%;
+            font-style: italic;
+            height: 1.3em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin: 0;
+            margin-top: 0.3em;
+        }
     }
     .chatbox-btn {
-        border-radius: $chatbox-border-radius;
+        border-radius: 50%;
         border: 1px solid white;
         color: white;
         cursor: pointer;
         display: inline-block;
         float: right;
         font-size: $box-close-font-size;
-        margin: 0 0 0 3px;
-        padding-bottom: $box-close-button-padding-bottom;
-        padding-left: $box-close-button-padding-left;
-        padding-right: $box-close-button-padding-right;
-        padding-top: $box-close-button-padding-top;
+        margin: 0 0.2em;
+        padding: 5px;
         text-decoration: none;
         &:active {
             position: relative;
@@ -64,11 +74,13 @@
             }
         }
         .chat-title {
+            color: $chat-head-text-color;
+            line-height: 15px;
+            display: block;
             a {
                 color: $chat-head-text-color;
                 width: 100%;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                word-wrap: break-word;
             }
         }
         .chat-body {

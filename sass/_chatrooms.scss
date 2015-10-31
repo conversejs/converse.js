@@ -1,6 +1,18 @@
 #conversejs {
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
+
+        .chatroom-topic {
+            color: white;
+            font-size: 80%;
+            font-style: italic;
+            height: 1.3em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin: 0;
+            margin-top: 0.3em;
+        }
     }
 
     .chatroom {

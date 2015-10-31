@@ -103,6 +103,8 @@
   content: "\2b14"; }
 #conversejs .icon-info:before {
   content: "\2360"; }
+#conversejs .icon-info-2:before {
+  content: "i"; }
 #conversejs .icon-italic:before {
   content: "\e04f"; }
 #conversejs .icon-key-2:before {
@@ -1132,8 +1134,7 @@
     display: block;
     text-align: center;
     width: 100%; }
-  #conversejs a.restore-chat,
-  #conversejs .chat-title {
+  #conversejs a.restore-chat {
     padding: 1px 0 1px 5px;
     color: white;
     line-height: 15px;
@@ -1143,17 +1144,6 @@
     white-space: nowrap; }
   #conversejs a.restore-chat:visited {
     color: white; }
-  #conversejs .user-custom-message,
-  #conversejs .chatroom-topic {
-    color: white;
-    font-size: 80%;
-    font-style: italic;
-    height: 1.3em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin: 0;
-    padding: 1px 0 1px 5px; }
   #conversejs .activated {
     display: block !important; }
   #conversejs .pure-button {
@@ -1215,28 +1205,37 @@
   border-top-right-radius: 4px;
   color: #ffffff;
   font-size: 100%;
-  height: 44px;
+  height: 55px;
   margin: 0;
   padding: 5px;
   position: relative; }
   #conversejs .chat-head .avatar {
+    margin-right: 0.5em;
     border-radius: 50%;
     float: left; }
   #conversejs .chat-head.chat-head-chatbox {
     background-color: #F4A261; }
+  #conversejs .chat-head .user-custom-message {
+    clear: left;
+    color: white;
+    font-size: 80%;
+    font-style: italic;
+    height: 1.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+    margin-top: 0.3em; }
 #conversejs .chatbox-btn {
-  border-radius: 4px;
+  border-radius: 50%;
   border: 1px solid white;
   color: white;
   cursor: pointer;
   display: inline-block;
   float: right;
-  font-size: 10px;
-  margin: 0 0 0 3px;
-  padding-bottom: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 4px;
+  font-size: 9px;
+  margin: 0 0.2em;
+  padding: 5px;
   text-decoration: none; }
   #conversejs .chatbox-btn:active {
     position: relative;
@@ -1262,19 +1261,22 @@
       #conversejs .chatbox .box-flyout {
         height: 400px;
         width: 100%; } }
-  #conversejs .chatbox .chat-title a {
+  #conversejs .chatbox .chat-title {
     color: white;
-    width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
+    line-height: 15px;
+    display: block; }
+    #conversejs .chatbox .chat-title a {
+      color: white;
+      width: 100%;
+      word-wrap: break-word; }
   #conversejs .chatbox .chat-body {
     background-color: white;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border-top: 0;
     height: 289px;
-    height: -webkit-calc(100% - 44px);
-    height: calc(100% - 44px); }
+    height: -webkit-calc(100% - 55px);
+    height: calc(100% - 55px); }
     #conversejs .chatbox .chat-body p {
       color: #818479;
       font-size: 14px;
@@ -1459,7 +1461,7 @@
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     color: white;
-    height: 44px;
+    height: 55px;
     margin: 0;
     padding: 6px 6px 6px 0; }
   #conversejs #controlbox form.search-xmpp-contact {
@@ -1632,8 +1634,8 @@
         color: #818479;
         display: block;
         font-size: 12px;
-        height: 43px;
-        line-height: 43px;
+        height: 54px;
+        line-height: 54px;
         margin: 0;
         text-align: center;
         text-decoration: none; }
@@ -1642,7 +1644,7 @@
         #conversejs #controlbox #controlbox-tabs li a.current, #conversejs #controlbox #controlbox-tabs li a.current:hover {
           box-shadow: none;
           border-bottom: 0;
-          height: 44px;
+          height: 55px;
           cursor: default;
           color: #818479; }
   #conversejs #controlbox .xmpp-status {
@@ -1684,8 +1686,8 @@
     text-align: center;
     width: 100%;
     height: 289px;
-    height: -webkit-calc(100% - 44px);
-    height: calc(100% - 44px);
+    height: -webkit-calc(100% - 55px);
+    height: calc(100% - 55px);
     overflow-y: scroll;
     overflow-x: hidden; }
     #conversejs #controlbox .controlbox-pane label {
@@ -1845,6 +1847,16 @@
 
 #conversejs .chat-head-chatroom {
   background-color: #E76F51; }
+  #conversejs .chat-head-chatroom .chatroom-topic {
+    color: white;
+    font-size: 80%;
+    font-style: italic;
+    height: 1.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+    margin-top: 0.3em; }
 #conversejs .chatroom {
   width: 300px; }
   @media screen and (max-width: 480px) {
@@ -1860,8 +1872,8 @@
       height: 289px;
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
-      height: -webkit-calc(100% - 44px);
-      height: calc(100% - 44px);
+      height: -webkit-calc(100% - 55px);
+      height: calc(100% - 55px);
       background-color: white;
       border-top: 0;
       display: table;
@@ -1917,8 +1929,8 @@
         color: #818479;
         font-size: 14px;
         height: 289px;
-        height: -webkit-calc(100% - 44px);
-        height: calc(100% - 44px);
+        height: -webkit-calc(100% - 55px);
+        height: calc(100% - 55px);
         overflow-y: auto;
         position: absolute; }
   #conversejs .chatroom .chat-textarea {

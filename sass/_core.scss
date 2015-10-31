@@ -96,8 +96,7 @@
         width: 100%;
     }
 
-    a.restore-chat,
-    .chat-title {
+    a.restore-chat {
         padding: 1px 0 1px 5px;
         color: $chat-head-text-color;
         line-height: 15px;
@@ -109,19 +108,6 @@
 
     a.restore-chat:visited {
         color: $chat-head-text-color;
-    }
-
-    .user-custom-message,
-    .chatroom-topic {
-        color: white;
-        font-size: 80%;
-        font-style: italic;
-        height: 1.3em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin: 0;
-        padding: 1px 0 1px 5px;
     }
 
     .activated {

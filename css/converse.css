@@ -1379,7 +1379,7 @@
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .private a,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .private {
         color: #4b7003; }
-      #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-participants,
+      #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-occupants,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-clear,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-otr {
         float: right; }
@@ -1879,7 +1879,7 @@
         font-weight: bold; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
         color: #1A9707; }
-      #conversejs .chatroom .box-flyout .chatroom-body .participants {
+      #conversejs .chatroom .box-flyout .chatroom-body .occupants {
         display: table-cell;
         vertical-align: top;
         background-color: white;
@@ -1889,16 +1889,16 @@
         border-bottom-right-radius: 4px;
         width: 100px;
         height: 100%; }
-        #conversejs .chatroom .box-flyout .chatroom-body .participants.hidden {
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants.hidden {
           display: none; }
-        #conversejs .chatroom .box-flyout .chatroom-body .participants .participants-heading {
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
           padding: 0.3em;
           font-weight: bold; }
-        #conversejs .chatroom .box-flyout .chatroom-body .participants .participant-list {
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list {
           height: 100%;
           overflow-y: scroll;
           list-style: none; }
-          #conversejs .chatroom .box-flyout .chatroom-body .participants .participant-list li {
+          #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li {
             cursor: default;
             display: block;
             font-size: 12px;
@@ -1907,7 +1907,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             width: 100px; }
-            #conversejs .chatroom .box-flyout .chatroom-body .participants .participant-list li.moderator {
+            #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li.moderator {
               color: #D24E2B; }
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
         background-color: white;

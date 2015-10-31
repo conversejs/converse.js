@@ -42,7 +42,7 @@
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 var name;
                 var view = this.chatboxviews.get('lounge@localhost'),
-                    $participants = view.$('.participant-list');
+                    $occupants = view.$('.occupant-list');
                 spyOn(view, 'onChatRoomPresence').andCallThrough();
                 var presence, role;
                 for (var i=0; i<mock.chatroom_names.length; i++) {
@@ -62,9 +62,9 @@
 
                     this.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
-                    expect($participants.find('li').length).toBe(1+i);
-                    expect($($participants.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
-                    expect($($participants.find('li')[i]).hasClass('moderator')).toBe(role === "moderator");
+                    expect($occupants.find('li').length).toBe(1+i);
+                    expect($($occupants.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
+                    expect($($occupants.find('li')[i]).hasClass('moderator')).toBe(role === "moderator");
                 }
 
                 // Test users leaving the room
@@ -85,7 +85,7 @@
                     }).nodeTree;
                     this.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
-                    expect($participants.find('li').length).toBe(i);
+                    expect($occupants.find('li').length).toBe(i);
                 }
             }.bind(converse));
 
@@ -105,7 +105,7 @@
                 .c('status').attrs({code:'110'}).nodeTree;
 
                 this.connection._dataRecv(test_utils.createRequest(presence));
-                var occupant = view.$el.find('.participant-list').find('li');
+                var occupant = view.$el.find('.occupant-list').find('li');
                 expect(occupant.length).toBe(1);
                 expect($(occupant).text()).toBe("moderatorman");
                 expect($(occupant).attr('class')).toBe('moderator');
@@ -274,7 +274,7 @@
                  *      <item affiliation='member'
                  *          jid='hag66@shakespeare.lit/pda'
                  *          nick='oldhag'
-                 *          role='participant'/>
+                 *          role='occupant'/>
                  *      <status code='303'/>
                  *      <status code='110'/>
                  *  </x>
@@ -287,7 +287,7 @@
                  *  <x xmlns='http://jabber.org/protocol/muc#user'>
                  *      <item affiliation='member'
                  *          jid='hag66@shakespeare.lit/pda'
-                 *          role='participant'/>
+                 *          role='occupant'/>
                  *      <status code='110'/>
                  *  </x>
                  *  </presence>
@@ -310,16 +310,16 @@
                   .c('item').attrs({
                       affiliation: 'member',
                       jid: 'dummy@localhost/pda',
-                      role: 'participant'
+                      role: 'occupant'
                   }).up()
                   .c('status').attrs({code:'110'}).up()
                   .c('status').attrs({code:'210'}).nodeTree;
 
                 this.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
-                var $participants = view.$('.participant-list');
-                expect($participants.children().length).toBe(1);
-                expect($participants.children().first(0).text()).toBe("oldnick");
+                var $occupants = view.$('.occupant-list');
+                expect($occupants.children().length).toBe(1);
+                expect($occupants.children().first(0).text()).toBe("oldnick");
                 expect($chat_content.find('div.chat-info').length).toBe(1);
                 expect($chat_content.find('div.chat-info').html()).toBe(__(view.newNicknameMessages["210"], "oldnick"));
 
@@ -334,7 +334,7 @@
                         affiliation: 'member',
                         jid: 'dummy@localhost/pda',
                         nick: 'newnick',
-                        role: 'participant'
+                        role: 'occupant'
                     }).up()
                     .c('status').attrs({code:'303'}).up()
                     .c('status').attrs({code:'110'}).nodeTree;
@@ -343,8 +343,8 @@
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
-                $participants = view.$('.participant-list');
-                expect($participants.children().length).toBe(0);
+                $occupants = view.$('.occupant-list');
+                expect($occupants.children().length).toBe(0);
 
                 presence = $pres().attrs({
                         from:'lounge@localhost/newnick',
@@ -355,7 +355,7 @@
                     .c('item').attrs({
                         affiliation: 'member',
                         jid: 'dummy@localhost/pda',
-                        role: 'participant'
+                        role: 'occupant'
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
 
@@ -363,9 +363,9 @@
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
-                $participants = view.$('.participant-list');
-                expect($participants.children().length).toBe(1);
-                expect($participants.children().first(0).text()).toBe("newnick");
+                $occupants = view.$('.occupant-list');
+                expect($occupants.children().length).toBe(1);
+                expect($occupants.children().first(0).text()).toBe("newnick");
             }.bind(converse));
 
             it("informs users if they have been kicked out of the chat room", function () {
@@ -402,7 +402,7 @@
                 var view = this.chatboxviews.get('lounge@localhost');
                 view.onChatRoomPresence(presence, {nick: 'dummy', name: 'lounge@localhost'});
                 expect(view.$('.chat-area').is(':visible')).toBeFalsy();
-                expect(view.$('.participants').is(':visible')).toBeFalsy();
+                expect(view.$('.occupants').is(':visible')).toBeFalsy();
                 var $chat_body = view.$('.chatroom-body');
                 expect($chat_body.html().trim().indexOf('<p>You have been kicked from this room</p><p>The reason given is: "Avaunt, you cullion!"</p>')).not.toBe(-1);
             }.bind(converse));

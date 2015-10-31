@@ -247,10 +247,6 @@
             null,
             "הכנס סמיילי"
          ],
-         "Hide the list of participants": [
-            null,
-            "הסתר רשימת משתתפים"
-         ],
          "Refresh encrypted conversation": [
             null,
             "רענן ישיבה מוצפנת"
@@ -470,10 +466,6 @@
          "Ban user from room": [
             null,
             "אסור משתמש מתוך חדר"
-         ],
-         "Change user role to participant": [
-            null,
-            "שנה תפקיד משתמש למשתתף"
          ],
          "Kick user from room": [
             null,

@@ -41,7 +41,7 @@
                 .chat-msg-room {
                     color: $message-them-color;
                 }
-                .participants {
+                .occupants {
                     display: table-cell;
                     vertical-align: top;
                     background-color: white;
@@ -54,11 +54,11 @@
                     &.hidden {
                         display: none;
                     }
-                    .participants-heading {
+                    .occupants-heading {
                         padding: 0.3em;
                         font-weight: bold;
                     }
-                    .participant-list {
+                    .occupant-list {
                         height: 100%;
                         overflow-y: scroll;
                         list-style: none;

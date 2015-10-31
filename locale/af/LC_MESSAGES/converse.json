@@ -246,10 +246,6 @@
             null,
             ""
          ],
-         "Hide the list of participants": [
-            null,
-            "Verskuil die lys van deelnemers"
-         ],
          "Refresh encrypted conversation": [
             null,
             "Verfris versleutelde gesprek"
@@ -469,10 +465,6 @@
          "Ban user from room": [
             null,
             "Verban gebruiker uit hierdie kletskamer"
-         ],
-         "Change user role to participant": [
-            null,
-            "Verander gebruikersrol na deelnemer"
          ],
          "Kick user from room": [
             null,

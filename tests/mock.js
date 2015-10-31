@@ -37,10 +37,10 @@
     mock.chatroom_roles = {
         'Anne Ebersbacher': { affiliation: "owner", role: "moderator" },
         'Dirk Theissen': { affiliation: "admin", role: "moderator" },
-        'Dyon van de Wege': { affiliation: "member", role: "participant" },
-        'Felix Hofmann': { affiliation: "member", role: "participant" },
-        'Ka Lek': { affiliation: "member", role: "participant" },
-        'Thomas Kalb': { affiliation: "member", role: "participant" }
+        'Dyon van de Wege': { affiliation: "member", role: "occupant" },
+        'Felix Hofmann': { affiliation: "member", role: "occupant" },
+        'Ka Lek': { affiliation: "member", role: "occupant" },
+        'Thomas Kalb': { affiliation: "member", role: "occupant" }
     };
 
     mock.event = {

@@ -153,17 +153,17 @@ $(document).ready(function () {
             });
         });
 
-        $('.toggle-participants a').click(function (ev) {
+        $('.toggle-occupants a').click(function (ev) {
             var $el = $(ev.target);
             if ($el.hasClass("icon-hide-users")) {
                 $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                $('div.participants').animate({width: 0}).hide();
+                $('div.occupants').animate({width: 0}).hide();
                 $el.closest('.chat-area').animate({width: '100%'});
                 $el.closest('form.sendXMPPMessage').animate({width: '100%'});
             } else {
                 $el.removeClass('icon-show-users').addClass('icon-hide-users');
                 $el.closest('.chat-area').animate({width: '200px'}, function () {
-                    $('div.participants').css({width: '100px'}).show();
+                    $('div.occupants').css({width: '100px'}).show();
                 });
                 $el.closest('form.sendXMPPMessage').animate({width: '200px'});
             }

@@ -247,10 +247,6 @@
             null,
             ""
          ],
-         "Hide the list of participants": [
-            null,
-            "Сховати список учасників"
-         ],
          "Refresh encrypted conversation": [
             null,
             "Оновити криптовану розмову"
@@ -470,10 +466,6 @@
          "Ban user from room": [
             null,
             "Заблокувати і викинути з кімнати"
-         ],
-         "Change user role to participant": [
-            null,
-            "Зробити користувача учасником"
          ],
          "Kick user from room": [
             null,

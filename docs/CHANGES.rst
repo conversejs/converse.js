@@ -184,7 +184,7 @@ Changelog
   See the `keepalive <https://conversejs.org/docs/html/configuration.html#keepalive>`_ configuration setting. [jcbrand]
 * Allow changing of nickname in a chat room via /nick command. [jcbrand]
 * Allow a chat room user to be muted or unmuted with the /mute and /voice commands. [jcbrand]
-* Add a chat room toolbar button for toggling the list of participants. [jcbrand]
+* Add a chat room toolbar button for toggling the list of occupants. [jcbrand]
 * Converse.js now responds to XEP-0030: Service Discovery requests. [jcbrand]
 * Bugfix. Roster groups all appear offline after page reload (with prebind).
   See http://librelist.com/browser//conversejs/2014/8/26/problem-with-contact-list-everyone-is-offline/ [heban and jcbrand]

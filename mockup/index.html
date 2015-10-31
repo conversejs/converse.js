@@ -380,21 +380,21 @@
                                     <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>
                                 </ul>
                             </li>
-                            <li class="toggle-participants"><a class="icon-hide-users" title="Hide the list of participants"></a></li>
+                            <li class="toggle-occupants"><a class="icon-hide-users" title="Hide the list of occupants"></a></li>
                             <li class="toggle-clear"><a class="icon-remove" title="Clear all messages"></a></li>
                         </ul>
                         <textarea type="text" class="chat-textarea" placeholder="Message"></textarea>
                     </form>
                 </div>
-                <div class="participants">
+                <div class="occupants">
                     <form class="pure-form room-invite">
                         <span class="twitter-typeahead" style="position: relative; display: inline-block; direction: ltr;"><input class="invited-contact tt-hint" type="text" readonly="" autocomplete="off" spellcheck="false" tabindex="-1" style="position: absolute; top: 0px; left: 0px; border-color: transparent; box-shadow: none; opacity: 1;"><input class="invited-contact tt-input" placeholder="Invite..." type="text" autocomplete="off" spellcheck="false" dir="auto" style="position: relative; vertical-align: top; background-color: transparent;"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre;"></pre><span class="tt-dropdown-menu" style="position: absolute; top: 100%; z-index: 100; display: none; left: 0px; right: auto;"><div class="tt-dataset-contacts-dataset"></div></span></span>
                     </form>
-                    <p class="participants-heading">Occupants:</strong>
-                    <ul class="participant-list">
-                        <li class="participant" title="This user can send messages in this room">Obi-wan Kenobi, Jedi Master</li>
-                        <li class="participant" title="This user can send messages in this room">jabber the hut</li>
-                        <li class="participant" title="This user can send messages in this room">leia</li>
+                    <p class="occupants-heading">Occupants:</strong>
+                    <ul class="occupant-list">
+                        <li class="occupant" title="This user can send messages in this room">Obi-wan Kenobi, Jedi Master</li>
+                        <li class="occupant" title="This user can send messages in this room">jabber the hut</li>
+                        <li class="occupant" title="This user can send messages in this room">leia</li>
                         <li class="moderator" title="This user is a moderator">luke</li>
                     </ul>
                 </div>
@@ -567,17 +567,17 @@ $(document).ready(function () {
             });
         });
 
-        $('.toggle-participants a').click(function (ev) {
+        $('.toggle-occupants a').click(function (ev) {
             var $el = $(ev.target);
             if ($el.hasClass("icon-hide-users")) {
                 $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                $('div.participants').animate({width: 0}).hide();
+                $('div.occupants').animate({width: 0}).hide();
                 $el.closest('.chat-area').animate({width: '100%'});
                 $el.closest('form.sendXMPPMessage').animate({width: '100%'});
             } else {
                 $el.removeClass('icon-show-users').addClass('icon-hide-users');
                 $el.closest('.chat-area').animate({width: '200px'}, function () {
-                    $('div.participants').css({width: '100px'}).show();
+                    $('div.occupants').css({width: '100px'}).show();
                 });
                 $el.closest('form.sendXMPPMessage').animate({width: '200px'});
             }

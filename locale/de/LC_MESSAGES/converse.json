@@ -243,10 +243,6 @@
             null,
             ""
          ],
-         "Hide the list of participants": [
-            null,
-            "Teilnehmerliste ausblenden"
-         ],
          "Refresh encrypted conversation": [
             null,
             ""
@@ -466,10 +462,6 @@
          "Ban user from room": [
             null,
             "Verbanne einen Benutzer aus dem Raum."
-         ],
-         "Change user role to participant": [
-            null,
-            "Benutzerrolle zu Teilnehmer ändern"
          ],
          "Kick user from room": [
             null,

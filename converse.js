@@ -340,7 +340,7 @@
                 'emoticons': true,
                 'call': false,
                 'clear': true,
-                'toggle_participants': true
+                'toggle_occupants': true
             },
             websocket_url: undefined,
             xhr_custom_status: false,
@@ -367,7 +367,7 @@
             _.extend(
                 this.visible_toolbar_buttons,
                 _.pick(settings.visible_toolbar_buttons, [
-                    'emoticons', 'call', 'clear', 'toggle_participants'
+                    'emoticons', 'call', 'clear', 'toggle_occupants'
                 ]
             ));
         }
@@ -2040,7 +2040,7 @@
                                 label_clear: __('Clear all messages'),
                                 label_end_encrypted_conversation: __('End encrypted conversation'),
                                 label_insert_smiley: __('Insert a smiley'),
-                                label_hide_participants: __('Hide the list of participants'),
+                                label_hide_occupants: __('Hide the list of occupants'),
                                 label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
                                 label_start_call: __('Start a call'),
                                 label_start_encrypted_conversation: __('Start encrypted conversation'),
@@ -2052,7 +2052,7 @@
                                 show_call_button: converse.visible_toolbar_buttons.call,
                                 show_clear_button: converse.visible_toolbar_buttons.clear,
                                 show_emoticons: converse.visible_toolbar_buttons.emoticons,
-                                show_participants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_participants
+                                show_occupants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_occupants
                             })
                         )
                     );
@@ -2673,7 +2673,7 @@
                     _.extend(
                         this.model.toJSON(), {
                             'desc_moderator': __('This user is a moderator'),
-                            'desc_participant': __('This user can send messages in this room'),
+                            'desc_occupant': __('This user can send messages in this room'),
                             'desc_visitor': __('This user can NOT send messages in this room')
                     })
                 );
@@ -2693,7 +2693,7 @@
 
         this.ChatRoomOccupantsView = Backbone.Overview.extend({
             tagName: 'div',
-            className: 'participants',
+            className: 'occupants',
 
             initialize: function () {
                 this.model.on("add", this.onOccupantAdded, this);
@@ -2718,7 +2718,7 @@
                     view.model = item;
                     view.initialize();
                 }
-                this.$('.participant-list').append(view.render().$el);
+                this.$('.occupant-list').append(view.render().$el);
             },
 
             parsePresence: function (pres) {
@@ -2824,7 +2824,7 @@
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearChatRoomMessages',
                 'click .toggle-call': 'toggleCall',
-                'click .toggle-participants a': 'toggleOccupants',
+                'click .toggle-occupants a': 'toggleOccupants',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'mousedown .dragresize-top': 'onStartVerticalResize',
                 'mousedown .dragresize-left': 'onStartHorizontalResize',
@@ -2905,12 +2905,12 @@
                 if (!this.model.get('hidden_occupants')) {
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                    this.$('div.participants').addClass('hidden');
+                    this.$('div.occupants').addClass('hidden');
                     this.scrollDown();
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
-                    this.$('div.participants').removeClass('hidden');
+                    this.$('div.occupants').removeClass('hidden');
                     this.scrollDown();
                 }
             },
@@ -3026,7 +3026,7 @@
                     case 'deop':
                         if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
-                                this.model.get('jid'), args[0], 'participant', args[1],
+                                this.model.get('jid'), args[0], 'occupant', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     case 'help':
@@ -3034,7 +3034,7 @@
                             '<strong>/admin</strong>: ' +__("Change user's affiliation to admin"),
                             '<strong>/ban</strong>: '   +__('Ban user from room'),
                             '<strong>/clear</strong>: ' +__('Remove messages'),
-                            '<strong>/deop</strong>: '  +__('Change user role to participant'),
+                            '<strong>/deop</strong>: '  +__('Change user role to occupant'),
                             '<strong>/help</strong>: '  +__('Show this menu'),
                             '<strong>/kick</strong>: '  +__('Kick user from room'),
                             '<strong>/me</strong>: '    +__('Write in 3rd person'),
@@ -3103,7 +3103,7 @@
                     case 'voice':
                         if (!this.validateRoleChangeCommand(match[1], args)) { break; }
                         this.modifyRole(
-                                this.model.get('jid'), args[0], 'participant', args[1],
+                                this.model.get('jid'), args[0], 'occupant', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
                     default:
@@ -3236,7 +3236,7 @@
                     function () {
                         $(this).remove();
                         that.$el.find('.chat-area').show();
-                        that.$el.find('.participants').removeClass('hidden');
+                        that.$el.find('.occupants').removeClass('hidden');
                     });
             },
 
@@ -3255,7 +3255,7 @@
                     function () {
                         $(this).remove();
                         that.$el.find('.chat-area').show();
-                        that.$el.find('.participants').removeClass('hidden');
+                        that.$el.find('.occupants').removeClass('hidden');
                     });
             },
 
@@ -3296,7 +3296,7 @@
 
             showDisconnectMessage: function (msg) {
                 this.$('.chat-area').hide();
-                this.$('.participants').hide();
+                this.$('.occupants').hide();
                 this.$('span.centered.spinner').remove();
                 this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
             },

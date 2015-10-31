@@ -247,10 +247,6 @@
             null,
             ""
          ],
-         "Hide the list of participants": [
-            null,
-            "Cacher la liste des participants"
-         ],
          "Refresh encrypted conversation": [
             null,
             "Actualiser la conversation cryptée"
@@ -470,10 +466,6 @@
          "Ban user from room": [
             null,
             "Bannir l'utilisateur du salon"
-         ],
-         "Change user role to participant": [
-            null,
-            "Changer le rôle  de l'utilisateur en participant"
          ],
          "Kick user from room": [
             null,

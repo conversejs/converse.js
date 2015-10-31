@@ -7,6 +7,7 @@ Changelog
 * #493 Refactor previous bugfix and now an event is emitted when a roster push event from server happens. [teseo]
 * #502. Chat room not opened in non_amd version. [rjanbiah]
 * #505 Typo caused [object Object] in room info [gromiak]
+* #510 MUC room memberlist is being cleared with page reload when keepalive option is set. [jcbrand]
 * Add the ability to also drag-resize chat boxes horizontally. [jcbrand]
 
 0.9.6 (2015-10-12)

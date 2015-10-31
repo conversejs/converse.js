@@ -2889,17 +2889,18 @@
                     this.renderToolbar();
                     this.$content = this.$el.find('.chat-content');
                 }
-                // XXX: This is a bit of a hack, to make sure that the
-                // sidebar's state is remembered.
-                this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
-                this.toggleOccupants();
+                this.toggleOccupants(null, true);
                 return this;
             },
 			
-            toggleOccupants: function (ev) {
+            toggleOccupants: function (ev, preserve_state) {
                 if (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
+                }
+                if (preserve_state) {
+                    // Bit of a hack, to make sure that the sidebar's state doesn't change
+                    this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
                 }
                 var $el = this.$('.icon-hide-users');
                 if (!this.model.get('hidden_occupants')) {
@@ -3235,7 +3236,7 @@
                 this.$el.find('div.chatroom-form-container').hide(
                     function () {
                         $(this).remove();
-                        that.$el.find('.chat-area').show();
+                        that.$el.find('.chat-area').removeClass('hidden');
                         that.$el.find('.occupants').removeClass('hidden');
                     });
             },
@@ -3254,7 +3255,7 @@
                 this.$el.find('div.chatroom-form-container').hide(
                     function () {
                         $(this).remove();
-                        that.$el.find('.chat-area').show();
+                        that.$el.find('.chat-area').removeClass('hidden');
                         that.$el.find('.occupants').removeClass('hidden');
                     });
             },
@@ -3264,7 +3265,7 @@
                 if (this.$el.find('div.chatroom-form-container').length) {
                     return;
                 }
-                this.$('.chatroom-body').children().hide();
+                this.$('.chatroom-body').children().addClass('hidden');
                 this.$('.chatroom-body').append(converse.templates.chatroom_form());
                 converse.connection.sendIQ(
                         $iq({

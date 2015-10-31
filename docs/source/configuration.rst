@@ -552,6 +552,10 @@ the page with class *toggle-controlbox*.
 If this options is set to true, the controlbox will by default be shown upon
 page load.
 
+However, be aware that even if this value is set to ``false``, if the
+controlbox is open, and the page is reloaded, then it will stay open on the new
+page as well.
+
 show_only_online_users
 ----------------------
 

@@ -1207,7 +1207,6 @@
             events: {
                 'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'minimize',
-                'click .view-vcard-button': 'renderVCard',
                 'keypress textarea.chat-textarea': 'keyPressed',
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
@@ -1269,33 +1268,6 @@
                 converse.emit('chatBoxOpened', this);
                 setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
-            },
-
-            renderVCard: function () {
-                var $chat_body = this.$el.find('.chat-body');
-                if (this.$el.find('.vcard-info').length) {
-                    return this.returnToChat();
-                }
-                $chat_body.children().addClass('hidden');
-                $chat_body.append(converse.templates.vcard(
-                    _.extend(this.model.toJSON(), {
-                        label_return: __('Return to chat')
-                    })
-                ));
-                $chat_body.find('input[type=button]').on('click', this.returnToChat.bind(this));
-                return this;
-            },
-
-            returnToChat: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $chat_body = this.$el.find('.chat-body');
-                this.$el.find('.vcard-info').hide(
-                    function () {
-                        $(this).remove();
-                        $chat_body.children().removeClass('hidden');
-                    }
-                );
-                return this;
             },
 
             setWidth: function () {

@@ -151,7 +151,8 @@ require.config({
         "status_option":            "src/templates/status_option",
         "toggle_chats":             "src/templates/toggle_chats",
         "toolbar":                  "src/templates/toolbar",
-        "trimmed_chat":             "src/templates/trimmed_chat"
+        "trimmed_chat":             "src/templates/trimmed_chat",
+        "vcard":                    "src/templates/vcard"
     },
 
     map: {

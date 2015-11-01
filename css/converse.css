@@ -1251,6 +1251,7 @@
       margin: 0;
       width: 100%; } }
   #conversejs .chatbox .box-flyout {
+    background-color: white;
     box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
     height: 450px;
     min-height: 225px;

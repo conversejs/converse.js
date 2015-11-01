@@ -32,7 +32,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             margin: 0;
-            margin-top: 0.3em;
+            padding-top: 0.2em;
         }
     }
     .chatbox-btn {
@@ -77,10 +77,12 @@
             color: $chat-head-text-color;
             line-height: 15px;
             display: block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            height: 2em;
             a {
                 color: $chat-head-text-color;
                 width: 100%;
-                word-wrap: break-word;
             }
         }
         .chat-body {

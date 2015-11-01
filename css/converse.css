@@ -1225,7 +1225,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     margin: 0;
-    margin-top: 0.3em; }
+    padding-top: 0.2em; }
 #conversejs .chatbox-btn {
   border-radius: 50%;
   border: 1px solid white;
@@ -1264,11 +1264,13 @@
   #conversejs .chatbox .chat-title {
     color: white;
     line-height: 15px;
-    display: block; }
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    height: 2em; }
     #conversejs .chatbox .chat-title a {
       color: white;
-      width: 100%;
-      word-wrap: break-word; }
+      width: 100%; }
   #conversejs .chatbox .chat-body {
     background-color: white;
     border-bottom-left-radius: 4px;

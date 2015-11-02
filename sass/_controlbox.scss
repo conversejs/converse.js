@@ -268,15 +268,12 @@
         .fancy-dropdown {
             border: 1px solid $light-background-border-color;
             height: $controlbox-dropdown-height;
-            border-radius: 4px;
+            border-radius: $chatbox-border-radius;
             text-align: left;
+            padding: 0;
+            padding-left: 0.3em;
             .choose-xmpp-status {
                 width: 155px;
-                span {
-                    padding-right: 5px;
-                    padding-left: 5px;
-                    float: left;
-                }
             }
             .choose-xmpp-status,
             .toggle-xmpp-contact-form {
@@ -286,17 +283,13 @@
                 white-space: nowrap;
                 display: inline;
             }
-            .toggle-xmpp-contact-form span {
-                float: left;
-            }
         }
         #fancy-xmpp-status-select {
             a.change-xmpp-status-message {
                 float: right;
                 clear: right;
-                height: 22px;
                 width: 12px;
-                margin: 0px 5px 0 0;
+                margin-right: 0.3em;
                 color: $link-color;
             }
         }

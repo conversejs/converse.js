@@ -79,47 +79,37 @@
             <div id="users" class="controlbox-pane" style="display: block;">
                 <form class="set-xmpp-status" action="" method="post">
                     <span id="xmpp-status-holder">
-                    <dl id="target" class="dropdown">
-                        <dt id="fancy-xmpp-status-select" class="fancy-dropdown">
-                            <div class="xmpp-status">
-                                <a class="choose-xmpp-status online" data-value="I am online" href="#" title="Click to change your chat status">
-                                    <span class="icon-online"></span>
-                                    I am online
-                                </a>
-                                <a class="change-xmpp-status-message icon-pencil" href="#" title="Click here to write a custom status message"></a>
-                            </div>
-                        </dt>
-                        <dd>
-                            <ul style="display: none;" class="xmpp-status-menu">
-                                <li>
-                                    <a href="#" class="online" data-value="online">
-                                    <span class="icon-online"></span>
-                                    Online</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="dnd" data-value="dnd">
-                                    <span class="icon-dnd"></span>
-                                    Busy</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="away" data-value="away">
-                                    <span class="icon-away"></span>
-                                    Away</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="offline" data-value="offline">
-                                    <span class="icon-offline"></span>
-                                    Offline</a>
-                                </li>
-                            </ul>
-                        </dd>
-                    </dl>
+                        <dl id="target" class="dropdown">
+                            <dt id="fancy-xmpp-status-select" class="fancy-dropdown">
+                                <div class="xmpp-status">
+                                    <a class="choose-xmpp-status online icon-online" data-value="I am online" href="#" title="Click to change your chat status">
+                                        I am online
+                                    </a>
+                                    <a class="change-xmpp-status-message icon-pencil" href="#" title="Click here to write a custom status message"></a>
+                                </div>
+                            </dt>
+                            <dd>
+                                <ul style="display: none;" class="xmpp-status-menu">
+                                    <li>
+                                        <a href="#" class="online icon-online" data-value="online">Online</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dnd icon-dnd" data-value="dnd">Busy</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="away icon-away" data-value="away">Away</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="offline icon-offline" data-value="offline">Offline</a>
+                                    </li>
+                                </ul>
+                            </dd>
+                        </dl>
                     </span>
                 </form>
                 <dl class="add-converse-contact dropdown">
                     <dt id="xmpp-contact-search" class="fancy-dropdown">
-                        <a class="toggle-xmpp-contact-form" href="#" title="Click to add new chat contacts">
-                            <span class="icon-plus"></span>
+                        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="Click to add new chat contacts">
                             Add a contact
                         </a>
                     </dt>
@@ -127,7 +117,7 @@
                         <ul>
                             <li>
                                 <form class="pure-form add-xmpp-contact">
-                                    <input type="text" name="identifier" class="username" placeholder="Contact username">
+                                    <input type="text" name="identifier" class="username" placeholder="e.g. user@example">
                                     <button class="pure-button button-primary" type="submit">Add</button>
                                 </form>
                             </li>
@@ -146,7 +136,7 @@
 
                     <dl class="roster-contacts" style="display: block;">
                         <dt class="roster-group" style="display: block;">
-                            <a href="#" data-group="Colleagues" class="group-toggle icon-opened" title="Click to hide these contacts">Colleagues</a>
+                        <a href="#" data-group="Colleagues" class="group-toggle" title="Click to hide these contacts"><i class="icon-opened"></i>Colleagues</a>
                         </dt>
                         <dd class="online current-xmpp-contact">
                             <a class="open-chat" title="Name: Victor Matfield JID: victor.matfield@localhost Click to chat with this contact" href="#">
@@ -170,7 +160,7 @@
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
                         <dt class="roster-group" style="display: block;">
-                            <a href="#" data-group="Family" class="group-toggle icon-opened" title="Click to hide these contacts">Family</a>
+                            <a href="#" data-group="Family" class="group-toggle" title="Click to hide these contacts"><i class="icon-opened"></i>Family</a>
                         </dt>
                         <dd class="away current-xmpp-contact">
                             <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -187,7 +177,7 @@
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
                         <dt class="roster-group" style="display: block;">
-                            <a href="#" data-group="Friends" class="group-toggle icon-opened" title="Click to hide these contacts">Friends</a>
+                            <a href="#" data-group="Friends" class="group-toggle" title="Click to hide these contacts"><i class="icon-opened"></i>Friends</a>
                         </dt>
                         <dd class="online current-xmpp-contact">
                             <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -204,7 +194,7 @@
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
                         <dt class="roster-group" style="display: block;">
-                            <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Ungrouped</a>
+                            <a href="#" class="group-toggle" title="Click to hide these contacts"><i class="icon-opened"></i>Ungrouped</a>
                         </dt>
                         <dd class="online current-xmpp-contact">
                             <a class="open-chat" title="Click to chat with this contact" href="#">
@@ -214,7 +204,7 @@
                             <a class="remove-xmpp-contact icon-remove" title="Click to remove this contact" href="#"></a>
                         </dd>
                         <dt class="roster-group" id="xmpp-contact-requests" style="display: block;">
-                            <a href="#" class="group-toggle icon-opened" title="Click to hide these contacts">Contact Requests</a>
+                            <a href="#" class="group-toggle" title="Click to hide these contacts"><i class="icon-opened"></i>Contact Requests</a>
                         </dt>
                         <dd class="offline requesting-xmpp-contact">
                             <span class="req-contact-name" title="Name: Bob Skinstad JID: bob.skinstad@localhost">Bob Skinstad</span>

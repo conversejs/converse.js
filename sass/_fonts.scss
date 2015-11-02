@@ -132,7 +132,7 @@
         -moz-osx-font-smoothing: grayscale;
     }
 
-    [class^="icon-"], [class*=" icon-"] {
+    [class^="icon-"]:before, [class*=" icon-"]:before {
         background-position: 14px 14px;
         background-image: none;
         font-family: 'Converse-js';

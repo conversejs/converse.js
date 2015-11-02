@@ -229,7 +229,7 @@
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
-#conversejs [class^="icon-"], #conversejs [class*=" icon-"] {
+#conversejs [class^="icon-"]:before, #conversejs [class*=" icon-"]:before {
   background-position: 14px 14px;
   background-image: none;
   font-family: 'Converse-js';
@@ -1026,8 +1026,6 @@
     font-size: 14px;
     padding: 0.25em;
     min-height: 0; }
-  #conversejs input[type=text] {
-    height: 26px; }
   #conversejs strong {
     font-weight: 700; }
   #conversejs ol, #conversejs ul {
@@ -1235,7 +1233,7 @@
   float: right;
   font-size: 9px;
   margin: 0 0.2em;
-  padding: 5px;
+  padding: 0.5em;
   text-decoration: none; }
   #conversejs .chatbox-btn:active {
     position: relative;
@@ -1656,13 +1654,11 @@
     border: 1px solid #B1BFC4;
     height: 25px;
     border-radius: 4px;
-    text-align: left; }
+    text-align: left;
+    padding: 0;
+    padding-left: 0.3em; }
     #conversejs #controlbox .fancy-dropdown .choose-xmpp-status {
       width: 155px; }
-      #conversejs #controlbox .fancy-dropdown .choose-xmpp-status span {
-        padding-right: 5px;
-        padding-left: 5px;
-        float: left; }
     #conversejs #controlbox .fancy-dropdown .choose-xmpp-status,
     #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
       text-shadow: 0 1px 0 #ffffff;
@@ -1670,14 +1666,11 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       display: inline; }
-    #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form span {
-      float: left; }
   #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message {
     float: right;
     clear: right;
-    height: 22px;
     width: 12px;
-    margin: 0px 5px 0 0;
+    margin-right: 0.3em;
     color: #2A9D8F; }
   #conversejs #controlbox .controlbox-pane {
     background-color: white;

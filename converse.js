@@ -6532,7 +6532,7 @@
                             'box_id' : b64_sha1(jid)
                         });
                     }
-                    return wrappedChatBox(converse.chatboxes.getChatBox(chatroom, true));
+                    return wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
                 };
                 if (typeof jids === "undefined") {
                     throw new TypeError('rooms.open: You need to provide at least one JID');

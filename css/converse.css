@@ -1811,7 +1811,11 @@
           width: 80%; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact.request-actions {
         margin-left: 0.5em;
+        margin-bottom: 0.3em;
         float: right; }
+      #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .req-contact-name {
+        width: 69%;
+        padding: 0; }
       #conversejs #converse-roster .roster-contacts dd.current-xmpp-contact span {
         font-size: 16px;
         float: left;
@@ -1826,7 +1830,8 @@
         white-space: nowrap;
         text-overflow: ellipsis; }
       #conversejs #converse-roster .roster-contacts dd span {
-        padding: 0 0.5em 0 0; }
+        padding: 0 0.5em 0 0;
+        height: 100%; }
       #conversejs #converse-roster .roster-contacts dd a.decline-xmpp-request {
         margin-left: 5px; }
       #conversejs #converse-roster .roster-contacts dd a.remove-xmpp-contact {
@@ -1837,9 +1842,6 @@
         color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {
     width: 80%; }
-  #conversejs #converse-roster span.req-contact-name {
-    width: 69%;
-    padding: 0; }
 
 #conversejs .chat-head-chatroom {
   background-color: #E76F51; }
@@ -1881,8 +1883,7 @@
         height: 100%;
         min-width: 200px; }
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
-          margin-top: 0.5em;
-          padding: 0.5em 0.5em 0 0.5em; }
+          padding: 0 0.5em 0 0.5em; }
       #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
         font-weight: bold; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
@@ -1935,7 +1936,7 @@
     margin: 0.3em; }
     #conversejs .chatroom .room-invite .invited-contact {
       margin: -1px 0 0 -1px;
-      width: 100px;
+      width: 100%;
       border: 1px solid #999; }
       #conversejs .chatroom .room-invite .invited-contact.tt-input {
         width: 100%;

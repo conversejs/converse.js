@@ -97,7 +97,12 @@
             &.requesting-xmpp-contact {
                 &.request-actions {
                     margin-left: 0.5em;
+                    margin-bottom: 0.3em;
                     float: right;
+                }
+                .req-contact-name {
+                    width: 69%;
+                    padding: 0;
                 }
             }
             &.current-xmpp-contact span {
@@ -118,6 +123,7 @@
             }
             span {
                 padding: 0 0.5em 0 0;
+                height: 100%;
             }
             a {
                 &.decline-xmpp-request {
@@ -136,10 +142,6 @@
     span {
         &.pending-contact-name {
             width: 80%;
-        }
-        &.req-contact-name {
-            width: 69%;
-            padding: 0;
         }
     }
 }

@@ -43,8 +43,8 @@
                     height: 100%;
                     min-width: $chat-width;
                     .chat-content {
-                        margin-top: 0.5em;
-                        padding: 0.5em 0.5em 0 0.5em; // Work around a weird box-sizing issue in Chromium related to bottom padding.
+                        // There's an annoying Chrome box-sizing bug which prevents us from adding 0.5em padding here.
+                        padding: 0 0.5em 0 0.5em;
                     }
                 }
                 .mentioned {
@@ -112,7 +112,7 @@
             margin: 0.3em;
             .invited-contact {
                 margin: -1px 0 0 -1px;
-                width: 100px;
+                width: 100%;
                 border: 1px solid #999;
                 &.tt-input {
                     width: 100%;

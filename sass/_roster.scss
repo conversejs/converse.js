@@ -83,8 +83,13 @@
             display: block;
             height: 24px;
             overflow-y: hidden;
-            padding: 0.3em 1em;
+            padding: 0.3em 0 0.3em 1em;
             text-shadow: 0 1px 0 $text-shadow-color;
+            line-height: $font-size;
+            width: 100%;
+            .open-chat {
+                max-width: 90%;
+            }
             &:hover {
                 background-color: $highlight-color;
                 .remove-xmpp-contact {
@@ -131,8 +136,7 @@
                 }
                 &.remove-xmpp-contact {
                     float: right;
-                    width: 22px;
-                    margin: 0;
+                    margin-right: 1em;
                     display: none;
                     color: $text-color;
                 }

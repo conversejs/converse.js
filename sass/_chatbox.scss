@@ -43,8 +43,9 @@
         display: inline-block;
         float: right;
         font-size: $box-close-font-size;
-        margin: 0 0.2em;
-        padding: 0.5em;
+        margin: 0;
+        margin-right: 0.2em;
+        padding: 0.5em 0.5em 0.3em 0.5em;
         text-decoration: none;
         &:active {
             position: relative;

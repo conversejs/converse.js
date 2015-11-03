@@ -207,15 +207,20 @@
         #set-custom-xmpp-status {
             float: left;
             padding: 0;
+            fieldset {
+                padding: 0;
+                margin-top: -1px;
+            }
             input {
                 height: $controlbox-dropdown-height + 1px;
                 @include calc(width, '100% - 40px');
                 padding: 0 0 0 0.5em;
             }
-            button {
+            input[type=submit] {
                 height: $controlbox-dropdown-height + 1px;
                 width: 40px;
                 padding: 1px;
+                float: right;
             }
         }
 
@@ -262,9 +267,6 @@
             }
         }
 
-        .xmpp-status {
-            display: inline;
-        }
         .fancy-dropdown {
             border: 1px solid $light-background-border-color;
             height: $controlbox-dropdown-height;
@@ -283,8 +285,17 @@
                 white-space: nowrap;
                 display: inline;
             }
+            &.no-border {
+                border: 0;
+            }
+
         }
         #fancy-xmpp-status-select {
+            padding-left: 0;
+            .xmpp-status {
+                margin-left: 0.3em;
+                display: inline;
+            }
             a.change-xmpp-status-message {
                 float: right;
                 clear: right;

@@ -5319,7 +5319,9 @@
                     'label_custom_status': __('Custom status'),
                     'label_save': __('Save')
                 });
-                this.$el.find('.xmpp-status').replaceWith(input);
+                var $xmppstatus = this.$el.find('.xmpp-status');
+                $xmppstatus.parent().addClass('no-border');
+                $xmppstatus.replaceWith(input);
                 this.$el.find('.custom-xmpp-status').focus().focus();
             },
 
@@ -5362,7 +5364,7 @@
                 // # For translators: the %1$s part gets replaced with the status
                 // # Example, I am online
                 var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                this.$el.find('#fancy-xmpp-status-select').html(
+                this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
                     converse.templates.chat_status({
                         'chat_status': stat,
                         'status_message': status_message,

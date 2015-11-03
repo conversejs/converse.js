@@ -2917,11 +2917,13 @@
                 if (!this.model.get('hidden_occupants')) {
                     this.model.save({hidden_occupants: true});
                     $el.removeClass('icon-hide-users').addClass('icon-show-users');
-                    this.$('div.occupants').addClass('hidden');
+                    this.$('.occupants').addClass('hidden');
+                    this.$('.chat-area').addClass('full');
                     this.scrollDown();
                 } else {
                     this.model.save({hidden_occupants: false});
                     $el.removeClass('icon-show-users').addClass('icon-hide-users');
+                    this.$('.chat-area').removeClass('full');
                     this.$('div.occupants').removeClass('hidden');
                     this.scrollDown();
                 }

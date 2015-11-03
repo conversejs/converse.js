@@ -305,7 +305,7 @@
             width: 100%;
             height: 289px;
             @include calc(height, '100% - #{$chat-head-height}');
-            overflow-y: scroll;
+            overflow-y: auto;
             overflow-x: hidden;
             label {
                 font-size: $font-size;

@@ -33,18 +33,20 @@
                 @include calc(height, '100% - #{$chat-head-height}');
                 background-color: white;
                 border-top: 0;
-                display: table;
-                table-layout: fixed;
                 width: 100%;
 
                 .chat-area {
                     word-wrap: break-word; 
-                    display: table-cell;
                     height: 100%;
+                    max-width: 70%;
+                    float: left;
                     min-width: $chat-width;
                     .chat-content {
                         // There's an annoying Chrome box-sizing bug which prevents us from adding 0.5em padding here.
                         padding: 0 0.5em 0 0.5em;
+                    }
+                    &.full {
+                        max-width: 100%;
                     }
                 }
                 .mentioned {
@@ -54,14 +56,12 @@
                     color: $message-them-color;
                 }
                 .occupants {
-                    display: table-cell;
                     vertical-align: top;
                     background-color: white;
-                    overflow-y: auto;
-                    overflow-x: hidden;
+                    overflow: hidden;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
-                    width: 100px;
+                    min-width: 30%;
                     height: 100%;
                     &.hidden {
                         display: none;
@@ -71,8 +71,10 @@
                         font-weight: bold;
                     }
                     .occupant-list {
-                        height: 100%;
-                        overflow-y: scroll;
+                        height: 85%;
+                        height: calc(100% - 70px);
+                        overflow-x: hidden;
+                        overflow-y: auto;
                         list-style: none;
                         li {
                             cursor: default;

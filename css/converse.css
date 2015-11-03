@@ -1685,7 +1685,7 @@
     height: 289px;
     height: -webkit-calc(100% - 55px);
     height: calc(100% - 55px);
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden; }
     #conversejs #controlbox .controlbox-pane label {
       font-size: 14px;
@@ -1878,29 +1878,28 @@
       height: calc(100% - 55px);
       background-color: white;
       border-top: 0;
-      display: table;
-      table-layout: fixed;
       width: 100%; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         word-wrap: break-word;
-        display: table-cell;
         height: 100%;
+        max-width: 70%;
+        float: left;
         min-width: 200px; }
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
           padding: 0 0.5em 0 0.5em; }
+        #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full {
+          max-width: 100%; }
       #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
         font-weight: bold; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
         color: #1A9707; }
       #conversejs .chatroom .box-flyout .chatroom-body .occupants {
-        display: table-cell;
         vertical-align: top;
         background-color: white;
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow: hidden;
         border-left: 1px solid #818479;
         border-bottom-right-radius: 4px;
-        width: 100px;
+        min-width: 30%;
         height: 100%; }
         #conversejs .chatroom .box-flyout .chatroom-body .occupants.hidden {
           display: none; }
@@ -1908,8 +1907,10 @@
           padding: 0.3em;
           font-weight: bold; }
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list {
-          height: 100%;
-          overflow-y: scroll;
+          height: 85%;
+          height: calc(100% - 70px);
+          overflow-x: hidden;
+          overflow-y: auto;
           list-style: none; }
           #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li {
             cursor: default;

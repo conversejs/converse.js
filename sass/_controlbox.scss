@@ -1,6 +1,10 @@
 #conversejs {
     #controlbox {
         display: none;
+        margin-right: 2*$chat-gutter;
+        @media screen and (max-width: $mobile-landscape-length) {
+            margin: 0;
+        }
         .controlbox-head {
             background-color: $controlbox-head-color;
             border-top-left-radius: $chatbox-border-radius;

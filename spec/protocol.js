@@ -195,7 +195,8 @@
                     *  </iq>
                     */
                     spyOn(converse.roster, "updateContact").andCallThrough();
-                    stanza = $iq({'type': 'set'}).c('query', {'xmlns': 'jabber:iq:roster'})
+                    stanza = $iq({'type': 'set', 'from': 'dummy@localhost'})
+                        .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
                             'jid': 'contact@example.org',
                             'subscription': 'none',

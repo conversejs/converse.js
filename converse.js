@@ -4451,8 +4451,11 @@
                  */
                 var id = iq.getAttribute('id');
                 var from = iq.getAttribute('from');
-                if (from && from !== "" && from !== converse.connection.jid) {
+                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
+                    // XXX: Some naughty servers apparently send from a full
+                    // JID so we need to explicitly compare bare jids here.
+                    // https://github.com/jcbrand/converse.js/issues/493
                     converse.connection.send(
                         $iq({type: 'error', id: id, from: converse.connection.jid})
                             .c('error', {'type': 'cancel'})
@@ -4466,8 +4469,7 @@
                 }.bind(this));
 
                 converse.emit('rosterPush', iq);
-
-		return true;
+                return true;
             },
 
             fetchFromServer: function (callback, errback) {

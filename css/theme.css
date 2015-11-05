@@ -103,6 +103,13 @@ a:focus {
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   }
 }
+@media (max-width: 480px) {
+    .navbar {
+        display: none;
+    }
+}
+
+
 .features-section,
 .outro,
 .intro {

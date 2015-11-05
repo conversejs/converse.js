@@ -1222,6 +1222,7 @@
             },
 
             initialize: function () {
+                $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
@@ -1346,6 +1347,22 @@
                 return this;
             },
 
+            adjustToViewport: function () {
+                /* Event handler called when viewport gets resized. We remove
+                 * custom width/height from chat boxes.
+                 */
+                var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+                var viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                if (viewport_width <= 480) {
+                    this.model.set('height', undefined);
+                    this.model.set('width', undefined);
+                } else if (viewport_width <= this.model.get('width')) {
+                    this.model.set('width', undefined);
+                } else if (viewport_height <= this.model.get('height')) {
+                    this.model.set('height', undefined);
+                }
+            },
+
             initDragResize: function () {
                 /* Determine and store the default box size.
                  * We need this information for the drag-resizing feature.
@@ -1371,6 +1388,13 @@
                     this.width = this.model.get('width');
                 }
                 return this;
+            },
+
+            setDimensions: function () {
+                // Make sure the chat box has the right height and width.
+                this.adjustToViewport();
+                this.setChatBoxHeight(this.model.get('height'));
+                this.setChatBoxWidth(this.model.get('width'));
             },
 
             clearStatusNotification: function () {
@@ -1780,14 +1804,22 @@
 
             setChatBoxHeight: function (height) {
                 if (!this.model.get('minimized')) {
-                    height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    if (height) {
+                        height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    } else {
+                        height = "";
+                    }
                     this.$el.children('.box-flyout')[0].style.height = height;
                 }
             },
 
             setChatBoxWidth: function (width) {
                 if (!this.model.get('minimized')) {
-                    width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    if (width) {
+                        width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    } else {
+                        width = "";
+                    }
                     this.$el[0].style.width = width;
                     this.$el.children('.box-flyout')[0].style.width = width;
                 }
@@ -2116,7 +2148,7 @@
                 if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                     return this.focus();
                 }
-                this.initDragResize();
+                this.initDragResize().setDimensions();
                 this.$el.fadeIn(function () {
                     if (typeof callback === "function") {
                         callback.apply(this, arguments);
@@ -2485,6 +2517,7 @@
 
             initialize: function () {
                 this.$el.insertAfter(converse.controlboxtoggle.$el);
+                $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                 this.model.on('change:connected', this.onConnected, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('hide', this.hide, this);
@@ -2568,7 +2601,7 @@
                 if (converse.allow_registration) {
                     this.registerpanel.render().$el.hide();
                 }
-                this.initDragResize();
+                this.initDragResize().setDimensions();
                 if ($feedback.length && $feedback.text() !== __('Connecting')) {
                     this.$('.conn-feedback').replaceWith($feedback);
                 }
@@ -2595,7 +2628,7 @@
                         this.roomspanel.model.save({nick: Strophe.getNodeFromJid(converse.bare_jid)});
                     }
                 }
-                this.initDragResize();
+                this.initDragResize().setDimensions();
             },
 
             close: function (ev) {
@@ -2845,6 +2878,7 @@
             is_chatroom: true,
 
             initialize: function () {
+                $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('change:minimized', function (item) {
                     if (item.get('minimized')) {

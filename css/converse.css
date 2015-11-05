@@ -1769,6 +1769,8 @@
     padding-left: 10px; }
   #conversejs #converse-roster .roster-filter-group {
     margin: 0 1em;
+    width: 100%;
+    padding-right: 2em;
     /* (jQ addClass:) if input has value: */
     /* (jQ addClass:) if mouse is over the 'x' input area*/ }
     #conversejs #converse-roster .roster-filter-group .roster-filter {

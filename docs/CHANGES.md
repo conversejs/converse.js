@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.9.7 (Unreleased)
+## 0.10.0 (Unreleased)
+
+**Note:**
+*This release drops CSS support for IE8 and IE9.*
 
 - #459 Wrong datatype passed to converse.chatboxes.getChatBox. [hobblegobber, jcbrand]
 - #493 Roster push fix [jcbrand]
@@ -8,8 +11,10 @@
 - #502. Chat room not opened in non_amd version. [rjanbiah]
 - #505 Typo caused [object Object] in room info [gromiak]
 - #508 "Is typing" doesn't automatically disappear [jcbrand]
+- #509 Updated Polish translations [ser]
 - #510 MUC room memberlist is being cleared with page reload when keepalive option is set. [jcbrand]
 - Add the ability to also drag-resize chat boxes horizontally. [jcbrand]
+- Updated Sass files and created a new style. [jcbrand]
 
 ## 0.9.6 (2015-10-12)
 

@@ -123,6 +123,10 @@
             null,
             "Tausche private Schlüssel mit Kontakt aus."
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Persönliche Nachricht"

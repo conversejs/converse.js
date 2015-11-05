@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.0 (Unreleased)
+## 0.10.0 (2015-11-05)
 
 **Note:**
 *This release drops CSS support for IE8 and IE9.*

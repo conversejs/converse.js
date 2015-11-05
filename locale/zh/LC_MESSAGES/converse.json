@@ -110,6 +110,10 @@
             null,
             "无法验证对方信息。"
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "私信"

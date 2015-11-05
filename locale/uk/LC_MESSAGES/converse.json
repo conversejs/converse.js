@@ -123,6 +123,10 @@
             null,
             "Обмін приватним ключем з контактом."
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Персональна вісточка"

@@ -122,6 +122,10 @@
             null,
             "Privát kulcs cseréje..."
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Személyes üzenet"

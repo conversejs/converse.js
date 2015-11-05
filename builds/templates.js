@@ -8,13 +8,13 @@ __p += '<div class="chat-message ' +
 ((__t = (extra_classes)) == null ? '' : __t) +
 '" data-isodate="' +
 ((__t = (isodate)) == null ? '' : __t) +
-'">\n    <span class="chat-message-' +
+'">\n    <span class="chat-msg-author chat-msg-' +
 ((__t = (sender)) == null ? '' : __t) +
 '">' +
 ((__t = (time)) == null ? '' : __t) +
 ' **' +
 ((__t = (username)) == null ? '' : __t) +
-' </span>\n    <span class="chat-message-content">' +
+' </span>\n    <span class="chat-msg-content">' +
 ((__t = (message)) == null ? '' : __t) +
 '</span>\n</div>\n';
 
@@ -26,9 +26,9 @@ this["templates"]["add_contact_dropdown"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form" href="#"\n            title="' +
+__p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
 ((__t = (label_click_to_chat)) == null ? '' : __t) +
-'">\n        <span class="icon-plus"></span>' +
+'"> ' +
 ((__t = (label_add_contact)) == null ? '' : __t) +
 '</a>\n    </dt>\n    <dd class="search-xmpp" style="display:none"><ul></ul></dd>\n</dl>\n';
 
@@ -40,9 +40,9 @@ this["templates"]["add_contact_form"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<li>\n    <form class="add-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="' +
+__p += '<li>\n    <form class="pure-form add-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="' +
 ((__t = (label_contact_username)) == null ? '' : __t) +
-'"/>\n        <button type="submit">' +
+'"/>\n        <button class="pure-button button-primary" type="submit">' +
 ((__t = (label_add)) == null ? '' : __t) +
 '</button>\n    </form>\n</li>\n';
 
@@ -54,13 +54,13 @@ this["templates"]["change_status_message"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<form id="set-custom-xmpp-status">\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" ' +
+__p += '<form id="set-custom-xmpp-status" class="pure-form">\n<fieldset>\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" ' +
 ((__t = (status_message)) == null ? '' : __t) +
-'\n            placeholder="' +
+' placeholder="' +
 ((__t = (label_custom_status)) == null ? '' : __t) +
-'"/>\n        <button type="submit">' +
+'"/>\n        <input type="submit" class="pure-button button-primary" value="' +
 ((__t = (label_save)) == null ? '' : __t) +
-'</button>\n    </span>\n</form>\n';
+'"/>\n    </span>\n</fieldset>\n</form>\n';
 
 }
 return __p
@@ -72,15 +72,15 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="xmpp-status">\n    <a class="choose-xmpp-status ' +
 ((__t = (chat_status)) == null ? '' : __t) +
-'"\n       data-value="' +
-((__t = (status_message)) == null ? '' : __t) +
-'"\n       href="#" title="' +
-((__t = (desc_change_status)) == null ? '' : __t) +
-'">\n\n        <span class="icon-' +
+' icon-' +
 ((__t = (chat_status)) == null ? '' : __t) +
-'"></span>' +
+'" data-value="' +
 ((__t = (status_message)) == null ? '' : __t) +
-'\n    </a>\n    <a class="change-xmpp-status-message icon-pencil"\n        href="#"\n        title="' +
+'" href="#" title="' +
+((__t = (desc_change_status)) == null ? '' : __t) +
+'">\n        ' +
+((__t = (status_message)) == null ? '' : __t) +
+'\n    </a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
 ((__t = (desc_custom_status)) == null ? '' : __t) +
 '"></a>\n</div>\n';
 
@@ -110,13 +110,11 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="box-flyout" ';
- if (height) { ;
-__p += ' style="height: ' +
-((__t = (height)) == null ? '' : __t) +
-'px" ';
- } ;
-__p += '>\n    <div class="dragresize"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <div class="chat-title">\n            ';
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="chatbox-btn close-chatbox-button icon-close" title="' +
+((__t = (info_close)) == null ? '' : __t) +
+'"></a>\n        <a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
+((__t = (info_minimize)) == null ? '' : __t) +
+'"></a>\n        <div class="chat-title">\n            ';
  if (url) { ;
 __p += '\n                <a href="' +
 ((__t = (url)) == null ? '' : __t) +
@@ -142,18 +140,21 @@ return __p
 
 this["templates"]["chatroom"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
+var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="box-flyout" ';
- if (height) { ;
-__p += ' style="height: ' +
-((__t = (height)) == null ? '' : __t) +
-'px" ';
- } ;
-__p += '>\n    <div class="dragresize"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="close-chatbox-button icon-close"></a>\n        <a class="toggle-chatbox-button icon-minus"></a>\n        <a class="configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        <a class="chatbox-btn toggle-chatbox-button icon-minus"></a>\n        <a class="chatbox-btn configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
 ((__t = ( _.escape(name) )) == null ? '' : __t) +
-' </div>\n        <p class="chatroom-topic"><p/>\n    </div>\n    <div class="chat-body"><span class="spinner centered"/></div>\n</div>\n';
+' </div>\n        <p class="chatroom-topic"><p/>\n    </div>\n    <div class="chat-body chatroom-body"><span class="spinner centered"/></div>\n</div>\n';
+
+}
+return __p
+};
+
+this["templates"]["chatroom_form"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form pure-form-stacked converse-form chatroom-form">\n        <fieldset>\n            <span class="spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
 
 }
 return __p
@@ -163,13 +164,13 @@ this["templates"]["chatroom_password_form"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="chatroom-form-container">\n    <form class="chatroom-form">\n        <legend>' +
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>' +
 ((__t = (heading)) == null ? '' : __t) +
-'</legend>\n        <label>' +
+'</legend>\n            <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
-'</label>\n        <input type="password" name="password"/>\n        <input type="submit" value="' +
+'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="' +
 ((__t = (label_submit)) == null ? '' : __t) +
-'"/>\n    </form>\n</div>\n';
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 
 }
 return __p
@@ -179,11 +180,11 @@ this["templates"]["chatroom_sidebar"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<!-- <div class="participants"> -->\n<form class="room-invite">\n    <input class="invited-contact" placeholder="' +
+__p += '<!-- <div class="occupants"> -->\n<form class="pure-form room-invite">\n    <input class="invited-contact" placeholder="' +
 ((__t = (label_invitation)) == null ? '' : __t) +
-'" type="text"/>\n</form>\n<label>' +
+'" type="text"/>\n</form>\n<p class="occupants-heading">' +
 ((__t = (label_occupants)) == null ? '' : __t) +
-':</label>\n<ul class="participant-list"></ul>\n<!-- </div> -->\n';
+':</p>\n<ul class="occupant-list"></ul>\n<!-- </div> -->\n';
 
 }
 return __p
@@ -205,7 +206,7 @@ this["templates"]["chats_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div id="minimized-chats">\n    <a id="toggle-minimized-chats" href="#"></a>\n    <div class="minimized-chats-flyout"></div>\n</div>\n';
+__p += '<div id="minimized-chats">\n    <a id="toggle-minimized-chats" href="#"></a>\n    <div class="flyout minimized-chats-flyout"></div>\n</div>\n';
 
 }
 return __p
@@ -226,7 +227,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="set-xmpp-status" action="" method="post">\n    <span id="xmpp-status-holder">\n        <select id="select-xmpp-status" style="display:none">\n            <option value="online">' +
+__p += '<form class="pure-form set-xmpp-status" action="" method="post">\n    <span id="xmpp-status-holder">\n        <select id="select-xmpp-status" style="display:none">\n            <option value="online">' +
 ((__t = (label_online)) == null ? '' : __t) +
 '</option>\n            <option value="dnd">' +
 ((__t = (label_busy)) == null ? '' : __t) +
@@ -260,16 +261,9 @@ return __p
 
 this["templates"]["controlbox"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
+var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="box-flyout" ';
- if (height) { ;
-__p += ' style="height: ' +
-((__t = (height)) == null ? '' : __t) +
-'px" ';
- } ;
-__p += '>\n    <div class="dragresize"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        <a class="close-chatbox-button icon-close"></a>\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        <a class="chatbox-btn close-chatbox-button icon-close"></a>\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 
 }
 return __p
@@ -495,7 +489,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form id="converse-login" method="post">\n    ';
+__p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ';
  if (auto_login) { ;
 __p += '\n        <span class="spinner login-submit"/>\n    ';
  } ;
@@ -505,19 +499,19 @@ __p += '\n        ';
  if (authentication == LOGIN) { ;
 __p += '\n            <label>' +
 ((__t = (label_username)) == null ? '' : __t) +
-'</label>\n            <input name="jid" placeholder="' +
+'</label>\n            <input type="text" name="jid" placeholder="' +
 ((__t = (placeholder_username)) == null ? '' : __t) +
 '">\n            <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
 '</label>\n            <input type="password" name="password" placeholder="' +
 ((__t = (placeholder_password)) == null ? '' : __t) +
-'">\n            <input class="submit" type="submit" value="' +
+'">\n            <input class="pure-button button-primary" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
 '">\n            <span class="conn-feedback"></span>\n        ';
  } ;
 __p += '\n        ';
  if (authentication == ANONYMOUS) { ;
-__p += '\n            <input type="submit" class="submit login-anon" value="' +
+__p += '\n            <input type="pure-button button-primary" class="submit login-anon" value="' +
 ((__t = (label_anon_login)) == null ? '' : __t) +
 '"/>\n        ';
  } ;
@@ -555,13 +549,13 @@ __p += '<div class="chat-message ' +
 ((__t = (isodate)) == null ? '' : __t) +
 '" data-msgid="' +
 ((__t = (msgid)) == null ? '' : __t) +
-'">\n    <span class="chat-message-' +
+'">\n    <span class="chat-msg-author chat-msg-' +
 ((__t = (sender)) == null ? '' : __t) +
 '">' +
 ((__t = (time)) == null ? '' : __t) +
 ' ' +
 ((__t = (username)) == null ? '' : __t) +
-':&nbsp;</span>\n    <span class="chat-message-content">' +
+':&nbsp;</span>\n    <span class="chat-msg-content">' +
 ((__t = (message)) == null ? '' : __t) +
 '</span>\n</div>\n';
 
@@ -573,7 +567,7 @@ this["templates"]["new_day"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<time class="chat-date" data-isodate="' +
+__p += '<time class="chat-info chat-date" data-isodate="' +
 ((__t = (isodate)) == null ? '' : __t) +
 '">' +
 ((__t = (datestring)) == null ? '' : __t) +
@@ -597,9 +591,9 @@ __p += '\n       title="' +
 '"\n    ';
  } ;
 __p += '\n    ';
- if (role === "participant") { ;
+ if (role === "occupant") { ;
 __p += '\n       title="' +
-((__t = (desc_participant)) == null ? '' : __t) +
+((__t = (desc_occupant)) == null ? '' : __t) +
 '"\n    ';
  } ;
 __p += '\n    ';
@@ -647,7 +641,7 @@ this["templates"]["pending_contacts"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<dt id="pending-xmpp-contacts"><a href="#" class="group-toggle icon-' +
+__p += '<dt class="roster-group" id="pending-xmpp-contacts"><a href="#" class="group-toggle icon-' +
 ((__t = (toggle_state)) == null ? '' : __t) +
 '" title="' +
 ((__t = (desc_group_toggle)) == null ? '' : __t) +
@@ -663,7 +657,7 @@ this["templates"]["register_panel"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<form id="converse-register">\n    <span class="reg-feedback"></span>\n    <label>' +
+__p += '<form id="converse-register" class="pure-form converse-form">\n    <span class="reg-feedback"></span>\n    <label>' +
 ((__t = (label_domain)) == null ? '' : __t) +
 '</label>\n    <input type="text" name="domain" placeholder="' +
 ((__t = (domain_placeholder)) == null ? '' : __t) +
@@ -673,7 +667,7 @@ __p += '<form id="converse-register">\n    <span class="reg-feedback"></span>\n 
 ((__t = (href_providers)) == null ? '' : __t) +
 '" class="url" target="_blank">' +
 ((__t = (help_providers_link)) == null ? '' : __t) +
-'</a>.</p>\n    <input class="submit" type="submit" value="' +
+'</a>.</p>\n    <input class="pure-button button-primary" type="submit" value="' +
 ((__t = (label_register)) == null ? '' : __t) +
 '">\n</form>\n';
 
@@ -719,7 +713,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<span class="spinner login-submit"/>\n<p class="info">' +
 ((__t = (info_message)) == null ? '' : __t) +
-'</p>\n<button class="cancel hor_centered">' +
+'</p>\n<button class="pure-button button-cancel hor_centered">' +
 ((__t = (cancel)) == null ? '' : __t) +
 '</button>\n';
 
@@ -760,7 +754,7 @@ this["templates"]["requesting_contacts"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<dt id="xmpp-contact-requests"><a href="#" class="group-toggle icon-' +
+__p += '<dt class="roster-group" id="xmpp-contact-requests"><a href="#" class="group-toggle icon-' +
 ((__t = (toggle_state)) == null ? '' : __t) +
 '" title="' +
 ((__t = (desc_group_toggle)) == null ? '' : __t) +
@@ -884,31 +878,31 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="add-chatroom" action="" method="post">\n    <label>' +
+__p += '<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">\n    <fieldset>\n        <label>' +
 ((__t = (label_room_name)) == null ? '' : __t) +
-'</label>\n    <input type="text" name="chatroom" class="new-chatroom-name"\n        placeholder="' +
+'</label>\n        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="' +
 ((__t = (label_room_name)) == null ? '' : __t) +
-'"/>\n    <label>' +
+'"/>\n        <label>' +
 ((__t = (label_nickname)) == null ? '' : __t) +
-'</label>\n    <input type="text" name="nick" class="new-chatroom-nick"\n        placeholder="' +
+'</label> <input type="text" name="nick" class="new-chatroom-nick" placeholder="' +
 ((__t = (label_nickname)) == null ? '' : __t) +
-'"/>\n    ';
+'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' +
+((__t = (label_join)) == null ? '' : __t) +
+'"/>\n    </fieldset>\n    <fieldset>\n        ';
  if (server_input_type != 'hidden') { ;
-__p += '\n        <label' +
+__p += '\n            <label' +
 ((__t = (server_label_global_attr)) == null ? '' : __t) +
 '>' +
 ((__t = (label_server)) == null ? '' : __t) +
-'</label>\n    ';
+'</label>\n        ';
  } ;
-__p += '\n    <input type="' +
+__p += '\n        <input type="' +
 ((__t = (server_input_type)) == null ? '' : __t) +
-'" name="server" class="new-chatroom-server"\n        placeholder="' +
+'" name="server" class="new-chatroom-server" placeholder="' +
 ((__t = (label_server)) == null ? '' : __t) +
-'"/>\n    <div class="button-group">\n        <input type="submit" class="left" name="join" value="' +
-((__t = (label_join)) == null ? '' : __t) +
-'"/>\n        <input type="button" class="right" name="show" id="show-rooms" value="' +
+'"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="' +
 ((__t = (label_show_rooms)) == null ? '' : __t) +
-'"/>\n    </div>\n</form>\n<dl id="available-chatrooms"></dl>\n';
+'"/>\n    </fieldset>\n</form>\n<dl id="available-chatrooms"></dl>\n';
 
 }
 return __p
@@ -918,13 +912,13 @@ this["templates"]["roster"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span class="input-button-group">\n    <input style="display: none;" class="roster-filter" placeholder="' +
+__p += '<form class="pure-form roster-filter-group input-button-group">\n    <input style="display: none;" class="roster-filter" placeholder="' +
 ((__t = (placeholder)) == null ? '' : __t) +
 '">\n    <select style="display: none;" class="filter-type">\n        <option value="contacts">' +
 ((__t = (label_contacts)) == null ? '' : __t) +
 '</option>\n        <option value="groups">' +
 ((__t = (label_groups)) == null ? '' : __t) +
-'</option>\n    </select>\n</span>\n';
+'</option>\n    </select>\n</form>\n';
 
 }
 return __p
@@ -1051,9 +1045,9 @@ __p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
 '"></a></li>\n';
  } ;
 __p += '\n';
- if (show_participants_toggle)  { ;
-__p += '\n<li class="toggle-participants"><a class="icon-hide-users" title="' +
-((__t = (label_hide_participants)) == null ? '' : __t) +
+ if (show_occupants_toggle)  { ;
+__p += '\n<li class="toggle-occupants"><a class="icon-hide-users" title="' +
+((__t = (label_hide_occupants)) == null ? '' : __t) +
 '"></a></li>\n';
  } ;
 __p += '\n';
@@ -1123,7 +1117,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<a class="close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count" \n    ';
+__p += '<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count" \n    ';
  if (!num_unread) { ;
 __p += ' style="display: none" ';
  } ;
@@ -1134,6 +1128,22 @@ __p += '\n    href="#">' +
 '">\n    ' +
 ((__t = ( title )) == null ? '' : __t) +
 '\n</a>\n';
+
+}
+return __p
+};
+
+this["templates"]["vcard"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<form class="pure-form converse-form vcard-info">\n    <fieldset>\n        <legend>The VCard info gets rendered here</legend>\n        <label>Full name:</label>\n        ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\n        <label>URL:</label>\n        ' +
+((__t = (url)) == null ? '' : __t) +
+'\n    </fieldset>\n    <fieldset>\n        <input type="button" class="pure-button button-cancel" value="' +
+((__t = (label_return)) == null ? '' : __t) +
+'"/>\n    </fieldset>\n</form>\n';
 
 }
 return __p

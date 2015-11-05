@@ -196,7 +196,7 @@
                 </div>
               </div>
 
-                <div id="chatrooms" class="controlbox-pane" style="">
+                <div id="chatrooms" class="controlbox-pane" style="display:none;">
                     <form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">
                         <fieldset>
                             <legend>Join an existing room or create a new one</legend>
@@ -506,6 +506,9 @@ $(document).ready(function () {
         switchTab(ev); 
     });
     $('a[href=#register]').click(function (ev) { 
+        switchTab(ev);
+    });
+    $('a[href=#login]').click(function (ev) { 
         switchTab(ev);
     });
 

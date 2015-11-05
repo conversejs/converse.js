@@ -52,7 +52,7 @@
          ],
          "Click to hide these contacts": [
             null,
-            "Kliek om hierdie kontakte te verskuil"
+            "Klik om hierdie kontakte te verskuil"
          ],
          "My contacts": [
             null,
@@ -122,6 +122,18 @@
             null,
             "Sleutels word met gespreksmaat uitgeruil."
          ],
+         "Close this chat box": [
+            null,
+            "Klik om hierdie kletskas toe te maak"
+         ],
+         "Minimize this chat box": [
+            null,
+            "Minimeer hierdie kletskas"
+         ],
+         "View more information on this person": [
+            null,
+            "Wys meer inligting aangaande hierdie persoon"
+         ],
          "Personal message": [
             null,
             "Persoonlike boodskap"
@@ -160,7 +172,7 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            "Is u seker u wil die boodskappe van hierdie klets uitvee?"
+            "Is u seker u wil die boodskappe in hierdie kletskas uitvee?"
          ],
          "Your message could not be sent": [
             null,
@@ -246,6 +258,10 @@
             null,
             ""
          ],
+         "Hide the list of occupants": [
+            null,
+            "Verskuil die lys van deelnemers"
+         ],
          "Refresh encrypted conversation": [
             null,
             "Verfris versleutelde gesprek"
@@ -308,7 +324,7 @@
          ],
          "Click to add new chat contacts": [
             null,
-            "Kliek om nuwe kletskontakte by te voeg"
+            "Klik om nuwe kletskontakte by te voeg"
          ],
          "Add a contact": [
             null,
@@ -320,7 +336,7 @@
          ],
          "Click to add as a chat contact": [
             null,
-            "Kliek om as kletskontak by te voeg"
+            "Klik om as kletskontak by te voeg"
          ],
          "Room name": [
             null,
@@ -356,7 +372,7 @@
          ],
          "Click to open this room": [
             null,
-            "Kliek om hierdie kletskamer te open"
+            "Klik om hierdie kletskamer te open"
          ],
          "Show more information on this room": [
             null,
@@ -465,6 +481,10 @@
          "Ban user from room": [
             null,
             "Verban gebruiker uit hierdie kletskamer"
+         ],
+         "Change user role to occupant": [
+            null,
+            "Verander gebruiker se rol na lid"
          ],
          "Kick user from room": [
             null,
@@ -664,7 +684,7 @@
          ],
          "Click to restore this chat": [
             null,
-            "Kliek om hierdie klets te herstel"
+            "Klik om hierdie klets te herstel"
          ],
          "Minimized": [
             null,
@@ -672,19 +692,19 @@
          ],
          "Click to remove this contact": [
             null,
-            "Kliek om hierdie kontak te verwyder"
+            "Klik om hierdie kontak te verwyder"
          ],
          "Click to accept this contact request": [
             null,
-            "Kliek om hierdie kontakversoek te aanvaar"
+            "Klik om hierdie kontakversoek te aanvaar"
          ],
          "Click to decline this contact request": [
             null,
-            "Kliek om hierdie kontakversoek te weier"
+            "Klik om hierdie kontakversoek te weier"
          ],
          "Click to chat with this contact": [
             null,
-            "Kliek om met hierdie kontak te klets"
+            "Klik om met hierdie kontak te klets"
          ],
          "Name": [
             null,
@@ -720,11 +740,11 @@
          ],
          "Click here to write a custom status message": [
             null,
-            "Kliek hier om jou eie statusboodskap te skryf"
+            "Klik hier om jou eie statusboodskap te skryf"
          ],
          "Click to change your chat status": [
             null,
-            "Kliek om jou klets-status te verander"
+            "Klik om jou klets-status te verander"
          ],
          "Custom status": [
             null,
@@ -745,6 +765,10 @@
          "away": [
             null,
             "afwesig"
+         ],
+         "offline": [
+            null,
+            "afgemeld"
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -800,7 +824,7 @@
          ],
          "Click here to log in anonymously": [
             null,
-            "Kliek hier om anoniem aan te meld"
+            "Klik hier om anoniem aan te meld"
          ],
          "Log In": [
             null,
@@ -808,7 +832,11 @@
          ],
          "user@server": [
             null,
-            ""
+            "gebruiker@bediener"
+         ],
+         "password": [
+            null,
+            "wagwoord"
          ],
          "Sign in": [
             null,

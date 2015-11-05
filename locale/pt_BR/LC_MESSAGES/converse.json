@@ -111,6 +111,10 @@
             null,
             "Não foi possível verificar a identidade deste usuário."
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Mensagem pessoal"

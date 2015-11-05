@@ -9,7 +9,7 @@
          },
          " e.g. conversejs.org": [
             null,
-            ""
+            "np. conversejs.org"
          ],
          "unencrypted": [
             null,
@@ -123,6 +123,10 @@
             null,
             "Wymieniam klucze szyfrujące z kontaktem."
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Wiadomość osobista"
@@ -142,6 +146,10 @@
          "has stopped typing": [
             null,
             "przestał pisać"
+         ],
+         "has gone away": [
+            null,
+            "uciekł"
          ],
          "Show this menu": [
             null,
@@ -191,6 +199,14 @@
             null,
             "Niewłaściwy schemat autoryzacji"
          ],
+         "has gone offline": [
+            null,
+            "wyłączył się"
+         ],
+         "is busy": [
+            null,
+            "zajęty"
+         ],
          "Your messages are not encrypted anymore": [
             null,
             "Twoje wiadomości nie są już szyfrowane"
@@ -233,7 +249,7 @@
          ],
          "Insert a smiley": [
             null,
-            ""
+            "Wstaw uśmieszek"
          ],
          "Refresh encrypted conversation": [
             null,
@@ -289,7 +305,7 @@
          ],
          "e.g. user@example.com": [
             null,
-            ""
+            "np. user@example.com"
          ],
          "Add": [
             null,
@@ -322,6 +338,10 @@
          "Server": [
             null,
             "Serwer"
+         ],
+         "Join Room": [
+            null,
+            "Wejdź do pokoju"
          ],
          "Show rooms": [
             null,
@@ -441,11 +461,11 @@
          ],
          "Error: the \"": [
             null,
-            ""
+            "Błąd: \""
          ],
          "Change user's affiliation to admin": [
             null,
-            ""
+            "Przyznaj prawa administratora"
          ],
          "Ban user from room": [
             null,
@@ -461,7 +481,7 @@
          ],
          "Grant membership to a user": [
             null,
-            ""
+            "Przyznaj członkowstwo "
          ],
          "Remove user's ability to post messages": [
             null,
@@ -473,11 +493,15 @@
          ],
          "Grant moderator role to user": [
             null,
-            ""
+            "Przyznaj prawa moderatora"
+         ],
+         "Grant ownership of this room": [
+            null,
+            "Uczyń właścicielem pokoju"
          ],
          "Revoke user's membership": [
             null,
-            ""
+            "Usuń z listy członków"
          ],
          "Set room topic": [
             null,
@@ -669,7 +693,7 @@
          ],
          "Name": [
             null,
-            ""
+            "Nazwa"
          ],
          "Are you sure you want to remove this contact?": [
             null,
@@ -677,7 +701,7 @@
          ],
          "Sorry, there was an error while trying to remove ": [
             null,
-            ""
+            "Wystąpił błąd w trakcie próby usunięcia "
          ],
          "Are you sure you want to decline this contact request?": [
             null,
@@ -685,11 +709,11 @@
          ],
          "Sorry, there was an error while trying to add ": [
             null,
-            ""
+            "Wystąpił błąd w czasie próby dodania "
          ],
          "This client does not allow presence subscriptions": [
             null,
-            ""
+            "Klient nie umożliwia subskrybcji obecności"
          ],
          "Type to filter": [
             null,
@@ -726,6 +750,10 @@
          "away": [
             null,
             "nieobecny"
+         ],
+         "offline": [
+            null,
+            "rozłączony"
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -771,6 +799,10 @@
             null,
             "Powrót"
          ],
+         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            "Dostawca odrzucił twoją próbę rejestracji. Sprawdź proszę poprawność danych które zostały wprowadzone."
+         ],
          "XMPP Username:": [
             null,
             "Nazwa użytkownika XMPP:"
@@ -779,13 +811,21 @@
             null,
             "Hasło:"
          ],
+         "Click here to log in anonymously": [
+            null,
+            "Kliknij tutaj aby zalogować się anonimowo"
+         ],
          "Log In": [
             null,
             "Zaloguj się"
          ],
          "user@server": [
             null,
-            ""
+            "user@server"
+         ],
+         "password": [
+            null,
+            "hasło"
          ],
          "Sign in": [
             null,

@@ -123,7 +123,7 @@ dev: stamp-bower stamp-bundler
 .PHONY: css
 css: converse.css
 
-converse.css:: stamp-bundler
+converse.css:: stamp-bundler stamp-bower
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
 .PHONY: watch

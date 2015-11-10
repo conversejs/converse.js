@@ -840,7 +840,7 @@ msgstr "Nome del dominio del provider XMPP:"
 
 #: converse.js:5570
 msgid "Fetch registration form"
-msgstr "Recupero il modulo di registrazione"
+msgstr "Modulo di registrazione"
 
 #: converse.js:5571
 msgid "Tip: A list of public XMPP providers is available"

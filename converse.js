@@ -304,6 +304,7 @@
             auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,
             auto_subscribe: false,
+            auto_join_on_invite: false,                     // Auto-join chatroom on invite
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
@@ -3633,15 +3634,19 @@
                     contact = converse.roster.get(from),
                     result;
 
-                if (!reason) {
-                    result = confirm(
-                        __(___("%1$s has invited you to join a chat room: %2$s"), contact.get('fullname'), room_jid)
-                    );
+                if (converse.auto_join_on_invite) {
+                    result = true;
                 } else {
-                    result = confirm(
-                         __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
-                                contact.get('fullname'), room_jid, reason)
-                    );
+                    contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);   // Invite request might come from someone not your roster list
+                    if (!reason) {
+                        result = confirm(
+                            __(___("%1$s has invited you to join a chat room: %2$s"), contact, room_jid)
+                        );
+                    } else {
+                        result = confirm(
+                             __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'), contact, room_jid, reason)
+                        );
+                    }
                 }
                 if (result === true) {
                     var chatroom = converse.chatboxviews.showChat({

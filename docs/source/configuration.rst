@@ -244,6 +244,13 @@ auto_subscribe
 
 If true, the user will automatically subscribe back to any contact requests.
 
+auto_join_on_invite
+--------------
+
+* Default:  ``false``
+
+If true, the user will automatically join a chatroom on invite without any confirm.
+
 .. _`bosh-service-url`:
 
 bosh_service_url

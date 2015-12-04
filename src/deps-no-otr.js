@@ -1,8 +1,8 @@
 define("converse-dependencies", [
     "jquery",
     "underscore",
-    "utils",
     "polyfill",
+    "utils",
     "moment_with_locales",
     "strophe",
     "strophe.disco",

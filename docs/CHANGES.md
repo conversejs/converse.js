@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.1 (2015-12-02)
+
+- #524 Added auto_join_on_invite parameter for automatically joining chatrooms. [ben]
+- FIX: A chatroom invite might come from someone not in your roster list. [ben]
+
 ## 0.10.0 (2015-11-05)
 
 **Note:**
@@ -15,6 +20,7 @@
 - #510 MUC room memberlist is being cleared with page reload when keepalive option is set. [jcbrand]
 - Add the ability to also drag-resize chat boxes horizontally. [jcbrand]
 - Updated Sass files and created a new style. [jcbrand]
+
 
 ## 0.9.6 (2015-10-12)
 

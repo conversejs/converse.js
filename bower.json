@@ -9,6 +9,7 @@
     "requirejs-text": "~2.0.10",
     "requirejs-tpl-jcbrand": "*"
   },
+  "main": "./converse.js",
   "dependencies": {
     "requirejs": "~2.1.15",
     "jquery": "1.11.0",

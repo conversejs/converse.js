@@ -7,7 +7,7 @@
     </fieldset>
     <fieldset>
         {[ if (server_input_type != 'hidden') { ]}
-            <label{{server_label_global_attr}}>{{label_server}}</label>
+            <label>{{server_label_global_attr}}>{{label_server}}</label>
         {[ } ]}
         <input type="{{server_input_type}}" name="server" class="new-chatroom-server" placeholder="{{label_server}}"/>
         <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="{{label_show_rooms}}"/>

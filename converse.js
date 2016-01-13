@@ -421,7 +421,12 @@
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
-        this.initial_presence_sent = 0;
+        // This var is used to detect when the session was disconnected,
+        // so that we can send out a new presence stanza. Otherwise
+        // it won't be sent out due to roster contacts already being
+        // in sessionStorage.
+        // https://github.com/jcbrand/converse.js/issues/521
+        this.initial_presence_sent = false;
         this.msg_counter = 0;
 
         // Module-level functions
@@ -4511,11 +4516,14 @@
                 return true;
             },
 
-            fetchFromServer: function (callback, errback) {
+            fetchFromServer: function (callback) {
                 /* Get the roster from the XMPP server */
                 var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
-                return converse.connection.sendIQ(iq, this.onReceivedFromServer.bind(this));
+                return converse.connection.sendIQ(iq, function () {
+                        this.onReceivedFromServer.apply(this, arguments);
+                        callback.apply(this, arguments);
+                    }.bind(this));
             },
 
             onReceivedFromServer: function (iq) {
@@ -4526,16 +4534,6 @@
                 $(iq).children('query').find('item').each(function (idx, item) {
                     this.updateContact(item);
                 }.bind(this));
-                if (!converse.initial_presence_sent) {
-                    /* Once we've sent out our initial presence stanza, we'll
-                     * start receiving presence stanzas from our contacts.
-                     * We therefore only want to do this after our roster has
-                     * been set up (otherwise we can't meaningfully process
-                     * incoming presence stanzas).
-                     */
-                    converse.initial_presence_sent = 1;
-                    converse.xmppstatus.sendPresence();
-                }
             },
 
             updateContact: function (item) {
@@ -4938,13 +4936,26 @@
                         converse.roster.fetch({
                             add: true,
                             success: function (collection) {
-                                if (collection.length > 0) {
-                                    converse.initial_presence_sent = 1;
-                                } else {
-                                    // We don't have any roster contacts stored
-                                    // in sessionStorage, so lets fetch the
-                                    // roster from the XMPP server.
-                                    converse.roster.fetchFromServer();
+                                if (collection.length === 0) {
+                                    /* We don't have any roster contacts stored in sessionStorage,
+                                     * so lets fetch the roster from the XMPP server. We pass in
+                                     * 'sendPresence' as callback method, because after initially
+                                     * fetching the roster we are ready to receive presence
+                                     * updates from our contacts.
+                                     */
+                                    converse.roster.fetchFromServer(
+                                        converse.xmppstatus.sendInitialPresence.bind(converse.xmppstatus)
+                                    );
+                                } else if (converse.connection._proto instanceof Strophe.Websocket ||
+                                           !converse.keepalive ||
+                                           !converse.initial_presence_sent
+                                        ) {
+                                    /* We're not going to fetch the roster again (because we have
+                                     * it already cached in sessionStorage, but we still need to
+                                     * send out our presence because this is a new session.
+                                     * See: https://github.com/jcbrand/converse.js/issues/536
+                                     */
+                                    converse.xmppstatus.sendInitialPresence();
                                 }
                             }
                         });
@@ -5275,6 +5286,11 @@
 
             sendPresence: function (type, status_message) {
                 converse.connection.send(this.constructPresence(type, status_message));
+            },
+
+            sendInitialPresence: function () {
+                this.sendPresence();
+                converse.initial_presence_sent = true;
             },
 
             setStatus: function (value) {

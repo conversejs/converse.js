@@ -245,7 +245,7 @@ auto_subscribe
 If true, the user will automatically subscribe back to any contact requests.
 
 auto_join_on_invite
---------------
+-------------------
 
 * Default:  ``false``
 

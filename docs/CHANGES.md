@@ -5,6 +5,7 @@
 - #524 Added `auto_join_on_invite` parameter for automatically joining chatrooms. [ben]
 - #521 Not sending presence when connecting after disconnection. [jcbrand]
 - #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]
+- #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]
 
 ## 0.10.0 (2015-11-05)

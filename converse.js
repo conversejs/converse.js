@@ -6347,9 +6347,6 @@
 
                 if (typeof plugin.initialize === "function") {
                     plugin.initialize.bind(plugin)(this);
-                } else {
-                    // This will be deprecated in 0.10
-                    plugin.bind(this)(this);
                 }
             }.bind(this));
         };

@@ -309,12 +309,14 @@
             cache_otr_key: false,
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
+            default_domain: undefined,
             domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             expose_rid_and_sid: false,
             forward_messages: false,
             hide_muc_server: false,
             hide_offline_users: false,
             jid: undefined,
+            locked_domain: undefined,
             keepalive: false,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
             message_carbons: false, // Support for XEP-280
@@ -6015,7 +6017,7 @@
                         'label_password': __('Password:'),
                         'label_anon_login': __('Click here to log in anonymously'),
                         'label_login': __('Log In'),
-                        'placeholder_username': __('user@server'),
+                        'placeholder_username': (converse.locked_domain || converse.default_domain) && __('Username') || __('user@server'),
                         'placeholder_password': __('password')
                     })
                 ));
@@ -6053,6 +6055,11 @@
                     $pw_input.addClass('error');
                 }
                 if (errors) { return; }
+                if (converse.locked_domain) {
+                    jid = Strophe.escapeNode(jid) + '@' + converse.locked_domain;
+                } else if (converse.default_domain && jid.indexOf('@') === -1) {
+                    jid = jid + '@' + converse.default_domain;
+                }
                 this.connect($form, jid, password);
                 return false;
             },

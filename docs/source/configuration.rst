@@ -319,6 +319,21 @@ debug
 
 If set to true, debugging output will be logged to the browser console.
 
+default_domain
+--------------
+
+* Default:  ``undefined``
+
+Specify a domain to act as the default for user JIDs. This allows users to log
+in with only the username part of their JID, instead of the full JID.
+
+For example, if ``default_domain`` is ``example.org``, then the user:
+``johnny@example.org`` can log in with only ``johnny``.
+
+JIDs with other domains are still allowed but need to be provided in full.
+To specify only one domain and disallow other domains, see the `locked_domain`_
+option.
+
 domain_placeholder
 ------------------
 
@@ -476,7 +491,12 @@ If no locale is matching available locales, the default is ``en``.
 Specify the locale/language. The language must be in the ``locales`` object. Refer to
 ``./locale/locales.js`` to see which locales are supported.
 
-.. _`play-sounds`:
+locked_domain
+-------------
+
+* Default:  ``undefined``
+
+Similar to `default_domain`_ but no other domains are allowed.
 
 ping_interval
 -------------
@@ -488,6 +508,8 @@ The ping are sent only if no messages are sent in the last ``ping_interval`` sec
 You need to set the value to any positive value to enable this functionality.
 
 If you set this value to ``0`` or any negative value, il will disable this functionality.
+
+.. _`play-sounds`:
 
 play_sounds
 -----------

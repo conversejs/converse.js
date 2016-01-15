@@ -5,6 +5,8 @@
 - #352 When the user has manually scrolled up in a chat window, don't scroll
   down on chat event notifications. [jcbrand]
 - #524 Added `auto_join_on_invite` parameter for automatically joining chatrooms. [ben]
+- #520 Set specific domain. Two new options [default_domain](https://conversejs.org/docs/html/configuration.html#default_domain)
+  and [locked_domain](https://conversejs.org/docs/html/configuration.html#locked_domain). [jcbrand]
 - #521 Not sending presence when connecting after disconnection. [jcbrand]
 - #535 Messages not received when room with mixed-case JID is used. [jcbrand]
 - #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]

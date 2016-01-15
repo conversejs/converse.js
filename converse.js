@@ -2491,7 +2491,7 @@
                     name = $name.val().trim();
                     $name.val(''); // Clear the input
                     if (name && server) {
-                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server;
+                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
                         $name.removeClass('error');
                         $server.removeClass('error');
                         this.model.save({muc_domain: server});
@@ -3749,6 +3749,7 @@
                  *    (String) jid - The JID of the user whose chat box we want
                  *    (Boolean) create - Should a new chat box be created if none exists?
                  */
+                jid = jid.toLowerCase();
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var chatbox = this.get(bare_jid);
                 if (!chatbox && create) {
@@ -6375,7 +6376,7 @@
             'focus': view.focus.bind(view),
             'get': chatbox.get.bind(chatbox),
             'initiateOTR': chatbox.initiateOTR.bind(chatbox),
-            'is_chatroom': chatbox.is_chatroom,
+            'is_chatroom': view.is_chatroom,
             'maximize': chatbox.maximize.bind(chatbox),
             'minimize': chatbox.minimize.bind(chatbox),
             'open': view.show.bind(view),
@@ -6581,6 +6582,7 @@
                     throw new TypeError('rooms.open: invalid nick, must be string');
                 }
                 var _transform = function (jid) {
+                    jid = jid.toLowerCase();
                     var chatroom = converse.chatboxes.get(jid);
                     converse.log('jid');
                     if (!chatroom) {

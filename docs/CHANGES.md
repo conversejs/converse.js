@@ -6,6 +6,7 @@
   down on chat event notifications. [jcbrand]
 - #524 Added `auto_join_on_invite` parameter for automatically joining chatrooms. [ben]
 - #521 Not sending presence when connecting after disconnection. [jcbrand]
+- #535 Messages not received when room with mixed-case JID is used. [jcbrand]
 - #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]
 - #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]

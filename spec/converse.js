@@ -317,6 +317,89 @@
             }, converse));
         }, converse));
 
+        describe("The \"rooms\" API", function () {
+            beforeEach(function () {
+                test_utils.closeAllChatBoxes();
+                test_utils.clearBrowserStorage();
+                converse.rosterview.model.reset();
+                test_utils.createContacts('current');
+            });
+
+            it("has a method 'get' which returns a wrapped chat room (if it exists)", function () {
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var jid = 'lounge@localhost';
+                var room = converse_api.rooms.get(jid);
+                expect(room instanceof Object).toBeTruthy();
+                expect(room.is_chatroom).toBeTruthy();
+                var chatroomview = converse.chatboxviews.get(jid);
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+                chatroomview.close();
+
+                // Test with mixed case
+                test_utils.openChatRoom('Leisure', 'localhost', 'dummy');
+                jid = 'Leisure@localhost';
+                room = converse_api.rooms.get(jid);
+                expect(room instanceof Object).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid.toLowerCase());
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+
+                jid = 'leisure@localhost';
+                room = converse_api.rooms.get(jid);
+                expect(room instanceof Object).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid.toLowerCase());
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+
+                jid = 'leiSure@localhost';
+                room = converse_api.rooms.get(jid);
+                expect(room instanceof Object).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid.toLowerCase());
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+                chatroomview.close();
+
+                // Non-existing room
+                jid = 'lounge2@localhost';
+                room = converse_api.rooms.get(jid);
+                expect(typeof room === 'undefined').toBeTruthy();
+            });
+
+           it("has a method 'open' which opens and returns a wrapped chat box", function () {
+                // Test on chat room that doesn't exist.
+                var jid = 'lounge@localhost';
+                var room = converse_api.rooms.open(jid);
+                expect(room instanceof Object).toBeTruthy();
+                expect(room.is_chatroom).toBeTruthy();
+                var chatroomview = converse.chatboxviews.get(jid);
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+
+                // Test again, now that the room exists.
+                room = converse_api.rooms.open(jid);
+                expect(room instanceof Object).toBeTruthy();
+                expect(room.is_chatroom).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid);
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+
+                // Test with mixed case in JID
+                jid = 'Leisure@localhost';
+                room = converse_api.rooms.open(jid);
+                expect(room instanceof Object).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid.toLowerCase());
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+
+                jid = 'leisure@localhost';
+                room = converse_api.rooms.open(jid);
+                expect(room instanceof Object).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid.toLowerCase());
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+
+                jid = 'leiSure@localhost';
+                room = converse_api.rooms.open(jid);
+                expect(room instanceof Object).toBeTruthy();
+                chatroomview = converse.chatboxviews.get(jid.toLowerCase());
+                expect(chatroomview.$el.is(':visible')).toBeTruthy();
+                chatroomview.close();
+            });
+        });
+
         describe("The \"settings\" API", $.proxy(function() {
             beforeEach($.proxy(function () {
                 test_utils.closeAllChatBoxes();

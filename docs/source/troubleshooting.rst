@@ -107,3 +107,23 @@ It shows in which order the libraries must be loaded via ``<script>`` tags. Add
 your own libraries, making sure that they are loaded in the correct order (e.g.
 jQuery plugins must load after jQuery).
 
+
+Performance issues with large rosters
+=====================================
+
+Effort has been made to benchmark and optimize converse.js to work with large
+rosters.
+
+See for example the benchmarking tests in `spec/profiling.js
+<https://github.com/jcbrand/converse.js/blob/master/spec/profiling.js>`_ which
+can be used together with the `profiling features of
+Chrome <https://developer.chrome.com/devtools/docs/cpu-profiling>`_ to find
+bottlenecks in the code.
+
+However, with large rosters (more than 1000 contacts), rendering in
+converse.js slows down a lot and it may become intolerably slow.
+
+One simple trick to improve performance is to set ``show_only_online_users: true``.
+This will (usually) reduce the amount of contacts that get rendered in the
+roster, which eases one of the remaining performance bottlenecks.
+

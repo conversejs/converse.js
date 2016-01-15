@@ -2,6 +2,8 @@
 
 ## 0.10.1 (Unreleased)
 
+- #352 When the user has manually scrolled up in a chat window, don't scroll
+  down on chat event notifications. [jcbrand]
 - #524 Added `auto_join_on_invite` parameter for automatically joining chatrooms. [ben]
 - #521 Not sending presence when connecting after disconnection. [jcbrand]
 - #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]

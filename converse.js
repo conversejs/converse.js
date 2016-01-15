@@ -1420,8 +1420,11 @@
                 if (!keep_old) {
                     this.clearStatusNotification();
                 }
+                var was_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight;
                 this.$content.append($('<div class="chat-info chat-event"></div>').text(message));
-                this.scrollDown();
+                if (was_at_bottom) {
+                    this.scrollDown();
+                }
             },
 
             clearChatRoomMessages: function (ev) {

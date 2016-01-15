@@ -201,11 +201,16 @@ auto_login
 This option can be used to let converse.js automatically log the user in as
 soon as the page loads.
 
-It should be used either with ``authentication`` set to ``anonymous`` or to
-``login``.
+It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
 
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values.
+
+This is a useful setting if you'd like to create a custom login form in your
+website. You'll need to write some Javascript to accept that custom form's
+login credentials, then you can pass those credentials (``jid`` and
+``password``) to ``converse.initialize`` to start converse.js and log the user
+into their XMPP account.
 
 auto_away
 ---------

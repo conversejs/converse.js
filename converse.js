@@ -421,12 +421,15 @@
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
-        // This var is used to detect when the session was disconnected,
-        // so that we can send out a new presence stanza. Otherwise
-        // it won't be sent out due to roster contacts already being
-        // in sessionStorage.
-        // https://github.com/jcbrand/converse.js/issues/521
-        this.initial_presence_sent = false;
+        /* When reloading the page:
+         * For new sessions, we need to send out a presence stanza to notify
+         * the server/network that we're online.
+         * When re-attaching to an existing session (e.g. via the keepalive
+         * option), we don't need to again send out a presence stanza, because
+         * it's as if "we never left" (see onConnectStatusChanged).
+         * https://github.com/jcbrand/converse.js/issues/521
+         */
+        this.send_initial_presence = true;
         this.msg_counter = 0;
 
         // Module-level functions
@@ -629,12 +632,18 @@
         this.onConnectStatusChanged = function (status, condition, reconnect) {
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                // By default we always want to send out an initial presence stanza.
+                converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
                 } else {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+                    if (converse.connection.restored) {
+                        converse.send_initial_presence = false; // No need to send an initial presence stanza when
+                                                                // we're restoring an existing session.
+                    }
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
@@ -4944,18 +4953,15 @@
                                      * updates from our contacts.
                                      */
                                     converse.roster.fetchFromServer(
-                                        converse.xmppstatus.sendInitialPresence.bind(converse.xmppstatus)
+                                        converse.xmppstatus.sendPresence.bind(converse.xmppstatus)
                                     );
-                                } else if (converse.connection._proto instanceof Strophe.Websocket ||
-                                           !converse.keepalive ||
-                                           !converse.initial_presence_sent
-                                        ) {
-                                    /* We're not going to fetch the roster again (because we have
+                                } else if (converse.send_initial_presence) {
+                                    /* We're not going to fetch the roster again because we have
                                      * it already cached in sessionStorage, but we still need to
-                                     * send out our presence because this is a new session.
+                                     * send out a presence stanza because this is a new session.
                                      * See: https://github.com/jcbrand/converse.js/issues/536
                                      */
-                                    converse.xmppstatus.sendInitialPresence();
+                                    converse.xmppstatus.sendPresence();
                                 }
                             }
                         });
@@ -5286,11 +5292,6 @@
 
             sendPresence: function (type, status_message) {
                 converse.connection.send(this.constructPresence(type, status_message));
-            },
-
-            sendInitialPresence: function () {
-                this.sendPresence();
-                converse.initial_presence_sent = true;
             },
 
             setStatus: function (value) {
@@ -6264,7 +6265,6 @@
             /* Remove those views which are only allowed with a valid
              * connection.
              */
-            this.initial_presence_sent = false;
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }

@@ -481,6 +481,12 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+locked_domain
+-------------
+
+* Default:  ``undefined``
+
+Similar to `default_domain`_ but no other domains are allowed.
 
 message_archiving
 -----------------
@@ -532,73 +538,6 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
-expose_rid_and_sid
-------------------
-
-* Default:  ``false``
-
-Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
-globally via the API. This allows other scripts served on the same page to use
-these values.
-
-*Beware*: a malicious script could use these tokens to assume your identity
-and inject fake chat messages.
-
-forward_messages
-----------------
-
-* Default:  ``false``
-
-If set to ``true``, sent messages will also be forwarded to the sending user's
-bare JID (their Jabber ID independent of any chat clients aka resources).
-
-This means that sent messages are visible from all the user's chat clients,
-and not just the one from which it was actually sent.
-
-This is especially important for web chat, such as converse.js, where each
-browser tab functions as a separate chat client, with its own resource.
-
-This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
-
-For an alternative approach, see also `message_carbons`_.
-
-fullname
---------
-
-If you are using prebinding, can specify the fullname of the currently
-logged in user, otherwise the user's vCard will be fetched.
-
-hide_muc_server
----------------
-
-* Default:  ``false``
-
-Hide the ``server`` input field of the form inside the ``Room`` panel of the
-controlbox. Useful if you want to restrict users to a specific XMPP server of
-your choosing.
-
-hide_offline_users
-------------------
-
-* Default:  ``false``
-
-If set to ``true``, then don't show offline users.
-
-i18n
-----
-
-* Default:  Auto-detection of the User/Browser language
-
-If no locale is matching available locales, the default is ``en``.
-Specify the locale/language. The language must be in the ``locales`` object. Refer to
-``./locale/locales.js`` to see which locales are supported.
-
-locked_domain
--------------
-
-* Default:  ``undefined``
-
-Similar to `default_domain`_ but no other domains are allowed.
 
 ping_interval
 -------------

@@ -341,6 +341,108 @@ domain_placeholder
 
 The placeholder text shown in the domain input on the registration form.
 
+expose_rid_and_sid
+------------------
+
+* Default:  ``false``
+
+Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
+globally via the API. This allows other scripts served on the same page to use
+these values.
+
+*Beware*: a malicious script could use these tokens to assume your identity
+and inject fake chat messages.
+
+forward_messages
+----------------
+
+* Default:  ``false``
+
+If set to ``true``, sent messages will also be forwarded to the sending user's
+bare JID (their Jabber ID independent of any chat clients aka resources).
+
+This means that sent messages are visible from all the user's chat clients,
+and not just the one from which it was actually sent.
+
+This is especially important for web chat, such as converse.js, where each
+browser tab functions as a separate chat client, with its own resource.
+
+This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+
+For an alternative approach, see also `message_carbons`_.
+
+fullname
+--------
+
+If you are using prebinding, can specify the fullname of the currently
+logged in user, otherwise the user's vCard will be fetched.
+
+hide_muc_server
+---------------
+
+* Default:  ``false``
+
+Hide the ``server`` input field of the form inside the ``Room`` panel of the
+controlbox. Useful if you want to restrict users to a specific XMPP server of
+your choosing.
+
+hide_offline_users
+------------------
+
+* Default:  ``false``
+
+If set to ``true``, then don't show offline users.
+
+include_offline_state
+---------------------
+
+* Default: `false`
+
+Originally, converse.js included an `offline` state which the user could
+choose (along with `online`, `busy` and `away`).
+
+Eventually it was however decided to remove this state, since the `offline`
+state doesn't propagate across tabs like the others do.
+
+What's meant by "propagate across tabs", is that when you set the state to
+`offline` in one tab, and you have instances of converse.js open in other tabs
+in your browser, then those instances will not have their states changed to
+`offline` as well. For the other statees the change is however propagated.
+
+The reason for this is that according to the XMPP spec, there is no `offline`
+state. The only defined states are:
+
+* away -- The entity or resource is temporarily away.
+* chat -- The entity or resource is actively interested in chattiIng.
+* dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
+* xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
+
+Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info. 
+
+What used to happen in converse.js when the `offline` state was chosen, is
+that a presence stanza with a `type` of `unavailable` was sent out.
+
+This is actually exactly what happens when you log out of converse.js as well,
+with the notable exception that in the `offline` state, the connection is not
+terminated. So you can at any time change your state to something else and
+start chatting again.
+
+This might be useful to people, however the fact that the `offline` state
+doesn't propagate across tabs means that the user experience is inconsistent,
+confusing and appears "broken".
+
+If you are however aware of this issue and still want to allow the `offline`
+state, then you can set this option to `true` to enable it.
+
+i18n
+----
+
+* Default:  Auto-detection of the User/Browser language
+
+If no locale is matching available locales, the default is ``en``.
+Specify the locale/language. The language must be in the ``locales`` object. Refer to
+``./locale/locales.js`` to see which locales are supported.
+
 jid
 ---
 

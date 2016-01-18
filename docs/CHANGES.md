@@ -12,6 +12,8 @@
 - #535 Messages not received when room with mixed-case JID is used. [jcbrand]
 - #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]
 - #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
+- #547 By default the `offline` state is no longer choosable.
+  See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]
 
 ## 0.10.0 (2015-11-05)

@@ -316,6 +316,7 @@
             forward_messages: false,
             hide_muc_server: false,
             hide_offline_users: false,
+            include_offline_state: false,
             jid: undefined,
             keepalive: false,
             locked_domain: undefined,
@@ -2223,6 +2224,7 @@
                     label_away: __('Away'),
                     label_offline: __('Offline'),
                     label_logout: __('Log out'),
+                    include_offline_state: converse.include_offline_state,
                     allow_logout: converse.allow_logout
                 });
                 this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));

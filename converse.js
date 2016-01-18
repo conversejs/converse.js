@@ -295,16 +295,17 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
-            archived_messages_page_size: '20',
-            auto_away: 0, // Seconds after which user status is set to 'away'
-            auto_xa: 0, // Seconds after which user status is set to 'xa'
             allow_registration: true,
             animate: true,
+            archived_messages_page_size: '20',
+            authentication: 'login', // Available values are "login", "prebind", "anonymous".
+            auto_away: 0, // Seconds after which user status is set to 'away'
+            auto_join_on_invite: false,                     // Auto-join chatroom on invite
             auto_list_rooms: false,
             auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,
             auto_subscribe: false,
-            auto_join_on_invite: false,                     // Auto-join chatroom on invite
+            auto_xa: 0, // Seconds after which user status is set to 'xa'
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
@@ -316,17 +317,15 @@
             hide_muc_server: false,
             hide_offline_users: false,
             jid: undefined,
-            locked_domain: undefined,
             keepalive: false,
+            locked_domain: undefined,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
             message_carbons: false, // Support for XEP-280
             muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            password: undefined,
             ping_interval: 180, //in seconds
             play_sounds: false,
-            sounds_path: '/sounds/',
-            password: undefined,
-            authentication: 'login', // Available values are "login", "prebind", "anonymous".
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
@@ -336,6 +335,7 @@
             show_only_online_users: false,
             show_toolbar: true,
             sid: undefined,
+            sounds_path: '/sounds/',
             storage: 'session',
             use_otr_by_default: false,
             use_vcards: true,

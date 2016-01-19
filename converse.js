@@ -4192,6 +4192,13 @@
                         this.save({'resources': resources});
                     }
                 }
+                else {
+                    // if there is no resource (resource is null), it probably
+                    // means that the user is now completely offline. To make sure
+                    // that there isn't any "ghost" resources left, we empty the array
+                    this.save({'resources': []});
+                    return 0;
+                }
                 return resources.length;
             },
 

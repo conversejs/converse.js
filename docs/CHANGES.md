@@ -15,6 +15,7 @@
 - #547 By default the `offline` state is no longer choosable.
   See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]
+- #487 Empty the resources array when the resource is null [rlanvin]
 
 ## 0.10.0 (2015-11-05)
 

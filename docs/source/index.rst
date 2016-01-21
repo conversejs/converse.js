@@ -51,6 +51,7 @@ Table of Contents
    style_guide 
    theming
    translations
+   troubleshooting
    documentation
    builds
 

@@ -32,6 +32,7 @@ require.config({
         "strophe-md5":              "components/strophejs/src/md5",
         "strophe-polyfill":         "components/strophejs/src/polyfills",
         "strophe-sha1":             "components/strophejs/src/sha1",
+        "strophe-utils":            "components/strophejs/src/utils",
         "strophe-websocket":        "components/strophejs/src/websocket",
         "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
         "strophe.ping":             "src/strophe.ping",

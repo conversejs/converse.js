@@ -201,11 +201,16 @@ auto_login
 This option can be used to let converse.js automatically log the user in as
 soon as the page loads.
 
-It should be used either with ``authentication`` set to ``anonymous`` or to
-``login``.
+It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
 
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values.
+
+This is a useful setting if you'd like to create a custom login form in your
+website. You'll need to write some Javascript to accept that custom form's
+login credentials, then you can pass those credentials (``jid`` and
+``password``) to ``converse.initialize`` to start converse.js and log the user
+into their XMPP account.
 
 auto_away
 ---------
@@ -243,6 +248,13 @@ auto_subscribe
 * Default:  ``false``
 
 If true, the user will automatically subscribe back to any contact requests.
+
+auto_join_on_invite
+-------------------
+
+* Default:  ``false``
+
+If true, the user will automatically join a chatroom on invite without any confirm.
 
 .. _`bosh-service-url`:
 
@@ -307,101 +319,27 @@ debug
 
 If set to true, debugging output will be logged to the browser console.
 
+default_domain
+--------------
+
+* Default:  ``undefined``
+
+Specify a domain to act as the default for user JIDs. This allows users to log
+in with only the username part of their JID, instead of the full JID.
+
+For example, if ``default_domain`` is ``example.org``, then the user:
+``johnny@example.org`` can log in with only ``johnny``.
+
+JIDs with other domains are still allowed but need to be provided in full.
+To specify only one domain and disallow other domains, see the `locked_domain`_
+option.
+
 domain_placeholder
 ------------------
 
 * Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
-
-jid
----
-
-The Jabber ID or "JID" of the current user. The JID uniquely identifies a user
-on the XMPP network. It looks like an email address, but it's used for instant
-messaging instead.
-
-This value needs to be provided when using the :ref:`keepalive` option together
-with `prebind`_.
-
-
-.. _`keepalive`:
-
-keepalive
----------
-
-* Default:    ``true``
-
-Determines whether Converse.js will maintain the chat session across page
-loads.
-
-This setting should also be used in conjunction with ``authentication`` set to `prebind`_.
-
-When using ``keepalive`` and ``prebind``, you will have to provide the `jid`_
-of the current user to ensure that a cached session is only resumed if it
-belongs to the current user.
-
-See also:
-
-* :ref:`session-support`
-
-.. note::
-    Currently the "keepalive" setting only works with BOSH and not with
-    websockets. This is because XMPP over websocket does not use the same
-    session token as with BOSH. A possible solution for this is to implement
-    `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
-    with regards to "stream resumption".
-
-
-message_archiving
------------------
-
-* Default:  ``never``
-
-Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_
-
-This sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
-
-``roster`` means that only messages to and from JIDs in your roster will be
-archived. The other two values are self-explanatory.
-
-message_carbons
----------------
-
-* Default:  ``false``
-
-Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
-
-In order to keep all IM clients for a user engaged in a conversation,
-outbound messages are carbon-copied to all interested resources.
-
-This is especially important in webchat, like converse.js, where each browser
-tab serves as a separate IM client.
-
-Both message_carbons and `forward_messages`_ try to solve the same problem
-(showing sent messages in all connected chat clients aka resources), but go about it
-in two different ways.
-
-Message carbons is the XEP (Jabber protocol extension) specifically drafted to
-solve this problem, while `forward_messages`_ uses
-`stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
-
-muc_history_max_stanzas
------------------------
-
-* Default:  ``undefined``
-
-This option allows you to specify the maximum amount of messages to be shown in a
-chat room when you enter it. By default, the amount specified in the room
-configuration or determined by the server will be returned.
-
-Please note, this option is not related to
-`XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
-which also allows you to show archived chat room messages, but follows a
-different approach.
-
-If you're using MAM for archiving chat room messages, you might want to set
-this option to zero.
 
 expose_rid_and_sid
 ------------------
@@ -455,6 +393,47 @@ hide_offline_users
 
 If set to ``true``, then don't show offline users.
 
+include_offline_state
+---------------------
+
+* Default: `false`
+
+Originally, converse.js included an `offline` state which the user could
+choose (along with `online`, `busy` and `away`).
+
+Eventually it was however decided to remove this state, since the `offline`
+state doesn't propagate across tabs like the others do.
+
+What's meant by "propagate across tabs", is that when you set the state to
+`offline` in one tab, and you have instances of converse.js open in other tabs
+in your browser, then those instances will not have their states changed to
+`offline` as well. For the other statees the change is however propagated.
+
+The reason for this is that according to the XMPP spec, there is no `offline`
+state. The only defined states are:
+
+* away -- The entity or resource is temporarily away.
+* chat -- The entity or resource is actively interested in chattiIng.
+* dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
+* xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
+
+Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info. 
+
+What used to happen in converse.js when the `offline` state was chosen, is
+that a presence stanza with a `type` of `unavailable` was sent out.
+
+This is actually exactly what happens when you log out of converse.js as well,
+with the notable exception that in the `offline` state, the connection is not
+terminated. So you can at any time change your state to something else and
+start chatting again.
+
+This might be useful to people, however the fact that the `offline` state
+doesn't propagate across tabs means that the user experience is inconsistent,
+confusing and appears "broken".
+
+If you are however aware of this issue and still want to allow the `offline`
+state, then you can set this option to `true` to enable it.
+
 i18n
 ----
 
@@ -464,7 +443,101 @@ If no locale is matching available locales, the default is ``en``.
 Specify the locale/language. The language must be in the ``locales`` object. Refer to
 ``./locale/locales.js`` to see which locales are supported.
 
-.. _`play-sounds`:
+jid
+---
+
+The Jabber ID or "JID" of the current user. The JID uniquely identifies a user
+on the XMPP network. It looks like an email address, but it's used for instant
+messaging instead.
+
+This value needs to be provided when using the :ref:`keepalive` option together
+with `prebind`_.
+
+
+.. _`keepalive`:
+
+keepalive
+---------
+
+* Default:    ``true``
+
+Determines whether Converse.js will maintain the chat session across page
+loads.
+
+This setting should also be used in conjunction with ``authentication`` set to `prebind`_.
+
+When using ``keepalive`` and ``prebind``, you will have to provide the `jid`_
+of the current user to ensure that a cached session is only resumed if it
+belongs to the current user.
+
+See also:
+
+* :ref:`session-support`
+
+.. note::
+    Currently the "keepalive" setting only works with BOSH and not with
+    websockets. This is because XMPP over websocket does not use the same
+    session token as with BOSH. A possible solution for this is to implement
+    `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
+    with regards to "stream resumption".
+
+locked_domain
+-------------
+
+* Default:  ``undefined``
+
+Similar to `default_domain`_ but no other domains are allowed.
+
+message_archiving
+-----------------
+
+* Default:  ``never``
+
+Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_
+
+This sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
+
+``roster`` means that only messages to and from JIDs in your roster will be
+archived. The other two values are self-explanatory.
+
+message_carbons
+---------------
+
+* Default:  ``false``
+
+Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
+
+In order to keep all IM clients for a user engaged in a conversation,
+outbound messages are carbon-copied to all interested resources.
+
+This is especially important in webchat, like converse.js, where each browser
+tab serves as a separate IM client.
+
+Both message_carbons and `forward_messages`_ try to solve the same problem
+(showing sent messages in all connected chat clients aka resources), but go about it
+in two different ways.
+
+Message carbons is the XEP (Jabber protocol extension) specifically drafted to
+solve this problem, while `forward_messages`_ uses
+`stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+
+muc_history_max_stanzas
+-----------------------
+
+* Default:  ``undefined``
+
+This option allows you to specify the maximum amount of messages to be shown in a
+chat room when you enter it. By default, the amount specified in the room
+configuration or determined by the server will be returned.
+
+Please note, this option is not related to
+`XEP-0313 Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
+which also allows you to show archived chat room messages, but follows a
+different approach.
+
+If you're using MAM for archiving chat room messages, you might want to set
+this option to zero.
+
 
 ping_interval
 -------------
@@ -476,6 +549,8 @@ The ping are sent only if no messages are sent in the last ``ping_interval`` sec
 You need to set the value to any positive value to enable this functionality.
 
 If you set this value to ``0`` or any negative value, il will disable this functionality.
+
+.. _`play-sounds`:
 
 play_sounds
 -----------

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.10.1 (Unreleased)
+
+- #352 When the user has manually scrolled up in a chat window, don't scroll
+  down on chat event notifications. [jcbrand]
+- #524 Added [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto_join_on_invite)
+  parameter for automatically joining chatrooms. [ben]
+- #520 Set specific domain. Two new options [default_domain](https://conversejs.org/docs/html/configuration.html#default_domain)
+  and [locked_domain](https://conversejs.org/docs/html/configuration.html#locked_domain). [jcbrand]
+- #521 Not sending presence when connecting after disconnection. [jcbrand]
+- #535 Messages not received when room with mixed-case JID is used. [jcbrand]
+- #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]
+- #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
+- #547 By default the `offline` state is no longer choosable.
+  See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
+- A chatroom invite might come from someone not in your roster list. [ben]
+- #487 Empty the resources array when the resource is null [rlanvin]
+
 ## 0.10.0 (2015-11-05)
 
 **Note:**
@@ -15,6 +32,7 @@
 - #510 MUC room memberlist is being cleared with page reload when keepalive option is set. [jcbrand]
 - Add the ability to also drag-resize chat boxes horizontally. [jcbrand]
 - Updated Sass files and created a new style. [jcbrand]
+
 
 ## 0.9.6 (2015-10-12)
 

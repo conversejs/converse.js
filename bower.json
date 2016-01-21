@@ -15,7 +15,7 @@
     "jed": "0.5.4",
     "underscore": "~1.8.3",
     "backbone": "1.1.2",
-    "backbone.browserStorage": "*",
+    "backbone.browserStorage": "0.0.2",
     "backbone.overview": "0.0.1",
     "otr": "0.2.12",
     "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",

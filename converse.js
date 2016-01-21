@@ -295,35 +295,38 @@
             allow_logout: true,
             allow_muc: true,
             allow_otr: true,
-            archived_messages_page_size: '20',
-            auto_away: 0, // Seconds after which user status is set to 'away'
-            auto_xa: 0, // Seconds after which user status is set to 'xa'
             allow_registration: true,
             animate: true,
+            archived_messages_page_size: '20',
+            authentication: 'login', // Available values are "login", "prebind", "anonymous".
+            auto_away: 0, // Seconds after which user status is set to 'away'
+            auto_join_on_invite: false,                     // Auto-join chatroom on invite
             auto_list_rooms: false,
             auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,
             auto_subscribe: false,
+            auto_xa: 0, // Seconds after which user status is set to 'xa'
             bosh_service_url: undefined, // The BOSH connection manager URL.
             cache_otr_key: false,
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
+            default_domain: undefined,
             domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             expose_rid_and_sid: false,
             forward_messages: false,
             hide_muc_server: false,
             hide_offline_users: false,
+            include_offline_state: false,
             jid: undefined,
             keepalive: false,
+            locked_domain: undefined,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
             message_carbons: false, // Support for XEP-280
             muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            password: undefined,
             ping_interval: 180, //in seconds
             play_sounds: false,
-            sounds_path: '/sounds/',
-            password: undefined,
-            authentication: 'login', // Available values are "login", "prebind", "anonymous".
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
@@ -333,6 +336,7 @@
             show_only_online_users: false,
             show_toolbar: true,
             sid: undefined,
+            sounds_path: '/sounds/',
             storage: 'session',
             use_otr_by_default: false,
             use_vcards: true,
@@ -420,7 +424,15 @@
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
-        this.initial_presence_sent = 0;
+        /* When reloading the page:
+         * For new sessions, we need to send out a presence stanza to notify
+         * the server/network that we're online.
+         * When re-attaching to an existing session (e.g. via the keepalive
+         * option), we don't need to again send out a presence stanza, because
+         * it's as if "we never left" (see onConnectStatusChanged).
+         * https://github.com/jcbrand/converse.js/issues/521
+         */
+        this.send_initial_presence = true;
         this.msg_counter = 0;
 
         // Module-level functions
@@ -623,12 +635,18 @@
         this.onConnectStatusChanged = function (status, condition, reconnect) {
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                // By default we always want to send out an initial presence stanza.
+                converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
                 } else {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+                    if (converse.connection.restored) {
+                        converse.send_initial_presence = false; // No need to send an initial presence stanza when
+                                                                // we're restoring an existing session.
+                    }
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
@@ -1405,8 +1423,11 @@
                 if (!keep_old) {
                     this.clearStatusNotification();
                 }
+                var was_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight;
                 this.$content.append($('<div class="chat-info chat-event"></div>').text(message));
-                this.scrollDown();
+                if (was_at_bottom) {
+                    this.scrollDown();
+                }
             },
 
             clearChatRoomMessages: function (ev) {
@@ -2203,6 +2224,7 @@
                     label_away: __('Away'),
                     label_offline: __('Offline'),
                     label_logout: __('Log out'),
+                    include_offline_state: converse.include_offline_state,
                     allow_logout: converse.allow_logout
                 });
                 this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
@@ -2473,7 +2495,7 @@
                     name = $name.val().trim();
                     $name.val(''); // Clear the input
                     if (name && server) {
-                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server;
+                        jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
                         $name.removeClass('error');
                         $server.removeClass('error');
                         this.model.save({muc_domain: server});
@@ -3633,15 +3655,19 @@
                     contact = converse.roster.get(from),
                     result;
 
-                if (!reason) {
-                    result = confirm(
-                        __(___("%1$s has invited you to join a chat room: %2$s"), contact.get('fullname'), room_jid)
-                    );
+                if (converse.auto_join_on_invite) {
+                    result = true;
                 } else {
-                    result = confirm(
-                         __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
-                                contact.get('fullname'), room_jid, reason)
-                    );
+                    contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);   // Invite request might come from someone not your roster list
+                    if (!reason) {
+                        result = confirm(
+                            __(___("%1$s has invited you to join a chat room: %2$s"), contact, room_jid)
+                        );
+                    } else {
+                        result = confirm(
+                             __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'), contact, room_jid, reason)
+                        );
+                    }
                 }
                 if (result === true) {
                     var chatroom = converse.chatboxviews.showChat({
@@ -3727,6 +3753,7 @@
                  *    (String) jid - The JID of the user whose chat box we want
                  *    (Boolean) create - Should a new chat box be created if none exists?
                  */
+                jid = jid.toLowerCase();
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var chatbox = this.get(bare_jid);
                 if (!chatbox && create) {
@@ -4165,6 +4192,13 @@
                         this.save({'resources': resources});
                     }
                 }
+                else {
+                    // if there is no resource (resource is null), it probably
+                    // means that the user is now completely offline. To make sure
+                    // that there isn't any "ghost" resources left, we empty the array
+                    this.save({'resources': []});
+                    return 0;
+                }
                 return resources.length;
             },
 
@@ -4506,11 +4540,14 @@
                 return true;
             },
 
-            fetchFromServer: function (callback, errback) {
+            fetchFromServer: function (callback) {
                 /* Get the roster from the XMPP server */
                 var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
-                return converse.connection.sendIQ(iq, this.onReceivedFromServer.bind(this));
+                return converse.connection.sendIQ(iq, function () {
+                        this.onReceivedFromServer.apply(this, arguments);
+                        callback.apply(this, arguments);
+                    }.bind(this));
             },
 
             onReceivedFromServer: function (iq) {
@@ -4521,16 +4558,6 @@
                 $(iq).children('query').find('item').each(function (idx, item) {
                     this.updateContact(item);
                 }.bind(this));
-                if (!converse.initial_presence_sent) {
-                    /* Once we've sent out our initial presence stanza, we'll
-                     * start receiving presence stanzas from our contacts.
-                     * We therefore only want to do this after our roster has
-                     * been set up (otherwise we can't meaningfully process
-                     * incoming presence stanzas).
-                     */
-                    converse.initial_presence_sent = 1;
-                    converse.xmppstatus.sendPresence();
-                }
             },
 
             updateContact: function (item) {
@@ -4933,13 +4960,23 @@
                         converse.roster.fetch({
                             add: true,
                             success: function (collection) {
-                                if (collection.length > 0) {
-                                    converse.initial_presence_sent = 1;
-                                } else {
-                                    // We don't have any roster contacts stored
-                                    // in sessionStorage, so lets fetch the
-                                    // roster from the XMPP server.
-                                    converse.roster.fetchFromServer();
+                                if (collection.length === 0) {
+                                    /* We don't have any roster contacts stored in sessionStorage,
+                                     * so lets fetch the roster from the XMPP server. We pass in
+                                     * 'sendPresence' as callback method, because after initially
+                                     * fetching the roster we are ready to receive presence
+                                     * updates from our contacts.
+                                     */
+                                    converse.roster.fetchFromServer(function () {
+                                        converse.xmppstatus.sendPresence();
+                                    });
+                                } else if (converse.send_initial_presence) {
+                                    /* We're not going to fetch the roster again because we have
+                                     * it already cached in sessionStorage, but we still need to
+                                     * send out a presence stanza because this is a new session.
+                                     * See: https://github.com/jcbrand/converse.js/issues/536
+                                     */
+                                    converse.xmppstatus.sendPresence();
                                 }
                             }
                         });
@@ -5989,7 +6026,7 @@
                         'label_password': __('Password:'),
                         'label_anon_login': __('Click here to log in anonymously'),
                         'label_login': __('Log In'),
-                        'placeholder_username': __('user@server'),
+                        'placeholder_username': (converse.locked_domain || converse.default_domain) && __('Username') || __('user@server'),
                         'placeholder_password': __('password')
                     })
                 ));
@@ -6027,6 +6064,11 @@
                     $pw_input.addClass('error');
                 }
                 if (errors) { return; }
+                if (converse.locked_domain) {
+                    jid = Strophe.escapeNode(jid) + '@' + converse.locked_domain;
+                } else if (converse.default_domain && jid.indexOf('@') === -1) {
+                    jid = jid + '@' + converse.default_domain;
+                }
                 this.connect($form, jid, password);
                 return false;
             },
@@ -6243,7 +6285,6 @@
             /* Remove those views which are only allowed with a valid
              * connection.
              */
-            this.initial_presence_sent = false;
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }
@@ -6326,9 +6367,6 @@
 
                 if (typeof plugin.initialize === "function") {
                     plugin.initialize.bind(plugin)(this);
-                } else {
-                    // This will be deprecated in 0.10
-                    plugin.bind(this)(this);
                 }
             }.bind(this));
         };
@@ -6354,7 +6392,7 @@
             'focus': view.focus.bind(view),
             'get': chatbox.get.bind(chatbox),
             'initiateOTR': chatbox.initiateOTR.bind(chatbox),
-            'is_chatroom': chatbox.is_chatroom,
+            'is_chatroom': view.is_chatroom,
             'maximize': chatbox.maximize.bind(chatbox),
             'minimize': chatbox.minimize.bind(chatbox),
             'open': view.show.bind(view),
@@ -6560,6 +6598,7 @@
                     throw new TypeError('rooms.open: invalid nick, must be string');
                 }
                 var _transform = function (jid) {
+                    jid = jid.toLowerCase();
                     var chatroom = converse.chatboxes.get(jid);
                     converse.log('jid');
                     if (!chatroom) {

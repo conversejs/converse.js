@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-05 11:09+0000\n"
-"PO-Revision-Date: 2015-12-24 17:15+0300\n"
+"PO-Revision-Date: 2016-01-22 20:39+0300\n"
 "Last-Translator: Laconic Team <info@laconic.website>\n"
 "Language-Team: Laconic Team <info@laconic.website>\n"
 "Language: ru\n"
@@ -131,6 +131,12 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
+"Аутентификационный запрос %1$s\n"
+"\n"
+"Ваш контакт из чата пытается проверить вашу подлинность, задав вам следующий "
+"котрольный вопрос.\n"
+"\n"
+"%2$s"
 
 #: converse.js:1076
 msgid "Could not verify this user's identify."
@@ -182,7 +188,7 @@ msgstr "Показать это меню"
 
 #: converse.js:1685
 msgid "Write in the third person"
-msgstr ""
+msgstr "Вписать третьего человека"
 
 #: converse.js:1686 converse.js:3084
 msgid "Remove messages"
@@ -216,6 +222,14 @@ msgid ""
 "If you have confirmed that the fingerprints match, click OK, otherwise click "
 "Cancel."
 msgstr ""
+"Вот отпечатки, пожалуйста подтвердите их с помощью %1$s, вне этого чата.\n"
+"\n"
+"Отпечатки для Вас, %2$s: %3$s\n"
+"\n"
+"Отпечаток для %1$s: %4$s\n"
+"\n"
+"Если вы удостоверились, что отпечатки совпадают, нажмите OK, если нет "
+"нажмите Отмена"
 
 #: converse.js:1930
 msgid ""
@@ -225,6 +239,10 @@ msgid ""
 "Your contact will then be prompted the same question and if they type the "
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
+"Вам будет предложено создать контрольный вопрос и ответ на этот вопрос.\n"
+"\n"
+"Вашему контакту будет задан этот вопрос и, если ответы совпадут (с учётом "
+"регистра), его подлинность будет подтверждена."
 
 #: converse.js:1931
 msgid "What is your security question?"
@@ -236,7 +254,7 @@ msgstr "Ваш ответ на секретный вопрос?"
 
 #: converse.js:1937
 msgid "Invalid authentication scheme provided"
-msgstr ""
+msgstr "Некоррекная схема аутентификации"
 
 #: converse.js:1955
 msgid "has gone offline"
@@ -287,6 +305,7 @@ msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
+"Ваш контакт закрыл свою часть приватной сессии, вы должны сделать то же самое"
 
 #: converse.js:2084
 msgid "Clear all messages"
@@ -294,7 +313,7 @@ msgstr "Очистить все сообщения"
 
 #: converse.js:2085
 msgid "End encrypted conversation"
-msgstr ""
+msgstr "Закончить шифрованную беседу"
 
 #: converse.js:2086
 msgid "Insert a smiley"
@@ -302,27 +321,27 @@ msgstr "Вставить смайлик"
 
 #: converse.js:2087
 msgid "Hide the list of occupants"
-msgstr ""
+msgstr "Спрятать список участников"
 
 #: converse.js:2088
 msgid "Refresh encrypted conversation"
-msgstr ""
+msgstr "Обновить шифрованную беседу"
 
 #: converse.js:2089
 msgid "Start a call"
-msgstr ""
+msgstr "Инициировать звонок"
 
 #: converse.js:2090
 msgid "Start encrypted conversation"
-msgstr "Начать шифрованный диалог"
+msgstr "Начать шифрованный разговор"
 
 #: converse.js:2091
 msgid "Verify with fingerprints"
-msgstr ""
+msgstr "Проверить при помощи отпечатков"
 
 #: converse.js:2092
 msgid "Verify with SMP"
-msgstr ""
+msgstr "Проверить при помощи SMP"
 
 #: converse.js:2093
 msgid "What's this?"
@@ -496,19 +515,19 @@ msgid "Invite..."
 msgstr "Пригласить..."
 
 #: converse.js:2751
-#, fuzzy
 msgid "Occupants"
 msgstr "Участники:"
 
 #: converse.js:2847
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
-msgstr ""
+msgstr "Вы собираетесь пригласить %1$s в чат \"%2$s\". "
 
 #: converse.js:2848
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
 msgstr ""
+"Вы можете дополнительно вставить сообщение, объясняющее причину приглашения."
 
 #: converse.js:2931
 msgid "Message"
@@ -516,11 +535,11 @@ msgstr "Сообщение"
 
 #: converse.js:2983
 msgid "Error: could not execute the command"
-msgstr ""
+msgstr "Ошибка: невозможно выполнить команду"
 
 #: converse.js:3041
 msgid "Error: the \""
-msgstr ""
+msgstr "Ошибка:  \""
 
 #: converse.js:3082
 msgid "Change user's affiliation to admin"
@@ -532,16 +551,16 @@ msgstr "Забанить пользователя в этой конф."
 
 #: converse.js:3085
 msgid "Change user role to occupant"
-msgstr ""
+msgstr "Изменить роль пользователя на \"участник\""
 
 #: converse.js:3087
-#, fuzzy
 msgid "Kick user from room"
-msgstr "Отключить пользователя от кнофер."
+msgstr "Удалить пользователя из комнаты."
 
 #: converse.js:3088
+#, fuzzy
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "Вписать третьего"
 
 #: converse.js:3089
 msgid "Grant membership to a user"
@@ -549,24 +568,23 @@ msgstr ""
 
 #: converse.js:3090
 msgid "Remove user's ability to post messages"
-msgstr ""
+msgstr "Отнять у пользователя возможность оставлять сообщения"
 
 #: converse.js:3091
 msgid "Change your nickname"
-msgstr ""
+msgstr "Изменить свой ник"
 
 #: converse.js:3092
 msgid "Grant moderator role to user"
-msgstr ""
+msgstr "Предоставить права модератора пользователю"
 
 #: converse.js:3093
-#, fuzzy
 msgid "Grant ownership of this room"
-msgstr "Вас нет в списке этой конференции"
+msgstr "Предоставить права владельца на эту комнату"
 
 #: converse.js:3094
 msgid "Revoke user's membership"
-msgstr ""
+msgstr "Отозвать членство пользователя"
 
 #: converse.js:3095
 #, fuzzy
@@ -575,7 +593,7 @@ msgstr "Установить тему"
 
 #: converse.js:3096
 msgid "Allow muted user to post messages"
-msgstr ""
+msgstr "Разрешить заглушенным пользователям оставлять сообщения"
 
 #: converse.js:3252 converse.js:5356
 msgid "Save"
@@ -615,7 +633,7 @@ msgstr "Эта комната не показывает недоступных �
 
 #: converse.js:3378
 msgid "Non-privacy-related room configuration has changed"
-msgstr ""
+msgstr "Изменились настройки комнаты не относящиеся к приватности"
 
 #: converse.js:3379
 msgid "Room logging is now enabled"
@@ -698,8 +716,9 @@ msgid "Your nickname has been changed to: <strong>%1$s</strong>"
 msgstr "Ваш псевдоним изменён на : <strong>%1$s</strong>"
 
 #: converse.js:3463 converse.js:3472
+#, fuzzy
 msgid "The reason given is: \""
-msgstr ""
+msgstr "Причина: \""
 
 #: converse.js:3485
 msgid "You are not on the member list of this room"
@@ -757,11 +776,11 @@ msgstr "Удалить контакт"
 
 #: converse.js:4265
 msgid "Click to accept this contact request"
-msgstr ""
+msgstr "Нажмите, чтобы принять запрос этого контакта"
 
 #: converse.js:4266
 msgid "Click to decline this contact request"
-msgstr ""
+msgstr "Нажмите, чтобы отклонить запрос этого контакта"
 
 #: converse.js:4277
 msgid "Click to chat with this contact"
@@ -844,7 +863,7 @@ msgstr ""
 
 #: converse.js:5571
 msgid "Tip: A list of public XMPP providers is available"
-msgstr ""
+msgstr "Совет. Список публичных XMPP провайдеров доступен"
 
 #: converse.js:5572
 msgid "here"
@@ -859,24 +878,28 @@ msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
+"К сожалению провайдер не поддерживает in band регистрацию аккаунта. "
+"Пожалуйста попробуйте выбрать другого провайдера."
 
 #: converse.js:5683
 msgid "Requesting a registration form from the XMPP server"
-msgstr ""
+msgstr "Запрашивается регистрационная форма с XMPP сервера"
 
 #: converse.js:5718
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
+"Что-то пошло не так, при установке связи с \"%1$s\". Вы уверены, что он "
+"существует?"
 
 #: converse.js:5737
 msgid "Now logging you in"
-msgstr ""
+msgstr "Осуществляется вход"
 
 #: converse.js:5741
 msgid "Registered successfully"
-msgstr ""
+msgstr "Зарегистрирован успешно"
 
 #: converse.js:5800
 msgid "Return"
@@ -887,20 +910,20 @@ msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
+"Провайдер отклонил вашу попытку зарегистрироваться. Пожалуйста, проверьте, "
+"правильно ли введены значения."
 
 #: converse.js:5988
-#, fuzzy
 msgid "XMPP Username:"
-msgstr "JID:"
+msgstr "XMPP Username:"
 
 #: converse.js:5989
 msgid "Password:"
 msgstr "Пароль:"
 
 #: converse.js:5990
-#, fuzzy
 msgid "Click here to log in anonymously"
-msgstr "Эта комната не анонимная"
+msgstr "Нажмите здесь, чтобы войти анонимно"
 
 #: converse.js:5991
 msgid "Log In"
@@ -908,7 +931,7 @@ msgstr "Войти"
 
 #: converse.js:5992
 msgid "user@server"
-msgstr ""
+msgstr "user@server"
 
 #: converse.js:5993
 msgid "password"

@@ -417,6 +417,9 @@
         HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
         HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
+        //auto_reconnect timeout
+        this.reconnectTimeout = undefined;
+
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
@@ -593,8 +596,10 @@
         this.reconnect = function (condition) {
             converse.log('Attempting to reconnect in 5 seconds');
             converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
-            setTimeout(function () {
+            clearTimeout(converse.reconnectTimeout);
+            converse.reconnectTimeout = setTimeout(function () {
                 if (converse.authentication !== "prebind") {
+                    this.connection.pass = this.password;
                     this.connection.connect(
                         this.connection.jid,
                         this.connection.pass,
@@ -624,6 +629,10 @@
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 delete converse.disconnection_cause;
+                if (!!converse.reconnectTimeout) {
+                    clearTimeout(converse.reconnectTimeout);
+                    delete converse.reconnectTimeout;
+                }
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();

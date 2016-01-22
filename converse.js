@@ -434,6 +434,7 @@
          */
         this.send_initial_presence = true;
         this.msg_counter = 0;
+        this.reconnectTimeout = undefined;
 
         // Module-level functions
         // ----------------------
@@ -605,7 +606,8 @@
         this.reconnect = function (condition) {
             converse.log('Attempting to reconnect in 5 seconds');
             converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
-            setTimeout(function () {
+            clearTimeout(converse.reconnectTimeout);
+            converse.reconnectTimeout = setTimeout(function () {
                 if (converse.authentication !== "prebind") {
                     this.connection.connect(
                         this.connection.jid,
@@ -638,6 +640,10 @@
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
+                if (!!converse.reconnectTimeout) {
+                    clearTimeout(converse.reconnectTimeout);
+                    delete converse.reconnectTimeout;
+                }
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();

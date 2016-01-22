@@ -632,7 +632,7 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+                if (converse.auto_reconnect) {
                     converse.reconnect(condition);
                 } else {
                     converse.renderLoginPanel();

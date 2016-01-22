@@ -421,6 +421,9 @@
         HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
         HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
+        //auto_reconnect timeout
+        this.reconnectTimeout = undefined;
+
         // Module-level variables
         // ----------------------
         this.callback = callback || function () {};
@@ -605,8 +608,10 @@
         this.reconnect = function (condition) {
             converse.log('Attempting to reconnect in 5 seconds');
             converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
-            setTimeout(function () {
+            clearTimeout(converse.reconnectTimeout);
+            converse.reconnectTimeout = setTimeout(function () {
                 if (converse.authentication !== "prebind") {
+                    this.connection.pass = this.password;
                     this.connection.connect(
                         this.connection.jid,
                         this.connection.pass,
@@ -638,6 +643,10 @@
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
+                if (!!converse.reconnectTimeout) {
+                    clearTimeout(converse.reconnectTimeout);
+                    delete converse.reconnectTimeout;
+                }
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
@@ -650,7 +659,7 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+                if (converse.auto_reconnect) {
                     converse.reconnect(condition);
                 } else {
                     converse.renderLoginPanel();
@@ -1396,8 +1405,8 @@
                 }
                 var min_width = $flyout.css('min-width');
                 var min_height = $flyout.css('min-height');
-                this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
-                this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
+                this.model.set('min_width', min_width ? Number(min_width.replace(/px$/, '')) : 0);
+                this.model.set('min_height', min_height ? Number(min_height.replace(/px$/, '')) : 0);
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;

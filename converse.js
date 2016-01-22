@@ -1378,8 +1378,8 @@
                 }
                 var min_width = $flyout.css('min-width');
                 var min_height = $flyout.css('min-height');
-                this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
-                this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
+                this.model.set('min_width', min_width ? Number(min_width.replace(/px$/, '')) : 0);
+                this.model.set('min_height', min_height ? Number(min_height.replace(/px$/, '')) : 0);
                 // Initialize last known mouse position
                 this.prev_pageY = 0;
                 this.prev_pageX = 0;

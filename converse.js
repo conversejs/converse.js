@@ -2363,7 +2363,7 @@
 
             informNoRoomsFound: function () {
                 var $available_chatrooms = this.$el.find('#available-chatrooms');
-                // # For translators: %1$s is a variable and will be replaced with the XMPP server name
+                // For translators: %1$s is a variable and will be replaced with the XMPP server name
                 $available_chatrooms.html('<dt>'+__('No rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
                 $('input#show-rooms').show().siblings('span.spinner').remove();
             },
@@ -2376,8 +2376,8 @@
                     $available_chatrooms = this.$el.find('#available-chatrooms');
                 this.rooms = $(iq).find('query').find('item');
                 if (this.rooms.length) {
-                    // # For translators: %1$s is a variable and will be
-                    // # replaced with the XMPP server name
+                    // For translators: %1$s is a variable and will be
+                    // replaced with the XMPP server name
                     $available_chatrooms.html('<dt>'+__('Rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
                     fragment = document.createDocumentFragment();
                     for (i=0; i<this.rooms.length; i++) {
@@ -3524,9 +3524,8 @@
                     } else if ($error.find('not-acceptable').length) {
                         this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
                     } else if ($error.find('conflict').length) {
-                        // TODO: give user the option of choosing a different
-                        // nickname
                         this.showDisconnectMessage(__("Your nickname is already taken"));
+                        // TODO: give user the option of choosing a different nickname
                     } else if ($error.find('item-not-found').length) {
                         this.showDisconnectMessage(__("This room does not (yet) exist"));
                     } else if ($error.find('service-unavailable').length) {
@@ -3576,8 +3575,8 @@
                 }
                 if (subject) {
                     this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
-                    // # For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
-                    // # Example: Topic set by JC Brand to: Hello World!
+                    // For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
+                    // Example: Topic set by JC Brand to: Hello World!
                     this.$content.append(
                         converse.templates.info({
                             'message': __('Topic set by %1$s to: %2$s', sender, subject)
@@ -5440,8 +5439,8 @@
 
             updateStatusUI: function (model) {
                 var stat = model.get('status');
-                // # For translators: the %1$s part gets replaced with the status
-                // # Example, I am online
+                // For translators: the %1$s part gets replaced with the status
+                // Example, I am online
                 var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
                 this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
                     converse.templates.chat_status({

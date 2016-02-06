@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.1 (Unreleased)
+## 0.10.1 (2016-02-06)
 
 - #352 When the user has manually scrolled up in a chat window, don't scroll
   down on chat event notifications. [jcbrand]

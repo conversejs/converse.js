@@ -8,7 +8,7 @@
          },
          " e.g. conversejs.org": [
             null,
-            ""
+            "например, conversejs.org"
          ],
          "unencrypted": [
             null,
@@ -50,6 +50,10 @@
             null,
             "Отошёл"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Кликните, чтобы спрятать эти контакты"
+         ],
          "My contacts": [
             null,
             "Контакты"
@@ -64,7 +68,7 @@
          ],
          "Ungrouped": [
             null,
-            ""
+            "Несгруппированные"
          ],
          "Contacts": [
             null,
@@ -72,11 +76,7 @@
          ],
          "Groups": [
             null,
-            ""
-         ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
+            "Группы"
          ],
          "Error": [
             null,
@@ -96,35 +96,47 @@
          ],
          "Re-establishing encrypted session": [
             null,
-            ""
+            "Восстанавливается шифрованная сессия"
          ],
          "Generating private key.": [
             null,
-            ""
+            "Генерируется секретный ключ"
          ],
          "Your browser might become unresponsive.": [
             null,
-            ""
+            "Ваш браузер может перестать отвечать."
          ],
          "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            ""
+            "Аутентификационный запрос %1$s\n\nВаш контакт из чата пытается проверить вашу подлинность, задав вам следующий котрольный вопрос.\n\n%2$s"
          ],
          "Could not verify this user's identify.": [
             null,
-            ""
+            "Не удалось проверить подлинность этого пользователя."
          ],
          "Exchanging private key with contact.": [
             null,
-            ""
+            "Обмен секретным ключом с контактом."
+         ],
+         "Close this chat box": [
+            null,
+            "Закрыть это окно чата"
          ],
          "Minimize this chat box": [
             null,
-            ""
+            "Свернуть это окно чата"
+         ],
+         "View more information on this person": [
+            null,
+            "Просмотреть больше информации об этом человеке."
          ],
          "Personal message": [
             null,
-            "Введите сообщение"
+            "Персональное сообщение"
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Вы уверены, что хотите очистить сообщения из этой конференции?"
          ],
          "me": [
             null,
@@ -132,11 +144,15 @@
          ],
          "is typing": [
             null,
-            ""
+            "печатает"
          ],
          "has stopped typing": [
             null,
-            ""
+            "перестал печатать"
+         ],
+         "has gone away": [
+            null,
+            "отошёл"
          ],
          "Show this menu": [
             null,
@@ -144,7 +160,7 @@
          ],
          "Write in the third person": [
             null,
-            ""
+            "Вписать третьего человека"
          ],
          "Remove messages": [
             null,
@@ -152,7 +168,7 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            ""
+            "Вы уверены, что хотите очистить сообщения из этого окна чата?"
          ],
          "Your message could not be sent": [
             null,
@@ -160,31 +176,39 @@
          ],
          "We received an unencrypted message": [
             null,
-            ""
+            "Мы получили незашифрованное сообщение"
          ],
          "We received an unreadable encrypted message": [
             null,
-            ""
+            "Мы получили "
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
-            ""
+            "Вот отпечатки, пожалуйста подтвердите их с помощью %1$s, вне этого чата.\n\nОтпечатки для Вас, %2$s: %3$s\n\nОтпечаток для %1$s: %4$s\n\nЕсли вы удостоверились, что отпечатки совпадают, нажмите OK, если нет нажмите Отмена"
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
-            ""
+            "Вам будет предложено создать контрольный вопрос и ответ на этот вопрос.\n\nВашему контакту будет задан этот вопрос и, если ответы совпадут (с учётом регистра), его подлинность будет подтверждена."
          ],
          "What is your security question?": [
             null,
-            ""
+            "Ваш секретный вопрос?"
          ],
          "What is the answer to the security question?": [
             null,
-            ""
+            "Ваш ответ на секретный вопрос?"
          ],
          "Invalid authentication scheme provided": [
             null,
-            ""
+            "Некоррекная схема аутентификации"
+         ],
+         "has gone offline": [
+            null,
+            "вышел из сети"
+         ],
+         "is busy": [
+            null,
+            "занят"
          ],
          "Your messages are not encrypted anymore": [
             null,
@@ -192,7 +216,7 @@
          ],
          "Your contact has ended encryption on their end, you should do the same.": [
             null,
-            ""
+            "Ваш контакт закончил шифрование у себя, вы должны сделать то же самое."
          ],
          "Your messages are not encrypted. Click here to enable OTR encryption.": [
             null,
@@ -200,39 +224,43 @@
          ],
          "Your contact has closed their end of the private session, you should do the same": [
             null,
-            ""
+            "Ваш контакт закрыл свою часть приватной сессии, вы должны сделать то же самое"
+         ],
+         "Clear all messages": [
+            null,
+            "Очистить все сообщения"
          ],
          "End encrypted conversation": [
             null,
-            ""
+            "Закончить шифрованную беседу"
          ],
          "Insert a smiley": [
             null,
-            ""
+            "Вставить смайлик"
          ],
          "Hide the list of occupants": [
             null,
-            ""
+            "Спрятать список участников"
          ],
          "Refresh encrypted conversation": [
             null,
-            ""
+            "Обновить шифрованную беседу"
          ],
          "Start a call": [
             null,
-            ""
+            "Инициировать звонок"
          ],
          "Start encrypted conversation": [
             null,
-            ""
+            "Начать шифрованный разговор"
          ],
          "Verify with fingerprints": [
             null,
-            ""
+            "Проверить при помощи отпечатков"
          ],
          "Verify with SMP": [
             null,
-            ""
+            "Проверить при помощи SMP"
          ],
          "What's this?": [
             null,
@@ -254,6 +282,10 @@
             null,
             "Не в сети"
          ],
+         "Log out": [
+            null,
+            "Выйти"
+         ],
          "Contact name": [
             null,
             "Имя контакта"
@@ -264,7 +296,7 @@
          ],
          "e.g. user@example.com": [
             null,
-            ""
+            "например, user@example.com"
          ],
          "Add": [
             null,
@@ -298,17 +330,21 @@
             null,
             "Сервер"
          ],
+         "Join Room": [
+            null,
+            "Присоединться к конференции"
+         ],
          "Show rooms": [
             null,
-            "Обновить"
+            "Показать конференции"
          ],
          "Rooms": [
             null,
-            "Конфер."
+            "Конференции"
          ],
          "No rooms on %1$s": [
             null,
-            "Нет доступных конференций %1$s"
+            "Нет конференций %1$s"
          ],
          "Rooms on %1$s": [
             null,
@@ -392,15 +428,19 @@
          ],
          "Invite...": [
             null,
-            ""
+            "Пригласить..."
+         ],
+         "Occupants": [
+            null,
+            "Участники:"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
-            ""
+            "Вы собираетесь пригласить %1$s в чат \"%2$s\". "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
-            ""
+            "Вы можете дополнительно вставить сообщение, объясняющее причину приглашения."
          ],
          "Message": [
             null,
@@ -408,23 +448,27 @@
          ],
          "Error: could not execute the command": [
             null,
-            ""
+            "Ошибка: невозможно выполнить команду"
          ],
          "Error: the \"": [
             null,
-            ""
+            "Ошибка:  \""
          ],
          "Change user's affiliation to admin": [
             null,
             ""
          ],
+         "Ban user from room": [
+            null,
+            "Забанить пользователя в этой конф."
+         ],
          "Change user role to occupant": [
             null,
-            ""
+            "Изменить роль пользователя на \"участник\""
          ],
-         "Write in 3rd person": [
+         "Kick user from room": [
             null,
-            ""
+            "Удалить пользователя из комнаты."
          ],
          "Grant membership to a user": [
             null,
@@ -432,23 +476,27 @@
          ],
          "Remove user's ability to post messages": [
             null,
-            ""
+            "Отнять у пользователя возможность оставлять сообщения"
          ],
          "Change your nickname": [
             null,
-            ""
+            "Изменить свой ник"
          ],
          "Grant moderator role to user": [
             null,
-            ""
+            "Предоставить права модератора пользователю"
+         ],
+         "Grant ownership of this room": [
+            null,
+            "Предоставить права владельца на эту комнату"
          ],
          "Revoke user's membership": [
             null,
-            ""
+            "Отозвать членство пользователя"
          ],
          "Allow muted user to post messages": [
             null,
-            ""
+            "Разрешить заглушенным пользователям оставлять сообщения"
          ],
          "Save": [
             null,
@@ -488,15 +536,15 @@
          ],
          "Non-privacy-related room configuration has changed": [
             null,
-            ""
+            "Изменились настройки комнаты не относящиеся к приватности"
          ],
          "Room logging is now enabled": [
             null,
-            ""
+            "Лог конференции включен"
          ],
          "Room logging is now disabled": [
             null,
-            ""
+            "Лог конференции выключен"
          ],
          "This room is now non-anonymous": [
             null,
@@ -550,9 +598,13 @@
             null,
             "<strong>%1$s</strong> удалён потому что не участник"
          ],
-         "The reason given is: \"": [
+         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
             null,
-            ""
+            "Ваш псевдоним автоматически изменён на : <strong>%1$s</strong>"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Ваш псевдоним изменён на : <strong>%1$s</strong>"
          ],
          "You are not on the member list of this room": [
             null,
@@ -594,13 +646,25 @@
             null,
             ""
          ],
-         "Minimized": [
+         "Click to restore this chat": [
             null,
             ""
+         ],
+         "Minimized": [
+            null,
+            "Минимизированный"
          ],
          "Click to remove this contact": [
             null,
             "Удалить контакт"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "Нажмите, чтобы принять запрос этого контакта"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "Нажмите, чтобы отклонить запрос этого контакта"
          ],
          "Click to chat with this contact": [
             null,
@@ -608,11 +672,19 @@
          ],
          "Name": [
             null,
-            ""
+            "Имя"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Вы уверены, что хотите удалить этот контакт?"
          ],
          "Sorry, there was an error while trying to remove ": [
             null,
             ""
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Вы уверены, что хотите отклонить запрос от этого контакта?"
          ],
          "Sorry, there was an error while trying to add ": [
             null,
@@ -628,7 +700,7 @@
          ],
          "I am %1$s": [
             null,
-            "%1$s"
+            "Я %1$s"
          ],
          "Click here to write a custom status message": [
             null,
@@ -668,47 +740,55 @@
          ],
          "Tip: A list of public XMPP providers is available": [
             null,
-            ""
+            "Совет. Список публичных XMPP провайдеров доступен"
          ],
          "here": [
             null,
-            ""
+            "Здесь"
          ],
          "Register": [
             null,
-            ""
+            "Регистрация"
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
-            ""
+            "К сожалению провайдер не поддерживает in band регистрацию аккаунта. Пожалуйста попробуйте выбрать другого провайдера."
          ],
          "Requesting a registration form from the XMPP server": [
             null,
-            ""
+            "Запрашивается регистрационная форма с XMPP сервера"
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
             null,
-            ""
+            "Что-то пошло не так, при установке связи с \"%1$s\". Вы уверены, что он существует?"
          ],
          "Now logging you in": [
             null,
-            ""
+            "Осуществляется вход"
          ],
          "Registered successfully": [
             null,
-            ""
+            "Зарегистрирован успешно"
          ],
          "Return": [
             null,
-            ""
+            "Назад"
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
-            ""
+            "Провайдер отклонил вашу попытку зарегистрироваться. Пожалуйста, проверьте, правильно ли введены значения."
+         ],
+         "XMPP Username:": [
+            null,
+            "XMPP Username:"
          ],
          "Password:": [
             null,
             "Пароль:"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Нажмите здесь, чтобы войти анонимно"
          ],
          "Log In": [
             null,
@@ -716,7 +796,11 @@
          ],
          "user@server": [
             null,
-            ""
+            "user@server"
+         ],
+         "password": [
+            null,
+            "пароль"
          ],
          "Sign in": [
             null,
@@ -724,7 +808,7 @@
          ],
          "Toggle chat": [
             null,
-            ""
+            "Включить чат"
          ]
       }
    }

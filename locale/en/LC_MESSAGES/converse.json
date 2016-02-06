@@ -827,6 +827,10 @@
             null,
             "Log In"
          ],
+         "Username": [
+            null,
+            ""
+         ],
          "user@server": [
             null,
             ""

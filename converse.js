@@ -6209,7 +6209,8 @@
                 try {
                     return this.connection.restore(this.jid, this.onConnectStatusChanged);
                 } catch (e) {
-                    converse.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
+                    this.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
+                    this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
             } else { // Not keepalive
                 if (this.jid && this.sid && this.rid) {
@@ -6241,7 +6242,8 @@
                 try {
                     return this.connection.restore(undefined, this.onConnectStatusChanged);
                 } catch (e) {
-                    converse.log("Could not restore sessions. Error message: "+e.message);
+                    this.log("Could not restore session. Error message: "+e.message);
+                    this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
             }
             if (this.auto_login) {

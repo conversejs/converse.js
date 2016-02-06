@@ -16,7 +16,9 @@
   See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]
 - #487 Empty the resources array when the resource is null [rlanvin]
-- #559 Optimize auto_reconnect function. [m0cs]
+- #534 Updated Russian translation [LaconicTranslator]
+- #555 The status restored from sessionStorage is never updated [jcbrand]
+- #559 Remove reconnection timer once connected succesfully [m0cs]
 
 ## 0.10.0 (2015-11-05)
 

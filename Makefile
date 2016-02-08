@@ -64,7 +64,7 @@ serve: stamp-npm
 
 .PHONY: pot
 pot:
-	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.10.1 -c --language="javascript";
+	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.10.1 -c --language="python";
 
 .PHONY: po
 po:

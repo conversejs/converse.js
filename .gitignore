@@ -47,7 +47,7 @@ builds/converse-no-locales-no-otr.js
 builds/converse-no-locales-no-otr.min.js
 builds/converse-no-otr.js
 builds/converse-no-otr.min.js
-builds/converse.js
+builds/converse.min.js
 builds/converse.nojquery.js
 builds/converse.nojquery.min.js
 

@@ -62,9 +62,11 @@ serve: stamp-npm
 ########################################################################
 ## Translation machinery
 
+GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.10.1 -c
+
 .PHONY: pot
 pot:
-	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.10.1 -c --language="javascript";
+	$(GETTEXT) --language="javascript" 2>&1 > /dev/null; test $$? -eq 0 && exit 0 || $(GETTEXT) --language="python" && exit $$?;
 
 .PHONY: po
 po:

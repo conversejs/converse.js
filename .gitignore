@@ -9,6 +9,7 @@
 .project
 .pydevproject
 analytics.js
+.idea
 
 # Ruby/Sass/Bundler
 .bundle

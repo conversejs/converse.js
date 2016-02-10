@@ -6168,7 +6168,7 @@
             return this.chatboxes.add({
                 id: 'controlbox',
                 box_id: 'controlbox',
-                closed: !this.show_controlbox_by_default
+                closed: (this.show_controlbox_by_default===false)
             });
         };
 

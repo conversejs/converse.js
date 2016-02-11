@@ -2555,6 +2555,9 @@
                 if (this.model.get('connected')) {
                     this.initRoster();
                 }
+                if (typeof this.model.get('closed')==='undefined') {
+                    this.model.set('closed', !converse.show_controlbox_by_default);
+                }
                 if (!this.model.get('closed')) {
                     this.show();
                 } else {

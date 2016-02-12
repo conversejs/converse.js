@@ -753,6 +753,7 @@
         };
 
         this.logOut = function () {
+            converse.auto_login = false;
             converse.chatboxviews.closeAllChatBoxes(false);
             converse.clearSession();
             converse.connection.disconnect();

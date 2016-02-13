@@ -4,8 +4,8 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, CryptoJS, crypto, define, window, jQuery, setTimeout, clearTimeout, document, templates, _,
-  $iq, $msg, $pres, $build, DSA, OTR, Strophe, moment, utils, b64_sha1, locales */
+/*global Backbone, define, window, jQuery, setTimeout, clearTimeout, document, templates, _,
+  $iq, $msg, $pres, $build, Strophe, moment, utils, b64_sha1, locales */
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -30,8 +30,6 @@
                     dependencies.$msg,
                     dependencies.$pres,
                     dependencies.$build,
-                    dependencies.otr ? dependencies.otr.DSA : undefined,
-                    dependencies.otr ? dependencies.otr.OTR : undefined,
                     dependencies.Strophe,
                     dependencies.underscore,
                     dependencies.moment,
@@ -46,9 +44,9 @@
         // In this case, the dependencies need to be available already as
         // global variables, and should be loaded separately via *script* tags.
         // See the file **non_amd.html** for an example of this usecase.
-        root.converse = factory(templates, jQuery, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1);
+        root.converse = factory(templates, jQuery, $iq, $msg, $pres, $build, Strophe, _, moment, utils, b64_sha1);
     }
-}(this, function (templates, $, $iq, $msg, $pres, $build, DSA, OTR, Strophe, _, moment, utils, b64_sha1) {
+}(this, function (templates, $, $iq, $msg, $pres, $build, Strophe, _, moment, utils, b64_sha1) {
     /* "use strict";
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -175,10 +173,6 @@
         var ANONYMOUS  = "anonymous";
         var PREBIND = "prebind";
 
-        var UNENCRYPTED = 0;
-        var UNVERIFIED= 1;
-        var VERIFIED= 2;
-        var FINISHED = 3;
         var KEY = {
             ENTER: 13,
             FORWARD_SLASH: 47
@@ -208,15 +202,6 @@
             'PAUSED':     20000,
             'INACTIVE':   90000
         };
-        var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
-            ((typeof crypto.randomBytes === 'function') ||
-                (typeof crypto.getRandomValues === 'function')
-        ));
-        var HAS_CRYPTO = HAS_CSPRNG && (
-            (typeof CryptoJS !== "undefined") &&
-            (typeof OTR !== "undefined") &&
-            (typeof DSA !== "undefined")
-        );
         var OPENED = 'opened';
         var CLOSED = 'closed';
 
@@ -235,10 +220,8 @@
             var view = converse.chatboxviews.get(chatbox.get('jid'));
             return {
                 'close': view.close.bind(view),
-                'endOTR': chatbox.endOTR.bind(chatbox),
                 'focus': view.focus.bind(view),
                 'get': chatbox.get.bind(chatbox),
-                'initiateOTR': chatbox.initiateOTR.bind(chatbox),
                 // FIXME: leaky abstraction from MUC
                 'is_chatroom': view.is_chatroom,
                 'maximize': chatbox.maximize.bind(chatbox),
@@ -311,8 +294,6 @@
             allow_contact_requests: true,
             allow_dragresize: true,
             allow_logout: true,
-            allow_muc: true,
-            allow_otr: true,
             allow_registration: true,
             animate: true,
             archived_messages_page_size: '20',
@@ -324,7 +305,6 @@
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             bosh_service_url: undefined, // The BOSH connection manager URL.
-            cache_otr_key: false,
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
             default_domain: undefined,
@@ -355,7 +335,6 @@
             sid: undefined,
             sounds_path: '/sounds/',
             storage: 'session',
-            use_otr_by_default: false,
             use_vcards: true,
             visible_toolbar_buttons: {
                 'emoticons': true,
@@ -393,26 +372,6 @@
             ));
         }
         $.fx.off = !this.animate;
-
-        // Only allow OTR if we have the capability
-        this.allow_otr = this.allow_otr && HAS_CRYPTO;
-
-        // Only use OTR by default if allow OTR is enabled to begin with
-        this.use_otr_by_default = this.use_otr_by_default && this.allow_otr;
-
-        // Translation aware constants
-        // ---------------------------
-        var OTR_CLASS_MAPPING = {};
-        OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
-        OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
-        OTR_CLASS_MAPPING[VERIFIED] = 'verified';
-        OTR_CLASS_MAPPING[FINISHED] = 'finished';
-
-        var OTR_TRANSLATED_MAPPING  = {};
-        OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
-        OTR_TRANSLATED_MAPPING[UNVERIFIED] = __('unverified');
-        OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
-        OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
 
         var STATUSES = {
             'dnd': __('This contact is busy'),
@@ -777,15 +736,6 @@
         };
 
         this.registerGlobalEventHandlers = function () {
-            $(document).click(function () {
-                if ($('.toggle-otr ul').is(':visible')) {
-                    $('.toggle-otr ul', this).slideUp();
-                }
-                if ($('.toggle-smiley ul').is(':visible')) {
-                    $('.toggle-smiley ul', this).slideUp();
-                }
-            });
-
             $(document).on('mousemove', function (ev) {
                 if (!this.resizing || !this.allow_dragresize) { return true; }
                 ev.preventDefault();
@@ -948,43 +898,6 @@
             converse.emit('ready');
         };
 
-        // Backbone Models and Views
-        // -------------------------
-        this.OTR = Backbone.Model.extend({
-            // A model for managing OTR settings.
-            getSessionPassphrase: function () {
-                if (converse.authentication === 'prebind') {
-                    var key = b64_sha1(converse.connection.jid),
-                        pass = window.sessionStorage[key];
-                    if (typeof pass === 'undefined') {
-                        pass = Math.floor(Math.random()*4294967295).toString();
-                        window.sessionStorage[key] = pass;
-                    }
-                    return pass;
-                } else {
-                    return converse.connection.pass;
-                }
-            },
-
-            generatePrivateKey: function (instance_tag) {
-                var key = new DSA();
-                var jid = converse.connection.jid;
-                if (converse.cache_otr_key) {
-                    var cipher = CryptoJS.lib.PasswordBasedCipher;
-                    var pass = this.getSessionPassphrase();
-                    if (typeof pass !== "undefined") {
-                        // Encrypt the key and set in sessionStorage. Also store instance tag.
-                        window.sessionStorage[b64_sha1(jid+'priv_key')] =
-                            cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
-                        window.sessionStorage[b64_sha1(jid+'instance_tag')] = instance_tag;
-                        window.sessionStorage[b64_sha1(jid+'pass_check')] =
-                            cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString();
-                    }
-                }
-                return key;
-            }
-        });
-
         this.Message = Backbone.Model.extend({
             idAttribute: 'msgid',
             defaults: function(){
@@ -1004,10 +917,10 @@
                 var height = this.get('height'),
                     width = this.get('width'),
                     settings = {
-                    'height': converse.applyDragResistance(height, this.get('default_height')),
-                    'width': converse.applyDragResistance(width, this.get('default_width')),
-                    'num_unread': this.get('num_unread') || 0
-                };
+                        'height': converse.applyDragResistance(height, this.get('default_height')),
+                        'width': converse.applyDragResistance(width, this.get('default_width')),
+                        'num_unread': this.get('num_unread') || 0
+                    };
                 if (this.get('box_id') !== 'controlbox') {
                     this.messages = new converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
@@ -1018,7 +931,6 @@
                         'chat_state': undefined,
                         'box_id' : b64_sha1(this.get('jid')),
                         'minimized': this.get('minimized') || false,
-                        'otr_status': this.get('otr_status') || UNENCRYPTED,
                         'time_minimized': this.get('time_minimized') || moment(),
                         'time_opened': this.get('time_opened') || moment().valueOf(),
                         'url': '',
@@ -1041,133 +953,6 @@
                     'minimized': true,
                     'time_minimized': moment().format()
                 });
-            },
-
-            getSession: function (callback) {
-                var cipher = CryptoJS.lib.PasswordBasedCipher;
-                var pass, instance_tag, saved_key, pass_check;
-                if (converse.cache_otr_key) {
-                    pass = converse.otr.getSessionPassphrase();
-                    if (typeof pass !== "undefined") {
-                        instance_tag = window.sessionStorage[b64_sha1(this.id+'instance_tag')];
-                        saved_key = window.sessionStorage[b64_sha1(this.id+'priv_key')];
-                        pass_check = window.sessionStorage[b64_sha1(this.connection.jid+'pass_check')];
-                        if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
-                            var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
-                            var key = DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
-                            if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
-                                // Verified that the passphrase is still the same
-                                this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
-                                callback({
-                                    'key': key,
-                                    'instance_tag': instance_tag
-                                });
-                                return; // Our work is done here
-                            }
-                        }
-                    }
-                }
-                // We need to generate a new key and instance tag
-                this.trigger('showHelpMessages', [
-                    __('Generating private key.'),
-                    __('Your browser might become unresponsive.')],
-                    null,
-                    true // show spinner
-                );
-                setTimeout(function () {
-                    var instance_tag = OTR.makeInstanceTag();
-                    callback({
-                        'key': converse.otr.generatePrivateKey.call(this, instance_tag),
-                        'instance_tag': instance_tag
-                    });
-                }, 500);
-            },
-
-            updateOTRStatus: function (state) {
-                switch (state) {
-                    case OTR.CONST.STATUS_AKE_SUCCESS:
-                        if (this.otr.msgstate === OTR.CONST.MSGSTATE_ENCRYPTED) {
-                            this.save({'otr_status': UNVERIFIED});
-                        }
-                        break;
-                    case OTR.CONST.STATUS_END_OTR:
-                        if (this.otr.msgstate === OTR.CONST.MSGSTATE_FINISHED) {
-                            this.save({'otr_status': FINISHED});
-                        } else if (this.otr.msgstate === OTR.CONST.MSGSTATE_PLAINTEXT) {
-                            this.save({'otr_status': UNENCRYPTED});
-                        }
-                        break;
-                }
-            },
-
-            onSMP: function (type, data) {
-                // Event handler for SMP (Socialist's Millionaire Protocol)
-                // used by OTR (off-the-record).
-                switch (type) {
-                    case 'question':
-                        this.otr.smpSecret(prompt(__(
-                            'Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s',
-                            [this.get('fullname'), data])));
-                        break;
-                    case 'trust':
-                        if (data === true) {
-                            this.save({'otr_status': VERIFIED});
-                        } else {
-                            this.trigger(
-                                'showHelpMessages',
-                                [__("Could not verify this user's identify.")],
-                                'error');
-                            this.save({'otr_status': UNVERIFIED});
-                        }
-                        break;
-                    default:
-                        throw new TypeError('ChatBox.onSMP: Unknown type for SMP');
-                }
-            },
-
-            initiateOTR: function (query_msg) {
-                // Sets up an OTR object through which we can send and receive
-                // encrypted messages.
-                //
-                // If 'query_msg' is passed in, it means there is an alread incoming
-                // query message from our contact. Otherwise, it is us who will
-                // send the query message to them.
-                this.save({'otr_status': UNENCRYPTED});
-                this.getSession(function (session) {
-                    this.otr = new OTR({
-                        fragment_size: 140,
-                        send_interval: 200,
-                        priv: session.key,
-                        instance_tag: session.instance_tag,
-                        debug: this.debug
-                    });
-                    this.otr.on('status', this.updateOTRStatus.bind(this));
-                    this.otr.on('smp', this.onSMP.bind(this));
-
-                    this.otr.on('ui', function (msg) {
-                        this.trigger('showReceivedOTRMessage', msg);
-                    }.bind(this));
-                    this.otr.on('io', function (msg) {
-                        this.trigger('sendMessage', new converse.Message({ message: msg }));
-                    }.bind(this));
-                    this.otr.on('error', function (msg) {
-                        this.trigger('showOTRError', msg);
-                    }.bind(this));
-
-                    this.trigger('showHelpMessages', [__('Exchanging private key with contact.')]);
-                    if (query_msg) {
-                        this.otr.receiveMsg(query_msg);
-                    } else {
-                        this.otr.sendQueryMsg();
-                    }
-                }.bind(this));
-            },
-
-            endOTR: function () {
-                if (this.otr) {
-                    this.otr.endOtr();
-                }
-                this.save({'otr_status': UNENCRYPTED});
             },
 
             createMessage: function ($message, $delay, archive_id) {
@@ -1211,32 +996,6 @@
                     time: time,
                     archive_id: archive_id
                 });
-            },
-
-            receiveMessage: function ($message, $delay, archive_id) {
-                var $body = $message.children('body');
-                var text = ($body.length > 0 ? $body.text() : undefined);
-                if ((!text) || (!converse.allow_otr)) {
-                    return this.createMessage($message, $delay, archive_id);
-                }
-                if (text.match(/^\?OTRv23?/)) {
-                    this.initiateOTR(text);
-                } else {
-                    if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                        this.otr.receiveMsg(text);
-                    } else {
-                        if (text.match(/^\?OTR/)) {
-                            if (!this.otr) {
-                                this.initiateOTR(text);
-                            } else {
-                                this.otr.receiveMsg(text);
-                            }
-                        } else {
-                            // Normal unencrypted message.
-                            this.createMessage($message, $delay, archive_id);
-                        }
-                    }
-                }
             }
         });
 
@@ -1253,10 +1012,6 @@
                 'click .toggle-smiley': 'toggleEmoticonMenu',
                 'click .toggle-smiley ul li': 'insertEmoticon',
                 'click .toggle-clear': 'clearMessages',
-                'click .toggle-otr': 'toggleOTRMenu',
-                'click .start-otr': 'startOTRFromToolbar',
-                'click .end-otr': 'endOTR',
-                'click .auth-otr': 'authOTR',
                 'click .toggle-call': 'toggleCall',
                 'mousedown .dragresize-top': 'onStartVerticalResize',
                 'mousedown .dragresize-left': 'onStartHorizontalResize',
@@ -1272,23 +1027,11 @@
                 this.model.on('change:chat_state', this.sendChatState, this);
                 this.model.on('change:chat_status', this.onChatStatusChanged, this);
                 this.model.on('change:image', this.renderAvatar, this);
-                this.model.on('change:otr_status', this.onOTRStatusChanged, this);
                 this.model.on('change:minimized', this.onMinimizedChanged, this);
                 this.model.on('change:status', this.onStatusChanged, this);
-                this.model.on('showOTRError', this.showOTRError, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.model.on('sendMessage', this.sendMessage, this);
-                this.model.on('showSentOTRMessage', function (text) {
-                    this.showMessage({'message': text, 'sender': 'me'});
-                }, this);
-                this.model.on('showReceivedOTRMessage', function (text) {
-                    this.showMessage({'message': text, 'sender': 'them'});
-                }, this);
                 this.updateVCard().render().fetchMessages().insertIntoPage().hide();
-
-                if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
-                    this.model.initiateOTR();
-                }
             },
 
             render: function () {
@@ -1668,22 +1411,25 @@
                 }
             },
 
+            createMessageStanza: function (message) {
+                return $msg({
+                            from: converse.connection.jid,
+                            to: this.model.get('jid'),
+                            type: 'chat',
+                            id: message.get('msgid')
+                       }).c('body').t(message.get('message')).up()
+                         .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+            },
+
             sendMessage: function (message) {
                 /* Responsible for sending off a text message.
                  *
                  *  Parameters:
                  *    (Message) message - The chat message
                  */
-                // TODO: We might want to send to specfic resources. Especially in the OTR case.
-                var bare_jid = this.model.get('jid');
-                var messageStanza = $msg({from: converse.connection.jid, to: bare_jid, type: 'chat', id: message.get('msgid')})
-                    .c('body').t(message.get('message')).up()
-                    .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
-
-                if (this.model.get('otr_status') !== UNENCRYPTED) {
-                    // OTR messages aren't carbon copied
-                    messageStanza.c('private', {'xmlns': Strophe.NS.CARBONS});
-                }
+                // TODO: We might want to send to specfic resources.
+                // Especially in the OTR case.
+                var messageStanza = this.createMessageStanza(message);
                 converse.connection.send(messageStanza);
                 if (converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
@@ -1704,7 +1450,11 @@
                  *    (string) text - The chat message text.
                  */
                 if (!converse.connection.authenticated) {
-                    return this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
+                    return this.showHelpMessages(
+                        ['Sorry, the connection has been lost, '+
+                            'and your message could not be sent'],
+                        'error'
+                    );
                 }
                 var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
                 if (match) {
@@ -1719,28 +1469,17 @@
                             ];
                         this.showHelpMessages(msgs);
                         return;
-                    } else if ((converse.allow_otr) && (match[1] === "endotr")) {
-                        return this.endOTR();
-                    } else if ((converse.allow_otr) && (match[1] === "otr")) {
-                        return this.model.initiateOTR();
                     }
                 }
-                if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
-                    // Off-the-record encryption is active
-                    this.model.otr.sendMsg(text);
-                    this.model.trigger('showSentOTRMessage', text);
-                } else {
-                    // We only save unencrypted messages.
-                    var fullname = converse.xmppstatus.get('fullname');
-                    fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
-                    var message = this.model.messages.create({
-                        fullname: fullname,
-                        sender: 'me',
-                        time: moment().format(),
-                        message: text
-                    });
-                    this.sendMessage(message);
-                }
+                var fullname = converse.xmppstatus.get('fullname');
+                fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
+                var message = this.model.messages.create({
+                    fullname: fullname,
+                    sender: 'me',
+                    time: moment().format(),
+                    message: text
+                });
+                this.sendMessage(message);
             },
 
             sendChatState: function () {
@@ -1906,70 +1645,6 @@
                 this.$el.find('.toggle-smiley ul').slideToggle(200);
             },
 
-            toggleOTRMenu: function (ev) {
-                ev.stopPropagation();
-                this.$el.find('.toggle-otr ul').slideToggle(200);
-            },
-
-            showOTRError: function (msg) {
-                if (msg === 'Message cannot be sent at this time.') {
-                    this.showHelpMessages(
-                        [__('Your message could not be sent')], 'error');
-                } else if (msg === 'Received an unencrypted message.') {
-                    this.showHelpMessages(
-                        [__('We received an unencrypted message')], 'error');
-                } else if (msg === 'Received an unreadable encrypted message.') {
-                    this.showHelpMessages(
-                        [__('We received an unreadable encrypted message')],
-                        'error');
-                } else {
-                    this.showHelpMessages(['Encryption error occured: '+msg], 'error');
-                }
-                converse.log("OTR ERROR:"+msg);
-            },
-
-            startOTRFromToolbar: function (ev) {
-                $(ev.target).parent().parent().slideUp();
-                ev.stopPropagation();
-                this.model.initiateOTR();
-            },
-
-            endOTR: function (ev) {
-                if (typeof ev !== "undefined") {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                }
-                this.model.endOTR();
-            },
-
-            authOTR: function (ev) {
-                var scheme = $(ev.target).data().scheme;
-                var result, question, answer;
-                if (scheme === 'fingerprint') {
-                    result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
-                            this.model.get('fullname'),
-                            converse.xmppstatus.get('fullname')||converse.bare_jid,
-                            this.model.otr.priv.fingerprint(),
-                            this.model.otr.their_priv_pk.fingerprint()
-                        ]
-                    ));
-                    if (result === true) {
-                        this.model.save({'otr_status': VERIFIED});
-                    } else {
-                        this.model.save({'otr_status': UNVERIFIED});
-                    }
-                } else if (scheme === 'smp') {
-                    alert(__('You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.'));
-                    question = prompt(__('What is your security question?'));
-                    if (question) {
-                        answer = prompt(__('What is the answer to the security question?'));
-                        this.model.otr.smpSecret(answer, question);
-                    }
-                } else {
-                    this.showHelpMessages([__('Invalid authentication scheme provided')], 'error');
-                }
-            },
-
             toggleCall: function (ev) {
                 ev.stopPropagation();
                 converse.emit('callButtonClicked', {
@@ -1999,10 +1674,6 @@
             onStatusChanged: function (item) {
                 this.showStatusMessage();
                 converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
-            },
-
-            onOTRStatusChanged: function () {
-                this.renderToolbar().informOTRChange();
             },
 
             onMinimizedChanged: function (item) {
@@ -2078,68 +1749,22 @@
                 return this;
             },
 
-            informOTRChange: function () {
-                var data = this.model.toJSON();
-                var msgs = [];
-                if (data.otr_status === UNENCRYPTED) {
-                    msgs.push(__("Your messages are not encrypted anymore"));
-                } else if (data.otr_status === UNVERIFIED) {
-                    msgs.push(__("Your messages are now encrypted but your contact's identity has not been verified."));
-                } else if (data.otr_status === VERIFIED) {
-                    msgs.push(__("Your contact's identify has been verified."));
-                } else if (data.otr_status === FINISHED) {
-                    msgs.push(__("Your contact has ended encryption on their end, you should do the same."));
+            renderToolbar: function (options) {
+                if (!converse.show_toolbar) {
+                    return;
                 }
-                return this.showHelpMessages(msgs, 'info', false);
-            },
-
-            getOTRTooltip: function () {
-                var data = this.model.toJSON();
-                if (data.otr_status === UNENCRYPTED) {
-                    return __('Your messages are not encrypted. Click here to enable OTR encryption.');
-                } else if (data.otr_status === UNVERIFIED) {
-                    return __('Your messages are encrypted, but your contact has not been verified.');
-                } else if (data.otr_status === VERIFIED) {
-                    return __('Your messages are encrypted and your contact verified.');
-                } else if (data.otr_status === FINISHED) {
-                    return __('Your contact has closed their end of the private session, you should do the same');
-                }
-            },
-
-            renderToolbar: function () {
-                // FIXME: leaky abstractions from plugins, particularly
-                // "toggle_occupants" from MUC.
-                if (converse.show_toolbar) {
-                    var data = this.model.toJSON();
-                    this.$el.find('.chat-toolbar').html(
-                        converse.templates.toolbar(
-                            _.extend(data, {
-                                FINISHED: FINISHED,
-                                UNENCRYPTED: UNENCRYPTED,
-                                UNVERIFIED: UNVERIFIED,
-                                VERIFIED: VERIFIED,
-                                allow_otr: converse.allow_otr && !this.is_chatroom,
-                                otr_tooltip: this.getOTRTooltip(),
-                                label_clear: __('Clear all messages'),
-                                label_end_encrypted_conversation: __('End encrypted conversation'),
-                                label_insert_smiley: __('Insert a smiley'),
-                                label_hide_occupants: __('Hide the list of occupants'),
-                                label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
-                                label_start_call: __('Start a call'),
-                                label_start_encrypted_conversation: __('Start encrypted conversation'),
-                                label_verify_with_fingerprints: __('Verify with fingerprints'),
-                                label_verify_with_smp: __('Verify with SMP'),
-                                label_whats_this: __("What\'s this?"),
-                                otr_status_class: OTR_CLASS_MAPPING[data.otr_status],
-                                otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
-                                show_call_button: converse.visible_toolbar_buttons.call,
-                                show_clear_button: converse.visible_toolbar_buttons.clear,
-                                show_emoticons: converse.visible_toolbar_buttons.emoticons,
-                                show_occupants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_occupants
-                            })
-                        )
-                    );
-                }
+                options = _.extend(options || {}, {
+                    label_clear: __('Clear all messages'),
+                    label_hide_occupants: __('Hide the list of occupants'),
+                    label_insert_smiley: __('Insert a smiley'),
+                    label_start_call: __('Start a call'),
+                    show_call_button: converse.visible_toolbar_buttons.call,
+                    show_clear_button: converse.visible_toolbar_buttons.clear,
+                    show_emoticons: converse.visible_toolbar_buttons.emoticons,
+                    // FIXME Leaky abstraction MUC
+                    show_occupants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_occupants
+                });
+                this.$el.find('.chat-toolbar').html(converse.templates.toolbar(_.extend(this.model.toJSON(), options || {})));
                 return this;
             },
 
@@ -2379,14 +2004,6 @@
             onConnected: function () {
                 if (this.model.get('connected')) {
                     this.render().initRoster();
-                    converse.features.off('add', this.featureAdded, this);
-                    converse.features.on('add', this.featureAdded, this);
-                    // Features could have been added before the controlbox was
-                    // initialized. Currently we're only interested in MUC
-                    var feature = converse.features.findWhere({'var': Strophe.NS.MUC});
-                    if (feature) {
-                        this.featureAdded(feature);
-                    }
                 }
             },
 
@@ -2434,24 +2051,14 @@
 
             renderContactsPanel: function () {
                 this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                this.contactspanel = new converse.ContactsPanel({'$parent': this.$el.find('.controlbox-panes')});
+                this.contactspanel = new converse.ContactsPanel({
+                    '$parent': this.$el.find('.controlbox-panes')
+                });
                 this.contactspanel.render();
-                converse.xmppstatusview = new converse.XMPPStatusView({'model': converse.xmppstatus});
+                converse.xmppstatusview = new converse.XMPPStatusView({
+                    'model': converse.xmppstatus
+                });
                 converse.xmppstatusview.render();
-                if (converse.allow_muc) {
-                    this.roomspanel = new converse.RoomsPanel({
-                        '$parent': this.$el.find('.controlbox-panes'),
-                        'model': new (Backbone.Model.extend({
-                            id: b64_sha1('converse.roomspanel'+converse.bare_jid), // Required by sessionStorage
-                            browserStorage: new Backbone.BrowserStorage[converse.storage](
-                                b64_sha1('converse.roomspanel'+converse.bare_jid))
-                        }))()
-                    });
-                    this.roomspanel.render().model.fetch();
-                    if (!this.roomspanel.model.get('nick')) {
-                        this.roomspanel.model.save({nick: Strophe.getNodeFromJid(converse.bare_jid)});
-                    }
-                }
                 this.initDragResize().setDimensions();
             },
 
@@ -2498,16 +2105,6 @@
                     converse.emit('controlBoxOpened', this);
                 }.bind(this));
                 return this;
-            },
-
-            featureAdded: function (feature) {
-                if ((feature.get('var') === Strophe.NS.MUC) && (converse.allow_muc)) {
-                    this.roomspanel.model.save({muc_domain: feature.get('from')});
-                    var $server= this.$el.find('input.new-chatroom-server');
-                    if (! $server.is(':focus')) {
-                        $server.val(this.roomspanel.model.get('muc_domain'));
-                    }
-                }
             },
 
             switchTab: function (ev) {
@@ -2780,7 +2377,7 @@
                 if (!this.isOnlyChatStateNotification($message) && !is_me && !$forwarded.length) {
                     converse.playNotification();
                 }
-                chatbox.receiveMessage($message, $delay, archive_id);
+                chatbox.createMessage($message, $delay, archive_id);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;
@@ -2974,8 +2571,6 @@
                     }
                 }, this);
                 this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
-                this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
-                this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
             },
 
             render: function () {
@@ -4590,9 +4185,6 @@
                 if (converse.use_vcards) {
                     converse.connection.disco.addFeature(Strophe.NS.VCARD);
                 }
-                if (converse.allow_muc) {
-                    converse.connection.disco.addFeature(Strophe.NS.MUC);
-                }
                 if (converse.message_carbons) {
                     converse.connection.disco.addFeature(Strophe.NS.CARBONS);
                 }
@@ -5353,7 +4945,6 @@
             this.chatboxes = new this.ChatBoxes();
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
             this.controlboxtoggle = new this.ControlBoxToggle();
-            this.otr = new this.OTR();
             this.initSession();
             this.initConnection();
             if (this.connection) {

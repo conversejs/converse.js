@@ -6,6 +6,9 @@
 //
 /*global converse, utils, Backbone, define, window, setTimeout */
 
+/* This is a Converse.js plugin which add support for multi-user chat rooms, as
+ * specified in XEP-0045 Multi-user chat.
+ */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD module loading
@@ -44,8 +47,6 @@
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
     converse_api.plugins.add('muc', {
-        /* This plugin adds support for XEP-0045 Multi-user chat
-         */
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -53,6 +54,69 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
+
+            Features: {
+                addClientFeatures: function () {
+                    var converse = this._super.converse;
+                    this._super.addClientFeatures.apply(this, arguments);
+                    if (converse.allow_muc) {
+                        converse.connection.disco.addFeature(Strophe.NS.MUC);
+                    }
+                }
+            },
+
+            ControlBoxView: {
+                renderContactsPanel: function () {
+                    var converse = this._super.converse;
+                    this._super.renderContactsPanel.apply(this, arguments);
+                    if (converse.allow_muc) {
+                        this.roomspanel = new converse.RoomsPanel({
+                            '$parent': this.$el.find('.controlbox-panes'),
+                            'model': new (Backbone.Model.extend({
+                                id: b64_sha1('converse.roomspanel'+converse.bare_jid), // Required by sessionStorage
+                                browserStorage: new Backbone.BrowserStorage[converse.storage](
+                                    b64_sha1('converse.roomspanel'+converse.bare_jid))
+                            }))()
+                        });
+                        this.roomspanel.render().model.fetch();
+                        if (!this.roomspanel.model.get('nick')) {
+                            this.roomspanel.model.save({
+                                nick: Strophe.getNodeFromJid(converse.bare_jid)
+                            });
+                        }
+                    }
+                },
+
+                onConnected: function () {
+                    var converse = this._super.converse;
+                    this._super.onConnected.apply(this, arguments);
+
+                    if (this.model.get('connected')) {
+                        converse.features.off('add', this.featureAdded, this);
+                        converse.features.on('add', this.featureAdded, this);
+                        // Features could have been added before the controlbox was
+                        // initialized. We're only interested in MUC
+                        var feature = converse.features.findWhere({
+                            'var': Strophe.NS.MUC
+                        });
+                        if (feature) {
+                            this.featureAdded(feature);
+                        }
+                    }
+                },
+
+                featureAdded: function (feature) {
+                    var converse = this._super.converse;
+                    if ((feature.get('var') === Strophe.NS.MUC) && (converse.allow_muc)) {
+                        this.roomspanel.model.save({muc_domain: feature.get('from')});
+                        var $server= this.$el.find('input.new-chatroom-server');
+                        if (! $server.is(':focus')) {
+                            $server.val(this.roomspanel.model.get('muc_domain'));
+                        }
+                    }
+                }
+            },
+
             ChatBoxView: {
                 clearChatRoomMessages: function (ev) {
                     /* New method added to the ChatBox model which allows all
@@ -72,7 +136,7 @@
                     /* Override so that we can register a handler
                      * for chat room invites.
                      */
-                    this._super.registerMessageHandler(); // First call the original
+                    this._super.registerMessageHandler.apply(this, arguments); // First call the original
                     this._super.converse.connection.addHandler(
                         function (message) {
                             this.onInvite(message);
@@ -134,10 +198,11 @@
             var converse = this.converse;
             // Configuration values for this plugin
             var settings = {
+                allow_muc: true,
                 auto_join_on_invite: false  // Auto-join chatroom on invite
             };
-            _.extend(this, settings);
-            _.extend(this, _.pick(converse.user_settings, Object.keys(settings)));
+            _.extend(converse, settings);
+            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 
             converse.ChatRoomView = converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view

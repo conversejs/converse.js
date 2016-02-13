@@ -9,6 +9,7 @@ define("converse", [
      * Any of the following components can be removed if they're not needed.
      */
     "converse-muc", // XEP-0045 Multi-user chat
+    "converse-otr", // Off-the-record encryption for one-on-one messages
     /* End: Removable components */
 
     "converse-core"

@@ -2037,6 +2037,7 @@
                      */
                     chatboxviews.trimChats(this);
                     converse.refreshWebkit();
+                    this.$content.scrollTop(this.model.get('scroll'));
                     this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
                 }.bind(this));
@@ -2044,6 +2045,8 @@
 
             minimize: function (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                // save the scroll position to restore it on maximize
+                this.model.save({'scroll': this.$content.scrollTop()});
                 // Minimizes a chat box
                 this.setChatState(INACTIVE).model.minimize();
                 this.$el.hide('fast', converse.refreshwebkit);

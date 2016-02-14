@@ -110,6 +110,7 @@
                 },
 
                 createMessage: function ($message, $delay, archive_id) {
+                    var converse = this._super.converse;
                     var $body = $message.children('body');
                     var text = ($body.length > 0 ? $body.text() : undefined);
                     if ((!text) || (!converse.allow_otr)) {
@@ -136,6 +137,7 @@
                 },
                 
                 getSession: function (callback) {
+                    var converse = this._super.converse;
                     var cipher = CryptoJS.lib.PasswordBasedCipher;
                     var pass, instance_tag, saved_key, pass_check;
                     if (converse.cache_otr_key) {
@@ -226,6 +228,7 @@
                     // send the query message to them.
                     this.save({'otr_status': UNENCRYPTED});
                     this.getSession(function (session) {
+                        var converse = this._super.converse;
                         this.otr = new otr.OTR({
                             fragment_size: 140,
                             send_interval: 200,
@@ -272,6 +275,7 @@
                 },
 
                 initialize: function () {
+                    var converse = this._super.converse;
                     this._super.initialize.apply(this, arguments);
                     this.model.on('change:otr_status', this.onOTRStatusChanged, this);
                     this.model.on('showOTRError', this.showOTRError, this);
@@ -296,6 +300,7 @@
                 },
 
                 onMessageSubmitted: function (text) {
+                    var converse = this._super.converse;
                     if (!converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
@@ -340,6 +345,7 @@
                 },
 
                 showOTRError: function (msg) {
+                    var converse = this._super.converse;
                     if (msg === 'Message cannot be sent at this time.') {
                         this.showHelpMessages(
                             [__('Your message could not be sent')], 'error');
@@ -371,6 +377,7 @@
                 },
 
                 authOTR: function (ev) {
+                    var converse = this._super.converse;
                     var scheme = $(ev.target).data().scheme;
                     var result, question, answer;
                     if (scheme === 'fingerprint') {
@@ -417,6 +424,7 @@
                 },
 
                 renderToolbar: function (options) {
+                    var converse = this._super.converse;
                     if (!converse.show_toolbar) {
                         return;
                     }
@@ -426,7 +434,7 @@
                         UNENCRYPTED: UNENCRYPTED,
                         UNVERIFIED: UNVERIFIED,
                         VERIFIED: VERIFIED,
-                        // Leaky abstraction
+                        // FIXME: Leaky abstraction MUC
                         allow_otr: converse.allow_otr && !this.is_chatroom,
                         label_end_encrypted_conversation: __('End encrypted conversation'),
                         label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
@@ -439,6 +447,10 @@
                         otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
                     this._super.renderToolbar.call(this, options);
+                    this.$el.find('.chat-toolbar').append(
+                            converse.templates.toolbar_otr(
+                                _.extend(this.model.toJSON(), options || {})
+                            ));
                     return this;
                 }
             },

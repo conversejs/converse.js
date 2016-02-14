@@ -1,11 +1,16 @@
 # Changelog
 
-## 0.10.2 (Unreleased)
+## 0.11.0 (Unreleased)
 
-- #261 show_controlbox_by_default config not working [diditopher]
-- #573 xgettext build error: `'javascript' unknown`
+- Split converse.js into different modules. The code for the OTR and MUC
+  features are now in separate modules and these can be removed completely from
+  the build. [jcbrand]
+- Don't play sound notifications for OTR messages which are setting up an
+  encrypted session. [jcbrand]
 - Save scroll position on minimize and restore it on maximize [rlanvin]
+- #261 show_controlbox_by_default config not working [diditopher]
 - #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
+- #573 xgettext build error: `'javascript' unknown` [jcbrand]
 
 ## 0.10.1 (2016-02-06)
 

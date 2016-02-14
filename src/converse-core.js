@@ -955,6 +955,28 @@
                 });
             },
 
+            isOnlyChatStateNotification: function ($msg) {
+                // See XEP-0085 Chat State Notification
+                return (
+                    $msg.find('body').length === 0 && (
+                        $msg.find(ACTIVE).length !== 0 ||
+                        $msg.find(COMPOSING).length !== 0 ||
+                        $msg.find(INACTIVE).length !== 0 ||
+                        $msg.find(PAUSED).length !== 0 ||
+                        $msg.find(GONE).length !== 0
+                    )
+                );
+            },
+
+            shouldPlayNotification: function ($message) {
+                var $forwarded = $message.find('forwarded');
+                if ($forwarded.length) {
+                    return false;
+                }
+                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
+                return !this.isOnlyChatStateNotification($message) && !is_me;
+            },
+
             createMessage: function ($message, $delay, archive_id) {
                 $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
@@ -2313,19 +2335,6 @@
                 });
             },
 
-            isOnlyChatStateNotification: function ($msg) {
-                // See XEP-0085 Chat State Notification
-                return (
-                    $msg.find('body').length === 0 && (
-                        $msg.find(ACTIVE).length !== 0 ||
-                        $msg.find(COMPOSING).length !== 0 ||
-                        $msg.find(INACTIVE).length !== 0 ||
-                        $msg.find(PAUSED).length !== 0 ||
-                        $msg.find(GONE).length !== 0
-                    )
-                );
-            },
-
             onMessage: function (message) {
                 /* Handler method for all incoming single-user chat "message" stanzas.
                  */
@@ -2374,7 +2383,7 @@
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                if (!this.isOnlyChatStateNotification($message) && !is_me && !$forwarded.length) {
+                if (chatbox.shouldPlayNotification($message)) {
                     converse.playNotification();
                 }
                 chatbox.createMessage($message, $delay, archive_id);

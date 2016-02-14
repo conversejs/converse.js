@@ -109,10 +109,27 @@
                     }
                 },
 
+                isOTRMessage: function ($message) {
+                    var $body = $message.children('body'),
+                        text = ($body.length > 0 ? $body.text() : undefined);
+                    return !!text.match(/^\?OTR/);
+                },
+
+                shouldPlayNotification: function ($message) {
+                    /* Don't play a notification if this is an OTR message but
+                     * encryption is not yet set up. That would mean that the
+                     * OTR session is still being established, so there are no
+                     * "visible" OTR messages being exchanged.
+                     */
+                    return this._super.shouldPlayNotification.apply(this, arguments) &&
+                        !(this.isOTRMessage($message) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
+                },
+
                 createMessage: function ($message, $delay, archive_id) {
-                    var converse = this._super.converse;
-                    var $body = $message.children('body');
-                    var text = ($body.length > 0 ? $body.text() : undefined);
+                    var converse = this._super.converse,
+                        $body = $message.children('body'),
+                        text = ($body.length > 0 ? $body.text() : undefined);
+
                     if ((!text) || (!converse.allow_otr)) {
                         return this._super.createMessage.apply(this, arguments);
                     }

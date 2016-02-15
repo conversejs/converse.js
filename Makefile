@@ -57,7 +57,7 @@ all: dev
 
 .PHONY: serve
 serve: stamp-npm
-	$(HTTPSERVE) -p 8000
+	$(HTTPSERVE) -p 8000 -c -1
 
 ########################################################################
 ## Translation machinery

@@ -104,24 +104,23 @@
                 var $el, jid, chatboxview, chatbox;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
-                expect(this.chatboxes.length).toEqual(1);
+                expect(converse.chatboxes.length).toEqual(1);
                 chatbox = test_utils.openChatBoxFor(contact_jid);
-                chatboxview = this.chatboxviews.get(contact_jid);
+                chatboxview = converse.chatboxviews.get(contact_jid);
                 spyOn(chatboxview, 'focus');
-
                 // Test that they can be trimmed
                 runs(function () {
                     converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
-                }.bind(this));
-                waits(50);
+                });
+                waits(300); // ChatBox.show() is debounced for 250ms
                 runs(function () {
-                    $el = this.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                    $el = converse.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                     $el.click();
-                    expect(this.chatboxes.length).toEqual(2);
+                    expect(converse.chatboxes.length).toEqual(2);
                     expect(chatboxview.focus).toHaveBeenCalled();
-                }.bind(this));
-            }.bind(converse));
+                });
+            });
 
             it("can be saved to, and retrieved from, browserStorage", function () {
                 spyOn(converse, 'emit');
@@ -270,18 +269,19 @@
                 }.bind(converse));
 
                 it("contains a button for inserting emoticons", function () {
-                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxviews.get(contact_jid);
-                    var $toolbar = view.$el.find('ul.chat-toolbar');
-                    var $textarea = view.$el.find('textarea.chat-textarea');
-                    expect($toolbar.children('li.toggle-smiley').length).toBe(1);
-                    // Register spies
-                    spyOn(view, 'toggleEmoticonMenu').andCallThrough();
-                    spyOn(view, 'insertEmoticon').andCallThrough();
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        view, $toolbar, $textarea;
+                    waits(300); // ChatBox.show() is debounced for 250ms
                     runs(function () {
+                        test_utils.openChatBoxFor(contact_jid);
+                        view = converse.chatboxviews.get(contact_jid);
+                        $toolbar = view.$el.find('ul.chat-toolbar');
+                        $textarea = view.$el.find('textarea.chat-textarea');
+                        expect($toolbar.children('li.toggle-smiley').length).toBe(1);
+                        // Register spies
+                        spyOn(view, 'toggleEmoticonMenu').andCallThrough();
+                        spyOn(view, 'insertEmoticon').andCallThrough();
+                        view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                         $toolbar.children('li.toggle-smiley').click();
                     });
                     waits(250);
@@ -325,7 +325,7 @@
                         expect(view.$el.find('.toggle-smiley ul').is(':visible')).toBeFalsy();
                         expect($textarea.val()).toBe(':) <3 ');
                     });
-                }.bind(converse));
+                });
 
                 it("contains a button for starting an encrypted chat session", function () {
                     // TODO: More tests can be added here...
@@ -812,17 +812,20 @@
 
                 describe("An active notification", function () {
                     it("is sent when the user opens a chat box", function () {
-                        spyOn(converse.connection, 'send');
-                        var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(contact_jid);
-                        var view = this.chatboxviews.get(contact_jid);
-                        expect(view.model.get('chat_state')).toBe('active');
-                        expect(converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(1);
-                        expect($stanza.children().prop('tagName')).toBe('active');
-                    }.bind(converse));
+                        waits(300); // ChatBox.show() is debounced for 250ms
+                        runs(function () {
+                            spyOn(converse.connection, 'send');
+                            var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            test_utils.openChatBoxFor(contact_jid);
+                            var view = converse.chatboxviews.get(contact_jid);
+                            expect(view.model.get('chat_state')).toBe('active');
+                            expect(converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect($stanza.attr('to')).toBe(contact_jid);
+                            expect($stanza.children().length).toBe(1);
+                            expect($stanza.children().prop('tagName')).toBe('active');
+                        });
+                    });
 
                     it("is sent when the user maximizes a minimized a chat box", function () {
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -843,30 +846,33 @@
 
                 describe("A composing notification", function () {
                     it("is sent as soon as the user starts typing a message which is not a command", function () {
-                        var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(contact_jid);
-                        var view = this.chatboxviews.get(contact_jid);
-                        expect(view.model.get('chat_state')).toBe('active');
-                        spyOn(this.connection, 'send');
-                        view.keyPressed({
-                            target: view.$el.find('textarea.chat-textarea'),
-                            keyCode: 1
-                        });
-                        expect(view.model.get('chat_state')).toBe('composing');
-                        expect(this.connection.send).toHaveBeenCalled();
-                        var $stanza = $(this.connection.send.argsForCall[0][0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(1);
-                        expect($stanza.children().prop('tagName')).toBe('composing');
+                        waits(300); // ChatBox.show() is debounced for 250ms
+                        runs(function () {
+                            var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            test_utils.openChatBoxFor(contact_jid);
+                            var view = converse.chatboxviews.get(contact_jid);
+                            expect(view.model.get('chat_state')).toBe('active');
+                            spyOn(converse.connection, 'send');
+                            view.keyPressed({
+                                target: view.$el.find('textarea.chat-textarea'),
+                                keyCode: 1
+                            });
+                            expect(view.model.get('chat_state')).toBe('composing');
+                            expect(converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect($stanza.attr('to')).toBe(contact_jid);
+                            expect($stanza.children().length).toBe(1);
+                            expect($stanza.children().prop('tagName')).toBe('composing');
 
-                        // The notification is not sent again
-                        view.keyPressed({
-                            target: view.$el.find('textarea.chat-textarea'),
-                            keyCode: 1
+                            // The notification is not sent again
+                            view.keyPressed({
+                                target: view.$el.find('textarea.chat-textarea'),
+                                keyCode: 1
+                            });
+                            expect(view.model.get('chat_state')).toBe('composing');
+                            expect(converse.emit.callCount, 1);
                         });
-                        expect(view.model.get('chat_state')).toBe('composing');
-                        expect(converse.emit.callCount, 1);
-                    }.bind(converse));
+                    });
 
                     it("will be shown if received", function () {
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
@@ -893,13 +899,15 @@
 
                 describe("A paused notification", function () {
                     it("is sent if the user has stopped typing since 30 seconds", function () {
-                        this.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
-                        var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(contact_jid);
-                        var view = this.chatboxviews.get(contact_jid);
-                        spyOn(converse.connection, 'send');
-                        spyOn(view, 'setChatState').andCallThrough();
+                        var view, contact_jid;
+                        converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
+                        waits(300); // ChatBox.show() is debounced for 250ms
                         runs(function () {
+                            contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            test_utils.openChatBoxFor(contact_jid);
+                            view = converse.chatboxviews.get(contact_jid);
+                            spyOn(converse.connection, 'send');
+                            spyOn(view, 'setChatState').andCallThrough();
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
                                 target: view.$el.find('textarea.chat-textarea'),
@@ -940,7 +948,7 @@
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('composing');
                         });
-                    }.bind(converse));
+                    });
 
                     it("will be shown if received", function () {
                         // TODO: only show paused state if the previous state was composing
@@ -1010,19 +1018,22 @@
                     }.bind(converse));
 
                     it("is sent if the user closes a chat box", function () {
-                        var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(contact_jid);
-                        var view = this.chatboxviews.get(contact_jid);
-                        expect(view.model.get('chat_state')).toBe('active');
-                        spyOn(converse.connection, 'send');
-                        view.close();
-                        expect(view.model.get('chat_state')).toBe('inactive');
-                        expect(converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(1);
-                        expect($stanza.children().prop('tagName')).toBe('inactive');
-                    }.bind(converse));
+                        waits(300); // ChatBox.show() is debounced for 250ms
+                        runs(function () {
+                            var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            test_utils.openChatBoxFor(contact_jid);
+                            var view = converse.chatboxviews.get(contact_jid);
+                            expect(view.model.get('chat_state')).toBe('active');
+                            spyOn(converse.connection, 'send');
+                            view.close();
+                            expect(view.model.get('chat_state')).toBe('inactive');
+                            expect(converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect($stanza.attr('to')).toBe(contact_jid);
+                            expect($stanza.children().length).toBe(1);
+                            expect($stanza.children().prop('tagName')).toBe('inactive');
+                        });
+                    });
 
                     it("will clear any other chat status notifications if its received", function () {
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions

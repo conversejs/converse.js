@@ -1429,7 +1429,7 @@
                     converse.incrementMsgCounter();
                 }
                 if (!this.model.get('minimized') && !this.$el.is(':visible')) {
-                    _.debounce(this.show.bind(this), 100)();
+                    this.show();
                 }
             },
 
@@ -1830,7 +1830,7 @@
                 return this;
             },
 
-            show: function (focus) {
+            show: _.debounce(function (callback) {
                 if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                     if (focus) { this.focus(); }
                     return this;
@@ -1849,7 +1849,7 @@
                     }
                 }.bind(this));
                 return this;
-            },
+            }, 250, true),
 
             scrollDownMessageHeight: function ($message) {
                 if (this.$content.is(':visible')) {

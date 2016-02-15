@@ -2174,22 +2174,22 @@
                 return this;
             },
 
-            show: function (callback) {
+            show: function (focus) {
                 if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                     return this.focus();
                 }
                 this.initDragResize().setDimensions();
                 this.$el.fadeIn(function () {
-                    if (typeof callback === "function") {
-                        callback.apply(this, arguments);
-                    }
                     if (converse.connection.connected) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
                     }
                     this.setChatState(ACTIVE);
-                    this.scrollDown().focus();
+                    this.scrollDown();
+                    if ( focus ) {
+                        this.focus();
+                    }
                 }.bind(this));
                 return this;
             },
@@ -3923,7 +3923,7 @@
                 if (chatbox.get('minimized')) {
                     chatbox.maximize();
                 } else {
-                    chatbox.trigger('show');
+                    chatbox.trigger('show', true);
                 }
                 return chatbox;
             }

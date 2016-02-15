@@ -5,6 +5,7 @@
 - #261 show_controlbox_by_default config not working [diditopher]
 - #573 xgettext build error: `'javascript' unknown`
 - Save scroll position on minimize and restore it on maximize [rlanvin]
+- #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
 
 ## 0.10.1 (2016-02-06)
 

@@ -837,6 +837,26 @@ An example plugin
         // The following line registers your plugin.
         converse_api.plugins.add('myplugin', {
 
+            initialize: function () {
+                // Converse.js's plugin mechanism will call the initialize
+                // method on any plugin (if it exists) as soon as the plugin has
+                // been loaded.
+
+                // Inside this method, you have access to the protected "inner"
+                // converse object, from which you can get any configuration
+                // options that the user might have passed in via
+                // converse.initialize. These values are stored in the
+                // "user_settings" attribute.
+                
+                // Let's assume the user might in a custom setting, like so:
+                // converse.initialize({
+                //      "initialize_message": "My plugin has been initialized"
+                // });
+                //
+                // Then we can alert that message, like so:
+                alert(this.converse.user_settings.initialize_message);
+            },
+
             myFunction: function () {
                 // This is a function which does not override anything in
                 // converse.js itself, but in which you still have access to

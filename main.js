@@ -17,8 +17,6 @@ require.config({
         "backbone":                 "components/backbone/backbone",
         "backbone.browserStorage":  "components/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "components/backbone.overview/backbone.overview",
-        "converse-dependencies":    "src/deps-full",
-        "converse-templates":       "src/templates",
         "eventemitter":             "components/otr/build/dep/eventemitter",
         "jquery":                   "components/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
@@ -44,6 +42,12 @@ require.config({
         "underscore":               "components/underscore/underscore",
         "utils":                    "src/utils",
         "polyfill":                 "src/polyfill",
+        
+        // Converse
+        "converse-core":            "src/converse-core",
+        "converse-muc":             "src/converse-muc",
+        "converse-dependencies":    "src/deps-full",
+        "converse-templates":       "src/templates",
 
         // Off-the-record-encryption
         "bigint":               "src/bigint",
@@ -57,7 +61,7 @@ require.config({
         "crypto.md5":           "components/crypto-js-evanvosberg/src/md5",
         "crypto.mode-ctr":      "components/otr/vendor/cryptojs/mode-ctr",
         "crypto.pad-nopadding": "components/otr/vendor/cryptojs/pad-nopadding",
-        "crypto.sha1":         "components/otr/vendor/cryptojs/sha1",
+        "crypto.sha1":          "components/otr/vendor/cryptojs/sha1",
         "crypto.sha256":        "components/otr/vendor/cryptojs/sha256",
         "salsa20":              "components/otr/build/dep/salsa20",
         "otr":                  "src/otr",
@@ -195,7 +199,7 @@ require.config({
 });
 
 if (typeof(require) === 'function') {
-    require(["converse"], function(converse) {
-        window.converse = converse;
+    require(["converse"], function(converse_api) {
+        window.converse = converse_api;
     });
 }

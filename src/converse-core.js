@@ -415,6 +415,10 @@
         // Module-level functions
         // ----------------------
 
+	this.generateResource = function () {
+            return '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+        };
+
         this.sendCSI = function (stat) {
             /* Send out a Chat Status Notification (XEP-0352) */
             if (converse.features[Strophe.NS.CSI] || true) {
@@ -4723,9 +4727,9 @@
                 if (jid) {
                     resource = Strophe.getResourceFromJid(jid);
                     if (!resource) {
-                        jid = jid.toLowerCase() + '/converse.js-' + Math.floor(Math.random()*139749825).toString();
+                        jid = jid.toLowerCase() + converse.generateResource();
                     } else {
-                        jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+Strophe.getResourceFromJid(jid);
+                        jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
                     }
                 }
                 converse.connection.connect(jid, password, converse.onConnectStatusChanged);
@@ -4893,7 +4897,12 @@
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
-                    this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+Strophe.getResourceFromJid(this.jid);
+                    var resource = Strophe.getResourceFromJid(this.jid);
+                    if (!resource) {
+                        this.jid = this.jid.toLowerCase() + converse.generateResource();
+                    } else {
+                        this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
+                    }
                     this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
                 }
             }

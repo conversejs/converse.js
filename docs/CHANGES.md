@@ -7,10 +7,12 @@
   the build. [jcbrand]
 - Don't play sound notifications for OTR messages which are setting up an
   encrypted session. [jcbrand]
-- Save scroll position on minimize and restore it on maximize [rlanvin]
-- #261 show_controlbox_by_default config not working [diditopher]
+- Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
+- #261 `show_controlbox_by_default` config not working [diditopher]
 - #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
 - #573 xgettext build error: `'javascript' unknown` [jcbrand]
+- #587 Fix issue when logging out with `auto_logout=true` [davec82]
+- #589 Save scroll position on minimize and restore it on maximize [rlanvin]
 
 ## 0.10.1 (2016-02-06)
 

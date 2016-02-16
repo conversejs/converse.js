@@ -5033,12 +5033,6 @@
         'disconnect': function () {
               converse.connection.disconnect();
         },
-        'account': {
-            // XXX: Deprecated, will be removed with next non-minor release
-            'logout': function () {
-                converse.logOut();
-            }
-        },
         'user': {
             'logout': function () {
                 converse.logOut();

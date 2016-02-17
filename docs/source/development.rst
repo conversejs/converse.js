@@ -821,18 +821,32 @@ An example plugin
 
     (function (root, factory) {
         if (typeof define === 'function' && define.amd) {
-            define("myplugin", ["jquery", "strophe", "utils", "converse"], factory);
+            // AMD. Register as a module called "myplugin"
+            define("myplugin", ["converse"], factory);
+        } else {
+            // Browser globals. If you're not using a module loader such as require.js,
+            // then this line below executes. Make sure that your plugin's <script> tag
+            // appears after the one from converse.js.
+            factory(converse);
         }
-    }(this, function ($, strophe, utils, converse_api) {
+    }(this, function (converse_api) {
 
-        // Wrap your UI strings with the __ function for translation support.
-        var __ = $.proxy(utils.__, this);
+        // Commonly used utilities and variables can be found under the "env"
+        // namespace of converse_api
 
         // Strophe methods for building stanzas
-        var Strophe = strophe.Strophe;
-        $iq = strophe.$iq;
-        $msg = strophe.$msg;
-        $build = strophe.$build;
+        var Strophe = converse_api.env.Strophe,
+            $iq = converse_api.env.$iq,
+            $msg = converse_api.env.$msg,
+            $pres = converse_api.env.$pres,
+            $build = converse_api.env.$build,
+            b64_sha1 = converse_api.env.b64_sha1;
+
+        // Other frequently used utilities
+        var $ = converse_api.env.jQuery,
+            _ = converse_api.env._,
+            moment = converse_api.env.moment;
+        
 
         // The following line registers your plugin.
         converse_api.plugins.add('myplugin', {

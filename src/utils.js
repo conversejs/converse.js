@@ -1,9 +1,9 @@
-/*global jQuery, templates, escape, Jed, _ */
+/*global jQuery, templates, escape, Jed, _, locales */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(["jquery", "underscore", "converse-templates", "locales"], factory);
     } else {
-        root.utils = factory(jQuery, _, templates);
+        root.utils = factory(jQuery, _, templates, locales);
     }
 }(this, function ($, _, templates, locales) {
     "use strict";

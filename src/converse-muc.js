@@ -19,7 +19,7 @@
         // In this case, the dependencies need to be available already as
         // global variables, and should be loaded separately via *script* tags.
         // See the file **non_amd.html** for an example of this usecase.
-        root.converse = factory(converse, utils);
+        factory(converse, utils);
     }
 }(this, function (converse_api, utils) {
     // Strophe methods for building stanzas

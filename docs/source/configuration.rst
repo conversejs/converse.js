@@ -679,6 +679,21 @@ Data in localStorage on the other hand is kept indefinitely.
     roster contact statuses will not become out of sync in a single session,
     only across more than one session.
 
+synchronize_availability
+--------------------
+
+* Default: ``true``
+
+Valid options: ``true``, ``false``, ``a resource name``.
+
+This option lets you synchronize your chat status (`online`, `busy`, `away`) with other chat clients. In other words,
+if you change your status to `busy` in a different chat client, your status will change to `busy` in converse.js as well.
+
+If set to ``true``, converse.js will synchronize with all other clients you are logged in with.
+
+If set to ``false``, this feature is disabled.
+
+If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
 
 use_otr_by_default
 ------------------

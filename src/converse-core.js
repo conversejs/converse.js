@@ -284,7 +284,6 @@
             message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             password: undefined,
-            ping_interval: 180, //in seconds
             play_sounds: false,
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
@@ -741,71 +740,19 @@
             }.bind(this), 200));
         };
 
-        this.ping = function (jid, success, error, timeout) {
-            // XXX: We could first check here if the server advertised that it supports PING.
-            // However, some servers don't advertise while still keeping the
-            // connection option due to pings.
-            //
-            // var feature = converse.features.findWhere({'var': Strophe.NS.PING});
-            converse.lastStanzaDate = new Date();
-            if (typeof jid === 'undefined' || jid === null) {
-                jid = Strophe.getDomainFromJid(converse.bare_jid);
-            }
-            if (typeof timeout === 'undefined' ) { timeout = null; }
-            if (typeof success === 'undefined' ) { success = null; }
-            if (typeof error === 'undefined' ) { error = null; }
-            if (converse.connection) {
-                converse.connection.ping.ping(jid, success, error, timeout);
-                return true;
-            }
-            return false;
-        };
-		
-        this.pong = function (ping) {
-            converse.lastStanzaDate = new Date();
-            converse.connection.ping.pong(ping);
-            return true;
-        };
-
-        this.registerPongHandler = function () {
-            converse.connection.disco.addFeature(Strophe.NS.PING);
-            converse.connection.ping.addPingHandler(this.pong);
-        };
-
-        this.registerPingHandler = function () {
-            this.registerPongHandler();
-            if (this.ping_interval > 0) {
-                this.connection.addHandler(function () {
-                    /* Handler on each stanza, saves the received date
-                     * in order to ping only when needed.
-                     */
-                    this.lastStanzaDate = new Date();
-                    return true;
-                }.bind(converse));
-                this.connection.addTimedHandler(1000, function () {
-                    var now = new Date();
-                    if (!this.lastStanzaDate) {
-                        this.lastStanzaDate = now;
-                    }
-                    if ((now - this.lastStanzaDate)/1000 > this.ping_interval) {
-                        return this.ping();
-                    }
-                    return true;
-                }.bind(converse));
-            }
-        };
-
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
+            var deferred = new $.Deferred();
             this.initStatus(function () {
-                this.registerPingHandler();
                 this.rosterview.registerRosterXHandler();
                 this.rosterview.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
                 this.xmppstatus.sendPresence();
                 this.giveFeedback(__('Contacts'));
+                deferred.resolve();
             }.bind(this));
+            return deferred.promise();
         };
 
         this.enableCarbons = function () {
@@ -832,10 +779,11 @@
             this.connection.send(carbons_iq);
         };
 
-        this.onConnected = function () {
+        this.onConnected = function (callback) {
             // When reconnecting, there might be some open chat boxes. We don't
             // know whether these boxes are of the same account or not, so we
             // close them now.
+            var deferred = new $.Deferred();
             this.chatboxviews.closeAllChatBoxes();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
@@ -845,11 +793,13 @@
             this.features = new this.Features();
             this.enableCarbons();
             this.initStatus(function () {
-                this.registerPingHandler();
                 this.registerIntervalHandler();				
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
-                if (this.callback) {
+                if (typeof this.callback === 'function') {
+                    // A callback method may be passed in via the
+                    // converse.initialize method.
+                    // XXX: Can we use $.Deferred instead of this callback?
                     if (this.connection.service === 'jasmine tests') {
                         // XXX: Call back with the internal converse object. This
                         // object should never be exposed to production systems.
@@ -860,8 +810,10 @@
                         this.callback();
                     }
                 }
+                deferred.resolve();
             }.bind(this));
             converse.emit('ready');
+            return deferred.promise();
         };
 
         this.Message = Backbone.Model.extend({
@@ -4629,9 +4581,6 @@
         },
         'send': function (stanza) {
             converse.connection.send(stanza);
-        },
-        'ping': function (jid) {
-            converse.ping(jid);
         },
         'plugins': {
             'add': function (name, plugin) {

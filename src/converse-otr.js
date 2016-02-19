@@ -23,16 +23,13 @@
         factory(otr, converse, utils);
     }
 }(this, function (otr, converse_api, utils) {
+    "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         b64_sha1 = converse_api.env.b64_sha1;
     // Other necessary globals
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._;
-
-    // Translation machinery
-    // ---------------------
-    var __ = utils.__.bind(this);
 
     var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
         ((typeof crypto.randomBytes === 'function') ||
@@ -49,19 +46,27 @@
     var VERIFIED= 2;
     var FINISHED = 3;
 
-    // Translation aware constants
-    // ---------------------------
+
     var OTR_CLASS_MAPPING = {};
     OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
     OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
     OTR_CLASS_MAPPING[FINISHED] = 'finished';
 
+    // Translation aware constants
+    // ---------------------------
+
+    // Just a placeholder for now, we need to bind the utils.__ method to the
+    // inner converse object, which we can't here, so we do it in the
+    // initialize method.
+    var __ =  function () {};
+
     var OTR_TRANSLATED_MAPPING  = {};
     OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
     OTR_TRANSLATED_MAPPING[UNVERIFIED] = __('unverified');
     OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
     OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
+
 
     converse_api.plugins.add('otr', {
 
@@ -486,6 +491,8 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+            // For translations
+            __ = utils.__.bind(converse);
             // Configuration values for this plugin
             var settings = {
                 allow_otr: true,

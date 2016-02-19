@@ -22,6 +22,7 @@
         factory(converse, utils);
     }
 }(this, function (converse_api, utils) {
+    "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         $iq = converse_api.env.$iq,
@@ -36,7 +37,10 @@
 
     // Translation machinery
     // ---------------------
-    var __ = utils.__.bind(this);
+    // __ is just a placeholder for now, we need to bind the utils.__ method
+    // to the inner converse object, which we can't here, so we do it in the
+    // initialize method.
+    var __ =  function () {};
     var ___ = utils.___;
     
     // Add Strophe Namespaces
@@ -194,8 +198,9 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-
             var converse = this.converse;
+            // For translations
+            __ = utils.__.bind(converse);
             // Configuration values for this plugin
             var settings = {
                 allow_muc: true,

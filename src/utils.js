@@ -1,11 +1,11 @@
-/*global jQuery, templates, escape, Jed, _, locales */
+/*global jQuery, templates, escape, _, locales */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(["jquery", "underscore", "converse-templates", "locales"], factory);
+        define(["jquery", "underscore", "jed", "converse-templates", "locales"], factory);
     } else {
         root.utils = factory(jQuery, _, templates, locales);
     }
-}(this, function ($, _, templates, locales) {
+}(this, function ($, _, Jed, templates, locales) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -110,12 +110,12 @@
 
         ___: function (str) {
             /* XXX: This is part of a hack to get gettext to scan strings to be
-                * translated. Strings we cannot send to the function above because
-                * they require variable interpolation and we don't yet have the
-                * variables at scan time.
-                *
-                * See actionInfoMessages
-                */
+             * translated. Strings we cannot send to the function above because
+             * they require variable interpolation and we don't yet have the
+             * variables at scan time.
+             *
+             * See actionInfoMessages in src/converse-muc.js
+             */
             return str;
         },
 

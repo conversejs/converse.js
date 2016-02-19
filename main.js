@@ -47,6 +47,7 @@ require.config({
         "converse-core":            "src/converse-core",
         "converse-muc":             "src/converse-muc",
         "converse-otr":             "src/converse-otr",
+        "converse-register":        "src/converse-register",
         "converse-dependencies":    "src/deps-full",
         "converse-templates":       "src/templates",
 

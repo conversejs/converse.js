@@ -71,6 +71,7 @@ require([
                 "spec/chatroom",
                 "spec/minchats",
                 "spec/profiling",
+                "spec/ping",
                 "spec/register",
                 "spec/xmppstatus"
             ], function () {

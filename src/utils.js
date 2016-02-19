@@ -146,6 +146,22 @@
             }))[0];
         },
 
+        contains: function (attr, query) {
+            return function (item) {
+                if (typeof attr === 'object') {
+                    var value = false;
+                    _.each(attr, function (a) {
+                        value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    });
+                    return value;
+                } else if (typeof attr === 'string') {
+                    return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                } else {
+                    throw new TypeError('contains: wrong attribute type. Must be string or array.');
+                }
+            };
+        },
+
         xForm2webForm: function ($field, $stanza) {
             /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
             * and turns it into a HTML DOM field.
@@ -232,6 +248,12 @@
                 }
             }
         }
+    };
+
+    utils.contains.not = function (attr, query) {
+        return function (item) {
+            return !(utils.contains(attr, query)(item));
+        };
     };
     return utils;
 }));

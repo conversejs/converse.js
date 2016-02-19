@@ -199,7 +199,9 @@
             // Configuration values for this plugin
             var settings = {
                 allow_muc: true,
-                auto_join_on_invite: false  // Auto-join chatroom on invite
+                auto_join_on_invite: false,  // Auto-join chatroom on invite
+                hide_muc_server: false,
+                muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             };
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
@@ -940,6 +942,157 @@
                             converse.log("Error while trying to fetch archived messages", "error");
                         }.bind(this)
                     );
+                }
+            });
+
+            converse.ChatRoomOccupant = Backbone.Model;
+            converse.ChatRoomOccupantView = Backbone.View.extend({
+                tagName: 'li',
+                initialize: function () {
+                    this.model.on('add', this.render, this);
+                    this.model.on('change', this.render, this);
+                    this.model.on('destroy', this.destroy, this);
+                },
+                render: function () {
+                    var $new = converse.templates.occupant(
+                        _.extend(
+                            this.model.toJSON(), {
+                                'desc_moderator': __('This user is a moderator'),
+                                'desc_occupant': __('This user can send messages in this room'),
+                                'desc_visitor': __('This user can NOT send messages in this room')
+                        })
+                    );
+                    this.$el.replaceWith($new);
+                    this.setElement($new, true);
+                    return this;
+                },
+
+                destroy: function () {
+                    this.$el.remove();
+                }
+            });
+
+            converse.ChatRoomOccupants = Backbone.Collection.extend({
+                model: converse.ChatRoomOccupant
+            });
+
+            converse.ChatRoomOccupantsView = Backbone.Overview.extend({
+                tagName: 'div',
+                className: 'occupants',
+
+                initialize: function () {
+                    this.model.on("add", this.onOccupantAdded, this);
+                },
+
+                render: function () {
+                    this.$el.html(
+                        converse.templates.chatroom_sidebar({
+                            'label_invitation': __('Invite...'),
+                            'label_occupants': __('Occupants')
+                        })
+                    );
+                    return this.initInviteWidget();
+                },
+
+                onOccupantAdded: function (item) {
+                    var view = this.get(item.get('id'));
+                    if (!view) {
+                        view = this.add(item.get('id'), new converse.ChatRoomOccupantView({model: item}));
+                    } else {
+                        delete view.model; // Remove ref to old model to help garbage collection
+                        view.model = item;
+                        view.initialize();
+                    }
+                    this.$('.occupant-list').append(view.render().$el);
+                },
+
+                parsePresence: function (pres) {
+                    var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
+                    var data = {
+                        id: id,
+                        nick: id,
+                        type: pres.getAttribute("type"),
+                        states: []
+                    };
+                    _.each(pres.childNodes, function (child) {
+                        switch (child.nodeName) {
+                            case "status":
+                                data.status = child.textContent || null;
+                                break;
+                            case "show":
+                                data.show = child.textContent || null;
+                                break;
+                            case "x":
+                                if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
+                                    _.each(child.childNodes, function (item) {
+                                        switch (item.nodeName) {
+                                            case "item":
+                                                data.affiliation = item.getAttribute("affiliation");
+                                                data.role = item.getAttribute("role");
+                                                data.jid = item.getAttribute("jid");
+                                                data.nick = item.getAttribute("nick") || data.nick;
+                                                break;
+                                            case "status":
+                                                if (item.getAttribute("code")) {
+                                                    data.states.push(item.getAttribute("code"));
+                                                }
+                                        }
+                                    });
+                                }
+                        }
+                    });
+                    return data;
+                },
+
+                updateOccupantsOnPresence: function (pres) {
+                    var occupant;
+                    var data = this.parsePresence(pres);
+                    switch (data.type) {
+                        case 'error':
+                            return true;
+                        case 'unavailable':
+                            occupant = this.model.get(data.id);
+                            if (occupant) { occupant.destroy(); }
+                            break;
+                        default:
+                            occupant = this.model.get(data.id);
+                            if (occupant) {
+                                occupant.save(data);
+                            } else {
+                                this.model.create(data);
+                            }
+                    }
+                },
+
+                initInviteWidget: function () {
+                    var $el = this.$('input.invited-contact');
+                    $el.typeahead({
+                        minLength: 1,
+                        highlight: true
+                    }, {
+                        name: 'contacts-dataset',
+                        source: function (q, cb) {
+                            var results = [];
+                            _.each(converse.roster.filter(utils.contains(['fullname', 'jid'], q)), function (n) {
+                                results.push({value: n.get('fullname'), jid: n.get('jid')});
+                            });
+                            cb(results);
+                        },
+                        templates: {
+                            suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
+                        }
+                    });
+                    $el.on('typeahead:selected', function (ev, suggestion, dname) {
+                        var reason = prompt(
+                            __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
+                            __("You may optionally include a message, explaining the reason for the invitation.")
+                        );
+                        if (reason !== null) {
+                            this.chatroomview.directInvite(suggestion.jid, reason);
+                        }
+                        $(ev.target).typeahead('val', '');
+                    }.bind(this));
+                    return this;
                 }
             });
 

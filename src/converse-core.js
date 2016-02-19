@@ -61,27 +61,6 @@
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
-    var contains = function (attr, query) {
-        return function (item) {
-            if (typeof attr === 'object') {
-                var value = false;
-                _.each(attr, function (a) {
-                    value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
-                });
-                return value;
-            } else if (typeof attr === 'string') {
-                return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
-            } else {
-                throw new TypeError('contains: wrong attribute type. Must be string or array.');
-            }
-        };
-    };
-    contains.not = function (attr, query) {
-        return function (item) {
-            return !(contains(attr, query)(item));
-        };
-    };
-
     var converse = {
         plugins: {},
         templates: templates,
@@ -284,7 +263,6 @@
         // Translation machinery
         // ---------------------
         var __ = utils.__.bind(this);
-        var ___ = utils.___;
 
         // Default configuration values
         // ----------------------------
@@ -311,7 +289,6 @@
             domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             expose_rid_and_sid: false,
             forward_messages: false,
-            hide_muc_server: false,
             hide_offline_users: false,
             include_offline_state: false,
             jid: undefined,
@@ -319,7 +296,6 @@
             locked_domain: undefined,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
             message_carbons: false, // Support for XEP-280
-            muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             password: undefined,
             ping_interval: 180, //in seconds
@@ -2156,158 +2132,6 @@
             }
         });
 
-        this.ChatRoomOccupant = Backbone.Model;
-        this.ChatRoomOccupantView = Backbone.View.extend({
-            tagName: 'li',
-            initialize: function () {
-                this.model.on('add', this.render, this);
-                this.model.on('change', this.render, this);
-                this.model.on('destroy', this.destroy, this);
-            },
-            render: function () {
-                var $new = converse.templates.occupant(
-                    _.extend(
-                        this.model.toJSON(), {
-                            'desc_moderator': __('This user is a moderator'),
-                            'desc_occupant': __('This user can send messages in this room'),
-                            'desc_visitor': __('This user can NOT send messages in this room')
-                    })
-                );
-                this.$el.replaceWith($new);
-                this.setElement($new, true);
-                return this;
-            },
-
-            destroy: function () {
-                this.$el.remove();
-            }
-        });
-
-        this.ChatRoomOccupants = Backbone.Collection.extend({
-            model: converse.ChatRoomOccupant
-        });
-
-        this.ChatRoomOccupantsView = Backbone.Overview.extend({
-            tagName: 'div',
-            className: 'occupants',
-
-            initialize: function () {
-                this.model.on("add", this.onOccupantAdded, this);
-            },
-
-            render: function () {
-                this.$el.html(
-                    converse.templates.chatroom_sidebar({
-                        'label_invitation': __('Invite...'),
-                        'label_occupants': __('Occupants')
-                    })
-                );
-                return this.initInviteWidget();
-            },
-
-            onOccupantAdded: function (item) {
-                var view = this.get(item.get('id'));
-                if (!view) {
-                    view = this.add(item.get('id'), new converse.ChatRoomOccupantView({model: item}));
-                } else {
-                    delete view.model; // Remove ref to old model to help garbage collection
-                    view.model = item;
-                    view.initialize();
-                }
-                this.$('.occupant-list').append(view.render().$el);
-            },
-
-            parsePresence: function (pres) {
-                var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-                var data = {
-                    id: id,
-                    nick: id,
-                    type: pres.getAttribute("type"),
-                    states: []
-                };
-                _.each(pres.childNodes, function (child) {
-                    switch (child.nodeName) {
-                        case "status":
-                            data.status = child.textContent || null;
-                            break;
-                        case "show":
-                            data.show = child.textContent || null;
-                            break;
-                        case "x":
-                            if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
-                                _.each(child.childNodes, function (item) {
-                                    switch (item.nodeName) {
-                                        case "item":
-                                            data.affiliation = item.getAttribute("affiliation");
-                                            data.role = item.getAttribute("role");
-                                            data.jid = item.getAttribute("jid");
-                                            data.nick = item.getAttribute("nick") || data.nick;
-                                            break;
-                                        case "status":
-                                            if (item.getAttribute("code")) {
-                                                data.states.push(item.getAttribute("code"));
-                                            }
-                                    }
-                                });
-                            }
-                    }
-                });
-                return data;
-            },
-
-            updateOccupantsOnPresence: function (pres) {
-                var occupant;
-                var data = this.parsePresence(pres);
-                switch (data.type) {
-                    case 'error':
-                        return true;
-                    case 'unavailable':
-                        occupant = this.model.get(data.id);
-                        if (occupant) { occupant.destroy(); }
-                        break;
-                    default:
-                        occupant = this.model.get(data.id);
-                        if (occupant) {
-                            occupant.save(data);
-                        } else {
-                            this.model.create(data);
-                        }
-                }
-            },
-
-            initInviteWidget: function () {
-                var $el = this.$('input.invited-contact');
-                $el.typeahead({
-                    minLength: 1,
-                    highlight: true
-                }, {
-                    name: 'contacts-dataset',
-                    source: function (q, cb) {
-                        var results = [];
-                        _.each(converse.roster.filter(contains(['fullname', 'jid'], q)), function (n) {
-                            results.push({value: n.get('fullname'), jid: n.get('jid')});
-                        });
-                        cb(results);
-                    },
-                    templates: {
-                        suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
-                    }
-                });
-                $el.on('typeahead:selected', function (ev, suggestion, dname) {
-                    var reason = prompt(
-                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
-                        __("You may optionally include a message, explaining the reason for the invitation.")
-                    );
-                    if (reason !== null) {
-                        this.chatroomview.directInvite(suggestion.jid, reason);
-                    }
-                    $(ev.target).typeahead('val', '');
-                }.bind(this));
-                return this;
-            }
-
-        });
-
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
             comparator: 'time_opened',
@@ -3451,14 +3275,14 @@
                     this.showIfNecessary();
                 } else {
                     q = q.toLowerCase();
-                    matches = this.model.contacts.filter(contains.not('fullname', q));
+                    matches = this.model.contacts.filter(utils.contains.not('fullname', q));
                     if (matches.length === this.model.contacts.length) { // hide the whole group
                         this.hide();
                     } else {
                         _.each(matches, function (item) {
                             this.get(item.get('id')).$el.hide();
                         }.bind(this));
-                        _.each(this.model.contacts.reject(contains.not('fullname', q)), function (item) {
+                        _.each(this.model.contacts.reject(utils.contains.not('fullname', q)), function (item) {
                             this.get(item.get('id')).$el.show();
                         }.bind(this));
                         this.showIfNecessary();

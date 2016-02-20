@@ -3813,7 +3813,7 @@
 
             setStatus: function (ev) {
                 ev.preventDefault();
-                var $el = $(ev.target),
+                var $el = $(ev.currentTarget),
                     value = $el.attr('data-value');
                 if (value === 'logout') {
                     this.$el.find(".dropdown dd ul").hide();

@@ -15,6 +15,7 @@
 - #589 Save scroll position on minimize and restore it on maximize [rlanvin]
 - #592 Add random resource for `auto_login`, add method generateResource to generate random resource [davec82]
 - #598 Add option `synchronize_availability` [davec82]
+- #600 Fix change xmpp status also on icon-status click [davec82]
 
 ## 0.10.1 (2016-02-06)
 

@@ -90,6 +90,8 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
+            // FIXME: this can be refactored to take the i18n obj as a
+            // parameter.
             // Translation factory
             if (typeof this.i18n === "undefined") {
                 this.i18n = locales.en;

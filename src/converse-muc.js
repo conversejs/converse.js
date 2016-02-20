@@ -4,43 +4,30 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global converse, utils, Backbone, define, window, setTimeout */
+/*global Backbone, define, window, setTimeout */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD module loading
-        define("converse-muc", ["converse-core", "utils"], factory);
-    } else {
-        // When not using a module loader
-        // -------------------------------
-        // In this case, the dependencies need to be available already as
-        // global variables, and should be loaded separately via *script* tags.
-        // See the file **non_amd.html** for an example of this usecase.
-        factory(converse, utils);
-    }
-}(this, function (converse_api, utils) {
+    define("converse-muc", ["converse-core", "converse-api"], factory);
+}(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         $iq = converse_api.env.$iq,
+        $build = converse_api.env.$build,
         $msg = converse_api.env.$msg,
         $pres = converse_api.env.$pres,
-        $build = converse_api.env.$build,
-        b64_sha1 = converse_api.env.b64_sha1;
+        b64_sha1 = converse_api.env.b64_sha1,
+        utils = converse_api.env.utils;
     // Other necessary globals
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._,
         moment = converse_api.env.moment;
 
-    // Translation machinery
-    // ---------------------
-    // __ is just a placeholder for now, we need to bind the utils.__ method
-    // to the inner converse object, which we can't here, so we do it in the
-    // initialize method.
-    var __ =  function () {};
+    // For translations
+    var __ = utils.__.bind(converse);
     var ___ = utils.___;
     
     // Add Strophe Namespaces
@@ -199,8 +186,6 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
-            // For translations
-            __ = utils.__.bind(converse);
             // Configuration values for this plugin
             var settings = {
                 allow_muc: true,

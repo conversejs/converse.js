@@ -45,6 +45,7 @@ require.config({
         
         // Converse
         "converse-core":            "src/converse-core",
+        "converse-api":             "src/converse-api",
         "converse-muc":             "src/converse-muc",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
@@ -201,9 +202,3 @@ require.config({
         'strophe.vcard':        { deps: ['strophe'] }
     }
 });
-
-if (typeof(require) === 'function') {
-    require(["converse"], function(converse_api) {
-        window.converse = converse_api;
-    });
-}

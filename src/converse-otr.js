@@ -4,28 +4,18 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global converse, utils, Backbone, define, window, setTimeout, 
-  crypto, CryptoJS, otr */
+/*global Backbone, define, window, crypto, CryptoJS */
 
 /* This is a Converse.js plugin which add support Off-the-record (OTR)
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD module loading
-        define("converse-otr", ["otr", "converse-core", "utils"], factory);
-    } else {
-        // When not using a module loader
-        // -------------------------------
-        // In this case, the dependencies need to be available already as
-        // global variables, and should be loaded separately via *script* tags.
-        // See the file **non_amd.html** for an example of this usecase.
-        factory(otr, converse, utils);
-    }
-}(this, function (otr, converse_api, utils) {
+    define("converse-otr", ["otr", "converse-core", "converse-api"], factory);
+}(this, function (otr, converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
+        utils = converse_api.env.utils,
         b64_sha1 = converse_api.env.b64_sha1;
     // Other necessary globals
     var $ = converse_api.env.jQuery,
@@ -55,11 +45,7 @@
 
     // Translation aware constants
     // ---------------------------
-
-    // Just a placeholder for now, we need to bind the utils.__ method to the
-    // inner converse object, which we can't here, so we do it in the
-    // initialize method.
-    var __ =  function () {};
+    var __ = utils.__.bind(converse);
 
     var OTR_TRANSLATED_MAPPING  = {};
     OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
@@ -190,7 +176,7 @@
                         null,
                         true // show spinner
                     );
-                    setTimeout(function () {
+                    window.setTimeout(function () {
                         var instance_tag = otr.OTR.makeInstanceTag();
                         callback({
                             'key': converse.otr.generatePrivateKey.call(this, instance_tag),

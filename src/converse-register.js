@@ -4,38 +4,24 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global converse, utils, Backbone, define */
+/*global Backbone, define */
 
 /* This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD module loading
-        define("converse-register", ["converse-core", "utils"], factory);
-    } else {
-        // When not using a module loader
-        // -------------------------------
-        // In this case, the dependencies need to be available already as
-        // global variables, and should be loaded separately via *script* tags.
-        // See the file **non_amd.html** for an example of this usecase.
-        factory(converse, utils);
-    }
-}(this, function (converse_api, utils) {
+    define("converse-register", ["converse-core", "converse-api"], factory);
+}(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
+        utils = converse_api.env.utils,
         $iq = converse_api.env.$iq;
     // Other necessary globals
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._;
-
-    // Translation machinery
-    // ---------------------
-    // Just a placeholder for now, we need to bind the utils.__ method to the
-    // inner converse object, which we can't here, so we do it in the
-    // initialize method.
-    var __ =  function () {};
+    // For translations
+    var __ = utils.__.bind(converse);
     
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');

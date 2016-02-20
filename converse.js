@@ -4,6 +4,8 @@
  * when it generates a build.
  */
 define("converse", [
+    "converse-api",
+
     /* Removable components
      * --------------------
      * Any of the following components may be removed if they're not needed.
@@ -13,8 +15,7 @@ define("converse", [
     "converse-register",// XEP-0077 In-band registration
     "converse-ping",    // XEP-0199 XMPP Ping
     /* End: Removable components */
-
-    "converse-core"
-], function() {
-    return arguments[arguments.length-1];
+], function(converse_api) {
+    window.converse = converse_api;
+    return converse_api;
 });

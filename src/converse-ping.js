@@ -4,37 +4,20 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global converse, utils, define */
+/*global define */
 
 /* This is a Converse.js plugin which add support for application-level pings
  * as specified in XEP-0199 XMPP Ping.
  */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD module loading
-        define("converse-ping", ["converse-core", "utils"], factory);
-    } else {
-        // When not using a module loader
-        // -------------------------------
-        // In this case, the dependencies need to be available already as
-        // global variables, and should be loaded separately via *script* tags.
-        // See the file **non_amd.html** for an example of this usecase.
-        factory(converse, utils);
-    }
-}(this, function (converse_api, utils) {
+    define("converse-ping", ["converse-core", "converse-api"], factory);
+}(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe;
     // Other necessary globals
     var _ = converse_api.env._;
-
-    // Translation machinery
-    // ---------------------
-    // Just a placeholder for now, we need to bind the utils.__ method to the
-    // inner converse object, which we can't here, so we do it in the
-    // initialize method.
-    var __ =  function () {};
-
+    
     converse_api.plugins.add('ping', {
 
         overrides: {
@@ -61,8 +44,6 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
-            // For translations
-            __ = utils.__.bind(converse);
             // Configuration values for this plugin
             var settings = {
                 ping_interval: 180 //in seconds

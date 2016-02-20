@@ -4,48 +4,34 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, jQuery, setTimeout, clearTimeout, document, templates, _,
-  $iq, $msg, $pres, $build, Strophe, moment, utils, b64_sha1, locales */
+/*global Backbone, define, window, document, locales */
 
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD module loading
-        // ------------------
-        // When using require.js, two modules are loaded as dependencies.
-        //
-        // * **converse-dependencies**: A list of dependencies on which converse.js
-        //   depends. The path to this module is in main.js and the module itself can
-        //   be overridden.
-        // * **converse-templates**: The HTML templates used by converse.js.
-        //
-        // The dependencies are then split up and passed into the factory function,
-        // which contains and instantiates converse.js.
-        define("converse-core",
-              ["converse-dependencies", "converse-templates"],
-            function (dependencies, templates) {
-                return factory(
-                    templates,
-                    dependencies.jQuery,
-                    dependencies.$iq,
-                    dependencies.$msg,
-                    dependencies.$pres,
-                    dependencies.$build,
-                    dependencies.Strophe,
-                    dependencies.underscore,
-                    dependencies.moment,
-                    dependencies.utils,
-                    dependencies.SHA1.b64_sha1
-                );
-            }
-        );
-    } else {
-        // When not using a module loader
-        // -------------------------------
-        // In this case, the dependencies need to be available already as
-        // global variables, and should be loaded separately via *script* tags.
-        // See the file **non_amd.html** for an example of this usecase.
-        root.converse = factory(templates, jQuery, $iq, $msg, $pres, $build, Strophe, _, moment, utils, b64_sha1);
-    }
+    // Two modules are loaded as dependencies.
+    //
+    // * **converse-dependencies**: A list of dependencies converse.js depends on.
+    //   The path to this module is in main.js and the module itself can be overridden.
+    // * **converse-templates**: The HTML templates used by converse.js.
+    //
+    // The dependencies are then split up and passed into the factory function,
+    // which contains and instantiates converse.js.
+    define("converse-core", ["converse-dependencies", "converse-templates"],
+        function (dependencies, templates) {
+            return factory(
+                templates,
+                dependencies.jQuery,
+                dependencies.$iq,
+                dependencies.$msg,
+                dependencies.$pres,
+                dependencies.$build,
+                dependencies.Strophe,
+                dependencies.underscore,
+                dependencies.moment,
+                dependencies.utils,
+                dependencies.SHA1.b64_sha1
+            );
+        }
+    );
 }(this, function (templates, $, $iq, $msg, $pres, $build, Strophe, _, moment, utils, b64_sha1) {
     /* "use strict";
      * Cannot use this due to Safari bug.
@@ -89,14 +75,8 @@
         }
     };
 
-    // Global constants
-
-    // XEP-0059 Result Set Management
-    var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
-    // XEP-0313 Message Archive Management
-    var MAM_ATTRIBUTES = ['with', 'start', 'end'];
-
-    var STATUS_WEIGHTS = {
+    // Module-level constants
+    converse.STATUS_WEIGHTS = {
         'offline':      6,
         'unavailable':  5,
         'xa':           4,
@@ -104,6 +84,92 @@
         'dnd':          2,
         'chat':         1, // We currently don't differentiate between "chat" and "online"
         'online':       1
+    };
+
+    // TODO Refactor into external MAM plugin
+    // XEP-0059 Result Set Management
+    var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
+    // XEP-0313 Message Archive Management
+    var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+    converse.queryForArchivedMessages = function (options, callback, errback) {
+        /* Do a MAM (XEP-0313) query for archived messages.
+            *
+            * Parameters:
+            *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
+            *    (Function) callback - A function to call whenever we receive query-relevant stanza.
+            *    (Function) errback - A function to call when an error stanza is received.
+            *
+            * The options parameter can also be an instance of
+            * Strophe.RSM to enable easy querying between results pages.
+            *
+            * The callback function may be called multiple times, first
+            * for the initial IQ result and then for each message
+            * returned. The last time the callback is called, a
+            * Strophe.RSM object is returned on which "next" or "previous"
+            * can be called before passing it in again to this method, to
+            * get the next or previous page in the result set.
+            */
+        var date, messages = [];
+        if (typeof options === "function") {
+            callback = options;
+            errback = callback;
+        }
+        if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+            throw new Error('This server does not support XEP-0313, Message Archive Management');
+        }
+        var queryid = converse.connection.getUniqueId();
+        var attrs = {'type':'set'};
+        if (typeof options !== "undefined" && options.groupchat) {
+            if (!options['with']) {
+                throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
+            }
+            attrs.to = options['with'];
+        }
+        var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
+        if (typeof options !== "undefined") {
+            stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
+                    .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
+                    .c('value').t(Strophe.NS.MAM).up().up();
+
+            if (options['with'] && !options.groupchat) {
+                stanza.c('field', {'var':'with'}).c('value').t(options['with']).up().up();
+            }
+            _.each(['start', 'end'], function (t) {
+                if (options[t]) {
+                    date = moment(options[t]);
+                    if (date.isValid()) {
+                        stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
+                    } else {
+                        throw new TypeError('archive.query: invalid date provided for: '+t);
+                    }
+                }
+            });
+            stanza.up();
+            if (options instanceof Strophe.RSM) {
+                stanza.cnode(options.toXML());
+            } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+                stanza.cnode(new Strophe.RSM(options).toXML());
+            }
+        }
+        converse.connection.addHandler(function (message) {
+            var $msg = $(message), $fin, rsm;
+            if (typeof callback === "function") {
+                $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
+                if ($fin.length) {
+                    rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
+                    _.extend(rsm, _.pick(options, ['max']));
+                    _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
+                    callback(messages, rsm);
+                    return false; // We've received all messages, decommission this handler
+                } else if (queryid === $msg.find('result').attr('queryid')) {
+                    messages.push(message);
+                }
+                return true;
+            } else {
+                return false; // There's no callback, so no use in continuing this handler.
+            }
+        }, Strophe.NS.MAM);
+        converse.connection.sendIQ(stanza, null, errback);
     };
 
     converse.initialize = function (settings, callback) {
@@ -376,7 +442,7 @@
         // Module-level functions
         // ----------------------
 
-	this.generateResource = function () {
+        this.generateResource = function () {
             return '/converse.js-' + Math.floor(Math.random()*139749825).toString();
         };
 
@@ -547,8 +613,8 @@
         this.reconnect = function (condition) {
             converse.log('Attempting to reconnect in 5 seconds');
             converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
-            clearTimeout(converse.reconnectTimeout);
-            converse.reconnectTimeout = setTimeout(function () {
+            window.clearTimeout(converse.reconnectTimeout);
+            converse.reconnectTimeout = window.setTimeout(function () {
                 if (converse.authentication !== "prebind") {
                     this.connection.connect(
                         this.connection.jid,
@@ -582,7 +648,7 @@
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
                 if (!!converse.reconnectTimeout) {
-                    clearTimeout(converse.reconnectTimeout);
+                    window.clearTimeout(converse.reconnectTimeout);
                     delete converse.reconnectTimeout;
                 }
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
@@ -992,7 +1058,7 @@
                 this.renderToolbar().renderAvatar();
                 this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                 converse.emit('chatBoxOpened', this);
-                setTimeout(converse.refreshWebkit, 50);
+                window.setTimeout(converse.refreshWebkit, 50);
                 return this.showStatusMessage();
             },
 
@@ -1049,7 +1115,7 @@
                     return;
                 }
                 this.addSpinner();
-                API.archive.query(options, function (messages) {
+                converse.queryForArchivedMessages(options, function (messages) {
                         this.clearSpinner();
                         if (messages.length) {
                             _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
@@ -1322,13 +1388,13 @@
                  *    (Object) message - The message Backbone object that was added.
                  */
                 if (typeof this.clear_status_timeout !== 'undefined') {
-                    clearTimeout(this.clear_status_timeout);
+                    window.clearTimeout(this.clear_status_timeout);
                     delete this.clear_status_timeout;
                 }
                 if (!message.get('message')) {
                     if (message.get('chat_state') === COMPOSING) {
                         this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
-                        this.clear_status_timeout = setTimeout(this.clearStatusNotification.bind(this), 10000);
+                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
                         return;
                     } else if (message.get('chat_state') === PAUSED) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
@@ -1446,14 +1512,14 @@
                  *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
                  */
                 if (typeof this.chat_state_timeout !== 'undefined') {
-                    clearTimeout(this.chat_state_timeout);
+                    window.clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout;
                 }
                 if (state === COMPOSING) {
-                    this.chat_state_timeout = setTimeout(
+                    this.chat_state_timeout = window.setTimeout(
                             this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, PAUSED);
                 } else if (state === PAUSED) {
-                    this.chat_state_timeout = setTimeout(
+                    this.chat_state_timeout = window.setTimeout(
                             this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, INACTIVE);
                 }
                 if (!no_save && this.model.get('chat_state') !== state) {
@@ -2778,12 +2844,12 @@
                 var name1, name2;
                 var status1 = contact1.get('chat_status') || 'offline';
                 var status2 = contact2.get('chat_status') || 'offline';
-                if (STATUS_WEIGHTS[status1] === STATUS_WEIGHTS[status2]) {
+                if (converse.STATUS_WEIGHTS[status1] === converse.STATUS_WEIGHTS[status2]) {
                     name1 = contact1.get('fullname').toLowerCase();
                     name2 = contact2.get('fullname').toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
-                    return STATUS_WEIGHTS[status1] < STATUS_WEIGHTS[status2] ? -1 : 1;
+                    return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
             },
 
@@ -4372,259 +4438,5 @@
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
     };
-
-    var API = {
-        'initialize': function (settings, callback) {
-            converse.initialize(settings, callback);
-        },
-        'disconnect': function () {
-              converse.connection.disconnect();
-        },
-        'user': {
-            'logout': function () {
-                converse.logOut();
-            },
-            'status': {
-                'get': function () {
-                    return converse.xmppstatus.get('status');
-                },
-                'set': function (value, message) {
-                    var data = {'status': value};
-                    if (!_.contains(_.keys(STATUS_WEIGHTS), value)) {
-                        throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
-                    }
-                    if (typeof message === "string") {
-                        data.status_message = message;
-                    }
-                    converse.xmppstatus.save(data);
-                },
-                'message': {
-                    'get': function () {
-                        return converse.xmppstatus.get('status_message');
-                    },
-                    'set': function (stat) {
-                        converse.xmppstatus.save({'status_message': stat});
-                    }
-                }
-            },
-        },
-        'settings': {
-            'get': function (key) {
-                if (_.contains(Object.keys(converse.default_settings), key)) {
-                    return converse[key];
-                }
-            },
-            'set': function (key, val) {
-                var o = {};
-                if (typeof key === "object") {
-                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
-                } else if (typeof key === "string") {
-                    o[key] = val;
-                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
-                }
-            }
-        },
-        'contacts': {
-            'get': function (jids) {
-                var _transform = function (jid) {
-                    var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
-                    if (contact) {
-                        return contact.attributes;
-                    }
-                    return null;
-                };
-                if (typeof jids === "undefined") {
-                    jids = converse.roster.pluck('jid');
-                } else if (typeof jids === "string") {
-                    return _transform(jids);
-                }
-                return _.map(jids, _transform);
-            },
-            'add': function (jid, name) {
-                if (typeof jid !== "string" || jid.indexOf('@') < 0) {
-                    throw new TypeError('contacts.add: invalid jid');
-                }
-                converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
-            }
-        },
-        'chats': {
-            'open': function (jids) {
-                var chatbox;
-                if (typeof jids === "undefined") {
-                    converse.log("chats.open: You need to provide at least one JID", "error");
-                    return null;
-                } else if (typeof jids === "string") {
-                    chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
-                    chatbox.open();
-                    return chatbox;
-                }
-                return _.map(jids, function (jid) {
-                    chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
-                    chatbox.open();
-                    return chatbox;
-                });
-            },
-            'get': function (jids) {
-                if (typeof jids === "undefined") {
-                    converse.log("chats.get: You need to provide at least one JID", "error");
-                    return null;
-                } else if (typeof jids === "string") {
-                    return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
-                }
-                return _.map(jids, _.partial(_.compose(converse.wrappedChatBox, converse.chatboxes.getChatBox.bind(converse.chatboxes)), _, true));
-            }
-        },
-        'archive': {
-            'query': function (options, callback, errback) {
-                /* Do a MAM (XEP-0313) query for archived messages.
-                 *
-                 * Parameters:
-                 *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
-                 *    (Function) callback - A function to call whenever we receive query-relevant stanza.
-                 *    (Function) errback - A function to call when an error stanza is received.
-                 *
-                 * The options parameter can also be an instance of
-                 * Strophe.RSM to enable easy querying between results pages.
-                 *
-                 * The callback function may be called multiple times, first
-                 * for the initial IQ result and then for each message
-                 * returned. The last time the callback is called, a
-                 * Strophe.RSM object is returned on which "next" or "previous"
-                 * can be called before passing it in again to this method, to
-                 * get the next or previous page in the result set.
-                 */
-                var date, messages = [];
-                if (typeof options === "function") {
-                    callback = options;
-                    errback = callback;
-                }
-                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    throw new Error('This server does not support XEP-0313, Message Archive Management');
-                }
-                var queryid = converse.connection.getUniqueId();
-                var attrs = {'type':'set'};
-                if (typeof options !== "undefined" && options.groupchat) {
-                    if (!options['with']) {
-                        throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
-                    }
-                    attrs.to = options['with'];
-                }
-                var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-                if (typeof options !== "undefined") {
-                    stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
-                            .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
-                            .c('value').t(Strophe.NS.MAM).up().up();
-
-                    if (options['with'] && !options.groupchat) {
-                        stanza.c('field', {'var':'with'}).c('value').t(options['with']).up().up();
-                    }
-                    _.each(['start', 'end'], function (t) {
-                        if (options[t]) {
-                            date = moment(options[t]);
-                            if (date.isValid()) {
-                                stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
-                            } else {
-                                throw new TypeError('archive.query: invalid date provided for: '+t);
-                            }
-                        }
-                    });
-                    stanza.up();
-                    if (options instanceof Strophe.RSM) {
-                        stanza.cnode(options.toXML());
-                    } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
-                        stanza.cnode(new Strophe.RSM(options).toXML());
-                    }
-                }
-                converse.connection.addHandler(function (message) {
-                    var $msg = $(message), $fin, rsm;
-                    if (typeof callback === "function") {
-                        $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
-                        if ($fin.length) {
-                            rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
-                            _.extend(rsm, _.pick(options, ['max']));
-                            _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
-                            callback(messages, rsm);
-                            return false; // We've received all messages, decommission this handler
-                        } else if (queryid === $msg.find('result').attr('queryid')) {
-                            messages.push(message);
-                        }
-                        return true;
-                    } else {
-                        return false; // There's no callback, so no use in continuing this handler.
-                    }
-                }, Strophe.NS.MAM);
-                converse.connection.sendIQ(stanza, null, errback);
-            }
-        },
-        'tokens': {
-            'get': function (id) {
-                if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {
-                    return null;
-                }
-                if (id.toLowerCase() === 'rid') {
-                    return converse.connection.rid || converse.connection._proto.rid;
-                } else if (id.toLowerCase() === 'sid') {
-                    return converse.connection.sid || converse.connection._proto.sid;
-                }
-            }
-        },
-        'listen': {
-            'once': function (evt, handler) {
-                converse.once(evt, handler);
-            },
-            'on': function (evt, handler) {
-                converse.on(evt, handler);
-            },
-            'not': function (evt, handler) {
-                converse.off(evt, handler);
-            },
-        },
-        'send': function (stanza) {
-            converse.connection.send(stanza);
-        },
-        'plugins': {
-            'add': function (name, plugin) {
-                converse.plugins[name] = plugin;
-            },
-            'remove': function (name) {
-                delete converse.plugins[name];
-            },
-            'override': function (name, value) {
-                /* Helper method for overriding methods and attributes directly on the
-                 * converse object. For Backbone objects, use instead the 'extend'
-                 * method.
-                 *
-                 * If a method is overridden, then the original method will still be
-                 * available via the _super attribute.
-                 *
-                 * name: The attribute being overridden.
-                 * value: The value of the attribute being overridden.
-                 */
-                converse._overrideAttribute(name, value);
-            },
-            'extend': function (obj, attributes) {
-                /* Helper method for overriding or extending Converse's Backbone Views or Models
-                 *
-                 * When a method is overriden, the original will still be available
-                 * on the _super attribute of the object being overridden.
-                 *
-                 * obj: The Backbone View or Model
-                 * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
-                 */
-                converse._extendObject(obj, attributes);
-            }
-        },
-        'env': {
-            '$build': $build,
-            '$iq': $iq,
-            '$msg': $msg,
-            '$pres': $pres,
-            'Strophe': Strophe,
-            '_': _,
-            'b64_sha1':  b64_sha1,
-            'jQuery': $,
-            'moment': moment
-        }
-    };
-    return API;
+    return converse;
 }));

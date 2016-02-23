@@ -50,7 +50,6 @@ require.config({
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
         "converse-register":        "src/converse-register",
-        "converse-dependencies":    "src/deps-full",
         "converse-templates":       "src/templates",
 
         // Off-the-record-encryption

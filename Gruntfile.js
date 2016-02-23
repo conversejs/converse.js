@@ -61,9 +61,7 @@ module.exports = function(grunt) {
              rjs + ' -o src/build-no-jquery.js &&' +
              rjs + ' -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js && ' +
              rjs + ' -o src/build-no-locales-no-otr.js && ' +
-             rjs + ' -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js && ' +
-             rjs + ' -o src/build-no-otr.js &&' +
-             rjs + ' -o src/build-no-otr.js optimize=none out=builds/converse-no-otr.js', callback);
+             rjs + ' -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js', callback);
             // XXX: It might be possible to not have separate build config files. For example:
             // 'r.js -o src/build.js paths.converse-dependencies=src/deps-no-otr paths.locales=locale/nolocales out=builds/converse-no-locales-no-otr.min.js'
     });

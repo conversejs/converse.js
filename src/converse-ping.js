@@ -10,7 +10,11 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 (function (root, factory) {
-    define("converse-ping", ["converse-core", "converse-api"], factory);
+    define("converse-ping", [
+        "converse-core",
+        "converse-api",
+        "strophe.ping"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas

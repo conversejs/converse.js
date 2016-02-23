@@ -15,28 +15,35 @@
     //
     // The dependencies are then split up and passed into the factory function,
     // which contains and instantiates converse.js.
-    define("converse-core", ["converse-dependencies", "converse-templates"],
-        function (dependencies, templates) {
-            return factory(
-                templates,
-                dependencies.jQuery,
-                dependencies.$iq,
-                dependencies.$msg,
-                dependencies.$pres,
-                dependencies.$build,
-                dependencies.Strophe,
-                dependencies.underscore,
-                dependencies.moment,
-                dependencies.utils,
-                dependencies.SHA1.b64_sha1
-            );
-        }
-    );
-}(this, function (templates, $, $iq, $msg, $pres, $build, Strophe, _, moment, utils, b64_sha1) {
-    /* "use strict";
+    define("converse-core", [
+        "jquery",
+        "underscore",
+        "polyfill",
+        "utils",
+        "moment_with_locales",
+        "strophe",
+        "converse-templates",
+        "strophe.disco",
+        "strophe.rsm",
+        "strophe.vcard",
+        "backbone.browserStorage",
+        "backbone.overview",
+        "typeahead",
+    ], factory);
+}(this, function ($, _, dummy, utils, moment, Strophe, templates) {
+    /* 
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
+    // "use strict";
+
+    // Strophe globals
+    var $build = Strophe.$build;
+    var $iq = Strophe.$iq;
+    var $msg = Strophe.$msg;
+    var $pres = Strophe.$pres;
+    var b64_sha1 = Strophe.SHA1.b64_sha1;
+    Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
     /* Configuration of underscore templates (this config is distinct to the
@@ -61,17 +68,6 @@
         },
         off: function (evt, handler) {
             $(this).unbind(evt, handler);
-        },
-        refreshWebkit: function () {
-            /* This works around a webkit bug. Refresh the browser's viewport,
-             * otherwise chatboxes are not moved along when one is closed.
-             */
-            if ($.browser.webkit) {
-                var conversejs = document.getElementById('conversejs');
-                conversejs.style.display = 'none';
-                conversejs.offsetHeight = conversejs.offsetHeight;
-                conversejs.style.display = 'block';
-            }
         }
     };
 
@@ -1058,7 +1054,7 @@
                 this.renderToolbar().renderAvatar();
                 this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                 converse.emit('chatBoxOpened', this);
-                window.setTimeout(converse.refreshWebkit, 50);
+                window.setTimeout(utils.refreshWebkit, 50);
                 return this.showStatusMessage();
             },
 
@@ -1718,7 +1714,7 @@
                      * to make space available if need be.
                      */
                     chatboxviews.trimChats(this);
-                    converse.refreshWebkit();
+                    utils.refreshWebkit();
                     this.$content.scrollTop(this.model.get('scroll'));
                     this.setChatState(ACTIVE).focus();
                     converse.emit('chatBoxMaximized', this);
@@ -1731,7 +1727,7 @@
                 this.model.save({'scroll': this.$content.scrollTop()});
                 // Minimizes a chat box
                 this.setChatState(INACTIVE).model.minimize();
-                this.$el.hide('fast', converse.refreshwebkit);
+                this.$el.hide('fast', utils.refreshwebkit);
                 converse.emit('chatBoxMinimized', this);
             },
 
@@ -1812,7 +1808,7 @@
             hide: function () {
                 if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                     this.$el.hide();
-                    converse.refreshWebkit();
+                    utils.refreshWebkit();
                 }
                 return this;
             },
@@ -2086,7 +2082,7 @@
 
             hide: function (callback) {
                 this.$el.hide('fast', function () {
-                    converse.refreshWebkit();
+                    utils.refreshWebkit();
                     converse.emit('chatBoxClosed', this);
                     converse.controlboxtoggle.show(function () {
                         if (typeof callback === "function") {
@@ -2103,7 +2099,7 @@
                         if (converse.rosterview) {
                             converse.rosterview.update();
                         }
-                        converse.refreshWebkit();
+                        utils.refreshWebkit();
                     }.bind(this));
                     converse.emit('controlBoxOpened', this);
                 }.bind(this));

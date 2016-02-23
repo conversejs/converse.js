@@ -1,11 +1,14 @@
-/*global jQuery, templates, escape, _, locales */
+/*global escape */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(["jquery", "underscore", "jed", "converse-templates", "locales"], factory);
-    } else {
-        root.utils = factory(jQuery, _, templates, locales);
-    }
-}(this, function ($, _, Jed, templates, locales) {
+    define([
+        "jquery",
+        "jquery.browser",
+        "underscore",
+        "jed",
+        "converse-templates",
+        "locales"
+    ], factory);
+}(this, function ($, dummy, _, Jed, templates, locales) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -119,6 +122,18 @@
              * See actionInfoMessages in src/converse-muc.js
              */
             return str;
+        },
+
+        refreshWebkit: function () {
+            /* This works around a webkit bug. Refreshes the browser's viewport,
+             * otherwise chatboxes are not moved along when one is closed.
+             */
+            if ($.browser.webkit) {
+                var conversejs = document.getElementById('conversejs');
+                conversejs.style.display = 'none';
+                var tmp = conversejs.offsetHeight; // jshint ignore:line
+                conversejs.style.display = 'block';
+            }
         },
 
         webForm2xForm: function (field) {

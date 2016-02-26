@@ -38,6 +38,7 @@ help:
 	@echo " dev           Set up the development environment. To force a fresh start, run 'make clean' first."
 	@echo " epub          Export the documentation to epub."
 	@echo " html          Make standalone HTML files of the documentation."
+	@echo " doc           Same as "doc". Make standalone HTML files of the documentation."
 	@echo " linkcheck     Check all documentation external links for integrity."
 	@echo " po            Generate gettext PO files for each i18n language."
 	@echo " po2json       Generate JSON files from the language PO files."
@@ -166,6 +167,9 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+.PHONY: doc
+doc: html
 
 .PHONY: epub
 epub:

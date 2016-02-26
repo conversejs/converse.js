@@ -7,6 +7,7 @@ HTTPSERVE		?= ./node_modules/.bin/http-server
 JSHINT 			?= ./node_modules/.bin/jshint
 PAPER           =
 PHANTOMJS       ?= ./node_modules/.bin/phantomjs
+RJS				?= ./node_modules/.bin/r.js
 PO2JSON         ?= ./node_modules/.bin/po2json
 SASS            ?= ./.bundle/bin/sass
 SPHINXBUILD     ?= ./bin/sphinx-build
@@ -119,7 +120,7 @@ clean::
 	rm -rf node_modules components .bundle
 
 .PHONY: dev
-dev: stamp-bower stamp-bundler
+dev: stamp-bower stamp-bundler converse
 
 ########################################################################
 ## Builds
@@ -141,6 +142,11 @@ jsmin:
 .PHONY: watch
 cssmin: stamp-npm
 	$(GRUNT) cssmin
+
+.PHONY: converse
+converse:: stamp-npm
+	$(RJS) -o src/build-no-dependencies.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js
 
 .PHONY: build
 build:: stamp-npm
@@ -168,7 +174,7 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-.PHONY: doc
+.PHONY: html
 doc: html
 
 .PHONY: epub

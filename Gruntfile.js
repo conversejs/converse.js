@@ -60,6 +60,8 @@ module.exports = function(grunt) {
              rjs + ' -o src/build.js optimize=none out=builds/converse.js && ' +
              rjs + ' -o src/build-no-jquery.js &&' +
              rjs + ' -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js && ' +
+             rjs + ' -o src/build-no-dependencies.js &&' +
+             rjs + ' -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js && ' +
              rjs + ' -o src/build-no-locales-no-otr.js && ' +
              rjs + ' -o src/build-no-locales-no-otr.js optimize=none out=builds/converse-no-locales-no-otr.js', callback);
             // XXX: It might be possible to not have separate build config files. For example:

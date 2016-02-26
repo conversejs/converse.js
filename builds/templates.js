@@ -1061,6 +1061,17 @@ __p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
 '"></a></li>\n';
  } ;
 __p += '\n';
+
+}
+return __p
+};
+
+this["templates"]["toolbar_otr"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
  if (allow_otr)  { ;
 __p += '\n    <li class="toggle-otr ' +
 ((__t = (otr_status_class)) == null ? '' : __t) +

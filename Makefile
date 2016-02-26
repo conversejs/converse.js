@@ -20,6 +20,7 @@ JSHINTEXCEPTIONS = $(GENERATED) \
 		   src/otr.js \
 		   src/crypto.js \
 		   src/build-no-jquery.js \
+		   src/build-no-dependencies.js \
 		   src/build-no-locales-no-otr.js \
 		   src/build-no-otr.js \
 		   src/build.js \

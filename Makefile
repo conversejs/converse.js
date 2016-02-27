@@ -21,8 +21,6 @@ JSHINTEXCEPTIONS = $(GENERATED) \
 		   src/crypto.js \
 		   src/build-no-jquery.js \
 		   src/build-no-dependencies.js \
-		   src/build-no-locales-no-otr.js \
-		   src/build-no-otr.js \
 		   src/build.js \
 		   src/bigint.js
 CHECKSOURCES	= $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
@@ -109,38 +107,58 @@ stamp-bower: stamp-npm bower.json
 	$(BOWER) install
 	touch stamp-bower
 
-stamp-bundler:
+stamp-bundler: Gemfile
 	mkdir -p .bundle
 	gem install --user bundler --bindir .bundle/bin
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
 	touch stamp-bundler
 
 .PHONY: clean
-clean::
-	rm -f stamp-npm stamp-bower stamp-bundler
-	rm -rf node_modules components .bundle
+clean:
+	-rm -f stamp-npm stamp-bower stamp-bundler
+	-rm -rf node_modules components .bundle
 
 .PHONY: dev
-dev: stamp-bower stamp-bundler converse
+dev: stamp-bower stamp-bundler build
 
 ########################################################################
 ## Builds
 
 .PHONY: css
-css: converse.css
+css: css/converse.css
 
-converse.css:: stamp-bundler stamp-bower
+css/converse.css:: stamp-bundler stamp-bower sass
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
 .PHONY: watch
 watch: stamp-bundler
 	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css
 
-.PHONY: jsmin
-jsmin:
-	$(GRUNT) jsmin
+BUILDS = builds/converse.js \
+		 builds/converse.min.js \
+         builds/converse.nojquery.js \
+ 		 builds/converse.nojquery.min.js \
+		 builds/converse-no-dependencies.min.js \
+		 builds/converse-no-dependencies.js
 
-.PHONY: watch
+# XXX This can be updated to use uglify to minimize instead of letting r.js run twice per file
+builds/converse.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build.js
+builds/converse.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build.js optimize=none out=builds/converse.js
+builds/converse.nojquery.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-jquery.js
+builds/converse.nojquery.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js
+builds/converse-no-dependencies.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-dependencies.js
+builds/converse-no-dependencies.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js
+
+.PHONY: jsmin
+jsmin: $(BUILDS)
+
+.PHONY: cssmin 
 cssmin: stamp-npm
 	$(GRUNT) cssmin
 
@@ -152,17 +170,18 @@ converse:: stamp-npm
 .PHONY: build
 build:: stamp-npm
 	$(GRUNT) jst
-	$(GRUNT) minify
+	$(GRUNT) cssmin
+	make jsmin
 
 ########################################################################
 ## Tests
 
 .PHONY: jshint
-jshint: stamp-npm
+jshint: stamp-bower
 	$(JSHINT) --config jshintrc $(CHECKSOURCES)
 
 .PHONY: watch
-check: stamp-npm jshint
+check: stamp-bower jshint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 
 ########################################################################

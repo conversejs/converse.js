@@ -1,7 +1,8 @@
 # You can set these variables from the command line.
 GRUNT   		?= node_modules\.bin\grunt.cmd
-BOWER                   ?= node_modules\.bin\bower.cmd
-PHANTOMJS               ?= node_modules\.bin\phantomjs.cmd
+BOWER           ?= node_modules\.bin\bower.cmd
+PHANTOMJS       ?= node_modules\.bin\phantomjs.cmd
+RJS				?= ./node_modules/.bin/r.js.cmd
 SASS 			?= sass 
 RMRF 			?= rmdir /q /s 
 RMF 			?= del /q 
@@ -51,9 +52,16 @@ dev: clean
 css::
 	$(SASS) sass/converse.scss > css/converse.css
 
-build::
+.PHONY: build
+build:: stamp-npm
 	$(GRUNT) jst
-	$(GRUNT) minify
+	$(GRUNT) cssmin
+	$(RJS) -o src/build.js
+	$(RJS) -o src/build.js optimize=none out=builds/converse.js
+	$(RJS) -o src/build-no-jquery.js
+	$(RJS) -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js
+	$(RJS) -o src/build-no-dependencies.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js
 
 ########################################################################
 ## Tests

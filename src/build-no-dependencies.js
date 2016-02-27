@@ -13,6 +13,7 @@
         "strophe.disco",
         "strophe.rsm",
         "strophe.vcard",
+        "strophe.ping",
         "typeahead",
         "otr",
         "underscore"

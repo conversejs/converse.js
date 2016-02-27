@@ -141,7 +141,6 @@ BUILDS = builds/converse.js \
 		 builds/converse-no-dependencies.min.js \
 		 builds/converse-no-dependencies.js
 
-# XXX This can be updated to use uglify to minimize instead of letting r.js run twice per file
 builds/converse.min.js: stamp-bower src locale components *.js
 	$(RJS) -o src/build.js
 builds/converse.js: stamp-bower src locale components *.js

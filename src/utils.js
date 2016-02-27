@@ -1,14 +1,13 @@
-/*global escape */
+/*global escape locales */
 (function (root, factory) {
     define([
         "jquery",
         "jquery.browser",
         "underscore",
         "jed",
-        "converse-templates",
-        "locales"
+        "converse-templates"
     ], factory);
-}(this, function ($, dummy, _, Jed, templates, locales) {
+}(this, function ($, dummy, _, Jed, templates) {
     "use strict";
 
     var XFORM_TYPE_MAP = {

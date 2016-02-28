@@ -50,7 +50,7 @@ require.config({
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
         "converse-register":        "src/converse-register",
-        "converse-templates":       "src/templates",
+        "converse-templates":       "src/converse-templates",
 
         // Off-the-record-encryption
         "bigint":               "src/bigint",

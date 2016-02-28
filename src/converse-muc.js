@@ -123,6 +123,17 @@
             },
 
             ChatBoxes: {
+                onChatBoxAdded: function (item) {
+                    var view = this.get(item.get('id'));
+                    if (!view && item.get('chatroom')) {
+                        view = new converse.ChatRoomView({'model': item});
+                        this.add(item.get('id'), view);
+                        this.trimChats(view);
+                    } else {
+                        this._super.onChatBoxAdded.apply(this, arguments);
+                    }
+                },
+
                 registerMessageHandler: function () {
                     /* Override so that we can register a handler
                      * for chat room invites.

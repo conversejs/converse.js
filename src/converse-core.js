@@ -2284,9 +2284,7 @@
             onChatBoxAdded: function (item) {
                 var view = this.get(item.get('id'));
                 if (!view) {
-                    if (item.get('chatroom')) {
-                        view = new converse.ChatRoomView({'model': item});
-                    } else if (item.get('box_id') === 'controlbox') {
+                    if (item.get('box_id') === 'controlbox') {
                         view = new converse.ControlBoxView({model: item});
                     } else {
                         view = new converse.ChatBoxView({model: item});

@@ -4,10 +4,9 @@
         "jquery",
         "jquery.browser",
         "underscore",
-        "jed",
         "converse-templates"
     ], factory);
-}(this, function ($, dummy, _, Jed, templates) {
+}(this, function ($, dummy, _, templates) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -92,6 +91,9 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
+            if (typeof Jed === "undefined") {
+                return str;
+            }
             // FIXME: this can be refactored to take the i18n obj as a
             // parameter.
             // Translation factory

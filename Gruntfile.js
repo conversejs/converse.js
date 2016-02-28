@@ -15,7 +15,7 @@ module.exports = function(grunt) {
                     }
                 },
                 files: {
-                    "builds/templates.js": ["src/templates/*.html"]
+                    "dist/templates.js": ["src/templates/*.html"]
                 },
             }
         },
@@ -43,7 +43,7 @@ module.exports = function(grunt) {
                     }
                 },
                 src: ['locale/**/LC_MESSAGES/*.json'],
-                dest: 'builds/locales.js'
+                dest: 'dist/locales.js'
             }
         }
     });

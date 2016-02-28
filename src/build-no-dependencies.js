@@ -1,7 +1,7 @@
 ({
     baseUrl: "../",
     name: "components/almond/almond.js",
-    out: "../builds/converse-no-dependencies.min.js",
+    out: "../dist/converse-no-dependencies.min.js",
     include: ['converse'],
     excludeShallow: [
         'locales',

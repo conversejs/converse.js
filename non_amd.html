@@ -53,12 +53,18 @@
     <!-- END BACKBONE -->
 
     <!-- BEGIN I18N -->
+    <!-- These files can be removed if you don't want to include any
+        translations for converse.js.
+        If you want to modify which translations are included, you can modify
+        src/locales.js to remove those you don't need, and then run `make
+        build` to generates a new dist/locales.js file.
+    -->
     <script type="text/javascript" src="components/jed/jed.js"></script>
-    <script type="text/javascript" src="builds/locales.js"></script>
+    <script type="text/javascript" src="dist/locales.js"></script>
     <!-- END I18N -->
 
     <script type="text/javascript" src="components/momentjs/min/moment-with-locales.js"></script>
-    <script type="text/javascript" src="builds/converse-no-dependencies.js"></script>
+    <script type="text/javascript" src="dist/converse-no-dependencies.js"></script>
 </head>
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
     <section class="intro">

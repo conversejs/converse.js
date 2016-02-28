@@ -57,11 +57,11 @@ build:: stamp-npm
 	$(GRUNT) jst
 	$(GRUNT) cssmin
 	$(RJS) -o src/build.js
-	$(RJS) -o src/build.js optimize=none out=builds/converse.js
+	$(RJS) -o src/build.js optimize=none out=dist/converse.js
 	$(RJS) -o src/build-no-jquery.js
-	$(RJS) -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js
+	$(RJS) -o src/build-no-jquery.js optimize=none out=dist/converse.nojquery.js
 	$(RJS) -o src/build-no-dependencies.js
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 
 ########################################################################
 ## Tests

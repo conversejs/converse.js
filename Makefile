@@ -134,25 +134,25 @@ css/converse.css:: stamp-bundler stamp-bower sass
 watch: stamp-bundler
 	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css
 
-BUILDS = builds/converse.js \
-		 builds/converse.min.js \
-         builds/converse.nojquery.js \
- 		 builds/converse.nojquery.min.js \
-		 builds/converse-no-dependencies.min.js \
-		 builds/converse-no-dependencies.js
+BUILDS = dist/converse.js \
+		 dist/converse.min.js \
+         dist/converse.nojquery.js \
+ 		 dist/converse.nojquery.min.js \
+		 dist/converse-no-dependencies.min.js \
+		 dist/converse-no-dependencies.js
 
-builds/converse.min.js: stamp-bower src locale components *.js
+dist/converse.min.js: stamp-bower src locale components *.js
 	$(RJS) -o src/build.js
-builds/converse.js: stamp-bower src locale components *.js
-	$(RJS) -o src/build.js optimize=none out=builds/converse.js
-builds/converse.nojquery.min.js: stamp-bower src locale components *.js
+dist/converse.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build.js optimize=none out=dist/converse.js
+dist/converse.nojquery.min.js: stamp-bower src locale components *.js
 	$(RJS) -o src/build-no-jquery.js
-builds/converse.nojquery.js: stamp-bower src locale components *.js
-	$(RJS) -o src/build-no-jquery.js optimize=none out=builds/converse.nojquery.js
-builds/converse-no-dependencies.min.js: stamp-bower src locale components *.js
+dist/converse.nojquery.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-jquery.js optimize=none out=dist/converse.nojquery.js
+dist/converse-no-dependencies.min.js: stamp-bower src locale components *.js
 	$(RJS) -o src/build-no-dependencies.js
-builds/converse-no-dependencies.js: stamp-bower src locale components *.js
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js
+dist/converse-no-dependencies.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 
 .PHONY: jsmin
 jsmin: $(BUILDS)
@@ -161,10 +161,8 @@ jsmin: $(BUILDS)
 cssmin: stamp-npm
 	$(GRUNT) cssmin
 
-.PHONY: converse
-converse:: stamp-npm
-	$(RJS) -o src/build-no-dependencies.js
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=builds/converse-no-dependencies.js
+.PHONY: dist
+dist:: build
 
 .PHONY: build
 build:: stamp-npm

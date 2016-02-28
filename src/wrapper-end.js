@@ -30,3 +30,4 @@ define('backbone', [], emptyFunction);
 define('backbone.browserStorage', ['backbone'], emptyFunction);
 define('backbone.overview', ['backbone'], emptyFunction);
 define('otr', [], function () { return { 'DSA': DSA, 'OTR': OTR };});
+define("locales", [], emptyFunction);

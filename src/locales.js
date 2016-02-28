@@ -7,7 +7,7 @@
  * See also src/moment_locales.js
  */
 (function (root, factory) {
-    define("locales", ['jquery', 'jed', 
+    define("locales", ['jed',
         'text!af',
         'text!de',
         'text!en',

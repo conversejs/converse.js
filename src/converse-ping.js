@@ -32,14 +32,12 @@
             // New functions which don't exist yet can also be added.
 
             onConnected: function () {
-                var converse = this._super.converse;
-                this._super.onConnected().done(converse.registerPingHandler);
+                this._super.onConnected().done(this.registerPingHandler);
             },
             onReconnected: function () {
                 // We need to re-register the ping event handler on the newly
                 // created connection.
-                var converse = this._super.converse;
-                this._super.onReconnected().done(converse.registerPingHandler);
+                this._super.onReconnected().done(this.registerPingHandler);
             }
         },
 

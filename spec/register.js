@@ -18,6 +18,7 @@
             var connection = mock.mock_connection;
             connection.connected = false;
             converse._tearDown();
+            converse.initialized_plugins = [];
             converse.initialize({
                 i18n: window.locales.en,
                 bosh_service_url: 'localhost',
@@ -42,6 +43,7 @@
             var connection = mock.mock_connection;
             connection.connected = false;
             converse._tearDown();
+            converse.initialized_plugins = [];
             converse.initialize({
                 i18n: window.locales.en,
                 animate: false,
@@ -59,6 +61,7 @@
             connection = mock.mock_connection;
             connection.connected = false;
             converse._tearDown();
+            converse.initialized_plugins = [];
             converse.initialize({
                 i18n: window.locales.en,
                 bosh_service_url: 'localhost',

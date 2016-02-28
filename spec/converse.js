@@ -16,8 +16,10 @@
 
         describe("Authentication", function () {
             it("needs either a bosh_service_url a websocket_url or both", function () {
+                converse.connection.connected = false;
                 expect(converse.initConnection.bind({})).toThrow(
                     new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
+                converse.connection.connected = true;
             });
 
             describe("with prebind", function () {

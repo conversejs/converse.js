@@ -10,7 +10,11 @@
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    define("converse-muc", ["converse-core", "converse-api"], factory);
+    define("converse-muc", [
+            "converse-core",
+            "converse-api",
+            "converse-controlbox"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
@@ -48,10 +52,9 @@
 
             Features: {
                 addClientFeatures: function () {
-                    var converse = this._super.converse;
                     this._super.addClientFeatures.apply(this, arguments);
-                    if (converse.allow_muc) {
-                        converse.connection.disco.addFeature(Strophe.NS.MUC);
+                    if (this.allow_muc) {
+                        this.connection.disco.addFeature(Strophe.NS.MUC);
                     }
                 }
             },
@@ -123,17 +126,6 @@
             },
 
             ChatBoxes: {
-                onChatBoxAdded: function (item) {
-                    var view = this.get(item.get('id'));
-                    if (!view && item.get('chatroom')) {
-                        view = new converse.ChatRoomView({'model': item});
-                        this.add(item.get('id'), view);
-                        this.trimChats(view);
-                    } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
-                    }
-                },
-
                 registerMessageHandler: function () {
                     /* Override so that we can register a handler
                      * for chat room invites.
@@ -190,6 +182,19 @@
                     }
                 }
             },
+
+            ChatBoxViews: {
+                onChatBoxAdded: function (item) {
+                    var view = this.get(item.get('id'));
+                    if (!view && item.get('chatroom')) {
+                        view = new converse.ChatRoomView({'model': item});
+                        this.add(item.get('id'), view);
+                        this.trimChats(view);
+                    } else {
+                        this._super.onChatBoxAdded.apply(this, arguments);
+                    }
+                }
+            }
         },
 
         initialize: function () {

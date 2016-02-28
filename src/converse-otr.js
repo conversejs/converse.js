@@ -57,7 +57,7 @@
  
             _initialize: function () {
                 this._super._initialize.apply(this, arguments);
-                this._super.converse.otr = new this._super.converse.OTR();
+                this.otr = new this.OTR();
             },
 
             registerGlobalEventHandlers: function () {

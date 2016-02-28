@@ -10,7 +10,11 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define("converse-register", ["converse-core", "converse-api"], factory);
+    define("converse-register", [
+            "converse-core",
+            "converse-api",
+            "converse-controlbox"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas

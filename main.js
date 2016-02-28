@@ -44,8 +44,9 @@ require.config({
         "polyfill":                 "src/polyfill",
         
         // Converse
-        "converse-core":            "src/converse-core",
         "converse-api":             "src/converse-api",
+        "converse-controlbox":      "src/converse-controlbox",
+        "converse-core":            "src/converse-core",
         "converse-muc":             "src/converse-muc",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",

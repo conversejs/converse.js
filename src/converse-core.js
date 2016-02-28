@@ -312,6 +312,7 @@
 
         // Translation machinery
         // ---------------------
+        this.i18n = settings.i18n ? settings.i18n : locales.en;
         var __ = utils.__.bind(this);
 
         // Default configuration values

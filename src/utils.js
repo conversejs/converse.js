@@ -1,4 +1,4 @@
-/*global escape locales */
+/*global escape, locales, Jed */
 (function (root, factory) {
     define([
         "jquery",

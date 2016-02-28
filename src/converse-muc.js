@@ -29,7 +29,7 @@
     // For translations
     var __ = utils.__.bind(converse);
     var ___ = utils.___;
-    
+
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
     Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");

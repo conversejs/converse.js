@@ -21,6 +21,9 @@
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._;
 
+    // For translations
+    var __ = utils.__.bind(converse);
+
     var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
         ((typeof crypto.randomBytes === 'function') ||
             (typeof crypto.getRandomValues === 'function')
@@ -36,23 +39,12 @@
     var VERIFIED= 2;
     var FINISHED = 3;
 
-
+    var OTR_TRANSLATED_MAPPING  = {}; // Populated in initialize
     var OTR_CLASS_MAPPING = {};
     OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
     OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
     OTR_CLASS_MAPPING[FINISHED] = 'finished';
-
-    // Translation aware constants
-    // ---------------------------
-    var __ = utils.__.bind(converse);
-
-    var OTR_TRANSLATED_MAPPING  = {};
-    OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
-    OTR_TRANSLATED_MAPPING[UNVERIFIED] = __('unverified');
-    OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
-    OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
-
 
     converse_api.plugins.add('otr', {
 
@@ -477,6 +469,17 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+            // Translation aware constants
+            // ---------------------------
+            // We can only call the __ translation method *after* converse.js
+            // has been initialized and with it the i18n machinery. That's why
+            // we do it here in the "initialize" method and not at the top of
+            // the module.
+            OTR_TRANSLATED_MAPPING[UNENCRYPTED] = __('unencrypted');
+            OTR_TRANSLATED_MAPPING[UNVERIFIED] = __('unverified');
+            OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
+            OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
+
             // For translations
             __ = utils.__.bind(converse);
             // Configuration values for this plugin

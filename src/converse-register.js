@@ -77,7 +77,6 @@
              */
             var converse = this.converse;
             // For translations
-            __ = utils.__.bind(converse);
             // Configuration values for this plugin
             var settings = {
                 allow_registration: true,

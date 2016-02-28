@@ -27,23 +27,23 @@
         'text!zh'
         ], function ($, Jed) {
             root.locales = {
-                'af':     arguments[2],
-                'de':     arguments[3],
-                'en':     arguments[4],
-                'es':     arguments[5],
-                'fr':     arguments[6],
-                'he':     arguments[7],
-                'hu':     arguments[8],
-                'id':     arguments[9],
-                'it':     arguments[10],
-                'ja':     arguments[11],
-                'nb':     arguments[12],
-                'nl':     arguments[13],
-                'pl':     arguments[14],
-                'pt-br':  arguments[15],
-                'ru':     arguments[16],
-                'uk':     arguments[17],
-                'zh':     arguments[18]
+                'af':     arguments[1],
+                'de':     arguments[2],
+                'en':     arguments[3],
+                'es':     arguments[4],
+                'fr':     arguments[5],
+                'he':     arguments[6],
+                'hu':     arguments[7],
+                'id':     arguments[8],
+                'it':     arguments[9],
+                'ja':     arguments[10],
+                'nb':     arguments[11],
+                'nl':     arguments[12],
+                'pl':     arguments[13],
+                'pt-br':  arguments[14],
+                'ru':     arguments[15],
+                'uk':     arguments[16],
+                'zh':     arguments[17]
             };
             return root.locales;
         });

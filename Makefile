@@ -170,6 +170,7 @@ converse:: stamp-npm
 build:: stamp-npm
 	$(GRUNT) jst
 	$(GRUNT) cssmin
+	$(GRUNT) json
 	make jsmin
 
 ########################################################################

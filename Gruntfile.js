@@ -32,8 +32,22 @@ module.exports = function(grunt) {
                 dest: 'css/converse.min.css',
                 src: ['css/converse.css']
             }
+        },
+        json: {
+            main: {
+                options: {
+                    namespace: 'locales',
+                    includePath: true,
+                    processName: function(filename) {
+                        return filename.toLowerCase().match(/^locale\/(.*)\/lc_messages/)[1];
+                    }
+                },
+                src: ['locale/**/LC_MESSAGES/*.json'],
+                dest: 'builds/locales.js'
+            }
         }
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jst');
+    grunt.loadNpmTasks('grunt-json');
 };

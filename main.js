@@ -48,6 +48,7 @@ require.config({
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
         "converse-muc":             "src/converse-muc",
+        "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
         "converse-register":        "src/converse-register",

@@ -9,6 +9,7 @@
   encrypted session. [jcbrand]
 - Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
 - #261 `show_controlbox_by_default` config not working [diditopher]
+- #443 HTML5 notifications of received messages [jcbrand]
 - #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
 - #573 xgettext build error: `'javascript' unknown` [jcbrand]
 - #587 Fix issue when logging out with `auto_logout=true` [davec82]

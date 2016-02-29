@@ -805,6 +805,7 @@
             // created connection.
             var deferred = new $.Deferred();
             this.initStatus(function () {
+                // FIXME: leaky abstraction from RosterView
                 this.rosterview.registerRosterXHandler();
                 this.rosterview.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
@@ -879,6 +880,471 @@
             return deferred.promise();
         };
 
+
+        this.RosterContact = Backbone.Model.extend({
+            initialize: function (attributes, options) {
+                var jid = attributes.jid;
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var resource = Strophe.getResourceFromJid(jid);
+                attributes.jid = bare_jid;
+                this.set(_.extend({
+                    'id': bare_jid,
+                    'jid': bare_jid,
+                    'fullname': bare_jid,
+                    'chat_status': 'offline',
+                    'user_id': Strophe.getNodeFromJid(jid),
+                    'resources': resource ? [resource] : [],
+                    'groups': [],
+                    'image_type': 'image/png',
+                    'image': "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",
+                    'status': ''
+                }, attributes));
+
+                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
+            },
+
+        subscribe: function (message) {
+                /* Send a presence subscription request to this roster contact
+                *
+                * Parameters:
+                *    (String) message - An optional message to explain the
+                *      reason for the subscription request.
+                */
+                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
+                var pres = $pres({to: this.get('jid'), type: "subscribe"});
+                if (message && message !== "") {
+                    pres.c("status").t(message).up();
+                }
+                var nick = converse.xmppstatus.get('fullname');
+                if (nick && nick !== "") {
+                    pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
+                }
+                converse.connection.send(pres);
+                return this;
+            },
+
+            ackSubscribe: function () {
+                /* Upon receiving the presence stanza of type "subscribed",
+                * the user SHOULD acknowledge receipt of that subscription
+                * state notification by sending a presence stanza of type
+                * "subscribe" to the contact
+                */
+                converse.connection.send($pres({
+                    'type': 'subscribe',
+                    'to': this.get('jid')
+                }));
+            },
+
+            ackUnsubscribe: function (jid) {
+                /* Upon receiving the presence stanza of type "unsubscribed",
+                * the user SHOULD acknowledge receipt of that subscription state
+                * notification by sending a presence stanza of type "unsubscribe"
+                * this step lets the user's server know that it MUST no longer
+                * send notification of the subscription state change to the user.
+                *  Parameters:
+                *    (String) jid - The Jabber ID of the user who is unsubscribing
+                */
+                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                this.destroy(); // Will cause removeFromRoster to be called.
+            },
+
+            unauthorize: function (message) {
+                /* Unauthorize this contact's presence subscription
+                * Parameters:
+                *   (String) message - Optional message to send to the person being unauthorized
+                */
+                converse.rejectPresenceSubscription(this.get('jid'), message);
+                return this;
+            },
+
+            authorize: function (message) {
+                /* Authorize presence subscription
+                * Parameters:
+                *   (String) message - Optional message to send to the person being authorized
+                */
+                var pres = $pres({to: this.get('jid'), type: "subscribed"});
+                if (message && message !== "") {
+                    pres.c("status").t(message);
+                }
+                converse.connection.send(pres);
+                return this;
+            },
+
+            removeResource: function (resource) {
+                var resources = this.get('resources'), idx;
+                if (resource) {
+                    idx = _.indexOf(resources, resource);
+                    if (idx !== -1) {
+                        resources.splice(idx, 1);
+                        this.save({'resources': resources});
+                    }
+                }
+                else {
+                    // if there is no resource (resource is null), it probably
+                    // means that the user is now completely offline. To make sure
+                    // that there isn't any "ghost" resources left, we empty the array
+                    this.save({'resources': []});
+                    return 0;
+                }
+                return resources.length;
+            },
+
+            removeFromRoster: function (callback) {
+                /* Instruct the XMPP server to remove this contact from our roster
+                * Parameters:
+                *   (Function) callback
+                */
+                var iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', {jid: this.get('jid'), subscription: "remove"});
+                converse.connection.sendIQ(iq, callback, callback);
+                return this;
+            },
+
+            showInRoster: function () {
+                var chatStatus = this.get('chat_status');
+                if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
+                    // If pending or requesting, show
+                    if ((this.get('ask') === 'subscribe') ||
+                            (this.get('subscription') === 'from') ||
+                            (this.get('requesting') === true)) {
+                        return true;
+                    }
+                    return false;
+                }
+                return true;
+            }
+        });
+
+
+        this.RosterContacts = Backbone.Collection.extend({
+            model: converse.RosterContact,
+            comparator: function (contact1, contact2) {
+                var name1, name2;
+                var status1 = contact1.get('chat_status') || 'offline';
+                var status2 = contact2.get('chat_status') || 'offline';
+                if (converse.STATUS_WEIGHTS[status1] === converse.STATUS_WEIGHTS[status2]) {
+                    name1 = contact1.get('fullname').toLowerCase();
+                    name2 = contact2.get('fullname').toLowerCase();
+                    return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
+                } else  {
+                    return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
+                }
+            },
+
+            subscribeToSuggestedItems: function (msg) {
+                $(msg).find('item').each(function (i, items) {
+                    if (this.getAttribute('action') === 'add') {
+                        converse.roster.addAndSubscribe(
+                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
+                    }
+                });
+                return true;
+            },
+
+            isSelf: function (jid) {
+                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
+            },
+
+            addAndSubscribe: function (jid, name, groups, message, attributes) {
+                /* Add a roster contact and then once we have confirmation from
+                * the XMPP server we subscribe to that contact's presence updates.
+                *  Parameters:
+                *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                *    (String) name - The name of that user
+                *    (Array of Strings) groups - Any roster groups the user might belong to
+                *    (String) message - An optional message to explain the
+                *      reason for the subscription request.
+                *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                */
+                this.addContact(jid, name, groups, attributes).done(function (contact) {
+                    if (contact instanceof converse.RosterContact) {
+                        contact.subscribe(message);
+                    }
+                });
+            },
+
+            sendContactAddIQ: function (jid, name, groups, callback, errback) {
+                /*  Send an IQ stanza to the XMPP server to add a new roster contact.
+                *  Parameters:
+                *    (String) jid - The Jabber ID of the user being added
+                *    (String) name - The name of that user
+                *    (Array of Strings) groups - Any roster groups the user might belong to
+                *    (Function) callback - A function to call once the VCard is returned
+                *    (Function) errback - A function to call if an error occured
+                */
+                name = _.isEmpty(name)? jid: name;
+                var iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', { jid: jid, name: name });
+                _.map(groups, function (group) { iq.c('group').t(group).up(); });
+                converse.connection.sendIQ(iq, callback, errback);
+            },
+
+            addContact: function (jid, name, groups, attributes) {
+                /* Adds a RosterContact instance to converse.roster and
+                * registers the contact on the XMPP server.
+                * Returns a promise which is resolved once the XMPP server has
+                * responded.
+                *  Parameters:
+                *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                *    (String) name - The name of that user
+                *    (Array of Strings) groups - Any roster groups the user might belong to
+                *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                */
+                var deferred = new $.Deferred();
+                groups = groups || [];
+                name = _.isEmpty(name)? jid: name;
+                this.sendContactAddIQ(jid, name, groups,
+                    function (iq) {
+                        var contact = this.create(_.extend({
+                            ask: undefined,
+                            fullname: name,
+                            groups: groups,
+                            jid: jid,
+                            requesting: false,
+                            subscription: 'none'
+                        }, attributes), {sort: false});
+                        deferred.resolve(contact);
+                    }.bind(this),
+                    function (err) {
+                        alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
+                        converse.log(err);
+                        deferred.resolve(err);
+                    }
+                );
+                return deferred.promise();
+            },
+
+            addResource: function (bare_jid, resource) {
+                var item = this.get(bare_jid),
+                    resources;
+                if (item) {
+                    resources = item.get('resources');
+                    if (resources) {
+                        if (_.indexOf(resources, resource) === -1) {
+                            resources.push(resource);
+                            item.set({'resources': resources});
+                        }
+                    } else  {
+                        item.set({'resources': [resource]});
+                    }
+                }
+            },
+
+            subscribeBack: function (bare_jid) {
+                var contact = this.get(bare_jid);
+                if (contact instanceof converse.RosterContact) {
+                    contact.authorize().subscribe();
+                } else {
+                    // Can happen when a subscription is retried or roster was deleted
+                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
+                        if (contact instanceof converse.RosterContact) {
+                            contact.authorize().subscribe();
+                        }
+                    });
+                }
+            },
+
+            getNumOnlineContacts: function () {
+                var count = 0,
+                    ignored = ['offline', 'unavailable'],
+                    models = this.models,
+                    models_length = models.length,
+                    i;
+                if (converse.show_only_online_users) {
+                    ignored = _.union(ignored, ['dnd', 'xa', 'away']);
+                }
+                for (i=0; i<models_length; i++) {
+                    if (_.indexOf(ignored, models[i].get('chat_status')) === -1) {
+                        count++;
+                    }
+                }
+                return count;
+            },
+
+            onRosterPush: function (iq) {
+                /* Handle roster updates from the XMPP server.
+                * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                *
+                * Parameters:
+                *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                */
+                var id = iq.getAttribute('id');
+                var from = iq.getAttribute('from');
+                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
+                    // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
+                    // XXX: Some naughty servers apparently send from a full
+                    // JID so we need to explicitly compare bare jids here.
+                    // https://github.com/jcbrand/converse.js/issues/493
+                    converse.connection.send(
+                        $iq({type: 'error', id: id, from: converse.connection.jid})
+                            .c('error', {'type': 'cancel'})
+                            .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
+                    );
+                    return true;
+                }
+                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
+                $(iq).children('query').find('item').each(function (idx, item) {
+                    this.updateContact(item);
+                }.bind(this));
+
+                converse.emit('rosterPush', iq);
+                return true;
+            },
+
+            fetchFromServer: function (callback) {
+                /* Get the roster from the XMPP server */
+                var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
+                        .c('query', {xmlns: Strophe.NS.ROSTER});
+                return converse.connection.sendIQ(iq, function () {
+                        this.onReceivedFromServer.apply(this, arguments);
+                        callback.apply(this, arguments);
+                    }.bind(this));
+            },
+
+            onReceivedFromServer: function (iq) {
+                /* An IQ stanza containing the roster has been received from
+                * the XMPP server.
+                */
+                converse.emit('roster', iq);
+                $(iq).children('query').find('item').each(function (idx, item) {
+                    this.updateContact(item);
+                }.bind(this));
+            },
+
+            updateContact: function (item) {
+                /* Update or create RosterContact models based on items
+                * received in the IQ from the server.
+                */
+                var jid = item.getAttribute('jid');
+                if (this.isSelf(jid)) { return; }
+                var groups = [],
+                    contact = this.get(jid),
+                    ask = item.getAttribute("ask"),
+                    subscription = item.getAttribute("subscription");
+                $.map(item.getElementsByTagName('group'), function (group) {
+                    groups.push(Strophe.getText(group));
+                });
+                if (!contact) {
+                    if ((subscription === "none" && ask === null) || (subscription === "remove")) {
+                        return; // We're lazy when adding contacts.
+                    }
+                    this.create({
+                        ask: ask,
+                        fullname: item.getAttribute("name") || jid,
+                        groups: groups,
+                        jid: jid,
+                        subscription: subscription
+                    }, {sort: false});
+                } else {
+                    if (subscription === "remove") {
+                        return contact.destroy(); // will trigger removeFromRoster
+                    }
+                    // We only find out about requesting contacts via the
+                    // presence handler, so if we receive a contact
+                    // here, we know they aren't requesting anymore.
+                    // see docs/DEVELOPER.rst
+                    contact.save({
+                        subscription: subscription,
+                        ask: ask,
+                        requesting: null,
+                        groups: groups
+                    });
+                }
+            },
+
+            createContactFromVCard: function (iq, jid, fullname, img, img_type, url) {
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                this.create({
+                    jid: bare_jid,
+                    subscription: 'none',
+                    ask: null,
+                    requesting: true,
+                    fullname: fullname || bare_jid,
+                    image: img,
+                    image_type: img_type,
+                    url: url,
+                    vcard_updated: moment().format()
+                });
+            },
+
+            handleIncomingSubscription: function (jid) {
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var contact = this.get(bare_jid);
+                if (!converse.allow_contact_requests) {
+                    converse.rejectPresenceSubscription(jid, __("This client does not allow presence subscriptions"));
+                }
+                if (converse.auto_subscribe) {
+                    if ((!contact) || (contact.get('subscription') !== 'to')) {
+                        this.subscribeBack(bare_jid);
+                    } else {
+                        contact.authorize();
+                    }
+                } else {
+                    if (contact) {
+                        if (contact.get('subscription') !== 'none')  {
+                            contact.authorize();
+                        } else if (contact.get('ask') === "subscribe") {
+                            contact.authorize();
+                        }
+                    } else if (!contact) {
+                        converse.getVCard(
+                            bare_jid, this.createContactFromVCard.bind(this),
+                            function (iq, jid) {
+                                converse.log("Error while retrieving vcard for "+jid);
+                                this.createContactFromVCard.call(this, iq, jid);
+                            }.bind(this)
+                        );
+                    }
+                }
+            },
+
+            presenceHandler: function (presence) {
+                var $presence = $(presence),
+                    presence_type = presence.getAttribute('type');
+                if (presence_type === 'error') { return true; }
+                var jid = presence.getAttribute('from'),
+                    bare_jid = Strophe.getBareJidFromJid(jid),
+                    resource = Strophe.getResourceFromJid(jid),
+                    chat_status = $presence.find('show').text() || 'online',
+                    status_message = $presence.find('status'),
+                    contact = this.get(bare_jid);
+                if (this.isSelf(bare_jid)) {
+                    if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')&&(converse.synchronize_availability === true || converse.synchronize_availability === resource)) {
+                        // Another resource has changed its status and synchronize_availability option let to update, we'll update ours as well.
+                        converse.xmppstatus.save({'status': chat_status});
+                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message.text()}); }
+                    }
+                    return;
+                } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                    return; // Ignore MUC
+                }
+                if (contact && (status_message.text() !== contact.get('status'))) {
+                    contact.save({'status': status_message.text()});
+                }
+                if (presence_type === 'subscribed' && contact) {
+                    contact.ackSubscribe();
+                } else if (presence_type === 'unsubscribed' && contact) {
+                    contact.ackUnsubscribe();
+                } else if (presence_type === 'unsubscribe') {
+                    return;
+                } else if (presence_type === 'subscribe') {
+                    this.handleIncomingSubscription(jid);
+                } else if (presence_type === 'unavailable' && contact) {
+                    // Only set the user to offline if there aren't any
+                    // other resources still available.
+                    if (contact.removeResource(resource) === 0) {
+                        contact.save({'chat_status': "offline"});
+                    }
+                } else if (contact) { // presence_type is undefined
+                    this.addResource(bare_jid, resource);
+                    contact.save({'chat_status': chat_status});
+                }
+            }
+        });
+
+
         this.Message = Backbone.Model.extend({
             idAttribute: 'msgid',
             defaults: function(){
@@ -887,10 +1353,13 @@
                 };
             }
         });
+
+
         this.Messages = Backbone.Collection.extend({
             model: converse.Message,
             comparator: 'time'
         });
+
 
         this.ChatBox = Backbone.Model.extend({
 
@@ -2602,11 +3071,6 @@
              */
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
-            }
-            if (this.rosterview) {
-                this.rosterview.unregisterHandlers();
-                this.rosterview.model.off().reset(); // Removes roster groups
-                this.rosterview.undelegateEvents().remove();
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             if (this.features) {

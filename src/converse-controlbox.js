@@ -265,9 +265,6 @@
                     /* We initialize the roster, which will appear inside the
                     * Contacts Panel.
                     */
-                    converse.roster = new converse.RosterContacts();
-                    converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.contacts-'+converse.bare_jid));
                     var rostergroups = new converse.RosterGroups();
                     rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.roster.groups'+converse.bare_jid));

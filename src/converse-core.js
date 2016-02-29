@@ -822,6 +822,9 @@
             this.enableCarbons();
             this.initStatus(function () {
                 this.registerIntervalHandler();				
+                this.roster = new this.RosterContacts();
+                this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
+                    b64_sha1('converse.contacts-'+this.bare_jid));
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (typeof this.callback === 'function') {

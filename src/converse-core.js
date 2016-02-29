@@ -309,10 +309,10 @@
             moment.locale = moment.lang;
         }
         moment.locale(this.detectLocale(this.isMomentLocale));
+        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)];
 
         // Translation machinery
         // ---------------------
-        this.i18n = settings.i18n ? settings.i18n : locales.en;
         var __ = utils.__.bind(this);
 
         // Default configuration values

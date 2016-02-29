@@ -888,27 +888,38 @@ An example plugin
                 // For example, the inner protected *converse* object has a
                 // method "onConnected". You can override that method as follows:
                 onConnected: function () {
-                    // Override the onConnected method in converse.js
-                    // You have access to the protected converse object via the
-                    // _super attribute.
-                    var converse = this._super.converse;
+                    // Overrides the onConnected method in converse.js
+
+                    // Top-level functions in "overrides" are bound to the
+                    // inner "converse" object.
+                    var converse = this;
 
                     // Your custom code comes here.
                     // ...
 
                     // You can access the original function being overridden
-                    // vai the _super attribute.
-                    this._super.onConnected();
+                    // via the _super attribute.
+                    // Make sure to pass on the arguments supplied to this
+                    // function and also to apply the proper "this" object.
+                    this._super.onConnected.apply(this, arguments);
                 },
 
                 XMPPStatus: {
                     // Override converse.js's XMPPStatus Backbone model so that we can override the
                     // function that sends out the presence stanza.
                     sendPresence: function (type, status_message, jid) {
+                        // The "converse" object is available via the _super
+                        // attribute.
                         var converse = this._super.converse;
+
                         // Custom code can come here
                         // ...
-                        this._super.sendPresence(type, status_message, jid);
+
+                        // You can call the original overridden method, by
+                        // accessing it via the _super attribute.
+                        // When calling it, you need to apply the proper
+                        // context as reference by the "this" variable.
+                        this._super.sendPresence.apply(this, arguments);
                     }
                 },
             }

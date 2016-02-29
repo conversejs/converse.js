@@ -88,6 +88,32 @@
     converse.OPENED = 'opened';
     converse.CLOSED = 'closed';
 
+    var KEY = {
+        ENTER: 13,
+        FORWARD_SLASH: 47
+    };
+
+    var PRETTY_CONNECTION_STATUS = {
+        0: 'ERROR',
+        1: 'CONNECTING',
+        2: 'CONNFAIL',
+        3: 'AUTHENTICATING',
+        4: 'AUTHFAIL',
+        5: 'CONNECTED',
+        6: 'DISCONNECTED',
+        7: 'DISCONNECTING',
+        8: 'ATTACHED',
+        9: 'REDIRECT'
+    };
+
+    // XEP-0085 Chat states
+    // http://xmpp.org/extensions/xep-0085.html
+    var INACTIVE = 'inactive';
+    var ACTIVE = 'active';
+    var COMPOSING = 'composing';
+    var PAUSED = 'paused';
+    var GONE = 'gone';
+
     // TODO Refactor into external MAM plugin
     // XEP-0059 Result Set Management
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
@@ -174,6 +200,38 @@
         converse.connection.sendIQ(stanza, null, errback);
     };
 
+
+    converse.isOnlyChatStateNotification = function ($msg) {
+        // See XEP-0085 Chat State Notification
+        return (
+            $msg.find('body').length === 0 && (
+                $msg.find(ACTIVE).length !== 0 ||
+                $msg.find(COMPOSING).length !== 0 ||
+                $msg.find(INACTIVE).length !== 0 ||
+                $msg.find(PAUSED).length !== 0 ||
+                $msg.find(GONE).length !== 0
+            )
+        );
+    };
+
+
+    converse.log = function (txt, level) {
+        var logger;
+        if (typeof console === "undefined" || typeof console.log === "undefined") {
+            logger = { log: function () {}, error: function () {} };
+        } else {
+            logger = console;
+        }
+        if (converse.debug) {
+            if (level === 'error') {
+                logger.log('ERROR: '+txt);
+            } else {
+                logger.log(txt);
+            }
+        }
+    };
+
+
     converse.initialize = function (settings, callback) {
         "use strict";
         var converse = this;
@@ -203,33 +261,6 @@
         Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
-        // Constants
-        // ---------
-        var KEY = {
-            ENTER: 13,
-            FORWARD_SLASH: 47
-        };
-
-        var PRETTY_CONNECTION_STATUS = {
-            0: 'ERROR',
-            1: 'CONNECTING',
-            2: 'CONNFAIL',
-            3: 'AUTHENTICATING',
-            4: 'AUTHFAIL',
-            5: 'CONNECTED',
-            6: 'DISCONNECTED',
-            7: 'DISCONNECTING',
-            8: 'ATTACHED',
-            9: 'REDIRECT'
-        };
-
-        // XEP-0085 Chat states
-        // http://xmpp.org/extensions/xep-0085.html
-        var INACTIVE = 'inactive';
-        var ACTIVE = 'active';
-        var COMPOSING = 'composing';
-        var PAUSED = 'paused';
-        var GONE = 'gone';
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     20000,
             'INACTIVE':   90000
@@ -482,8 +513,24 @@
             $(window).on('click mousemove keypress focus'+unloadevent , this.onUserActivity.bind(this));
             window.setInterval(this.onEverySecond.bind(this), 1000);
         };
-		
-        this.playNotification = function () {
+
+        this.shouldNotifyOfNewMessage = function ($message) {
+            var $forwarded = $message.find('forwarded');
+            if ($forwarded.length) {
+                return false;
+            }
+            var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
+            return !converse.isOnlyChatStateNotification($message) && !is_me;
+        };
+
+        this.notifyOfNewMessage = function ($message) {
+            /* Plays a sound to notify that a new message was recieved.
+             *
+             * Returns true if the notification was made and false otherwise.
+             */
+            if (!this.shouldNotifyOfNewMessage($message)) {
+                return false;
+            }
             var audio;
             if (converse.play_sounds && typeof Audio !== "undefined") {
                 audio = new Audio(converse.sounds_path+"msg_received.ogg");
@@ -494,6 +541,7 @@
                     audio.play();
                 }
             }
+            return true;
         };
 
         this.giveFeedback = function (message, klass) {
@@ -506,22 +554,6 @@
                     $el.removeClass('error');
                 }
             });
-        };
-
-        this.log = function (txt, level) {
-            var logger;
-            if (typeof console === "undefined" || typeof console.log === "undefined") {
-                logger = { log: function () {}, error: function () {} };
-            } else {
-                logger = console;
-            }
-            if (this.debug) {
-                if (level === 'error') {
-                    logger.log('ERROR: '+txt);
-                } else {
-                    logger.log(txt);
-                }
-            }
         };
 
         this.rejectPresenceSubscription = function (jid, message) {
@@ -757,11 +789,11 @@
             }.bind(this));
 
             $(window).on("blur focus", function (ev) {
-                if ((this.windowState !== ev.type) && (ev.type === 'focus')) {
+                if ((converse.windowState !== ev.type) && (ev.type === 'focus')) {
                     converse.clearMsgCounter();
                 }
-                this.windowState = ev.type;
-            }.bind(this));
+                converse.windowState = ev.type;
+            });
 
             $(window).on("resize", _.debounce(function (ev) {
                 this.chatboxviews.trimChats();
@@ -901,28 +933,6 @@
                     'minimized': true,
                     'time_minimized': moment().format()
                 });
-            },
-
-            isOnlyChatStateNotification: function ($msg) {
-                // See XEP-0085 Chat State Notification
-                return (
-                    $msg.find('body').length === 0 && (
-                        $msg.find(ACTIVE).length !== 0 ||
-                        $msg.find(COMPOSING).length !== 0 ||
-                        $msg.find(INACTIVE).length !== 0 ||
-                        $msg.find(PAUSED).length !== 0 ||
-                        $msg.find(GONE).length !== 0
-                    )
-                );
-            },
-
-            shouldPlayNotification: function ($message) {
-                var $forwarded = $message.find('forwarded');
-                if ($forwarded.length) {
-                    return false;
-                }
-                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
-                return !this.isOnlyChatStateNotification($message) && !is_me;
             },
 
             createMessage: function ($message, $delay, archive_id) {
@@ -1348,6 +1358,29 @@
                 return this.scrollDown();
             },
 
+            handleChatStateMessage: function (message) {
+                if (message.get('chat_state') === COMPOSING) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                    this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
+                } else if (message.get('chat_state') === PAUSED) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
+                    this.$content.find('div.chat-event').remove();
+                } else if (message.get('chat_state') === GONE) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
+                }
+            },
+
+            handleTextMessage: function (message) {
+                this.showMessage(_.clone(message.attributes));
+                if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
+                    converse.incrementMsgCounter();
+                }
+                if (!this.model.get('minimized') && !this.$el.is(':visible')) {
+                    this.show();
+                }
+            },
+
             onMessageAdded: function (message) {
                 /* Handler that gets called when a new message object is created.
                  *
@@ -1359,28 +1392,9 @@
                     delete this.clear_status_timeout;
                 }
                 if (!message.get('message')) {
-                    if (message.get('chat_state') === COMPOSING) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
-                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
-                        return;
-                    } else if (message.get('chat_state') === PAUSED) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                        return;
-                    } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
-                        this.$content.find('div.chat-event').remove();
-                        return;
-                    } else if (message.get('chat_state') === GONE) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
-                        return;
-                    }
+                    this.handleChatStateMessage(message);
                 } else {
-                    this.showMessage(_.clone(message.attributes));
-                }
-                if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
-                    converse.incrementMsgCounter();
-                }
-                if (!this.model.get('minimized') && !this.$el.is(':visible')) {
-                    this.show();
+                    this.handleTextMessage(message);
                 }
             },
 
@@ -1903,9 +1917,7 @@
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                if (chatbox.shouldPlayNotification($message)) {
-                    converse.playNotification();
-                }
+                converse.notifyOfNewMessage($message);
                 chatbox.createMessage($message, $delay, archive_id);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);

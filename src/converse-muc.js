@@ -916,7 +916,7 @@
                     }
                     this.model.createMessage($message, $delay, archive_id);
                     if (!delayed && sender !== this.model.get('nick') && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
-                        converse.playNotification();
+                        converse.notifyOfNewMessage();
                     }
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message

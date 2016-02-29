@@ -882,6 +882,7 @@
 
 
         this.RosterContact = Backbone.Model.extend({
+
             initialize: function (attributes, options) {
                 var jid = attributes.jid;
                 var bare_jid = Strophe.getBareJidFromJid(jid);
@@ -903,7 +904,7 @@
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
             },
 
-        subscribe: function (message) {
+            subscribe: function (message) {
                 /* Send a presence subscription request to this roster contact
                 *
                 * Parameters:
@@ -1019,6 +1020,7 @@
 
         this.RosterContacts = Backbone.Collection.extend({
             model: converse.RosterContact,
+
             comparator: function (contact1, contact2) {
                 var name1, name2;
                 var status1 = contact1.get('chat_status') || 'offline';
@@ -2124,6 +2126,7 @@
                         this.$el.find('div.chat-event').remove();
                     }
                 }
+                // FIXME: multiple parameters not accepted?
                 converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
             },
 

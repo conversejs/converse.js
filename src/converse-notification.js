@@ -23,7 +23,7 @@
             "doesn't support HTML5 notifications.");
         return;
     }
-    // Ask user to enable HTML5 notifications 
+    // Ask user to enable HTML5 notifications
     Notification.requestPermission();
 
 
@@ -35,11 +35,11 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-            
+
             notifyOfNewMessage: function ($message) {
                 var result = this._super.notifyOfNewMessage.apply(this, arguments);
                 if (result && (this.windowState === 'blur') && (Notification.permission === "granted")) {
-                    this.showNotification($message);
+                    this.showMessageNotification($message);
                 }
                 return result;
             }
@@ -51,7 +51,35 @@
              */
             var converse = this.converse;
 
-            converse.showNotification = function ($message) {
+            converse.showChatStateNotification = function (event, contact) {
+                /* Show an HTML5 notification indicating that a contact changed
+                 * their chat state.
+                 */
+                var chat_state = contact.chat_status,
+                    message = null;
+                if (chat_state === 'offline') {
+                    message = __('has gone offline');
+                } else if (chat_state === 'away') {
+                    message = __('has gone away');
+                } else if ((chat_state === 'dnd')) {
+                    message = __('is busy');
+                } else if (chat_state === 'online') {
+                    message = __('has come online');
+                }
+                if (message === null) {
+                    return;
+                }
+                var n = new Notification(contact.fullname, {
+                        body: message,
+                        lang: converse.i18n.locale_data.converse[""].lang,
+                        icon: 'logo/conversejs.png'
+                    });
+                setTimeout(n.close.bind(n), 5000);
+            };
+
+            converse.on('contactStatusChanged',  converse.showChatStateNotification);
+
+            converse.showMessageNotification = function ($message) {
                 /* Show an HTML5 notification of a received message.
                  */
                 var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
@@ -61,7 +89,7 @@
                         lang: converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'
                     });
-                setTimeout(n.close.bind(n), 5000); 
+                setTimeout(n.close.bind(n), 5000);
             };
         }
     });

@@ -106,14 +106,6 @@
         9: 'REDIRECT'
     };
 
-    // XEP-0085 Chat states
-    // http://xmpp.org/extensions/xep-0085.html
-    var INACTIVE = 'inactive';
-    var ACTIVE = 'active';
-    var COMPOSING = 'composing';
-    var PAUSED = 'paused';
-    var GONE = 'gone';
-
     // TODO Refactor into external MAM plugin
     // XEP-0059 Result Set Management
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
@@ -201,20 +193,6 @@
     };
 
 
-    converse.isOnlyChatStateNotification = function ($msg) {
-        // See XEP-0085 Chat State Notification
-        return (
-            $msg.find('body').length === 0 && (
-                $msg.find(ACTIVE).length !== 0 ||
-                $msg.find(COMPOSING).length !== 0 ||
-                $msg.find(INACTIVE).length !== 0 ||
-                $msg.find(PAUSED).length !== 0 ||
-                $msg.find(GONE).length !== 0
-            )
-        );
-    };
-
-
     converse.log = function (txt, level) {
         var logger;
         if (typeof console === "undefined" || typeof console.log === "undefined") {
@@ -261,10 +239,20 @@
         Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
+        // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     20000,
             'INACTIVE':   90000
         };
+
+        // XEP-0085 Chat states
+        // http://xmpp.org/extensions/xep-0085.html
+        this.INACTIVE = 'inactive';
+        this.ACTIVE = 'active';
+        this.COMPOSING = 'composing';
+        this.PAUSED = 'paused';
+        this.GONE = 'gone';
+
 
         // Detect support for the user's locale
         // ------------------------------------
@@ -378,7 +366,6 @@
             message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             password: undefined,
-            play_sounds: false,
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             rid: undefined,
@@ -386,7 +373,6 @@
             show_only_online_users: false,
             show_toolbar: true,
             sid: undefined,
-            sounds_path: '/sounds/',
             storage: 'session',
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
             use_vcards: true,
@@ -453,7 +439,7 @@
             /* Send out a Chat Status Notification (XEP-0352) */
             if (converse.features[Strophe.NS.CSI] || true) {
                 converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-                this.inactive = (stat === INACTIVE) ? true : false;
+                this.inactive = (stat === converse.INACTIVE) ? true : false;
             }
         };
 
@@ -468,7 +454,7 @@
                 return;
             }
             if (this.inactive) {
-                this.sendCSI(ACTIVE);
+                this.sendCSI(converse.ACTIVE);
             }
             if (this.auto_changed_status === true) {
                 this.auto_changed_status = false;
@@ -489,7 +475,7 @@
             var stat = this.xmppstatus.getStatus();
             this.idle_seconds++;
             if (this.csi_waiting_time > 0 && this.idle_seconds > this.csi_waiting_time && !this.inactive) {
-                this.sendCSI(INACTIVE);
+                this.sendCSI(converse.INACTIVE);
             }
             if (this.auto_away > 0 && this.idle_seconds > this.auto_away && stat !== 'away' && stat !== 'xa') {
                 this.auto_changed_status = true;
@@ -512,36 +498,6 @@
             this.auto_changed_status = false; // Was the user's status changed by converse.js?
             $(window).on('click mousemove keypress focus'+unloadevent , this.onUserActivity.bind(this));
             window.setInterval(this.onEverySecond.bind(this), 1000);
-        };
-
-        this.shouldNotifyOfNewMessage = function ($message) {
-            var $forwarded = $message.find('forwarded');
-            if ($forwarded.length) {
-                return false;
-            }
-            var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
-            return !converse.isOnlyChatStateNotification($message) && !is_me;
-        };
-
-        this.notifyOfNewMessage = function ($message) {
-            /* Plays a sound to notify that a new message was recieved.
-             *
-             * Returns true if the notification was made and false otherwise.
-             */
-            if (!this.shouldNotifyOfNewMessage($message)) {
-                return false;
-            }
-            var audio;
-            if (converse.play_sounds && typeof Audio !== "undefined") {
-                audio = new Audio(converse.sounds_path+"msg_received.ogg");
-                if (audio.canPlayType('/audio/ogg')) {
-                    audio.play();
-                } else {
-                    audio = new Audio(converse.sounds_path+"msg_received.mp3");
-                    audio.play();
-                }
-            }
-            return true;
         };
 
         this.giveFeedback = function (message, klass) {
@@ -1413,11 +1369,11 @@
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
                     msgid = $message.attr('id'),
-                    chat_state = $message.find(COMPOSING).length && COMPOSING ||
-                        $message.find(PAUSED).length && PAUSED ||
-                        $message.find(INACTIVE).length && INACTIVE ||
-                        $message.find(ACTIVE).length && ACTIVE ||
-                        $message.find(GONE).length && GONE,
+                    chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
+                        $message.find(converse.PAUSED).length && converse.PAUSED ||
+                        $message.find(converse.INACTIVE).length && converse.INACTIVE ||
+                        $message.find(converse.ACTIVE).length && converse.ACTIVE ||
+                        $message.find(converse.GONE).length && converse.GONE,
                     stamp, time, sender, from;
 
                 if (is_groupchat) {
@@ -1830,14 +1786,14 @@
             },
 
             handleChatStateMessage: function (message) {
-                if (message.get('chat_state') === COMPOSING) {
+                if (message.get('chat_state') === converse.COMPOSING) {
                     this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                     this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
-                } else if (message.get('chat_state') === PAUSED) {
+                } else if (message.get('chat_state') === converse.PAUSED) {
                     this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
+                } else if (_.contains([converse.INACTIVE, converse.ACTIVE], message.get('chat_state'))) {
                     this.$content.find('div.chat-event').remove();
-                } else if (message.get('chat_state') === GONE) {
+                } else if (message.get('chat_state') === converse.GONE) {
                     this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                 }
             },
@@ -1876,7 +1832,7 @@
                             type: 'chat',
                             id: message.get('msgid')
                        }).c('body').t(message.get('message')).up()
-                         .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                         .c(converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
             },
 
             sendMessage: function (message) {
@@ -1967,12 +1923,12 @@
                     window.clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout;
                 }
-                if (state === COMPOSING) {
+                if (state === converse.COMPOSING) {
                     this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, PAUSED);
-                } else if (state === PAUSED) {
+                            this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, converse.PAUSED);
+                } else if (state === converse.PAUSED) {
                     this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, INACTIVE);
+                            this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, converse.INACTIVE);
                 }
                 if (!no_save && this.model.get('chat_state') !== state) {
                     this.model.set('chat_state', state);
@@ -1996,11 +1952,11 @@
                         }
                         converse.emit('messageSend', message);
                     }
-                    this.setChatState(ACTIVE);
+                    this.setChatState(converse.ACTIVE);
                 } else if (!this.model.get('chatroom')) { // chat state data is currently only for single user chat
                     // Set chat state to composing if keyCode is not a forward-slash
                     // (which would imply an internal command and not a message).
-                    this.setChatState(COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
+                    this.setChatState(converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                 }
             },
 
@@ -2155,7 +2111,7 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (converse.connection.connected) {
                     this.model.destroy();
-                    this.setChatState(INACTIVE);
+                    this.setChatState(converse.INACTIVE);
                 } else {
                     this.hide();
                 }
@@ -2167,7 +2123,7 @@
                 converse.chatboxviews.trimChats(this);
                 utils.refreshWebkit();
                 this.$content.scrollTop(this.model.get('scroll'));
-                this.setChatState(ACTIVE).focus();
+                this.setChatState(converse.ACTIVE).focus();
                 converse.emit('chatBoxMaximized', this);
             },
 
@@ -2183,7 +2139,7 @@
                 // save the scroll position to restore it on maximize
                 this.model.save({'scroll': this.$content.scrollTop()});
                 // Minimizes a chat box
-                this.setChatState(INACTIVE).model.minimize();
+                this.setChatState(converse.INACTIVE).model.minimize();
                 this.$el.hide('fast', utils.refreshwebkit);
                 converse.emit('chatBoxMinimized', this);
             },
@@ -2282,7 +2238,7 @@
                         // localstorage
                         this.model.save();
                     }
-                    this.setChatState(ACTIVE);
+                    this.setChatState(converse.ACTIVE);
                     this.scrollDown();
                     if (focus) {
                         this.focus();
@@ -2389,7 +2345,6 @@
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                converse.notifyOfNewMessage($message);
                 chatbox.createMessage($message, $delay, archive_id);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
@@ -3160,7 +3115,7 @@
                     return;
                 }
                 plugin.converse = converse;
-                _.each(Object.keys(plugin.overrides), function (key) {
+                _.each(Object.keys(plugin.overrides || {}), function (key) {
                     /* We automatically override all methods and Backbone views and
                      * models that are in the "overrides" namespace.
                      */

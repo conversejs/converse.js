@@ -196,7 +196,7 @@
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 converse.play_sounds = true;
-                spyOn(converse, 'notifyOfNewMessage');
+                spyOn(converse, 'playSoundNotification');
                 var view = this.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                 var text = 'This message will play a sound because it mentions dummy';
@@ -207,7 +207,7 @@
                     type: 'groupchat'
                 }).c('body').t(text);
                 view.onChatRoomMessage(message.nodeTree);
-                expect(converse.notifyOfNewMessage).toHaveBeenCalled();
+                expect(converse.playSoundNotification).toHaveBeenCalled();
 
                 text = "This message won't play a sound";
                 message = $msg({
@@ -217,7 +217,7 @@
                     type: 'groupchat'
                 }).c('body').t(text);
                 view.onChatRoomMessage(message.nodeTree);
-                expect(converse.notifyOfNewMessage, 1);
+                expect(converse.playSoundNotification, 1);
                 converse.play_sounds = false;
 
                 text = "This message won't play a sound because it is sent by dummy";
@@ -228,7 +228,7 @@
                     type: 'groupchat'
                 }).c('body').t(text);
                 view.onChatRoomMessage(message.nodeTree);
-                expect(converse.notifyOfNewMessage, 1);
+                expect(converse.playSoundNotification, 1);
                 converse.play_sounds = false;
             }.bind(converse));
 

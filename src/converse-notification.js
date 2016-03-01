@@ -10,46 +10,77 @@
     define("converse-notification", ["converse-core", "converse-api"], factory);
 }(this, function (converse, converse_api) {
     "use strict";
-    var utils = converse_api.env.utils;
-    var Strophe = converse_api.env.Strophe;
+    var $ = converse_api.env.jQuery,
+        utils = converse_api.env.utils,
+        Strophe = converse_api.env.Strophe,
+        _ = converse_api.env._;
     // For translations
     var __ = utils.__.bind(converse);
     var ___ = utils.___;
 
-    if (!("Notification" in window)) {
-        // HTML5 notifications aren't supported.
-        converse.log(
-            "Not loading the notifications plugin because this browser "+
-            "doesn't support HTML5 notifications.");
-        return;
-    }
-    // Ask user to enable HTML5 notifications
-    Notification.requestPermission();
+    var supports_html5_notification = "Notification" in window;
 
+    if (supports_html5_notification && Notification.permission !== 'denied') {
+        // Ask user to enable HTML5 notifications
+        Notification.requestPermission();
+    }
 
     converse_api.plugins.add('notification', {
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            notifyOfNewMessage: function ($message) {
-                var result = this._super.notifyOfNewMessage.apply(this, arguments);
-                if (result && (this.windowState === 'blur') && (Notification.permission === "granted")) {
-                    this.showMessageNotification($message);
-                }
-                return result;
-            }
-        },
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+            // Configuration values for this plugin
+            var settings = {
+                play_sounds: false,
+                sounds_path: '/sounds/',
+                notification_icon: '/logo/conversejs.png'
+            };
+            _.extend(converse.default_settings, settings);
+            _.extend(converse, settings);
+            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+
+            converse.isOnlyChatStateNotification = function ($msg) {
+                // See XEP-0085 Chat State Notification
+                return (
+                    $msg.find('body').length === 0 && (
+                        $msg.find(converse.ACTIVE).length !== 0 ||
+                        $msg.find(converse.COMPOSING).length !== 0 ||
+                        $msg.find(converse.INACTIVE).length !== 0 ||
+                        $msg.find(converse.PAUSED).length !== 0 ||
+                        $msg.find(converse.GONE).length !== 0
+                    )
+                );
+            };
+
+            converse.shouldNotifyOfNewMessage = function ($message) {
+                var $forwarded = $message.find('forwarded');
+                if ($forwarded.length) {
+                    return false;
+                }
+                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
+                return !converse.isOnlyChatStateNotification($message) && !is_me;
+            };
+
+            converse.playSoundNotification = function ($message) {
+                /* Plays a sound to notify that a new message was recieved.
+                 */
+                // XXX Eventually this can be refactored to use Notification's sound
+                // feature, but no browser currently supports it.
+                // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
+                var audio;
+                if (converse.play_sounds && typeof Audio !== "undefined") {
+                    audio = new Audio(converse.sounds_path+"msg_received.ogg");
+                    if (audio.canPlayType('/audio/ogg')) {
+                        audio.play();
+                    } else {
+                        audio = new Audio(converse.sounds_path+"msg_received.mp3");
+                        audio.play();
+                    }
+                }
+            };
 
             converse.showChatStateNotification = function (event, contact) {
                 /* Show an HTML5 notification indicating that a contact changed
@@ -77,20 +108,39 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.on('contactStatusChanged',  converse.showChatStateNotification);
-
             converse.showMessageNotification = function ($message) {
-                /* Show an HTML5 notification of a received message.
+                /* Shows an HTML5 Notification to indicate that a new chat
+                 * message was received.
                  */
+                if (!supports_html5_notification ||
+                        this.windowState !== 'blur' ||
+                        Notification.permission !== "granted") {
+                    return;
+                }
                 var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
                 var roster_item = converse.roster.get(contact_jid);
                 var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
                         body: $message.children('body').text(),
                         lang: converse.i18n.locale_data.converse[""].lang,
-                        icon: 'logo/conversejs.png'
+                        icon: converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
             };
+
+            converse.notifyOfNewMessage = function (message) {
+                /* Event handler for the on('message') event. Will call methods
+                 * to play sounds and show HTML5 notifications.
+                 */
+                var $message = $(message);
+                if (!converse.shouldNotifyOfNewMessage($message)) {
+                    return false;
+                }
+                converse.playSoundNotification($message);
+                converse.showMessageNotification($message);
+            };
+
+            converse.on('contactStatusChanged',  converse.showChatStateNotification);
+            converse.on('message',  converse.showMessageNotification);
         }
     });
 }));

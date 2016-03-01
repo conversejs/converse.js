@@ -538,6 +538,14 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
+notification_icon
+-----------------
+
+* Default: ``'/logo/conversejs.png'``
+
+This option specifies which icon is shown in HTML5 notifications, as provided
+by the ``src/converse-notification.js`` plugin.
+
 
 ping_interval
 -------------

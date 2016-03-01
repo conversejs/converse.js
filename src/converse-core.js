@@ -1024,13 +1024,14 @@
 
             sendContactAddIQ: function (jid, name, groups, callback, errback) {
                 /*  Send an IQ stanza to the XMPP server to add a new roster contact.
-                *  Parameters:
-                *    (String) jid - The Jabber ID of the user being added
-                *    (String) name - The name of that user
-                *    (Array of Strings) groups - Any roster groups the user might belong to
-                *    (Function) callback - A function to call once the VCard is returned
-                *    (Function) errback - A function to call if an error occured
-                */
+                 *
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user being added
+                 *    (String) name - The name of that user
+                 *    (Array of Strings) groups - Any roster groups the user might belong to
+                 *    (Function) callback - A function to call once the VCard is returned
+                 *    (Function) errback - A function to call if an error occured
+                 */
                 name = _.isEmpty(name)? jid: name;
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
@@ -1041,15 +1042,16 @@
 
             addContact: function (jid, name, groups, attributes) {
                 /* Adds a RosterContact instance to converse.roster and
-                * registers the contact on the XMPP server.
-                * Returns a promise which is resolved once the XMPP server has
-                * responded.
-                *  Parameters:
-                *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                *    (String) name - The name of that user
-                *    (Array of Strings) groups - Any roster groups the user might belong to
-                *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                */
+                 * registers the contact on the XMPP server.
+                 * Returns a promise which is resolved once the XMPP server has
+                 * responded.
+                 *
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                 *    (String) name - The name of that user
+                 *    (Array of Strings) groups - Any roster groups the user might belong to
+                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                 */
                 var deferred = new $.Deferred();
                 groups = groups || [];
                 name = _.isEmpty(name)? jid: name;
@@ -1212,9 +1214,12 @@
                 }
             },
 
-            createContactFromVCard: function (iq, jid, fullname, img, img_type, url) {
+            createRequestingContactFromVCard: function (iq, jid, fullname, img, img_type, url) {
+                /* A contact request was recieved, and we then asked for the
+                 * VCard of that user.
+                 */
                 var bare_jid = Strophe.getBareJidFromJid(jid);
-                this.create({
+                var user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
@@ -1224,7 +1229,9 @@
                     image_type: img_type,
                     url: url,
                     vcard_updated: moment().format()
-                });
+                };
+                this.create(user_data);
+                converse.emit('contactRequest', user_data);
             },
 
             handleIncomingSubscription: function (jid) {
@@ -1248,10 +1255,10 @@
                         }
                     } else if (!contact) {
                         converse.getVCard(
-                            bare_jid, this.createContactFromVCard.bind(this),
+                            bare_jid, this.createRequestingContactFromVCard.bind(this),
                             function (iq, jid) {
                                 converse.log("Error while retrieving vcard for "+jid);
-                                this.createContactFromVCard.call(this, iq, jid);
+                                this.createRequestingContactFromVCard.call(this, iq, jid);
                             }.bind(this)
                         );
                     }

@@ -501,6 +501,7 @@
                 });
                 waits(50);
                 runs(function () {
+                    spyOn(converse, "emit");
                     /*
                     * <presence
                     *     from='user@example.com'
@@ -513,6 +514,7 @@
                         'type': 'subscribe'
                     });
                     this.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                     var $header = $('a:contains("Contact requests")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();

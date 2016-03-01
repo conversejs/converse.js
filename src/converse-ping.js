@@ -50,6 +50,7 @@
             var settings = {
                 ping_interval: 180 //in seconds
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 

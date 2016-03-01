@@ -87,6 +87,7 @@
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 

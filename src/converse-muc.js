@@ -209,6 +209,7 @@
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 

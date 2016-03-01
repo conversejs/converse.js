@@ -54,21 +54,28 @@
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
+    // We create an object to act as the "this" context for event handlers (as
+    // defined below and accessible via converse_api.listen).
+    // We don't want the inner converse object to be the context, since it
+    // contains sensitive information, and we don't want it to be something in
+    // the DOM or window, because then anyone can trigger converse events.
+    var event_context = {};
+
     var converse = {
         plugins: {},
         initialized_plugins: [],
         templates: templates,
         emit: function (evt, data) {
-            $(this).trigger(evt, data);
+            $(event_context).trigger(evt, data);
         },
         once: function (evt, handler) {
-            $(this).one(evt, handler);
+            $(event_context).one(evt, handler);
         },
         on: function (evt, handler) {
-            $(this).bind(evt, handler);
+            $(event_context).bind(evt, handler);
         },
         off: function (evt, handler) {
-            $(this).unbind(evt, handler);
+            $(event_context).unbind(evt, handler);
         }
     };
 
@@ -2089,13 +2096,15 @@
                         this.$el.find('div.chat-event').remove();
                     }
                 }
-                // FIXME: multiple parameters not accepted?
-                converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
+                converse.emit('contactStatusChanged', item.attributes);
             },
 
             onStatusChanged: function (item) {
                 this.showStatusMessage();
-                converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
+                converse.emit('contactStatusMessageChanged', {
+                    'contact': item.attributes,
+                    'message': item.get('status')
+                });
             },
 
             onMinimizedChanged: function (item) {

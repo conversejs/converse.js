@@ -322,7 +322,7 @@
                     }
                 },
 
-                directInvite: function (receiver, reason) {
+                directInvite: function (recipient, reason) {
                     var attrs = {
                         xmlns: 'jabber:x:conference',
                         jid: this.model.get('jid')
@@ -331,11 +331,15 @@
                     if (this.model.get('password')) { attrs.password = this.model.get('password'); }
                     var invitation = $msg({
                         from: converse.connection.jid,
-                        to: receiver,
+                        to: recipient,
                         id: converse.connection.getUniqueId()
                     }).c('x', attrs);
                     converse.connection.send(invitation);
-                    converse.emit('roomInviteSent', this, receiver, reason);
+                    converse.emit('roomInviteSent', {
+                        'room': this,
+                        'recipient': recipient,
+                        'reason': reason
+                    });
                 },
 
                 onCommandError: function (stanza) {

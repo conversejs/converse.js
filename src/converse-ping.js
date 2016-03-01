@@ -32,12 +32,12 @@
             // New functions which don't exist yet can also be added.
 
             onConnected: function () {
-                this._super.onConnected().done(this.registerPingHandler);
+                this._super.onConnected().done(converse.registerPingHandler);
             },
             onReconnected: function () {
                 // We need to re-register the ping event handler on the newly
                 // created connection.
-                this._super.onReconnected().done(this.registerPingHandler);
+                this._super.onReconnected().done(converse.registerPingHandler);
             }
         },
 
@@ -83,7 +83,7 @@
 
             converse.registerPongHandler = function () {
                 converse.connection.disco.addFeature(Strophe.NS.PING);
-                converse.connection.ping.addPingHandler(this.pong);
+                converse.connection.ping.addPingHandler(converse.pong);
             };
 
             converse.registerPingHandler = function () {
@@ -101,7 +101,7 @@
                         if (!converse.lastStanzaDate) {
                             converse.lastStanzaDate = now;
                         }
-                        if ((now - converse.lastStanzaDate)/1000 > this.ping_interval) {
+                        if ((now - converse.lastStanzaDate)/1000 > converse.ping_interval) {
                             return converse.ping();
                         }
                         return true;

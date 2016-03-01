@@ -142,7 +142,7 @@
             };
 
             converse.on('contactStatusChanged',  converse.showChatStateNotification);
-            converse.on('message',  converse.showMessageNotification);
+            converse.on('message',  converse.notifyOfNewMessage);
         }
     });
 }));

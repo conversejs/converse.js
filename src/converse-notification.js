@@ -34,6 +34,7 @@
             var converse = this.converse;
             // Configuration values for this plugin
             var settings = {
+                show_desktop_notifications: true,
                 play_sounds: false,
                 sounds_path: '/sounds/',
                 notification_icon: '/logo/conversejs.png'
@@ -113,7 +114,8 @@
                  * message was received.
                  */
                 if (!supports_html5_notification ||
-                        this.windowState !== 'blur' ||
+                        !converse.show_desktop_notifications ||
+                        converse.windowState !== 'blur' ||
                         Notification.permission !== "granted") {
                     return;
                 }

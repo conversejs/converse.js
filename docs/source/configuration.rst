@@ -574,6 +574,8 @@ formatted sound files. We need both, because neither format is supported by all 
 You can set the URL where the sound files are hosted with the `sounds_path`_
 option.
 
+Requires the `src/converse-notification.js` plugin.
+
 .. _`prebind_url`:
 
 prebind_url
@@ -638,6 +640,18 @@ page load.
 However, be aware that even if this value is set to ``false``, if the
 controlbox is open, and the page is reloaded, then it will stay open on the new
 page as well.
+
+.. _`show-desktop-notifications`:
+
+show_desktop_notifications
+--------------------------
+
+* Default: ``true``
+
+Should HTML5 desktop notifications be shown when the browser is not visible or
+blurred?
+
+Requires the `src/converse-notification.js` plugin.
 
 show_only_online_users
 ----------------------

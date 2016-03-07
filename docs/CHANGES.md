@@ -13,6 +13,7 @@
 - #534 Updated Russian translation [badfiles]
 - #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
 - #573 xgettext build error: `'javascript' unknown` [jcbrand]
+- #577 New config variable [message_archiving_timeout](https://conversejs.org/docs/html/configuration.html#message_archiving_timeout) [jcbrand]
 - #587 Fix issue when logging out with `auto_logout=true` [davec82]
 - #589 Save scroll position on minimize and restore it on maximize [rlanvin]
 - #592 Add random resource for `auto_login`, add method generateResource to generate random resource [davec82]

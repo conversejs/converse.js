@@ -142,7 +142,7 @@
             errback = callback;
         }
         if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-            throw new Error('This server does not support XEP-0313, Message Archive Management');
+            errback('This server does not support XEP-0313, Message Archive Management');
         }
         var queryid = converse.connection.getUniqueId();
         var attrs = {'type':'set'};
@@ -196,7 +196,7 @@
                 return false; // There's no callback, so no use in continuing this handler.
             }
         }, Strophe.NS.MAM);
-        converse.connection.sendIQ(stanza, null, errback);
+        converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
     };
 
 
@@ -370,6 +370,7 @@
             keepalive: false,
             locked_domain: undefined,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
+            message_archiving_timeout: 8000, // The amount of time (in milliseconds) to wait before aborting a MAM (XEP-0313) request
             message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             password: undefined,

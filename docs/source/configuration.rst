@@ -500,6 +500,17 @@ This sets the default archiving preference. Valid values are ``never``, ``always
 ``roster`` means that only messages to and from JIDs in your roster will be
 archived. The other two values are self-explanatory.
 
+
+message_archiving_timeout
+-------------------------
+
+* Default:  ``8000``
+
+The amount of time (in milliseconds) to wait when requesting archived messages
+from the XMPP server.
+
+Used in conjunction with `message_archiving` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
+
 message_carbons
 ---------------
 

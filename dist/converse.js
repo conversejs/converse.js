@@ -27001,11 +27001,23 @@ return Backbone.BrowserStorage;
         this.views = {};
         this.keys = _.partial(_.keys, this.views);
         this.getAll = _.partial(_.identity, this.views);
-        this.get = function (id) { return this.views[id]; }.bind(this);
+
+        this.get = function (id) {
+            return this.views[id];
+        }.bind(this);
+
+        this.xget = function (id) {
+            /* Exclusive get. Returns all instances except the given id. */
+            return _.filter(this.views, function (view, vid) {
+                return vid !== id;
+            });
+        }.bind(this);
+
         this.add = function (id, view) {
             this.views[id] = view;
             return view;
         }.bind(this);
+
         this.remove = function (id) {
             if (typeof id === "undefined") {
                 new Backbone.View().remove.apply(this);
@@ -27017,6 +27029,7 @@ return Backbone.BrowserStorage;
                 return view;
             }
         }.bind(this);
+
         this.removeAll = function () {
             _.each(_.keys(this.views), this.remove);
         }.bind(this);
@@ -28294,20 +28307,28 @@ return Backbone.BrowserStorage;
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
+    // We create an object to act as the "this" context for event handlers (as
+    // defined below and accessible via converse_api.listen).
+    // We don't want the inner converse object to be the context, since it
+    // contains sensitive information, and we don't want it to be something in
+    // the DOM or window, because then anyone can trigger converse events.
+    var event_context = {};
+
     var converse = {
         plugins: {},
+        initialized_plugins: [],
         templates: templates,
         emit: function (evt, data) {
-            $(this).trigger(evt, data);
+            $(event_context).trigger(evt, data);
         },
         once: function (evt, handler) {
-            $(this).one(evt, handler);
+            $(event_context).one(evt, handler);
         },
         on: function (evt, handler) {
-            $(this).bind(evt, handler);
+            $(event_context).bind(evt, handler);
         },
         off: function (evt, handler) {
-            $(this).unbind(evt, handler);
+            $(event_context).unbind(evt, handler);
         }
     };
 
@@ -28320,6 +28341,29 @@ return Backbone.BrowserStorage;
         'dnd':          2,
         'chat':         1, // We currently don't differentiate between "chat" and "online"
         'online':       1
+    };
+    converse.LOGIN = "login";
+    converse.ANONYMOUS  = "anonymous";
+    converse.PREBIND = "prebind";
+    converse.OPENED = 'opened';
+    converse.CLOSED = 'closed';
+
+    var KEY = {
+        ENTER: 13,
+        FORWARD_SLASH: 47
+    };
+
+    var PRETTY_CONNECTION_STATUS = {
+        0: 'ERROR',
+        1: 'CONNECTING',
+        2: 'CONNFAIL',
+        3: 'AUTHENTICATING',
+        4: 'AUTHFAIL',
+        5: 'CONNECTED',
+        6: 'DISCONNECTED',
+        7: 'DISCONNECTING',
+        8: 'ATTACHED',
+        9: 'REDIRECT'
     };
 
     // TODO Refactor into external MAM plugin
@@ -28351,7 +28395,9 @@ return Backbone.BrowserStorage;
             errback = callback;
         }
         if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-            throw new Error('This server does not support XEP-0313, Message Archive Management');
+            converse.log('This server does not support XEP-0313, Message Archive Management');
+            errback(null);
+            return;
         }
         var queryid = converse.connection.getUniqueId();
         var attrs = {'type':'set'};
@@ -28405,8 +28451,26 @@ return Backbone.BrowserStorage;
                 return false; // There's no callback, so no use in continuing this handler.
             }
         }, Strophe.NS.MAM);
-        converse.connection.sendIQ(stanza, null, errback);
+        converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
     };
+
+
+    converse.log = function (txt, level) {
+        var logger;
+        if (typeof console === "undefined" || typeof console.log === "undefined") {
+            logger = { log: function () {}, error: function () {} };
+        } else {
+            logger = console;
+        }
+        if (converse.debug) {
+            if (level === 'error') {
+                logger.log('ERROR: '+txt);
+            } else {
+                logger.log(txt);
+            }
+        }
+    };
+
 
     converse.initialize = function (settings, callback) {
         "use strict";
@@ -28437,43 +28501,20 @@ return Backbone.BrowserStorage;
         Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
-        // Constants
-        // ---------
-        var LOGIN = "login";
-        var ANONYMOUS  = "anonymous";
-        var PREBIND = "prebind";
-
-        var KEY = {
-            ENTER: 13,
-            FORWARD_SLASH: 47
-        };
-
-        var PRETTY_CONNECTION_STATUS = {
-            0: 'ERROR',
-            1: 'CONNECTING',
-            2: 'CONNFAIL',
-            3: 'AUTHENTICATING',
-            4: 'AUTHFAIL',
-            5: 'CONNECTED',
-            6: 'DISCONNECTED',
-            7: 'DISCONNECTING',
-            8: 'ATTACHED',
-            9: 'REDIRECT'
-        };
-
-        // XEP-0085 Chat states
-        // http://xmpp.org/extensions/xep-0085.html
-        var INACTIVE = 'inactive';
-        var ACTIVE = 'active';
-        var COMPOSING = 'composing';
-        var PAUSED = 'paused';
-        var GONE = 'gone';
+        // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     20000,
             'INACTIVE':   90000
         };
-        var OPENED = 'opened';
-        var CLOSED = 'closed';
+
+        // XEP-0085 Chat states
+        // http://xmpp.org/extensions/xep-0085.html
+        this.INACTIVE = 'inactive';
+        this.ACTIVE = 'active';
+        this.COMPOSING = 'composing';
+        this.PAUSED = 'paused';
+        this.GONE = 'gone';
+
 
         // Detect support for the user's locale
         // ------------------------------------
@@ -28549,10 +28590,10 @@ return Backbone.BrowserStorage;
             moment.locale = moment.lang;
         }
         moment.locale(this.detectLocale(this.isMomentLocale));
+        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)];
 
         // Translation machinery
         // ---------------------
-        this.i18n = settings.i18n ? settings.i18n : locales.en;
         var __ = utils.__.bind(this);
 
         // Default configuration values
@@ -28584,19 +28625,17 @@ return Backbone.BrowserStorage;
             keepalive: false,
             locked_domain: undefined,
             message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
+            message_archiving_timeout: 8000, // The amount of time (in milliseconds) to wait before aborting a MAM (XEP-0313) request
             message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             password: undefined,
-            play_sounds: false,
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             rid: undefined,
             roster_groups: false,
-            show_controlbox_by_default: false,
             show_only_online_users: false,
             show_toolbar: true,
             sid: undefined,
-            sounds_path: '/sounds/',
             storage: 'session',
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
             use_vcards: true,
@@ -28618,9 +28657,9 @@ return Backbone.BrowserStorage;
         _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
 
         // BBB
-        if (this.prebind === true) { this.authentication = PREBIND; }
+        if (this.prebind === true) { this.authentication = converse.PREBIND; }
 
-        if (this.authentication === ANONYMOUS) {
+        if (this.authentication === converse.ANONYMOUS) {
             if (!this.jid) {
                 throw("Config Error: you need to provide the server's domain via the " +
                         "'jid' option when using anonymous authentication.");
@@ -28636,30 +28675,6 @@ return Backbone.BrowserStorage;
             ));
         }
         $.fx.off = !this.animate;
-
-        var STATUSES = {
-            'dnd': __('This contact is busy'),
-            'online': __('This contact is online'),
-            'offline': __('This contact is offline'),
-            'unavailable': __('This contact is unavailable'),
-            'xa': __('This contact is away for an extended period'),
-            'away': __('This contact is away')
-        };
-        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
-
-        var HEADER_CURRENT_CONTACTS =  __('My contacts');
-        var HEADER_PENDING_CONTACTS = __('Pending contacts');
-        var HEADER_REQUESTING_CONTACTS = __('Contact requests');
-        var HEADER_UNGROUPED = __('Ungrouped');
-
-        var LABEL_CONTACTS = __('Contacts');
-        var LABEL_GROUPS = __('Groups');
-
-        var HEADER_WEIGHTS = {};
-        HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
-        HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
-        HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
-        HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
         // Module-level variables
         // ----------------------
@@ -28687,7 +28702,7 @@ return Backbone.BrowserStorage;
             /* Send out a Chat Status Notification (XEP-0352) */
             if (converse.features[Strophe.NS.CSI] || true) {
                 converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-                this.inactive = (stat === INACTIVE) ? true : false;
+                this.inactive = (stat === converse.INACTIVE) ? true : false;
             }
         };
 
@@ -28702,7 +28717,7 @@ return Backbone.BrowserStorage;
                 return;
             }
             if (this.inactive) {
-                this.sendCSI(ACTIVE);
+                this.sendCSI(converse.ACTIVE);
             }
             if (this.auto_changed_status === true) {
                 this.auto_changed_status = false;
@@ -28723,7 +28738,7 @@ return Backbone.BrowserStorage;
             var stat = this.xmppstatus.getStatus();
             this.idle_seconds++;
             if (this.csi_waiting_time > 0 && this.idle_seconds > this.csi_waiting_time && !this.inactive) {
-                this.sendCSI(INACTIVE);
+                this.sendCSI(converse.INACTIVE);
             }
             if (this.auto_away > 0 && this.idle_seconds > this.auto_away && stat !== 'away' && stat !== 'xa') {
                 this.auto_changed_status = true;
@@ -28747,19 +28762,6 @@ return Backbone.BrowserStorage;
             $(window).on('click mousemove keypress focus'+unloadevent , this.onUserActivity.bind(this));
             window.setInterval(this.onEverySecond.bind(this), 1000);
         };
-		
-        this.playNotification = function () {
-            var audio;
-            if (converse.play_sounds && typeof Audio !== "undefined") {
-                audio = new Audio(converse.sounds_path+"msg_received.ogg");
-                if (audio.canPlayType('/audio/ogg')) {
-                    audio.play();
-                } else {
-                    audio = new Audio(converse.sounds_path+"msg_received.mp3");
-                    audio.play();
-                }
-            }
-        };
 
         this.giveFeedback = function (message, klass) {
             $('.conn-feedback').each(function (idx, el) {
@@ -28771,22 +28773,6 @@ return Backbone.BrowserStorage;
                     $el.removeClass('error');
                 }
             });
-        };
-
-        this.log = function (txt, level) {
-            var logger;
-            if (typeof console === "undefined" || typeof console.log === "undefined") {
-                logger = { log: function () {}, error: function () {} };
-            } else {
-                logger = console;
-            }
-            if (this.debug) {
-                if (level === 'error') {
-                    logger.log('ERROR: '+txt);
-                } else {
-                    logger.log(txt);
-                }
-            }
         };
 
         this.rejectPresenceSubscription = function (jid, message) {
@@ -28869,13 +28855,6 @@ return Backbone.BrowserStorage;
                     this.startNewBOSHSession();
                 }
             }.bind(this), 5000);
-        };
-
-        this.renderLoginPanel = function () {
-            converse._tearDown();
-            var view = converse.chatboxviews.get('controlbox');
-            view.model.set({connected:false});
-            view.renderLoginPanel();
         };
 
         this.onConnectStatusChanged = function (status, condition, reconnect) {
@@ -28991,14 +28970,11 @@ return Backbone.BrowserStorage;
                 this.roster.browserStorage._clear();
             }
             this.session.browserStorage._clear();
-            if (converse.connection.connected) {
-                converse.chatboxes.get('controlbox').save({'connected': false});
-            }
         };
 
         this.logOut = function () {
             converse.auto_login = false;
-            converse.chatboxviews.closeAllChatBoxes(false);
+            converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
             converse.connection.disconnect();
         };
@@ -29032,11 +29008,11 @@ return Backbone.BrowserStorage;
             }.bind(this));
 
             $(window).on("blur focus", function (ev) {
-                if ((this.windowState !== ev.type) && (ev.type === 'focus')) {
+                if ((converse.windowState !== ev.type) && (ev.type === 'focus')) {
                     converse.clearMsgCounter();
                 }
-                this.windowState = ev.type;
-            }.bind(this));
+                converse.windowState = ev.type;
+            });
 
             $(window).on("resize", _.debounce(function (ev) {
                 this.chatboxviews.trimChats();
@@ -29048,6 +29024,7 @@ return Backbone.BrowserStorage;
             // created connection.
             var deferred = new $.Deferred();
             this.initStatus(function () {
+                // FIXME: leaky abstraction from RosterView
                 this.rosterview.registerRosterXHandler();
                 this.rosterview.registerPresenceHandler();
                 this.chatboxes.registerMessageHandler();
@@ -29097,6 +29074,9 @@ return Backbone.BrowserStorage;
             this.enableCarbons();
             this.initStatus(function () {
                 this.registerIntervalHandler();				
+                this.roster = new this.RosterContacts();
+                this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
+                    b64_sha1('converse.contacts-'+this.bare_jid));
                 this.chatboxes.onConnected();
                 this.giveFeedback(__('Contacts'));
                 if (typeof this.callback === 'function') {
@@ -29119,6 +29099,480 @@ return Backbone.BrowserStorage;
             return deferred.promise();
         };
 
+
+        this.RosterContact = Backbone.Model.extend({
+
+            initialize: function (attributes, options) {
+                var jid = attributes.jid;
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var resource = Strophe.getResourceFromJid(jid);
+                attributes.jid = bare_jid;
+                this.set(_.extend({
+                    'id': bare_jid,
+                    'jid': bare_jid,
+                    'fullname': bare_jid,
+                    'chat_status': 'offline',
+                    'user_id': Strophe.getNodeFromJid(jid),
+                    'resources': resource ? [resource] : [],
+                    'groups': [],
+                    'image_type': 'image/png',
+                    'image': "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==",
+                    'status': ''
+                }, attributes));
+
+                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
+            },
+
+            subscribe: function (message) {
+                /* Send a presence subscription request to this roster contact
+                *
+                * Parameters:
+                *    (String) message - An optional message to explain the
+                *      reason for the subscription request.
+                */
+                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
+                var pres = $pres({to: this.get('jid'), type: "subscribe"});
+                if (message && message !== "") {
+                    pres.c("status").t(message).up();
+                }
+                var nick = converse.xmppstatus.get('fullname');
+                if (nick && nick !== "") {
+                    pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
+                }
+                converse.connection.send(pres);
+                return this;
+            },
+
+            ackSubscribe: function () {
+                /* Upon receiving the presence stanza of type "subscribed",
+                * the user SHOULD acknowledge receipt of that subscription
+                * state notification by sending a presence stanza of type
+                * "subscribe" to the contact
+                */
+                converse.connection.send($pres({
+                    'type': 'subscribe',
+                    'to': this.get('jid')
+                }));
+            },
+
+            ackUnsubscribe: function (jid) {
+                /* Upon receiving the presence stanza of type "unsubscribed",
+                * the user SHOULD acknowledge receipt of that subscription state
+                * notification by sending a presence stanza of type "unsubscribe"
+                * this step lets the user's server know that it MUST no longer
+                * send notification of the subscription state change to the user.
+                *  Parameters:
+                *    (String) jid - The Jabber ID of the user who is unsubscribing
+                */
+                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                this.destroy(); // Will cause removeFromRoster to be called.
+            },
+
+            unauthorize: function (message) {
+                /* Unauthorize this contact's presence subscription
+                * Parameters:
+                *   (String) message - Optional message to send to the person being unauthorized
+                */
+                converse.rejectPresenceSubscription(this.get('jid'), message);
+                return this;
+            },
+
+            authorize: function (message) {
+                /* Authorize presence subscription
+                * Parameters:
+                *   (String) message - Optional message to send to the person being authorized
+                */
+                var pres = $pres({to: this.get('jid'), type: "subscribed"});
+                if (message && message !== "") {
+                    pres.c("status").t(message);
+                }
+                converse.connection.send(pres);
+                return this;
+            },
+
+            removeResource: function (resource) {
+                var resources = this.get('resources'), idx;
+                if (resource) {
+                    idx = _.indexOf(resources, resource);
+                    if (idx !== -1) {
+                        resources.splice(idx, 1);
+                        this.save({'resources': resources});
+                    }
+                }
+                else {
+                    // if there is no resource (resource is null), it probably
+                    // means that the user is now completely offline. To make sure
+                    // that there isn't any "ghost" resources left, we empty the array
+                    this.save({'resources': []});
+                    return 0;
+                }
+                return resources.length;
+            },
+
+            removeFromRoster: function (callback) {
+                /* Instruct the XMPP server to remove this contact from our roster
+                * Parameters:
+                *   (Function) callback
+                */
+                var iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', {jid: this.get('jid'), subscription: "remove"});
+                converse.connection.sendIQ(iq, callback, callback);
+                return this;
+            },
+
+            showInRoster: function () {
+                var chatStatus = this.get('chat_status');
+                if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
+                    // If pending or requesting, show
+                    if ((this.get('ask') === 'subscribe') ||
+                            (this.get('subscription') === 'from') ||
+                            (this.get('requesting') === true)) {
+                        return true;
+                    }
+                    return false;
+                }
+                return true;
+            }
+        });
+
+
+        this.RosterContacts = Backbone.Collection.extend({
+            model: converse.RosterContact,
+
+            comparator: function (contact1, contact2) {
+                var name1, name2;
+                var status1 = contact1.get('chat_status') || 'offline';
+                var status2 = contact2.get('chat_status') || 'offline';
+                if (converse.STATUS_WEIGHTS[status1] === converse.STATUS_WEIGHTS[status2]) {
+                    name1 = contact1.get('fullname').toLowerCase();
+                    name2 = contact2.get('fullname').toLowerCase();
+                    return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
+                } else  {
+                    return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
+                }
+            },
+
+            subscribeToSuggestedItems: function (msg) {
+                $(msg).find('item').each(function (i, items) {
+                    if (this.getAttribute('action') === 'add') {
+                        converse.roster.addAndSubscribe(
+                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
+                    }
+                });
+                return true;
+            },
+
+            isSelf: function (jid) {
+                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
+            },
+
+            addAndSubscribe: function (jid, name, groups, message, attributes) {
+                /* Add a roster contact and then once we have confirmation from
+                * the XMPP server we subscribe to that contact's presence updates.
+                *  Parameters:
+                *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                *    (String) name - The name of that user
+                *    (Array of Strings) groups - Any roster groups the user might belong to
+                *    (String) message - An optional message to explain the
+                *      reason for the subscription request.
+                *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                */
+                this.addContact(jid, name, groups, attributes).done(function (contact) {
+                    if (contact instanceof converse.RosterContact) {
+                        contact.subscribe(message);
+                    }
+                });
+            },
+
+            sendContactAddIQ: function (jid, name, groups, callback, errback) {
+                /*  Send an IQ stanza to the XMPP server to add a new roster contact.
+                 *
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user being added
+                 *    (String) name - The name of that user
+                 *    (Array of Strings) groups - Any roster groups the user might belong to
+                 *    (Function) callback - A function to call once the VCard is returned
+                 *    (Function) errback - A function to call if an error occured
+                 */
+                name = _.isEmpty(name)? jid: name;
+                var iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', { jid: jid, name: name });
+                _.map(groups, function (group) { iq.c('group').t(group).up(); });
+                converse.connection.sendIQ(iq, callback, errback);
+            },
+
+            addContact: function (jid, name, groups, attributes) {
+                /* Adds a RosterContact instance to converse.roster and
+                 * registers the contact on the XMPP server.
+                 * Returns a promise which is resolved once the XMPP server has
+                 * responded.
+                 *
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                 *    (String) name - The name of that user
+                 *    (Array of Strings) groups - Any roster groups the user might belong to
+                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                 */
+                var deferred = new $.Deferred();
+                groups = groups || [];
+                name = _.isEmpty(name)? jid: name;
+                this.sendContactAddIQ(jid, name, groups,
+                    function (iq) {
+                        var contact = this.create(_.extend({
+                            ask: undefined,
+                            fullname: name,
+                            groups: groups,
+                            jid: jid,
+                            requesting: false,
+                            subscription: 'none'
+                        }, attributes), {sort: false});
+                        deferred.resolve(contact);
+                    }.bind(this),
+                    function (err) {
+                        alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
+                        converse.log(err);
+                        deferred.resolve(err);
+                    }
+                );
+                return deferred.promise();
+            },
+
+            addResource: function (bare_jid, resource) {
+                var item = this.get(bare_jid),
+                    resources;
+                if (item) {
+                    resources = item.get('resources');
+                    if (resources) {
+                        if (_.indexOf(resources, resource) === -1) {
+                            resources.push(resource);
+                            item.set({'resources': resources});
+                        }
+                    } else  {
+                        item.set({'resources': [resource]});
+                    }
+                }
+            },
+
+            subscribeBack: function (bare_jid) {
+                var contact = this.get(bare_jid);
+                if (contact instanceof converse.RosterContact) {
+                    contact.authorize().subscribe();
+                } else {
+                    // Can happen when a subscription is retried or roster was deleted
+                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
+                        if (contact instanceof converse.RosterContact) {
+                            contact.authorize().subscribe();
+                        }
+                    });
+                }
+            },
+
+            getNumOnlineContacts: function () {
+                var count = 0,
+                    ignored = ['offline', 'unavailable'],
+                    models = this.models,
+                    models_length = models.length,
+                    i;
+                if (converse.show_only_online_users) {
+                    ignored = _.union(ignored, ['dnd', 'xa', 'away']);
+                }
+                for (i=0; i<models_length; i++) {
+                    if (_.indexOf(ignored, models[i].get('chat_status')) === -1) {
+                        count++;
+                    }
+                }
+                return count;
+            },
+
+            onRosterPush: function (iq) {
+                /* Handle roster updates from the XMPP server.
+                * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                *
+                * Parameters:
+                *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                */
+                var id = iq.getAttribute('id');
+                var from = iq.getAttribute('from');
+                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
+                    // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
+                    // XXX: Some naughty servers apparently send from a full
+                    // JID so we need to explicitly compare bare jids here.
+                    // https://github.com/jcbrand/converse.js/issues/493
+                    converse.connection.send(
+                        $iq({type: 'error', id: id, from: converse.connection.jid})
+                            .c('error', {'type': 'cancel'})
+                            .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
+                    );
+                    return true;
+                }
+                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
+                $(iq).children('query').find('item').each(function (idx, item) {
+                    this.updateContact(item);
+                }.bind(this));
+
+                converse.emit('rosterPush', iq);
+                return true;
+            },
+
+            fetchFromServer: function (callback) {
+                /* Get the roster from the XMPP server */
+                var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
+                        .c('query', {xmlns: Strophe.NS.ROSTER});
+                return converse.connection.sendIQ(iq, function () {
+                        this.onReceivedFromServer.apply(this, arguments);
+                        callback.apply(this, arguments);
+                    }.bind(this));
+            },
+
+            onReceivedFromServer: function (iq) {
+                /* An IQ stanza containing the roster has been received from
+                * the XMPP server.
+                */
+                converse.emit('roster', iq);
+                $(iq).children('query').find('item').each(function (idx, item) {
+                    this.updateContact(item);
+                }.bind(this));
+            },
+
+            updateContact: function (item) {
+                /* Update or create RosterContact models based on items
+                * received in the IQ from the server.
+                */
+                var jid = item.getAttribute('jid');
+                if (this.isSelf(jid)) { return; }
+                var groups = [],
+                    contact = this.get(jid),
+                    ask = item.getAttribute("ask"),
+                    subscription = item.getAttribute("subscription");
+                $.map(item.getElementsByTagName('group'), function (group) {
+                    groups.push(Strophe.getText(group));
+                });
+                if (!contact) {
+                    if ((subscription === "none" && ask === null) || (subscription === "remove")) {
+                        return; // We're lazy when adding contacts.
+                    }
+                    this.create({
+                        ask: ask,
+                        fullname: item.getAttribute("name") || jid,
+                        groups: groups,
+                        jid: jid,
+                        subscription: subscription
+                    }, {sort: false});
+                } else {
+                    if (subscription === "remove") {
+                        return contact.destroy(); // will trigger removeFromRoster
+                    }
+                    // We only find out about requesting contacts via the
+                    // presence handler, so if we receive a contact
+                    // here, we know they aren't requesting anymore.
+                    // see docs/DEVELOPER.rst
+                    contact.save({
+                        subscription: subscription,
+                        ask: ask,
+                        requesting: null,
+                        groups: groups
+                    });
+                }
+            },
+
+            createRequestingContactFromVCard: function (iq, jid, fullname, img, img_type, url) {
+                /* A contact request was recieved, and we then asked for the
+                 * VCard of that user.
+                 */
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var user_data = {
+                    jid: bare_jid,
+                    subscription: 'none',
+                    ask: null,
+                    requesting: true,
+                    fullname: fullname || bare_jid,
+                    image: img,
+                    image_type: img_type,
+                    url: url,
+                    vcard_updated: moment().format()
+                };
+                this.create(user_data);
+                converse.emit('contactRequest', user_data);
+            },
+
+            handleIncomingSubscription: function (jid) {
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var contact = this.get(bare_jid);
+                if (!converse.allow_contact_requests) {
+                    converse.rejectPresenceSubscription(jid, __("This client does not allow presence subscriptions"));
+                }
+                if (converse.auto_subscribe) {
+                    if ((!contact) || (contact.get('subscription') !== 'to')) {
+                        this.subscribeBack(bare_jid);
+                    } else {
+                        contact.authorize();
+                    }
+                } else {
+                    if (contact) {
+                        if (contact.get('subscription') !== 'none')  {
+                            contact.authorize();
+                        } else if (contact.get('ask') === "subscribe") {
+                            contact.authorize();
+                        }
+                    } else if (!contact) {
+                        converse.getVCard(
+                            bare_jid, this.createRequestingContactFromVCard.bind(this),
+                            function (iq, jid) {
+                                converse.log("Error while retrieving vcard for "+jid);
+                                this.createRequestingContactFromVCard.call(this, iq, jid);
+                            }.bind(this)
+                        );
+                    }
+                }
+            },
+
+            presenceHandler: function (presence) {
+                var $presence = $(presence),
+                    presence_type = presence.getAttribute('type');
+                if (presence_type === 'error') { return true; }
+                var jid = presence.getAttribute('from'),
+                    bare_jid = Strophe.getBareJidFromJid(jid),
+                    resource = Strophe.getResourceFromJid(jid),
+                    chat_status = $presence.find('show').text() || 'online',
+                    status_message = $presence.find('status'),
+                    contact = this.get(bare_jid);
+                if (this.isSelf(bare_jid)) {
+                    if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')&&(converse.synchronize_availability === true || converse.synchronize_availability === resource)) {
+                        // Another resource has changed its status and synchronize_availability option let to update, we'll update ours as well.
+                        converse.xmppstatus.save({'status': chat_status});
+                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message.text()}); }
+                    }
+                    return;
+                } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                    return; // Ignore MUC
+                }
+                if (contact && (status_message.text() !== contact.get('status'))) {
+                    contact.save({'status': status_message.text()});
+                }
+                if (presence_type === 'subscribed' && contact) {
+                    contact.ackSubscribe();
+                } else if (presence_type === 'unsubscribed' && contact) {
+                    contact.ackUnsubscribe();
+                } else if (presence_type === 'unsubscribe') {
+                    return;
+                } else if (presence_type === 'subscribe') {
+                    this.handleIncomingSubscription(jid);
+                } else if (presence_type === 'unavailable' && contact) {
+                    // Only set the user to offline if there aren't any
+                    // other resources still available.
+                    if (contact.removeResource(resource) === 0) {
+                        contact.save({'chat_status': "offline"});
+                    }
+                } else if (contact) { // presence_type is undefined
+                    this.addResource(bare_jid, resource);
+                    contact.save({'chat_status': chat_status});
+                }
+            }
+        });
+
+
         this.Message = Backbone.Model.extend({
             idAttribute: 'msgid',
             defaults: function(){
@@ -29127,39 +29581,41 @@ return Backbone.BrowserStorage;
                 };
             }
         });
+
+
         this.Messages = Backbone.Collection.extend({
             model: converse.Message,
             comparator: 'time'
         });
 
+
         this.ChatBox = Backbone.Model.extend({
 
             initialize: function () {
+                this.messages = new converse.Messages();
+                this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
+                this.save(_.extend(this.getDefaultSettings(), {
+                    // The chat_state will be set to ACTIVE once the chat box is opened
+                    // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
+                    'chat_state': undefined,
+                    'box_id' : b64_sha1(this.get('jid')),
+                    'minimized': this.get('minimized') || false,
+                    'time_minimized': this.get('time_minimized') || moment(),
+                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'url': '',
+                    'user_id' : Strophe.getNodeFromJid(this.get('jid'))
+                }));
+            },
+
+            getDefaultSettings: function () {
                 var height = this.get('height'),
-                    width = this.get('width'),
-                    settings = {
-                        'height': converse.applyDragResistance(height, this.get('default_height')),
-                        'width': converse.applyDragResistance(width, this.get('default_width')),
-                        'num_unread': this.get('num_unread') || 0
-                    };
-                if (this.get('box_id') !== 'controlbox') {
-                    this.messages = new converse.Messages();
-                    this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
-                    this.save(_.extend(settings, {
-                        // The chat_state will be set to ACTIVE once the chat box is opened
-                        // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-                        'chat_state': undefined,
-                        'box_id' : b64_sha1(this.get('jid')),
-                        'minimized': this.get('minimized') || false,
-                        'time_minimized': this.get('time_minimized') || moment(),
-                        'time_opened': this.get('time_opened') || moment().valueOf(),
-                        'url': '',
-                        'user_id' : Strophe.getNodeFromJid(this.get('jid'))
-                    }));
-                } else {
-                    this.set(_.extend(settings, { 'time_opened': moment(0).valueOf() }));
-                }
+                    width = this.get('width');
+                return {
+                    'height': converse.applyDragResistance(height, this.get('default_height')),
+                    'width': converse.applyDragResistance(width, this.get('default_width')),
+                    'num_unread': this.get('num_unread') || 0
+                };
             },
 
             maximize: function () {
@@ -29176,28 +29632,6 @@ return Backbone.BrowserStorage;
                 });
             },
 
-            isOnlyChatStateNotification: function ($msg) {
-                // See XEP-0085 Chat State Notification
-                return (
-                    $msg.find('body').length === 0 && (
-                        $msg.find(ACTIVE).length !== 0 ||
-                        $msg.find(COMPOSING).length !== 0 ||
-                        $msg.find(INACTIVE).length !== 0 ||
-                        $msg.find(PAUSED).length !== 0 ||
-                        $msg.find(GONE).length !== 0
-                    )
-                );
-            },
-
-            shouldPlayNotification: function ($message) {
-                var $forwarded = $message.find('forwarded');
-                if ($forwarded.length) {
-                    return false;
-                }
-                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
-                return !this.isOnlyChatStateNotification($message) && !is_me;
-            },
-
             createMessage: function ($message, $delay, archive_id) {
                 $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
@@ -29205,11 +29639,11 @@ return Backbone.BrowserStorage;
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
                     msgid = $message.attr('id'),
-                    chat_state = $message.find(COMPOSING).length && COMPOSING ||
-                        $message.find(PAUSED).length && PAUSED ||
-                        $message.find(INACTIVE).length && INACTIVE ||
-                        $message.find(ACTIVE).length && ACTIVE ||
-                        $message.find(GONE).length && GONE,
+                    chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
+                        $message.find(converse.PAUSED).length && converse.PAUSED ||
+                        $message.find(converse.INACTIVE).length && converse.INACTIVE ||
+                        $message.find(converse.ACTIVE).length && converse.ACTIVE ||
+                        $message.find(converse.GONE).length && converse.GONE,
                     stamp, time, sender, from;
 
                 if (is_groupchat) {
@@ -29366,7 +29800,10 @@ return Backbone.BrowserStorage;
             },
 
             insertIntoPage: function () {
-                this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                /* This method gets overridden in src/converse-controlbox.js if
+                 * the controlbox plugin is active.
+                 */
+                $('#conversejs').prepend(this.$el);
                 return this;
             },
 
@@ -29618,6 +30055,29 @@ return Backbone.BrowserStorage;
                 return this.scrollDown();
             },
 
+            handleChatStateMessage: function (message) {
+                if (message.get('chat_state') === converse.COMPOSING) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                    this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
+                } else if (message.get('chat_state') === converse.PAUSED) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                } else if (_.contains([converse.INACTIVE, converse.ACTIVE], message.get('chat_state'))) {
+                    this.$content.find('div.chat-event').remove();
+                } else if (message.get('chat_state') === converse.GONE) {
+                    this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
+                }
+            },
+
+            handleTextMessage: function (message) {
+                this.showMessage(_.clone(message.attributes));
+                if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
+                    converse.incrementMsgCounter();
+                }
+                if (!this.model.get('minimized') && !this.$el.is(':visible')) {
+                    this.show();
+                }
+            },
+
             onMessageAdded: function (message) {
                 /* Handler that gets called when a new message object is created.
                  *
@@ -29629,28 +30089,9 @@ return Backbone.BrowserStorage;
                     delete this.clear_status_timeout;
                 }
                 if (!message.get('message')) {
-                    if (message.get('chat_state') === COMPOSING) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
-                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
-                        return;
-                    } else if (message.get('chat_state') === PAUSED) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                        return;
-                    } else if (_.contains([INACTIVE, ACTIVE], message.get('chat_state'))) {
-                        this.$content.find('div.chat-event').remove();
-                        return;
-                    } else if (message.get('chat_state') === GONE) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
-                        return;
-                    }
+                    this.handleChatStateMessage(message);
                 } else {
-                    this.showMessage(_.clone(message.attributes));
-                }
-                if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
-                    converse.incrementMsgCounter();
-                }
-                if (!this.model.get('minimized') && !this.$el.is(':visible')) {
-                    this.show();
+                    this.handleTextMessage(message);
                 }
             },
 
@@ -29661,7 +30102,7 @@ return Backbone.BrowserStorage;
                             type: 'chat',
                             id: message.get('msgid')
                        }).c('body').t(message.get('message')).up()
-                         .c(ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                         .c(converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
             },
 
             sendMessage: function (message) {
@@ -29752,12 +30193,12 @@ return Backbone.BrowserStorage;
                     window.clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout;
                 }
-                if (state === COMPOSING) {
+                if (state === converse.COMPOSING) {
                     this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, PAUSED);
-                } else if (state === PAUSED) {
+                            this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, converse.PAUSED);
+                } else if (state === converse.PAUSED) {
                     this.chat_state_timeout = window.setTimeout(
-                            this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, INACTIVE);
+                            this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, converse.INACTIVE);
                 }
                 if (!no_save && this.model.get('chat_state') !== state) {
                     this.model.set('chat_state', state);
@@ -29781,11 +30222,11 @@ return Backbone.BrowserStorage;
                         }
                         converse.emit('messageSend', message);
                     }
-                    this.setChatState(ACTIVE);
+                    this.setChatState(converse.ACTIVE);
                 } else if (!this.model.get('chatroom')) { // chat state data is currently only for single user chat
                     // Set chat state to composing if keyCode is not a forward-slash
                     // (which would imply an internal command and not a message).
-                    this.setChatState(COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
+                    this.setChatState(converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                 }
             },
 
@@ -29911,12 +30352,15 @@ return Backbone.BrowserStorage;
                         this.$el.find('div.chat-event').remove();
                     }
                 }
-                converse.emit('contactStatusChanged', item.attributes, item.get('chat_status'));
+                converse.emit('contactStatusChanged', item.attributes);
             },
 
             onStatusChanged: function (item) {
                 this.showStatusMessage();
-                converse.emit('contactStatusMessageChanged', item.attributes, item.get('status'));
+                converse.emit('contactStatusMessageChanged', {
+                    'contact': item.attributes,
+                    'message': item.get('status')
+                });
             },
 
             onMinimizedChanged: function (item) {
@@ -29939,7 +30383,7 @@ return Backbone.BrowserStorage;
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (converse.connection.connected) {
                     this.model.destroy();
-                    this.setChatState(INACTIVE);
+                    this.setChatState(converse.INACTIVE);
                 } else {
                     this.hide();
                 }
@@ -29947,19 +30391,19 @@ return Backbone.BrowserStorage;
                 return this;
             },
 
+            onShow: function () {
+                converse.chatboxviews.trimChats(this);
+                utils.refreshWebkit();
+                this.$content.scrollTop(this.model.get('scroll'));
+                this.setChatState(converse.ACTIVE).focus();
+                converse.emit('chatBoxMaximized', this);
+            },
+
             maximize: function () {
-                var chatboxviews = converse.chatboxviews;
-                // Restores a minimized chat box
-                this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', function () {
-                    /* Now that the chat box is visible, we can call trimChats
-                     * to make space available if need be.
-                     */
-                    chatboxviews.trimChats(this);
-                    utils.refreshWebkit();
-                    this.$content.scrollTop(this.model.get('scroll'));
-                    this.setChatState(ACTIVE).focus();
-                    converse.emit('chatBoxMaximized', this);
-                }.bind(this));
+                // Restore a minimized chat box
+                $('#conversejs').prepend(this.$el);
+                this.$el.show('fast', this.onShow.bind(this)); 
+                return this;
             },
 
             minimize: function (ev) {
@@ -29967,7 +30411,7 @@ return Backbone.BrowserStorage;
                 // save the scroll position to restore it on maximize
                 this.model.save({'scroll': this.$content.scrollTop()});
                 // Minimizes a chat box
-                this.setChatState(INACTIVE).model.minimize();
+                this.setChatState(converse.INACTIVE).model.minimize();
                 this.$el.hide('fast', utils.refreshwebkit);
                 converse.emit('chatBoxMinimized', this);
             },
@@ -30066,7 +30510,7 @@ return Backbone.BrowserStorage;
                         // localstorage
                         this.model.save();
                     }
-                    this.setChatState(ACTIVE);
+                    this.setChatState(converse.ACTIVE);
                     this.scrollDown();
                     if (focus) {
                         this.focus();
@@ -30090,282 +30534,6 @@ return Backbone.BrowserStorage;
             }
         });
 
-        this.ContactsPanel = Backbone.View.extend({
-            tagName: 'div',
-            className: 'controlbox-pane',
-            id: 'users',
-            events: {
-                'click a.toggle-xmpp-contact-form': 'toggleContactForm',
-                'submit form.add-xmpp-contact': 'addContactFromForm',
-                'submit form.search-xmpp-contact': 'searchContacts',
-                'click a.subscribe-to-user': 'addContactFromList'
-            },
-
-            initialize: function (cfg) {
-                cfg.$parent.append(this.$el);
-                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-            },
-
-            render: function () {
-                var markup;
-                var widgets = converse.templates.contacts_panel({
-                    label_online: __('Online'),
-                    label_busy: __('Busy'),
-                    label_away: __('Away'),
-                    label_offline: __('Offline'),
-                    label_logout: __('Log out'),
-                    include_offline_state: converse.include_offline_state,
-                    allow_logout: converse.allow_logout
-                });
-                this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
-                if (converse.xhr_user_search) {
-                    markup = converse.templates.search_contact({
-                        label_contact_name: __('Contact name'),
-                        label_search: __('Search')
-                    });
-                } else {
-                    markup = converse.templates.add_contact_form({
-                        label_contact_username: __('e.g. user@example.com'),
-                        label_add: __('Add')
-                    });
-                }
-                if (converse.allow_contact_requests) {
-                    widgets += converse.templates.add_contact_dropdown({
-                        label_click_to_chat: __('Click to add new chat contacts'),
-                        label_add_contact: __('Add a contact')
-                    });
-                }
-                this.$el.html(widgets);
-                this.$el.find('.search-xmpp ul').append(markup);
-                return this;
-            },
-
-            toggleContactForm: function (ev) {
-                ev.preventDefault();
-                this.$el.find('.search-xmpp').toggle('fast', function () {
-                    if ($(this).is(':visible')) {
-                        $(this).find('input.username').focus();
-                    }
-                });
-            },
-
-            searchContacts: function (ev) {
-                ev.preventDefault();
-                $.getJSON(converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
-                    var $ul= $('.search-xmpp ul');
-                    $ul.find('li.found-user').remove();
-                    $ul.find('li.chat-info').remove();
-                    if (!data.length) {
-                        $ul.append('<li class="chat-info">'+__('No users found')+'</li>');
-                    }
-                    $(data).each(function (idx, obj) {
-                        $ul.append(
-                            $('<li class="found-user"></li>')
-                            .append(
-                                $('<a class="subscribe-to-user" href="#" title="'+__('Click to add as a chat contact')+'"></a>')
-                                .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
-                                .text(obj.fullname)
-                            )
-                        );
-                    });
-                });
-            },
-
-            addContactFromForm: function (ev) {
-                ev.preventDefault();
-                var $input = $(ev.target).find('input');
-                var jid = $input.val();
-                if (! jid) {
-                    // this is not a valid JID
-                    $input.addClass('error');
-                    return;
-                }
-                converse.roster.addAndSubscribe(jid);
-                $('.search-xmpp').hide();
-            },
-
-            addContactFromList: function (ev) {
-                ev.preventDefault();
-                var $target = $(ev.target),
-                    jid = $target.attr('data-recipient'),
-                    name = $target.text();
-                converse.roster.addAndSubscribe(jid, name);
-                $target.parent().remove();
-                $('.search-xmpp').hide();
-            }
-        });
-
-        this.ControlBoxView = converse.ChatBoxView.extend({
-            tagName: 'div',
-            className: 'chatbox',
-            id: 'controlbox',
-            events: {
-                'click a.close-chatbox-button': 'close',
-                'click ul#controlbox-tabs li a': 'switchTab',
-                'mousedown .dragresize-top': 'onStartVerticalResize',
-                'mousedown .dragresize-left': 'onStartHorizontalResize',
-                'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-            },
-
-            initialize: function () {
-                this.$el.insertAfter(converse.controlboxtoggle.$el);
-                $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                this.model.on('change:connected', this.onConnected, this);
-                this.model.on('destroy', this.hide, this);
-                this.model.on('hide', this.hide, this);
-                this.model.on('show', this.show, this);
-                this.model.on('change:closed', this.ensureClosedState, this);
-                this.render();
-                if (this.model.get('connected')) {
-                    this.initRoster();
-                }
-                if (typeof this.model.get('closed')==='undefined') {
-                    this.model.set('closed', !converse.show_controlbox_by_default);
-                }
-                if (!this.model.get('closed')) {
-                    this.show();
-                } else {
-                    this.hide();
-                }
-            },
-
-            render: function () {
-                if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
-                    // TODO: we might need to take prebinding into consideration here.
-                    this.renderLoginPanel();
-                } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
-                    this.renderContactsPanel();
-                }
-                return this;
-            },
-
-            giveFeedback: function (message, klass) {
-                var $el = this.$('.conn-feedback');
-                $el.addClass('conn-feedback').text(message);
-                if (klass) {
-                    $el.addClass(klass);
-                }
-            },
-
-            onConnected: function () {
-                if (this.model.get('connected')) {
-                    this.render().initRoster();
-                }
-            },
-
-            initRoster: function () {
-                /* We initialize the roster, which will appear inside the
-                 * Contacts Panel.
-                 */
-                converse.roster = new converse.RosterContacts();
-                converse.roster.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.contacts-'+converse.bare_jid));
-                var rostergroups = new converse.RosterGroups();
-                rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.roster.groups'+converse.bare_jid));
-                converse.rosterview = new converse.RosterView({model: rostergroups});
-                this.contactspanel.$el.append(converse.rosterview.$el);
-                converse.rosterview.render().fetch().update();
-                return this;
-            },
-
-            renderLoginPanel: function () {
-                var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
-                this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                var cfg = {
-                    '$parent': this.$el.find('.controlbox-panes'),
-                    'model': this
-                };
-                if (!this.loginpanel) {
-                    this.loginpanel = new converse.LoginPanel(cfg);
-                } else {
-                    this.loginpanel.delegateEvents().initialize(cfg);
-                }
-                this.loginpanel.render();
-                this.initDragResize().setDimensions();
-                if ($feedback.length && $feedback.text() !== __('Connecting')) {
-                    this.$('.conn-feedback').replaceWith($feedback);
-                }
-                return this;
-            },
-
-            renderContactsPanel: function () {
-                this.$el.html(converse.templates.controlbox(this.model.toJSON()));
-                this.contactspanel = new converse.ContactsPanel({
-                    '$parent': this.$el.find('.controlbox-panes')
-                });
-                this.contactspanel.render();
-                converse.xmppstatusview = new converse.XMPPStatusView({
-                    'model': converse.xmppstatus
-                });
-                converse.xmppstatusview.render();
-                this.initDragResize().setDimensions();
-            },
-
-            close: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (converse.connection.connected) {
-                    this.model.save({'closed': true});
-                } else {
-                    this.model.trigger('hide');
-                }
-                converse.emit('controlBoxClosed', this);
-                return this;
-            },
-
-            ensureClosedState: function () {
-                if (this.model.get('closed')) {
-                    this.hide();
-                } else {
-                    this.show();
-                }
-            },
-
-            hide: function (callback) {
-                this.$el.hide('fast', function () {
-                    utils.refreshWebkit();
-                    converse.emit('chatBoxClosed', this);
-                    converse.controlboxtoggle.show(function () {
-                        if (typeof callback === "function") {
-                            callback();
-                        }
-                    });
-                });
-                return this;
-            },
-
-            show: function () {
-                converse.controlboxtoggle.hide(function () {
-                    this.$el.show('fast', function () {
-                        if (converse.rosterview) {
-                            converse.rosterview.update();
-                        }
-                        utils.refreshWebkit();
-                    }.bind(this));
-                    converse.emit('controlBoxOpened', this);
-                }.bind(this));
-                return this;
-            },
-
-            switchTab: function (ev) {
-                // TODO: automatically focus the relevant input
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $tab = $(ev.target),
-                    $sibling = $tab.parent().siblings('li').children('a'),
-                    $tab_panel = $($tab.attr('href'));
-                $($sibling.attr('href')).hide();
-                $sibling.removeClass('current');
-                $tab.addClass('current');
-                $tab_panel.show();
-                return this;
-            },
-
-            showHelpMessages: function (msgs) {
-                // Override showHelpMessages in ChatBoxView, for now do nothing.
-                return;
-            }
-        });
-
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
             comparator: 'time_opened',
@@ -30378,26 +30546,26 @@ return Backbone.BrowserStorage;
                     }.bind(this), null, 'message', 'chat');
             },
 
+            onChatBoxFetched: function (collection, resp) {
+                /* Show chat boxes upon receiving them from sessionStorage
+                 *
+                 * This method gets overridden entirely in src/converse-controlbox.js
+                 * if the controlbox plugin is active.
+                 */
+                collection.each(function (chatbox) {
+                    if (!chatbox.get('minimized')) {
+                        chatbox.trigger('show');
+                    }
+                });
+            },
+
             onConnected: function () {
                 this.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.chatboxes-'+converse.bare_jid));
                 this.registerMessageHandler();
                 this.fetch({
                     add: true,
-                    success: function (collection, resp) {
-                        collection.each(function (chatbox) {
-                            if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
-                                chatbox.trigger('show');
-                            }
-                        });
-                        if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
-                            this.add({
-                                id: 'controlbox',
-                                box_id: 'controlbox'
-                            });
-                        }
-                        this.get('controlbox').save({connected:true});
-                    }.bind(this)
+                    success: this.onChatBoxFetched.bind(this)
                 });
             },
 
@@ -30448,9 +30616,6 @@ return Backbone.BrowserStorage;
                 }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
-                }
-                if (chatbox.shouldPlayNotification($message)) {
-                    converse.playNotification();
                 }
                 chatbox.createMessage($message, $delay, archive_id);
                 converse.roster.addResource(contact_jid, resource);
@@ -30524,13 +30689,7 @@ return Backbone.BrowserStorage;
             onChatBoxAdded: function (item) {
                 var view = this.get(item.get('id'));
                 if (!view) {
-                    if (item.get('chatroom')) {
-                        view = new converse.ChatRoomView({'model': item});
-                    } else if (item.get('box_id') === 'controlbox') {
-                        view = new converse.ControlBoxView({model: item});
-                    } else {
-                        view = new converse.ChatBoxView({model: item});
-                    }
+                    view = new converse.ChatBoxView({model: item});
                     this.add(item.get('id'), view);
                 } else {
                     delete view.model; // Remove ref to old model to help garbage collection
@@ -30538,6 +30697,13 @@ return Backbone.BrowserStorage;
                     view.initialize();
                 }
                 this.trimChats(view);
+            },
+
+            getChatBoxWidth: function (view) {
+                if (!view.model.get('minimized') && view.$el.is(':visible')) {
+                    return view.$el.outerWidth(true);
+                }
+                return 0;
             },
 
             trimChats: function (newchat) {
@@ -30552,39 +30718,29 @@ return Backbone.BrowserStorage;
                     return;
                 }
                 var oldest_chat,
-                    controlbox_width = 0,
                     $minimized = converse.minimized_chats.$el,
                     minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                     boxes_width = newchat ? newchat.$el.outerWidth(true) : 0,
-                    new_id = newchat ? newchat.model.get('id') : null,
-                    controlbox = this.get('controlbox');
+                    new_id = newchat ? newchat.model.get('id') : null;
 
-                if (!controlbox || !controlbox.$el.is(':visible')) {
-                    controlbox_width = converse.controlboxtoggle.$el.outerWidth(true);
-                } else {
-                    controlbox_width = controlbox.$el.outerWidth(true);
-                }
+                boxes_width += _.reduce(this.xget(new_id), function (memo, view) {
+                    return memo + this.getChatBoxWidth(view);
+                }.bind(this), 0);
 
-                _.each(this.getAll(), function (view) {
-                    var id = view.model.get('id');
-                    if ((id !== 'controlbox') && (id !== new_id) && (!view.model.get('minimized')) && view.$el.is(':visible')) {
-                        boxes_width += view.$el.outerWidth(true);
-                    }
-                });
-
-                if ((minimized_width + boxes_width + controlbox_width) > $('body').outerWidth(true)) {
-                    oldest_chat = this.getOldestMaximizedChat();
-                    if (oldest_chat && oldest_chat.get('id') !== new_id) {
+                if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
+                    oldest_chat = this.getOldestMaximizedChat([new_id]);
+                    if (oldest_chat) {
                         oldest_chat.minimize();
                     }
                 }
             },
 
-            getOldestMaximizedChat: function () {
-                // Get oldest view (which is not controlbox)
+            getOldestMaximizedChat: function (exclude_ids) {
+                // Get oldest view (if its id is not excluded)
                 var i = 0;
                 var model = this.model.sort().at(i);
-                while (model.get('id') === 'controlbox' || model.get('minimized') === true) {
+                while (_.contains(exclude_ids, model.get('id')) ||
+                       model.get('minimized') === true) {
                     i++;
                     model = this.model.at(i);
                     if (!model) {
@@ -30594,20 +30750,11 @@ return Backbone.BrowserStorage;
                 return model;
             },
 
-            closeAllChatBoxes: function (include_controlbox) {
-                // TODO: once Backbone.Overview has been refactored, we should
-                // be able to call .each on the views themselves.
-                var ids = [];
-                this.model.each(function (model) {
-                    var id = model.get('id');
-                    if (include_controlbox || id !== 'controlbox') {
-                        ids.push(id);
-                    }
-                });
-                ids.forEach(function(id) {
-                    var chatbox = this.get(id);
-                    if (chatbox) { chatbox.close(); }
-                }, this);
+            closeAllChatBoxes: function () {
+                /* This method gets overridden in src/converse-controlbox.js if
+                 * the controlbox plugin is active.
+                 */
+                this.each(function (view) { view.close(); });
                 return this;
             },
 
@@ -30737,7 +30884,7 @@ return Backbone.BrowserStorage;
             },
 
             onChanged: function (item) {
-                if (item.get('id') !== 'controlbox' && item.get('minimized')) {
+                if (item.get('minimized')) {
                     this.addChat(item);
                 } else if (this.get(item.get('id'))) {
                     this.removeChat(item);
@@ -30802,1158 +30949,6 @@ return Backbone.BrowserStorage;
                     this.$flyout.show();
                 }
                 return this.$el;
-            }
-        });
-
-        this.RosterContact = Backbone.Model.extend({
-            initialize: function (attributes, options) {
-                var jid = attributes.jid;
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var resource = Strophe.getResourceFromJid(jid);
-                attributes.jid = bare_jid;
-                this.set(_.extend({
-                    'id': bare_jid,
-                    'jid': bare_jid,
-                    'fullname': bare_jid,
-                    'chat_status': 'offline',
-                    'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? [resource] : [],
-                    'groups': [],
-                    'image_type': 'image/png',
-                    'image': "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==",
-                    'status': ''
-                }, attributes));
-
-                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
-            },
-
-           subscribe: function (message) {
-                /* Send a presence subscription request to this roster contact
-                 *
-                 * Parameters:
-                 *    (String) message - An optional message to explain the
-                 *      reason for the subscription request.
-                 */
-                this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
-                var pres = $pres({to: this.get('jid'), type: "subscribe"});
-                if (message && message !== "") {
-                    pres.c("status").t(message).up();
-                }
-                var nick = converse.xmppstatus.get('fullname');
-                if (nick && nick !== "") {
-                    pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
-                }
-                converse.connection.send(pres);
-                return this;
-            },
-
-            ackSubscribe: function () {
-                /* Upon receiving the presence stanza of type "subscribed",
-                 * the user SHOULD acknowledge receipt of that subscription
-                 * state notification by sending a presence stanza of type
-                 * "subscribe" to the contact
-                 */
-                converse.connection.send($pres({
-                    'type': 'subscribe',
-                    'to': this.get('jid')
-                }));
-            },
-
-            ackUnsubscribe: function (jid) {
-                /* Upon receiving the presence stanza of type "unsubscribed",
-                 * the user SHOULD acknowledge receipt of that subscription state
-                 * notification by sending a presence stanza of type "unsubscribe"
-                 * this step lets the user's server know that it MUST no longer
-                 * send notification of the subscription state change to the user.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user who is unsubscribing
-                 */
-                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
-                this.destroy(); // Will cause removeFromRoster to be called.
-            },
-
-            unauthorize: function (message) {
-                /* Unauthorize this contact's presence subscription
-                 * Parameters:
-                 *   (String) message - Optional message to send to the person being unauthorized
-                 */
-                converse.rejectPresenceSubscription(this.get('jid'), message);
-                return this;
-            },
-
-            authorize: function (message) {
-                /* Authorize presence subscription
-                 * Parameters:
-                 *   (String) message - Optional message to send to the person being authorized
-                 */
-                var pres = $pres({to: this.get('jid'), type: "subscribed"});
-                if (message && message !== "") {
-                    pres.c("status").t(message);
-                }
-                converse.connection.send(pres);
-                return this;
-            },
-
-            removeResource: function (resource) {
-                var resources = this.get('resources'), idx;
-                if (resource) {
-                    idx = _.indexOf(resources, resource);
-                    if (idx !== -1) {
-                        resources.splice(idx, 1);
-                        this.save({'resources': resources});
-                    }
-                }
-                else {
-                    // if there is no resource (resource is null), it probably
-                    // means that the user is now completely offline. To make sure
-                    // that there isn't any "ghost" resources left, we empty the array
-                    this.save({'resources': []});
-                    return 0;
-                }
-                return resources.length;
-            },
-
-            removeFromRoster: function (callback) {
-                /* Instruct the XMPP server to remove this contact from our roster
-                 * Parameters:
-                 *   (Function) callback
-                 */
-                var iq = $iq({type: 'set'})
-                    .c('query', {xmlns: Strophe.NS.ROSTER})
-                    .c('item', {jid: this.get('jid'), subscription: "remove"});
-                converse.connection.sendIQ(iq, callback, callback);
-                return this;
-            },
-
-            showInRoster: function () {
-                var chatStatus = this.get('chat_status');
-                if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
-                    // If pending or requesting, show
-                    if ((this.get('ask') === 'subscribe') ||
-                            (this.get('subscription') === 'from') ||
-                            (this.get('requesting') === true)) {
-                        return true;
-                    }
-                    return false;
-                }
-                return true;
-            }
-        });
-
-        this.RosterContactView = Backbone.View.extend({
-            tagName: 'dd',
-
-            events: {
-                "click .accept-xmpp-request": "acceptRequest",
-                "click .decline-xmpp-request": "declineRequest",
-                "click .open-chat": "openChat",
-                "click .remove-xmpp-contact": "removeContact"
-            },
-
-            initialize: function () {
-                this.model.on("change", this.render, this);
-                this.model.on("remove", this.remove, this);
-                this.model.on("destroy", this.remove, this);
-                this.model.on("open", this.openChat, this);
-            },
-
-            render: function () {
-                if (!this.model.showInRoster()) {
-                    this.$el.hide();
-                    return this;
-                } else if (this.$el[0].style.display === "none") {
-                    this.$el.show();
-                }
-                var item = this.model,
-                    ask = item.get('ask'),
-                    chat_status = item.get('chat_status'),
-                    requesting  = item.get('requesting'),
-                    subscription = item.get('subscription');
-
-                var classes_to_remove = [
-                    'current-xmpp-contact',
-                    'pending-xmpp-contact',
-                    'requesting-xmpp-contact'
-                    ].concat(_.keys(STATUSES));
-
-                _.each(classes_to_remove,
-                    function (cls) {
-                        if (this.el.className.indexOf(cls) !== -1) {
-                            this.$el.removeClass(cls);
-                        }
-                    }, this);
-                this.$el.addClass(chat_status).data('status', chat_status);
-
-                if ((ask === 'subscribe') || (subscription === 'from')) {
-                    /* ask === 'subscribe'
-                     *      Means we have asked to subscribe to them.
-                     *
-                     * subscription === 'from'
-                     *      They are subscribed to use, but not vice versa.
-                     *      We assume that there is a pending subscription
-                     *      from us to them (otherwise we're in a state not
-                     *      supported by converse.js).
-                     *
-                     *  So in both cases the user is a "pending" contact.
-                     */
-                    this.$el.addClass('pending-xmpp-contact');
-                    this.$el.html(converse.templates.pending_contact(
-                        _.extend(item.toJSON(), {
-                            'desc_remove': __('Click to remove this contact'),
-                            'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
-                        })
-                    ));
-                } else if (requesting === true) {
-                    this.$el.addClass('requesting-xmpp-contact');
-                    this.$el.html(converse.templates.requesting_contact(
-                        _.extend(item.toJSON(), {
-                            'desc_accept': __("Click to accept this contact request"),
-                            'desc_decline': __("Click to decline this contact request"),
-                            'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
-                        })
-                    ));
-                    converse.controlboxtoggle.showControlBox();
-                } else if (subscription === 'both' || subscription === 'to') {
-                    this.$el.addClass('current-xmpp-contact');
-                    this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
-                    this.$el.html(converse.templates.roster_item(
-                        _.extend(item.toJSON(), {
-                            'desc_status': STATUSES[chat_status||'offline'],
-                            'desc_chat': __('Click to chat with this contact'),
-                            'desc_remove': __('Click to remove this contact'),
-                            'title_fullname': __('Name'),
-                            'allow_contact_removal': converse.allow_contact_removal
-                        })
-                    ));
-                }
-                return this;
-            },
-
-            openChat: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                return converse.chatboxviews.showChat(this.model.attributes);
-            },
-
-            removeContact: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                if (!converse.allow_contact_removal) { return; }
-                var result = confirm(__("Are you sure you want to remove this contact?"));
-                if (result === true) {
-                    var iq = $iq({type: 'set'})
-                        .c('query', {xmlns: Strophe.NS.ROSTER})
-                        .c('item', {jid: this.model.get('jid'), subscription: "remove"});
-                    converse.connection.sendIQ(iq,
-                        function (iq) {
-                            this.model.destroy();
-                            this.remove();
-                        }.bind(this),
-                        function (err) {
-                            alert(__("Sorry, there was an error while trying to remove "+name+" as a contact."));
-                            converse.log(err);
-                        }
-                    );
-                }
-            },
-
-            acceptRequest: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                converse.roster.sendContactAddIQ(
-                    this.model.get('jid'),
-                    this.model.get('fullname'),
-                    [],
-                    function () { this.model.authorize().subscribe(); }.bind(this)
-                );
-            },
-
-            declineRequest: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var result = confirm(__("Are you sure you want to decline this contact request?"));
-                if (result === true) {
-                    this.model.unauthorize().destroy();
-                }
-                return this;
-            }
-        });
-
-        this.RosterContacts = Backbone.Collection.extend({
-            model: converse.RosterContact,
-            comparator: function (contact1, contact2) {
-                var name1, name2;
-                var status1 = contact1.get('chat_status') || 'offline';
-                var status2 = contact2.get('chat_status') || 'offline';
-                if (converse.STATUS_WEIGHTS[status1] === converse.STATUS_WEIGHTS[status2]) {
-                    name1 = contact1.get('fullname').toLowerCase();
-                    name2 = contact2.get('fullname').toLowerCase();
-                    return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
-                } else  {
-                    return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
-                }
-            },
-
-            subscribeToSuggestedItems: function (msg) {
-                $(msg).find('item').each(function (i, items) {
-                    if (this.getAttribute('action') === 'add') {
-                        converse.roster.addAndSubscribe(
-                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
-                    }
-                });
-                return true;
-            },
-
-            isSelf: function (jid) {
-                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
-            },
-
-            addAndSubscribe: function (jid, name, groups, message, attributes) {
-                /* Add a roster contact and then once we have confirmation from
-                 * the XMPP server we subscribe to that contact's presence updates.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                 *    (String) name - The name of that user
-                 *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (String) message - An optional message to explain the
-                 *      reason for the subscription request.
-                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                 */
-                this.addContact(jid, name, groups, attributes).done(function (contact) {
-                    if (contact instanceof converse.RosterContact) {
-                        contact.subscribe(message);
-                    }
-                });
-            },
-
-            sendContactAddIQ: function (jid, name, groups, callback, errback) {
-                /*  Send an IQ stanza to the XMPP server to add a new roster contact.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user being added
-                 *    (String) name - The name of that user
-                 *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (Function) callback - A function to call once the VCard is returned
-                 *    (Function) errback - A function to call if an error occured
-                 */
-                name = _.isEmpty(name)? jid: name;
-                var iq = $iq({type: 'set'})
-                    .c('query', {xmlns: Strophe.NS.ROSTER})
-                    .c('item', { jid: jid, name: name });
-                _.map(groups, function (group) { iq.c('group').t(group).up(); });
-                converse.connection.sendIQ(iq, callback, errback);
-            },
-
-            addContact: function (jid, name, groups, attributes) {
-                /* Adds a RosterContact instance to converse.roster and
-                 * registers the contact on the XMPP server.
-                 * Returns a promise which is resolved once the XMPP server has
-                 * responded.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                 *    (String) name - The name of that user
-                 *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                 */
-                var deferred = new $.Deferred();
-                groups = groups || [];
-                name = _.isEmpty(name)? jid: name;
-                this.sendContactAddIQ(jid, name, groups,
-                    function (iq) {
-                        var contact = this.create(_.extend({
-                            ask: undefined,
-                            fullname: name,
-                            groups: groups,
-                            jid: jid,
-                            requesting: false,
-                            subscription: 'none'
-                        }, attributes), {sort: false});
-                        deferred.resolve(contact);
-                    }.bind(this),
-                    function (err) {
-                        alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
-                        converse.log(err);
-                        deferred.resolve(err);
-                    }
-                );
-                return deferred.promise();
-            },
-
-            addResource: function (bare_jid, resource) {
-                var item = this.get(bare_jid),
-                    resources;
-                if (item) {
-                    resources = item.get('resources');
-                    if (resources) {
-                        if (_.indexOf(resources, resource) === -1) {
-                            resources.push(resource);
-                            item.set({'resources': resources});
-                        }
-                    } else  {
-                        item.set({'resources': [resource]});
-                    }
-                }
-            },
-
-            subscribeBack: function (bare_jid) {
-                var contact = this.get(bare_jid);
-                if (contact instanceof converse.RosterContact) {
-                    contact.authorize().subscribe();
-                } else {
-                    // Can happen when a subscription is retried or roster was deleted
-                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
-                        if (contact instanceof converse.RosterContact) {
-                            contact.authorize().subscribe();
-                        }
-                    });
-                }
-            },
-
-            getNumOnlineContacts: function () {
-                var count = 0,
-                    ignored = ['offline', 'unavailable'],
-                    models = this.models,
-                    models_length = models.length,
-                    i;
-                if (converse.show_only_online_users) {
-                    ignored = _.union(ignored, ['dnd', 'xa', 'away']);
-                }
-                for (i=0; i<models_length; i++) {
-                    if (_.indexOf(ignored, models[i].get('chat_status')) === -1) {
-                        count++;
-                    }
-                }
-                return count;
-            },
-
-            onRosterPush: function (iq) {
-                /* Handle roster updates from the XMPP server.
-                 * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                 *
-                 * Parameters:
-                 *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                 */
-                var id = iq.getAttribute('id');
-                var from = iq.getAttribute('from');
-                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
-                    // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
-                    // XXX: Some naughty servers apparently send from a full
-                    // JID so we need to explicitly compare bare jids here.
-                    // https://github.com/jcbrand/converse.js/issues/493
-                    converse.connection.send(
-                        $iq({type: 'error', id: id, from: converse.connection.jid})
-                            .c('error', {'type': 'cancel'})
-                            .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
-                    );
-                    return true;
-                }
-                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
-
-                converse.emit('rosterPush', iq);
-                return true;
-            },
-
-            fetchFromServer: function (callback) {
-                /* Get the roster from the XMPP server */
-                var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
-                        .c('query', {xmlns: Strophe.NS.ROSTER});
-                return converse.connection.sendIQ(iq, function () {
-                        this.onReceivedFromServer.apply(this, arguments);
-                        callback.apply(this, arguments);
-                    }.bind(this));
-            },
-
-            onReceivedFromServer: function (iq) {
-                /* An IQ stanza containing the roster has been received from
-                 * the XMPP server.
-                 */
-                converse.emit('roster', iq);
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
-            },
-
-            updateContact: function (item) {
-                /* Update or create RosterContact models based on items
-                 * received in the IQ from the server.
-                 */
-                var jid = item.getAttribute('jid');
-                if (this.isSelf(jid)) { return; }
-                var groups = [],
-                    contact = this.get(jid),
-                    ask = item.getAttribute("ask"),
-                    subscription = item.getAttribute("subscription");
-                $.map(item.getElementsByTagName('group'), function (group) {
-                    groups.push(Strophe.getText(group));
-                });
-                if (!contact) {
-                    if ((subscription === "none" && ask === null) || (subscription === "remove")) {
-                        return; // We're lazy when adding contacts.
-                    }
-                    this.create({
-                        ask: ask,
-                        fullname: item.getAttribute("name") || jid,
-                        groups: groups,
-                        jid: jid,
-                        subscription: subscription
-                    }, {sort: false});
-                } else {
-                    if (subscription === "remove") {
-                        return contact.destroy(); // will trigger removeFromRoster
-                    }
-                    // We only find out about requesting contacts via the
-                    // presence handler, so if we receive a contact
-                    // here, we know they aren't requesting anymore.
-                    // see docs/DEVELOPER.rst
-                    contact.save({
-                        subscription: subscription,
-                        ask: ask,
-                        requesting: null,
-                        groups: groups
-                    });
-                }
-            },
-
-            createContactFromVCard: function (iq, jid, fullname, img, img_type, url) {
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                this.create({
-                    jid: bare_jid,
-                    subscription: 'none',
-                    ask: null,
-                    requesting: true,
-                    fullname: fullname || bare_jid,
-                    image: img,
-                    image_type: img_type,
-                    url: url,
-                    vcard_updated: moment().format()
-                });
-            },
-
-            handleIncomingSubscription: function (jid) {
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var contact = this.get(bare_jid);
-                if (!converse.allow_contact_requests) {
-                    converse.rejectPresenceSubscription(jid, __("This client does not allow presence subscriptions"));
-                }
-                if (converse.auto_subscribe) {
-                    if ((!contact) || (contact.get('subscription') !== 'to')) {
-                        this.subscribeBack(bare_jid);
-                    } else {
-                        contact.authorize();
-                    }
-                } else {
-                    if (contact) {
-                        if (contact.get('subscription') !== 'none')  {
-                            contact.authorize();
-                        } else if (contact.get('ask') === "subscribe") {
-                            contact.authorize();
-                        }
-                    } else if (!contact) {
-                        converse.getVCard(
-                            bare_jid, this.createContactFromVCard.bind(this),
-                            function (iq, jid) {
-                                converse.log("Error while retrieving vcard for "+jid);
-                                this.createContactFromVCard.call(this, iq, jid);
-                            }.bind(this)
-                        );
-                    }
-                }
-            },
-
-            presenceHandler: function (presence) {
-                var $presence = $(presence),
-                    presence_type = presence.getAttribute('type');
-                if (presence_type === 'error') { return true; }
-                var jid = presence.getAttribute('from'),
-                    bare_jid = Strophe.getBareJidFromJid(jid),
-                    resource = Strophe.getResourceFromJid(jid),
-                    chat_status = $presence.find('show').text() || 'online',
-                    status_message = $presence.find('status'),
-                    contact = this.get(bare_jid);
-                if (this.isSelf(bare_jid)) {
-                    if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')&&(converse.synchronize_availability === true || converse.synchronize_availability === resource)) {
-                        // Another resource has changed its status and synchronize_availability option let to update, we'll update ours as well.
-                        converse.xmppstatus.save({'status': chat_status});
-                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message.text()}); }
-                    }
-                    return;
-                } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
-                    return; // Ignore MUC
-                }
-                if (contact && (status_message.text() !== contact.get('status'))) {
-                    contact.save({'status': status_message.text()});
-                }
-                if (presence_type === 'subscribed' && contact) {
-                    contact.ackSubscribe();
-                } else if (presence_type === 'unsubscribed' && contact) {
-                    contact.ackUnsubscribe();
-                } else if (presence_type === 'unsubscribe') {
-                    return;
-                } else if (presence_type === 'subscribe') {
-                    this.handleIncomingSubscription(jid);
-                } else if (presence_type === 'unavailable' && contact) {
-                    // Only set the user to offline if there aren't any
-                    // other resources still available.
-                    if (contact.removeResource(resource) === 0) {
-                        contact.save({'chat_status': "offline"});
-                    }
-                } else if (contact) { // presence_type is undefined
-                    this.addResource(bare_jid, resource);
-                    contact.save({'chat_status': chat_status});
-                }
-            }
-        });
-
-        this.RosterGroup = Backbone.Model.extend({
-            initialize: function (attributes, options) {
-                this.set(_.extend({
-                    description: DESC_GROUP_TOGGLE,
-                    state: OPENED
-                }, attributes));
-                // Collection of contacts belonging to this group.
-                this.contacts = new converse.RosterContacts();
-            }
-        });
-
-        this.RosterGroupView = Backbone.Overview.extend({
-            tagName: 'dt',
-            className: 'roster-group',
-            events: {
-                "click a.group-toggle": "toggle"
-            },
-
-            initialize: function () {
-                this.model.contacts.on("add", this.addContact, this);
-                this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
-                this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
-                this.model.contacts.on("change:chat_status", function (contact) {
-                    // This might be optimized by instead of first sorting,
-                    // finding the correct position in positionContact
-                    this.model.contacts.sort();
-                    this.positionContact(contact).render();
-                }, this);
-                this.model.contacts.on("destroy", this.onRemove, this);
-                this.model.contacts.on("remove", this.onRemove, this);
-                converse.roster.on('change:groups', this.onContactGroupChange, this);
-            },
-
-            render: function () {
-                this.$el.attr('data-group', this.model.get('name'));
-                this.$el.html(
-                    $(converse.templates.group_header({
-                        label_group: this.model.get('name'),
-                        desc_group_toggle: this.model.get('description'),
-                        toggle_state: this.model.get('state')
-                    }))
-                );
-                return this;
-            },
-
-            addContact: function (contact) {
-                var view = new converse.RosterContactView({model: contact});
-                this.add(contact.get('id'), view);
-                view = this.positionContact(contact).render();
-                if (contact.showInRoster()) {
-                    if (this.model.get('state') === CLOSED) {
-                        if (view.$el[0].style.display !== "none") { view.$el.hide(); }
-                        if (!this.$el.is(':visible')) { this.$el.show(); }
-                    } else {
-                        if (this.$el[0].style.display !== "block") { this.show(); }
-                    }
-                }
-            },
-
-            positionContact: function (contact) {
-                /* Place the contact's DOM element in the correct alphabetical
-                 * position amongst the other contacts in this group.
-                 */
-                var view = this.get(contact.get('id'));
-                var index = this.model.contacts.indexOf(contact);
-                view.$el.detach();
-                if (index === 0) {
-                    this.$el.after(view.$el);
-                } else if (index === (this.model.contacts.length-1)) {
-                    this.$el.nextUntil('dt').last().after(view.$el);
-                } else {
-                    this.$el.nextUntil('dt').eq(index).before(view.$el);
-                }
-                return view;
-            },
-
-            show: function () {
-                this.$el.show();
-                _.each(this.getAll(), function (contactView) {
-                    if (contactView.model.showInRoster()) {
-                        contactView.$el.show();
-                    }
-                });
-            },
-
-            hide: function () {
-                this.$el.nextUntil('dt').addBack().hide();
-            },
-
-            filter: function (q) {
-                /* Filter the group's contacts based on the query "q".
-                 * The query is matched against the contact's full name.
-                 * If all contacts are filtered out (i.e. hidden), then the
-                 * group must be filtered out as well.
-                 */
-                var matches;
-                if (q.length === 0) {
-                    if (this.model.get('state') === OPENED) {
-                        this.model.contacts.each(function (item) {
-                            if (item.showInRoster()) {
-                                this.get(item.get('id')).$el.show();
-                            }
-                        }.bind(this));
-                    }
-                    this.showIfNecessary();
-                } else {
-                    q = q.toLowerCase();
-                    matches = this.model.contacts.filter(utils.contains.not('fullname', q));
-                    if (matches.length === this.model.contacts.length) { // hide the whole group
-                        this.hide();
-                    } else {
-                        _.each(matches, function (item) {
-                            this.get(item.get('id')).$el.hide();
-                        }.bind(this));
-                        _.each(this.model.contacts.reject(utils.contains.not('fullname', q)), function (item) {
-                            this.get(item.get('id')).$el.show();
-                        }.bind(this));
-                        this.showIfNecessary();
-                    }
-                }
-            },
-
-            showIfNecessary: function () {
-                if (!this.$el.is(':visible') && this.model.contacts.length > 0) {
-                    this.$el.show();
-                }
-            },
-
-            toggle: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $el = $(ev.target);
-                if ($el.hasClass("icon-opened")) {
-                    this.$el.nextUntil('dt').slideUp();
-                    this.model.save({state: CLOSED});
-                    $el.removeClass("icon-opened").addClass("icon-closed");
-                } else {
-                    $el.removeClass("icon-closed").addClass("icon-opened");
-                    this.model.save({state: OPENED});
-                    this.filter(
-                        converse.rosterview.$('.roster-filter').val(),
-                        converse.rosterview.$('.filter-type').val()
-                    );
-                }
-            },
-
-            onContactGroupChange: function (contact) {
-                var in_this_group = _.contains(contact.get('groups'), this.model.get('name'));
-                var cid = contact.get('id');
-                var in_this_overview = !this.get(cid);
-                if (in_this_group && !in_this_overview) {
-                    this.model.contacts.remove(cid);
-                } else if (!in_this_group && in_this_overview) {
-                    this.addContact(contact);
-                }
-            },
-
-            onContactSubscriptionChange: function (contact) {
-                if ((this.model.get('name') === HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
-                    this.model.contacts.remove(contact.get('id'));
-                }
-            },
-
-            onContactRequestChange: function (contact) {
-                if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
-                    this.model.contacts.remove(contact.get('id'));
-                }
-            },
-
-            onRemove: function (contact) {
-                this.remove(contact.get('id'));
-                if (this.model.contacts.length === 0) {
-                    this.$el.hide();
-                }
-            }
-        });
-
-        this.RosterGroups = Backbone.Collection.extend({
-            model: converse.RosterGroup,
-            comparator: function (a, b) {
-                /* Groups are sorted alphabetically, ignoring case.
-                 * However, Ungrouped, Requesting Contacts and Pending Contacts
-                 * appear last and in that order. */
-                a = a.get('name');
-                b = b.get('name');
-                var special_groups = _.keys(HEADER_WEIGHTS);
-                var a_is_special = _.contains(special_groups, a);
-                var b_is_special = _.contains(special_groups, b);
-                if (!a_is_special && !b_is_special ) {
-                    return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
-                } else if (a_is_special && b_is_special) {
-                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
-                } else if (!a_is_special && b_is_special) {
-                    return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
-                } else if (a_is_special && !b_is_special) {
-                    return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
-                }
-            }
-        });
-
-        this.RosterView = Backbone.Overview.extend({
-            tagName: 'div',
-            id: 'converse-roster',
-            events: {
-                "keydown .roster-filter": "liveFilter",
-                "click .onX": "clearFilter",
-                "mousemove .x": "togglePointer",
-                "change .filter-type": "changeFilterType"
-            },
-
-            initialize: function () {
-                this.roster_handler_ref = this.registerRosterHandler();
-                this.rosterx_handler_ref = this.registerRosterXHandler();
-                this.presence_ref = this.registerPresenceHandler();
-                converse.roster.on("add", this.onContactAdd, this);
-                converse.roster.on('change', this.onContactChange, this);
-                converse.roster.on("destroy", this.update, this);
-                converse.roster.on("remove", this.update, this);
-                this.model.on("add", this.onGroupAdd, this);
-                this.model.on("reset", this.reset, this);
-                this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
-            },
-
-            unregisterHandlers: function () {
-                converse.connection.deleteHandler(this.roster_handler_ref);
-                delete this.roster_handler_ref;
-                converse.connection.deleteHandler(this.rosterx_handler_ref);
-                delete this.rosterx_handler_ref;
-                converse.connection.deleteHandler(this.presence_ref);
-                delete this.presence_ref;
-            },
-
-            update: _.debounce(function () {
-                var $count = $('#online-count');
-                $count.text('('+converse.roster.getNumOnlineContacts()+')');
-                if (!$count.is(':visible')) {
-                    $count.show();
-                }
-                if (this.$roster.parent().length === 0) {
-                    this.$el.append(this.$roster.show());
-                }
-                return this.showHideFilter();
-            }, converse.animate ? 100 : 0),
-
-            render: function () {
-                this.$el.html(converse.templates.roster({
-                    placeholder: __('Type to filter'),
-                    label_contacts: LABEL_CONTACTS,
-                    label_groups: LABEL_GROUPS
-                }));
-                if (!converse.allow_contact_requests) {
-                    // XXX: if we ever support live editing of config then
-                    // we'll need to be able to remove this class on the fly.
-                    this.$el.addClass('no-contact-requests');
-                }
-                return this;
-            },
-
-            fetch: function () {
-                this.model.fetch({
-                    silent: true, // We use the success handler to handle groups that were added,
-                                  // we need to first have all groups before positionFetchedGroups
-                                  // will work properly.
-                    success: function (collection, resp, options) {
-                        if (collection.length !== 0) {
-                            this.positionFetchedGroups(collection, resp, options);
-                        }
-                        converse.roster.fetch({
-                            add: true,
-                            success: function (collection) {
-                                if (collection.length === 0) {
-                                    /* We don't have any roster contacts stored in sessionStorage,
-                                     * so lets fetch the roster from the XMPP server. We pass in
-                                     * 'sendPresence' as callback method, because after initially
-                                     * fetching the roster we are ready to receive presence
-                                     * updates from our contacts.
-                                     */
-                                    converse.roster.fetchFromServer(function () {
-                                        converse.xmppstatus.sendPresence();
-                                    });
-                                } else if (converse.send_initial_presence) {
-                                    /* We're not going to fetch the roster again because we have
-                                     * it already cached in sessionStorage, but we still need to
-                                     * send out a presence stanza because this is a new session.
-                                     * See: https://github.com/jcbrand/converse.js/issues/536
-                                     */
-                                    converse.xmppstatus.sendPresence();
-                                }
-                            }
-                        });
-                    }.bind(this)
-                });
-                return this;
-            },
-
-            changeFilterType: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                this.clearFilter();
-                this.filter(
-                    this.$('.roster-filter').val(),
-                    ev.target.value
-                );
-            },
-
-            tog: function (v) {
-                return v?'addClass':'removeClass';
-            },
-
-            togglePointer: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var el = ev.target;
-                $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
-            },
-
-            filter: function (query, type) {
-                query = query.toLowerCase();
-                if (type === 'groups') {
-                    _.each(this.getAll(), function (view, idx) {
-                        if (view.model.get('name').toLowerCase().indexOf(query.toLowerCase()) === -1) {
-                            view.hide();
-                        } else if (view.model.contacts.length > 0) {
-                            view.show();
-                        }
-                    });
-                } else {
-                    _.each(this.getAll(), function (view) {
-                        view.filter(query, type);
-                    });
-                }
-            },
-
-            liveFilter: _.debounce(function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $filter = this.$('.roster-filter');
-                var q = $filter.val();
-                var t = this.$('.filter-type').val();
-                $filter[this.tog(q)]('x');
-                this.filter(q, t);
-            }, 300),
-
-            clearFilter: function (ev) {
-                if (ev && ev.preventDefault) {
-                    ev.preventDefault();
-                    $(ev.target).removeClass('x onX').val('');
-                }
-                this.filter('');
-            },
-
-            showHideFilter: function () {
-                if (!this.$el.is(':visible')) {
-                    return;
-                }
-                var $filter = this.$('.roster-filter');
-                var $type  = this.$('.filter-type');
-                var visible = $filter.is(':visible');
-                if (visible && $filter.val().length > 0) {
-                    // Don't hide if user is currently filtering.
-                    return;
-                }
-                if (this.$roster.hasScrollBar()) {
-                    if (!visible) {
-                        $filter.show();
-                        $type.show();
-                    }
-                } else {
-                    $filter.hide();
-                    $type.hide();
-                }
-                return this;
-            },
-
-            reset: function () {
-                converse.roster.reset();
-                this.removeAll();
-                this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
-                this.render().update();
-                return this;
-            },
-
-            registerRosterHandler: function () {
-                converse.connection.addHandler(
-                    converse.roster.onRosterPush.bind(converse.roster),
-                    Strophe.NS.ROSTER, 'iq', "set"
-                );
-            },
-
-            registerRosterXHandler: function () {
-                var t = 0;
-                converse.connection.addHandler(
-                    function (msg) {
-                        window.setTimeout(
-                            function () {
-                                converse.connection.flush();
-                                converse.roster.subscribeToSuggestedItems.bind(converse.roster)(msg);
-                            },
-                            t
-                        );
-                        t += $(msg).find('item').length*250;
-                        return true;
-                    },
-                    Strophe.NS.ROSTERX, 'message', null
-                );
-            },
-
-            registerPresenceHandler: function () {
-                converse.connection.addHandler(
-                    function (presence) {
-                        converse.roster.presenceHandler(presence);
-                        return true;
-                    }.bind(this), null, 'presence', null);
-            },
-
-            onGroupAdd: function (group) {
-                var view = new converse.RosterGroupView({model: group});
-                this.add(group.get('name'), view.render());
-                this.positionGroup(view);
-            },
-
-            onContactAdd: function (contact) {
-                this.addRosterContact(contact).update();
-                if (!contact.get('vcard_updated')) {
-                    // This will update the vcard, which triggers a change
-                    // request which will rerender the roster contact.
-                    converse.getVCard(contact.get('jid'));
-                }
-            },
-
-            onContactChange: function (contact) {
-                this.updateChatBox(contact).update();
-                if (_.has(contact.changed, 'subscription')) {
-                    if (contact.changed.subscription === 'from') {
-                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-                    } else if (_.contains(['both', 'to'], contact.get('subscription'))) {
-                        this.addExistingContact(contact);
-                    }
-                }
-                if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
-                    this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-                }
-                if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
-                    this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
-                }
-                this.liveFilter();
-            },
-
-            updateChatBox: function (contact) {
-                var chatbox = converse.chatboxes.get(contact.get('jid')),
-                    changes = {};
-                if (!chatbox) {
-                    return this;
-                }
-                if (_.has(contact.changed, 'chat_status')) {
-                    changes.chat_status = contact.get('chat_status');
-                }
-                if (_.has(contact.changed, 'status')) {
-                    changes.status = contact.get('status');
-                }
-                chatbox.save(changes);
-                return this;
-            },
-
-            positionFetchedGroups: function (model, resp, options) {
-                /* Instead of throwing an add event for each group
-                 * fetched, we wait until they're all fetched and then
-                 * we position them.
-                 * Works around the problem of positionGroup not
-                 * working when all groups besides the one being
-                 * positioned aren't already in inserted into the
-                 * roster DOM element.
-                 */
-                model.sort();
-                model.each(function (group, idx) {
-                    var view = this.get(group.get('name'));
-                    if (!view) {
-                        view = new converse.RosterGroupView({model: group});
-                        this.add(group.get('name'), view.render());
-                    }
-                    if (idx === 0) {
-                        this.$roster.append(view.$el);
-                    } else {
-                        this.appendGroup(view);
-                    }
-                }.bind(this));
-            },
-
-            positionGroup: function (view) {
-                /* Place the group's DOM element in the correct alphabetical
-                 * position amongst the other groups in the roster.
-                 */
-                var $groups = this.$roster.find('.roster-group'),
-                    index = $groups.length ? this.model.indexOf(view.model) : 0;
-                if (index === 0) {
-                    this.$roster.prepend(view.$el);
-                } else if (index === (this.model.length-1)) {
-                    this.appendGroup(view);
-                } else {
-                    $($groups.eq(index)).before(view.$el);
-                }
-                return this;
-            },
-
-            appendGroup: function (view) {
-                /* Add the group at the bottom of the roster
-                 */
-                var $last = this.$roster.find('.roster-group').last();
-                var $siblings = $last.siblings('dd');
-                if ($siblings.length > 0) {
-                    $siblings.last().after(view.$el);
-                } else {
-                    $last.after(view.$el);
-                }
-                return this;
-            },
-
-            getGroup: function (name) {
-                /* Returns the group as specified by name.
-                 * Creates the group if it doesn't exist.
-                 */
-                var view =  this.get(name);
-                if (view) {
-                    return view.model;
-                }
-                return this.model.create({name: name, id: b64_sha1(name)});
-            },
-
-            addContactToGroup: function (contact, name) {
-                this.getGroup(name).contacts.add(contact);
-            },
-
-            addExistingContact: function (contact) {
-                var groups;
-                if (converse.roster_groups) {
-                    groups = contact.get('groups');
-                    if (groups.length === 0) {
-                        groups = [HEADER_UNGROUPED];
-                    }
-                } else {
-                    groups = [HEADER_CURRENT_CONTACTS];
-                }
-                _.each(groups, _.bind(this.addContactToGroup, this, contact));
-            },
-
-            addRosterContact: function (contact) {
-                if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
-                    this.addExistingContact(contact);
-                } else {
-                    if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
-                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-                    } else if (contact.get('requesting') === true) {
-                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
-                    }
-                }
-                return this;
             }
         });
 
@@ -32043,118 +31038,6 @@ return Backbone.BrowserStorage;
                 if (prev_status === status_message) {
                     this.trigger("update-status-ui", this);
                 }
-            }
-        });
-
-        this.XMPPStatusView = Backbone.View.extend({
-            el: "span#xmpp-status-holder",
-
-            events: {
-                "click a.choose-xmpp-status": "toggleOptions",
-                "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-                "submit #set-custom-xmpp-status": "setStatusMessage",
-                "click .dropdown dd ul li a": "setStatus"
-            },
-
-            initialize: function () {
-                this.model.on("change:status", this.updateStatusUI, this);
-                this.model.on("change:status_message", this.updateStatusUI, this);
-                this.model.on("update-status-ui", this.updateStatusUI, this);
-            },
-
-           render: function () {
-                // Replace the default dropdown with something nicer
-                var $select = this.$el.find('select#select-xmpp-status'),
-                    chat_status = this.model.get('status') || 'offline',
-                    options = $('option', $select),
-                    $options_target,
-                    options_list = [];
-                this.$el.html(converse.templates.choose_status());
-                this.$el.find('#fancy-xmpp-status-select')
-                        .html(converse.templates.chat_status({
-                            'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
-                            'chat_status': chat_status,
-                            'desc_custom_status': __('Click here to write a custom status message'),
-                            'desc_change_status': __('Click to change your chat status')
-                            }));
-                // iterate through all the <option> elements and add option values
-                options.each(function () {
-                    options_list.push(converse.templates.status_option({
-                        'value': $(this).val(),
-                        'text': this.text
-                    }));
-                });
-                $options_target = this.$el.find("#target dd ul").hide();
-                $options_target.append(options_list.join(''));
-                $select.remove();
-                return this;
-            },
-
-            toggleOptions: function (ev) {
-                ev.preventDefault();
-                $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
-            },
-
-            renderStatusChangeForm: function (ev) {
-                ev.preventDefault();
-                var status_message = this.model.get('status') || 'offline';
-                var input = converse.templates.change_status_message({
-                    'status_message': status_message,
-                    'label_custom_status': __('Custom status'),
-                    'label_save': __('Save')
-                });
-                var $xmppstatus = this.$el.find('.xmpp-status');
-                $xmppstatus.parent().addClass('no-border');
-                $xmppstatus.replaceWith(input);
-                this.$el.find('.custom-xmpp-status').focus().focus();
-            },
-
-            setStatusMessage: function (ev) {
-                ev.preventDefault();
-                this.model.setStatusMessage($(ev.target).find('input').val());
-            },
-
-            setStatus: function (ev) {
-                ev.preventDefault();
-                var $el = $(ev.currentTarget),
-                    value = $el.attr('data-value');
-                if (value === 'logout') {
-                    this.$el.find(".dropdown dd ul").hide();
-                    converse.logOut();
-                } else {
-                    this.model.setStatus(value);
-                    this.$el.find(".dropdown dd ul").hide();
-                }
-            },
-
-            getPrettyStatus: function (stat) {
-                if (stat === 'chat') {
-                    return __('online');
-                } else if (stat === 'dnd') {
-                    return __('busy');
-                } else if (stat === 'xa') {
-                    return __('away for long');
-                } else if (stat === 'away') {
-                    return __('away');
-                } else if (stat === 'offline') {
-                    return __('offline');
-                } else {
-                    return __(stat) || __('online');
-                }
-            },
-
-            updateStatusUI: function (model) {
-                var stat = model.get('status');
-                // For translators: the %1$s part gets replaced with the status
-                // Example, I am online
-                var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
-                    converse.templates.chat_status({
-                        'chat_status': stat,
-                        'status_message': status_message,
-                        'desc_custom_status': __('Click here to write a custom status message'),
-                        'desc_change_status': __('Click to change your chat status')
-                    }));
             }
         });
 
@@ -32293,167 +31176,6 @@ return Backbone.BrowserStorage;
             }
         });
 
-        this.LoginPanel = Backbone.View.extend({
-            tagName: 'div',
-            id: "login-dialog",
-            className: 'controlbox-pane',
-            events: {
-                'submit form#converse-login': 'authenticate'
-            },
-
-            initialize: function (cfg) {
-                cfg.$parent.html(this.$el.html(
-                    converse.templates.login_panel({
-                        'LOGIN': LOGIN,
-                        'ANONYMOUS': ANONYMOUS,
-                        'PREBIND': PREBIND,
-                        'auto_login': converse.auto_login,
-                        'authentication': converse.authentication,
-                        'label_username': __('XMPP Username:'),
-                        'label_password': __('Password:'),
-                        'label_anon_login': __('Click here to log in anonymously'),
-                        'label_login': __('Log In'),
-                        'placeholder_username': (converse.locked_domain || converse.default_domain) && __('Username') || __('user@server'),
-                        'placeholder_password': __('password')
-                    })
-                ));
-                this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-            },
-
-            render: function () {
-                this.$tabs.append(converse.templates.login_tab({label_sign_in: __('Sign in')}));
-                this.$el.find('input#jid').focus();
-                if (!this.$el.is(':visible')) {
-                    this.$el.show();
-                }
-                return this;
-            },
-
-            authenticate: function (ev) {
-                if (ev && ev.preventDefault) { ev.preventDefault(); }
-                var $form = $(ev.target);
-                if (converse.authentication === ANONYMOUS) {
-                    this.connect($form, converse.jid, null);
-                    return;
-                }
-                var $jid_input = $form.find('input[name=jid]'),
-                    jid = $jid_input.val(),
-                    $pw_input = $form.find('input[name=password]'),
-                    password = $pw_input.val(),
-                    errors = false;
-
-                if (! jid) {
-                    errors = true;
-                    $jid_input.addClass('error');
-                }
-                if (! password)  {
-                    errors = true;
-                    $pw_input.addClass('error');
-                }
-                if (errors) { return; }
-                if (converse.locked_domain) {
-                    jid = Strophe.escapeNode(jid) + '@' + converse.locked_domain;
-                } else if (converse.default_domain && jid.indexOf('@') === -1) {
-                    jid = jid + '@' + converse.default_domain;
-                }
-                this.connect($form, jid, password);
-                return false;
-            },
-
-            connect: function ($form, jid, password) {
-                var resource;
-                if ($form) {
-                    $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                }
-                if (jid) {
-                    resource = Strophe.getResourceFromJid(jid);
-                    if (!resource) {
-                        jid = jid.toLowerCase() + converse.generateResource();
-                    } else {
-                        jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
-                    }
-                }
-                converse.connection.connect(jid, password, converse.onConnectStatusChanged);
-            },
-
-            remove: function () {
-                this.$tabs.empty();
-                this.$el.parent().empty();
-            }
-        });
-
-        this.ControlBoxToggle = Backbone.View.extend({
-            tagName: 'a',
-            className: 'toggle-controlbox',
-            id: 'toggle-controlbox',
-            events: {
-                'click': 'onClick'
-            },
-            attributes: {
-                'href': "#"
-            },
-
-            initialize: function () {
-                this.render();
-            },
-
-            render: function () {
-                $('#conversejs').prepend(this.$el.html(
-                    converse.templates.controlbox_toggle({
-                        'label_toggle': __('Toggle chat')
-                    })
-                ));
-                // We let the render method of ControlBoxView decide whether
-                // the ControlBox or the Toggle must be shown. This prevents
-                // artifacts (i.e. on page load the toggle is shown only to then
-                // seconds later be hidden in favor of the control box).
-                this.$el.hide();
-                return this;
-            },
-
-            hide: function (callback) {
-                this.$el.fadeOut('fast', callback);
-            },
-
-            show: function (callback) {
-                this.$el.show('fast', callback);
-            },
-
-            showControlBox: function () {
-                var controlbox = converse.chatboxes.get('controlbox');
-                if (!controlbox) {
-                    controlbox = converse.addControlBox();
-                }
-                if (converse.connection.connected) {
-                    controlbox.save({closed: false});
-                } else {
-                    controlbox.trigger('show');
-                }
-            },
-
-            onClick: function (e) {
-                e.preventDefault();
-                if ($("div#controlbox").is(':visible')) {
-                    var controlbox = converse.chatboxes.get('controlbox');
-                    if (converse.connection.connected) {
-                        controlbox.save({closed: true});
-                    } else {
-                        controlbox.trigger('hide');
-                    }
-                } else {
-                    this.showControlBox();
-                }
-            }
-        });
-
-        this.addControlBox = function () {
-            return this.chatboxes.add({
-                id: 'controlbox',
-                box_id: 'controlbox',
-                closed: !this.show_controlbox_by_default
-            });
-        };
-
         this.setUpXMLLogging = function () {
             if (this.debug) {
                 this.connection.xmlInput = function (body) { converse.log(body); };
@@ -32531,9 +31253,9 @@ return Backbone.BrowserStorage;
                 if (!this.jid) {
                     throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
                 }
-                if (this.authentication === ANONYMOUS) {
+                if (this.authentication === converse.ANONYMOUS) {
                     this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
-                } else if (this.authentication === LOGIN) {
+                } else if (this.authentication === converse.LOGIN) {
                     if (!this.password) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
@@ -32567,7 +31289,7 @@ return Backbone.BrowserStorage;
                 this.setUpXMLLogging();
                 // We now try to resume or automatically set up a new session.
                 // Otherwise the user will be shown a login form.
-                if (this.authentication === PREBIND) {
+                if (this.authentication === converse.PREBIND) {
                     this.attemptPreboundSession();
                 } else {
                     this.attemptNonPreboundSession();
@@ -32581,11 +31303,6 @@ return Backbone.BrowserStorage;
              */
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
-            }
-            if (this.rosterview) {
-                this.rosterview.unregisterHandlers();
-                this.rosterview.model.off().reset(); // Removes roster groups
-                this.rosterview.undelegateEvents().remove();
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             if (this.features) {
@@ -32603,24 +31320,36 @@ return Backbone.BrowserStorage;
         this._initialize = function () {
             this.chatboxes = new this.ChatBoxes();
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
-            this.controlboxtoggle = new this.ControlBoxToggle();
             this.initSession();
             this.initConnection();
-            if (this.connection) {
-                this.addControlBox();
-            }
             return this;
+        };
+
+        this.wrappedOverride = function (key, value, super_method, clean) {
+            // We create a partially applied wrapper function, that
+            // makes sure to set the proper super method when the
+            // overriding method is called. This is done to enable
+            // chaining of plugin methods, all the way up to the
+            // original method.
+            var ret;
+            if (clean) {
+                converse._super = { 'converse': converse };
+            }
+            this._super[key] = super_method;
+            ret = value.apply(this, _.rest(arguments, 4));
+            if (clean) { delete this._super; }
+            return ret;
         };
 
         this._overrideAttribute = function (key, plugin) {
             // See converse.plugins.override
             var value = plugin.overrides[key];
             if (typeof value === "function") {
-                if (typeof plugin._super === "undefined") {
-                    plugin._super = {'converse': converse};
-                }
-                plugin._super[key] = converse[key].bind(converse);
-                converse[key] = value.bind(plugin);
+                var wrapped_function = _.partial(
+                    converse.wrappedOverride.bind(converse),
+                    key, value, converse[key].bind(converse), true
+                );
+                converse[key] = wrapped_function;
             } else {
                 converse[key] = value;
             }
@@ -32634,19 +31363,33 @@ return Backbone.BrowserStorage;
             _.each(attributes, function (value, key) {
                 if (key === 'events') {
                     obj.prototype[key] = _.extend(value, obj.prototype[key]);
+                } else if (typeof value === 'function') {
+                    // We create a partially applied wrapper function, that
+                    // makes sure to set the proper super method when the
+                    // overriding method is called. This is done to enable
+                    // chaining of plugin methods, all the way up to the
+                    // original method.
+                    var wrapped_function = _.partial(
+                        converse.wrappedOverride,
+                        key, value, obj.prototype[key], false
+                    );
+                    obj.prototype[key] = wrapped_function;
                 } else {
-                    if (typeof value === 'function') {
-                        obj.prototype._super[key] = obj.prototype[key];
-                    }
                     obj.prototype[key] = value;
                 }
             });
         };
 
-        this._initializePlugins = function () {
-            _.each(this.plugins, function (plugin) {
+        this.initializePlugins = function () {
+            _.each(_.keys(this.plugins), function (name) {
+                var plugin = this.plugins[name];
+                if (_.contains(this.initialized_plugins, name)) {
+                    // Don't initialize plugins twice, otherwise we get
+                    // infinite recursion in overridden methods.
+                    return;
+                }
                 plugin.converse = converse;
-                _.each(Object.keys(plugin.overrides), function (key) {
+                _.each(Object.keys(plugin.overrides || {}), function (key) {
                     /* We automatically override all methods and Backbone views and
                      * models that are in the "overrides" namespace.
                      */
@@ -32661,6 +31404,7 @@ return Backbone.BrowserStorage;
                 if (typeof plugin.initialize === "function") {
                     plugin.initialize.bind(plugin)(this);
                 }
+                this.initialized_plugins.push(name);
             }.bind(this));
         };
 
@@ -32670,7 +31414,7 @@ return Backbone.BrowserStorage;
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        this._initializePlugins();
+        this.initializePlugins();
         this._initialize();
         this.registerGlobalEventHandlers();
         converse.emit('initialized');
@@ -33930,7 +32674,7 @@ define('text!pl',[],function () { return '{\n   "domain": "converse",\n   "local
 define('text!pt_BR',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n > 1);",\n            "lang": "pt_BR"\n         },\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "unencrypted": [\n            null,\n            "não-criptografado"\n         ],\n         "unverified": [\n            null,\n            "não-verificado"\n         ],\n         "verified": [\n            null,\n            "verificado"\n         ],\n         "finished": [\n            null,\n            "finalizado"\n         ],\n         "This contact is busy": [\n            null,\n            "Este contato está ocupado"\n         ],\n         "This contact is online": [\n            null,\n            "Este contato está online"\n         ],\n         "This contact is offline": [\n            null,\n            "Este contato está offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Este contato está indisponível"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Este contato está ausente por um longo período"\n         ],\n         "This contact is away": [\n            null,\n            "Este contato está ausente"\n         ],\n         "My contacts": [\n            null,\n            "Meus contatos"\n         ],\n         "Pending contacts": [\n            null,\n            "Contados pendentes"\n         ],\n         "Contact requests": [\n            null,\n            "Solicitação de contatos"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Contatos"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "Attempting to reconnect in 5 seconds": [\n            null,\n            ""\n         ],\n         "Error": [\n            null,\n            "Erro"\n         ],\n         "Connecting": [\n            null,\n            "Conectando"\n         ],\n         "Authenticating": [\n            null,\n            "Autenticando"\n         ],\n         "Authentication Failed": [\n            null,\n            "Falha de autenticação"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Reestabelecendo sessão criptografada"\n         ],\n         "Generating private key.": [\n            null,\n            "Gerando chave-privada."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Seu navegador pode parar de responder."\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Não foi possível verificar a identidade deste usuário."\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Personal message": [\n            null,\n            "Mensagem pessoal"\n         ],\n         "me": [\n            null,\n            "eu"\n         ],\n         "Show this menu": [\n            null,\n            "Mostrar o menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Escrever em terceira pessoa"\n         ],\n         "Remove messages": [\n            null,\n            "Remover mensagens"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Tem certeza que deseja limpar as mensagens dessa caixa?"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Sua mensagem não pode ser enviada"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Recebemos uma mensagem não-criptografada"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Recebemos uma mensagem não-criptografada ilegível"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aqui estão as assinaturas digitais, por favor confirme elas com %1$s, fora deste chat.\\n\\nAssinatura para você, %2$s: %3$s\\n\\nAssinatura para %1$s: %4$s\\n\\nSe você tiver confirmado que as assinaturas conferem, clique OK, caso contrário, clique Cancelar."\n         ],\n         "What is your security question?": [\n            null,\n            "Qual é a sua pergunta de segurança?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Qual é a resposta para a pergunta de segurança?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schema de autenticação fornecido é inválido"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Suas mensagens não estão mais criptografadas"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Suas mensagens não estão criptografadas. Clique aqui para habilitar criptografia OTR."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalizar conversa criptografada"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Atualizar conversa criptografada"\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Iniciar conversa criptografada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verificar com assinatura digital"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verificar com SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "O que é isso?"\n         ],\n         "Online": [\n            null,\n            "Online"\n         ],\n         "Busy": [\n            null,\n            "Ocupado"\n         ],\n         "Away": [\n            null,\n            "Ausente"\n         ],\n         "Offline": [\n            null,\n            "Offline"\n         ],\n         "Contact name": [\n            null,\n            "Nome do contato"\n         ],\n         "Search": [\n            null,\n            "Procurar"\n         ],\n         "e.g. user@example.com": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Adicionar"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Clique para adicionar novos contatos ao chat"\n         ],\n         "Add a contact": [\n            null,\n            "Adicionar contato"\n         ],\n         "No users found": [\n            null,\n            "Não foram encontrados usuários"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Clique para adicionar como um contato do chat"\n         ],\n         "Room name": [\n            null,\n            "Nome da sala"\n         ],\n         "Nickname": [\n            null,\n            "Apelido"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Show rooms": [\n            null,\n            "Mostar salas"\n         ],\n         "Rooms": [\n            null,\n            "Salas"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Sem salas em %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Salas em %1$s"\n         ],\n         "Click to open this room": [\n            null,\n            "CLique para abrir a sala"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostrar mais informações nessa sala"\n         ],\n         "Description:": [\n            null,\n            "Descrição:"\n         ],\n         "Occupants:": [\n            null,\n            "Ocupantes:"\n         ],\n         "Features:": [\n            null,\n            "Recursos:"\n         ],\n         "Requires authentication": [\n            null,\n            "Requer autenticação"\n         ],\n         "Hidden": [\n            null,\n            "Escondido"\n         ],\n         "Requires an invitation": [\n            null,\n            "Requer um convite"\n         ],\n         "Moderated": [\n            null,\n            "Moderado"\n         ],\n         "Non-anonymous": [\n            null,\n            "Não anônimo"\n         ],\n         "Open room": [\n            null,\n            "Sala aberta"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanente"\n         ],\n         "Public": [\n            null,\n            "Público"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi anônimo"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporária"\n         ],\n         "Unmoderated": [\n            null,\n            "Sem moderação"\n         ],\n         "This user is a moderator": [\n            null,\n            "Esse usuário é o moderador"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Esse usuário pode enviar mensagens nessa sala"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Esse usuário NÃO pode enviar mensagens nessa sala"\n         ],\n         "Invite...": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Message": [\n            null,\n            "Mensagem"\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Error: the \\"": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Salvar"\n         ],\n         "Cancel": [\n            null,\n            "Cancelar"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "Ocorreu um erro enquanto tentava salvar o formulário"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Esse chat precisa de senha"\n         ],\n         "Password: ": [\n            null,\n            "Senha: "\n         ],\n         "Submit": [\n            null,\n            "Enviar"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Essa sala não é anônima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Agora esta sala mostra membros indisponíveis"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Essa sala não mostra membros indisponíveis"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "Configuraçõs não relacionadas à privacidade mudaram"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "O log da sala está ativado"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "O log da sala está desativado"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Esse sala é não anônima"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Essa sala agora é semi anônima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Essa sala agora é totalmente anônima"\n         ],\n         "A new room has been created": [\n            null,\n            "Uma nova sala foi criada"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Você foi banido dessa sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Você foi expulso dessa sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Você foi removido da sala devido a uma mudança de associação"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Você foi removido da sala porque ela foi mudada para somente membrose você não é um membro"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "<strong>%1$s</strong> foi banido"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "<strong>%1$s</strong> foi expulso"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "<srtong>%1$s</strong> foi removido por causa de troca de associação"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "<strong>%1$s</strong> foi removido por não ser um membro"\n         ],\n         "The reason given is: \\"": [\n            null,\n            ""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "Você não é membro dessa sala"\n         ],\n         "No nickname was specified": [\n            null,\n            "Você não escolheu um apelido "\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "Você não tem permitição de criar novas salas"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "Seu apelido não está de acordo com as regras da sala"\n         ],\n         "Your nickname is already taken": [\n            null,\n            "Seu apelido já foi escolhido"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "A sala não existe (ainda)"\n         ],\n         "This room has reached it\'s maximum number of occupants": [\n            null,\n            "A sala atingiu o número máximo de ocupantes"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Topico definido por %1$s para: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            "Minimizado"\n         ],\n         "Click to remove this contact": [\n            null,\n            "Clique para remover o contato"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Clique para conversar com o contato"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            ""\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            ""\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Type to filter": [\n            null,\n            ""\n         ],\n         "I am %1$s": [\n            null,\n            "Estou %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Clique aqui para customizar a mensagem de status"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Clique para mudar seu status no chat"\n         ],\n         "Custom status": [\n            null,\n            "Status customizado"\n         ],\n         "online": [\n            null,\n            "online"\n         ],\n         "busy": [\n            null,\n            "ocupado"\n         ],\n         "away for long": [\n            null,\n            "ausente a bastante tempo"\n         ],\n         "away": [\n            null,\n            "ausente"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "Return": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Password:": [\n            null,\n            "Senha:"\n         ],\n         "Log In": [\n            null,\n            "Entrar"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Conectar-se"\n         ],\n         "Toggle chat": [\n            null,\n            "Alternar bate-papo"\n         ]\n      }\n   }\n}';});
 
 
-define('text!ru',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "lang": "ru"\n         },\n         " e.g. conversejs.org": [\n            null,\n            "например, conversejs.org"\n         ],\n         "unencrypted": [\n            null,\n            "не зашифровано"\n         ],\n         "unverified": [\n            null,\n            "непроверено"\n         ],\n         "verified": [\n            null,\n            "проверено"\n         ],\n         "finished": [\n            null,\n            "закончено"\n         ],\n         "This contact is busy": [\n            null,\n            "Занят"\n         ],\n         "This contact is online": [\n            null,\n            "В сети"\n         ],\n         "This contact is offline": [\n            null,\n            "Не в сети"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Не доступен"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "На долго отошёл"\n         ],\n         "This contact is away": [\n            null,\n            "Отошёл"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Кликните, чтобы спрятать эти контакты"\n         ],\n         "My contacts": [\n            null,\n            "Контакты"\n         ],\n         "Pending contacts": [\n            null,\n            "Собеседники ожидающие авторизации"\n         ],\n         "Contact requests": [\n            null,\n            "Запросы на авторизацию"\n         ],\n         "Ungrouped": [\n            null,\n            "Несгруппированные"\n         ],\n         "Contacts": [\n            null,\n            "Контакты"\n         ],\n         "Groups": [\n            null,\n            "Группы"\n         ],\n         "Error": [\n            null,\n            "Ошибка"\n         ],\n         "Connecting": [\n            null,\n            "Соединение"\n         ],\n         "Authenticating": [\n            null,\n            "Авторизация"\n         ],\n         "Authentication Failed": [\n            null,\n            "Не удалось авторизоваться"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Восстанавливается шифрованная сессия"\n         ],\n         "Generating private key.": [\n            null,\n            "Генерируется секретный ключ"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ваш браузер может перестать отвечать."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Аутентификационный запрос %1$s\\n\\nВаш контакт из чата пытается проверить вашу подлинность, задав вам следующий котрольный вопрос.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Не удалось проверить подлинность этого пользователя."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Обмен секретным ключом с контактом."\n         ],\n         "Close this chat box": [\n            null,\n            "Закрыть это окно чата"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Свернуть это окно чата"\n         ],\n         "View more information on this person": [\n            null,\n            "Просмотреть больше информации об этом человеке."\n         ],\n         "Personal message": [\n            null,\n            "Персональное сообщение"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Вы уверены, что хотите очистить сообщения из этой конференции?"\n         ],\n         "me": [\n            null,\n            "Я"\n         ],\n         "is typing": [\n            null,\n            "печатает"\n         ],\n         "has stopped typing": [\n            null,\n            "перестал печатать"\n         ],\n         "has gone away": [\n            null,\n            "отошёл"\n         ],\n         "Show this menu": [\n            null,\n            "Показать это меню"\n         ],\n         "Write in the third person": [\n            null,\n            "Вписать третьего человека"\n         ],\n         "Remove messages": [\n            null,\n            "Удалить сообщения"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Вы уверены, что хотите очистить сообщения из этого окна чата?"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ваше сообщение не послано"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Мы получили незашифрованное сообщение"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Мы получили "\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Вот отпечатки, пожалуйста подтвердите их с помощью %1$s, вне этого чата.\\n\\nОтпечатки для Вас, %2$s: %3$s\\n\\nОтпечаток для %1$s: %4$s\\n\\nЕсли вы удостоверились, что отпечатки совпадают, нажмите OK, если нет нажмите Отмена"\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Вам будет предложено создать контрольный вопрос и ответ на этот вопрос.\\n\\nВашему контакту будет задан этот вопрос и, если ответы совпадут (с учётом регистра), его подлинность будет подтверждена."\n         ],\n         "What is your security question?": [\n            null,\n            "Ваш секретный вопрос?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Ваш ответ на секретный вопрос?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Некоррекная схема аутентификации"\n         ],\n         "has gone offline": [\n            null,\n            "вышел из сети"\n         ],\n         "is busy": [\n            null,\n            "занят"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Ваши сообщения больше не шифруются"\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Ваш контакт закончил шифрование у себя, вы должны сделать то же самое."\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ваши сообщения не шифруются. Нажмите здесь чтобы настроить шифрование."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ваш контакт закрыл свою часть приватной сессии, вы должны сделать то же самое"\n         ],\n         "Clear all messages": [\n            null,\n            "Очистить все сообщения"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Закончить шифрованную беседу"\n         ],\n         "Insert a smiley": [\n            null,\n            "Вставить смайлик"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Спрятать список участников"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Обновить шифрованную беседу"\n         ],\n         "Start a call": [\n            null,\n            "Инициировать звонок"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Начать шифрованный разговор"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Проверить при помощи отпечатков"\n         ],\n         "Verify with SMP": [\n            null,\n            "Проверить при помощи SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Что это?"\n         ],\n         "Online": [\n            null,\n            "В сети"\n         ],\n         "Busy": [\n            null,\n            "Занят"\n         ],\n         "Away": [\n            null,\n            "Отошёл"\n         ],\n         "Offline": [\n            null,\n            "Не в сети"\n         ],\n         "Log out": [\n            null,\n            "Выйти"\n         ],\n         "Contact name": [\n            null,\n            "Имя контакта"\n         ],\n         "Search": [\n            null,\n            "Поиск"\n         ],\n         "e.g. user@example.com": [\n            null,\n            "например, user@example.com"\n         ],\n         "Add": [\n            null,\n            "Добавить"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Добавить новую конференцию"\n         ],\n         "Add a contact": [\n            null,\n            "Добавть контакт"\n         ],\n         "No users found": [\n            null,\n            "Пользователи не найдены"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Добавить контакт"\n         ],\n         "Room name": [\n            null,\n            "Имя конференции"\n         ],\n         "Nickname": [\n            null,\n            "Псевдоним"\n         ],\n         "Server": [\n            null,\n            "Сервер"\n         ],\n         "Join Room": [\n            null,\n            "Присоединться к конференции"\n         ],\n         "Show rooms": [\n            null,\n            "Показать конференции"\n         ],\n         "Rooms": [\n            null,\n            "Конференции"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Нет конференций %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Конференции %1$s:"\n         ],\n         "Click to open this room": [\n            null,\n            "Зайти в конференцию"\n         ],\n         "Show more information on this room": [\n            null,\n            "Показать больше информации об этой конференции"\n         ],\n         "Description:": [\n            null,\n            "Описание:"\n         ],\n         "Occupants:": [\n            null,\n            "Участники:"\n         ],\n         "Features:": [\n            null,\n            "Свойства:"\n         ],\n         "Requires authentication": [\n            null,\n            "Требуется авторизация"\n         ],\n         "Hidden": [\n            null,\n            "Скрыто"\n         ],\n         "Requires an invitation": [\n            null,\n            "Требуется приглашение"\n         ],\n         "Moderated": [\n            null,\n            "Модерируемая"\n         ],\n         "Non-anonymous": [\n            null,\n            "Не анонимная"\n         ],\n         "Open room": [\n            null,\n            "Открыть конференцию"\n         ],\n         "Permanent room": [\n            null,\n            "Перманентная конференция"\n         ],\n         "Public": [\n            null,\n            "Публичный"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Частично анонимная"\n         ],\n         "Temporary room": [\n            null,\n            "Временная конференция"\n         ],\n         "Unmoderated": [\n            null,\n            "Немодерируемая"\n         ],\n         "This user is a moderator": [\n            null,\n            "Модератор"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Собеседник"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Пользователь не может посылать сообщения в эту комнату"\n         ],\n         "Invite...": [\n            null,\n            "Пригласить..."\n         ],\n         "Occupants": [\n            null,\n            "Участники:"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Вы собираетесь пригласить %1$s в чат \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Вы можете дополнительно вставить сообщение, объясняющее причину приглашения."\n         ],\n         "Message": [\n            null,\n            "Сообщение"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Ошибка: невозможно выполнить команду"\n         ],\n         "Error: the \\"": [\n            null,\n            "Ошибка:  \\""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Ban user from room": [\n            null,\n            "Забанить пользователя в этой конф."\n         ],\n         "Change user role to occupant": [\n            null,\n            "Изменить роль пользователя на \\"участник\\""\n         ],\n         "Kick user from room": [\n            null,\n            "Удалить пользователя из комнаты."\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Отнять у пользователя возможность оставлять сообщения"\n         ],\n         "Change your nickname": [\n            null,\n            "Изменить свой ник"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Предоставить права модератора пользователю"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Предоставить права владельца на эту комнату"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Отозвать членство пользователя"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Разрешить заглушенным пользователям оставлять сообщения"\n         ],\n         "Save": [\n            null,\n            "Сохранить"\n         ],\n         "Cancel": [\n            null,\n            "Отменить"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "При сохранение формы произошла ошибка."\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Для доступа в конфер. необходим пароль."\n         ],\n         "Password: ": [\n            null,\n            "Пароль: "\n         ],\n         "Submit": [\n            null,\n            "Отправить"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Эта комната не анонимная"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Эта комната показывает доступных собеседников"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Эта комната не показывает недоступных собеседников"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "Изменились настройки комнаты не относящиеся к приватности"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Лог конференции включен"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Лог конференции выключен"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Эта комната не анонимная"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Эта комната частично анонимная"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Эта комната стала полностью анонимной"\n         ],\n         "A new room has been created": [\n            null,\n            "Новая комната была создана"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Вам запрещено подключатся к этой конференции"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Вам запрещено подключатся к этой конференции"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "<strong>%1$s</strong> удалён потому что изменились права"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Вы отключены от этой конференции потому что режим изменился: только-участники"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Вы отключены от этой конференции потому что сервись конференций выключен."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "<strong>%1$s</strong> забанен"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "<strong>%1$s</strong> выдворен"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "<strong>%1$s</strong> has been removed because of an affiliation change"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "<strong>%1$s</strong> удалён потому что не участник"\n         ],\n         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [\n            null,\n            "Ваш псевдоним автоматически изменён на : <strong>%1$s</strong>"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "Ваш псевдоним изменён на : <strong>%1$s</strong>"\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "Вас нет в списке этой конференции"\n         ],\n         "No nickname was specified": [\n            null,\n            "Вы не указали псевдоним"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "Вы не имеете права создавать конфер."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "Псевдоним не согласуется с правилами конфер."\n         ],\n         "Your nickname is already taken": [\n            null,\n            "Ваш ник уже используется другим пользователем"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Эта комната не существует"\n         ],\n         "This room has reached it\'s maximum number of occupants": [\n            null,\n            "Конференция достигла максимального количества участников"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Тема %2$s устатновлена %1$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            ""\n         ],\n         "Minimized": [\n            null,\n            "Минимизированный"\n         ],\n         "Click to remove this contact": [\n            null,\n            "Удалить контакт"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Нажмите, чтобы принять запрос этого контакта"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Нажмите, чтобы отклонить запрос этого контакта"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Начать общение"\n         ],\n         "Name": [\n            null,\n            "Имя"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Вы уверены, что хотите удалить этот контакт?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            ""\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Вы уверены, что хотите отклонить запрос от этого контакта?"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            ""\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Type to filter": [\n            null,\n            ""\n         ],\n         "I am %1$s": [\n            null,\n            "Я %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Редактировать произвольный статус"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Изменить ваш статус"\n         ],\n         "Custom status": [\n            null,\n            "Произвольный статус"\n         ],\n         "online": [\n            null,\n            "на связи"\n         ],\n         "busy": [\n            null,\n            "занят"\n         ],\n         "away for long": [\n            null,\n            "отошёл на долго"\n         ],\n         "away": [\n            null,\n            "отошёл"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Совет. Список публичных XMPP провайдеров доступен"\n         ],\n         "here": [\n            null,\n            "Здесь"\n         ],\n         "Register": [\n            null,\n            "Регистрация"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "К сожалению провайдер не поддерживает in band регистрацию аккаунта. Пожалуйста попробуйте выбрать другого провайдера."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Запрашивается регистрационная форма с XMPP сервера"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Что-то пошло не так, при установке связи с \\"%1$s\\". Вы уверены, что он существует?"\n         ],\n         "Now logging you in": [\n            null,\n            "Осуществляется вход"\n         ],\n         "Registered successfully": [\n            null,\n            "Зарегистрирован успешно"\n         ],\n         "Return": [\n            null,\n            "Назад"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Провайдер отклонил вашу попытку зарегистрироваться. Пожалуйста, проверьте, правильно ли введены значения."\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Username:"\n         ],\n         "Password:": [\n            null,\n            "Пароль:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Нажмите здесь, чтобы войти анонимно"\n         ],\n         "Log In": [\n            null,\n            "Войти"\n         ],\n         "user@server": [\n            null,\n            "user@server"\n         ],\n         "password": [\n            null,\n            "пароль"\n         ],\n         "Sign in": [\n            null,\n            "Подписать"\n         ],\n         "Toggle chat": [\n            null,\n            "Включить чат"\n         ]\n      }\n   }\n}';});
+define('text!ru',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "lang": "ru"\n         },\n         " e.g. conversejs.org": [\n            null,\n            "например, conversejs.org"\n         ],\n         "unencrypted": [\n            null,\n            "не зашифровано"\n         ],\n         "unverified": [\n            null,\n            "непроверено"\n         ],\n         "verified": [\n            null,\n            "проверено"\n         ],\n         "finished": [\n            null,\n            "закончено"\n         ],\n         "This contact is busy": [\n            null,\n            "Занят"\n         ],\n         "This contact is online": [\n            null,\n            "В сети"\n         ],\n         "This contact is offline": [\n            null,\n            "Не в сети"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Недоступен"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Надолго отошёл"\n         ],\n         "This contact is away": [\n            null,\n            "Отошёл"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Кликните, чтобы спрятать эти контакты"\n         ],\n         "My contacts": [\n            null,\n            "Контакты"\n         ],\n         "Pending contacts": [\n            null,\n            "Собеседники, ожидающие авторизации"\n         ],\n         "Contact requests": [\n            null,\n            "Запросы на авторизацию"\n         ],\n         "Ungrouped": [\n            null,\n            "Несгруппированные"\n         ],\n         "Contacts": [\n            null,\n            "Контакты"\n         ],\n         "Groups": [\n            null,\n            "Группы"\n         ],\n         "Error": [\n            null,\n            "Ошибка"\n         ],\n         "Connecting": [\n            null,\n            "Соединение"\n         ],\n         "Authenticating": [\n            null,\n            "Авторизация"\n         ],\n         "Authentication Failed": [\n            null,\n            "Не удалось авторизоваться"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Восстанавливается зашифрованная сессия"\n         ],\n         "Generating private key.": [\n            null,\n            "Генерируется секретный ключ"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ваш браузер может зависнуть."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Аутентификационный запрос %1$s\\n\\nВаш контакт из чата пытается проверить вашу подлинность, задав вам следующий котрольный вопрос.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Не удалось проверить подлинность этого пользователя."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Обмен секретным ключом с контактом."\n         ],\n         "Close this chat box": [\n            null,\n            "Закрыть окно чата"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Свернуть окно чата"\n         ],\n         "View more information on this person": [\n            null,\n            "Просмотреть больше информации об этом человеке."\n         ],\n         "Personal message": [\n            null,\n            "Ваше сообщение"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Вы уверены, что хотите очистить сообщения из этого чата?"\n         ],\n         "me": [\n            null,\n            "Я"\n         ],\n         "is typing": [\n            null,\n            "набирает текст"\n         ],\n         "has stopped typing": [\n            null,\n            "перестал набирать"\n         ],\n         "has gone away": [\n            null,\n            "отошёл"\n         ],\n         "Show this menu": [\n            null,\n            "Показать это меню"\n         ],\n         "Write in the third person": [\n            null,\n            "Вписать третьего человека"\n         ],\n         "Remove messages": [\n            null,\n            "Удалить сообщения"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Вы уверены, что хотите очистить сообщения из окна чата?"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ваше сообщение не отправлено"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Вы получили незашифрованное сообщение"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Вы получили нечитаемое зашифрованное сообщение"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Вот отпечатки, пожалуйста подтвердите их с помощью %1$s вне этого чата.\\n\\nОтпечатки для Вас, %2$s: %3$s\\n\\nОтпечаток для %1$s: %4$s\\n\\nЕсли вы удостоверились, что отпечатки совпадают, нажмите OK; если нет, нажмите Отмена"\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Вам будет предложено создать контрольный вопрос и ответ на этот вопрос.\\n\\nВашему контакту будет задан этот вопрос и, если ответы совпадут (с учётом регистра), его подлинность будет подтверждена."\n         ],\n         "What is your security question?": [\n            null,\n            "Ваш секретный вопрос?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Ваш ответ на секретный вопрос?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Некоррекная схема аутентификации"\n         ],\n         "has gone offline": [\n            null,\n            "вышел из сети"\n         ],\n         "is busy": [\n            null,\n            "занят"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Ваши сообщения больше не шифруются"\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Ваш контакт закончил шифрование у себя, вы должны сделать тоже самое."\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ваши сообщения не шифруются. Нажмите здесь чтобы настроить шифрование."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ваш контакт закрыл свою часть приватной сессии, вы должны сделать тоже самое."\n         ],\n         "Clear all messages": [\n            null,\n            "Очистить все сообщения"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Закончить шифрованную беседу"\n         ],\n         "Insert a smiley": [\n            null,\n            "Вставить смайлик"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Спрятать список участников"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Обновить шифрованную беседу"\n         ],\n         "Start a call": [\n            null,\n            "Инициировать звонок"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Начать шифрованный разговор"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Проверить при помощи отпечатков"\n         ],\n         "Verify with SMP": [\n            null,\n            "Проверить при помощи SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Что это?"\n         ],\n         "Online": [\n            null,\n            "В сети"\n         ],\n         "Busy": [\n            null,\n            "Занят"\n         ],\n         "Away": [\n            null,\n            "Отошёл"\n         ],\n         "Offline": [\n            null,\n            "Не в сети"\n         ],\n         "Log out": [\n            null,\n            "Выйти"\n         ],\n         "Contact name": [\n            null,\n            "Имя контакта"\n         ],\n         "Search": [\n            null,\n            "Поиск"\n         ],\n         "e.g. user@example.com": [\n            null,\n            "например, user@example.com"\n         ],\n         "Add": [\n            null,\n            "Добавить"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Добавить новую конференцию"\n         ],\n         "Add a contact": [\n            null,\n            "Добавть контакт"\n         ],\n         "No users found": [\n            null,\n            "Пользователи не найдены"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Добавить контакт"\n         ],\n         "Room name": [\n            null,\n            "Имя чата"\n         ],\n         "Nickname": [\n            null,\n            "Псевдоним"\n         ],\n         "Server": [\n            null,\n            "Сервер"\n         ],\n         "Join Room": [\n            null,\n            "Присоединться к чату"\n         ],\n         "Show rooms": [\n            null,\n            "Показать чаты"\n         ],\n         "Rooms": [\n            null,\n            "Чаты"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Нет чатов на %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Чаты %1$s:"\n         ],\n         "Click to open this room": [\n            null,\n            "Зайти в чат"\n         ],\n         "Show more information on this room": [\n            null,\n            "Показать больше информации об этоом чате"\n         ],\n         "Description:": [\n            null,\n            "Описание:"\n         ],\n         "Occupants:": [\n            null,\n            "Участники:"\n         ],\n         "Features:": [\n            null,\n            "Свойства:"\n         ],\n         "Requires authentication": [\n            null,\n            "Требуется авторизация"\n         ],\n         "Hidden": [\n            null,\n            "Скрыто"\n         ],\n         "Requires an invitation": [\n            null,\n            "Требуется приглашение"\n         ],\n         "Moderated": [\n            null,\n            "Модерируемый"\n         ],\n         "Non-anonymous": [\n            null,\n            "Не анонимный"\n         ],\n         "Open room": [\n            null,\n            "Открыть чат"\n         ],\n         "Permanent room": [\n            null,\n            "Постоянный чат"\n         ],\n         "Public": [\n            null,\n            "Публичный"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Частично анонимный"\n         ],\n         "Temporary room": [\n            null,\n            "Временный чат"\n         ],\n         "Unmoderated": [\n            null,\n            "Немодерируемый"\n         ],\n         "This user is a moderator": [\n            null,\n            "Модератор"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Собеседник"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Пользователь не может посылать сообщения в этот чат"\n         ],\n         "Invite...": [\n            null,\n            "Пригласить..."\n         ],\n         "Occupants": [\n            null,\n            "Участники:"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Вы собираетесь пригласить %1$s в чат \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Вы можете дополнительно вставить сообщение, объясняющее причину приглашения."\n         ],\n         "Message": [\n            null,\n            "Сообщение"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Ошибка: невозможно выполнить команду"\n         ],\n         "Error: the \\"": [\n            null,\n            "Ошибка:  \\""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Дать права администратора"\n         ],\n         "Ban user from room": [\n            null,\n            "Забанить пользователя в этом чате"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Изменить роль пользователя на \\"участник\\""\n         ],\n         "Kick user from room": [\n            null,\n            "Удалить пользователя из чата"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Сделать пользователя участником"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Заглушить пользователя"\n         ],\n         "Change your nickname": [\n            null,\n            "Изменить свой псевдоним"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Предоставить права модератора пользователю"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Предоставить права владельца на этот чат"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Отозвать членство пользователя"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Разрешить заглушенным пользователям оставлять сообщения"\n         ],\n         "Save": [\n            null,\n            "Сохранить"\n         ],\n         "Cancel": [\n            null,\n            "Отменить"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "При сохранение формы произошла ошибка."\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Для доступа в чат необходим пароль"\n         ],\n         "Password: ": [\n            null,\n            "Пароль: "\n         ],\n         "Submit": [\n            null,\n            "Отправить"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Этот чат не анонимный"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Этот чат показывает недоступных собеседников"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Этот чат не показывает недоступных собеседников"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "Изменились настройки чата, не относящиеся к приватности"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Протокол чата включен"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Протокол чата выключен"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Этот чат не анонимнен"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Этот чат частично анонимен"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Этот чат стал полностью анонимным"\n         ],\n         "A new room has been created": [\n            null,\n            "Появился новый чат"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Вам запрещено подключатся к этому чату"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Вас выкинули из чата"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Вас удалили из-за изменения прав"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Вы отключены от чата, потому что он теперь только для участников"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Вы отключены от этого чата, потому что служба чатов отключилась."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "<strong>%1$s</strong> забанен"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "<strong>%1$s</strong> был выкинут из чата"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "<strong>%1$s</strong> удалён, потому что изменились права"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "<strong>%1$s</strong> удалён, потому что не участник"\n         ],\n         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [\n            null,\n            "Ваш псевдоним автоматически изменён на: <strong>%1$s</strong>"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "Ваш псевдоним изменён на: <strong>%1$s</strong>"\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "Вы не участник этого чата"\n         ],\n         "No nickname was specified": [\n            null,\n            "Вы не указали псевдоним"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "Вы не имеете права создавать чаты"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "Псевдоним не согласуется с правилами конфер."\n         ],\n         "Your nickname is already taken": [\n            null,\n            "Этот псевдоним уже занят другим пользователем"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Этот чат не существует"\n         ],\n         "This room has reached it\'s maximum number of occupants": [\n            null,\n            "Чат достиг максимального количества участников"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Тема %2$s устатновлена %1$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s пригласил вас в чат: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s пригласил вас в чат: %2$s, по следующей причине: \\"%3$s\\""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Кликните, чтобы развернуть чат"\n         ],\n         "Minimized": [\n            null,\n            "Свёрнут"\n         ],\n         "Click to remove this contact": [\n            null,\n            "Удалить контакт"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Кликните, чтобы принять запрос этого контакта"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Кликните, чтобы отклонить запрос этого контакта"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Кликните, чтобы начать общение"\n         ],\n         "Name": [\n            null,\n            "Имя"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Вы уверены, что хотите удалить этот контакт?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            "Возникла ошибка при удалении "\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Вы уверены, что хотите отклонить запрос от этого контакта?"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            "Возникла ошибка при добавлении "\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Программа не поддерживает уведомления о статусе"\n         ],\n         "Type to filter": [\n            null,\n            "Текст для фильтра"\n         ],\n         "I am %1$s": [\n            null,\n            "Я %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Редактировать произвольный статус"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Изменить ваш статус"\n         ],\n         "Custom status": [\n            null,\n            "Произвольный статус"\n         ],\n         "online": [\n            null,\n            "на связи"\n         ],\n         "busy": [\n            null,\n            "занят"\n         ],\n         "away for long": [\n            null,\n            "отошёл надолго"\n         ],\n         "away": [\n            null,\n            "отошёл"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Домен XMPP провайдера"\n         ],\n         "Fetch registration form": [\n            null,\n            "Получить форму регистрации"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Совет: Список публичных XMPP провайдеров доступен"\n         ],\n         "here": [\n            null,\n            "здесь"\n         ],\n         "Register": [\n            null,\n            "Регистрация"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "К сожалению, провайдер не поддерживает регистрацию аккаунта через клиентское приложение. Пожалуйста попробуйте выбрать другого провайдера."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Запрашивается регистрационная форма с XMPP сервера"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Что-то пошло не так при установке связи с \\"%1$s\\". Вы уверены, что он существует?"\n         ],\n         "Now logging you in": [\n            null,\n            "Осуществляется вход"\n         ],\n         "Registered successfully": [\n            null,\n            "Зарегистрирован успешно"\n         ],\n         "Return": [\n            null,\n            "Назад"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Провайдер отклонил вашу попытку зарегистрироваться. Пожалуйста, проверьте, правильно ли введены значения."\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Username:"\n         ],\n         "Password:": [\n            null,\n            "Пароль:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Нажмите здесь, чтобы войти анонимно"\n         ],\n         "Log In": [\n            null,\n            "Войти"\n         ],\n         "user@server": [\n            null,\n            "user@server"\n         ],\n         "password": [\n            null,\n            "пароль"\n         ],\n         "Sign in": [\n            null,\n            "Вход"\n         ],\n         "Toggle chat": [\n            null,\n            "Включить чат"\n         ]\n      }\n   }\n}\n';});
 
 
 define('text!uk',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",\n            "lang": "uk"\n         },\n         " e.g. conversejs.org": [\n            null,\n            " напр. conversejs.org"\n         ],\n         "unencrypted": [\n            null,\n            "некриптовано"\n         ],\n         "unverified": [\n            null,\n            "неперевірено"\n         ],\n         "verified": [\n            null,\n            "перевірено"\n         ],\n         "finished": [\n            null,\n            "завершено"\n         ],\n         "This contact is busy": [\n            null,\n            "Цей контакт зайнятий"\n         ],\n         "This contact is online": [\n            null,\n            "Цей контакт на зв\'язку"\n         ],\n         "This contact is offline": [\n            null,\n            "Цей контакт поза мережею"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Цей контакт недоступний"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Цей контакт відсутній тривалий час"\n         ],\n         "This contact is away": [\n            null,\n            "Цей контакт відсутній"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Клацніть, щоб приховати ці контакти"\n         ],\n         "My contacts": [\n            null,\n            "Мої контакти"\n         ],\n         "Pending contacts": [\n            null,\n            "Контакти в очікуванні"\n         ],\n         "Contact requests": [\n            null,\n            "Запити контакту"\n         ],\n         "Ungrouped": [\n            null,\n            "Негруповані"\n         ],\n         "Contacts": [\n            null,\n            "Контакти"\n         ],\n         "Groups": [\n            null,\n            "Групи"\n         ],\n         "Attempting to reconnect in 5 seconds": [\n            null,\n            ""\n         ],\n         "Error": [\n            null,\n            "Помилка"\n         ],\n         "Connecting": [\n            null,\n            "Під\'єднуюсь"\n         ],\n         "Authenticating": [\n            null,\n            "Автентикуюсь"\n         ],\n         "Authentication Failed": [\n            null,\n            "Автентикація невдала"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Перевстановлюю криптований сеанс"\n         ],\n         "Generating private key.": [\n            null,\n            "Генерація приватного ключа."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ваш браузер може підвиснути."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Запит автентикації від %1$s\\n\\nВаш контакт в чаті намагається встановити Вашу особу і просить відповісти на питання нижче.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Не можу перевірити автентичність цього користувача."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Обмін приватним ключем з контактом."\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Personal message": [\n            null,\n            "Персональна вісточка"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Ви впевнені, що хочете очистити повідомлення з цієї кімнати?"\n         ],\n         "me": [\n            null,\n            "я"\n         ],\n         "is typing": [\n            null,\n            "друкує"\n         ],\n         "has stopped typing": [\n            null,\n            "припинив друкувати"\n         ],\n         "has gone away": [\n            null,\n            "пішов геть"\n         ],\n         "Show this menu": [\n            null,\n            "Показати це меню"\n         ],\n         "Write in the third person": [\n            null,\n            "Писати від третьої особи"\n         ],\n         "Remove messages": [\n            null,\n            "Видалити повідомлення"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Ви впевнені, що хочете очистити повідомлення з цього вікна чату?"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ваше повідомлення не може бути надіслане"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Ми отримали некриптоване повідомлення"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Ми отримали нечитабельне криптоване повідомлення"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Ось відбитки, будь-ласка, підтвердіть їх з %1$s, за межами цього чату.\\n\\nВідбиток для Вас, %2$s: %3$s\\n\\nВідбиток для %1$s: %4$s\\n\\nЯкщо Ви підтверджуєте відповідність відбитка, клацніть Гаразд, інакше клацніть Відміна."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Вас запитають таємне питання і відповідь на нього.\\n\\nПотім Вашого контакта запитають те саме питання, і якщо вони введуть ту саму відповідь (враховуючи регістр), їх особи будуть перевірені."\n         ],\n         "What is your security question?": [\n            null,\n            "Яке Ваше таємне питання?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Яка відповідь на таємне питання?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Надана некоректна схема автентикації"\n         ],\n         "has gone offline": [\n            null,\n            "тепер поза мережею"\n         ],\n         "is busy": [\n            null,\n            "зайнятий"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Ваші повідомлення більше не криптуються"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ваші повідомлення вже криптуються, але особа Вашого контакту не перевірена."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Особу Вашого контакту перевірено."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Ваш контакт припинив криптування зі свого боку, Вам слід зробити те саме."\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ваші повідомлення не криптуються. Клацніть тут, щоб увімкнути OTR-криптування."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Ваші повідомлення криптуються, але Ваш контакт не був перевірений."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Ваші повідомлення криптуються і Ваш контакт перевірено."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ваш контакт закрив зі свого боку приватну сесію, Вам слід зробити те ж саме"\n         ],\n         "Clear all messages": [\n            null,\n            "Очистити всі повідомлення"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Завершити криптовану розмову"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Оновити криптовану розмову"\n         ],\n         "Start a call": [\n            null,\n            "Почати виклик"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Почати криптовану розмову"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Перевірити за відбитками"\n         ],\n         "Verify with SMP": [\n            null,\n            "Перевірити за SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Що це?"\n         ],\n         "Online": [\n            null,\n            "На зв\'язку"\n         ],\n         "Busy": [\n            null,\n            "Зайнятий"\n         ],\n         "Away": [\n            null,\n            "Далеко"\n         ],\n         "Offline": [\n            null,\n            "Поза мережею"\n         ],\n         "Log out": [\n            null,\n            "Вийти"\n         ],\n         "Contact name": [\n            null,\n            "Назва контакту"\n         ],\n         "Search": [\n            null,\n            "Пошук"\n         ],\n         "e.g. user@example.com": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Додати"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Клацніть, щоб додати нові контакти до чату"\n         ],\n         "Add a contact": [\n            null,\n            "Додати контакт"\n         ],\n         "No users found": [\n            null,\n            "Жодного користувача не знайдено"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Клацніть, щоб додати як чат-контакт"\n         ],\n         "Room name": [\n            null,\n            "Назва кімнати"\n         ],\n         "Nickname": [\n            null,\n            "Прізвисько"\n         ],\n         "Server": [\n            null,\n            "Сервер"\n         ],\n         "Join Room": [\n            null,\n            "Приєднатися до кімнати"\n         ],\n         "Show rooms": [\n            null,\n            "Показати кімнати"\n         ],\n         "Rooms": [\n            null,\n            "Кімнати"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Жодної кімнати на %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Кімнати на %1$s"\n         ],\n         "Click to open this room": [\n            null,\n            "Клацніть, щоб увійти в цю кімнату"\n         ],\n         "Show more information on this room": [\n            null,\n            "Показати більше інформації про цю кімату"\n         ],\n         "Description:": [\n            null,\n            "Опис:"\n         ],\n         "Occupants:": [\n            null,\n            "Присутні:"\n         ],\n         "Features:": [\n            null,\n            "Особливості:"\n         ],\n         "Requires authentication": [\n            null,\n            "Вимагає автентикації"\n         ],\n         "Hidden": [\n            null,\n            "Прихована"\n         ],\n         "Requires an invitation": [\n            null,\n            "Вимагає запрошення"\n         ],\n         "Moderated": [\n            null,\n            "Модерована"\n         ],\n         "Non-anonymous": [\n            null,\n            "Не-анонімні"\n         ],\n         "Open room": [\n            null,\n            "Увійти в кімнату"\n         ],\n         "Permanent room": [\n            null,\n            "Постійна кімната"\n         ],\n         "Public": [\n            null,\n            "Публічна"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Напів-анонімна"\n         ],\n         "Temporary room": [\n            null,\n            "Тимчасова кімната"\n         ],\n         "Unmoderated": [\n            null,\n            "Немодерована"\n         ],\n         "This user is a moderator": [\n            null,\n            "Цей користувач є модератором"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Цей користувач може слати повідомлення в цій кімнаті"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Цей користувач НЕ МОЖЕ слати повідомлення в цій кімнаті"\n         ],\n         "Invite...": [\n            null,\n            "Запросіть..."\n         ],\n         "Occupants": [\n            null,\n            "Учасники"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Ви запрошуєте %1$s до чату \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."\n         ],\n         "Message": [\n            null,\n            "Повідомлення"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Помилка: Не можу виконати команду"\n         ],\n         "Error: the \\"": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Призначити користувача адміністратором"\n         ],\n         "Ban user from room": [\n            null,\n            "Заблокувати і викинути з кімнати"\n         ],\n         "Kick user from room": [\n            null,\n            "Викинути з кімнати"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Писати в 3-й особі"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Надати членство користувачу"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Забрати можливість слати повідомлення"\n         ],\n         "Change your nickname": [\n            null,\n            "Змінити Ваше прізвисько"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Надати права модератора"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Передати у власність цю кімнату"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Забрати членство в користувача"\n         ],\n         "Set room topic": [\n            null,\n            "Встановити тему кімнати"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Дозволити безголосому користувачу слати повідомлення"\n         ],\n         "Save": [\n            null,\n            "Зберегти"\n         ],\n         "Cancel": [\n            null,\n            "Відміна"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "Трапилася помилка при спробі зберегти форму."\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ця кімната вимагає пароль"\n         ],\n         "Password: ": [\n            null,\n            "Пароль:"\n         ],\n         "Submit": [\n            null,\n            "Надіслати"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ця кімната не є анонімною"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ця кімната вже показує недоступних учасників"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ця кімната не показує недоступних учасників"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "Змінено конфігурацію кімнати, не повязану з приватністю"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Журналювання кімнати тепер ввімкнено"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Журналювання кімнати тепер вимкнено"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Ця кімната тепер не-анонімна"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ця кімната тепер напів-анонімна"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ця кімната тепер повністю анонімна"\n         ],\n         "A new room has been created": [\n            null,\n            "Створено нову кімнату"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Вам заблокували доступ до цієї кімнати"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Вас викинули з цієї кімнати"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Вас видалено з кімнати у зв\'язку зі змінами власності кімнати"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "<strong>%1$s</strong> заблоковано"\n         ],\n         "<strong>%1$s</strong>\'s nickname has changed": [\n            null,\n            "Прізвисько <strong>%1$s</strong> змінено"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "<strong>%1$s</strong> було викинуто звідси"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "<strong>%1$s</strong> було видалено через зміни власності кімнати"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "<strong>%1$s</strong> було виделано через відсутність членства"\n         ],\n         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [\n            null,\n            "Ваше прізвисько було автоматично змінене на: <strong>%1$s</strong>"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "Ваше прізвисько було змінене на: <strong>%1$s</strong>"\n         ],\n         "The reason given is: \\"": [\n            null,\n            "Причиною вказано: \\""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "Ви не є у списку членів цієї кімнати"\n         ],\n         "No nickname was specified": [\n            null,\n            "Не вказане прізвисько"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "Вам не дозволено створювати нові кімнати"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "Ваше прізвисько не відповідає політиці кімнати"\n         ],\n         "Your nickname is already taken": [\n            null,\n            "Таке прізвисько вже зайняте"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Такої кімнати (поки) не існує"\n         ],\n         "This room has reached it\'s maximum number of occupants": [\n            null,\n            "Ця кімната досягнула максимуму учасників"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Тема встановлена %1$s: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s запрошує вас приєднатись до чату: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \\"%3$s\\""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Клацніть, щоб відновити цей чат"\n         ],\n         "Minimized": [\n            null,\n            "Мінімізовано"\n         ],\n         "Click to remove this contact": [\n            null,\n            "Клацніть, щоб видалити цей контакт"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Клацніть, щоб прийняти цей запит контакту"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Клацніть, щоб відхилити цей запит контакту"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Клацніть, щоб почати розмову з цим контактом"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Ви впевнені, що хочете видалити цей контакт?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            ""\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Ви впевнені, що хочете відхилити цей запит контакту?"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            ""\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Type to filter": [\n            null,\n            "Друкуйте для фільтру"\n         ],\n         "I am %1$s": [\n            null,\n            "Я %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Клацніть тут, щоб створити власний статус"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Клацніть, щоб змінити статус в чаті"\n         ],\n         "Custom status": [\n            null,\n            "Власний статус"\n         ],\n         "online": [\n            null,\n            "на зв\'язку"\n         ],\n         "busy": [\n            null,\n            "зайнятий"\n         ],\n         "away for long": [\n            null,\n            "давно відсутній"\n         ],\n         "away": [\n            null,\n            "відсутній"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Домен Вашого провайдера XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Отримати форму реєстрації"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Порада: доступний перелік публічних XMPP-провайдерів"\n         ],\n         "here": [\n            null,\n            "тут"\n         ],\n         "Register": [\n            null,\n            "Реєстрація"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого провайдера."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Запитую форму реєстрації з XMPP сервера"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Щось пішло не так при встановленні зв\'язку з \\"%1$s\\". Ви впевнені, що такий існує?"\n         ],\n         "Now logging you in": [\n            null,\n            "Входимо"\n         ],\n         "Registered successfully": [\n            null,\n            "Успішно зареєстровано"\n         ],\n         "Return": [\n            null,\n            "Вернутися"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP адреса:"\n         ],\n         "Password:": [\n            null,\n            "Пароль:"\n         ],\n         "Log In": [\n            null,\n            "Ввійти"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Вступити"\n         ],\n         "Toggle chat": [\n            null,\n            "Включити чат"\n         ]\n      }\n   }\n}';});
@@ -33995,13 +32739,1471 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
+/*global define, Backbone */
+
+(function (root, factory) {
+    define("converse-controlbox", ["converse-core", "converse-api"], factory);
+}(this, function (converse, converse_api) {
+    "use strict";
+    // Strophe methods for building stanzas
+    var Strophe = converse_api.env.Strophe,
+        $iq = converse_api.env.$iq,
+        b64_sha1 = converse_api.env.b64_sha1,
+        utils = converse_api.env.utils;
+    // Other necessary globals
+    var $ = converse_api.env.jQuery,
+        _ = converse_api.env._,
+        moment = converse_api.env.moment;
+
+    // For translations
+    var __ = utils.__.bind(converse);
+
+    converse_api.plugins.add('controlbox', {
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // New functions which don't exist yet can also be added.
+
+            initSession: function () {
+                this.controlboxtoggle = new this.ControlBoxToggle();
+                this._super.initSession.apply(this, arguments);
+            },
+
+            initConnection: function () {
+                this._super.initConnection.apply(this, arguments);
+                if (this.connection) {
+                    this.addControlBox();
+                }
+            },
+
+            _tearDown: function () {
+                this._super._tearDown.apply(this, arguments);
+                if (this.rosterview) {
+                    this.rosterview.unregisterHandlers();
+                    // Removes roster groups
+                    this.rosterview.model.off().reset();
+                    this.rosterview.undelegateEvents().remove();
+                }
+            },
+
+            clearSession: function () {
+                this._super.clearSession.apply(this, arguments);
+                if (this.connection.connected) {
+                    this.chatboxes.get('controlbox').save({'connected': false});
+                }
+            },
+
+            ChatBoxes: {
+                onChatBoxFetched: function (collection, resp) {
+                    collection.each(function (chatbox) {
+                        if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
+                            chatbox.trigger('show');
+                        }
+                    });
+                    if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
+                        this.add({
+                            id: 'controlbox',
+                            box_id: 'controlbox'
+                        });
+                    }
+                    this.get('controlbox').save({connected:true});
+                },
+
+            },
+
+            ChatBoxViews: {
+                onChatBoxAdded: function (item) {
+                    var view = this.get(item.get('id'));
+                    if (!view && item.get('box_id') === 'controlbox') {
+                        view = new converse.ControlBoxView({model: item});
+                        this.add(item.get('id'), view);
+                        this.trimChats(view);
+                    } else {
+                        this._super.onChatBoxAdded.apply(this, arguments);
+                    }
+                },
+
+                closeAllChatBoxes: function () {
+                    this.each(function (view) {
+                        if (view.model.get('id') !== 'controlbox') {
+                            view.close();
+                        }
+                    });
+                    return this;
+                },
+
+                getOldestMaximizedChat: function (exclude_ids) {
+                    exclude_ids.push('controlbox');
+                    this._super.getOldestMaximizedChat(exclude_ids);
+                },
+
+                getChatBoxWidth: function (view) {
+                    var controlbox = this.get('controlbox');
+                    if (view.model.get('id') === 'controlbox') {
+                        /* We return the width of the controlbox or its toggle,
+                         * depending on which is visible.
+                         */
+                        if (!controlbox || !controlbox.$el.is(':visible')) {
+                            return converse.controlboxtoggle.$el.outerWidth(true);
+                        } else {
+                            return controlbox.$el.outerWidth(true);
+                        }
+                    } else {
+                        return this._super.getChatBoxWidth.apply(this, arguments);
+                    }
+                }
+            },
+
+
+            MinimizedChats: {
+                onChanged: function (item) {
+                    if (item.get('id') === 'controlbox')  {
+                        return;
+                    } else {
+                        this._super.onChanged.apply(this, arguments);
+                    }
+                }
+            },
+
+
+            ChatBox: {
+                initialize: function () {
+                    if (this.get('id') === 'controlbox') {
+                        this.set(
+                            _.extend(
+                                this.getDefaultSettings(),
+                                { 'time_opened': moment(0).valueOf() }
+                            ));
+                    } else {
+                        this._super.initialize.apply(this, arguments);
+                    }
+                },
+            },
+
+
+            ChatBoxView: {
+                insertIntoPage: function () {
+                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    return this;
+                },
+
+                maximize: function () {
+                    var chatboxviews = converse.chatboxviews;
+                    // Restores a minimized chat box
+                    this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', this.onShow.bind(this));
+                    return this;
+                }
+            }
+        },
+
+        initialize: function () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            var converse = this.converse;
+            var settings = {
+                show_controlbox_by_default: false,
+            };
+            _.extend(converse.default_settings, settings);
+            _.extend(converse, settings);
+            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+
+            var STATUSES = {
+                'dnd': __('This contact is busy'),
+                'online': __('This contact is online'),
+                'offline': __('This contact is offline'),
+                'unavailable': __('This contact is unavailable'),
+                'xa': __('This contact is away for an extended period'),
+                'away': __('This contact is away')
+            };
+            var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
+            var LABEL_CONTACTS = __('Contacts');
+            var LABEL_GROUPS = __('Groups');
+            var HEADER_CURRENT_CONTACTS =  __('My contacts');
+            var HEADER_PENDING_CONTACTS = __('Pending contacts');
+            var HEADER_REQUESTING_CONTACTS = __('Contact requests');
+            var HEADER_UNGROUPED = __('Ungrouped');
+            var HEADER_WEIGHTS = {};
+            HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
+            HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
+            HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
+            HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
+
+            converse.addControlBox = function () {
+                return converse.chatboxes.add({
+                    id: 'controlbox',
+                    box_id: 'controlbox',
+                    closed: !converse.show_controlbox_by_default
+                });
+            };
+
+            converse.renderLoginPanel = function () {
+                converse._tearDown();
+                var view = converse.chatboxviews.get('controlbox');
+                view.model.set({connected:false});
+                view.renderLoginPanel();
+            };
+
+
+            converse.ControlBoxView = converse.ChatBoxView.extend({
+                tagName: 'div',
+                className: 'chatbox',
+                id: 'controlbox',
+                events: {
+                    'click a.close-chatbox-button': 'close',
+                    'click ul#controlbox-tabs li a': 'switchTab',
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize: function () {
+                    this.$el.insertAfter(converse.controlboxtoggle.$el);
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    this.model.on('change:connected', this.onConnected, this);
+                    this.model.on('destroy', this.hide, this);
+                    this.model.on('hide', this.hide, this);
+                    this.model.on('show', this.show, this);
+                    this.model.on('change:closed', this.ensureClosedState, this);
+                    this.render();
+                    if (this.model.get('connected')) {
+                        this.initRoster();
+                    }
+                    if (typeof this.model.get('closed')==='undefined') {
+                        this.model.set('closed', !converse.show_controlbox_by_default);
+                    }
+                    if (!this.model.get('closed')) {
+                        this.show();
+                    } else {
+                        this.hide();
+                    }
+                },
+
+                render: function () {
+                    if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
+                        // TODO: we might need to take prebinding into consideration here.
+                        this.renderLoginPanel();
+                    } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
+                        this.renderContactsPanel();
+                    }
+                    return this;
+                },
+
+                giveFeedback: function (message, klass) {
+                    var $el = this.$('.conn-feedback');
+                    $el.addClass('conn-feedback').text(message);
+                    if (klass) {
+                        $el.addClass(klass);
+                    }
+                },
+
+                onConnected: function () {
+                    if (this.model.get('connected')) {
+                        this.render().initRoster();
+                    }
+                },
+
+                initRoster: function () {
+                    /* We initialize the roster, which will appear inside the
+                    * Contacts Panel.
+                    */
+                    var rostergroups = new converse.RosterGroups();
+                    rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                        b64_sha1('converse.roster.groups'+converse.bare_jid));
+                    converse.rosterview = new converse.RosterView({model: rostergroups});
+                    this.contactspanel.$el.append(converse.rosterview.$el);
+                    converse.rosterview.render().fetch().update();
+                    return this;
+                },
+
+                renderLoginPanel: function () {
+                    var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
+                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
+                    var cfg = {
+                        '$parent': this.$el.find('.controlbox-panes'),
+                        'model': this
+                    };
+                    if (!this.loginpanel) {
+                        this.loginpanel = new converse.LoginPanel(cfg);
+                    } else {
+                        this.loginpanel.delegateEvents().initialize(cfg);
+                    }
+                    this.loginpanel.render();
+                    this.initDragResize().setDimensions();
+                    if ($feedback.length && $feedback.text() !== __('Connecting')) {
+                        this.$('.conn-feedback').replaceWith($feedback);
+                    }
+                    return this;
+                },
+
+                renderContactsPanel: function () {
+                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
+                    this.contactspanel = new converse.ContactsPanel({
+                        '$parent': this.$el.find('.controlbox-panes')
+                    });
+                    this.contactspanel.render();
+                    converse.xmppstatusview = new converse.XMPPStatusView({
+                        'model': converse.xmppstatus
+                    });
+                    converse.xmppstatusview.render();
+                    this.initDragResize().setDimensions();
+                },
+
+                close: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (converse.connection.connected) {
+                        this.model.save({'closed': true});
+                    } else {
+                        this.model.trigger('hide');
+                    }
+                    converse.emit('controlBoxClosed', this);
+                    return this;
+                },
+
+                ensureClosedState: function () {
+                    if (this.model.get('closed')) {
+                        this.hide();
+                    } else {
+                        this.show();
+                    }
+                },
+
+                hide: function (callback) {
+                    this.$el.hide('fast', function () {
+                        utils.refreshWebkit();
+                        converse.emit('chatBoxClosed', this);
+                        converse.controlboxtoggle.show(function () {
+                            if (typeof callback === "function") {
+                                callback();
+                            }
+                        });
+                    });
+                    return this;
+                },
+
+                show: function () {
+                    converse.controlboxtoggle.hide(function () {
+                        this.$el.show('fast', function () {
+                            if (converse.rosterview) {
+                                converse.rosterview.update();
+                            }
+                            utils.refreshWebkit();
+                        }.bind(this));
+                        converse.emit('controlBoxOpened', this);
+                    }.bind(this));
+                    return this;
+                },
+
+                switchTab: function (ev) {
+                    // TODO: automatically focus the relevant input
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var $tab = $(ev.target),
+                        $sibling = $tab.parent().siblings('li').children('a'),
+                        $tab_panel = $($tab.attr('href'));
+                    $($sibling.attr('href')).hide();
+                    $sibling.removeClass('current');
+                    $tab.addClass('current');
+                    $tab_panel.show();
+                    return this;
+                },
+
+                showHelpMessages: function (msgs) {
+                    // Override showHelpMessages in ChatBoxView, for now do nothing.
+                    return;
+                }
+            });
+
+
+            converse.LoginPanel = Backbone.View.extend({
+                tagName: 'div',
+                id: "login-dialog",
+                className: 'controlbox-pane',
+                events: {
+                    'submit form#converse-login': 'authenticate'
+                },
+
+                initialize: function (cfg) {
+                    cfg.$parent.html(this.$el.html(
+                        converse.templates.login_panel({
+                            'LOGIN': converse.LOGIN,
+                            'ANONYMOUS': converse.ANONYMOUS,
+                            'PREBIND': converse.PREBIND,
+                            'auto_login': converse.auto_login,
+                            'authentication': converse.authentication,
+                            'label_username': __('XMPP Username:'),
+                            'label_password': __('Password:'),
+                            'label_anon_login': __('Click here to log in anonymously'),
+                            'label_login': __('Log In'),
+                            'placeholder_username': (converse.locked_domain || converse.default_domain) && __('Username') || __('user@server'),
+                            'placeholder_password': __('password')
+                        })
+                    ));
+                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                },
+
+                render: function () {
+                    this.$tabs.append(converse.templates.login_tab({label_sign_in: __('Sign in')}));
+                    this.$el.find('input#jid').focus();
+                    if (!this.$el.is(':visible')) {
+                        this.$el.show();
+                    }
+                    return this;
+                },
+
+                authenticate: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var $form = $(ev.target);
+                    if (converse.authentication === converse.ANONYMOUS) {
+                        this.connect($form, converse.jid, null);
+                        return;
+                    }
+                    var $jid_input = $form.find('input[name=jid]'),
+                        jid = $jid_input.val(),
+                        $pw_input = $form.find('input[name=password]'),
+                        password = $pw_input.val(),
+                        errors = false;
+
+                    if (! jid) {
+                        errors = true;
+                        $jid_input.addClass('error');
+                    }
+                    if (! password)  {
+                        errors = true;
+                        $pw_input.addClass('error');
+                    }
+                    if (errors) { return; }
+                    if (converse.locked_domain) {
+                        jid = Strophe.escapeNode(jid) + '@' + converse.locked_domain;
+                    } else if (converse.default_domain && jid.indexOf('@') === -1) {
+                        jid = jid + '@' + converse.default_domain;
+                    }
+                    this.connect($form, jid, password);
+                    return false;
+                },
+
+                connect: function ($form, jid, password) {
+                    var resource;
+                    if ($form) {
+                        $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
+                    }
+                    if (jid) {
+                        resource = Strophe.getResourceFromJid(jid);
+                        if (!resource) {
+                            jid = jid.toLowerCase() + converse.generateResource();
+                        } else {
+                            jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
+                        }
+                    }
+                    converse.connection.connect(jid, password, converse.onConnectStatusChanged);
+                },
+
+                remove: function () {
+                    this.$tabs.empty();
+                    this.$el.parent().empty();
+                }
+            });
+
+
+            converse.XMPPStatusView = Backbone.View.extend({
+                el: "span#xmpp-status-holder",
+
+                events: {
+                    "click a.choose-xmpp-status": "toggleOptions",
+                    "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
+                    "submit #set-custom-xmpp-status": "setStatusMessage",
+                    "click .dropdown dd ul li a": "setStatus"
+                },
+
+                initialize: function () {
+                    this.model.on("change:status", this.updateStatusUI, this);
+                    this.model.on("change:status_message", this.updateStatusUI, this);
+                    this.model.on("update-status-ui", this.updateStatusUI, this);
+                },
+
+                render: function () {
+                    // Replace the default dropdown with something nicer
+                    var $select = this.$el.find('select#select-xmpp-status'),
+                        chat_status = this.model.get('status') || 'offline',
+                        options = $('option', $select),
+                        $options_target,
+                        options_list = [];
+                    this.$el.html(converse.templates.choose_status());
+                    this.$el.find('#fancy-xmpp-status-select')
+                            .html(converse.templates.chat_status({
+                                'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
+                                'chat_status': chat_status,
+                                'desc_custom_status': __('Click here to write a custom status message'),
+                                'desc_change_status': __('Click to change your chat status')
+                                }));
+                    // iterate through all the <option> elements and add option values
+                    options.each(function () {
+                        options_list.push(converse.templates.status_option({
+                            'value': $(this).val(),
+                            'text': this.text
+                        }));
+                    });
+                    $options_target = this.$el.find("#target dd ul").hide();
+                    $options_target.append(options_list.join(''));
+                    $select.remove();
+                    return this;
+                },
+
+                toggleOptions: function (ev) {
+                    ev.preventDefault();
+                    $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
+                },
+
+                renderStatusChangeForm: function (ev) {
+                    ev.preventDefault();
+                    var status_message = this.model.get('status') || 'offline';
+                    var input = converse.templates.change_status_message({
+                        'status_message': status_message,
+                        'label_custom_status': __('Custom status'),
+                        'label_save': __('Save')
+                    });
+                    var $xmppstatus = this.$el.find('.xmpp-status');
+                    $xmppstatus.parent().addClass('no-border');
+                    $xmppstatus.replaceWith(input);
+                    this.$el.find('.custom-xmpp-status').focus().focus();
+                },
+
+                setStatusMessage: function (ev) {
+                    ev.preventDefault();
+                    this.model.setStatusMessage($(ev.target).find('input').val());
+                },
+
+                setStatus: function (ev) {
+                    ev.preventDefault();
+                    var $el = $(ev.currentTarget),
+                        value = $el.attr('data-value');
+                    if (value === 'logout') {
+                        this.$el.find(".dropdown dd ul").hide();
+                        converse.logOut();
+                    } else {
+                        this.model.setStatus(value);
+                        this.$el.find(".dropdown dd ul").hide();
+                    }
+                },
+
+                getPrettyStatus: function (stat) {
+                    if (stat === 'chat') {
+                        return __('online');
+                    } else if (stat === 'dnd') {
+                        return __('busy');
+                    } else if (stat === 'xa') {
+                        return __('away for long');
+                    } else if (stat === 'away') {
+                        return __('away');
+                    } else if (stat === 'offline') {
+                        return __('offline');
+                    } else {
+                        return __(stat) || __('online');
+                    }
+                },
+
+                updateStatusUI: function (model) {
+                    var stat = model.get('status');
+                    // For translators: the %1$s part gets replaced with the status
+                    // Example, I am online
+                    var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
+                    this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
+                        converse.templates.chat_status({
+                            'chat_status': stat,
+                            'status_message': status_message,
+                            'desc_custom_status': __('Click here to write a custom status message'),
+                            'desc_change_status': __('Click to change your chat status')
+                        }));
+                }
+            });
+
+
+            converse.ContactsPanel = Backbone.View.extend({
+                tagName: 'div',
+                className: 'controlbox-pane',
+                id: 'users',
+                events: {
+                    'click a.toggle-xmpp-contact-form': 'toggleContactForm',
+                    'submit form.add-xmpp-contact': 'addContactFromForm',
+                    'submit form.search-xmpp-contact': 'searchContacts',
+                    'click a.subscribe-to-user': 'addContactFromList'
+                },
+
+                initialize: function (cfg) {
+                    cfg.$parent.append(this.$el);
+                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                },
+
+                render: function () {
+                    var markup;
+                    var widgets = converse.templates.contacts_panel({
+                        label_online: __('Online'),
+                        label_busy: __('Busy'),
+                        label_away: __('Away'),
+                        label_offline: __('Offline'),
+                        label_logout: __('Log out'),
+                        include_offline_state: converse.include_offline_state,
+                        allow_logout: converse.allow_logout
+                    });
+                    this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
+                    if (converse.xhr_user_search) {
+                        markup = converse.templates.search_contact({
+                            label_contact_name: __('Contact name'),
+                            label_search: __('Search')
+                        });
+                    } else {
+                        markup = converse.templates.add_contact_form({
+                            label_contact_username: __('e.g. user@example.com'),
+                            label_add: __('Add')
+                        });
+                    }
+                    if (converse.allow_contact_requests) {
+                        widgets += converse.templates.add_contact_dropdown({
+                            label_click_to_chat: __('Click to add new chat contacts'),
+                            label_add_contact: __('Add a contact')
+                        });
+                    }
+                    this.$el.html(widgets);
+                    this.$el.find('.search-xmpp ul').append(markup);
+                    return this;
+                },
+
+                toggleContactForm: function (ev) {
+                    ev.preventDefault();
+                    this.$el.find('.search-xmpp').toggle('fast', function () {
+                        if ($(this).is(':visible')) {
+                            $(this).find('input.username').focus();
+                        }
+                    });
+                },
+
+                searchContacts: function (ev) {
+                    ev.preventDefault();
+                    $.getJSON(converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                        var $ul= $('.search-xmpp ul');
+                        $ul.find('li.found-user').remove();
+                        $ul.find('li.chat-info').remove();
+                        if (!data.length) {
+                            $ul.append('<li class="chat-info">'+__('No users found')+'</li>');
+                        }
+                        $(data).each(function (idx, obj) {
+                            $ul.append(
+                                $('<li class="found-user"></li>')
+                                .append(
+                                    $('<a class="subscribe-to-user" href="#" title="'+__('Click to add as a chat contact')+'"></a>')
+                                    .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
+                                    .text(obj.fullname)
+                                )
+                            );
+                        });
+                    });
+                },
+
+                addContactFromForm: function (ev) {
+                    ev.preventDefault();
+                    var $input = $(ev.target).find('input');
+                    var jid = $input.val();
+                    if (! jid) {
+                        // this is not a valid JID
+                        $input.addClass('error');
+                        return;
+                    }
+                    converse.roster.addAndSubscribe(jid);
+                    $('.search-xmpp').hide();
+                },
+
+                addContactFromList: function (ev) {
+                    ev.preventDefault();
+                    var $target = $(ev.target),
+                        jid = $target.attr('data-recipient'),
+                        name = $target.text();
+                    converse.roster.addAndSubscribe(jid, name);
+                    $target.parent().remove();
+                    $('.search-xmpp').hide();
+                }
+            });
+
+
+            converse.RosterContactView = Backbone.View.extend({
+                tagName: 'dd',
+
+                events: {
+                    "click .accept-xmpp-request": "acceptRequest",
+                    "click .decline-xmpp-request": "declineRequest",
+                    "click .open-chat": "openChat",
+                    "click .remove-xmpp-contact": "removeContact"
+                },
+
+                initialize: function () {
+                    this.model.on("change", this.render, this);
+                    this.model.on("remove", this.remove, this);
+                    this.model.on("destroy", this.remove, this);
+                    this.model.on("open", this.openChat, this);
+                },
+
+                render: function () {
+                    if (!this.model.showInRoster()) {
+                        this.$el.hide();
+                        return this;
+                    } else if (this.$el[0].style.display === "none") {
+                        this.$el.show();
+                    }
+                    var item = this.model,
+                        ask = item.get('ask'),
+                        chat_status = item.get('chat_status'),
+                        requesting  = item.get('requesting'),
+                        subscription = item.get('subscription');
+
+                    var classes_to_remove = [
+                        'current-xmpp-contact',
+                        'pending-xmpp-contact',
+                        'requesting-xmpp-contact'
+                        ].concat(_.keys(STATUSES));
+
+                    _.each(classes_to_remove,
+                        function (cls) {
+                            if (this.el.className.indexOf(cls) !== -1) {
+                                this.$el.removeClass(cls);
+                            }
+                        }, this);
+                    this.$el.addClass(chat_status).data('status', chat_status);
+
+                    if ((ask === 'subscribe') || (subscription === 'from')) {
+                        /* ask === 'subscribe'
+                        *      Means we have asked to subscribe to them.
+                        *
+                        * subscription === 'from'
+                        *      They are subscribed to use, but not vice versa.
+                        *      We assume that there is a pending subscription
+                        *      from us to them (otherwise we're in a state not
+                        *      supported by converse.js).
+                        *
+                        *  So in both cases the user is a "pending" contact.
+                        */
+                        this.$el.addClass('pending-xmpp-contact');
+                        this.$el.html(converse.templates.pending_contact(
+                            _.extend(item.toJSON(), {
+                                'desc_remove': __('Click to remove this contact'),
+                                'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
+                            })
+                        ));
+                    } else if (requesting === true) {
+                        this.$el.addClass('requesting-xmpp-contact');
+                        this.$el.html(converse.templates.requesting_contact(
+                            _.extend(item.toJSON(), {
+                                'desc_accept': __("Click to accept this contact request"),
+                                'desc_decline': __("Click to decline this contact request"),
+                                'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
+                            })
+                        ));
+                        converse.controlboxtoggle.showControlBox();
+                    } else if (subscription === 'both' || subscription === 'to') {
+                        this.$el.addClass('current-xmpp-contact');
+                        this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
+                        this.$el.html(converse.templates.roster_item(
+                            _.extend(item.toJSON(), {
+                                'desc_status': STATUSES[chat_status||'offline'],
+                                'desc_chat': __('Click to chat with this contact'),
+                                'desc_remove': __('Click to remove this contact'),
+                                'title_fullname': __('Name'),
+                                'allow_contact_removal': converse.allow_contact_removal
+                            })
+                        ));
+                    }
+                    return this;
+                },
+
+                openChat: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    return converse.chatboxviews.showChat(this.model.attributes);
+                },
+
+                removeContact: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (!converse.allow_contact_removal) { return; }
+                    var result = confirm(__("Are you sure you want to remove this contact?"));
+                    if (result === true) {
+                        var iq = $iq({type: 'set'})
+                            .c('query', {xmlns: Strophe.NS.ROSTER})
+                            .c('item', {jid: this.model.get('jid'), subscription: "remove"});
+                        converse.connection.sendIQ(iq,
+                            function (iq) {
+                                this.model.destroy();
+                                this.remove();
+                            }.bind(this),
+                            function (err) {
+                                alert(__("Sorry, there was an error while trying to remove "+name+" as a contact."));
+                                converse.log(err);
+                            }
+                        );
+                    }
+                },
+
+                acceptRequest: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    converse.roster.sendContactAddIQ(
+                        this.model.get('jid'),
+                        this.model.get('fullname'),
+                        [],
+                        function () { this.model.authorize().subscribe(); }.bind(this)
+                    );
+                },
+
+                declineRequest: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var result = confirm(__("Are you sure you want to decline this contact request?"));
+                    if (result === true) {
+                        this.model.unauthorize().destroy();
+                    }
+                    return this;
+                }
+            });
+
+
+            converse.RosterGroup = Backbone.Model.extend({
+                initialize: function (attributes, options) {
+                    this.set(_.extend({
+                        description: DESC_GROUP_TOGGLE,
+                        state: converse.OPENED
+                    }, attributes));
+                    // Collection of contacts belonging to this group.
+                    this.contacts = new converse.RosterContacts();
+                }
+            });
+
+
+            converse.RosterGroupView = Backbone.Overview.extend({
+                tagName: 'dt',
+                className: 'roster-group',
+                events: {
+                    "click a.group-toggle": "toggle"
+                },
+
+                initialize: function () {
+                    this.model.contacts.on("add", this.addContact, this);
+                    this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
+                    this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
+                    this.model.contacts.on("change:chat_status", function (contact) {
+                        // This might be optimized by instead of first sorting,
+                        // finding the correct position in positionContact
+                        this.model.contacts.sort();
+                        this.positionContact(contact).render();
+                    }, this);
+                    this.model.contacts.on("destroy", this.onRemove, this);
+                    this.model.contacts.on("remove", this.onRemove, this);
+                    converse.roster.on('change:groups', this.onContactGroupChange, this);
+                },
+
+                render: function () {
+                    this.$el.attr('data-group', this.model.get('name'));
+                    this.$el.html(
+                        $(converse.templates.group_header({
+                            label_group: this.model.get('name'),
+                            desc_group_toggle: this.model.get('description'),
+                            toggle_state: this.model.get('state')
+                        }))
+                    );
+                    return this;
+                },
+
+                addContact: function (contact) {
+                    var view = new converse.RosterContactView({model: contact});
+                    this.add(contact.get('id'), view);
+                    view = this.positionContact(contact).render();
+                    if (contact.showInRoster()) {
+                        if (this.model.get('state') === converse.CLOSED) {
+                            if (view.$el[0].style.display !== "none") { view.$el.hide(); }
+                            if (!this.$el.is(':visible')) { this.$el.show(); }
+                        } else {
+                            if (this.$el[0].style.display !== "block") { this.show(); }
+                        }
+                    }
+                },
+
+                positionContact: function (contact) {
+                    /* Place the contact's DOM element in the correct alphabetical
+                    * position amongst the other contacts in this group.
+                    */
+                    var view = this.get(contact.get('id'));
+                    var index = this.model.contacts.indexOf(contact);
+                    view.$el.detach();
+                    if (index === 0) {
+                        this.$el.after(view.$el);
+                    } else if (index === (this.model.contacts.length-1)) {
+                        this.$el.nextUntil('dt').last().after(view.$el);
+                    } else {
+                        this.$el.nextUntil('dt').eq(index).before(view.$el);
+                    }
+                    return view;
+                },
+
+                show: function () {
+                    this.$el.show();
+                    _.each(this.getAll(), function (contactView) {
+                        if (contactView.model.showInRoster()) {
+                            contactView.$el.show();
+                        }
+                    });
+                },
+
+                hide: function () {
+                    this.$el.nextUntil('dt').addBack().hide();
+                },
+
+                filter: function (q) {
+                    /* Filter the group's contacts based on the query "q".
+                    * The query is matched against the contact's full name.
+                    * If all contacts are filtered out (i.e. hidden), then the
+                    * group must be filtered out as well.
+                    */
+                    var matches;
+                    if (q.length === 0) {
+                        if (this.model.get('state') === converse.OPENED) {
+                            this.model.contacts.each(function (item) {
+                                if (item.showInRoster()) {
+                                    this.get(item.get('id')).$el.show();
+                                }
+                            }.bind(this));
+                        }
+                        this.showIfNecessary();
+                    } else {
+                        q = q.toLowerCase();
+                        matches = this.model.contacts.filter(utils.contains.not('fullname', q));
+                        if (matches.length === this.model.contacts.length) { // hide the whole group
+                            this.hide();
+                        } else {
+                            _.each(matches, function (item) {
+                                this.get(item.get('id')).$el.hide();
+                            }.bind(this));
+                            _.each(this.model.contacts.reject(utils.contains.not('fullname', q)), function (item) {
+                                this.get(item.get('id')).$el.show();
+                            }.bind(this));
+                            this.showIfNecessary();
+                        }
+                    }
+                },
+
+                showIfNecessary: function () {
+                    if (!this.$el.is(':visible') && this.model.contacts.length > 0) {
+                        this.$el.show();
+                    }
+                },
+
+                toggle: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var $el = $(ev.target);
+                    if ($el.hasClass("icon-opened")) {
+                        this.$el.nextUntil('dt').slideUp();
+                        this.model.save({state: converse.CLOSED});
+                        $el.removeClass("icon-opened").addClass("icon-closed");
+                    } else {
+                        $el.removeClass("icon-closed").addClass("icon-opened");
+                        this.model.save({state: converse.OPENED});
+                        this.filter(
+                            converse.rosterview.$('.roster-filter').val(),
+                            converse.rosterview.$('.filter-type').val()
+                        );
+                    }
+                },
+
+                onContactGroupChange: function (contact) {
+                    var in_this_group = _.contains(contact.get('groups'), this.model.get('name'));
+                    var cid = contact.get('id');
+                    var in_this_overview = !this.get(cid);
+                    if (in_this_group && !in_this_overview) {
+                        this.model.contacts.remove(cid);
+                    } else if (!in_this_group && in_this_overview) {
+                        this.addContact(contact);
+                    }
+                },
+
+                onContactSubscriptionChange: function (contact) {
+                    if ((this.model.get('name') === HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
+                        this.model.contacts.remove(contact.get('id'));
+                    }
+                },
+
+                onContactRequestChange: function (contact) {
+                    if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
+                        this.model.contacts.remove(contact.get('id'));
+                    }
+                },
+
+                onRemove: function (contact) {
+                    this.remove(contact.get('id'));
+                    if (this.model.contacts.length === 0) {
+                        this.$el.hide();
+                    }
+                }
+            });
+
+
+            converse.RosterGroups = Backbone.Collection.extend({
+                model: converse.RosterGroup,
+                comparator: function (a, b) {
+                    /* Groups are sorted alphabetically, ignoring case.
+                    * However, Ungrouped, Requesting Contacts and Pending Contacts
+                    * appear last and in that order. */
+                    a = a.get('name');
+                    b = b.get('name');
+                    var special_groups = _.keys(HEADER_WEIGHTS);
+                    var a_is_special = _.contains(special_groups, a);
+                    var b_is_special = _.contains(special_groups, b);
+                    if (!a_is_special && !b_is_special ) {
+                        return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+                    } else if (a_is_special && b_is_special) {
+                        return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                    } else if (!a_is_special && b_is_special) {
+                        return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
+                    } else if (a_is_special && !b_is_special) {
+                        return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
+                    }
+                }
+            });
+
+            converse.RosterView = Backbone.Overview.extend({
+                tagName: 'div',
+                id: 'converse-roster',
+                events: {
+                    "keydown .roster-filter": "liveFilter",
+                    "click .onX": "clearFilter",
+                    "mousemove .x": "togglePointer",
+                    "change .filter-type": "changeFilterType"
+                },
+
+                initialize: function () {
+                    this.roster_handler_ref = this.registerRosterHandler();
+                    this.rosterx_handler_ref = this.registerRosterXHandler();
+                    this.presence_ref = this.registerPresenceHandler();
+                    converse.roster.on("add", this.onContactAdd, this);
+                    converse.roster.on('change', this.onContactChange, this);
+                    converse.roster.on("destroy", this.update, this);
+                    converse.roster.on("remove", this.update, this);
+                    this.model.on("add", this.onGroupAdd, this);
+                    this.model.on("reset", this.reset, this);
+                    this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
+                },
+
+                unregisterHandlers: function () {
+                    converse.connection.deleteHandler(this.roster_handler_ref);
+                    delete this.roster_handler_ref;
+                    converse.connection.deleteHandler(this.rosterx_handler_ref);
+                    delete this.rosterx_handler_ref;
+                    converse.connection.deleteHandler(this.presence_ref);
+                    delete this.presence_ref;
+                },
+
+                update: _.debounce(function () {
+                    var $count = $('#online-count');
+                    $count.text('('+converse.roster.getNumOnlineContacts()+')');
+                    if (!$count.is(':visible')) {
+                        $count.show();
+                    }
+                    if (this.$roster.parent().length === 0) {
+                        this.$el.append(this.$roster.show());
+                    }
+                    return this.showHideFilter();
+                }, converse.animate ? 100 : 0),
+
+                render: function () {
+                    this.$el.html(converse.templates.roster({
+                        placeholder: __('Type to filter'),
+                        label_contacts: LABEL_CONTACTS,
+                        label_groups: LABEL_GROUPS
+                    }));
+                    if (!converse.allow_contact_requests) {
+                        // XXX: if we ever support live editing of config then
+                        // we'll need to be able to remove this class on the fly.
+                        this.$el.addClass('no-contact-requests');
+                    }
+                    return this;
+                },
+
+                fetch: function () {
+                    this.model.fetch({
+                        silent: true, // We use the success handler to handle groups that were added,
+                                    // we need to first have all groups before positionFetchedGroups
+                                    // will work properly.
+                        success: function (collection, resp, options) {
+                            if (collection.length !== 0) {
+                                this.positionFetchedGroups(collection, resp, options);
+                            }
+                            converse.roster.fetch({
+                                add: true,
+                                success: function (collection) {
+                                    if (collection.length === 0) {
+                                        /* We don't have any roster contacts stored in sessionStorage,
+                                        * so lets fetch the roster from the XMPP server. We pass in
+                                        * 'sendPresence' as callback method, because after initially
+                                        * fetching the roster we are ready to receive presence
+                                        * updates from our contacts.
+                                        */
+                                        converse.roster.fetchFromServer(function () {
+                                            converse.xmppstatus.sendPresence();
+                                        });
+                                    } else if (converse.send_initial_presence) {
+                                        /* We're not going to fetch the roster again because we have
+                                        * it already cached in sessionStorage, but we still need to
+                                        * send out a presence stanza because this is a new session.
+                                        * See: https://github.com/jcbrand/converse.js/issues/536
+                                        */
+                                        converse.xmppstatus.sendPresence();
+                                    }
+                                }
+                            });
+                        }.bind(this)
+                    });
+                    return this;
+                },
+
+                changeFilterType: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.clearFilter();
+                    this.filter(
+                        this.$('.roster-filter').val(),
+                        ev.target.value
+                    );
+                },
+
+                tog: function (v) {
+                    return v?'addClass':'removeClass';
+                },
+
+                togglePointer: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var el = ev.target;
+                    $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
+                },
+
+                filter: function (query, type) {
+                    query = query.toLowerCase();
+                    if (type === 'groups') {
+                        _.each(this.getAll(), function (view, idx) {
+                            if (view.model.get('name').toLowerCase().indexOf(query.toLowerCase()) === -1) {
+                                view.hide();
+                            } else if (view.model.contacts.length > 0) {
+                                view.show();
+                            }
+                        });
+                    } else {
+                        _.each(this.getAll(), function (view) {
+                            view.filter(query, type);
+                        });
+                    }
+                },
+
+                liveFilter: _.debounce(function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var $filter = this.$('.roster-filter');
+                    var q = $filter.val();
+                    var t = this.$('.filter-type').val();
+                    $filter[this.tog(q)]('x');
+                    this.filter(q, t);
+                }, 300),
+
+                clearFilter: function (ev) {
+                    if (ev && ev.preventDefault) {
+                        ev.preventDefault();
+                        $(ev.target).removeClass('x onX').val('');
+                    }
+                    this.filter('');
+                },
+
+                showHideFilter: function () {
+                    if (!this.$el.is(':visible')) {
+                        return;
+                    }
+                    var $filter = this.$('.roster-filter');
+                    var $type  = this.$('.filter-type');
+                    var visible = $filter.is(':visible');
+                    if (visible && $filter.val().length > 0) {
+                        // Don't hide if user is currently filtering.
+                        return;
+                    }
+                    if (this.$roster.hasScrollBar()) {
+                        if (!visible) {
+                            $filter.show();
+                            $type.show();
+                        }
+                    } else {
+                        $filter.hide();
+                        $type.hide();
+                    }
+                    return this;
+                },
+
+                reset: function () {
+                    converse.roster.reset();
+                    this.removeAll();
+                    this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
+                    this.render().update();
+                    return this;
+                },
+
+                registerRosterHandler: function () {
+                    converse.connection.addHandler(
+                        converse.roster.onRosterPush.bind(converse.roster),
+                        Strophe.NS.ROSTER, 'iq', "set"
+                    );
+                },
+
+                registerRosterXHandler: function () {
+                    var t = 0;
+                    converse.connection.addHandler(
+                        function (msg) {
+                            window.setTimeout(
+                                function () {
+                                    converse.connection.flush();
+                                    converse.roster.subscribeToSuggestedItems.bind(converse.roster)(msg);
+                                },
+                                t
+                            );
+                            t += $(msg).find('item').length*250;
+                            return true;
+                        },
+                        Strophe.NS.ROSTERX, 'message', null
+                    );
+                },
+
+                registerPresenceHandler: function () {
+                    converse.connection.addHandler(
+                        function (presence) {
+                            converse.roster.presenceHandler(presence);
+                            return true;
+                        }.bind(this), null, 'presence', null);
+                },
+
+                onGroupAdd: function (group) {
+                    var view = new converse.RosterGroupView({model: group});
+                    this.add(group.get('name'), view.render());
+                    this.positionGroup(view);
+                },
+
+                onContactAdd: function (contact) {
+                    this.addRosterContact(contact).update();
+                    if (!contact.get('vcard_updated')) {
+                        // This will update the vcard, which triggers a change
+                        // request which will rerender the roster contact.
+                        converse.getVCard(contact.get('jid'));
+                    }
+                },
+
+                onContactChange: function (contact) {
+                    this.updateChatBox(contact).update();
+                    if (_.has(contact.changed, 'subscription')) {
+                        if (contact.changed.subscription === 'from') {
+                            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                        } else if (_.contains(['both', 'to'], contact.get('subscription'))) {
+                            this.addExistingContact(contact);
+                        }
+                    }
+                    if (_.has(contact.changed, 'ask') && contact.changed.ask === 'subscribe') {
+                        this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                    }
+                    if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
+                        this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+                    }
+                    this.liveFilter();
+                },
+
+                updateChatBox: function (contact) {
+                    var chatbox = converse.chatboxes.get(contact.get('jid')),
+                        changes = {};
+                    if (!chatbox) {
+                        return this;
+                    }
+                    if (_.has(contact.changed, 'chat_status')) {
+                        changes.chat_status = contact.get('chat_status');
+                    }
+                    if (_.has(contact.changed, 'status')) {
+                        changes.status = contact.get('status');
+                    }
+                    chatbox.save(changes);
+                    return this;
+                },
+
+                positionFetchedGroups: function (model, resp, options) {
+                    /* Instead of throwing an add event for each group
+                    * fetched, we wait until they're all fetched and then
+                    * we position them.
+                    * Works around the problem of positionGroup not
+                    * working when all groups besides the one being
+                    * positioned aren't already in inserted into the
+                    * roster DOM element.
+                    */
+                    model.sort();
+                    model.each(function (group, idx) {
+                        var view = this.get(group.get('name'));
+                        if (!view) {
+                            view = new converse.RosterGroupView({model: group});
+                            this.add(group.get('name'), view.render());
+                        }
+                        if (idx === 0) {
+                            this.$roster.append(view.$el);
+                        } else {
+                            this.appendGroup(view);
+                        }
+                    }.bind(this));
+                },
+
+                positionGroup: function (view) {
+                    /* Place the group's DOM element in the correct alphabetical
+                    * position amongst the other groups in the roster.
+                    */
+                    var $groups = this.$roster.find('.roster-group'),
+                        index = $groups.length ? this.model.indexOf(view.model) : 0;
+                    if (index === 0) {
+                        this.$roster.prepend(view.$el);
+                    } else if (index === (this.model.length-1)) {
+                        this.appendGroup(view);
+                    } else {
+                        $($groups.eq(index)).before(view.$el);
+                    }
+                    return this;
+                },
+
+                appendGroup: function (view) {
+                    /* Add the group at the bottom of the roster
+                    */
+                    var $last = this.$roster.find('.roster-group').last();
+                    var $siblings = $last.siblings('dd');
+                    if ($siblings.length > 0) {
+                        $siblings.last().after(view.$el);
+                    } else {
+                        $last.after(view.$el);
+                    }
+                    return this;
+                },
+
+                getGroup: function (name) {
+                    /* Returns the group as specified by name.
+                    * Creates the group if it doesn't exist.
+                    */
+                    var view =  this.get(name);
+                    if (view) {
+                        return view.model;
+                    }
+                    return this.model.create({name: name, id: b64_sha1(name)});
+                },
+
+                addContactToGroup: function (contact, name) {
+                    this.getGroup(name).contacts.add(contact);
+                },
+
+                addExistingContact: function (contact) {
+                    var groups;
+                    if (converse.roster_groups) {
+                        groups = contact.get('groups');
+                        if (groups.length === 0) {
+                            groups = [HEADER_UNGROUPED];
+                        }
+                    } else {
+                        groups = [HEADER_CURRENT_CONTACTS];
+                    }
+                    _.each(groups, _.bind(this.addContactToGroup, this, contact));
+                },
+
+                addRosterContact: function (contact) {
+                    if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
+                        this.addExistingContact(contact);
+                    } else {
+                        if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
+                            this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
+                        } else if (contact.get('requesting') === true) {
+                            this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
+                        }
+                    }
+                    return this;
+                }
+            });
+
+
+            converse.ControlBoxToggle = Backbone.View.extend({
+                tagName: 'a',
+                className: 'toggle-controlbox',
+                id: 'toggle-controlbox',
+                events: {
+                    'click': 'onClick'
+                },
+                attributes: {
+                    'href': "#"
+                },
+
+                initialize: function () {
+                    this.render();
+                },
+
+                render: function () {
+                    $('#conversejs').prepend(this.$el.html(
+                        converse.templates.controlbox_toggle({
+                            'label_toggle': __('Toggle chat')
+                        })
+                    ));
+                    // We let the render method of ControlBoxView decide whether
+                    // the ControlBox or the Toggle must be shown. This prevents
+                    // artifacts (i.e. on page load the toggle is shown only to then
+                    // seconds later be hidden in favor of the control box).
+                    this.$el.hide();
+                    return this;
+                },
+
+                hide: function (callback) {
+                    this.$el.fadeOut('fast', callback);
+                },
+
+                show: function (callback) {
+                    this.$el.show('fast', callback);
+                },
+
+                showControlBox: function () {
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    if (!controlbox) {
+                        controlbox = converse.addControlBox();
+                    }
+                    if (converse.connection.connected) {
+                        controlbox.save({closed: false});
+                    } else {
+                        controlbox.trigger('show');
+                    }
+                },
+
+                onClick: function (e) {
+                    e.preventDefault();
+                    if ($("div#controlbox").is(':visible')) {
+                        var controlbox = converse.chatboxes.get('controlbox');
+                        if (converse.connection.connected) {
+                            controlbox.save({closed: true});
+                        } else {
+                            controlbox.trigger('hide');
+                        }
+                    } else {
+                        this.showControlBox();
+                    }
+                }
+            });
+        }
+    });
+}));
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
 /*global Backbone, define, window, setTimeout */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    define("converse-muc", ["converse-core", "converse-api"], factory);
+    define("converse-muc", [
+            "converse-core",
+            "converse-api",
+            "converse-controlbox"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
@@ -34039,10 +34241,9 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
 
             Features: {
                 addClientFeatures: function () {
-                    var converse = this._super.converse;
                     this._super.addClientFeatures.apply(this, arguments);
-                    if (converse.allow_muc) {
-                        converse.connection.disco.addFeature(Strophe.NS.MUC);
+                    if (this.allow_muc) {
+                        this.connection.disco.addFeature(Strophe.NS.MUC);
                     }
                 }
             },
@@ -34170,6 +34371,19 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                 }
             },
+
+            ChatBoxViews: {
+                onChatBoxAdded: function (item) {
+                    var view = this.get(item.get('id'));
+                    if (!view && item.get('chatroom')) {
+                        view = new converse.ChatRoomView({'model': item});
+                        this.add(item.get('id'), view);
+                        this.trimChats(view);
+                    } else {
+                        this._super.onChatBoxAdded.apply(this, arguments);
+                    }
+                }
+            }
         },
 
         initialize: function () {
@@ -34184,6 +34398,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 
@@ -34296,7 +34511,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                 },
 
-                directInvite: function (receiver, reason) {
+                directInvite: function (recipient, reason) {
                     var attrs = {
                         xmlns: 'jabber:x:conference',
                         jid: this.model.get('jid')
@@ -34305,11 +34520,15 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     if (this.model.get('password')) { attrs.password = this.model.get('password'); }
                     var invitation = $msg({
                         from: converse.connection.jid,
-                        to: receiver,
+                        to: recipient,
                         id: converse.connection.getUniqueId()
                     }).c('x', attrs);
                     converse.connection.send(invitation);
-                    converse.emit('roomInviteSent', this, receiver, reason);
+                    converse.emit('roomInviteSent', {
+                        'room': this,
+                        'recipient': recipient,
+                        'reason': reason
+                    });
                 },
 
                 onCommandError: function (stanza) {
@@ -34891,7 +35110,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                     this.model.createMessage($message, $delay, archive_id);
                     if (!delayed && sender !== this.model.get('nick') && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
-                        converse.playNotification();
+                        converse.notifyOfNewMessage();
                     }
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
@@ -43008,7 +43227,7 @@ define("crypto.mode-ctr", ["crypto.cipher-core"], function(){});
  
             _initialize: function () {
                 this._super._initialize.apply(this, arguments);
-                this._super.converse.otr = new this._super.converse.OTR();
+                this.otr = new this.OTR();
             },
 
             registerGlobalEventHandlers: function () {
@@ -43439,6 +43658,7 @@ define("crypto.mode-ctr", ["crypto.cipher-core"], function(){});
                 cache_otr_key: false,
                 use_otr_by_default: false
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 
@@ -43499,7 +43719,11 @@ define("crypto.mode-ctr", ["crypto.cipher-core"], function(){});
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define("converse-register", ["converse-core", "converse-api"], factory);
+    define("converse-register", [
+            "converse-core",
+            "converse-api",
+            "converse-controlbox"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
@@ -43572,6 +43796,7 @@ define("crypto.mode-ctr", ["crypto.cipher-core"], function(){});
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 
@@ -44135,13 +44360,11 @@ Strophe.addConnectionPlugin('ping', {
             // New functions which don't exist yet can also be added.
 
             onConnected: function () {
-                var converse = this._super.converse;
                 this._super.onConnected().done(converse.registerPingHandler);
             },
             onReconnected: function () {
                 // We need to re-register the ping event handler on the newly
                 // created connection.
-                var converse = this._super.converse;
                 this._super.onReconnected().done(converse.registerPingHandler);
             }
         },
@@ -44155,6 +44378,7 @@ Strophe.addConnectionPlugin('ping', {
             var settings = {
                 ping_interval: 180 //in seconds
             };
+            _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
             _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
 
@@ -44187,7 +44411,7 @@ Strophe.addConnectionPlugin('ping', {
 
             converse.registerPongHandler = function () {
                 converse.connection.disco.addFeature(Strophe.NS.PING);
-                converse.connection.ping.addPingHandler(this.pong);
+                converse.connection.ping.addPingHandler(converse.pong);
             };
 
             converse.registerPingHandler = function () {
@@ -44205,7 +44429,7 @@ Strophe.addConnectionPlugin('ping', {
                         if (!converse.lastStanzaDate) {
                             converse.lastStanzaDate = now;
                         }
-                        if ((now - converse.lastStanzaDate)/1000 > this.ping_interval) {
+                        if ((now - converse.lastStanzaDate)/1000 > converse.ping_interval) {
                             return converse.ping();
                         }
                         return true;
@@ -44225,32 +44449,394 @@ Strophe.addConnectionPlugin('ping', {
     });
 }));
 
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define("converse-notification", ["converse-core", "converse-api"], factory);
+}(this, function (converse, converse_api) {
+    "use strict";
+    var $ = converse_api.env.jQuery,
+        utils = converse_api.env.utils,
+        Strophe = converse_api.env.Strophe,
+        _ = converse_api.env._;
+    // For translations
+    var __ = utils.__.bind(converse);
+    var ___ = utils.___;
+
+    var supports_html5_notification = "Notification" in window;
+
+    if (supports_html5_notification && Notification.permission !== 'denied') {
+        // Ask user to enable HTML5 notifications
+        Notification.requestPermission();
+    }
+
+    converse_api.plugins.add('notification', {
+
+        initialize: function () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            var converse = this.converse;
+            // Configuration values for this plugin
+            var settings = {
+                show_desktop_notifications: true,
+                play_sounds: false,
+                sounds_path: '/sounds/',
+                notification_icon: '/logo/conversejs.png'
+            };
+            _.extend(converse.default_settings, settings);
+            _.extend(converse, settings);
+            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+
+            converse.isOnlyChatStateNotification = function ($msg) {
+                // See XEP-0085 Chat State Notification
+                return (
+                    $msg.find('body').length === 0 && (
+                        $msg.find(converse.ACTIVE).length !== 0 ||
+                        $msg.find(converse.COMPOSING).length !== 0 ||
+                        $msg.find(converse.INACTIVE).length !== 0 ||
+                        $msg.find(converse.PAUSED).length !== 0 ||
+                        $msg.find(converse.GONE).length !== 0
+                    )
+                );
+            };
+
+            converse.shouldNotifyOfNewMessage = function ($message) {
+                var $forwarded = $message.find('forwarded');
+                if ($forwarded.length) {
+                    return false;
+                }
+                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
+                return !converse.isOnlyChatStateNotification($message) && !is_me;
+            };
+
+            converse.playSoundNotification = function ($message) {
+                /* Plays a sound to notify that a new message was recieved.
+                 */
+                // XXX Eventually this can be refactored to use Notification's sound
+                // feature, but no browser currently supports it.
+                // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
+                var audio;
+                if (converse.play_sounds && typeof Audio !== "undefined") {
+                    audio = new Audio(converse.sounds_path+"msg_received.ogg");
+                    if (audio.canPlayType('/audio/ogg')) {
+                        audio.play();
+                    } else {
+                        audio = new Audio(converse.sounds_path+"msg_received.mp3");
+                        audio.play();
+                    }
+                }
+            };
+
+            converse.showChatStateNotification = function (evt, contact) {
+                /* Show an HTML5 notification indicating that a contact changed
+                 * their chat state.
+                 */
+                var chat_state = contact.chat_status,
+                    message = null;
+                if (chat_state === 'offline') {
+                    message = __('has gone offline');
+                } else if (chat_state === 'away') {
+                    message = __('has gone away');
+                } else if ((chat_state === 'dnd')) {
+                    message = __('is busy');
+                } else if (chat_state === 'online') {
+                    message = __('has come online');
+                }
+                if (message === null) {
+                    return;
+                }
+                var n = new Notification(contact.fullname, {
+                        body: message,
+                        lang: converse.i18n.locale_data.converse[""].lang,
+                        icon: 'logo/conversejs.png'
+                    });
+                setTimeout(n.close.bind(n), 5000);
+            };
+
+            converse.showMessageNotification = function (evt, $message) {
+                /* Shows an HTML5 Notification to indicate that a new chat
+                 * message was received.
+                 */
+                if (!supports_html5_notification ||
+                        !converse.show_desktop_notifications ||
+                        converse.windowState !== 'blur' ||
+                        Notification.permission !== "granted") {
+                    return;
+                }
+                var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                var roster_item = converse.roster.get(contact_jid);
+                var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
+                        body: $message.children('body').text(),
+                        lang: converse.i18n.locale_data.converse[""].lang,
+                        icon: converse.notification_icon
+                    });
+                setTimeout(n.close.bind(n), 5000);
+            };
+
+            converse.notifyOfNewMessage = function (message) {
+                /* Event handler for the on('message') event. Will call methods
+                 * to play sounds and show HTML5 notifications.
+                 */
+                var $message = $(message);
+                if (!converse.shouldNotifyOfNewMessage($message)) {
+                    return false;
+                }
+                converse.playSoundNotification($message);
+                converse.showMessageNotification($message);
+            };
+
+            converse.on('contactStatusChanged',  converse.showChatStateNotification);
+            converse.on('message',  converse.notifyOfNewMessage);
+        }
+    });
+}));
+
+var config;
+if (typeof(require) === 'undefined') {
+    /* XXX: Hack to work around r.js's stupid parsing.
+     * We want to save the configuration in a variable so that we can reuse it in
+     * tests/main.js.
+     */
+    require = { // jshint ignore:line
+        config: function (c) {
+            config = c;
+        }
+    };
+}
+
+require.config({
+    baseUrl: '.',
+    paths: {
+        "backbone":                 "components/backbone/backbone",
+        "backbone.browserStorage":  "components/backbone.browserStorage/backbone.browserStorage",
+        "backbone.overview":        "components/backbone.overview/backbone.overview",
+        "eventemitter":             "components/otr/build/dep/eventemitter",
+        "jquery":                   "components/jquery/dist/jquery",
+        "jquery-private":           "src/jquery-private",
+        "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
+        "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
+        "moment":                   "components/momentjs/moment",
+        "strophe":                  "components/strophejs/src/wrapper",
+        "strophe-base64":           "components/strophejs/src/base64",
+        "strophe-bosh":             "components/strophejs/src/bosh",
+        "strophe-core":             "components/strophejs/src/core",
+        "strophe-md5":              "components/strophejs/src/md5",
+        "strophe-polyfill":         "components/strophejs/src/polyfills",
+        "strophe-sha1":             "components/strophejs/src/sha1",
+        "strophe-utils":            "components/strophejs/src/utils",
+        "strophe-websocket":        "components/strophejs/src/websocket",
+        "strophe.disco":            "components/strophejs-plugins/disco/strophe.disco",
+        "strophe.ping":             "src/strophe.ping",
+        "strophe.rsm":              "components/strophejs-plugins/rsm/strophe.rsm",
+        "strophe.vcard":            "src/strophe.vcard",
+        "text":                     'components/requirejs-text/text',
+        "tpl":                      'components/requirejs-tpl-jcbrand/tpl',
+        "typeahead":                "components/typeahead.js/index",
+        "underscore":               "components/underscore/underscore",
+        "utils":                    "src/utils",
+        "polyfill":                 "src/polyfill",
+        
+        // Converse
+        "converse-api":             "src/converse-api",
+        "converse-controlbox":      "src/converse-controlbox",
+        "converse-core":            "src/converse-core",
+        "converse-muc":             "src/converse-muc",
+        "converse-notification":    "src/converse-notification",
+        "converse-otr":             "src/converse-otr",
+        "converse-ping":            "src/converse-ping",
+        "converse-register":        "src/converse-register",
+        "converse-templates":       "src/converse-templates",
+
+        // Off-the-record-encryption
+        "bigint":               "src/bigint",
+        "crypto":               "src/crypto",
+        "crypto.aes":           "components/otr/vendor/cryptojs/aes",
+        "crypto.cipher-core":   "components/otr/vendor/cryptojs/cipher-core",
+        "crypto.core":          "components/otr/vendor/cryptojs/core",
+        "crypto.enc-base64":    "components/otr/vendor/cryptojs/enc-base64",
+        "crypto.evpkdf":        "components/crypto-js-evanvosberg/src/evpkdf",
+        "crypto.hmac":          "components/otr/vendor/cryptojs/hmac",
+        "crypto.md5":           "components/crypto-js-evanvosberg/src/md5",
+        "crypto.mode-ctr":      "components/otr/vendor/cryptojs/mode-ctr",
+        "crypto.pad-nopadding": "components/otr/vendor/cryptojs/pad-nopadding",
+        "crypto.sha1":          "components/otr/vendor/cryptojs/sha1",
+        "crypto.sha256":        "components/otr/vendor/cryptojs/sha256",
+        "salsa20":              "components/otr/build/dep/salsa20",
+        "otr":                  "src/otr",
+
+        // Locales paths
+        "locales":   "src/locales",
+        "jed":       "components/jed/jed",
+        "af":        "locale/af/LC_MESSAGES/converse.json",
+        "de":        "locale/de/LC_MESSAGES/converse.json",
+        "en":        "locale/en/LC_MESSAGES/converse.json",
+        "es":        "locale/es/LC_MESSAGES/converse.json",
+        "fr":        "locale/fr/LC_MESSAGES/converse.json",
+        "he":        "locale/he/LC_MESSAGES/converse.json",
+        "hu":        "locale/hu/LC_MESSAGES/converse.json",
+        "id":        "locale/id/LC_MESSAGES/converse.json",
+        "it":        "locale/it/LC_MESSAGES/converse.json",
+        "ja":        "locale/ja/LC_MESSAGES/converse.json",
+        "nb":        "locale/nb/LC_MESSAGES/converse.json",
+        "nl":        "locale/nl/LC_MESSAGES/converse.json",
+        "pl":        "locale/pl/LC_MESSAGES/converse.json",
+        "pt_BR":     "locale/pt_BR/LC_MESSAGES/converse.json",
+        "ru":        "locale/ru/LC_MESSAGES/converse.json",
+        "uk":        "locale/uk/LC_MESSAGES/converse.json",
+        "zh":        "locale/zh/LC_MESSAGES/converse.json",
+
+        "moment_with_locales": "src/moment_locales",
+        'moment_af':        "components/momentjs/locale/af",
+        'moment_de':        "components/momentjs/locale/de",
+        'moment_es':        "components/momentjs/locale/es",
+        'moment_fr':        "components/momentjs/locale/fr",
+        'moment_he':        "components/momentjs/locale/he",
+        'moment_hu':        "components/momentjs/locale/hu",
+        'moment_id':        "components/momentjs/locale/id",
+        'moment_it':        "components/momentjs/locale/it",
+        'moment_ja':        "components/momentjs/locale/ja",
+        'moment_nb':        "components/momentjs/locale/nb",
+        'moment_nl':        "components/momentjs/locale/nl",
+        'moment_pl':        "components/momentjs/locale/pl",
+        'moment_pt-br':     "components/momentjs/locale/pt-br",
+        'moment_ru':        "components/momentjs/locale/ru",
+        'moment_uk':        "components/momentjs/locale/uk",
+        'moment_zh':        "components/momentjs/locale/zh-cn",
+
+        // Templates
+        "action":                   "src/templates/action",
+        "add_contact_dropdown":     "src/templates/add_contact_dropdown",
+        "add_contact_form":         "src/templates/add_contact_form",
+        "change_status_message":    "src/templates/change_status_message",
+        "chat_status":              "src/templates/chat_status",
+        "chatarea":                 "src/templates/chatarea",
+        "chatbox":                  "src/templates/chatbox",
+        "chatroom":                 "src/templates/chatroom",
+        "chatroom_form":            "src/templates/chatroom_form",
+        "chatroom_password_form":   "src/templates/chatroom_password_form",
+        "chatroom_sidebar":         "src/templates/chatroom_sidebar",
+        "chatrooms_tab":            "src/templates/chatrooms_tab",
+        "chats_panel":              "src/templates/chats_panel",
+        "choose_status":            "src/templates/choose_status",
+        "contacts_panel":           "src/templates/contacts_panel",
+        "contacts_tab":             "src/templates/contacts_tab",
+        "controlbox":               "src/templates/controlbox",
+        "controlbox_toggle":        "src/templates/controlbox_toggle",
+        "field":                    "src/templates/field",
+        "form_captcha":             "src/templates/form_captcha",
+        "form_checkbox":            "src/templates/form_checkbox",
+        "form_input":               "src/templates/form_input",
+        "form_select":              "src/templates/form_select",
+        "form_textarea":            "src/templates/form_textarea",
+        "form_username":            "src/templates/form_username",
+        "group_header":             "src/templates/group_header",
+        "info":                     "src/templates/info",
+        "login_panel":              "src/templates/login_panel",
+        "login_tab":                "src/templates/login_tab",
+        "message":                  "src/templates/message",
+        "new_day":                  "src/templates/new_day",
+        "occupant":                 "src/templates/occupant",
+        "pending_contact":          "src/templates/pending_contact",
+        "pending_contacts":         "src/templates/pending_contacts",
+        "register_panel":           "src/templates/register_panel",
+        "register_tab":             "src/templates/register_tab",
+        "registration_form":        "src/templates/registration_form",
+        "registration_request":     "src/templates/registration_request",
+        "requesting_contact":       "src/templates/requesting_contact",
+        "requesting_contacts":      "src/templates/requesting_contacts",
+        "room_description":         "src/templates/room_description",
+        "room_item":                "src/templates/room_item",
+        "room_panel":               "src/templates/room_panel",
+        "roster":                   "src/templates/roster",
+        "roster_item":              "src/templates/roster_item",
+        "search_contact":           "src/templates/search_contact",
+        "select_option":            "src/templates/select_option",
+        "status_option":            "src/templates/status_option",
+        "toggle_chats":             "src/templates/toggle_chats",
+        "toolbar":                  "src/templates/toolbar",
+        "toolbar_otr":              "src/templates/toolbar_otr",
+        "trimmed_chat":             "src/templates/trimmed_chat",
+        "vcard":                    "src/templates/vcard"
+    },
+
+    map: {
+        // '*' means all modules will get 'jquery-private'
+        // for their 'jquery' dependency.
+        '*': { 'jquery': 'jquery-private' },
+        // 'jquery-private' wants the real jQuery module
+        // though. If this line was not here, there would
+        // be an unresolvable cyclic dependency.
+        'jquery-private': { 'jquery': 'jquery' }
+    },
+
+    tpl: {
+        // Configuration for requirejs-tpl
+        // Use Mustache style syntax for variable interpolation
+        templateSettings: {
+            evaluate : /\{\[([\s\S]+?)\]\}/g,
+            interpolate : /\{\{([\s\S]+?)\}\}/g
+        }
+    },
+
+    // define module dependencies for modules not using define
+    shim: {
+        'crypto.aes':           { deps: ['crypto.cipher-core'] },
+        'crypto.cipher-core':   { deps: ['crypto.enc-base64', 'crypto.evpkdf'] },
+        'crypto.enc-base64':    { deps: ['crypto.core'] },
+        'crypto.evpkdf':        { deps: ['crypto.md5'] },
+        'crypto.hmac':          { deps: ['crypto.core'] },
+        'crypto.md5':           { deps: ['crypto.core'] },
+        'crypto.mode-ctr':      { deps: ['crypto.cipher-core'] },
+        'crypto.pad-nopadding': { deps: ['crypto.cipher-core'] },
+        'crypto.sha1':          { deps: ['crypto.core'] },
+        'crypto.sha256':        { deps: ['crypto.core'] },
+        'bigint':               { deps: ['crypto'] },
+        'strophe.ping':         { deps: ['strophe'] },
+        'strophe.register':     { deps: ['strophe'] },
+        'strophe.vcard':        { deps: ['strophe'] }
+    }
+});
+
+
 /* Converse.js components configuration
  *
  * This file is used to tell require.js which components (or plugins) to load
  * when it generates a build.
  */
-define("converse", ["converse-api",
+if (typeof define !== 'undefined') {
+    /* When running tests, define is not defined. */
+    define("converse", [
+        "converse-api",
 
-    /* START: Removable components
-     * --------------------
-     * Any of the following components may be removed if they're not needed.
-     */
-    "locales",          // Translations for converse.js. This line can be removed
-                        // to remove *all* translations, or you can modify the
-                        // file src/locales.js to include only those
-                        // translations that you care about.
+        /* START: Removable components
+        * --------------------
+        * Any of the following components may be removed if they're not needed.
+        */
+        "locales",              // Translations for converse.js. This line can be removed
+                                // to remove *all* translations, or you can modify the
+                                // file src/locales.js to include only those
+                                // translations that you care about.
 
-    "converse-muc",     // XEP-0045 Multi-user chat
-    "converse-otr",     // Off-the-record encryption for one-on-one messages
-    "converse-register",// XEP-0077 In-band registration
-    "converse-ping",    // XEP-0199 XMPP Ping
-    /* END: Removable components */
+        "converse-muc",         // XEP-0045 Multi-user chat
+        "converse-otr",         // Off-the-record encryption for one-on-one messages
+        "converse-controlbox",  // The control box
+        "converse-register",    // XEP-0077 In-band registration
+        "converse-ping",        // XEP-0199 XMPP Ping
+        "converse-notification",// HTML5 Notifications
+        /* END: Removable components */
 
-], function(converse_api) {
-    window.converse = converse_api;
-    return converse_api;
-});
-
+    ], function(converse_api) {
+        window.converse = converse_api;
+        return converse_api;
+    });
+}
+;
 
 require(["converse"]);

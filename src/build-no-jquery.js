@@ -5,5 +5,8 @@
     include: ['converse'],
     exclude: ['jquery', 'jquery-private'],
     insertRequire: ['converse'],
-    mainConfigFile: '../converse.js'
+    mainConfigFile: '../converse.js',
+    wrap: {
+        endFile: "wrapper-no-jquery.js"
+    }
 })

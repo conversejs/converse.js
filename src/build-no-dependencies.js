@@ -39,7 +39,7 @@
         "underscore"
     ],
     wrap: {
-        endFile: "wrapper-end.js"
+        endFile: ["wrapper-no-jquery.js", "wrapper-no-deps.js"]
     },
     insertRequire: ['converse'],
     mainConfigFile: '../converse.js'

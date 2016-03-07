@@ -5,5 +5,5 @@
     include: ['converse'],
     exclude: ['jquery', 'jquery-private'],
     insertRequire: ['converse'],
-    mainConfigFile: '../main.js'
+    mainConfigFile: '../converse.js'
 })

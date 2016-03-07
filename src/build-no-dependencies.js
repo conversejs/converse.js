@@ -42,5 +42,5 @@
         endFile: "wrapper-end.js"
     },
     insertRequire: ['converse'],
-    mainConfigFile: '../main.js'
+    mainConfigFile: '../converse.js'
 })

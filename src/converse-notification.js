@@ -83,7 +83,7 @@
                 }
             };
 
-            converse.showChatStateNotification = function (event, contact) {
+            converse.showChatStateNotification = function (evt, contact) {
                 /* Show an HTML5 notification indicating that a contact changed
                  * their chat state.
                  */
@@ -109,7 +109,7 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.showMessageNotification = function ($message) {
+            converse.showMessageNotification = function (evt, $message) {
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */

@@ -41,6 +41,7 @@
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(converse.showMessageNotification).toHaveBeenCalled();
                     });
 
@@ -50,6 +51,7 @@
                         spyOn(converse, 'showChatStateNotification');
                         var jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         converse.roster.get(jid).set('chat_status', 'busy'); // This will emit 'contactStatusChanged'
+                        expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(converse.showChatStateNotification).toHaveBeenCalled();
                     });
                 });
@@ -57,7 +59,11 @@
 
             describe("When a new contact request is received", function () {
                 it("an HTML5 Notification is received", function () {
-                    // TODO
+                    spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                    spyOn(converse, 'showContactRequestNotification');
+                    converse.emit('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
+                    expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                    expect(converse.showContactRequestNotification).toHaveBeenCalled();
                 });
             });
         });

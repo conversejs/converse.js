@@ -105,11 +105,15 @@
                 }
             };
 
-            converse.areDesktopNotificationsEnabled = function () {
-                return (supports_html5_notification &&
-                        converse.show_desktop_notifications &&
-                        converse.windowState === 'blur' &&
-                        Notification.permission === "granted");
+            converse.areDesktopNotificationsEnabled = function (ignore_blur) {
+                var enabled = supports_html5_notification &&
+                    converse.show_desktop_notifications &&
+                    Notification.permission === "granted";
+                if (ignore_blur) {
+                    return enabled;
+                } else {
+                    return enabled && converse.windowState === 'blur';
+                }
             };
 
             converse.showMessageNotification = function ($message) {
@@ -152,6 +156,15 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
+            converse.showContactRequestNotification = function (contact) {
+                var n = new Notification(contact.fullname, {
+                        body: __('is requesting to be your contact'),
+                        lang: converse.i18n.locale_data.converse[""].lang,
+                        icon: 'logo/conversejs.png'
+                    });
+                setTimeout(n.close.bind(n), 5000);
+            };
+
             converse.handleChatStateNotification = function (evt, contact) {
                 /* Event handler for on('contactStatusChanged').
                  * Will show an HTML5 notification to indicate that the chat
@@ -176,6 +189,13 @@
                 }
             };
 
+            converse.handleContactRequestNotification = function (evt, contact) {
+                if (converse.areDesktopNotificationsEnabled(true)) {
+                    converse.showContactRequestNotification(contact);
+                }
+            };
+
+            converse.on('contactRequest',  converse.handleContactRequestNotification);
             converse.on('contactStatusChanged',  converse.handleChatStateNotification);
             converse.on('message',  converse.handleMessageNotification);
         }

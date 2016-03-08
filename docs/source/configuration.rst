@@ -659,8 +659,13 @@ show_desktop_notifications
 
 * Default: ``true``
 
-Should HTML5 desktop notifications be shown when the browser is not visible or
-not focused?
+Should HTML5 desktop notifications be shown?
+
+Notification will be shown in the following cases:
+
+* the browser is not visible nor focused and a private message is received.
+* the browser is not visible nor focused and a groupchat message is received which mentions you.
+* `auto_subscribe` is set to `false` and a new contact request is received.
 
 Requires the `src/converse-notification.js` plugin.
 

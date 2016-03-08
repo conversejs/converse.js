@@ -158,7 +158,7 @@
 
             converse.showContactRequestNotification = function (contact) {
                 var n = new Notification(contact.fullname, {
-                        body: __('is requesting to be your contact'),
+                        body: __('wants to be your contact'),
                         lang: converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'
                     });

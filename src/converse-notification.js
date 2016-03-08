@@ -20,10 +20,6 @@
 
     var supports_html5_notification = "Notification" in window;
 
-    if (supports_html5_notification && Notification.permission !== 'denied') {
-        // Ask user to enable HTML5 notifications
-        Notification.requestPermission();
-    }
 
     converse_api.plugins.add('notification', {
 
@@ -195,9 +191,18 @@
                 }
             };
 
+            converse.requestPermission = function (evt) {
+                if (supports_html5_notification &&
+                    ! _.contains(['denied', 'granted'], Notification.permission)) {
+                    // Ask user to enable HTML5 notifications
+                    Notification.requestPermission();
+                }
+            };
+
             converse.on('contactRequest',  converse.handleContactRequestNotification);
             converse.on('contactStatusChanged',  converse.handleChatStateNotification);
             converse.on('message',  converse.handleMessageNotification);
+            converse.on('ready', converse.requestPermission);
         }
     });
 }));

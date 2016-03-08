@@ -629,6 +629,7 @@
                 if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
                     converse.reconnect(condition);
                 } else {
+                    // FIXME: leaky abstraction from converse-controlbox.js
                     converse.renderLoginPanel();
                 }
             } else if (status === Strophe.Status.ERROR) {
@@ -646,6 +647,7 @@
             } else if (status === Strophe.Status.DISCONNECTING) {
                 // FIXME: what about prebind?
                 if (!converse.connection.connected) {
+                    // FIXME: leaky abstraction from converse-controlbox.js
                     converse.renderLoginPanel();
                 }
                 if (condition) {

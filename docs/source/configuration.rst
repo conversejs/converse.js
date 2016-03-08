@@ -660,7 +660,7 @@ show_desktop_notifications
 * Default: ``true``
 
 Should HTML5 desktop notifications be shown when the browser is not visible or
-blurred?
+not focused?
 
 Requires the `src/converse-notification.js` plugin.
 

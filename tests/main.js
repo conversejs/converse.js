@@ -70,6 +70,7 @@ require([
                 "spec/chatbox",
                 "spec/chatroom",
                 "spec/minchats",
+                "spec/notification",
                 "spec/profiling",
                 "spec/ping",
                 "spec/register",

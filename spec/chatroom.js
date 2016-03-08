@@ -192,46 +192,6 @@
                 expect(converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
             }.bind(converse));
 
-            it("plays a sound when the current user is mentioned (if configured)", function () {
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                spyOn(converse, 'emit');
-                converse.play_sounds = true;
-                spyOn(converse, 'playSoundNotification');
-                var view = this.chatboxviews.get('lounge@localhost');
-                if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                var text = 'This message will play a sound because it mentions dummy';
-                var message = $msg({
-                    from: 'lounge@localhost/otheruser',
-                    id: '1',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.onChatRoomMessage(message.nodeTree);
-                expect(converse.playSoundNotification).toHaveBeenCalled();
-
-                text = "This message won't play a sound";
-                message = $msg({
-                    from: 'lounge@localhost/otheruser',
-                    id: '2',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.onChatRoomMessage(message.nodeTree);
-                expect(converse.playSoundNotification, 1);
-                converse.play_sounds = false;
-
-                text = "This message won't play a sound because it is sent by dummy";
-                message = $msg({
-                    from: 'lounge@localhost/dummy',
-                    id: '3',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.onChatRoomMessage(message.nodeTree);
-                expect(converse.playSoundNotification, 1);
-                converse.play_sounds = false;
-            }.bind(converse));
-
             it("shows sent groupchat messages", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');

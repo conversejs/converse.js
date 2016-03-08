@@ -56,10 +56,32 @@
                 );
             };
 
-            converse.shouldNotifyOfNewMessage = function ($message) {
+            converse.shouldNotifyOfGroupMessage = function ($message) {
+                /* Is this a group message worthy of notification?
+                 */
+                var jid = $message.attr('from'),
+                    resource = Strophe.getResourceFromJid(jid),
+                    sender = resource && Strophe.unescapeNode(resource) || '';
+                if (sender === '' || $message.find('delay').length > 0) {
+                    return false;
+                }
+                var room = converse.chatboxes.get(Strophe.getBareJidFromJid(jid));
+                var body = $message.children('body').text();
+                if (sender === room.get('nick') || !(new RegExp("\\b"+room.get('nick')+"\\b")).test(body)) {
+                    return false;
+                }
+                return true;
+            };
+
+            converse.shouldNotifyOfMessage = function ($message) {
+                /* Is this a message worthy of notification?
+                 */
                 var $forwarded = $message.find('forwarded');
                 if ($forwarded.length) {
                     return false;
+                }
+                if ($message.attr('type') === 'groupchat') {
+                    return converse.shouldNotifyOfGroupMessage($message);
                 }
                 var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
                 return !converse.isOnlyChatStateNotification($message) && !is_me;
@@ -83,16 +105,17 @@
                 }
             };
 
+            converse.areDesktopNotificationsEnabled = function () {
+                return (supports_html5_notification &&
+                        converse.show_desktop_notifications &&
+                        converse.windowState === 'blur' &&
+                        Notification.permission === "granted");
+            };
+
             converse.showMessageNotification = function ($message) {
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
-                if (!supports_html5_notification ||
-                        !converse.show_desktop_notifications ||
-                        converse.windowState !== 'blur' ||
-                        Notification.permission !== "granted") {
-                    return;
-                }
                 var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
                 var roster_item = converse.roster.get(contact_jid);
                 var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
@@ -103,10 +126,9 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.handleChatStateNotification = function (evt, contact) {
-                /* Event handler for on('contactStatusChanged').
-                 * Will show an HTML5 notification to indicate that the chat
-                 * status has changed.
+            converse.showChatStateNotification = function (contact) {
+                /* Creates an HTML5 Notification to inform of a change in a
+                 * contact's chat state.
                  */
                 var chat_state = contact.chat_status,
                     message = null;
@@ -130,21 +152,32 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
+            converse.handleChatStateNotification = function (evt, contact) {
+                /* Event handler for on('contactStatusChanged').
+                 * Will show an HTML5 notification to indicate that the chat
+                 * status has changed.
+                 */
+                if (converse.areDesktopNotificationsEnabled()) {
+                    converse.showChatStateNotification();
+                }
+            };
 
-            converse.handleNewMessageNotification = function (evt, message) {
+            converse.handleMessageNotification = function (evt, message) {
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
                 var $message = $(message);
-                if (!converse.shouldNotifyOfNewMessage($message)) {
+                if (!converse.shouldNotifyOfMessage($message)) {
                     return false;
                 }
                 converse.playSoundNotification($message);
-                converse.showMessageNotification($message);
+                if (converse.areDesktopNotificationsEnabled()) {
+                    converse.showMessageNotification($message);
+                }
             };
 
             converse.on('contactStatusChanged',  converse.handleChatStateNotification);
-            converse.on('message',  converse.handleNewMessageNotification);
+            converse.on('message',  converse.handleMessageNotification);
         }
     });
 }));

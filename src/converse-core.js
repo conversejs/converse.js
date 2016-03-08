@@ -868,6 +868,9 @@
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
+                this.on('change:chat_status', function (item) {
+                    converse.emit('contactStatusChanged', item.attributes);
+                });
             },
 
             subscribe: function (message) {
@@ -2099,7 +2102,6 @@
                         this.$el.find('div.chat-event').remove();
                     }
                 }
-                converse.emit('contactStatusChanged', item.attributes);
             },
 
             onStatusChanged: function (item) {

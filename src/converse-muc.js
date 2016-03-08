@@ -888,17 +888,14 @@
                 onChatRoomMessage: function (message) {
                     var $message = $(message),
                         archive_id = $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id'),
-                        delayed = $message.find('delay').length > 0,
                         $forwarded = $message.find('forwarded'),
                         $delay;
 
                     if ($forwarded.length) {
                         $message = $forwarded.children('message');
                         $delay = $forwarded.children('delay');
-                        delayed = $delay.length > 0;
                     }
-                    var body = $message.children('body').text(),
-                        jid = $message.attr('from'),
+                    var jid = $message.attr('from'),
                         msgid = $message.attr('id'),
                         resource = Strophe.getResourceFromJid(jid),
                         sender = resource && Strophe.unescapeNode(resource) || '',
@@ -920,9 +917,6 @@
                         return true;
                     }
                     this.model.createMessage($message, $delay, archive_id);
-                    if (!delayed && sender !== this.model.get('nick') && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(body)) {
-                        converse.notifyOfNewMessage();
-                    }
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
                         converse.emit('message', message);

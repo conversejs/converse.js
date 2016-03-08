@@ -83,9 +83,30 @@
                 }
             };
 
-            converse.showChatStateNotification = function (evt, contact) {
-                /* Show an HTML5 notification indicating that a contact changed
-                 * their chat state.
+            converse.showMessageNotification = function ($message) {
+                /* Shows an HTML5 Notification to indicate that a new chat
+                 * message was received.
+                 */
+                if (!supports_html5_notification ||
+                        !converse.show_desktop_notifications ||
+                        converse.windowState !== 'blur' ||
+                        Notification.permission !== "granted") {
+                    return;
+                }
+                var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                var roster_item = converse.roster.get(contact_jid);
+                var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
+                        body: $message.children('body').text(),
+                        lang: converse.i18n.locale_data.converse[""].lang,
+                        icon: converse.notification_icon
+                    });
+                setTimeout(n.close.bind(n), 5000);
+            };
+
+            converse.handleChatStateNotification = function (evt, contact) {
+                /* Event handler for on('contactStatusChanged').
+                 * Will show an HTML5 notification to indicate that the chat
+                 * status has changed.
                  */
                 var chat_state = contact.chat_status,
                     message = null;
@@ -109,27 +130,8 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.showMessageNotification = function (evt, $message) {
-                /* Shows an HTML5 Notification to indicate that a new chat
-                 * message was received.
-                 */
-                if (!supports_html5_notification ||
-                        !converse.show_desktop_notifications ||
-                        converse.windowState !== 'blur' ||
-                        Notification.permission !== "granted") {
-                    return;
-                }
-                var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
-                var roster_item = converse.roster.get(contact_jid);
-                var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
-                        body: $message.children('body').text(),
-                        lang: converse.i18n.locale_data.converse[""].lang,
-                        icon: converse.notification_icon
-                    });
-                setTimeout(n.close.bind(n), 5000);
-            };
 
-            converse.notifyOfNewMessage = function (message) {
+            converse.handleNewMessageNotification = function (evt, message) {
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
@@ -141,8 +143,8 @@
                 converse.showMessageNotification($message);
             };
 
-            converse.on('contactStatusChanged',  converse.showChatStateNotification);
-            converse.on('message',  converse.notifyOfNewMessage);
+            converse.on('contactStatusChanged',  converse.handleChatStateNotification);
+            converse.on('message',  converse.handleNewMessageNotification);
         }
     });
 }));

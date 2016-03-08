@@ -1544,7 +1544,7 @@
                     }.bind(this),
                     function () {
                         this.clearSpinner();
-                        converse.log("Error while trying to fetch archived messages", "error");
+                        converse.log("Error or timeout while trying to fetch archived messages", "error");
                     }.bind(this)
                 );
             },

@@ -171,7 +171,7 @@
                  * status has changed.
                  */
                 if (converse.areDesktopNotificationsEnabled()) {
-                    converse.showChatStateNotification();
+                    converse.showChatStateNotification(contact);
                 }
             };
 

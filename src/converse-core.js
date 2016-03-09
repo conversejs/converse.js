@@ -2462,21 +2462,20 @@
                  * be shown.
                  *
                  * It checks whether there is enough space on the page to show
-                 * another chat box. Otherwise it minimize the oldest chat box
+                 * another chat box. Otherwise it minimizes the oldest chat box
                  * to create space.
                  */
                 if (converse.no_trimming || (this.model.length <= 1)) {
                     return;
                 }
-                var oldest_chat,
+                var oldest_chat, boxes_width,
                     $minimized = converse.minimized_chats.$el,
                     minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
-                    boxes_width = newchat ? newchat.$el.outerWidth(true) : 0,
                     new_id = newchat ? newchat.model.get('id') : null;
 
-                boxes_width += _.reduce(this.xget(new_id), function (memo, view) {
+                boxes_width = _.reduce(this.xget(new_id), function (memo, view) {
                     return memo + this.getChatBoxWidth(view);
-                }.bind(this), 0);
+                }.bind(this), newchat ? newchat.$el.outerWidth(true) : 0);
 
                 if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
                     oldest_chat = this.getOldestMaximizedChat([new_id]);

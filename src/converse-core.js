@@ -2142,7 +2142,7 @@
                 return this;
             },
 
-            onShow: function () {
+            onMaximized: function () {
                 converse.chatboxviews.trimChats(this);
                 utils.refreshWebkit();
                 this.$content.scrollTop(this.model.get('scroll'));
@@ -2150,10 +2150,15 @@
                 converse.emit('chatBoxMaximized', this);
             },
 
+            onMinimized: function () {
+                utils.refreshWebkit();
+                converse.emit('chatBoxMinimized', this);
+            },
+
             maximize: function () {
                 // Restore a minimized chat box
                 $('#conversejs').prepend(this.$el);
-                this.$el.show('fast', this.onShow.bind(this)); 
+                this.$el.show('fast', this.onMaximized.bind(this));
                 return this;
             },
 
@@ -2161,10 +2166,8 @@
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 // save the scroll position to restore it on maximize
                 this.model.save({'scroll': this.$content.scrollTop()});
-                // Minimizes a chat box
                 this.setChatState(converse.INACTIVE).model.minimize();
-                this.$el.hide('fast', utils.refreshwebkit);
-                converse.emit('chatBoxMinimized', this);
+                this.$el.hide('fast', this.onMinimized.bind(this));
             },
 
             updateVCard: function () {

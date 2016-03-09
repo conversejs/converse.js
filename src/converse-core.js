@@ -3098,7 +3098,7 @@
             if (typeof value === "function") {
                 var wrapped_function = _.partial(
                     converse.wrappedOverride.bind(converse),
-                    key, value, converse[key].bind(converse), true
+                        key, value, converse[key].bind(converse), true
                 );
                 converse[key] = wrapped_function;
             } else {
@@ -3122,7 +3122,7 @@
                     // original method.
                     var wrapped_function = _.partial(
                         converse.wrappedOverride,
-                        key, value, obj.prototype[key], false
+                            key, value, obj.prototype[key], false
                     );
                     obj.prototype[key] = wrapped_function;
                 } else {

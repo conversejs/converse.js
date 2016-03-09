@@ -2312,7 +2312,7 @@
                     }.bind(this), null, 'message', 'chat');
             },
 
-            onChatBoxFetched: function (collection, resp) {
+            onChatBoxesFetched: function (collection, resp) {
                 /* Show chat boxes upon receiving them from sessionStorage
                  *
                  * This method gets overridden entirely in src/converse-controlbox.js
@@ -2331,7 +2331,7 @@
                 this.registerMessageHandler();
                 this.fetch({
                     add: true,
-                    success: this.onChatBoxFetched.bind(this)
+                    success: this.onChatBoxesFetched.bind(this)
                 });
             },
 

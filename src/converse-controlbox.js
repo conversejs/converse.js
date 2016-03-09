@@ -62,7 +62,7 @@
             },
 
             ChatBoxes: {
-                onChatBoxFetched: function (collection, resp) {
+                onChatBoxesFetched: function (collection, resp) {
                     collection.each(function (chatbox) {
                         if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
                             chatbox.trigger('show');

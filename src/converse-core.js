@@ -2261,18 +2261,16 @@
                     this.debouncedShow = _.debounce(function (focus) {
                         if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                             if (focus) { this.focus(); }
-                            return this;
+                            return;
                         }
                         this.initDragResize().setDimensions();
-                        // We call trimChats before fading in, to avoid ugly transition
-                        // effects.
-                        converse.chatboxviews.trimChats(this);
                         this.$el.fadeIn(function () {
                             if (converse.connection.connected) {
                                 // Without a connection, we haven't yet initialized
                                 // localstorage
                                 this.model.save();
                             }
+                            converse.chatboxviews.trimChats(this);
                             this.setChatState(converse.ACTIVE);
                             this.scrollDown();
                             if (focus) {
@@ -2452,7 +2450,6 @@
                     view.model = item;
                     view.initialize();
                 }
-                this.trimChats(view);
             },
 
             getChatBoxWidth: function (view) {

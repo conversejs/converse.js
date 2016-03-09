@@ -85,7 +85,6 @@
                     if (!view && item.get('box_id') === 'controlbox') {
                         view = new converse.ControlBoxView({model: item});
                         this.add(item.get('id'), view);
-                        this.trimChats(view);
                     } else {
                         this._super.onChatBoxAdded.apply(this, arguments);
                     }
@@ -351,6 +350,7 @@
 
                 show: function () {
                     converse.controlboxtoggle.hide(function () {
+                        converse.chatboxviews.trimChats(this);
                         this.$el.show('fast', function () {
                             if (converse.rosterview) {
                                 converse.rosterview.update();

@@ -189,7 +189,6 @@
                     if (!view && item.get('chatroom')) {
                         view = new converse.ChatRoomView({'model': item});
                         this.add(item.get('id'), view);
-                        this.trimChats(view);
                     } else {
                         this._super.onChatBoxAdded.apply(this, arguments);
                     }

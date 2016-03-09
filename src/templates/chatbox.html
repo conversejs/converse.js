@@ -9,7 +9,7 @@
             {[ if (url) { ]}
                 <a href="{{url}}" target="_blank" class="user">
             {[ } ]}
-                    {{ fullname }}
+                    {{ title }}
             {[ if (url) { ]}
                 </a>
             {[ } ]}
@@ -18,6 +18,7 @@
     </div>
     <div class="chat-body">
         <div class="chat-content"></div>
+        {[ if (show_textarea) { ]}
         <form class="sendXMPPMessage" action="" method="post">
             {[ if (show_toolbar) { ]}
                 <ul class="chat-toolbar no-text-select"></ul>
@@ -27,5 +28,6 @@
             class="chat-textarea"
             placeholder="{{label_personal_message}}"/>
         </form>
+        {[ } ]}
     </div>
 </div>

@@ -47,6 +47,7 @@ require.config({
         "converse-api":             "src/converse-api",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
+        "converse-headline":        "src/converse-notification",
         "converse-muc":             "src/converse-muc",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
@@ -230,6 +231,7 @@ if (typeof define !== 'undefined') {
         "converse-register",    // XEP-0077 In-band registration
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications
+        "converse-headline",    // Support for headline messages
         /* END: Removable components */
 
     ], function(converse_api) {

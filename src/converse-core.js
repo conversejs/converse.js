@@ -1468,9 +1468,10 @@
                     .html(converse.templates.chatbox(
                             _.extend(this.model.toJSON(), {
                                     show_toolbar: converse.show_toolbar,
+                                    show_textarea: true,
+                                    title: this.model.get('fullname'),
                                     info_close: __('Close this chat box'),
                                     info_minimize: __('Minimize this chat box'),
-                                    info_view: __('View more information on this person'),
                                     label_personal_message: __('Personal message')
                                 }
                             )

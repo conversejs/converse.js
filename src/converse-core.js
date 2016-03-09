@@ -31,7 +31,7 @@
         "typeahead",
     ], factory);
 }(this, function ($, _, dummy, utils, moment, Strophe, templates) {
-    /* 
+    /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
@@ -2116,7 +2116,7 @@
 
             onMinimizedChanged: function (item) {
                 if (item.get('minimized')) {
-                    this.hide();
+                    this.minimize();
                 } else {
                     this.maximize();
                 }

@@ -158,7 +158,7 @@
                 maximize: function () {
                     var chatboxviews = converse.chatboxviews;
                     // Restores a minimized chat box
-                    this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', this.onShow.bind(this));
+                    this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', this.onMaximized.bind(this));
                     return this;
                 }
             }

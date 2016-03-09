@@ -2411,16 +2411,6 @@
 
             initialize: function () {
                 this.model.on("add", this.onChatBoxAdded, this);
-                this.model.on("change:minimized", function (item) {
-                    if (item.get('minimized') === true) {
-                        /* When a chat is minimized in trimChats, trimChats needs to be
-                        * called again (in case the minimized chats toggle is newly shown).
-                        */
-                        this.trimChats();
-                    } else {
-                        this.trimChats(this.get(item.get('id')));
-                    }
-                }, this);
             },
 
             _ensureElement: function () {
@@ -2623,9 +2613,9 @@
 
             render: function () {
                 if (this.keys().length === 0) {
-                    this.$el.hide('fast');
+                    this.$el.hide('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
                 } else if (this.keys().length === 1) {
-                    this.$el.show('fast');
+                    this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
                 }
                 return this.$el;
             },

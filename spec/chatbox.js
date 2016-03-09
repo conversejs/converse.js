@@ -77,10 +77,10 @@
                         expect(this.chatboxviews.trimChats).toHaveBeenCalled();
 
                         chatboxview = this.chatboxviews.get(jid);
-                        spyOn(chatboxview, 'hide').andCallThrough();
+                        spyOn(chatboxview, 'minimize').andCallThrough();
                         chatboxview.model.set({'minimized': true});
                         expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
-                        expect(chatboxview.hide).toHaveBeenCalled();
+                        expect(chatboxview.minimize).toHaveBeenCalled();
                         trimmedview = trimmed_chatboxes.get(jid);
                     }
                     var key = this.chatboxviews.keys()[1];

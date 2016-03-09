@@ -102,7 +102,7 @@
 
                 getOldestMaximizedChat: function (exclude_ids) {
                     exclude_ids.push('controlbox');
-                    this._super.getOldestMaximizedChat.apply(this, arguments);
+                    return this._super.getOldestMaximizedChat.apply(this, arguments);
                 },
 
                 getChatBoxWidth: function (view) {

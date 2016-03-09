@@ -49,12 +49,12 @@ Screencasts
 Integration into other frameworks
 ---------------------------------
 
-* `Plone <http://plone.org>`_: 
-    `collective.xmpp.chat <http://github.com/collective/collective.xmpp.chat>`_ is an add-on for Plone that uses *Converse.js*. Together with `collective.xmpp.core <http://github.com/collective/collective.xmpp.core>`_, it provides for single-signon-support (SSO) and also enables you to manually or automatically register your Plone users onto your XMPP server.
-* `Django <http://www.djangoproject.com>`_: 
+* `Django <http://www.djangoproject.com>`_:
     `django-conversejs <https://pypi.python.org/pypi/django-conversejs>`_ is an app that makes it easer to integrate *Converse.js* into Django.
     `django-xmpp <https://github.com/fpytloun/django-xmpp>`_ adds XMPP chat integration with converse.js by letting Ejabberd authenticate against your Django site.
-* `Roundcube <http://roundcube.net>`_: 
+* `Plone <http://plone.org>`_:
+    `collective.xmpp.chat <http://github.com/collective/collective.xmpp.chat>`_ is an add-on for Plone that uses *Converse.js*. Together with `collective.xmpp.core <http://github.com/collective/collective.xmpp.core>`_, it provides for single-signon-support (SSO) and also enables you to manually or automatically register your Plone users onto your XMPP server.
+* `Roundcube <http://roundcube.net>`_:
     `roundcube-converse.js-xmpp-plugin <https://github.com/priyadi/roundcube-converse.js-xmpp-plugin>`_ is a plugin for Roundcube Webmail.
 * `Wordpress <http://wordpress.org>`_:
     `ConverseJS <http://wordpress.org/plugins/conversejs>`_
@@ -62,6 +62,9 @@ Integration into other frameworks
     `patterns.converse <https://github.com/jcbrand/patterns.converse>`_ provides a Patternslib pattern for Converse.js
 * `Alfresco <http://www.alfresco.com>`_:
     `alfresco-js-chat-share`_: `alfresco-js-chat-share <https://github.com/keensoft/alfresco-js-chat-share>`_
+* `Friendica <http://friendica.com>`_:
+    `converse <https://github.com/friendica/friendica-addons/tree/master/xmpp/converse>`_
+
 
 ----
 Demo
@@ -99,12 +102,6 @@ For support queries and discussions, please join the mailing list: conversejs@li
 Also take a look at the `mailing list archives <http://librelist.com/browser/conversejs>`_.
 
 Issues can be logged on the `Github issue tracker <https://github.com/jcbrand/converse.js/issues>`_.
-
-----------------------------------
-Donations and tips are appreciated
-----------------------------------
-
-* Bitcoin: 16FsPqE9DhFTryxrUenpsGX4LJ1TPu8GqS
 
 .. _`Integrated into a Plone site`: http://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp
 .. _`In a static HTML page`: http://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript

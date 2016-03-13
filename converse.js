@@ -46,6 +46,7 @@ require.config({
         // Converse
         "converse-api":             "src/converse-api",
         "converse-chatview":        "src/converse-chatview",
+        "converse-rosterview":      "src/converse-rosterview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
         "converse-headline":        "src/converse-headline",

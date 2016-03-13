@@ -761,17 +761,18 @@
             }.bind(this), 200));
         };
 
+        this.afterReconnected = function () {
+            this.chatboxes.registerMessageHandler();
+            this.xmppstatus.sendPresence();
+            this.giveFeedback(__('Contacts'));
+        };
+
         this.onReconnected = function () {
             // We need to re-register all the event handlers on the newly
             // created connection.
             var deferred = new $.Deferred();
             this.initStatus(function () {
-                // FIXME: leaky abstraction from RosterView
-                this.rosterview.registerRosterXHandler();
-                this.rosterview.registerPresenceHandler();
-                this.chatboxes.registerMessageHandler();
-                this.xmppstatus.sendPresence();
-                this.giveFeedback(__('Contacts'));
+                this.afterReconnected();
                 deferred.resolve();
             }.bind(this));
             return deferred.promise();

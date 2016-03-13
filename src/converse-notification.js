@@ -36,7 +36,6 @@
                 notification_icon: '/logo/conversejs.png'
             });
 
-
             converse.isOnlyChatStateNotification = function ($msg) {
                 // See XEP-0085 Chat State Notification
                 return (

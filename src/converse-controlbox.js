@@ -10,6 +10,7 @@
     define("converse-controlbox", [
             "converse-core",
             "converse-api",
+            "converse-rosterview",
             // TODO: remove this dependency
             "converse-chatview"
     ], factory);
@@ -172,12 +173,9 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
-            var settings = {
+            this.updateSettings({
                 show_controlbox_by_default: false,
-            };
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            });
 
             var STATUSES = {
                 'dnd': __('This contact is busy'),

@@ -80,16 +80,12 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
-            // For translations
-            // Configuration values for this plugin
-            var settings = {
+
+            this.updateSettings({
                 allow_registration: true,
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
-            };
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            });
 
 
             converse.RegisterPanel = Backbone.View.extend({

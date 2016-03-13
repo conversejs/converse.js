@@ -28,16 +28,14 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
-            // Configuration values for this plugin
-            var settings = {
+
+            this.updateSettings({
                 show_desktop_notifications: true,
                 play_sounds: false,
                 sounds_path: '/sounds/',
                 notification_icon: '/logo/conversejs.png'
-            };
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            });
+
 
             converse.isOnlyChatStateNotification = function ($msg) {
                 // See XEP-0085 Chat State Notification

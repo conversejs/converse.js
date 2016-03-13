@@ -46,13 +46,10 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
-            // Configuration values for this plugin
-            var settings = {
+
+            this.updateSettings({
                 ping_interval: 180 //in seconds
-            };
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            });
 
             converse.ping = function (jid, success, error, timeout) {
                 // XXX: We could first check here if the server advertised that

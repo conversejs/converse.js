@@ -50,6 +50,7 @@ require.config({
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
         "converse-headline":        "src/converse-headline",
+        "converse-mam":             "src/converse-mam",
         "converse-muc":             "src/converse-muc",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
@@ -228,6 +229,7 @@ if (typeof define !== 'undefined') {
                                 // translations that you care about.
 
         "converse-chatview",    // Renders standalone chat boxes for single user chat
+        "converse-mam",
         "converse-muc",         // XEP-0045 Multi-user chat
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-controlbox",  // The control box

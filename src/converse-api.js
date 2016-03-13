@@ -122,9 +122,6 @@
                 return _.map(jids, _.partial(_.compose(converse.wrappedChatBox, converse.chatboxes.getChatBox.bind(converse.chatboxes)), _, true));
             }
         },
-        'archive': {
-            'query': converse.queryForArchivedMessages.bind(converse)
-        },
         'tokens': {
             'get': function (id) {
                 if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {

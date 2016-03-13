@@ -378,7 +378,7 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                spyOn(converse.features, 'onMAMPreferences').andCallThrough();
+                spyOn(converse, 'onMAMPreferences').andCallThrough();
 
                 var feature = new converse.Feature({
                     'var': Strophe.NS.MAM
@@ -409,7 +409,7 @@
                     .c('never').c('jid').t('montague@montague.lit');
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                expect(converse.features.onMAMPreferences).toHaveBeenCalled();
+                expect(converse.onMAMPreferences).toHaveBeenCalled();
 
                 expect(converse.connection.sendIQ.callCount).toBe(2);
                 expect(sent_stanza.toString()).toBe(

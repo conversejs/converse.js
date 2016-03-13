@@ -887,7 +887,6 @@
 
                 onChatRoomMessage: function (message) {
                     var $message = $(message),
-                        archive_id = $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id'),
                         $forwarded = $message.find('forwarded'),
                         $delay;
 
@@ -916,7 +915,7 @@
                     if (sender === '') {
                         return true;
                     }
-                    this.model.createMessage($message, $delay, archive_id);
+                    this.model.createMessage($message, $delay);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
                         converse.emit('message', message);

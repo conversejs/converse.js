@@ -107,95 +107,6 @@
         9: 'REDIRECT'
     };
 
-    // TODO Refactor into external MAM plugin
-    // XEP-0059 Result Set Management
-    var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
-    // XEP-0313 Message Archive Management
-    var MAM_ATTRIBUTES = ['with', 'start', 'end'];
-    converse.queryForArchivedMessages = function (options, callback, errback) {
-        /* Do a MAM (XEP-0313) query for archived messages.
-            *
-            * Parameters:
-            *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
-            *    (Function) callback - A function to call whenever we receive query-relevant stanza.
-            *    (Function) errback - A function to call when an error stanza is received.
-            *
-            * The options parameter can also be an instance of
-            * Strophe.RSM to enable easy querying between results pages.
-            *
-            * The callback function may be called multiple times, first
-            * for the initial IQ result and then for each message
-            * returned. The last time the callback is called, a
-            * Strophe.RSM object is returned on which "next" or "previous"
-            * can be called before passing it in again to this method, to
-            * get the next or previous page in the result set.
-            */
-        var date, messages = [];
-        if (typeof options === "function") {
-            callback = options;
-            errback = callback;
-        }
-        if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-            converse.log('This server does not support XEP-0313, Message Archive Management');
-            errback(null);
-            return;
-        }
-        var queryid = converse.connection.getUniqueId();
-        var attrs = {'type':'set'};
-        if (typeof options !== "undefined" && options.groupchat) {
-            if (!options['with']) {
-                throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
-            }
-            attrs.to = options['with'];
-        }
-        var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-        if (typeof options !== "undefined") {
-            stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
-                    .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
-                    .c('value').t(Strophe.NS.MAM).up().up();
-
-            if (options['with'] && !options.groupchat) {
-                stanza.c('field', {'var':'with'}).c('value').t(options['with']).up().up();
-            }
-            _.each(['start', 'end'], function (t) {
-                if (options[t]) {
-                    date = moment(options[t]);
-                    if (date.isValid()) {
-                        stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
-                    } else {
-                        throw new TypeError('archive.query: invalid date provided for: '+t);
-                    }
-                }
-            });
-            stanza.up();
-            if (options instanceof Strophe.RSM) {
-                stanza.cnode(options.toXML());
-            } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
-                stanza.cnode(new Strophe.RSM(options).toXML());
-            }
-        }
-        converse.connection.addHandler(function (message) {
-            var $msg = $(message), $fin, rsm;
-            if (typeof callback === "function") {
-                $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
-                if ($fin.length) {
-                    rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
-                    _.extend(rsm, _.pick(options, ['max']));
-                    _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
-                    callback(messages, rsm);
-                    return false; // We've received all messages, decommission this handler
-                } else if (queryid === $msg.find('result').attr('queryid')) {
-                    messages.push(message);
-                }
-                return true;
-            } else {
-                return false; // There's no callback, so no use in continuing this handler.
-            }
-        }, Strophe.NS.MAM);
-        converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
-    };
-
-
     converse.log = function (txt, level) {
         var logger;
         if (typeof console === "undefined" || typeof console.log === "undefined") {
@@ -237,7 +148,6 @@
         Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
@@ -346,7 +256,6 @@
             allow_dragresize: true,
             allow_logout: true,
             animate: true,
-            archived_messages_page_size: '20',
             authentication: 'login', // Available values are "login", "prebind", "anonymous".
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_list_rooms: false,
@@ -365,8 +274,6 @@
             jid: undefined,
             keepalive: false,
             locked_domain: undefined,
-            message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (See https://xmpp.org/extensions/xep-0313.html#prefs )
-            message_archiving_timeout: 8000, // The amount of time (in milliseconds) to wait before aborting a MAM (XEP-0313) request
             message_carbons: false, // Support for XEP-280
             no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             password: undefined,
@@ -1378,7 +1285,7 @@
                 });
             },
 
-            createMessage: function ($message, $delay, archive_id) {
+            createMessage: function ($message, $delay) {
                 $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
                     delayed = $delay.length > 0,
@@ -1409,15 +1316,14 @@
                 } else {
                     sender = 'them';
                 }
-                this.messages.create({
+                return this.messages.create({
                     chat_state: chat_state,
                     delayed: delayed,
                     fullname: fullname,
                     message: body || undefined,
                     msgid: msgid,
                     sender: sender,
-                    time: time,
-                    archive_id: archive_id
+                    time: time
                 });
             }
         });
@@ -1466,8 +1372,7 @@
                     chatbox, resource,
                     from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
-                    to_resource = Strophe.getResourceFromJid(to_jid),
-                    archive_id = $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id');
+                    to_resource = Strophe.getResourceFromJid(to_jid);
 
                 if (to_resource && to_resource !== converse.resource) {
                     converse.log('Ignore incoming message intended for a different resource: '+to_jid, 'info');
@@ -1506,7 +1411,7 @@
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                chatbox.createMessage($message, $delay, archive_id);
+                chatbox.createMessage($message, $delay);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;
@@ -1943,57 +1848,7 @@
             },
 
             onFeatureAdded: function (feature) {
-                var prefs = feature.get('preferences') || {};
                 converse.emit('serviceDiscovered', feature);
-                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
-                    // Ask the server for archiving preferences
-                    converse.connection.sendIQ(
-                        $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),
-                        _.bind(this.onMAMPreferences, this, feature),
-                        _.bind(this.onMAMError, this, feature)
-                    );
-                }
-            },
-
-            onMAMPreferences: function (feature, iq) {
-                /* Handle returned IQ stanza containing Message Archive
-                 * Management (XEP-0313) preferences.
-                 *
-                 * XXX: For now we only handle the global default preference.
-                 * The XEP also provides for per-JID preferences, which is
-                 * currently not supported in converse.js.
-                 *
-                 * Per JID preferences will be set in chat boxes, so it'll
-                 * probbaly be handled elsewhere in any case.
-                 */
-                var $prefs = $(iq).find('prefs[xmlns="'+Strophe.NS.MAM+'"]');
-                var default_pref = $prefs.attr('default');
-                var stanza;
-                if (default_pref !== converse.message_archiving) {
-                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':converse.message_archiving});
-                    $prefs.children().each(function (idx, child) {
-                        stanza.cnode(child).up();
-                    });
-                    converse.connection.sendIQ(stanza, _.bind(function (feature, iq) {
-                            // XXX: Strictly speaking, the server should respond with the updated prefs
-                            // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
-                            // but Prosody doesn't do this, so we don't rely on it.
-                            feature.save({'preferences': {'default':converse.message_archiving}});
-                        }, this, feature),
-                        _.bind(this.onMAMError, this, feature)
-                    );
-                } else {
-                    feature.save({'preferences': {'default':converse.message_archiving}});
-                }
-            },
-
-            onMAMError: function (iq) {
-                if ($(iq).find('feature-not-implemented').length) {
-                    converse.log("Message Archive Management (XEP-0313) not supported by this browser");
-                } else {
-                    converse.log("An error occured while trying to set archiving preferences.");
-                    converse.log(iq);
-                }
             },
 
             addClientIdentities: function () {
@@ -2009,11 +1864,12 @@
                  *
                  * See: http://xmpp.org/extensions/xep-0030.html#info
                  */
+                // FIXME: should go into MUC
                 converse.connection.disco.addFeature('jabber:x:conference');
                 converse.connection.disco.addFeature(Strophe.NS.BOSH);
                 converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
                 converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                converse.connection.disco.addFeature(Strophe.NS.MAM);
+                // FIXME: should go into Roster view plugin?
                 converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
                 if (converse.use_vcards) {
                     converse.connection.disco.addFeature(Strophe.NS.VCARD);

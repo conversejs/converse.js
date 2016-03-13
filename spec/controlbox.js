@@ -134,6 +134,10 @@
         }
 
         describe("The live filter", $.proxy(function () {
+            beforeEach(function () {
+                test_utils.openControlBox();
+            });
+
             it("will only appear when roster contacts flow over the visible area", $.proxy(function () {
                 _clearContacts();
                 var $filter = converse.rosterview.$('.roster-filter');

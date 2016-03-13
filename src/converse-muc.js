@@ -13,6 +13,8 @@
     define("converse-muc", [
             "converse-core",
             "converse-api",
+            // TODO remove next two dependencies
+            "converse-chatview", 
             "converse-controlbox"
     ], factory);
 }(this, function (converse, converse_api) {
@@ -202,15 +204,14 @@
              */
             var converse = this.converse;
             // Configuration values for this plugin
-            var settings = {
+            this.updateSettings({
                 allow_muc: true,
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
-            };
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+                show_toolbar: true,
+            });
+
 
             converse.ChatRoomView = converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view

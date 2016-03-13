@@ -7,7 +7,12 @@
 /*global define, Backbone */
 
 (function (root, factory) {
-    define("converse-controlbox", ["converse-core", "converse-api"], factory);
+    define("converse-controlbox", [
+            "converse-core",
+            "converse-api",
+            // TODO: remove this dependency
+            "converse-chatview"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas
@@ -18,10 +23,9 @@
     // Other necessary globals
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._,
+        __ = utils.__.bind(converse),
         moment = converse_api.env.moment;
 
-    // For translations
-    var __ = utils.__.bind(converse);
 
     converse_api.plugins.add('controlbox', {
 

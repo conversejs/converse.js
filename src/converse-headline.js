@@ -7,18 +7,17 @@
 /*global define */
 
 (function (root, factory) {
-    define("converse-headline", ["converse-core", "converse-api"], factory);
+    define("converse-headline", [
+            "converse-core",
+            "converse-api",
+            // TODO: remove this dependency
+            "converse-chat"
+    ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        utils = converse_api.env.utils,
-        Strophe = converse_api.env.Strophe,
-        _ = converse_api.env._;
-    // For translations
-    var __ = utils.__.bind(converse);
-    var ___ = utils.___;
-
-    var supports_html5_notification = "Notification" in window;
+    var utils = converse_api.env.utils,
+        _ = converse_api.env._,
+        __ = utils.__.bind(converse);
 
 
     converse_api.plugins.add('headline', {

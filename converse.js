@@ -45,9 +45,10 @@ require.config({
         
         // Converse
         "converse-api":             "src/converse-api",
+        "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
-        "converse-headline":        "src/converse-notification",
+        "converse-headline":        "src/converse-headline",
         "converse-muc":             "src/converse-muc",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
@@ -225,6 +226,7 @@ if (typeof define !== 'undefined') {
                                 // file src/locales.js to include only those
                                 // translations that you care about.
 
+        "converse-chatview",    // Renders standalone chat boxes for single user chat
         "converse-muc",         // XEP-0045 Multi-user chat
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-controlbox",  // The control box

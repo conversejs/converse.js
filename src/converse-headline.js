@@ -15,10 +15,6 @@
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
-    var utils = converse_api.env.utils,
-        _ = converse_api.env._,
-        __ = utils.__.bind(converse);
-
 
     converse_api.plugins.add('headline', {
 

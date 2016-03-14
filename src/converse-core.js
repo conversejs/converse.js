@@ -1615,12 +1615,9 @@
                  *
                  * See: http://xmpp.org/extensions/xep-0030.html#info
                  */
-                // FIXME: should go into MUC
-                converse.connection.disco.addFeature('jabber:x:conference');
                 converse.connection.disco.addFeature(Strophe.NS.BOSH);
                 converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
                 converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                // FIXME: should go into Roster view plugin?
                 converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
                 if (converse.use_vcards) {
                     converse.connection.disco.addFeature(Strophe.NS.VCARD);

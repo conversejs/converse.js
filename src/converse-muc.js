@@ -66,6 +66,7 @@
             Features: {
                 addClientFeatures: function () {
                     this._super.addClientFeatures.apply(this, arguments);
+                    converse.connection.disco.addFeature('jabber:x:conference'); // Invites
                     if (this.allow_muc) {
                         this.connection.disco.addFeature(Strophe.NS.MUC);
                     }

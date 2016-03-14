@@ -40,6 +40,13 @@
                 return this;
             },
 
+            onConnected: function () {
+                converse.minimized_chats = new converse.MinimizedChats({
+                    model: converse.chatboxes
+                });
+                this._super.onConnected.apply(this, arguments);
+            },
+
             registerGlobalEventHandlers: function () {
                 this._super.registerGlobalEventHandlers.apply(this, arguments);
 
@@ -352,12 +359,6 @@
                 }
             });
 
-            var onLogin = function () {
-                converse.minimized_chats = new converse.MinimizedChats({
-                    model: converse.chatboxes
-                });
-            };
-            converse.on('ready', onLogin);
             converse.on('controlBoxOpened', function (evt, chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
                 // attr not set yet.

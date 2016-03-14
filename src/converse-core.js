@@ -184,8 +184,6 @@
                 'close': view.close.bind(view),
                 'focus': view.focus.bind(view),
                 'get': chatbox.get.bind(chatbox),
-                // FIXME: leaky abstraction from MUC
-                'is_chatroom': view.is_chatroom,
                 'maximize': chatbox.maximize.bind(chatbox),
                 'minimize': chatbox.minimize.bind(chatbox),
                 'open': view.show.bind(view),

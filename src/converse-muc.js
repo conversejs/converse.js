@@ -52,6 +52,17 @@
             //
             // New functions which don't exist yet can also be added.
 
+            wrappedChatBox: function (chatbox) {
+                /* Wrap a chatbox for outside consumption (i.e. so that it can be
+                * returned via the API.
+                */
+                if (!chatbox) { return; }
+                var view = converse.chatboxviews.get(chatbox.get('jid'));
+                var box = this._super.wrappedChatBox.apply(this, arguments);
+                box.is_chatroom = view.is_chatroom;
+                return box;
+            },
+
             Features: {
                 addClientFeatures: function () {
                     this._super.addClientFeatures.apply(this, arguments);

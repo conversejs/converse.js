@@ -10,9 +10,6 @@
     define("converse-minimize", [
             "converse-core",
             "converse-api",
-            // TODO: remove this dependency
-            "converse-controlbox",
-            "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -161,13 +158,6 @@
                     }
                     return model;
                 }
-            },
-
-            ControlBoxView: {
-                onControlBoxToggleHidden: function () {
-                    converse.chatboxviews.trimChats(this);
-                    this._super.onControlBoxToggleHidden.apply(this, arguments);
-                },
             }
         },
 
@@ -368,6 +358,11 @@
                 });
             };
             converse.on('ready', onLogin);
+            converse.on('controlBoxOpened', function (chatbox) {
+                // Wrapped in anon method because at scan time, chatboxviews
+                // attr not set yet.
+                converse.chatboxviews.trimChats(chatbox);
+            });
         }
     });
 }));

@@ -279,6 +279,7 @@
             show_only_online_users: false,
             sid: undefined,
             storage: 'session',
+            strict_plugin_dependencies: false,
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
             use_vcards: true,
             visible_toolbar_buttons: {
@@ -1875,8 +1876,17 @@
                     /* We automatically override all methods and Backbone views and
                      * models that are in the "overrides" namespace.
                      */
-                    var override = plugin.overrides[key];
+                    var msg,
+                        override = plugin.overrides[key];
                     if (typeof override === "object") {
+                        if (typeof converse[key] === 'undefined') {
+                            msg = "Error: Plugin tried to override "+key+" but it's not found.";
+                            if (converse.strict_plugin_dependencies) {
+                                throw msg;
+                            } else {
+                                converse.log(msg);
+                            }
+                        }
                         this._extendObject(converse[key], override);
                     } else {
                         this._overrideAttribute(key, plugin);

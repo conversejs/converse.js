@@ -417,7 +417,7 @@ state. The only defined states are:
 * dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
 * xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
 
-Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info. 
+Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info.
 
 What used to happen in converse.js when the `offline` state was chosen, is
 that a presence stanza with a `type` of `unavailable` was sent out.
@@ -717,6 +717,20 @@ Data in localStorage on the other hand is kept indefinitely.
     roster contact statuses will not become out of sync in a single session,
     only across more than one session.
 
+strict_plugin_dependencies
+--------------------------
+
+* Default: ``false``
+
+When set to ``true`` and a plugin tries to override an object which doesn't
+exist (for example because the plugin which provides that object is not
+loaded), then an error will be raised.
+
+Otherwise a message will simply be logged and the override instruction ignored.
+
+This allows plugins to have "soft" dependencies which aren't declared as
+as dependencies.
+
 synchronize_availability
 --------------------
 
@@ -789,7 +803,7 @@ websocket_url
 
 * Default: ``undefined``
 
-This option is used to specify a 
+This option is used to specify a
 `websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which
 converse.js can connect to.
 
@@ -805,7 +819,7 @@ support.
     Please note that not older browsers do not support websockets. For older
     browsers you'll want to specify a BOSH URL. See the :ref:`bosh-service-url`
     configuration setting).
-    
+
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
 

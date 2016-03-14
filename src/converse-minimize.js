@@ -358,7 +358,7 @@
                 });
             };
             converse.on('ready', onLogin);
-            converse.on('controlBoxOpened', function (chatbox) {
+            converse.on('controlBoxOpened', function (evt, chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
                 // attr not set yet.
                 converse.chatboxviews.trimChats(chatbox);

@@ -2056,20 +2056,14 @@
             return this;
         };
 
-        this.wrappedOverride = function (key, value, super_method, clean) {
+        this.wrappedOverride = function (key, value, super_method) {
             // We create a partially applied wrapper function, that
             // makes sure to set the proper super method when the
             // overriding method is called. This is done to enable
             // chaining of plugin methods, all the way up to the
             // original method.
-            var ret;
-            if (clean) {
-                converse._super = { 'converse': converse };
-            }
             this._super[key] = super_method;
-            ret = value.apply(this, _.rest(arguments, 4));
-            if (clean) { delete this._super; }
-            return ret;
+            return value.apply(this, _.rest(arguments, 3));
         };
 
         this._overrideAttribute = function (key, plugin) {
@@ -2078,7 +2072,7 @@
             if (typeof value === "function") {
                 var wrapped_function = _.partial(
                     converse.wrappedOverride.bind(converse),
-                        key, value, converse[key].bind(converse), true
+                        key, value, converse[key].bind(converse)
                 );
                 converse[key] = wrapped_function;
             } else {
@@ -2102,7 +2096,7 @@
                     // original method.
                     var wrapped_function = _.partial(
                         converse.wrappedOverride,
-                            key, value, obj.prototype[key], false
+                            key, value, obj.prototype[key]
                     );
                     obj.prototype[key] = wrapped_function;
                 } else {
@@ -2112,6 +2106,9 @@
         };
 
         this.initializePlugins = function () {
+            if (typeof converse._super === 'undefined') {
+                converse._super = { 'converse': converse };
+            }
 
             var updateSettings = function (settings) {
                 /* Helper method which gets put on the plugin and allows it to

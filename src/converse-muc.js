@@ -14,7 +14,7 @@
             "converse-core",
             "converse-api",
             // TODO remove next two dependencies
-            "converse-chatview", 
+            "converse-chatview",
             "converse-controlbox"
     ], factory);
 }(this, function (converse, converse_api) {
@@ -933,7 +933,7 @@
                     }
                     return true;
                 },
-                
+
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
                     *

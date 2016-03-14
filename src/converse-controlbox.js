@@ -66,12 +66,13 @@
             },
 
             ChatBoxes: {
+                chatBoxShouldBeShown: function (chatbox) {
+                    return this._super.chatBoxShouldBeShown.apply(this, arguments) &&
+                           chatbox.get('id') !== 'controlbox';
+                },
+
                 onChatBoxesFetched: function (collection, resp) {
-                    collection.each(function (chatbox) {
-                        if (chatbox.get('id') !== 'controlbox' && !chatbox.get('minimized')) {
-                            chatbox.trigger('show');
-                        }
-                    });
+                    this._super.onChatBoxesFetched.apply(this, arguments);
                     if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
                         this.add({
                             id: 'controlbox',
@@ -80,7 +81,6 @@
                     }
                     this.get('controlbox').save({connected:true});
                 },
-
             },
 
             ChatBoxViews: {
@@ -121,17 +121,6 @@
                         }
                     } else {
                         return this._super.getChatBoxWidth.apply(this, arguments);
-                    }
-                }
-            },
-
-
-            MinimizedChats: {
-                onChanged: function (item) {
-                    if (item.get('id') === 'controlbox')  {
-                        return;
-                    } else {
-                        this._super.onChanged.apply(this, arguments);
                     }
                 }
             },
@@ -330,17 +319,20 @@
                     return this;
                 },
 
-                show: function () {
-                    converse.controlboxtoggle.hide(function () {
-                        converse.chatboxviews.trimChats(this);
-                        this.$el.show('fast', function () {
-                            if (converse.rosterview) {
-                                converse.rosterview.update();
-                            }
-                            utils.refreshWebkit();
-                        }.bind(this));
+                onControlBoxToggleHidden: function () {
+                    this.$el.show('fast', function () {
+                        if (converse.rosterview) {
+                            converse.rosterview.update();
+                        }
+                        utils.refreshWebkit();
                         converse.emit('controlBoxOpened', this);
                     }.bind(this));
+                },
+
+                show: function () {
+                    converse.controlboxtoggle.hide(
+                        this.onControlBoxToggleHidden.bind(this)
+                    );
                     return this;
                 },
 

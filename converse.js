@@ -46,16 +46,17 @@ require.config({
         // Converse
         "converse-api":             "src/converse-api",
         "converse-chatview":        "src/converse-chatview",
-        "converse-rosterview":      "src/converse-rosterview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
         "converse-headline":        "src/converse-headline",
         "converse-mam":             "src/converse-mam",
+        "converse-minimize":        "src/converse-minimize",
         "converse-muc":             "src/converse-muc",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
         "converse-register":        "src/converse-register",
+        "converse-rosterview":      "src/converse-rosterview",
         "converse-templates":       "src/converse-templates",
 
         // Off-the-record-encryption
@@ -236,6 +237,7 @@ if (typeof define !== 'undefined') {
         "converse-register",    // XEP-0077 In-band registration
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications
+        "converse-minimize",    // Allows chat boxes to be minimized
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
 

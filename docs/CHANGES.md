@@ -2,11 +2,10 @@
 
 ## 0.11.0 (Unreleased)
 
-- Split converse.js into different modules.
-  The code for the OTR, MUC, Ping and registration features are now written as
-  plugins in separate modules and they can be completely removed from the build. [jcbrand]
+- Split converse.js up into different plugin modules. [jcbrand]
 - Don't play sound notifications for OTR messages which are setting up an
   encrypted session. [jcbrand]
+- Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]
 - Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
 - #261 `show_controlbox_by_default` config not working [diditopher]
 - #443 HTML5 notifications of received messages [jcbrand]

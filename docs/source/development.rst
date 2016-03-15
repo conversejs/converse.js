@@ -202,6 +202,23 @@ Example:
             roster_groups: true
         });
 
+send
+----
+
+Allows you to send XML stanzas.
+
+For example, to send a message stanza:
+
+.. code-block:: javascript
+
+    var msg = converse.env.$msg({
+        from: 'juliet@example.com/balcony',
+        to:'romeo@example.net',
+        type:'chat'
+    });
+    converse.send(msg);
+
+
 The "archive" grouping
 ----------------------
 
@@ -229,7 +246,6 @@ It accepts the following optional parameters:
 Examples
 ^^^^^^^^
 
-
 **Requesting all archived messages**
 
 The simplest query that can be made is to simply not pass in any parameters.
@@ -249,6 +265,7 @@ the returned messages.
         // Do something with the messages, like showing them in your webpage.
     }
     converse.archive.query(callback, errback))
+
 
 **Waiting until server support has been determined**
 
@@ -666,7 +683,7 @@ Returns a token, either the RID or SID token depending on what's asked for.
 
 Example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.tokens.get('rid')
 
@@ -691,7 +708,7 @@ grouping:
 
     For example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
         converse.listen.on('message', function (event, messageXML) { ... });
 
@@ -707,7 +724,7 @@ grouping:
 
     For example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
         converse.listen.once('message', function (event, messageXML) { ... });
 
@@ -722,7 +739,7 @@ grouping:
 
     For example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
         converse.listen.not('message', function (event, messageXML) { ... });
 

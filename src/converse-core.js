@@ -1685,7 +1685,9 @@
         this.attemptPreboundSession = function (tokens) {
             /* Handle session resumption or initialization when prebind is being used.
              */
-            if (this.keepalive) {
+            if (this.jid && this.sid && this.rid) {
+                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
+            } else if (this.keepalive) {
                 if (!this.jid) {
                     throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
                 }
@@ -1695,13 +1697,9 @@
                     this.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
                     this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
-            } else { // Not keepalive
-                if (this.jid && this.sid && this.rid) {
-                    return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
-                } else {
-                    throw new Error("initConnection: If you use prebind and not keepalive, "+
-                        "then you MUST supply JID, RID and SID values");
-                }
+            } else {
+                throw new Error("initConnection: If you use prebind and not keepalive, "+
+                    "then you MUST supply JID, RID and SID values");
             }
             // We haven't been able to attach yet. Let's see if there
             // is a prebind_url, otherwise there's nothing with which

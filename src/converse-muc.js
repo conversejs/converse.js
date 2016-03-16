@@ -126,19 +126,6 @@
                 }
             },
 
-            ChatBoxView: {
-                clearChatRoomMessages: function (ev) {
-                    /* New method added to the ChatBox model which allows all
-                     * messages in a chatroom to be cleared.
-                     */
-                    if (typeof ev !== "undefined") { ev.stopPropagation(); }
-                    var result = confirm(__("Are you sure you want to clear the messages from this room?"));
-                    if (result === true) {
-                        this.$content.empty();
-                    }
-                    return this;
-                },
-            },
 
             ChatBoxes: {
                 registerMessageHandler: function () {
@@ -420,6 +407,15 @@
                         return false;
                     }
                     return true;
+                },
+
+                clearChatRoomMessages: function (ev) {
+                    if (typeof ev !== "undefined") { ev.stopPropagation(); }
+                    var result = confirm(__("Are you sure you want to clear the messages from this room?"));
+                    if (result === true) {
+                        this.$content.empty();
+                    }
+                    return this;
                 },
 
                 onChatRoomMessageSubmitted: function (text) {

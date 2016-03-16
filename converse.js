@@ -245,6 +245,7 @@ if (typeof define !== 'undefined') {
 
     ], function(converse_api) {
         window.converse = converse_api;
+        $(window).trigger('converse-loaded', converse_api);
         return converse_api;
     });
 }

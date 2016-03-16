@@ -428,6 +428,8 @@
 
 
         this.reconnect = function (condition) {
+            this.connection.disconnect('re-connecting');
+            this.connection.reset();
             converse.log('Attempting to reconnect in 5 seconds');
             converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
             window.clearTimeout(converse.reconnectTimeout);

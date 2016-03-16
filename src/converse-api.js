@@ -145,7 +145,12 @@
                 converse.off(evt, handler);
             },
             'stanza': function (name, options, handler) {
-                options = options || {};
+                if (typeof options === 'function') {
+                    handler = options;
+                    options = {};
+                } else {
+                    options = options || {};
+                }
                 converse.connection.addHandler(
                     handler,
                     options.ns,

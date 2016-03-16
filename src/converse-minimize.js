@@ -44,7 +44,7 @@
                 converse.minimized_chats = new converse.MinimizedChats({
                     model: converse.chatboxes
                 });
-                this._super.onConnected.apply(this, arguments);
+                return this._super.onConnected.apply(this, arguments);
             },
 
             registerGlobalEventHandlers: function () {

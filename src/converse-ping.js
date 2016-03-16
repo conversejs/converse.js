@@ -32,12 +32,16 @@
             // New functions which don't exist yet can also be added.
 
             onConnected: function () {
-                this._super.onConnected().done(converse.registerPingHandler);
+                var promise = this._super.onConnected();
+                promise.done(converse.registerPingHandler);
+                return promise;
             },
             onReconnected: function () {
                 // We need to re-register the ping event handler on the newly
                 // created connection.
-                this._super.onReconnected().done(converse.registerPingHandler);
+                var promise = this._super.onReconnected();
+                promise.done(converse.registerPingHandler);
+                return promise;
             }
         },
 

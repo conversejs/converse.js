@@ -683,6 +683,7 @@
                 }
             }
             deferred.resolve();
+            converse.emit('initialized');
         };
 
         this.onConnected = function (callback) {
@@ -1856,7 +1857,6 @@
         this.initializePlugins();
         this._initialize();
         this.registerGlobalEventHandlers();
-        converse.emit('initialized');
     };
     return converse;
 }));

@@ -165,7 +165,7 @@ msgstr "Ваше сообщение"
 
 #: converse.js:1441
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Вы уверены, что хотите очистить сообщения из этой конференции?"
+msgstr "Вы уверены, что хотите очистить сообщения из этого чата?"
 
 #: converse.js:1595
 msgid "me"
@@ -242,16 +242,16 @@ msgid ""
 msgstr ""
 "Вам будет предложено создать контрольный вопрос и ответ на этот вопрос.\n"
 "\n"
-"Вашему контакту будет задан этот вопрос и, если ответы совпадут (с учётом "
+"Вашему контакту будет задан этот вопрос, и если ответы совпадут (с учётом "
 "регистра), его подлинность будет подтверждена."
 
 #: converse.js:1958
 msgid "What is your security question?"
-msgstr "Ваш секретный вопрос?"
+msgstr "Введите секретный вопрос"
 
 #: converse.js:1960
 msgid "What is the answer to the security question?"
-msgstr "Ваш ответ на секретный вопрос?"
+msgstr "Ответ на секретный вопрос"
 
 #: converse.js:1964
 msgid "Invalid authentication scheme provided"
@@ -299,7 +299,7 @@ msgstr "Ваши сообщения шифруются, но ваш контак
 #: converse.js:2099
 #, fuzzy
 msgid "Your messages are encrypted and your contact verified."
-msgstr "Ваши сообщения шифруются и ваш контакт проверен"
+msgstr "Ваши сообщения шифруются и ваш контакт проверен."
 
 #: converse.js:2101
 msgid ""
@@ -398,7 +398,7 @@ msgstr "Пользователи не найдены"
 
 #: converse.js:2281
 msgid "Click to add as a chat contact"
-msgstr "Добавить контакт"
+msgstr "Кликните, чтобы добавить контакт"
 
 #: converse.js:2339
 msgid "Room name"
@@ -569,7 +569,7 @@ msgstr "Сделать пользователя участником"
 
 #: converse.js:3118
 msgid "Remove user's ability to post messages"
-msgstr "Заглушить пользователя"
+msgstr "Запретить отправку сообщений"
 
 #: converse.js:3119
 msgid "Change your nickname"
@@ -594,7 +594,7 @@ msgstr "Установить тему"
 
 #: converse.js:3124
 msgid "Allow muted user to post messages"
-msgstr "Разрешить заглушенным пользователям оставлять сообщения"
+msgstr "Разрешить заглушенным пользователям отправлять сообщения"
 
 #: converse.js:3280 converse.js:5398
 msgid "Save"
@@ -779,7 +779,7 @@ msgstr "Кликните, чтобы развернуть чат"
 
 #: converse.js:4090
 msgid "Minimized"
-msgstr "Свёрнут"
+msgstr "Свёрнуто"
 
 #: converse.js:4296 converse.js:4317
 msgid "Click to remove this contact"
@@ -901,7 +901,7 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
-"Что-то пошло не так при установке связи с \"%1$s\". Вы уверены, что он "
+"Что-то пошло не так при установке связи с \"%1$s\". Вы уверены, что такой адрес "
 "существует?"
 
 #: converse.js:5779

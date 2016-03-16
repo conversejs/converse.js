@@ -809,6 +809,26 @@
          "Toggle chat": [
             null,
             "Включить чат"
+         ],
+         "%1$s says": [
+            null,
+            "%1$s пишет"
+         ],
+         "has gone offline": [
+            null,
+            "больше не в сети"
+         ],
+         "has come online": [
+            null,
+            "в сети"
+         ],
+         "is busy": [
+            null,
+            "просит не беспокоить"
+         ],
+         "wants to be your contact": [
+            null,
+            "просится в список контактов"
          ]
       }
    }

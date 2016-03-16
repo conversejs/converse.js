@@ -1143,10 +1143,19 @@
                     status_message = $presence.find('status'),
                     contact = this.get(bare_jid);
                 if (this.isSelf(bare_jid)) {
-                    if ((converse.connection.jid !== jid)&&(presence_type !== 'unavailable')&&(converse.synchronize_availability === true || converse.synchronize_availability === resource)) {
-                        // Another resource has changed its status and synchronize_availability option let to update, we'll update ours as well.
+                    if ((converse.connection.jid !== jid) &&
+                        (presence_type !== 'unavailable') &&
+                        (converse.synchronize_availability === true ||
+                         converse.synchronize_availability === resource)) {
+                        // Another resource has changed its status and
+                        // synchronize_availability option set to update,
+                        // we'll update ours as well.
                         converse.xmppstatus.save({'status': chat_status});
-                        if (status_message.length) { converse.xmppstatus.save({'status_message': status_message.text()}); }
+                        if (status_message.length) {
+                            converse.xmppstatus.save({
+                                'status_message': status_message.text()
+                            });
+                        }
                     }
                     return;
                 } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
@@ -1173,6 +1182,7 @@
                     this.addResource(bare_jid, resource);
                     contact.save({'chat_status': chat_status});
                 }
+                converse.emit('presence', presence);
             }
         });
 

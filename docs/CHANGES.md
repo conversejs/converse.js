@@ -2,6 +2,9 @@
 
 ## 0.11.0 (Unreleased)
 
+- Emit an event `presence` when a presence stanza is received. [jcbrand]
+- Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
+- Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
 - Split converse.js up into different plugin modules. [jcbrand]
 - Don't play sound notifications for OTR messages which are setting up an
   encrypted session. [jcbrand]

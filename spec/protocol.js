@@ -10,6 +10,7 @@
     );
 } (this, function ($, mock, test_utils) {
     "use strict";
+    var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var $pres = converse_api.env.$pres;
     // See:
@@ -173,7 +174,9 @@
                     */
                     expect(contact.subscribe).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                        "<presence to='contact@example.org' type='subscribe' xmlns='jabber:client'/>"
+                        "<presence to='contact@example.org' type='subscribe' xmlns='jabber:client'>"+
+                            "<nick xmlns='http://jabber.org/protocol/nick'>Max Mustermann</nick>"+
+                        "</presence>"
                     );
                     /* As a result, the user's server MUST initiate a second roster
                     * push to all of the user's available resources that have
@@ -503,16 +506,18 @@
                 runs(function () {
                     spyOn(converse, "emit");
                     /*
-                    * <presence
-                    *     from='user@example.com'
-                    *     to='contact@example.org'
-                    *     type='subscribe'/>
-                    */
+                     * <presence
+                     *     from='user@example.com'
+                     *     to='contact@example.org'
+                     *     type='subscribe'/>
+                     */
                     var stanza = $pres({
                         'to': converse.bare_jid,
                         'from': 'contact@example.org',
                         'type': 'subscribe'
-                    });
+                    }).c('nick', {
+                        'xmlns': Strophe.NS.NICK,
+                    }).t('Clint Contact');
                     this.connection._dataRecv(test_utils.createRequest(stanza));
                     expect(converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                     var $header = $('a:contains("Contact requests")');

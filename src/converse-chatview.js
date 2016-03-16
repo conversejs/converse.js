@@ -91,7 +91,8 @@
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.updateVCard().render().fetchMessages().insertIntoPage().hide();
+                    this.render().fetchMessages().insertIntoPage().hide();
+                    converse.emit('chatBoxInitialized', this);
                 },
 
                 render: function () {
@@ -800,29 +801,6 @@
                     this.model.save({'scroll': this.$content.scrollTop()});
                     this.setChatState(converse.INACTIVE).model.minimize();
                     this.$el.hide('fast', this.onMinimized.bind(this));
-                },
-
-                updateVCard: function () {
-                    if (!this.use_vcards) { return this; }
-                    var jid = this.model.get('jid'),
-                        contact = converse.roster.get(jid);
-                    if ((contact) && (!contact.get('vcard_updated'))) {
-                        converse.getVCard(
-                            jid,
-                            function (iq, jid, fullname, image, image_type, url) {
-                                this.model.save({
-                                    'fullname' : fullname || jid,
-                                    'url': url,
-                                    'image_type': image_type,
-                                    'image': image
-                                });
-                            }.bind(this),
-                            function () {
-                                converse.log("ChatBoxView.initialize: An error occured while fetching vcard");
-                            }
-                        );
-                    }
-                    return this;
                 },
 
                 renderToolbar: function (options) {

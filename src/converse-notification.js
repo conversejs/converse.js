@@ -199,7 +199,7 @@
             converse.on('contactRequest',  converse.handleContactRequestNotification);
             converse.on('contactStatusChanged',  converse.handleChatStateNotification);
             converse.on('message',  converse.handleMessageNotification);
-            converse.on('ready', converse.requestPermission);
+            converse.on('connected', converse.requestPermission);
         }
     });
 }));

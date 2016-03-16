@@ -24,7 +24,6 @@
         "strophe",
         "converse-templates",
         "strophe.disco",
-        "strophe.vcard",
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
@@ -148,6 +147,7 @@
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
+        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
@@ -278,7 +278,6 @@
             storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
-            use_vcards: true,
             visible_toolbar_buttons: {
                 'emoticons': true,
                 'call': false,
@@ -427,51 +426,6 @@
             converse.connection.send(pres);
         };
 
-        this.getVCard = function (jid, callback, errback) {
-            /* Request the VCard of another user.
-             *
-             * Parameters:
-             *    (String) jid - The Jabber ID of the user whose VCard is being requested.
-             *    (Function) callback - A function to call once the VCard is returned
-             *    (Function) errback - A function to call if an error occured
-             *      while trying to fetch the VCard.
-             */
-            if (!this.use_vcards) {
-                if (callback) { callback(jid, jid); }
-                return;
-            }
-            converse.connection.vcard.get(
-                function (iq) { // Successful callback
-                    var $vcard = $(iq).find('vCard');
-                    var fullname = $vcard.find('FN').text(),
-                        img = $vcard.find('BINVAL').text(),
-                        img_type = $vcard.find('TYPE').text(),
-                        url = $vcard.find('URL').text();
-                    if (jid) {
-                        var contact = converse.roster.get(jid);
-                        if (contact) {
-                            fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
-                            contact.save({
-                                'fullname': fullname,
-                                'image_type': img_type,
-                                'image': img,
-                                'url': url,
-                                'vcard_updated': moment().format()
-                            });
-                        }
-                    }
-                    if (callback) { callback(iq, jid, fullname, img, img_type, url); }
-                }.bind(this),
-                jid,
-                function (iq) { // Error callback
-                    var contact = converse.roster.get(jid);
-                    if (contact) {
-                        contact.save({ 'vcard_updated': moment().format() });
-                    }
-                    if (errback) { errback(iq, jid); }
-                }
-            );
-        };
 
         this.reconnect = function (condition) {
             converse.log('Attempting to reconnect in 5 seconds');
@@ -591,12 +545,18 @@
             this.updateMsgCounter();
         };
 
-        this.initStatus = function (callback) {
+        this.initStatus = function () {
+            var deferred = new $.Deferred();
             this.xmppstatus = new this.XMPPStatus();
             var id = b64_sha1('converse.xmppstatus-'+converse.bare_jid);
             this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
             this.xmppstatus.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
-            this.xmppstatus.fetch({success: callback, error: callback});
+            this.xmppstatus.fetch({
+                success: deferred.resolve,
+                error: deferred.resolve
+            });
+            converse.emit('statusInitialized');
+            return deferred.promise();
         };
 
         this.initSession = function () {
@@ -667,7 +627,7 @@
             // We need to re-register all the event handlers on the newly
             // created connection.
             var deferred = new $.Deferred();
-            this.initStatus(function () {
+            this.initStatus().done(function () {
                 this.afterReconnected();
                 deferred.resolve();
             }.bind(this));
@@ -698,6 +658,31 @@
             this.connection.send(carbons_iq);
         };
 
+
+        this.onStatusInitialized = function (deferred) {
+            this.registerIntervalHandler();				
+            this.roster = new this.RosterContacts();
+            this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
+                b64_sha1('converse.contacts-'+this.bare_jid));
+            this.chatboxes.onConnected();
+            this.giveFeedback(__('Contacts'));
+            if (typeof this.callback === 'function') {
+                // A callback method may be passed in via the
+                // converse.initialize method.
+                // XXX: Can we use $.Deferred instead of this callback?
+                if (this.connection.service === 'jasmine tests') {
+                    // XXX: Call back with the internal converse object. This
+                    // object should never be exposed to production systems.
+                    // 'jasmine tests' is an invalid http bind service value,
+                    // so we're sure that this is just for tests.
+                    this.callback(this);
+                } else  {
+                    this.callback();
+                }
+            }
+            deferred.resolve();
+        };
+
         this.onConnected = function (callback) {
             // When reconnecting, there might be some open chat boxes. We don't
             // know whether these boxes are of the same account or not, so we
@@ -710,30 +695,9 @@
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.features = new this.Features();
             this.enableCarbons();
-            this.initStatus(function () {
-                this.registerIntervalHandler();				
-                this.roster = new this.RosterContacts();
-                this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
-                    b64_sha1('converse.contacts-'+this.bare_jid));
-                this.chatboxes.onConnected();
-                this.giveFeedback(__('Contacts'));
-                if (typeof this.callback === 'function') {
-                    // A callback method may be passed in via the
-                    // converse.initialize method.
-                    // XXX: Can we use $.Deferred instead of this callback?
-                    if (this.connection.service === 'jasmine tests') {
-                        // XXX: Call back with the internal converse object. This
-                        // object should never be exposed to production systems.
-                        // 'jasmine tests' is an invalid http bind service value,
-                        // so we're sure that this is just for tests.
-                        this.callback(this);
-                    } else  {
-                        this.callback();
-                    }
-                }
-                deferred.resolve();
-            }.bind(this));
-            converse.emit('ready');
+            this.initStatus().done(_.bind(this.onStatusInitialized, this, deferred));
+            converse.emit('connected');
+            converse.emit('ready'); // BBB: Will be removed.
             return deferred.promise();
         };
 
@@ -933,7 +897,7 @@
                  *    (String) jid - The Jabber ID of the user being added
                  *    (String) name - The name of that user
                  *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (Function) callback - A function to call once the VCard is returned
+                 *    (Function) callback - A function to call once the IQ is returned
                  *    (Function) errback - A function to call if an error occured
                  */
                 name = _.isEmpty(name)? jid: name;
@@ -1118,31 +1082,33 @@
                 }
             },
 
-            createRequestingContactFromVCard: function (iq, jid, fullname, img, img_type, url) {
-                /* A contact request was recieved, and we then asked for the
-                 * VCard of that user.
+            createRequestingContact: function (presence) {
+                /* Creates a Requesting Contact.
+                 *
+                 * Note: this method gets completely overridden by converse-vcard.js
                  */
-                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+                var nick = $(presence).children('nick[xmlns='+Strophe.NS.NICK+']').text();
                 var user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: fullname || bare_jid,
-                    image: img,
-                    image_type: img_type,
-                    url: url,
-                    vcard_updated: moment().format()
+                    fullname: nick || bare_jid,
                 };
                 this.create(user_data);
                 converse.emit('contactRequest', user_data);
             },
 
-            handleIncomingSubscription: function (jid) {
+            handleIncomingSubscription: function (presence) {
+                var jid = presence.getAttribute('from');
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var contact = this.get(bare_jid);
                 if (!converse.allow_contact_requests) {
-                    converse.rejectPresenceSubscription(jid, __("This client does not allow presence subscriptions"));
+                    converse.rejectPresenceSubscription(
+                        jid,
+                        __("This client does not allow presence subscriptions")
+                    );
                 }
                 if (converse.auto_subscribe) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
@@ -1158,13 +1124,7 @@
                             contact.authorize();
                         }
                     } else if (!contact) {
-                        converse.getVCard(
-                            bare_jid, this.createRequestingContactFromVCard.bind(this),
-                            function (iq, jid) {
-                                converse.log("Error while retrieving vcard for "+jid);
-                                this.createRequestingContactFromVCard.call(this, iq, jid);
-                            }.bind(this)
-                        );
+                        this.createRequestingContact(presence);
                     }
                 }
             },
@@ -1199,7 +1159,7 @@
                 } else if (presence_type === 'unsubscribe') {
                     return;
                 } else if (presence_type === 'subscribe') {
-                    this.handleIncomingSubscription(jid);
+                    this.handleIncomingSubscription(presence);
                 } else if (presence_type === 'unavailable' && contact) {
                     // Only set the user to offline if there aren't any
                     // other resources still available.
@@ -1487,14 +1447,6 @@
                     'status' : this.getStatus()
                 });
                 this.on('change', function (item) {
-                    if (this.get('fullname') === undefined) {
-                        converse.getVCard(
-                            null, // No 'to' attr when getting one's own vCard
-                            function (iq, jid, fullname, image, image_type, url) {
-                                this.save({'fullname': fullname});
-                            }.bind(this)
-                        );
-                    }
                     if (_.has(item.changed, 'status')) {
                         converse.emit('statusChanged', this.get('status'));
                     }
@@ -1617,9 +1569,6 @@
                 converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
                 converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
                 converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
-                if (converse.use_vcards) {
-                    converse.connection.disco.addFeature(Strophe.NS.VCARD);
-                }
                 if (converse.message_carbons) {
                     converse.connection.disco.addFeature(Strophe.NS.CARBONS);
                 }

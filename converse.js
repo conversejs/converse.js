@@ -58,6 +58,7 @@ require.config({
         "converse-register":        "src/converse-register",
         "converse-rosterview":      "src/converse-rosterview",
         "converse-templates":       "src/converse-templates",
+        "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
         "bigint":               "src/bigint",
@@ -230,8 +231,9 @@ if (typeof define !== 'undefined') {
                                 // translations that you care about.
 
         "converse-chatview",    // Renders standalone chat boxes for single user chat
-        "converse-mam",
+        "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
+        "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
         "converse-controlbox",  // The control box
         "converse-register",    // XEP-0077 In-band registration

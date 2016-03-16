@@ -219,6 +219,7 @@ require.config({
 if (typeof define !== 'undefined') {
     /* When running tests, define is not defined. */
     define("converse", [
+        "jquery",
         "converse-api",
 
         /* START: Removable components
@@ -243,7 +244,7 @@ if (typeof define !== 'undefined') {
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
 
-    ], function(converse_api) {
+    ], function($, converse_api) {
         window.converse = converse_api;
         $(window).trigger('converse-loaded', converse_api);
         return converse_api;

@@ -16,7 +16,7 @@
          ],
          "unverified": [
             null,
-            "непроверено"
+            "не проверено"
          ],
          "verified": [
             null,
@@ -192,11 +192,11 @@
          ],
          "What is your security question?": [
             null,
-            "Ваш секретный вопрос?"
+            "Введите секретный вопрос"
          ],
          "What is the answer to the security question?": [
             null,
-            "Ваш ответ на секретный вопрос?"
+            "Ответ на секретный вопрос"
          ],
          "Invalid authentication scheme provided": [
             null,
@@ -248,11 +248,11 @@
          ],
          "Start a call": [
             null,
-            "Инициировать звонок"
+            "Позвонить"
          ],
          "Start encrypted conversation": [
             null,
-            "Начать шифрованный разговор"
+            "Начать зашифрованный разговор"
          ],
          "Verify with fingerprints": [
             null,
@@ -356,7 +356,7 @@
          ],
          "Show more information on this room": [
             null,
-            "Показать больше информации об этоом чате"
+            "Показать больше информации об этом чате"
          ],
          "Description:": [
             null,
@@ -476,7 +476,7 @@
          ],
          "Remove user's ability to post messages": [
             null,
-            "Заглушить пользователя"
+            "Запретить писать сообщения"
          ],
          "Change your nickname": [
             null,
@@ -600,11 +600,11 @@
          ],
          "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
             null,
-            "Ваш псевдоним автоматически изменён на: <strong>%1$s</strong>"
+            "Ваш псевдоним автоматически изменён на <strong>%1$s</strong>"
          ],
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
-            "Ваш псевдоним изменён на: <strong>%1$s</strong>"
+            "Ваш псевдоним изменён на <strong>%1$s</strong>"
          ],
          "You are not on the member list of this room": [
             null,
@@ -620,7 +620,7 @@
          ],
          "Your nickname doesn't conform to this room's policies": [
             null,
-            "Псевдоним не согласуется с правилами конфер."
+            "Псевдоним не согласуется с правилами чата"
          ],
          "Your nickname is already taken": [
             null,
@@ -652,7 +652,7 @@
          ],
          "Minimized": [
             null,
-            "Свёрнут"
+            "Свёрнуто"
          ],
          "Click to remove this contact": [
             null,
@@ -760,7 +760,7 @@
          ],
          "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
             null,
-            "Что-то пошло не так при установке связи с \"%1$s\". Вы уверены, что он существует?"
+            "Что-то пошло не так при установке связи с \"%1$s\". Вы уверены, что такой адрес существует?"
          ],
          "Now logging you in": [
             null,

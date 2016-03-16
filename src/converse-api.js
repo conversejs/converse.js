@@ -144,6 +144,18 @@
             'not': function (evt, handler) {
                 converse.off(evt, handler);
             },
+            'stanza': function (name, options, handler) {
+                options = options || {};
+                converse.connection.addHandler(
+                    handler,
+                    options.ns,
+                    options.name,
+                    options.type,
+                    options.id,
+                    options.from,
+                    options
+                );
+            },
         },
         'send': function (stanza) {
             converse.connection.send(stanza);

@@ -1182,7 +1182,6 @@
                     this.addResource(bare_jid, resource);
                     contact.save({'chat_status': chat_status});
                 }
-                converse.emit('presence', presence);
             }
         });
 

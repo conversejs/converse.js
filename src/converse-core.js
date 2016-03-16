@@ -1615,6 +1615,7 @@
             $.ajax({
                 url:  this.prebind_url,
                 type: 'GET',
+                dataType: "json",
                 success: function (response) {
                     this.connection.attach(
                             response.jid,

@@ -13,6 +13,7 @@
     define("converse-muc", [
             "converse-core",
             "converse-api",
+            "typeahead",
             // TODO remove next two dependencies
             "converse-chatview",
             "converse-controlbox"

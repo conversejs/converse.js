@@ -11,7 +11,8 @@
 (function (root, factory) {
     define("converse-mam", [
             "converse-core",
-            "converse-api"
+            "converse-api",
+            "strophe.rsm"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -26,6 +27,7 @@
     var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
     Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
+    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
 
     converse_api.plugins.add('mam', {

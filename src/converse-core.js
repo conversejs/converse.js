@@ -24,11 +24,9 @@
         "strophe",
         "converse-templates",
         "strophe.disco",
-        "strophe.rsm",
         "strophe.vcard",
         "backbone.browserStorage",
         "backbone.overview",
-        "typeahead",
     ], factory);
 }(this, function ($, _, dummy, utils, moment, Strophe, templates) {
     /*
@@ -149,7 +147,6 @@
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
-        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
         // Instance level constants

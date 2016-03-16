@@ -118,21 +118,25 @@ __p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-t
  if (url) { ;
 __p += '\n                <a href="' +
 ((__t = (url)) == null ? '' : __t) +
-'" target="_blank" class="user">\n            ';
+'" target="_blank" rel="noopener" class="user">\n            ';
  } ;
 __p += '\n                    ' +
-((__t = ( fullname )) == null ? '' : __t) +
+((__t = ( title )) == null ? '' : __t) +
 '\n            ';
  if (url) { ;
 __p += '\n                </a>\n            ';
  } ;
-__p += '\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
+__p += '\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        ';
+ if (show_textarea) { ;
+__p += '\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
  if (show_toolbar) { ;
 __p += '\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
  } ;
 __p += '\n        <textarea\n            type="text"\n            class="chat-textarea"\n            placeholder="' +
 ((__t = (label_personal_message)) == null ? '' : __t) +
-'"/>\n        </form>\n    </div>\n</div>\n';
+'"/>\n        </form>\n        ';
+ } ;
+__p += '\n    </div>\n</div>\n';
 
 }
 return __p
@@ -669,7 +673,7 @@ __p += '<form id="converse-register" class="pure-form converse-form">\n    <span
 ((__t = (help_providers)) == null ? '' : __t) +
 ' <a href="' +
 ((__t = (href_providers)) == null ? '' : __t) +
-'" class="url" target="_blank">' +
+'" class="url" target="_blank" rel="noopener">' +
 ((__t = (help_providers_link)) == null ? '' : __t) +
 '</a>.</p>\n    <input class="pure-button button-primary" type="submit" value="' +
 ((__t = (label_register)) == null ? '' : __t) +
@@ -1117,7 +1121,7 @@ __p += '\n               <li><a class="auth-otr" data-scheme="fingerprint" href=
 ((__t = (label_verify_with_fingerprints)) == null ? '' : __t) +
 '</a></li>\n            ';
  } ;
-__p += '\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">' +
+__p += '\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">' +
 ((__t = (label_whats_this)) == null ? '' : __t) +
 '</a></li>\n        </ul>\n    </li>\n';
  } ;

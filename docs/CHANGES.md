@@ -7,6 +7,8 @@
   encrypted session. [jcbrand]
 - Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]
 - Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
+- Use `rel=noopener` with links that contain `target=_blank` to prevent potential phishing attacks.
+  [More info here](https://mathiasbynens.github.io/rel-noopener/) [jcbrand]
 - #261 `show_controlbox_by_default` config not working [diditopher]
 - #443 HTML5 notifications of received messages [jcbrand]
 - #534 Updated Russian translation [badfiles]

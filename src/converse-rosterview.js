@@ -286,11 +286,6 @@
 
                 onContactAdd: function (contact) {
                     this.addRosterContact(contact).update();
-                    if (!contact.get('vcard_updated')) {
-                        // This will update the vcard, which triggers a change
-                        // request which will rerender the roster contact.
-                        converse.getVCard(contact.get('jid'));
-                    }
                 },
 
                 onContactChange: function (contact) {

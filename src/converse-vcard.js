@@ -158,6 +158,18 @@
             };
             converse.on('chatBoxInitialized', updateVCardForChatBox);
 
+
+            var onContactAdd = function (contact) {
+                if (!contact.get('vcard_updated')) {
+                    // This will update the vcard, which triggers a change
+                    // request which will rerender the roster contact.
+                    converse.getVCard(contact.get('jid'));
+                }
+            };
+            converse.on('initialized', function () {
+                converse.roster.on("add", onContactAdd);
+            });
+
             var fetchOwnVCard = function () {
                 if (converse.xmppstatus.get('fullname') === undefined) {
                     converse.getVCard(

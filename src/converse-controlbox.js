@@ -162,7 +162,11 @@
              */
             var converse = this.converse;
             this.updateSettings({
+                allow_logout: true,
+                default_domain: undefined,
                 show_controlbox_by_default: false,
+                xhr_user_search: false,
+                xhr_user_search_url: ''
             });
 
             var LABEL_CONTACTS = __('Contacts');

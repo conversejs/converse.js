@@ -243,15 +243,11 @@
         // Default configuration values
         // ----------------------------
         this.default_settings = {
-            allow_chat_pending_contacts: false,
-            allow_contact_removal: true,
             allow_contact_requests: true,
             allow_dragresize: true,
-            allow_logout: true,
             animate: true,
             authentication: 'login', // Available values are "login", "prebind", "anonymous".
             auto_away: 0, // Seconds after which user status is set to 'away'
-            auto_list_rooms: false,
             auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,
             auto_subscribe: false,
@@ -259,7 +255,6 @@
             bosh_service_url: undefined, // The BOSH connection manager URL.
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
-            default_domain: undefined,
             expose_rid_and_sid: false,
             forward_messages: false,
             hide_offline_users: false,
@@ -287,8 +282,6 @@
             websocket_url: undefined,
             xhr_custom_status: false,
             xhr_custom_status_url: '',
-            xhr_user_search: false,
-            xhr_user_search_url: ''
         };
 
         _.extend(this, this.default_settings);

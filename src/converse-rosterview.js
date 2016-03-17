@@ -41,6 +41,8 @@
              * loaded by converse.js's plugin machinery.
              */
             this.updateSettings({
+                allow_chat_pending_contacts: false,
+                allow_contact_removal: true,
                 show_toolbar: true,
             });
 

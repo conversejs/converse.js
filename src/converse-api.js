@@ -44,6 +44,7 @@
                     if (typeof message === "string") {
                         data.status_message = message;
                     }
+                    converse.xmppstatus.sendPresence(value);
                     converse.xmppstatus.save(data);
                 },
                 'message': {

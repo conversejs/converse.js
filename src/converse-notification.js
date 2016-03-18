@@ -31,6 +31,8 @@
 
             this.updateSettings({
                 show_desktop_notifications: true,
+                chatstate_notification_blacklist: [],
+                // ^ a list of JIDs to ignore concerning chat state notifications
                 play_sounds: false,
                 sounds_path: '/sounds/',
                 notification_icon: '/logo/conversejs.png'
@@ -127,6 +129,10 @@
                 /* Creates an HTML5 Notification to inform of a change in a
                  * contact's chat state.
                  */
+                if (_.contains(converse.chatstate_notification_blacklist, contact.get('jid'))) {
+                    // Don't notify if the user is being ignored.
+                    return;
+                }
                 var chat_state = contact.chat_status,
                     message = null;
                 if (chat_state === 'offline') {

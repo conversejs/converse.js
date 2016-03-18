@@ -298,6 +298,23 @@ This setting can only be used together with ``allow_otr = true``.
     to retrieve your private key and read your all the chat messages in your
     current session. Previous sessions however cannot be decrypted.
 
+ chatstate_notification_blacklist
+---------------------------------
+
+* Default: ``[]``
+
+A list of JIDs to be ignored when showing desktop notifications of changed chat states.
+
+Some user's clients routinely connect and disconnect (likely on mobile) and
+each time a chat state notificaion is received (``online`` when connecting and
+then ``offline`` when disconnecting).
+
+When desktop notifications are turned on (see `show-desktop-notifications`_),
+then you'll receive notification messages each time this happens.
+
+Receiving constant notifications that a user's client is connecting and disconnecting
+is annoying, so this option allows you to ignore those JIDs.
+
 csi_waiting_time
 ----------------
 

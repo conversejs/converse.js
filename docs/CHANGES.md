@@ -6,6 +6,7 @@
   As a result `converse.listen.on('message');` has been deprecated, use `converse.stanza.on('message');` instead. [jcbrand]
 - Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
 - Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
+- New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate_notification_blacklist) [jcbrand]
 - Split converse.js up into different plugin modules. [jcbrand]
 - Don't play sound notifications for OTR messages which are setting up an
   encrypted session. [jcbrand]

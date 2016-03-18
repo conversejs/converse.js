@@ -726,11 +726,11 @@
 
             subscribe: function (message) {
                 /* Send a presence subscription request to this roster contact
-                *
-                * Parameters:
-                *    (String) message - An optional message to explain the
-                *      reason for the subscription request.
-                */
+                 *
+                 * Parameters:
+                 *    (String) message - An optional message to explain the
+                 *      reason for the subscription request.
+                 */
                 this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
                 var pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
@@ -746,10 +746,10 @@
 
             ackSubscribe: function () {
                 /* Upon receiving the presence stanza of type "subscribed",
-                * the user SHOULD acknowledge receipt of that subscription
-                * state notification by sending a presence stanza of type
-                * "subscribe" to the contact
-                */
+                 * the user SHOULD acknowledge receipt of that subscription
+                 * state notification by sending a presence stanza of type
+                 * "subscribe" to the contact
+                 */
                 converse.connection.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
@@ -758,31 +758,31 @@
 
             ackUnsubscribe: function (jid) {
                 /* Upon receiving the presence stanza of type "unsubscribed",
-                * the user SHOULD acknowledge receipt of that subscription state
-                * notification by sending a presence stanza of type "unsubscribe"
-                * this step lets the user's server know that it MUST no longer
-                * send notification of the subscription state change to the user.
-                *  Parameters:
-                *    (String) jid - The Jabber ID of the user who is unsubscribing
-                */
+                 * the user SHOULD acknowledge receipt of that subscription state
+                 * notification by sending a presence stanza of type "unsubscribe"
+                 * this step lets the user's server know that it MUST no longer
+                 * send notification of the subscription state change to the user.
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user who is unsubscribing
+                 */
                 converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.destroy(); // Will cause removeFromRoster to be called.
             },
 
             unauthorize: function (message) {
                 /* Unauthorize this contact's presence subscription
-                * Parameters:
-                *   (String) message - Optional message to send to the person being unauthorized
-                */
+                 * Parameters:
+                 *   (String) message - Optional message to send to the person being unauthorized
+                 */
                 converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
             },
 
             authorize: function (message) {
                 /* Authorize presence subscription
-                * Parameters:
-                *   (String) message - Optional message to send to the person being authorized
-                */
+                 * Parameters:
+                 *   (String) message - Optional message to send to the person being authorized
+                 */
                 var pres = $pres({to: this.get('jid'), type: "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
@@ -812,9 +812,9 @@
 
             removeFromRoster: function (callback) {
                 /* Instruct the XMPP server to remove this contact from our roster
-                * Parameters:
-                *   (Function) callback
-                */
+                 * Parameters:
+                 *   (Function) callback
+                 */
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
@@ -870,15 +870,15 @@
 
             addAndSubscribe: function (jid, name, groups, message, attributes) {
                 /* Add a roster contact and then once we have confirmation from
-                * the XMPP server we subscribe to that contact's presence updates.
-                *  Parameters:
-                *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                *    (String) name - The name of that user
-                *    (Array of Strings) groups - Any roster groups the user might belong to
-                *    (String) message - An optional message to explain the
-                *      reason for the subscription request.
-                *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                */
+                 * the XMPP server we subscribe to that contact's presence updates.
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
+                 *    (String) name - The name of that user
+                 *    (Array of Strings) groups - Any roster groups the user might belong to
+                 *    (String) message - An optional message to explain the
+                 *      reason for the subscription request.
+                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
+                 */
                 this.addContact(jid, name, groups, attributes).done(function (contact) {
                     if (contact instanceof converse.RosterContact) {
                         contact.subscribe(message);
@@ -989,11 +989,11 @@
 
             onRosterPush: function (iq) {
                 /* Handle roster updates from the XMPP server.
-                * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                *
-                * Parameters:
-                *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                */
+                 * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+                 *
+                 * Parameters:
+                 *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
+                 */
                 var id = iq.getAttribute('id');
                 var from = iq.getAttribute('from');
                 if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
@@ -1029,8 +1029,8 @@
 
             onReceivedFromServer: function (iq) {
                 /* An IQ stanza containing the roster has been received from
-                * the XMPP server.
-                */
+                 * the XMPP server.
+                 */
                 converse.emit('roster', iq);
                 $(iq).children('query').find('item').each(function (idx, item) {
                     this.updateContact(item);
@@ -1039,8 +1039,8 @@
 
             updateContact: function (item) {
                 /* Update or create RosterContact models based on items
-                * received in the IQ from the server.
-                */
+                 * received in the IQ from the server.
+                 */
                 var jid = item.getAttribute('jid');
                 if (this.isSelf(jid)) { return; }
                 var groups = [],
@@ -1531,12 +1531,12 @@
         this.Feature = Backbone.Model;
         this.Features = Backbone.Collection.extend({
             /* Service Discovery
-            * -----------------
-            * This collection stores Feature Models, representing features
-            * provided by available XMPP entities (e.g. servers)
-            * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
-            * All features are shown here: http://xmpp.org/registrar/disco-features.html
-            */
+             * -----------------
+             * This collection stores Feature Models, representing features
+             * provided by available XMPP entities (e.g. servers)
+             * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
+             * All features are shown here: http://xmpp.org/registrar/disco-features.html
+             */
             model: converse.Feature,
             initialize: function () {
                 this.addClientIdentities().addClientFeatures();

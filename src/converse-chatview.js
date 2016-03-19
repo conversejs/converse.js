@@ -42,9 +42,9 @@
                     if (!view && !item.get('chatroom')) {
                         view = new converse.ChatBoxView({model: item});
                         this.add(item.get('id'), view);
-                        this.trimChats(view);
+                        return view;
                     } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
+                        return this._super.onChatBoxAdded.apply(this, arguments);
                     }
                 }
             }

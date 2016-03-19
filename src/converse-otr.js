@@ -10,7 +10,12 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-    define("converse-otr", ["otr", "converse-core", "converse-api"], factory);
+    define("converse-otr", [
+            "otr",
+            "converse-core",
+            "converse-api",
+            "converse-minimize"
+    ], factory);
 }(this, function (otr, converse, converse_api) {
     "use strict";
     // Strophe methods for building stanzas

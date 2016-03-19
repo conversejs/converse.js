@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, setTimeout */
+/*global Backbone, define, window */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -14,8 +14,8 @@
             "converse-core",
             "converse-api",
             "typeahead",
-            // TODO remove next two dependencies
             "converse-chatview",
+            // XXX: should we remove this dependency?
             "converse-controlbox"
     ], factory);
 }(this, function (converse, converse_api) {
@@ -221,6 +221,7 @@
                 length: 300,
                 tagName: 'div',
                 className: 'chatbox chatroom',
+                is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
                     'click .toggle-chatbox-button': 'minimize',
@@ -235,7 +236,6 @@
                     'mousedown .dragresize-left': 'onStartHorizontalResize',
                     'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
-                is_chatroom: true,
 
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
@@ -278,7 +278,7 @@
                     this.renderChatArea();
                     this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     this.setWidth();
-                    setTimeout(converse.refreshWebkit, 50);
+                    window.setTimeout(converse.refreshWebkit, 50);
                     return this;
                 },
 

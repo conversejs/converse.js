@@ -73,6 +73,7 @@ require([
                 "spec/notification",
                 "spec/profiling",
                 "spec/ping",
+                "spec/headline",
                 "spec/register",
                 "spec/xmppstatus"
             ], function () {

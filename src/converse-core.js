@@ -1264,8 +1264,7 @@
                 });
             }
         });
-
-
+        
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
             comparator: 'time_opened',

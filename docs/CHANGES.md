@@ -2,8 +2,11 @@
 
 ## 0.11.0 (Unreleased)
 
+- Add support for messages with type `headline`, often used for notifications
+  from the server. [jcbrand]
 - Add stanza-specific event listener `converse.listen.stanza`.
-  As a result `converse.listen.on('message');` has been deprecated, use `converse.stanza.on('message');` instead. [jcbrand]
+  As a result `converse.listen.on('message');` has been deprecated, use
+  `converse.stanza.on('message');` instead. [jcbrand]
 - Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
 - Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
 - New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate_notification_blacklist) [jcbrand]
@@ -12,8 +15,9 @@
   encrypted session. [jcbrand]
 - Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]
 - Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
-- Use `rel=noopener` with links that contain `target=_blank` to prevent potential phishing attacks.
-  [More info here](https://mathiasbynens.github.io/rel-noopener/) [jcbrand]
+- Use `rel=noopener` with links that contain `target=_blank` to prevent potential
+  phishing attacks. [More info here](https://mathiasbynens.github.io/rel-noopener/)
+  [jcbrand]
 - #261 `show_controlbox_by_default` config not working [diditopher]
 - #443 HTML5 notifications of received messages [jcbrand]
 - #534 Updated Russian translation [badfiles]
@@ -22,7 +26,8 @@
 - #577 New config variable [message_archiving_timeout](https://conversejs.org/docs/html/configuration.html#message_archiving_timeout) [jcbrand]
 - #587 Fix issue when logging out with `auto_logout=true` [davec82]
 - #589 Save scroll position on minimize and restore it on maximize [rlanvin]
-- #592 Add random resource for `auto_login`, add method generateResource to generate random resource [davec82]
+- #592 Add random resource for `auto_login`, add method generateResource to
+  generate random resource [davec82]
 - #598 Add option `synchronize_availability` [davec82]
 - #600 Fix change xmpp status also on icon-status click [davec82]
 

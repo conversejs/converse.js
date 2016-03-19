@@ -125,12 +125,12 @@
 
                 trimChats: function (newchat) {
                     /* This method is called when a newly created chat box will
-                    * be shown.
-                    *
-                    * It checks whether there is enough space on the page to show
-                    * another chat box. Otherwise it minimizes the oldest chat box
-                    * to create space.
-                    */
+                     * be shown.
+                     *
+                     * It checks whether there is enough space on the page to show
+                     * another chat box. Otherwise it minimizes the oldest chat box
+                     * to create space.
+                     */
                     if (converse.no_trimming || (this.model.length <= 1)) {
                         return;
                     }

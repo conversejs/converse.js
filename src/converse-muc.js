@@ -216,8 +216,8 @@
 
             converse.ChatRoomView = converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view
-                * for normal one-on-one chat boxes.
-                */
+                 * for normal one-on-one chat boxes.
+                 */
                 length: 300,
                 tagName: 'div',
                 className: 'chatbox chatroom',
@@ -397,8 +397,8 @@
 
                 validateRoleChangeCommand: function (command, args) {
                     /* Check that a command to change a chat room user's role or
-                    * affiliation has anough arguments.
-                    */
+                     * affiliation has anough arguments.
+                     */
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showStatusNotification(
@@ -421,11 +421,11 @@
 
                 onChatRoomMessageSubmitted: function (text) {
                     /* Gets called when the user presses enter to send off a
-                    * message in a chat room.
-                    *
-                    * Parameters:
-                    *    (String) text - The message text.
-                    */
+                     * message in a chat room.
+                     *
+                     * Parameters:
+                     *    (String) text - The message text.
+                     */
                     var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [];
                     switch (match[1]) {
@@ -723,27 +723,27 @@
                 },
 
                 /* http://xmpp.org/extensions/xep-0045.html
-                * ----------------------------------------
-                * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-                * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-                * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-                * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-                * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-                * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-                * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-                * 171 message      Configuration change    Inform occupants that room logging is now disabled
-                * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-                * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-                * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-                * 201 presence     Entering a room         Inform user that a new room has been created
-                * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-                * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-                * 303 presence     Exiting a room          Inform all occupants of new room nickname
-                * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-                * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-                * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-                * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
-                */
+                 * ----------------------------------------
+                 * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
+                 * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
+                 * 102 message      Configuration change    Inform occupants that room now shows unavailable members
+                 * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
+                 * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
+                 * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
+                 * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
+                 * 171 message      Configuration change    Inform occupants that room logging is now disabled
+                 * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
+                 * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
+                 * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
+                 * 201 presence     Entering a room         Inform user that a new room has been created
+                 * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
+                 * 301 presence     Removal from room       Inform user that he or she has been banned from the room
+                 * 303 presence     Exiting a room          Inform all occupants of new room nickname
+                 * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
+                 * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
+                 * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
+                 * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+                 */
                 infoMessages: {
                     100: __('This room is not anonymous'),
                     102: __('This room now shows unavailable members'),
@@ -767,15 +767,15 @@
 
                 actionInfoMessages: {
                     /* XXX: Note the triple underscore function and not double
-                    * underscore.
-                    *
-                    * This is a hack. We can't pass the strings to __ because we
-                    * don't yet know what the variable to interpolate is.
-                    *
-                    * Triple underscore will just return the string again, but we
-                    * can then at least tell gettext to scan for it so that these
-                    * strings are picked up by the translation machinery.
-                    */
+                     * underscore.
+                     *
+                     * This is a hack. We can't pass the strings to __ because we
+                     * don't yet know what the variable to interpolate is.
+                     *
+                     * Triple underscore will just return the string again, but we
+                     * can then at least tell gettext to scan for it so that these
+                     * strings are picked up by the translation machinery.
+                     */
                     301: ___("<strong>%1$s</strong> has been banned"),
                     303: ___("<strong>%1$s</strong>'s nickname has changed"),
                     307: ___("<strong>%1$s</strong> has been kicked out"),
@@ -790,9 +790,9 @@
 
                 showStatusMessages: function (el, is_self) {
                     /* Check for status codes and communicate their purpose to the user.
-                    * Allow user to configure chat room if they are the owner.
-                    * See: http://xmpp.org/registrar/mucstatus.html
-                    */
+                     * Allow user to configure chat room if they are the owner.
+                     * See: http://xmpp.org/registrar/mucstatus.html
+                     */
                     var $el = $(el),
                         i, disconnect_msgs = [], msgs = [], reasons = [];
 
@@ -935,10 +935,10 @@
 
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
-                    *
-                    * Then, upon receiving them, call onChatRoomMessage
-                    * so that they are displayed inside it.
-                    */
+                     *
+                     * Then, upon receiving them, call onChatRoomMessage
+                     * so that they are displayed inside it.
+                     */
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
@@ -1112,11 +1112,11 @@
 
             converse.RoomsPanel = Backbone.View.extend({
                 /* Backbone View which renders the "Rooms" tab and accompanying
-                * panel in the control box.
-                *
-                * In this panel, chat rooms can be listed, joined and new rooms
-                * can be created.
-                */
+                 * panel in the control box.
+                 *
+                 * In this panel, chat rooms can be listed, joined and new rooms
+                 * can be created.
+                 */
                 tagName: 'div',
                 className: 'controlbox-pane',
                 id: 'chatrooms',
@@ -1175,8 +1175,8 @@
 
                 onRoomsFound: function (iq) {
                     /* Handle the IQ stanza returned from the server, containing
-                    * all its public rooms.
-                    */
+                     * all its public rooms.
+                     */
                     var name, jid, i, fragment,
                         $available_chatrooms = this.$el.find('#available-chatrooms');
                     this.rooms = $(iq).find('query').find('item');
@@ -1207,7 +1207,7 @@
 
                 updateRoomsList: function () {
                     /* Send and IQ stanza to the server asking for all rooms
-                    */
+                     */
                     converse.connection.sendIQ(
                         $iq({
                             to: this.model.get('muc_domain'),
@@ -1338,8 +1338,8 @@
 
             _.extend(converse_api, {
                 /* We extend the default converse.js API to add methods specific to MUC
-                * chat rooms.
-                */
+                 * chat rooms.
+                 */
                 'rooms': {
                     'open': function (jids, nick) {
                         if (!nick) {

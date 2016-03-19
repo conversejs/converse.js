@@ -162,10 +162,10 @@
 
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
-                    *
-                    * Then, upon receiving them, call onMessage on the chat box,
-                    * so that they are displayed inside it.
-                    */
+                     *
+                     * Then, upon receiving them, call onMessage on the chat box,
+                     * so that they are displayed inside it.
+                     */
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
@@ -186,16 +186,16 @@
 
                 insertIntoPage: function () {
                     /* This method gets overridden in src/converse-controlbox.js if
-                    * the controlbox plugin is active.
-                    */
+                     * the controlbox plugin is active.
+                     */
                     $('#conversejs').prepend(this.$el);
                     return this;
                 },
 
                 adjustToViewport: function () {
                     /* Event handler called when viewport gets resized. We remove
-                    * custom width/height from chat boxes.
-                    */
+                     * custom width/height from chat boxes.
+                     */
                     var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
                     var viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
                     if (viewport_width <= 480) {
@@ -210,8 +210,8 @@
 
                 initDragResize: function () {
                     /* Determine and store the default box size.
-                    * We need this information for the drag-resizing feature.
-                    */
+                     * We need this information for the drag-resizing feature.
+                     */
                     var $flyout = this.$el.find('.box-flyout');
                     if (typeof this.model.get('height') === 'undefined') {
                         var height = $flyout.height();
@@ -271,11 +271,11 @@
 
                 prependDayIndicator: function (date) {
                     /* Prepends an indicator into the chat area, showing the day as
-                    * given by the passed in date.
-                    *
-                    * Parameters:
-                    *  (String) date - An ISO8601 date string.
-                    */
+                     * given by the passed in date.
+                     *
+                     * Parameters:
+                     *  (String) date - An ISO8601 date string.
+                     */
                     var day_date = moment(date).startOf('day');
                     this.$content.prepend(converse.templates.new_day({
                         isodate: day_date.format(),
@@ -285,11 +285,11 @@
 
                 appendMessage: function (attrs) {
                     /* Helper method which appends a message to the end of the chat
-                    * box's content area.
-                    *
-                    * Parameters:
-                    *  (Object) attrs: An object containing the message attributes.
-                    */
+                     * box's content area.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     */
                     _.compose(
                         _.debounce(this.scrollDown.bind(this), 50),
                         this.$content.append.bind(this.$content)
@@ -298,15 +298,15 @@
 
                 showMessage: function (attrs) {
                     /* Inserts a chat message into the content area of the chat box.
-                    * Will also insert a new day indicator if the message is on a
-                    * different day.
-                    *
-                    * The message to show may either be newer than the newest
-                    * message, or older than the oldest message.
-                    *
-                    * Parameters:
-                    *  (Object) attrs: An object containing the message attributes.
-                    */
+                     * Will also insert a new day indicator if the message is on a
+                     * different day.
+                     *
+                     * The message to show may either be newer than the newest
+                     * message, or older than the oldest message.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     */
                     var $first_msg = this.$content.children('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         last_msg_date, current_msg_date, day_date, $msgs, msg_dates, idx;
@@ -384,13 +384,13 @@
 
                 renderMessage: function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
-                    *
-                    * Parameters:
-                    *  (Object) attrs: An object containing the message attributes.
-                    *
-                    *  Returns:
-                    *      The DOM element representing the message.
-                    */
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     *
+                     *  Returns:
+                     *      The DOM element representing the message.
+                     */
                     var msg_time = moment(attrs.time) || moment,
                         text = attrs.message,
                         match = text.match(/^\/(.*?)(?: (.*))?$/),
@@ -465,10 +465,10 @@
 
                 onMessageAdded: function (message) {
                     /* Handler that gets called when a new message object is created.
-                    *
-                    * Parameters:
-                    *    (Object) message - The message Backbone object that was added.
-                    */
+                     *
+                     * Parameters:
+                     *    (Object) message - The message Backbone object that was added.
+                     */
                     if (typeof this.clear_status_timeout !== 'undefined') {
                         window.clearTimeout(this.clear_status_timeout);
                         delete this.clear_status_timeout;
@@ -492,10 +492,10 @@
 
                 sendMessage: function (message) {
                     /* Responsible for sending off a text message.
-                    *
-                    *  Parameters:
-                    *    (Message) message - The chat message
-                    */
+                     *
+                     *  Parameters:
+                     *    (Message) message - The chat message
+                     */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
                     var messageStanza = this.createMessageStanza(message);
@@ -513,11 +513,11 @@
 
                 onMessageSubmitted: function (text) {
                     /* This method gets called once the user has typed a message
-                    * and then pressed enter in a chat box.
-                    *
-                    *  Parameters:
-                    *    (string) text - The chat message text.
-                    */
+                     * and then pressed enter in a chat box.
+                     *
+                     *  Parameters:
+                     *    (string) text - The chat message text.
+                     */
                     if (!converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
@@ -553,9 +553,9 @@
 
                 sendChatState: function () {
                     /* Sends a message with the status of the user in this chat session
-                    * as taken from the 'chat_state' attribute of the chat box.
-                    * See XEP-0085 Chat State Notifications.
-                    */
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
                     converse.connection.send(
                         $msg({'to':this.model.get('jid'), 'type': 'chat'})
                             .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES})
@@ -564,16 +564,16 @@
 
                 setChatState: function (state, no_save) {
                     /* Mutator for setting the chat state of this chat session.
-                    * Handles clearing of any chat state notification timeouts and
-                    * setting new ones if necessary.
-                    * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-                    * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-                    * See XEP-0085 Chat State Notifications.
-                    *
-                    *  Parameters:
-                    *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-                    *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
-                    */
+                     * Handles clearing of any chat state notification timeouts and
+                     * setting new ones if necessary.
+                     * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+                     * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+                     * See XEP-0085 Chat State Notifications.
+                     *
+                     *  Parameters:
+                     *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+                     *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
+                     */
                     if (typeof this.chat_state_timeout !== 'undefined') {
                         window.clearTimeout(this.chat_state_timeout);
                         delete this.chat_state_timeout;
@@ -593,7 +593,7 @@
 
                 keyPressed: function (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
-                    */
+                     */
                     var $textarea = $(ev.target), message;
                     if (ev.keyCode === KEY.ENTER) {
                         ev.preventDefault();
@@ -865,9 +865,9 @@
                 show: function (focus) {
                     if (typeof this.debouncedShow === 'undefined') {
                         /* We wrap the method in a debouncer and set it on the
-                        * instance, so that we have it debounced per instance.
-                        * Debouncing it on the class-level is too broad.
-                        */
+                         * instance, so that we have it debounced per instance.
+                         * Debouncing it on the class-level is too broad.
+                         */
                         this.debouncedShow = _.debounce(function (focus) {
                             if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                                 if (focus) { this.focus(); }

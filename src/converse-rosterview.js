@@ -140,20 +140,20 @@
                                 success: function (collection) {
                                     if (collection.length === 0) {
                                         /* We don't have any roster contacts stored in sessionStorage,
-                                        * so lets fetch the roster from the XMPP server. We pass in
-                                        * 'sendPresence' as callback method, because after initially
-                                        * fetching the roster we are ready to receive presence
-                                        * updates from our contacts.
-                                        */
+                                         * so lets fetch the roster from the XMPP server. We pass in
+                                         * 'sendPresence' as callback method, because after initially
+                                         * fetching the roster we are ready to receive presence
+                                         * updates from our contacts.
+                                         */
                                         converse.roster.fetchFromServer(function () {
                                             converse.xmppstatus.sendPresence();
                                         });
                                     } else if (converse.send_initial_presence) {
                                         /* We're not going to fetch the roster again because we have
-                                        * it already cached in sessionStorage, but we still need to
-                                        * send out a presence stanza because this is a new session.
-                                        * See: https://github.com/jcbrand/converse.js/issues/536
-                                        */
+                                         * it already cached in sessionStorage, but we still need to
+                                         * send out a presence stanza because this is a new session.
+                                         * See: https://github.com/jcbrand/converse.js/issues/536
+                                         */
                                         converse.xmppstatus.sendPresence();
                                     }
                                 }
@@ -326,13 +326,13 @@
 
                 positionFetchedGroups: function (model, resp, options) {
                     /* Instead of throwing an add event for each group
-                    * fetched, we wait until they're all fetched and then
-                    * we position them.
-                    * Works around the problem of positionGroup not
-                    * working when all groups besides the one being
-                    * positioned aren't already in inserted into the
-                    * roster DOM element.
-                    */
+                     * fetched, we wait until they're all fetched and then
+                     * we position them.
+                     * Works around the problem of positionGroup not
+                     * working when all groups besides the one being
+                     * positioned aren't already in inserted into the
+                     * roster DOM element.
+                     */
                     model.sort();
                     model.each(function (group, idx) {
                         var view = this.get(group.get('name'));
@@ -350,8 +350,8 @@
 
                 positionGroup: function (view) {
                     /* Place the group's DOM element in the correct alphabetical
-                    * position amongst the other groups in the roster.
-                    */
+                     * position amongst the other groups in the roster.
+                     */
                     var $groups = this.$roster.find('.roster-group'),
                         index = $groups.length ? this.model.indexOf(view.model) : 0;
                     if (index === 0) {
@@ -366,7 +366,7 @@
 
                 appendGroup: function (view) {
                     /* Add the group at the bottom of the roster
-                    */
+                     */
                     var $last = this.$roster.find('.roster-group').last();
                     var $siblings = $last.siblings('dd');
                     if ($siblings.length > 0) {
@@ -379,8 +379,8 @@
 
                 getGroup: function (name) {
                     /* Returns the group as specified by name.
-                    * Creates the group if it doesn't exist.
-                    */
+                     * Creates the group if it doesn't exist.
+                     */
                     var view =  this.get(name);
                     if (view) {
                         return view.model;
@@ -466,16 +466,16 @@
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
                         /* ask === 'subscribe'
-                        *      Means we have asked to subscribe to them.
-                        *
-                        * subscription === 'from'
-                        *      They are subscribed to use, but not vice versa.
-                        *      We assume that there is a pending subscription
-                        *      from us to them (otherwise we're in a state not
-                        *      supported by converse.js).
-                        *
-                        *  So in both cases the user is a "pending" contact.
-                        */
+                         *      Means we have asked to subscribe to them.
+                         *
+                         * subscription === 'from'
+                         *      They are subscribed to use, but not vice versa.
+                         *      We assume that there is a pending subscription
+                         *      from us to them (otherwise we're in a state not
+                         *      supported by converse.js).
+                         *
+                         *  So in both cases the user is a "pending" contact.
+                         */
                         this.$el.addClass('pending-xmpp-contact');
                         this.$el.html(converse.templates.pending_contact(
                             _.extend(item.toJSON(), {
@@ -618,8 +618,8 @@
 
                 positionContact: function (contact) {
                     /* Place the contact's DOM element in the correct alphabetical
-                    * position amongst the other contacts in this group.
-                    */
+                     * position amongst the other contacts in this group.
+                     */
                     var view = this.get(contact.get('id'));
                     var index = this.model.contacts.indexOf(contact);
                     view.$el.detach();
@@ -648,10 +648,10 @@
 
                 filter: function (q) {
                     /* Filter the group's contacts based on the query "q".
-                    * The query is matched against the contact's full name.
-                    * If all contacts are filtered out (i.e. hidden), then the
-                    * group must be filtered out as well.
-                    */
+                     * The query is matched against the contact's full name.
+                     * If all contacts are filtered out (i.e. hidden), then the
+                     * group must be filtered out as well.
+                     */
                     var matches;
                     if (q.length === 0) {
                         if (this.model.get('state') === converse.OPENED) {
@@ -738,8 +738,8 @@
                 model: converse.RosterGroup,
                 comparator: function (a, b) {
                     /* Groups are sorted alphabetically, ignoring case.
-                    * However, Ungrouped, Requesting Contacts and Pending Contacts
-                    * appear last and in that order. */
+                     * However, Ungrouped, Requesting Contacts and Pending Contacts
+                     * appear last and in that order. */
                     a = a.get('name');
                     b = b.get('name');
                     var special_groups = _.keys(HEADER_WEIGHTS);

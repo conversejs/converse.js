@@ -120,8 +120,8 @@
 
                 registerHooks: function () {
                     /* Hook into Strophe's _connect_cb, so that we can send an IQ
-                    * requesting the registration fields.
-                    */
+                     * requesting the registration fields.
+                     */
                     var conn = converse.connection;
                     var connect_cb = conn._connect_cb.bind(conn);
                     conn._connect_cb = function (req, callback, raw) {
@@ -137,11 +137,11 @@
 
                 getRegistrationFields: function (req, _callback, raw) {
                     /*  Send an IQ stanza to the XMPP server asking for the
-                    *  registration fields.
-                    *  Parameters:
-                    *    (Strophe.Request) req - The current request
-                    *    (Function) callback
-                    */
+                     *  registration fields.
+                     *  Parameters:
+                     *    (Strophe.Request) req - The current request
+                     *    (Function) callback
+                     */
                     converse.log("sendQueryStanza was called");
                     var conn = converse.connection;
                     conn.connected = true;
@@ -172,10 +172,10 @@
 
                 onRegistrationFields: function (stanza) {
                     /*  Handler for Registration Fields Request.
-                    *
-                    *  Parameters:
-                    *    (XMLElement) elem - The query stanza.
-                    */
+                     *
+                     *  Parameters:
+                     *    (XMLElement) elem - The query stanza.
+                     */
                     if (stanza.getElementsByTagName("query").length !== 1) {
                         converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
@@ -204,11 +204,11 @@
 
                 onProviderChosen: function (ev) {
                     /* Callback method that gets called when the user has chosen an
-                    * XMPP provider.
-                    *
-                    * Parameters:
-                    *      (Submit Event) ev - Form submission event.
-                    */
+                     * XMPP provider.
+                     *
+                     * Parameters:
+                     *      (Submit Event) ev - Form submission event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var $form = $(ev.target),
                         $domain_input = $form.find('input[name=domain]'),
@@ -287,11 +287,11 @@
 
                 renderRegistrationForm: function (stanza) {
                     /* Renders the registration form based on the XForm fields
-                    * received from the XMPP server.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
-                    */
+                     * received from the XMPP server.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
+                     */
                     var $form= this.$('form'),
                         $stanza = $(stanza),
                         $fields, $input;
@@ -344,12 +344,12 @@
 
                 reportErrors: function (stanza) {
                     /* Report back to the user any error messages received from the
-                    * XMPP server after attempted registration.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - The IQ stanza received from the
-                    *      XMPP server.
-                    */
+                     * XMPP server after attempted registration.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - The IQ stanza received from the
+                     *      XMPP server.
+                     */
                     var $form= this.$('form'), flash;
                     var $errmsgs = $(stanza).find('error text');
                     var $flash = $form.find('.form-errors');
@@ -377,7 +377,7 @@
 
                 cancelRegistration: function (ev) {
                     /* Handler, when the user cancels the registration form.
-                    */
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     converse.connection.reset();
                     this.render();
@@ -385,12 +385,12 @@
 
                 submitRegistrationForm : function (ev) {
                     /* Handler, when the user submits the registration form.
-                    * Provides form error feedback or starts the registration
-                    * process.
-                    *
-                    * Parameters:
-                    *      (Event) ev - the submit event.
-                    */
+                     * Provides form error feedback or starts the registration
+                     * process.
+                     *
+                     * Parameters:
+                     *      (Event) ev - the submit event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var $empty_inputs = this.$('input.required:emptyVal');
                     if ($empty_inputs.length) {
@@ -418,11 +418,11 @@
 
                 setFields: function (stanza) {
                     /* Stores the values that will be sent to the XMPP server
-                    * during attempted registration.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
-                    */
+                     * during attempted registration.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
+                     */
                     var $query = $(stanza).find('query'), $xform;
                     if ($query.length > 0) {
                         $xform = $query.find('x[xmlns="'+Strophe.NS.XFORM+'"]');
@@ -470,12 +470,12 @@
 
                 _onRegisterIQ: function (stanza) {
                     /* Callback method that gets called when a return IQ stanza
-                    * is received from the XMPP server, after attempting to
-                    * register a new user.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - The IQ stanza.
-                    */
+                     * is received from the XMPP server, after attempting to
+                     * register a new user.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - The IQ stanza.
+                     */
                     var error = null,
                         query = stanza.getElementsByTagName("query");
                     if (query.length > 0) {

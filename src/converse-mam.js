@@ -61,7 +61,6 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-
             this.updateSettings({
                 archived_messages_page_size: '20',
                 message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
@@ -70,22 +69,22 @@
 
             converse.queryForArchivedMessages = function (options, callback, errback) {
                 /* Do a MAM (XEP-0313) query for archived messages.
-                    *
-                    * Parameters:
-                    *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
-                    *    (Function) callback - A function to call whenever we receive query-relevant stanza.
-                    *    (Function) errback - A function to call when an error stanza is received.
-                    *
-                    * The options parameter can also be an instance of
-                    * Strophe.RSM to enable easy querying between results pages.
-                    *
-                    * The callback function may be called multiple times, first
-                    * for the initial IQ result and then for each message
-                    * returned. The last time the callback is called, a
-                    * Strophe.RSM object is returned on which "next" or "previous"
-                    * can be called before passing it in again to this method, to
-                    * get the next or previous page in the result set.
-                    */
+                 *
+                 * Parameters:
+                 *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
+                 *    (Function) callback - A function to call whenever we receive query-relevant stanza.
+                 *    (Function) errback - A function to call when an error stanza is received.
+                 *
+                 * The options parameter can also be an instance of
+                 * Strophe.RSM to enable easy querying between results pages.
+                 *
+                 * The callback function may be called multiple times, first
+                 * for the initial IQ result and then for each message
+                 * returned. The last time the callback is called, a
+                 * Strophe.RSM object is returned on which "next" or "previous"
+                 * can be called before passing it in again to this method, to
+                 * get the next or previous page in the result set.
+                 */
                 var date, messages = [];
                 if (typeof options === "function") {
                     callback = options;
@@ -153,7 +152,7 @@
 
             _.extend(converse_api, {
                 /* Extend default converse.js API to add methods specific to MAM
-                */
+                 */
                 'archive': {
                     'query': converse.queryForArchivedMessages.bind(converse)
                 }

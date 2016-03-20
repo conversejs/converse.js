@@ -25,6 +25,8 @@
 - #592 Add random resource for `auto_login`, add method generateResource to generate random resource [davec82]
 - #598 Add option `synchronize_availability` [davec82]
 - #600 Fix change xmpp status also on icon-status click [davec82]
+- #616 converse-otr should depend on converse-minimize  [jcbrand]
+- #609 Remove split of fullname [lixmal]
 
 ## 0.10.1 (2016-02-06)
 

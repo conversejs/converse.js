@@ -1241,7 +1241,9 @@
                 } else {
                     from = Strophe.getBareJidFromJid($message.attr('from'));
                 }
-                fullname = (_.isEmpty(fullname) ? from: fullname).split(' ')[0];
+                if (_.isEmpty(fullname)) {
+                    fullname = from;
+                }
                 if (delayed) {
                     stamp = $delay.attr('stamp');
                     time = stamp;

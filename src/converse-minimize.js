@@ -200,7 +200,7 @@
                         this.model.toJSON(),
                         { 'tooltip': __('Click to restore this chat') }
                     );
-                    if (this.model.get('chatroom')) {
+                    if (this.model.get('type') === 'chatroom') {
                         data.title = this.model.get('name');
                         this.$el.addClass('chat-head-chatroom');
                     } else {

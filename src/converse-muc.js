@@ -171,7 +171,7 @@
                             'jid': room_jid,
                             'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
                             'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
-                            'chatroom': true,
+                            'type': 'chatroom',
                             'box_id': b64_sha1(room_jid),
                             'password': $x.attr('password')
                         });
@@ -188,11 +188,11 @@
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
-                    if (!view && item.get('chatroom')) {
+                    if (!view && item.get('type') === 'chatroom') {
                         view = new converse.ChatRoomView({'model': item});
-                        this.add(item.get('id'), view);
+                        return this.add(item.get('id'), view);
                     } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
+                        return this._super.onChatBoxAdded.apply(this, arguments);
                     }
                 }
             }
@@ -1322,7 +1322,7 @@
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                         'nick': nick,
-                        'chatroom': true,
+                        'type': 'chatroom',
                         'box_id': b64_sha1(jid)
                     });
                 },
@@ -1358,7 +1358,7 @@
                                     'jid': jid,
                                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                                     'nick': nick,
-                                    'chatroom': true,
+                                    'type': 'chatroom',
                                     'box_id': b64_sha1(jid)
                                 });
                             }

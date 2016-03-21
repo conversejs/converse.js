@@ -88,9 +88,9 @@
                     var view = this.get(item.get('id'));
                     if (!view && item.get('box_id') === 'controlbox') {
                         view = new converse.ControlBoxView({model: item});
-                        this.add(item.get('id'), view);
+                        return this.add(item.get('id'), view);
                     } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
+                        return this._super.onChatBoxAdded.apply(this, arguments);
                     }
                 },
 

@@ -36,10 +36,7 @@
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
-                    // FIXME: leaky abstraction from chatroom here, need to
-                    // come up with a nicer solution for this.
-                    // Perhaps change 'chatroom' to more generic non-boolean
-                    if (!view && !item.get('chatroom')) {
+                    if (!view) {
                         view = new converse.ChatBoxView({model: item});
                         this.add(item.get('id'), view);
                         return view;
@@ -600,7 +597,8 @@
                         message = $textarea.val();
                         $textarea.val('').focus();
                         if (message !== '') {
-                            if (this.model.get('chatroom')) {
+                            // XXX: leaky abstraction from MUC
+                            if (this.model.get('type') === 'chatroom') {
                                 this.onChatRoomMessageSubmitted(message);
                             } else {
                                 this.onMessageSubmitted(message);
@@ -608,7 +606,8 @@
                             converse.emit('messageSend', message);
                         }
                         this.setChatState(converse.ACTIVE);
-                    } else if (!this.model.get('chatroom')) { // chat state data is currently only for single user chat
+                    // XXX: leaky abstraction from MUC
+                    } else if (this.model.get('type') !== 'chatroom') { // chat state data is currently only for single user chat
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);

@@ -115,6 +115,10 @@
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
+                if (typeof converse.roster === 'undefined') {
+                    converse.log("Could not send notification, because roster is undefined", "error");
+                    return;
+                }
                 var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
                 var roster_item = converse.roster.get(contact_jid);
                 var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {

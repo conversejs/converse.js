@@ -24,27 +24,6 @@
     
     converse_api.plugins.add('ping', {
 
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            onConnected: function () {
-                var promise = this._super.onConnected();
-                promise.done(converse.registerPingHandler);
-                return promise;
-            },
-            onReconnected: function () {
-                // We need to re-register the ping event handler on the newly
-                // created connection.
-                var promise = this._super.onReconnected();
-                promise.done(converse.registerPingHandler);
-                return promise;
-            }
-        },
-
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -118,6 +97,13 @@
                     converse.ping(jid);
                 }
             });
+
+            var onConnected = function () {
+                // Wrapper so that we can spy on registerPingHandler in tests
+                converse.registerPingHandler();
+            };
+            converse.on('connected', onConnected);
+            converse.on('reconnected', onConnected);
         }
     });
 }));

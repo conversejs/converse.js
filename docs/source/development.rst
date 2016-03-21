@@ -862,12 +862,14 @@ When keepalive=true but there aren't any stored prebind tokens.
 
 ``converse.listen.on('noResumeableSession', function (event) { ... });``
 
-reconnect
-~~~~~~~~~
+reconnected
+~~~~~~~~~~~
 
-After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode.
+After the connection has dropped and converse.js has reconnected.
+Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
+have to be registered anew.
 
-``converse.listen.on('reconnect', function (event) { ... });``
+``converse.listen.on('reconnected', function (event) { ... });``
 
 roomInviteSent
 ~~~~~~~~~~~~~~

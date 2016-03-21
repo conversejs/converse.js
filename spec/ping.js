@@ -2,28 +2,34 @@
 (function (root, factory) {
     define([
         "jquery",
-        "mock",
-        "test_utils",
         "converse-ping"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
+        ], function ($) {
+            return factory($);
         }
     );
-} (this, function ($, mock, test_utils) {
+} (this, function ($) {
     "use strict";
 
-    describe("XMPP Ping", $.proxy(function (mock, test_utils) {
-        describe("Ping and pong handlers", $.proxy(function (mock, test_utils) {
-            it("are registered when converse.js is initialized", $.proxy(function () {
+    describe("XMPP Ping", function () {
+        describe("Ping and pong handlers", function () {
+            it("are registered when converse.js is connected", function () {
                 spyOn(converse, 'registerPingHandler').andCallThrough();
                 spyOn(converse, 'registerPongHandler').andCallThrough();
-                converse._initialize();
+                converse.emit('connected');
                 expect(converse.registerPingHandler).toHaveBeenCalled();
                 expect(converse.registerPongHandler).toHaveBeenCalled();
-            }, converse, mock, test_utils));
-        }));
+            });
 
-        describe("An IQ stanza", $.proxy(function (mock, test_utils) {
+            it("are registered when converse.js reconnected", function () {
+                spyOn(converse, 'registerPingHandler').andCallThrough();
+                spyOn(converse, 'registerPongHandler').andCallThrough();
+                converse.emit('reconnected');
+                expect(converse.registerPingHandler).toHaveBeenCalled();
+                expect(converse.registerPongHandler).toHaveBeenCalled();
+            });
+        });
+
+        describe("An IQ stanza", function () {
             it("is sent out when converse.js pings a server", function () {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
@@ -37,6 +43,6 @@
                         "<ping xmlns='urn:xmpp:ping'/>"+
                     "</iq>");
             });
-        }));
-    }, converse, mock, test_utils));
+        });
+    });
 }));

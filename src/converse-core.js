@@ -626,6 +626,7 @@
                 this.afterReconnected();
                 deferred.resolve();
             }.bind(this));
+            converse.emit('reconnected');
             return deferred.promise();
         };
 

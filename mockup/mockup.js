@@ -38,7 +38,27 @@
                 view.onChatRoomMessage(message.nodeTree);
             });
 
-            it("Show a private chat box", function () {
+            it("Show the control box", function () {
+                test_utils.openControlBox();
+                test_utils.openContactsPanel();
+            });
+
+            it("Show a headlines box", function () {
+                converse.connection._dataRecv(
+                    test_utils.createRequest(
+                        $msg({
+                            'type': 'headline',
+                            'from': 'notify.example.com',
+                            'to': 'dummy@localhost',
+                            'xml:lang': 'en'
+                        })
+                        .c('subject').t('MAIL').up()
+                        .c('body').t('You got mail.').up()
+                    )
+                );
+            });
+
+            xit("Show a private chat box", function () {
                 var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var chatbox = test_utils.openChatBoxFor(contact_jid);
                 var view = converse.chatboxviews.get(contact_jid);
@@ -53,11 +73,6 @@
                     }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 converse.chatboxes.onMessage(msg);
-            });
-
-            it("Show the control box", function () {
-                test_utils.openControlBox();
-                test_utils.openContactsPanel();
             });
         });
     }, window, mock, test_utils));

@@ -1,5 +1,4 @@
 // Extra test dependencies
-config.baseUrl = '../';
 config.paths.mock = "tests/mock";
 config.paths.test_utils = "tests/utils";
 config.paths.jasmine = "components/jasmine/lib/jasmine-core/jasmine";

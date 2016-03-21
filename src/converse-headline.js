@@ -22,15 +22,20 @@
     var onHeadlineMessage = function (message) {
         /* Handler method for all incoming messages of type "headline".
          */
-        var $message = $(message),
-            bare_jid = $message.attr('from');
-        converse.chatboxes.create({
-            'id': bare_jid,
-            'jid': bare_jid,
-            'fullname':  bare_jid,
-            'type': 'headline'
-        }).createMessage($message);
-        converse.emit('message', message);
+        var $message = $(message), from_jid = $message.attr('from');
+        if ($message.attr('type') === 'headline' || from_jid.indexOf('@') === -1) {
+            // Some servers (I'm looking at you Prosody) don't set the message
+            // type to "headline" when sending server messages. For now we
+            // check if an @ signal is included, and if not, we assume it's
+            // a headline message.
+            converse.chatboxes.create({
+                'id': from_jid,
+                'jid': from_jid,
+                'fullname':  from_jid,
+                'type': 'headline'
+            }).createMessage($message);
+            converse.emit('message', message);
+        }
         return true;
     };
 
@@ -107,7 +112,7 @@
 
             var registerHeadlineHandler = function () {
                 converse.connection.addHandler(
-                        onHeadlineMessage, null, 'message', 'headline');
+                        onHeadlineMessage, null, 'message');
             };
             converse.on('connected', registerHeadlineHandler);
             converse.on('reconnected', registerHeadlineHandler);

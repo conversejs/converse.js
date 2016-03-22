@@ -78,6 +78,12 @@
                 if ($message.attr('type') === 'groupchat') {
                     return converse.shouldNotifyOfGroupMessage($message);
                 }
+                if ($message.attr('type') === 'headline' || $message.attr('from').indexOf('@') === -1) {
+                    // XXX: 2nd check is workaround for Prosody which doesn't give type "headline"
+
+                    // We want to show notifications for headline messages.
+                    return true;
+                }
                 var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
                 return !converse.isOnlyChatStateNotification($message) && !is_me;
             };
@@ -115,13 +121,22 @@
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
-                if (typeof converse.roster === 'undefined') {
-                    converse.log("Could not send notification, because roster is undefined", "error");
-                    return;
+                var n, title, contact_jid, roster_item,
+                    from_jid = $message.attr('from');
+                if ($message.attr('type') === 'headline' || from_jid.indexOf('@') === -1) {
+                    // XXX: 2nd check is workaround for Prosody which doesn't
+                    // give type "headline"
+                    title = __(___("Notification from %1$s"), from_jid);
+                } else {
+                    if (typeof converse.roster === 'undefined') {
+                        converse.log("Could not send notification, because roster is undefined", "error");
+                        return;
+                    }
+                    contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                    roster_item = converse.roster.get(contact_jid);
+                    title = __(___("%1$s says"), roster_item.get('fullname'));
                 }
-                var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
-                var roster_item = converse.roster.get(contact_jid);
-                var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
+                n = new Notification(title, {
                         body: $message.children('body').text(),
                         lang: converse.i18n.locale_data.converse[""].lang,
                         icon: converse.notification_icon

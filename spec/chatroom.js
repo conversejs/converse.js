@@ -163,7 +163,7 @@
                 )[0];
                 expect(converse.chatboxes.models.length).toBe(1);
                 expect(converse.chatboxes.models[0].id).toBe("controlbox");
-                converse.chatboxes.onInvite(message);
+                converse.onDirectMUCInvitation(message);
                 expect(window.confirm).toHaveBeenCalledWith(
                     name + ' has invited you to join a chat room: '+ room_jid +
                     ', and left the following reason: "'+reason+'"');

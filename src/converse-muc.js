@@ -97,6 +97,8 @@
                 },
 
                 onConnected: function () {
+                    // TODO: This can probably be refactored to be an event
+                    // handler (and therefore removed from overrides)
                     var converse = this._super.converse;
                     this._super.onConnected.apply(this, arguments);
 
@@ -126,65 +128,6 @@
                 }
             },
 
-
-            ChatBoxes: {
-                registerMessageHandler: function () {
-                    /* Override so that we can register a handler
-                     * for chat room invites.
-                     */
-                    this._super.registerMessageHandler.apply(this, arguments); // First call the original
-                    this._super.converse.connection.addHandler(
-                        function (message) {
-                            this.onInvite(message);
-                            return true;
-                        }.bind(this), 'jabber:x:conference', 'message');
-                },
-
-                onInvite: function (message) {
-                    /* An invitation to join a chat room has been received */
-                    var converse = this._super.converse,
-                        $message = $(message),
-                        $x = $message.children('x[xmlns="jabber:x:conference"]'),
-                        from = Strophe.getBareJidFromJid($message.attr('from')),
-                        room_jid = $x.attr('jid'),
-                        reason = $x.attr('reason'),
-                        contact = converse.roster.get(from),
-                        result;
-
-                    if (converse.auto_join_on_invite) {
-                        result = true;
-                    } else {
-                        contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);   // Invite request might come from someone not your roster list
-                        if (!reason) {
-                            result = confirm(
-                                __(___("%1$s has invited you to join a chat room: %2$s"), contact, room_jid)
-                            );
-                        } else {
-                            result = confirm(
-                                __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'), contact, room_jid, reason)
-                            );
-                        }
-                    }
-                    if (result === true) {
-                        var chatroom = converse.chatboxviews.showChat({
-                            'id': room_jid,
-                            'jid': room_jid,
-                            'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                            'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
-                            'type': 'chatroom',
-                            'box_id': b64_sha1(room_jid),
-                            'password': $x.attr('password')
-                        });
-                        if (!_.contains(
-                                    [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
-                                    chatroom.get('connection_status'))
-                                ) {
-                            converse.chatboxviews.get(room_jid).join(null);
-                        }
-                    }
-                }
-            },
-
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
@@ -207,6 +150,7 @@
             this.updateSettings({
                 allow_muc: true,
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
+                auto_join_rooms: [], // List of JIDs of rooms to be joined upon login
                 auto_list_rooms: false,
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
@@ -1336,10 +1280,69 @@
                 }
             });
 
+            /* Support for XEP-0249: Direct MUC invitations */
+            /* ------------------------------------------------------------ */
+            converse.onDirectMUCInvitation = function (message) {
+                /*  A direct MUC invitation to join a room has been received */
+                var $message = $(message),
+                    $x = $message.children('x[xmlns="jabber:x:conference"]'),
+                    from = Strophe.getBareJidFromJid($message.attr('from')),
+                    room_jid = $x.attr('jid'),
+                    reason = $x.attr('reason'),
+                    contact = converse.roster.get(from),
+                    result;
+
+                if (converse.auto_join_on_invite) {
+                    result = true;
+                } else {
+                    // Invite request might come from someone not your roster list
+                    contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
+                    if (!reason) {
+                        result = confirm(
+                            __(___("%1$s has invited you to join a chat room: %2$s"),
+                                contact, room_jid)
+                        );
+                    } else {
+                        result = confirm(
+                            __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
+                                contact, room_jid, reason)
+                        );
+                    }
+                }
+                if (result === true) {
+                    var chatroom = converse.chatboxviews.showChat({
+                        'id': room_jid,
+                        'jid': room_jid,
+                        'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
+                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
+                        'type': 'chatroom',
+                        'box_id': b64_sha1(room_jid),
+                        'password': $x.attr('password')
+                    });
+                    if (!_.contains(
+                                [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
+                                chatroom.get('connection_status'))
+                            ) {
+                        converse.chatboxviews.get(room_jid).join(null);
+                    }
+                }
+            };
+            var registerInviteHandler = function () {
+                converse.connection.addHandler(
+                    function (message) {
+                        converse.onDirectMUCInvitation(message);
+                        return true;
+                    }, 'jabber:x:conference', 'message');
+            };
+            converse.on('connected', registerInviteHandler);
+            converse.on('reconnected', registerInviteHandler);
+            /* ------------------------------------------------------------ */
+
+
+            /* We extend the default converse.js API to add methods specific to MUC
+             * chat rooms.
+             */
             _.extend(converse_api, {
-                /* We extend the default converse.js API to add methods specific to MUC
-                 * chat rooms.
-                 */
                 'rooms': {
                     'open': function (jids, nick) {
                         if (!nick) {
@@ -1378,7 +1381,6 @@
                             return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                         }
                         return _.map(jids, _.partial(converse.wrappedChatBox, _.bind(converse.chatboxes.getChatBox, converse.chatboxes, _, true)));
-
                     }
                 }
             });

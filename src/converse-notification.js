@@ -133,7 +133,7 @@
                 /* Creates an HTML5 Notification to inform of a change in a
                  * contact's chat state.
                  */
-                if (_.contains(converse.chatstate_notification_blacklist, contact.get('jid'))) {
+                if (_.contains(converse.chatstate_notification_blacklist, contact.jid)) {
                     // Don't notify if the user is being ignored.
                     return;
                 }

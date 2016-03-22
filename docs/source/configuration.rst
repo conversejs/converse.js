@@ -256,6 +256,23 @@ auto_join_on_invite
 
 If true, the user will automatically join a chatroom on invite without any confirm.
 
+
+auto_join_rooms
+---------------
+
+* Default:  ``[]``
+
+This settings allows you to provide a list of groupchat conversations to be
+automatically joined once the user has logged in.
+
+You can either specify a simple list of room JIDs, in which case your nickname
+will be taken from your JID, or you can specify a list of maps, where each map
+specifies the room's JID and the nickname that should be used.
+
+For example:
+
+    `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
+
 .. _`bosh-service-url`:
 
 bosh_service_url

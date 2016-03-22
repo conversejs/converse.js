@@ -150,7 +150,8 @@
             this.updateSettings({
                 allow_muc: true,
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
-                auto_join_rooms: [], // List of JIDs of rooms to be joined upon login
+                auto_join_rooms: [], // List of maps {'jid': 'room@example.org', 'nick': 'WizardKing69' },
+                                     // providing room jids and nicks or simply a list JIDs.
                 auto_list_rooms: false,
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
@@ -1327,15 +1328,24 @@
                     }
                 }
             };
-            var registerInviteHandler = function () {
+            var onConnected = function () {
                 converse.connection.addHandler(
                     function (message) {
                         converse.onDirectMUCInvitation(message);
                         return true;
                     }, 'jabber:x:conference', 'message');
+                _.each(converse.auto_join_rooms, function (room) {
+                    if (typeof room === 'string') {
+                        converse_api.rooms.open(room);
+                    } else if (typeof room === 'object') {
+                        converse_api.rooms.open(room.jid, room.nick);
+                    } else {
+                        converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
+                    }
+                });
             };
-            converse.on('connected', registerInviteHandler);
-            converse.on('reconnected', registerInviteHandler);
+            converse.on('connected', onConnected);
+            converse.on('reconnected', onConnected);
             /* ------------------------------------------------------------ */
 
 

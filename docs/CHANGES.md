@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0 (Unreleased)
+## 1.0.0 (Unreleased)
 
 - Add support for messages with type `headline`, often used for notifications
   from the server. [jcbrand]
@@ -18,6 +18,8 @@
 - Use `rel=noopener` with links that contain `target=_blank` to prevent potential
   phishing attacks. [More info here](https://mathiasbynens.github.io/rel-noopener/)
   [jcbrand]
+- #156 Add the option `auto_join_rooms` which allows you to automatically
+  connect to certain rooms once logged in. [jcbrand]
 - #261 `show_controlbox_by_default` config not working [diditopher]
 - #443 HTML5 notifications of received messages [jcbrand]
 - #534 Updated Russian translation [badfiles]

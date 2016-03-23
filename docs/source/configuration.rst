@@ -595,7 +595,7 @@ by the ``src/converse-notification.js`` plugin.
 ping_interval
 -------------
 
-* Default:  ``300``
+* Default:  ``180``
 
 Make ping to server in order to keep connection with server killing sessions after idle timeout.
 The ping are sent only if no messages are sent in the last ``ping_interval`` seconds

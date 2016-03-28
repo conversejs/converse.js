@@ -64,7 +64,6 @@
 
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'click .toggle-chatbox-button': 'minimize',
                     'keypress textarea.chat-textarea': 'keyPressed',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
@@ -84,7 +83,6 @@
                     this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('change:image', this.renderAvatar, this);
-                    this.model.on('change:minimized', this.onMinimizedChanged, this);
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
@@ -100,6 +98,7 @@
                                         show_textarea: true,
                                         title: this.model.get('fullname'),
                                         info_close: __('Close this chat box'),
+                                        // FIXME: leaky-abstraction from converse-minimize
                                         info_minimize: __('Minimize this chat box'),
                                         label_personal_message: __('Personal message')
                                     }
@@ -450,12 +449,16 @@
                     }
                 },
 
+                shouldShowOnTextMessage: function () {
+                    return !this.$el.is(':visible');
+                },
+
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
                     if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
                         converse.incrementMsgCounter();
                     }
-                    if (!this.model.get('minimized') && !this.$el.is(':visible')) {
+                    if (this.shouldShowOnTextMessage()) {
                         this.show();
                     }
                 },
@@ -642,26 +645,22 @@
                 },
 
                 setChatBoxHeight: function (height) {
-                    if (!this.model.get('minimized')) {
-                        if (height) {
-                            height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
-                        } else {
-                            height = "";
-                        }
-                        this.$el.children('.box-flyout')[0].style.height = height;
+                    if (height) {
+                        height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    } else {
+                        height = "";
                     }
+                    this.$el.children('.box-flyout')[0].style.height = height;
                 },
 
                 setChatBoxWidth: function (width) {
-                    if (!this.model.get('minimized')) {
-                        if (width) {
-                            width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
-                        } else {
-                            width = "";
-                        }
-                        this.$el[0].style.width = width;
-                        this.$el.children('.box-flyout')[0].style.width = width;
+                    if (width) {
+                        width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    } else {
+                        width = "";
                     }
+                    this.$el[0].style.width = width;
+                    this.$el.children('.box-flyout')[0].style.width = width;
                 },
 
                 resizeChatBox: function (ev) {
@@ -746,14 +745,6 @@
                     });
                 },
 
-                onMinimizedChanged: function (item) {
-                    if (item.get('minimized')) {
-                        this.minimize();
-                    } else {
-                        this.maximize();
-                    }
-                },
-
                 showStatusMessage: function (msg) {
                     msg = msg || this.model.get('status');
                     if (typeof msg === "string") {
@@ -775,34 +766,6 @@
                     this.remove();
                     converse.emit('chatBoxClosed', this);
                     return this;
-                },
-
-                onMaximized: function () {
-                    converse.chatboxviews.trimChats(this);
-                    utils.refreshWebkit();
-                    this.$content.scrollTop(this.model.get('scroll'));
-                    this.setChatState(converse.ACTIVE).focus();
-                    converse.emit('chatBoxMaximized', this);
-                },
-
-                onMinimized: function () {
-                    utils.refreshWebkit();
-                    converse.emit('chatBoxMinimized', this);
-                },
-
-                maximize: function () {
-                    // Restore a minimized chat box
-                    $('#conversejs').prepend(this.$el);
-                    this.$el.show('fast', this.onMaximized.bind(this));
-                    return this;
-                },
-
-                minimize: function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    // save the scroll position to restore it on maximize
-                    this.model.save({'scroll': this.$content.scrollTop()});
-                    this.setChatState(converse.INACTIVE).model.minimize();
-                    this.$el.hide('fast', this.onMinimized.bind(this));
                 },
 
                 renderToolbar: function (options) {

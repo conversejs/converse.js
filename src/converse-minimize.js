@@ -10,6 +10,7 @@
     define("converse-minimize", [
             "converse-core",
             "converse-api",
+            "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -93,15 +94,79 @@
                 },
             },
 
+            ChatBoxView: {
+                events: {
+                    'click .toggle-chatbox-button': 'minimize',
+                },
+
+                initialize: function () {
+                    this.model.on('change:minimized', this.onMinimizedChanged, this);
+                    return this._super.initialize.apply(this, arguments);
+                },
+
+                shouldShowOnTextMessage: function () {
+                    return !this.model.get('minimized') &&
+                        this._super.shouldShowOnTextMessage.apply(this, arguments);
+                },
+
+                setChatBoxHeight: function (height) {
+                    if (!this.model.get('minimized')) {
+                        return this._super.setChatBoxHeight.apply(this, arguments);
+                    }
+                },
+
+                setChatBoxWidth: function (width) {
+                    if (!this.model.get('minimized')) {
+                        return this._super.setChatBoxWidth.apply(this, arguments);
+                    }
+                },
+
+                onMinimizedChanged: function (item) {
+                    if (item.get('minimized')) {
+                        this.minimize();
+                    } else {
+                        this.maximize();
+                    }
+                },
+
+                onMaximized: function () {
+                    converse.chatboxviews.trimChats(this);
+                    utils.refreshWebkit();
+                    this.$content.scrollTop(this.model.get('scroll'));
+                    this.setChatState(converse.ACTIVE).focus();
+                    converse.emit('chatBoxMaximized', this);
+                },
+
+                onMinimized: function () {
+                    utils.refreshWebkit();
+                    converse.emit('chatBoxMinimized', this);
+                },
+
+                maximize: function () {
+                    // Restore a minimized chat box
+                    $('#conversejs').prepend(this.$el);
+                    this.$el.show('fast', this.onMaximized.bind(this));
+                    return this;
+                },
+
+                minimize: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    // save the scroll position to restore it on maximize
+                    this.model.save({'scroll': this.$content.scrollTop()});
+                    this.setChatState(converse.INACTIVE).model.minimize();
+                    this.$el.hide('fast', this.onMinimized.bind(this));
+                },
+
+            },
+
             ChatBoxes: {
                 chatBoxShouldBeShown: function (chatbox) {
-                    return this._super.chatBoxShouldBeShown.apply(this, arguments) && 
+                    return this._super.chatBoxShouldBeShown.apply(this, arguments) &&
                            !chatbox.get('minimized');
                 },
             },
 
             ChatBoxViews: {
-
                 showChat: function (attrs) {
                     /* Find the chat box and show it. If it doesn't exist, create it.
                      */

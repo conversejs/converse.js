@@ -223,8 +223,15 @@
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.remove();
-                    this.model.destroy();
-                    converse.emit('chatBoxClosed', this);
+                    var view = converse.chatboxviews.get(this.model.get('id'));
+                    if (view) {
+                        // This will call model.destroy(), removing it from the
+                        // collection and will also emit 'chatBoxClosed'
+                        view.close();
+                    } else {
+                        this.model.destroy();
+                        converse.emit('chatBoxClosed', this);
+                    }
                     return this;
                 },
 

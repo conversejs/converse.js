@@ -765,11 +765,14 @@
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (converse.connection.connected) {
+                        // Immediately sending the chat state, because the
+                        // model is going to be destroyed afterwards.
+                        this.model.set('chat_state', converse.INACTIVE);
+                        this.sendChatState();
+
                         this.model.destroy();
-                        this.setChatState(converse.INACTIVE);
-                    } else {
-                        this.hide();
                     }
+                    this.remove();
                     converse.emit('chatBoxClosed', this);
                     return this;
                 },

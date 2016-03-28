@@ -1411,6 +1411,7 @@
 
             initialize: function () {
                 this.model.on("add", this.onChatBoxAdded, this);
+                this.model.on("destroy", this.removeChat, this);
             },
 
             _ensureElement: function () {
@@ -1432,12 +1433,21 @@
 
             onChatBoxAdded: function (item) {
                 var view = this.get(item.get('id'));
+                // Views aren't created here, since the core code doesn't have
+                // contain any views. Instead, they're created in overrides in
+                // converse-chatiew.js and/or converse-muc.js
                 if (view) {
+                    // This is an optimization. We don't remove older views, so
+                    // when one is available, we reuse it.
                     delete view.model; // Remove ref to old model to help garbage collection
                     view.model = item;
                     view.initialize();
                 }
                 return view;
+            },
+
+            removeChat: function (item) {
+                this.remove(item.get('id'));
             },
 
             closeAllChatBoxes: function () {

@@ -192,9 +192,6 @@
                             this.maximize();
                         }
                     }, this);
-                    this.model.on('destroy', function () {
-                        this.hide().leave();
-                    }, this);
 
                     this.occupantsview = new converse.ChatRoomOccupantsView({
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
@@ -241,6 +238,12 @@
                     }
                     this.toggleOccupants(null, true);
                     return this;
+                },
+
+                close: function (ev) {
+                    converse.connection.deleteHandler(this.handler);
+                    this.leave();
+                    converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 toggleOccupants: function (ev, preserve_state) {
@@ -545,7 +548,9 @@
                         presence.c("status", exit_msg);
                     }
                     converse.connection.addHandler(
-                        function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }.bind(this),
+                        function () {
+                            this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                        }.bind(this),
                         null, "presence", null, presenceid);
                     converse.connection.send(presence);
                 },

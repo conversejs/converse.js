@@ -52,7 +52,9 @@
                 this._super.registerGlobalEventHandlers.apply(this, arguments);
 
                 $(window).on("resize", _.debounce(function (ev) {
-                    converse.chatboxviews.trimChats();
+                    if (converse.connection.connected) {
+                        converse.chatboxviews.trimChats();
+                    }
                 }, 200));
             },
 
@@ -102,6 +104,13 @@
                 initialize: function () {
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
                     return this._super.initialize.apply(this, arguments);
+                },
+
+                afterShown: function () {
+                    this._super.afterShown.apply(this, arguments);
+                    if (!this.model.get('minimized')) {
+                        converse.chatboxviews.trimChats(this);
+                    }
                 },
 
                 shouldShowOnTextMessage: function () {
@@ -199,7 +208,7 @@
                     if (converse.no_trimming || (this.model.length <= 1)) {
                         return;
                     }
-                    var oldest_chat, boxes_width,
+                    var oldest_chat, boxes_width, view,
                         $minimized = converse.minimized_chats.$el,
                         minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                         new_id = newchat ? newchat.model.get('id') : null;
@@ -211,6 +220,14 @@
                     if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
                         oldest_chat = this.getOldestMaximizedChat([new_id]);
                         if (oldest_chat) {
+                            // We hide the chat immediately, because waiting
+                            // for the event to fire (and letting the
+                            // ChatBoxView hide it then) causes race
+                            // conditions.
+                            view = this.get(oldest_chat.get('id'));
+                            if (view) {
+                                view.$el.hide();
+                            }
                             oldest_chat.minimize();
                         }
                     }
@@ -434,7 +451,9 @@
             converse.on('controlBoxOpened', function (evt, chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
                 // attr not set yet.
-                converse.chatboxviews.trimChats(chatbox);
+                if (converse.connection.connected) {
+                    converse.chatboxviews.trimChats(chatbox);
+                }
             });
         }
     });

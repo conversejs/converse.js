@@ -827,6 +827,19 @@
                     return this;
                 },
 
+                afterShown: function () {
+                    if (converse.connection.connected) {
+                        // Without a connection, we haven't yet initialized
+                        // localstorage
+                        this.model.save();
+                    }
+                    this.setChatState(converse.ACTIVE);
+                    this.scrollDown();
+                    if (focus) {
+                        this.focus();
+                    }
+                },
+
                 show: function (focus) {
                     if (typeof this.debouncedShow === 'undefined') {
                         /* We wrap the method in a debouncer and set it on the
@@ -839,19 +852,7 @@
                                 return;
                             }
                             this.initDragResize().setDimensions();
-                            this.$el.fadeIn(function () {
-                                if (converse.connection.connected) {
-                                    // Without a connection, we haven't yet initialized
-                                    // localstorage
-                                    this.model.save();
-                                }
-                                converse.chatboxviews.trimChats(this);
-                                this.setChatState(converse.ACTIVE);
-                                this.scrollDown();
-                                if (focus) {
-                                    this.focus();
-                                }
-                            }.bind(this));
+                            this.$el.fadeIn(this.afterShown.bind(this));
                         }, 250, true);
                     }
                     this.debouncedShow.apply(this, arguments);

@@ -3,13 +3,11 @@
     define([
         "jquery",
         "underscore",
+        "utils",
         "mock",
         "test_utils"
-        ], function ($, _, mock, test_utils) {
-            return factory($, _, mock, test_utils);
-        }
-    );
-} (this, function ($, _, mock, test_utils) {
+        ], factory);
+} (this, function ($, _, utils, mock, test_utils) {
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
     var moment = converse_api.env.moment;
@@ -461,6 +459,7 @@
                 it("is ignored if it's intended for a different resource", function () {
                     // Send a message from a different resource
                     spyOn(converse, 'log');
+                    spyOn(converse.chatboxes, 'getChatBox');
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
                             from: sender_jid,
@@ -471,7 +470,35 @@
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     converse.chatboxes.onMessage(msg);
                     expect(converse.log).toHaveBeenCalledWith(
-                            "Ignore incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
+                            "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
+                    expect(converse.chatboxes.getChatBox).not.toHaveBeenCalled();
+                });
+
+                it("is ignored if it's a malformed headline message", function () {
+                    /* Ideally we wouldn't have to filter out headline
+                     * messages, but Prosody gives them the wrong 'type' :(
+                     */
+                    sinon.spy(converse, 'log');
+                    sinon.spy(converse.chatboxes, 'getChatBox');
+                    sinon.spy(utils, 'isHeadlineMessage');
+                    var msg = $msg({
+                            from: 'localhost',
+                            to: converse.bare_jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t("This headline message will not be shown").tree();
+                    converse.chatboxes.onMessage(msg);
+                    expect(converse.log.calledWith(
+                        "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: localhost",
+                        "info"
+                    )).toBeTruthy();
+                    expect(utils.isHeadlineMessage.called).toBeTruthy();
+                    expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
+                    expect(converse.chatboxes.getChatBox.called).toBeFalsy();
+                    // Remove sinon spies
+                    converse.log.restore();
+                    converse.chatboxes.getChatBox.restore();
+                    utils.isHeadlineMessage.restore();
                 });
 
                 it("can be a carbon message, as defined in XEP-0280", function () {

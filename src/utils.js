@@ -125,6 +125,21 @@
             return str;
         },
 
+        isHeadlineMessage: function (message) {
+            var $message = $(message),
+                from_jid = $message.attr('from');
+            if ($message.attr('type') === 'headline' ||
+                    // Some servers (I'm looking at you Prosody) don't set the message
+                    // type to "headline" when sending server messages. For now we
+                    // check if an @ signal is included, and if not, we assume it's
+                    // a headline message.
+                    (typeof from_jid !== 'undefined' && from_jid.indexOf('@') === -1)
+                ) {
+                return true;
+            }
+            return false;
+        },
+
         refreshWebkit: function () {
             /* This works around a webkit bug. Refreshes the browser's viewport,
              * otherwise chatboxes are not moved along when one is closed.

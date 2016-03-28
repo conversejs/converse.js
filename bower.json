@@ -30,7 +30,8 @@
     "skeleton-sass": "~2.0.3",
     "strophejs": "1.2.4",
     "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#amd",
-    "bourbon": "~4.2.3"
+    "bourbon": "~4.2.3",
+    "sinon": "^1.17.3"
   },
   "resolutions": {
     "backbone": "1.1.2"

@@ -68,19 +68,16 @@
                 return true;
             };
 
-            converse.shouldNotifyOfMessage = function ($message) {
+            converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
-                var $forwarded = $message.find('forwarded');
+                var $message = $(message),
+                    $forwarded = $message.find('forwarded');
                 if ($forwarded.length) {
                     return false;
-                }
-                if ($message.attr('type') === 'groupchat') {
+                } else if ($message.attr('type') === 'groupchat') {
                     return converse.shouldNotifyOfGroupMessage($message);
-                }
-                if ($message.attr('type') === 'headline' || $message.attr('from').indexOf('@') === -1) {
-                    // XXX: 2nd check is workaround for Prosody which doesn't give type "headline"
-
+                } else if (utils.isHeadlineMessage(message)) {
                     // We want to show notifications for headline messages.
                     return true;
                 }
@@ -198,7 +195,7 @@
                  * to play sounds and show HTML5 notifications.
                  */
                 var $message = $(message);
-                if (!converse.shouldNotifyOfMessage($message)) {
+                if (!converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }
                 converse.playSoundNotification($message);

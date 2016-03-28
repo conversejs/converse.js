@@ -1308,22 +1308,39 @@
             },
 
             onMessage: function (message) {
-                /* Handler method for all incoming single-user chat "message" stanzas.
+                /* Handler method for all incoming single-user chat "message"
+                 * stanzas.
                  */
                 var $message = $(message),
-                    contact_jid, $forwarded, $delay, from_bare_jid, from_resource, is_me, msgid,
+                    contact_jid, $forwarded, $delay, from_bare_jid,
+                    from_resource, is_me, msgid,
                     chatbox, resource,
                     from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
                 if (to_resource && to_resource !== converse.resource) {
-                    converse.log('Ignore incoming message intended for a different resource: '+to_jid, 'info');
+                    converse.log(
+                        'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
+                        'info'
+                    );
                     return true;
-                }
-                if (from_jid === converse.connection.jid) {
-                    // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
-                    converse.log("Ignore incoming message sent from this client's JID: "+from_jid, 'info');
+                } else if (from_jid === converse.connection.jid) {
+                    // FIXME: Forwarded messages should be sent to specific
+                    // resources, not broadcasted
+                    converse.log(
+                        "onMessage: Ignoring incoming message sent from this client's JID: "+from_jid,
+                        'info'
+                    );
+                    return true;
+                } else if (utils.isHeadlineMessage(message)) {
+                    // XXX: Ideally we wouldn't have to check for headline
+                    // messages, but Prosody sends headline messages with the
+                    // wrong type ('chat'), so we need to filter them out here.
+                    converse.log(
+                        "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: "+from_jid,
+                        'info'
+                    );
                     return true;
                 }
                 $forwarded = $message.find('forwarded');

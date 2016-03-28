@@ -1,6 +1,7 @@
 // Extra test dependencies
 config.paths.mock = "tests/mock";
 config.paths.test_utils = "tests/utils";
+config.paths.sinon = "components/sinon/lib/sinon";
 config.paths.jasmine = "components/jasmine/lib/jasmine-core/jasmine";
 config.paths["jasmine-html"] = "components/jasmine/lib/jasmine-core/jasmine-html";
 config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
@@ -34,9 +35,11 @@ require([
     "jquery",
     "converse",
     "mock",
-    "jasmine-html"
-    ], function($, converse, mock, jasmine) {
+    "jasmine-html",
+    "sinon"
+    ], function($, converse, mock, jasmine, sinon) {
         // Set up converse.js
+        window.sinon = sinon;
         window.converse_api = converse;
         window.localStorage.clear();
         window.sessionStorage.clear();

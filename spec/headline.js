@@ -2,13 +2,11 @@
 (function (root, factory) {
     define([
         "jquery",
+        "utils",
         "mock",
         "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
-        }
-    );
-} (this, function ($, mock, test_utils) {
+        ], factory);
+} (this, function ($, utils, mock, test_utils) {
     "use strict";
     var $msg = converse_api.env.$msg,
         _ = converse_api.env._;
@@ -30,6 +28,7 @@
              *  </x>
              *  </message>
              */
+            sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
                         'type': 'headline',
@@ -50,6 +49,9 @@
                         converse.chatboxviews.keys(),
                         'notify.example.com')
                     ).toBeTruthy();
+                expect(utils.isHeadlineMessage.called).toBeTruthy();
+                expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
+                utils.isHeadlineMessage.restore(); // unwraps
             });
         });
     });

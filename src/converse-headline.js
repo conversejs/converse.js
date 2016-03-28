@@ -22,12 +22,9 @@
     var onHeadlineMessage = function (message) {
         /* Handler method for all incoming messages of type "headline".
          */
-        var $message = $(message), from_jid = $message.attr('from');
-        if ($message.attr('type') === 'headline' || from_jid.indexOf('@') === -1) {
-            // Some servers (I'm looking at you Prosody) don't set the message
-            // type to "headline" when sending server messages. For now we
-            // check if an @ signal is included, and if not, we assume it's
-            // a headline message.
+        var $message = $(message),
+            from_jid = $message.attr('from');
+        if (utils.isHeadlineMessage(message)) {
             converse.chatboxes.create({
                 'id': from_jid,
                 'jid': from_jid,

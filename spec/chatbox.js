@@ -446,9 +446,7 @@
                         expect(chatbox.messages.length).toEqual(1);
                         var msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('message')).toEqual(message);
-                        // XXX: This is stupid, fullname is actually only the
-                        // users first name
-                        expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0].split(' ')[0]);
+                        expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
                         expect(msg_obj.get('sender')).toEqual('them');
                         expect(msg_obj.get('delayed')).toEqual(false);
                         // Now check that the message appears inside the chatbox in the DOM
@@ -506,7 +504,7 @@
                     expect(chatbox.messages.length).toEqual(1);
                     var msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(msgtext);
-                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1].split(' ')[0]);
+                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
@@ -547,7 +545,7 @@
                     expect(chatbox.messages.length).toEqual(1);
                     var msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(msgtext);
-                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[5].split(' ')[0]);
+                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[5]);
                     expect(msg_obj.get('sender')).toEqual('me');
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
@@ -631,7 +629,7 @@
                     expect(chatbox.messages.length).toEqual(1);
                     msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(message);
-                    expect(msg_obj.get('fullname')).toEqual(contact_name.split(' ')[0]);
+                    expect(msg_obj.get('fullname')).toEqual(contact_name);
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('delayed')).toEqual(true);
                     msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
@@ -662,7 +660,7 @@
                     expect(chatbox.messages.length).toEqual(2);
                     msg_obj = chatbox.messages.models[1];
                     expect(msg_obj.get('message')).toEqual(message);
-                    expect(msg_obj.get('fullname')).toEqual(contact_name.split(' ')[0]);
+                    expect(msg_obj.get('fullname')).toEqual(contact_name);
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('delayed')).toEqual(false);
                     msg_txt = $chat_content.find('.chat-message').last().find('.chat-msg-content').text();
@@ -893,7 +891,7 @@
                         // Check that the notification appears inside the chatbox in the DOM
                         var $events = chatboxview.$el.find('.chat-event');
                         expect($events.length).toBe(1);
-                        expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' is typing');
+                        expect($events.text()).toEqual(mock.cur_names[1] + ' is typing');
                     }.bind(converse));
                 }.bind(converse));
 
@@ -967,7 +965,7 @@
                         var chatboxview = this.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
                         expect($events.length).toBe(1);
-                        expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has stopped typing');
+                        expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
                     }.bind(converse));
                 }.bind(converse));
 
@@ -1073,7 +1071,7 @@
                         var chatboxview = this.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
                         expect($events.length).toBe(1);
-                        expect($events.text()).toEqual(mock.cur_names[1].split(' ')[0] + ' has gone away');
+                        expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
                     }.bind(converse));
                 }.bind(converse));
             }.bind(converse));

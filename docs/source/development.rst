@@ -386,8 +386,8 @@ This grouping collects API functions related to the XMPP connection.
 connected
 ~~~~~~~~~
 
-Returns a boolean value (`true` or `false`) depending on whether there is an
-established connection.
+A boolean attribute (i.e. not a callable) which is set to `true` or `false` depending
+on whether there is an established connection.
 
 disconnect
 ~~~~~~~~~~

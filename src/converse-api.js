@@ -26,9 +26,7 @@
             converse.initialize(settings, callback);
         },
         'connection': {
-            'connected': function () {
-                return converse.connection.connected;
-            },
+            'connected': converse.connection.connected,
             'disconnect': function () {
                 converse.connection.disconnect();
             },

@@ -25,6 +25,9 @@ JSHINTEXCEPTIONS = $(GENERATED) \
 		   src/bigint.js
 CHECKSOURCES	= $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
 
+.PHONY: all
+all: dev
+
 .PHONY: help
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
@@ -50,8 +53,6 @@ help:
 	@echo " stamp-bundler Install Bundler (Ruby) dependencies and create the guard file stamp-bundler which will prevent those dependencies from being installed again."
 	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
 
-.PHONY: all
-all: dev
 
 ########################################################################
 ## Miscellaneous

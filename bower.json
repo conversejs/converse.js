@@ -8,29 +8,31 @@
     "sinon": "^1.17.3"
   },
   "dependencies": {
-    "requirejs": "~2.1.15",
-    "jquery": "1.11.0",
-    "jed": "0.5.4",
+    "requirejs": "~2.2.0",
+    "jquery": "1.12.2",
+    "jed": "1.1.0",
     "underscore": "~1.8.3",
     "backbone": "1.1.2",
     "backbone.browserStorage": "0.0.2",
     "backbone.overview": "0.0.2",
-    "otr": "0.2.12",
+    "otr": "0.2.16",
     "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
-    "almond": "~0.3.0",
-    "requirejs-text": "~2.0.12",
+    "almond": "~0.3.1",
+    "requirejs-text": "~2.0.14",
     "requirejs-tpl-jcbrand": "*",
-    "momentjs": "~2.10.6",
-    "jquery.browser": ">=0.0.7",
+    "momentjs": "~2.12.0",
+    "jquery.browser": ">=0.1.0",
     "bootstrap": "~3.2.0",
     "fontawesome": "~4.1.0",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js",
-    "strophejs": "1.2.4",
+    "strophejs": "1.2.5",
     "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#amd",
-    "bourbon": "~4.2.3"
+    "bourbon": "~4.2.6"
   },
   "resolutions": {
-    "backbone": "1.1.2"
+    "backbone": "1.1.2",
+    "requirejs": "~2.2.0",
+    "jquery": "1.12.2"
   },
   "exportsOverride": {},
   "ignore": [

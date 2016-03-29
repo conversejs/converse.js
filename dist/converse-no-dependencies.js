@@ -2232,6 +2232,21 @@ define("converse-templates", [
             return str;
         },
 
+        isHeadlineMessage: function (message) {
+            var $message = $(message),
+                from_jid = $message.attr('from');
+            if ($message.attr('type') === 'headline' ||
+                    // Some servers (I'm looking at you Prosody) don't set the message
+                    // type to "headline" when sending server messages. For now we
+                    // check if an @ signal is included, and if not, we assume it's
+                    // a headline message.
+                    (typeof from_jid !== 'undefined' && from_jid.indexOf('@') === -1)
+                ) {
+                return true;
+            }
+            return false;
+        },
+
         refreshWebkit: function () {
             /* This works around a webkit bug. Refreshes the browser's viewport,
              * otherwise chatboxes are not moved along when one is closed.
@@ -3036,6 +3051,7 @@ define("polyfill", function(){});
                 this.afterReconnected();
                 deferred.resolve();
             }.bind(this));
+            converse.emit('reconnected');
             return deferred.promise();
         };
 
@@ -3651,7 +3667,9 @@ define("polyfill", function(){});
                 } else {
                     from = Strophe.getBareJidFromJid($message.attr('from'));
                 }
-                fullname = (_.isEmpty(fullname) ? from: fullname).split(' ')[0];
+                if (_.isEmpty(fullname)) {
+                    fullname = from;
+                }
                 if (delayed) {
                     stamp = $delay.attr('stamp');
                     time = stamp;
@@ -3674,8 +3692,7 @@ define("polyfill", function(){});
                 });
             }
         });
-
-
+        
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
             comparator: 'time_opened',
@@ -3716,22 +3733,39 @@ define("polyfill", function(){});
             },
 
             onMessage: function (message) {
-                /* Handler method for all incoming single-user chat "message" stanzas.
+                /* Handler method for all incoming single-user chat "message"
+                 * stanzas.
                  */
                 var $message = $(message),
-                    contact_jid, $forwarded, $delay, from_bare_jid, from_resource, is_me, msgid,
+                    contact_jid, $forwarded, $delay, from_bare_jid,
+                    from_resource, is_me, msgid,
                     chatbox, resource,
                     from_jid = $message.attr('from'),
                     to_jid = $message.attr('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
                 if (to_resource && to_resource !== converse.resource) {
-                    converse.log('Ignore incoming message intended for a different resource: '+to_jid, 'info');
+                    converse.log(
+                        'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
+                        'info'
+                    );
                     return true;
-                }
-                if (from_jid === converse.connection.jid) {
-                    // FIXME: Forwarded messages should be sent to specific resources, not broadcasted
-                    converse.log("Ignore incoming message sent from this client's JID: "+from_jid, 'info');
+                } else if (from_jid === converse.connection.jid) {
+                    // FIXME: Forwarded messages should be sent to specific
+                    // resources, not broadcasted
+                    converse.log(
+                        "onMessage: Ignoring incoming message sent from this client's JID: "+from_jid,
+                        'info'
+                    );
+                    return true;
+                } else if (utils.isHeadlineMessage(message)) {
+                    // XXX: Ideally we wouldn't have to check for headline
+                    // messages, but Prosody sends headline messages with the
+                    // wrong type ('chat'), so we need to filter them out here.
+                    converse.log(
+                        "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: "+from_jid,
+                        'info'
+                    );
                     return true;
                 }
                 $forwarded = $message.find('forwarded');
@@ -3802,6 +3836,7 @@ define("polyfill", function(){});
 
             initialize: function () {
                 this.model.on("add", this.onChatBoxAdded, this);
+                this.model.on("destroy", this.removeChat, this);
             },
 
             _ensureElement: function () {
@@ -3823,12 +3858,21 @@ define("polyfill", function(){});
 
             onChatBoxAdded: function (item) {
                 var view = this.get(item.get('id'));
+                // Views aren't created here, since the core code doesn't have
+                // contain any views. Instead, they're created in overrides in
+                // converse-chatiew.js and/or converse-muc.js
                 if (view) {
+                    // This is an optimization. We don't remove older views, so
+                    // when one is available, we reuse it.
                     delete view.model; // Remove ref to old model to help garbage collection
                     view.model = item;
                     view.initialize();
                 }
                 return view;
+            },
+
+            removeChat: function (item) {
+                this.remove(item.get('id'));
             },
 
             closeAllChatBoxes: function () {
@@ -4488,11 +4532,10 @@ define("polyfill", function(){});
     };
 }));
 
+/**
+ * @preserve jed.js https://github.com/SlexAxton/Jed
+ */
 /*
-jed.js
-v0.5.0beta
-
-https://github.com/SlexAxton/Jed
 -----------
 A gettext compatible i18n library for modern JavaScript Applications
 
@@ -4581,7 +4624,9 @@ in order to offer easy upgrades -- jsgettext.berlios.de
         }
       },
       // The default domain if one is missing
-      "domain" : "messages"
+      "domain" : "messages",
+      // enable debug mode to log untranslated strings to the console
+      "debug" : false
     };
 
     // Mix in the sent options with the default options
@@ -4626,7 +4671,7 @@ in order to offer easy upgrades -- jsgettext.berlios.de
     },
     fetch : function ( sArr ) {
       if ( {}.toString.call( sArr ) != '[object Array]' ) {
-        sArr = [].slice.call(arguments);
+        sArr = [].slice.call(arguments, 0);
       }
       return ( sArr && sArr.length ? Jed.sprintf : function(x){ return x; } )(
         this._i18n.dcnpgettext(this._domain, this._context, this._key, this._pkey, this._val),
@@ -4711,9 +4756,6 @@ in order to offer easy upgrades -- jsgettext.berlios.de
       // isn't explicitly passed in
       domain = domain || this._textdomain;
 
-      // Default the value to the singular case
-      val = typeof val == 'undefined' ? 1 : val;
-
       var fallback;
 
       // Handle special cases
@@ -4747,22 +4789,33 @@ in order to offer easy upgrades -- jsgettext.berlios.de
         throw new Error('No translation key found.');
       }
 
-      // Handle invalid numbers, but try casting strings for good measure
-      if ( typeof val != 'number' ) {
-        val = parseInt( val, 10 );
-
-        if ( isNaN( val ) ) {
-          throw new Error('The number that was passed in is not a number.');
-        }
-      }
-
       var key  = context ? context + Jed.context_delimiter + singular_key : singular_key,
           locale_data = this.options.locale_data,
           dict = locale_data[ domain ],
-          pluralForms = dict[""].plural_forms || (locale_data.messages || this.defaults.locale_data.messages)[""].plural_forms,
-          val_idx = getPluralFormFunc(pluralForms)(val) + 1,
+          defaultConf = (locale_data.messages || this.defaults.locale_data.messages)[""],
+          pluralForms = dict[""].plural_forms || dict[""]["Plural-Forms"] || dict[""]["plural-forms"] || defaultConf.plural_forms || defaultConf["Plural-Forms"] || defaultConf["plural-forms"],
           val_list,
           res;
+
+      var val_idx;
+      if (val === undefined) {
+        // No value passed in; assume singular key lookup.
+        val_idx = 0;
+
+      } else {
+        // Value has been passed in; use plural-forms calculations.
+
+        // Handle invalid numbers, but try casting strings for good measure
+        if ( typeof val != 'number' ) {
+          val = parseInt( val, 10 );
+
+          if ( isNaN( val ) ) {
+            throw new Error('The number that was passed in is not a number.');
+          }
+        }
+
+        val_idx = getPluralFormFunc(pluralForms)(val);
+      }
 
       // Throw an error if a domain isn't found
       if ( ! dict ) {
@@ -4773,20 +4826,25 @@ in order to offer easy upgrades -- jsgettext.berlios.de
 
       // If there is no match, then revert back to
       // english style singular/plural with the keys passed in.
-      if ( ! val_list || val_idx >= val_list.length ) {
+      if ( ! val_list || val_idx > val_list.length ) {
         if (this.options.missing_key_callback) {
-          this.options.missing_key_callback(key);
+          this.options.missing_key_callback(key, domain);
         }
-        res = [ null, singular_key, plural_key ];
-        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
+        res = [ singular_key, plural_key ];
+
+        // collect untranslated strings
+        if (this.options.debug===true) {
+          console.log(res[ getPluralFormFunc(pluralForms)( val ) ]);
+        }
+        return res[ getPluralFormFunc()( val ) ];
       }
 
       res = val_list[ val_idx ];
 
       // This includes empty strings on purpose
       if ( ! res  ) {
-        res = [ null, singular_key, plural_key ];
-        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
+        res = [ singular_key, plural_key ];
+        return res[ getPluralFormFunc()( val ) ];
       }
       return res;
     }
@@ -5090,15 +5148,15 @@ performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: return { type : 'GROUP', expr: $$[$0-1] }; 
+case 1: return { type : 'GROUP', expr: $$[$0-1] };
 break;
-case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] }; 
+case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] };
 break;
 case 3:this.$ = { type: "OR", left: $$[$0-2], right: $$[$0] };
 break;
 case 4:this.$ = { type: "AND", left: $$[$0-2], right: $$[$0] };
 break;
-case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] }; 
+case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] };
 break;
 case 6:this.$ = { type: 'LTE', left: $$[$0-2], right: $$[$0] };
 break;
@@ -5112,11 +5170,11 @@ case 10:this.$ = { type: 'EQ', left: $$[$0-2], right: $$[$0] };
 break;
 case 11:this.$ = { type: 'MOD', left: $$[$0-2], right: $$[$0] };
 break;
-case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] }; 
+case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] };
 break;
-case 13:this.$ = { type: 'VAR' }; 
+case 13:this.$ = { type: 'VAR' };
 break;
-case 14:this.$ = { type: 'NUM', val: Number(yytext) }; 
+case 14:this.$ = { type: 'NUM', val: Number(yytext) };
 break;
 }
 },
@@ -5402,7 +5460,7 @@ next:function () {
         if (this._input === "") {
             return this.EOF;
         } else {
-            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(), 
+            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(),
                     {text: "", token: null, line: this.yylineno});
         }
     },
@@ -5535,15 +5593,12 @@ return parser;
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
-                    // FIXME: leaky abstraction from chatroom here, need to
-                    // come up with a nicer solution for this.
-                    // Perhaps change 'chatroom' to more generic non-boolean
-                    if (!view && !item.get('chatroom')) {
+                    if (!view) {
                         view = new converse.ChatBoxView({model: item});
                         this.add(item.get('id'), view);
-                        this.trimChats(view);
+                        return view;
                     } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
+                        return this._super.onChatBoxAdded.apply(this, arguments);
                     }
                 }
             }
@@ -5566,7 +5621,6 @@ return parser;
 
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'click .toggle-chatbox-button': 'minimize',
                     'keypress textarea.chat-textarea': 'keyPressed',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
@@ -5586,7 +5640,6 @@ return parser;
                     this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:chat_status', this.onChatStatusChanged, this);
                     this.model.on('change:image', this.renderAvatar, this);
-                    this.model.on('change:minimized', this.onMinimizedChanged, this);
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
@@ -5602,6 +5655,7 @@ return parser;
                                         show_textarea: true,
                                         title: this.model.get('fullname'),
                                         info_close: __('Close this chat box'),
+                                        // FIXME: leaky-abstraction from converse-minimize
                                         info_minimize: __('Minimize this chat box'),
                                         label_personal_message: __('Personal message')
                                     }
@@ -5661,10 +5715,10 @@ return parser;
 
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
-                    *
-                    * Then, upon receiving them, call onMessage on the chat box,
-                    * so that they are displayed inside it.
-                    */
+                     *
+                     * Then, upon receiving them, call onMessage on the chat box,
+                     * so that they are displayed inside it.
+                     */
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
@@ -5685,16 +5739,16 @@ return parser;
 
                 insertIntoPage: function () {
                     /* This method gets overridden in src/converse-controlbox.js if
-                    * the controlbox plugin is active.
-                    */
+                     * the controlbox plugin is active.
+                     */
                     $('#conversejs').prepend(this.$el);
                     return this;
                 },
 
                 adjustToViewport: function () {
                     /* Event handler called when viewport gets resized. We remove
-                    * custom width/height from chat boxes.
-                    */
+                     * custom width/height from chat boxes.
+                     */
                     var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
                     var viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
                     if (viewport_width <= 480) {
@@ -5709,8 +5763,8 @@ return parser;
 
                 initDragResize: function () {
                     /* Determine and store the default box size.
-                    * We need this information for the drag-resizing feature.
-                    */
+                     * We need this information for the drag-resizing feature.
+                     */
                     var $flyout = this.$el.find('.box-flyout');
                     if (typeof this.model.get('height') === 'undefined') {
                         var height = $flyout.height();
@@ -5770,11 +5824,11 @@ return parser;
 
                 prependDayIndicator: function (date) {
                     /* Prepends an indicator into the chat area, showing the day as
-                    * given by the passed in date.
-                    *
-                    * Parameters:
-                    *  (String) date - An ISO8601 date string.
-                    */
+                     * given by the passed in date.
+                     *
+                     * Parameters:
+                     *  (String) date - An ISO8601 date string.
+                     */
                     var day_date = moment(date).startOf('day');
                     this.$content.prepend(converse.templates.new_day({
                         isodate: day_date.format(),
@@ -5784,11 +5838,11 @@ return parser;
 
                 appendMessage: function (attrs) {
                     /* Helper method which appends a message to the end of the chat
-                    * box's content area.
-                    *
-                    * Parameters:
-                    *  (Object) attrs: An object containing the message attributes.
-                    */
+                     * box's content area.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     */
                     _.compose(
                         _.debounce(this.scrollDown.bind(this), 50),
                         this.$content.append.bind(this.$content)
@@ -5797,15 +5851,15 @@ return parser;
 
                 showMessage: function (attrs) {
                     /* Inserts a chat message into the content area of the chat box.
-                    * Will also insert a new day indicator if the message is on a
-                    * different day.
-                    *
-                    * The message to show may either be newer than the newest
-                    * message, or older than the oldest message.
-                    *
-                    * Parameters:
-                    *  (Object) attrs: An object containing the message attributes.
-                    */
+                     * Will also insert a new day indicator if the message is on a
+                     * different day.
+                     *
+                     * The message to show may either be newer than the newest
+                     * message, or older than the oldest message.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     */
                     var $first_msg = this.$content.children('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         last_msg_date, current_msg_date, day_date, $msgs, msg_dates, idx;
@@ -5883,13 +5937,13 @@ return parser;
 
                 renderMessage: function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
-                    *
-                    * Parameters:
-                    *  (Object) attrs: An object containing the message attributes.
-                    *
-                    *  Returns:
-                    *      The DOM element representing the message.
-                    */
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing the message attributes.
+                     *
+                     *  Returns:
+                     *      The DOM element representing the message.
+                     */
                     var msg_time = moment(attrs.time) || moment,
                         text = attrs.message,
                         match = text.match(/^\/(.*?)(?: (.*))?$/),
@@ -5952,22 +6006,26 @@ return parser;
                     }
                 },
 
+                shouldShowOnTextMessage: function () {
+                    return !this.$el.is(':visible');
+                },
+
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
                     if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
                         converse.incrementMsgCounter();
                     }
-                    if (!this.model.get('minimized') && !this.$el.is(':visible')) {
+                    if (this.shouldShowOnTextMessage()) {
                         this.show();
                     }
                 },
 
                 onMessageAdded: function (message) {
                     /* Handler that gets called when a new message object is created.
-                    *
-                    * Parameters:
-                    *    (Object) message - The message Backbone object that was added.
-                    */
+                     *
+                     * Parameters:
+                     *    (Object) message - The message Backbone object that was added.
+                     */
                     if (typeof this.clear_status_timeout !== 'undefined') {
                         window.clearTimeout(this.clear_status_timeout);
                         delete this.clear_status_timeout;
@@ -5991,10 +6049,10 @@ return parser;
 
                 sendMessage: function (message) {
                     /* Responsible for sending off a text message.
-                    *
-                    *  Parameters:
-                    *    (Message) message - The chat message
-                    */
+                     *
+                     *  Parameters:
+                     *    (Message) message - The chat message
+                     */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
                     var messageStanza = this.createMessageStanza(message);
@@ -6012,11 +6070,11 @@ return parser;
 
                 onMessageSubmitted: function (text) {
                     /* This method gets called once the user has typed a message
-                    * and then pressed enter in a chat box.
-                    *
-                    *  Parameters:
-                    *    (string) text - The chat message text.
-                    */
+                     * and then pressed enter in a chat box.
+                     *
+                     *  Parameters:
+                     *    (string) text - The chat message text.
+                     */
                     if (!converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
@@ -6052,9 +6110,9 @@ return parser;
 
                 sendChatState: function () {
                     /* Sends a message with the status of the user in this chat session
-                    * as taken from the 'chat_state' attribute of the chat box.
-                    * See XEP-0085 Chat State Notifications.
-                    */
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
                     converse.connection.send(
                         $msg({'to':this.model.get('jid'), 'type': 'chat'})
                             .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES})
@@ -6063,16 +6121,16 @@ return parser;
 
                 setChatState: function (state, no_save) {
                     /* Mutator for setting the chat state of this chat session.
-                    * Handles clearing of any chat state notification timeouts and
-                    * setting new ones if necessary.
-                    * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-                    * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-                    * See XEP-0085 Chat State Notifications.
-                    *
-                    *  Parameters:
-                    *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-                    *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
-                    */
+                     * Handles clearing of any chat state notification timeouts and
+                     * setting new ones if necessary.
+                     * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+                     * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+                     * See XEP-0085 Chat State Notifications.
+                     *
+                     *  Parameters:
+                     *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+                     *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
+                     */
                     if (typeof this.chat_state_timeout !== 'undefined') {
                         window.clearTimeout(this.chat_state_timeout);
                         delete this.chat_state_timeout;
@@ -6092,14 +6150,15 @@ return parser;
 
                 keyPressed: function (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
-                    */
+                     */
                     var $textarea = $(ev.target), message;
                     if (ev.keyCode === KEY.ENTER) {
                         ev.preventDefault();
                         message = $textarea.val();
                         $textarea.val('').focus();
                         if (message !== '') {
-                            if (this.model.get('chatroom')) {
+                            // XXX: leaky abstraction from MUC
+                            if (this.model.get('type') === 'chatroom') {
                                 this.onChatRoomMessageSubmitted(message);
                             } else {
                                 this.onMessageSubmitted(message);
@@ -6107,7 +6166,8 @@ return parser;
                             converse.emit('messageSend', message);
                         }
                         this.setChatState(converse.ACTIVE);
-                    } else if (!this.model.get('chatroom')) { // chat state data is currently only for single user chat
+                    // XXX: leaky abstraction from MUC
+                    } else if (this.model.get('type') !== 'chatroom') { // chat state data is currently only for single user chat
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
@@ -6142,26 +6202,22 @@ return parser;
                 },
 
                 setChatBoxHeight: function (height) {
-                    if (!this.model.get('minimized')) {
-                        if (height) {
-                            height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
-                        } else {
-                            height = "";
-                        }
-                        this.$el.children('.box-flyout')[0].style.height = height;
+                    if (height) {
+                        height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    } else {
+                        height = "";
                     }
+                    this.$el.children('.box-flyout')[0].style.height = height;
                 },
 
                 setChatBoxWidth: function (width) {
-                    if (!this.model.get('minimized')) {
-                        if (width) {
-                            width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
-                        } else {
-                            width = "";
-                        }
-                        this.$el[0].style.width = width;
-                        this.$el.children('.box-flyout')[0].style.width = width;
+                    if (width) {
+                        width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    } else {
+                        width = "";
                     }
+                    this.$el[0].style.width = width;
+                    this.$el.children('.box-flyout')[0].style.width = width;
                 },
 
                 resizeChatBox: function (ev) {
@@ -6246,14 +6302,6 @@ return parser;
                     });
                 },
 
-                onMinimizedChanged: function (item) {
-                    if (item.get('minimized')) {
-                        this.minimize();
-                    } else {
-                        this.maximize();
-                    }
-                },
-
                 showStatusMessage: function (msg) {
                     msg = msg || this.model.get('status');
                     if (typeof msg === "string") {
@@ -6265,41 +6313,16 @@ return parser;
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (converse.connection.connected) {
+                        // Immediately sending the chat state, because the
+                        // model is going to be destroyed afterwards.
+                        this.model.set('chat_state', converse.INACTIVE);
+                        this.sendChatState();
+
                         this.model.destroy();
-                        this.setChatState(converse.INACTIVE);
-                    } else {
-                        this.hide();
                     }
+                    this.remove();
                     converse.emit('chatBoxClosed', this);
                     return this;
-                },
-
-                onMaximized: function () {
-                    converse.chatboxviews.trimChats(this);
-                    utils.refreshWebkit();
-                    this.$content.scrollTop(this.model.get('scroll'));
-                    this.setChatState(converse.ACTIVE).focus();
-                    converse.emit('chatBoxMaximized', this);
-                },
-
-                onMinimized: function () {
-                    utils.refreshWebkit();
-                    converse.emit('chatBoxMinimized', this);
-                },
-
-                maximize: function () {
-                    // Restore a minimized chat box
-                    $('#conversejs').prepend(this.$el);
-                    this.$el.show('fast', this.onMaximized.bind(this));
-                    return this;
-                },
-
-                minimize: function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    // save the scroll position to restore it on maximize
-                    this.model.save({'scroll': this.$content.scrollTop()});
-                    this.setChatState(converse.INACTIVE).model.minimize();
-                    this.$el.hide('fast', this.onMinimized.bind(this));
                 },
 
                 renderToolbar: function (options) {
@@ -6361,31 +6384,32 @@ return parser;
                     return this;
                 },
 
+                afterShown: function () {
+                    if (converse.connection.connected) {
+                        // Without a connection, we haven't yet initialized
+                        // localstorage
+                        this.model.save();
+                    }
+                    this.setChatState(converse.ACTIVE);
+                    this.scrollDown();
+                    if (focus) {
+                        this.focus();
+                    }
+                },
+
                 show: function (focus) {
                     if (typeof this.debouncedShow === 'undefined') {
                         /* We wrap the method in a debouncer and set it on the
-                        * instance, so that we have it debounced per instance.
-                        * Debouncing it on the class-level is too broad.
-                        */
+                         * instance, so that we have it debounced per instance.
+                         * Debouncing it on the class-level is too broad.
+                         */
                         this.debouncedShow = _.debounce(function (focus) {
                             if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                                 if (focus) { this.focus(); }
                                 return;
                             }
                             this.initDragResize().setDimensions();
-                            this.$el.fadeIn(function () {
-                                if (converse.connection.connected) {
-                                    // Without a connection, we haven't yet initialized
-                                    // localstorage
-                                    this.model.save();
-                                }
-                                converse.chatboxviews.trimChats(this);
-                                this.setChatState(converse.ACTIVE);
-                                this.scrollDown();
-                                if (focus) {
-                                    this.focus();
-                                }
-                            }.bind(this));
+                            this.$el.fadeIn(this.afterShown.bind(this));
                         }, 250, true);
                     }
                     this.debouncedShow.apply(this, arguments);
@@ -6473,7 +6497,6 @@ return parser;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-
             this.updateSettings({
                 archived_messages_page_size: '20',
                 message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
@@ -6482,22 +6505,22 @@ return parser;
 
             converse.queryForArchivedMessages = function (options, callback, errback) {
                 /* Do a MAM (XEP-0313) query for archived messages.
-                    *
-                    * Parameters:
-                    *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
-                    *    (Function) callback - A function to call whenever we receive query-relevant stanza.
-                    *    (Function) errback - A function to call when an error stanza is received.
-                    *
-                    * The options parameter can also be an instance of
-                    * Strophe.RSM to enable easy querying between results pages.
-                    *
-                    * The callback function may be called multiple times, first
-                    * for the initial IQ result and then for each message
-                    * returned. The last time the callback is called, a
-                    * Strophe.RSM object is returned on which "next" or "previous"
-                    * can be called before passing it in again to this method, to
-                    * get the next or previous page in the result set.
-                    */
+                 *
+                 * Parameters:
+                 *    (Object) options - Query parameters, either MAM-specific or also for Result Set Management.
+                 *    (Function) callback - A function to call whenever we receive query-relevant stanza.
+                 *    (Function) errback - A function to call when an error stanza is received.
+                 *
+                 * The options parameter can also be an instance of
+                 * Strophe.RSM to enable easy querying between results pages.
+                 *
+                 * The callback function may be called multiple times, first
+                 * for the initial IQ result and then for each message
+                 * returned. The last time the callback is called, a
+                 * Strophe.RSM object is returned on which "next" or "previous"
+                 * can be called before passing it in again to this method, to
+                 * get the next or previous page in the result set.
+                 */
                 var date, messages = [];
                 if (typeof options === "function") {
                     callback = options;
@@ -6565,7 +6588,7 @@ return parser;
 
             _.extend(converse_api, {
                 /* Extend default converse.js API to add methods specific to MAM
-                */
+                 */
                 'archive': {
                     'query': converse.queryForArchivedMessages.bind(converse)
                 }
@@ -6771,20 +6794,20 @@ return parser;
                                 success: function (collection) {
                                     if (collection.length === 0) {
                                         /* We don't have any roster contacts stored in sessionStorage,
-                                        * so lets fetch the roster from the XMPP server. We pass in
-                                        * 'sendPresence' as callback method, because after initially
-                                        * fetching the roster we are ready to receive presence
-                                        * updates from our contacts.
-                                        */
+                                         * so lets fetch the roster from the XMPP server. We pass in
+                                         * 'sendPresence' as callback method, because after initially
+                                         * fetching the roster we are ready to receive presence
+                                         * updates from our contacts.
+                                         */
                                         converse.roster.fetchFromServer(function () {
                                             converse.xmppstatus.sendPresence();
                                         });
                                     } else if (converse.send_initial_presence) {
                                         /* We're not going to fetch the roster again because we have
-                                        * it already cached in sessionStorage, but we still need to
-                                        * send out a presence stanza because this is a new session.
-                                        * See: https://github.com/jcbrand/converse.js/issues/536
-                                        */
+                                         * it already cached in sessionStorage, but we still need to
+                                         * send out a presence stanza because this is a new session.
+                                         * See: https://github.com/jcbrand/converse.js/issues/536
+                                         */
                                         converse.xmppstatus.sendPresence();
                                     }
                                 }
@@ -6957,13 +6980,13 @@ return parser;
 
                 positionFetchedGroups: function (model, resp, options) {
                     /* Instead of throwing an add event for each group
-                    * fetched, we wait until they're all fetched and then
-                    * we position them.
-                    * Works around the problem of positionGroup not
-                    * working when all groups besides the one being
-                    * positioned aren't already in inserted into the
-                    * roster DOM element.
-                    */
+                     * fetched, we wait until they're all fetched and then
+                     * we position them.
+                     * Works around the problem of positionGroup not
+                     * working when all groups besides the one being
+                     * positioned aren't already in inserted into the
+                     * roster DOM element.
+                     */
                     model.sort();
                     model.each(function (group, idx) {
                         var view = this.get(group.get('name'));
@@ -6981,8 +7004,8 @@ return parser;
 
                 positionGroup: function (view) {
                     /* Place the group's DOM element in the correct alphabetical
-                    * position amongst the other groups in the roster.
-                    */
+                     * position amongst the other groups in the roster.
+                     */
                     var $groups = this.$roster.find('.roster-group'),
                         index = $groups.length ? this.model.indexOf(view.model) : 0;
                     if (index === 0) {
@@ -6997,7 +7020,7 @@ return parser;
 
                 appendGroup: function (view) {
                     /* Add the group at the bottom of the roster
-                    */
+                     */
                     var $last = this.$roster.find('.roster-group').last();
                     var $siblings = $last.siblings('dd');
                     if ($siblings.length > 0) {
@@ -7010,8 +7033,8 @@ return parser;
 
                 getGroup: function (name) {
                     /* Returns the group as specified by name.
-                    * Creates the group if it doesn't exist.
-                    */
+                     * Creates the group if it doesn't exist.
+                     */
                     var view =  this.get(name);
                     if (view) {
                         return view.model;
@@ -7097,16 +7120,16 @@ return parser;
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
                         /* ask === 'subscribe'
-                        *      Means we have asked to subscribe to them.
-                        *
-                        * subscription === 'from'
-                        *      They are subscribed to use, but not vice versa.
-                        *      We assume that there is a pending subscription
-                        *      from us to them (otherwise we're in a state not
-                        *      supported by converse.js).
-                        *
-                        *  So in both cases the user is a "pending" contact.
-                        */
+                         *      Means we have asked to subscribe to them.
+                         *
+                         * subscription === 'from'
+                         *      They are subscribed to use, but not vice versa.
+                         *      We assume that there is a pending subscription
+                         *      from us to them (otherwise we're in a state not
+                         *      supported by converse.js).
+                         *
+                         *  So in both cases the user is a "pending" contact.
+                         */
                         this.$el.addClass('pending-xmpp-contact');
                         this.$el.html(converse.templates.pending_contact(
                             _.extend(item.toJSON(), {
@@ -7249,8 +7272,8 @@ return parser;
 
                 positionContact: function (contact) {
                     /* Place the contact's DOM element in the correct alphabetical
-                    * position amongst the other contacts in this group.
-                    */
+                     * position amongst the other contacts in this group.
+                     */
                     var view = this.get(contact.get('id'));
                     var index = this.model.contacts.indexOf(contact);
                     view.$el.detach();
@@ -7279,10 +7302,10 @@ return parser;
 
                 filter: function (q) {
                     /* Filter the group's contacts based on the query "q".
-                    * The query is matched against the contact's full name.
-                    * If all contacts are filtered out (i.e. hidden), then the
-                    * group must be filtered out as well.
-                    */
+                     * The query is matched against the contact's full name.
+                     * If all contacts are filtered out (i.e. hidden), then the
+                     * group must be filtered out as well.
+                     */
                     var matches;
                     if (q.length === 0) {
                         if (this.model.get('state') === converse.OPENED) {
@@ -7369,8 +7392,8 @@ return parser;
                 model: converse.RosterGroup,
                 comparator: function (a, b) {
                     /* Groups are sorted alphabetically, ignoring case.
-                    * However, Ungrouped, Requesting Contacts and Pending Contacts
-                    * appear last and in that order. */
+                     * However, Ungrouped, Requesting Contacts and Pending Contacts
+                     * appear last and in that order. */
                     a = a.get('name');
                     b = b.get('name');
                     var special_groups = _.keys(HEADER_WEIGHTS);
@@ -7481,9 +7504,9 @@ return parser;
                     var view = this.get(item.get('id'));
                     if (!view && item.get('box_id') === 'controlbox') {
                         view = new converse.ControlBoxView({model: item});
-                        this.add(item.get('id'), view);
+                        return this.add(item.get('id'), view);
                     } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
+                        return this._super.onChatBoxAdded.apply(this, arguments);
                     }
                 },
 
@@ -7640,8 +7663,8 @@ return parser;
 
                 initRoster: function () {
                     /* We initialize the roster, which will appear inside the
-                    * Contacts Panel.
-                    */
+                     * Contacts Panel.
+                     */
                     var rostergroups = new converse.RosterGroups();
                     rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
                         b64_sha1('converse.roster.groups'+converse.bare_jid));
@@ -8135,7 +8158,7 @@ return parser;
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, setTimeout */
+/*global Backbone, define, window */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -8145,8 +8168,8 @@ return parser;
             "converse-core",
             "converse-api",
             "typeahead",
-            // TODO remove next two dependencies
             "converse-chatview",
+            // XXX: should we remove this dependency?
             "converse-controlbox"
     ], factory);
 }(this, function (converse, converse_api) {
@@ -8228,6 +8251,8 @@ return parser;
                 },
 
                 onConnected: function () {
+                    // TODO: This can probably be refactored to be an event
+                    // handler (and therefore removed from overrides)
                     var converse = this._super.converse;
                     this._super.onConnected.apply(this, arguments);
 
@@ -8257,73 +8282,14 @@ return parser;
                 }
             },
 
-
-            ChatBoxes: {
-                registerMessageHandler: function () {
-                    /* Override so that we can register a handler
-                     * for chat room invites.
-                     */
-                    this._super.registerMessageHandler.apply(this, arguments); // First call the original
-                    this._super.converse.connection.addHandler(
-                        function (message) {
-                            this.onInvite(message);
-                            return true;
-                        }.bind(this), 'jabber:x:conference', 'message');
-                },
-
-                onInvite: function (message) {
-                    /* An invitation to join a chat room has been received */
-                    var converse = this._super.converse,
-                        $message = $(message),
-                        $x = $message.children('x[xmlns="jabber:x:conference"]'),
-                        from = Strophe.getBareJidFromJid($message.attr('from')),
-                        room_jid = $x.attr('jid'),
-                        reason = $x.attr('reason'),
-                        contact = converse.roster.get(from),
-                        result;
-
-                    if (converse.auto_join_on_invite) {
-                        result = true;
-                    } else {
-                        contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);   // Invite request might come from someone not your roster list
-                        if (!reason) {
-                            result = confirm(
-                                __(___("%1$s has invited you to join a chat room: %2$s"), contact, room_jid)
-                            );
-                        } else {
-                            result = confirm(
-                                __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'), contact, room_jid, reason)
-                            );
-                        }
-                    }
-                    if (result === true) {
-                        var chatroom = converse.chatboxviews.showChat({
-                            'id': room_jid,
-                            'jid': room_jid,
-                            'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                            'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
-                            'chatroom': true,
-                            'box_id': b64_sha1(room_jid),
-                            'password': $x.attr('password')
-                        });
-                        if (!_.contains(
-                                    [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
-                                    chatroom.get('connection_status'))
-                                ) {
-                            converse.chatboxviews.get(room_jid).join(null);
-                        }
-                    }
-                }
-            },
-
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
-                    if (!view && item.get('chatroom')) {
+                    if (!view && item.get('type') === 'chatroom') {
                         view = new converse.ChatRoomView({'model': item});
-                        this.add(item.get('id'), view);
+                        return this.add(item.get('id'), view);
                     } else {
-                        this._super.onChatBoxAdded.apply(this, arguments);
+                        return this._super.onChatBoxAdded.apply(this, arguments);
                     }
                 }
             }
@@ -8338,6 +8304,8 @@ return parser;
             this.updateSettings({
                 allow_muc: true,
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
+                auto_join_rooms: [], // List of maps {'jid': 'room@example.org', 'nick': 'WizardKing69' },
+                                     // providing room jids and nicks or simply a list JIDs.
                 auto_list_rooms: false,
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
@@ -8347,11 +8315,12 @@ return parser;
 
             converse.ChatRoomView = converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view
-                * for normal one-on-one chat boxes.
-                */
+                 * for normal one-on-one chat boxes.
+                 */
                 length: 300,
                 tagName: 'div',
                 className: 'chatbox chatroom',
+                is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
                     'click .toggle-chatbox-button': 'minimize',
@@ -8366,7 +8335,6 @@ return parser;
                     'mousedown .dragresize-left': 'onStartHorizontalResize',
                     'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
-                is_chatroom: true,
 
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
@@ -8377,9 +8345,6 @@ return parser;
                         } else {
                             this.maximize();
                         }
-                    }, this);
-                    this.model.on('destroy', function () {
-                        this.hide().leave();
                     }, this);
 
                     this.occupantsview = new converse.ChatRoomOccupantsView({
@@ -8409,7 +8374,7 @@ return parser;
                     this.renderChatArea();
                     this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     this.setWidth();
-                    setTimeout(converse.refreshWebkit, 50);
+                    window.setTimeout(converse.refreshWebkit, 50);
                     return this;
                 },
 
@@ -8427,6 +8392,12 @@ return parser;
                     }
                     this.toggleOccupants(null, true);
                     return this;
+                },
+
+                close: function (ev) {
+                    converse.connection.deleteHandler(this.handler);
+                    this.leave();
+                    converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 toggleOccupants: function (ev, preserve_state) {
@@ -8528,8 +8499,8 @@ return parser;
 
                 validateRoleChangeCommand: function (command, args) {
                     /* Check that a command to change a chat room user's role or
-                    * affiliation has anough arguments.
-                    */
+                     * affiliation has anough arguments.
+                     */
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showStatusNotification(
@@ -8552,11 +8523,11 @@ return parser;
 
                 onChatRoomMessageSubmitted: function (text) {
                     /* Gets called when the user presses enter to send off a
-                    * message in a chat room.
-                    *
-                    * Parameters:
-                    *    (String) text - The message text.
-                    */
+                     * message in a chat room.
+                     *
+                     * Parameters:
+                     *    (String) text - The message text.
+                     */
                     var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [];
                     switch (match[1]) {
@@ -8731,7 +8702,9 @@ return parser;
                         presence.c("status", exit_msg);
                     }
                     converse.connection.addHandler(
-                        function () { this.model.set('connection_status', Strophe.Status.DISCONNECTED); }.bind(this),
+                        function () {
+                            this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                        }.bind(this),
                         null, "presence", null, presenceid);
                     converse.connection.send(presence);
                 },
@@ -8854,27 +8827,27 @@ return parser;
                 },
 
                 /* http://xmpp.org/extensions/xep-0045.html
-                * ----------------------------------------
-                * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-                * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-                * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-                * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-                * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-                * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-                * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-                * 171 message      Configuration change    Inform occupants that room logging is now disabled
-                * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-                * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-                * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-                * 201 presence     Entering a room         Inform user that a new room has been created
-                * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-                * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-                * 303 presence     Exiting a room          Inform all occupants of new room nickname
-                * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-                * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-                * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-                * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
-                */
+                 * ----------------------------------------
+                 * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
+                 * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
+                 * 102 message      Configuration change    Inform occupants that room now shows unavailable members
+                 * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
+                 * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
+                 * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
+                 * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
+                 * 171 message      Configuration change    Inform occupants that room logging is now disabled
+                 * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
+                 * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
+                 * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
+                 * 201 presence     Entering a room         Inform user that a new room has been created
+                 * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
+                 * 301 presence     Removal from room       Inform user that he or she has been banned from the room
+                 * 303 presence     Exiting a room          Inform all occupants of new room nickname
+                 * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
+                 * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
+                 * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
+                 * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+                 */
                 infoMessages: {
                     100: __('This room is not anonymous'),
                     102: __('This room now shows unavailable members'),
@@ -8898,15 +8871,15 @@ return parser;
 
                 actionInfoMessages: {
                     /* XXX: Note the triple underscore function and not double
-                    * underscore.
-                    *
-                    * This is a hack. We can't pass the strings to __ because we
-                    * don't yet know what the variable to interpolate is.
-                    *
-                    * Triple underscore will just return the string again, but we
-                    * can then at least tell gettext to scan for it so that these
-                    * strings are picked up by the translation machinery.
-                    */
+                     * underscore.
+                     *
+                     * This is a hack. We can't pass the strings to __ because we
+                     * don't yet know what the variable to interpolate is.
+                     *
+                     * Triple underscore will just return the string again, but we
+                     * can then at least tell gettext to scan for it so that these
+                     * strings are picked up by the translation machinery.
+                     */
                     301: ___("<strong>%1$s</strong> has been banned"),
                     303: ___("<strong>%1$s</strong>'s nickname has changed"),
                     307: ___("<strong>%1$s</strong> has been kicked out"),
@@ -8921,9 +8894,9 @@ return parser;
 
                 showStatusMessages: function (el, is_self) {
                     /* Check for status codes and communicate their purpose to the user.
-                    * Allow user to configure chat room if they are the owner.
-                    * See: http://xmpp.org/registrar/mucstatus.html
-                    */
+                     * Allow user to configure chat room if they are the owner.
+                     * See: http://xmpp.org/registrar/mucstatus.html
+                     */
                     var $el = $(el),
                         i, disconnect_msgs = [], msgs = [], reasons = [];
 
@@ -9066,10 +9039,10 @@ return parser;
 
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
-                    *
-                    * Then, upon receiving them, call onChatRoomMessage
-                    * so that they are displayed inside it.
-                    */
+                     *
+                     * Then, upon receiving them, call onChatRoomMessage
+                     * so that they are displayed inside it.
+                     */
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
@@ -9243,11 +9216,11 @@ return parser;
 
             converse.RoomsPanel = Backbone.View.extend({
                 /* Backbone View which renders the "Rooms" tab and accompanying
-                * panel in the control box.
-                *
-                * In this panel, chat rooms can be listed, joined and new rooms
-                * can be created.
-                */
+                 * panel in the control box.
+                 *
+                 * In this panel, chat rooms can be listed, joined and new rooms
+                 * can be created.
+                 */
                 tagName: 'div',
                 className: 'controlbox-pane',
                 id: 'chatrooms',
@@ -9306,8 +9279,8 @@ return parser;
 
                 onRoomsFound: function (iq) {
                     /* Handle the IQ stanza returned from the server, containing
-                    * all its public rooms.
-                    */
+                     * all its public rooms.
+                     */
                     var name, jid, i, fragment,
                         $available_chatrooms = this.$el.find('#available-chatrooms');
                     this.rooms = $(iq).find('query').find('item');
@@ -9338,7 +9311,7 @@ return parser;
 
                 updateRoomsList: function () {
                     /* Send and IQ stanza to the server asking for all rooms
-                    */
+                     */
                     converse.connection.sendIQ(
                         $iq({
                             to: this.model.get('muc_domain'),
@@ -9453,7 +9426,7 @@ return parser;
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                         'nick': nick,
-                        'chatroom': true,
+                        'type': 'chatroom',
                         'box_id': b64_sha1(jid)
                     });
                 },
@@ -9467,10 +9440,78 @@ return parser;
                 }
             });
 
+            /* Support for XEP-0249: Direct MUC invitations */
+            /* ------------------------------------------------------------ */
+            converse.onDirectMUCInvitation = function (message) {
+                /*  A direct MUC invitation to join a room has been received */
+                var $message = $(message),
+                    $x = $message.children('x[xmlns="jabber:x:conference"]'),
+                    from = Strophe.getBareJidFromJid($message.attr('from')),
+                    room_jid = $x.attr('jid'),
+                    reason = $x.attr('reason'),
+                    contact = converse.roster.get(from),
+                    result;
+
+                if (converse.auto_join_on_invite) {
+                    result = true;
+                } else {
+                    // Invite request might come from someone not your roster list
+                    contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
+                    if (!reason) {
+                        result = confirm(
+                            __(___("%1$s has invited you to join a chat room: %2$s"),
+                                contact, room_jid)
+                        );
+                    } else {
+                        result = confirm(
+                            __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
+                                contact, room_jid, reason)
+                        );
+                    }
+                }
+                if (result === true) {
+                    var chatroom = converse.chatboxviews.showChat({
+                        'id': room_jid,
+                        'jid': room_jid,
+                        'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
+                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
+                        'type': 'chatroom',
+                        'box_id': b64_sha1(room_jid),
+                        'password': $x.attr('password')
+                    });
+                    if (!_.contains(
+                                [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
+                                chatroom.get('connection_status'))
+                            ) {
+                        converse.chatboxviews.get(room_jid).join(null);
+                    }
+                }
+            };
+            var onConnected = function () {
+                converse.connection.addHandler(
+                    function (message) {
+                        converse.onDirectMUCInvitation(message);
+                        return true;
+                    }, 'jabber:x:conference', 'message');
+                _.each(converse.auto_join_rooms, function (room) {
+                    if (typeof room === 'string') {
+                        converse_api.rooms.open(room);
+                    } else if (typeof room === 'object') {
+                        converse_api.rooms.open(room.jid, room.nick);
+                    } else {
+                        converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
+                    }
+                });
+            };
+            converse.on('connected', onConnected);
+            converse.on('reconnected', onConnected);
+            /* ------------------------------------------------------------ */
+
+
+            /* We extend the default converse.js API to add methods specific to MUC
+             * chat rooms.
+             */
             _.extend(converse_api, {
-                /* We extend the default converse.js API to add methods specific to MUC
-                * chat rooms.
-                */
                 'rooms': {
                     'open': function (jids, nick) {
                         if (!nick) {
@@ -9489,7 +9530,7 @@ return parser;
                                     'jid': jid,
                                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                                     'nick': nick,
-                                    'chatroom': true,
+                                    'type': 'chatroom',
                                     'box_id': b64_sha1(jid)
                                 });
                             }
@@ -9509,7 +9550,6 @@ return parser;
                             return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                         }
                         return _.map(jids, _.partial(converse.wrappedChatBox, _.bind(converse.chatboxes.getChatBox, converse.chatboxes, _, true)));
-
                     }
                 }
             });
@@ -9716,6 +9756,7 @@ return parser;
     define("converse-minimize", [
             "converse-core",
             "converse-api",
+            "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -9757,7 +9798,9 @@ return parser;
                 this._super.registerGlobalEventHandlers.apply(this, arguments);
 
                 $(window).on("resize", _.debounce(function (ev) {
-                    converse.chatboxviews.trimChats();
+                    if (converse.connection.connected) {
+                        converse.chatboxviews.trimChats();
+                    }
                 }, 200));
             },
 
@@ -9799,15 +9842,86 @@ return parser;
                 },
             },
 
+            ChatBoxView: {
+                events: {
+                    'click .toggle-chatbox-button': 'minimize',
+                },
+
+                initialize: function () {
+                    this.model.on('change:minimized', this.onMinimizedChanged, this);
+                    return this._super.initialize.apply(this, arguments);
+                },
+
+                afterShown: function () {
+                    this._super.afterShown.apply(this, arguments);
+                    if (!this.model.get('minimized')) {
+                        converse.chatboxviews.trimChats(this);
+                    }
+                },
+
+                shouldShowOnTextMessage: function () {
+                    return !this.model.get('minimized') &&
+                        this._super.shouldShowOnTextMessage.apply(this, arguments);
+                },
+
+                setChatBoxHeight: function (height) {
+                    if (!this.model.get('minimized')) {
+                        return this._super.setChatBoxHeight.apply(this, arguments);
+                    }
+                },
+
+                setChatBoxWidth: function (width) {
+                    if (!this.model.get('minimized')) {
+                        return this._super.setChatBoxWidth.apply(this, arguments);
+                    }
+                },
+
+                onMinimizedChanged: function (item) {
+                    if (item.get('minimized')) {
+                        this.minimize();
+                    } else {
+                        this.maximize();
+                    }
+                },
+
+                onMaximized: function () {
+                    converse.chatboxviews.trimChats(this);
+                    utils.refreshWebkit();
+                    this.$content.scrollTop(this.model.get('scroll'));
+                    this.setChatState(converse.ACTIVE).focus();
+                    converse.emit('chatBoxMaximized', this);
+                },
+
+                onMinimized: function () {
+                    utils.refreshWebkit();
+                    converse.emit('chatBoxMinimized', this);
+                },
+
+                maximize: function () {
+                    // Restore a minimized chat box
+                    $('#conversejs').prepend(this.$el);
+                    this.$el.show('fast', this.onMaximized.bind(this));
+                    return this;
+                },
+
+                minimize: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    // save the scroll position to restore it on maximize
+                    this.model.save({'scroll': this.$content.scrollTop()});
+                    this.setChatState(converse.INACTIVE).model.minimize();
+                    this.$el.hide('fast', this.onMinimized.bind(this));
+                },
+
+            },
+
             ChatBoxes: {
                 chatBoxShouldBeShown: function (chatbox) {
-                    return this._super.chatBoxShouldBeShown.apply(this, arguments) && 
+                    return this._super.chatBoxShouldBeShown.apply(this, arguments) &&
                            !chatbox.get('minimized');
                 },
             },
 
             ChatBoxViews: {
-
                 showChat: function (attrs) {
                     /* Find the chat box and show it. If it doesn't exist, create it.
                      */
@@ -9831,16 +9945,16 @@ return parser;
 
                 trimChats: function (newchat) {
                     /* This method is called when a newly created chat box will
-                    * be shown.
-                    *
-                    * It checks whether there is enough space on the page to show
-                    * another chat box. Otherwise it minimizes the oldest chat box
-                    * to create space.
-                    */
+                     * be shown.
+                     *
+                     * It checks whether there is enough space on the page to show
+                     * another chat box. Otherwise it minimizes the oldest chat box
+                     * to create space.
+                     */
                     if (converse.no_trimming || (this.model.length <= 1)) {
                         return;
                     }
-                    var oldest_chat, boxes_width,
+                    var oldest_chat, boxes_width, view,
                         $minimized = converse.minimized_chats.$el,
                         minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                         new_id = newchat ? newchat.model.get('id') : null;
@@ -9852,6 +9966,14 @@ return parser;
                     if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
                         oldest_chat = this.getOldestMaximizedChat([new_id]);
                         if (oldest_chat) {
+                            // We hide the chat immediately, because waiting
+                            // for the event to fire (and letting the
+                            // ChatBoxView hide it then) causes race
+                            // conditions.
+                            view = this.get(oldest_chat.get('id'));
+                            if (view) {
+                                view.$el.hide();
+                            }
                             oldest_chat.minimize();
                         }
                     }
@@ -9906,7 +10028,7 @@ return parser;
                         this.model.toJSON(),
                         { 'tooltip': __('Click to restore this chat') }
                     );
-                    if (this.model.get('chatroom')) {
+                    if (this.model.get('type') === 'chatroom') {
                         data.title = this.model.get('name');
                         this.$el.addClass('chat-head-chatroom');
                     } else {
@@ -9929,8 +10051,15 @@ return parser;
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.remove();
-                    this.model.destroy();
-                    converse.emit('chatBoxClosed', this);
+                    var view = converse.chatboxviews.get(this.model.get('id'));
+                    if (view) {
+                        // This will call model.destroy(), removing it from the
+                        // collection and will also emit 'chatBoxClosed'
+                        view.close();
+                    } else {
+                        this.model.destroy();
+                        converse.emit('chatBoxClosed', this);
+                    }
                     return this;
                 },
 
@@ -10068,7 +10197,9 @@ return parser;
             converse.on('controlBoxOpened', function (evt, chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
                 // attr not set yet.
-                converse.chatboxviews.trimChats(chatbox);
+                if (converse.connection.connected) {
+                    converse.chatboxviews.trimChats(chatbox);
+                }
             });
         }
     });
@@ -10740,8 +10871,8 @@ return parser;
 
                 registerHooks: function () {
                     /* Hook into Strophe's _connect_cb, so that we can send an IQ
-                    * requesting the registration fields.
-                    */
+                     * requesting the registration fields.
+                     */
                     var conn = converse.connection;
                     var connect_cb = conn._connect_cb.bind(conn);
                     conn._connect_cb = function (req, callback, raw) {
@@ -10757,11 +10888,11 @@ return parser;
 
                 getRegistrationFields: function (req, _callback, raw) {
                     /*  Send an IQ stanza to the XMPP server asking for the
-                    *  registration fields.
-                    *  Parameters:
-                    *    (Strophe.Request) req - The current request
-                    *    (Function) callback
-                    */
+                     *  registration fields.
+                     *  Parameters:
+                     *    (Strophe.Request) req - The current request
+                     *    (Function) callback
+                     */
                     converse.log("sendQueryStanza was called");
                     var conn = converse.connection;
                     conn.connected = true;
@@ -10792,10 +10923,10 @@ return parser;
 
                 onRegistrationFields: function (stanza) {
                     /*  Handler for Registration Fields Request.
-                    *
-                    *  Parameters:
-                    *    (XMLElement) elem - The query stanza.
-                    */
+                     *
+                     *  Parameters:
+                     *    (XMLElement) elem - The query stanza.
+                     */
                     if (stanza.getElementsByTagName("query").length !== 1) {
                         converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
@@ -10824,11 +10955,11 @@ return parser;
 
                 onProviderChosen: function (ev) {
                     /* Callback method that gets called when the user has chosen an
-                    * XMPP provider.
-                    *
-                    * Parameters:
-                    *      (Submit Event) ev - Form submission event.
-                    */
+                     * XMPP provider.
+                     *
+                     * Parameters:
+                     *      (Submit Event) ev - Form submission event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var $form = $(ev.target),
                         $domain_input = $form.find('input[name=domain]'),
@@ -10907,11 +11038,11 @@ return parser;
 
                 renderRegistrationForm: function (stanza) {
                     /* Renders the registration form based on the XForm fields
-                    * received from the XMPP server.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
-                    */
+                     * received from the XMPP server.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
+                     */
                     var $form= this.$('form'),
                         $stanza = $(stanza),
                         $fields, $input;
@@ -10964,12 +11095,12 @@ return parser;
 
                 reportErrors: function (stanza) {
                     /* Report back to the user any error messages received from the
-                    * XMPP server after attempted registration.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - The IQ stanza received from the
-                    *      XMPP server.
-                    */
+                     * XMPP server after attempted registration.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - The IQ stanza received from the
+                     *      XMPP server.
+                     */
                     var $form= this.$('form'), flash;
                     var $errmsgs = $(stanza).find('error text');
                     var $flash = $form.find('.form-errors');
@@ -10997,7 +11128,7 @@ return parser;
 
                 cancelRegistration: function (ev) {
                     /* Handler, when the user cancels the registration form.
-                    */
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     converse.connection.reset();
                     this.render();
@@ -11005,12 +11136,12 @@ return parser;
 
                 submitRegistrationForm : function (ev) {
                     /* Handler, when the user submits the registration form.
-                    * Provides form error feedback or starts the registration
-                    * process.
-                    *
-                    * Parameters:
-                    *      (Event) ev - the submit event.
-                    */
+                     * Provides form error feedback or starts the registration
+                     * process.
+                     *
+                     * Parameters:
+                     *      (Event) ev - the submit event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var $empty_inputs = this.$('input.required:emptyVal');
                     if ($empty_inputs.length) {
@@ -11038,11 +11169,11 @@ return parser;
 
                 setFields: function (stanza) {
                     /* Stores the values that will be sent to the XMPP server
-                    * during attempted registration.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
-                    */
+                     * during attempted registration.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
+                     */
                     var $query = $(stanza).find('query'), $xform;
                     if ($query.length > 0) {
                         $xform = $query.find('x[xmlns="'+Strophe.NS.XFORM+'"]');
@@ -11090,12 +11221,12 @@ return parser;
 
                 _onRegisterIQ: function (stanza) {
                     /* Callback method that gets called when a return IQ stanza
-                    * is received from the XMPP server, after attempting to
-                    * register a new user.
-                    *
-                    * Parameters:
-                    *      (XMLElement) stanza - The IQ stanza.
-                    */
+                     * is received from the XMPP server, after attempting to
+                     * register a new user.
+                     *
+                     * Parameters:
+                     *      (XMLElement) stanza - The IQ stanza.
+                     */
                     var error = null,
                         query = stanza.getElementsByTagName("query");
                     if (query.length > 0) {
@@ -11157,27 +11288,6 @@ return parser;
     var _ = converse_api.env._;
     
     converse_api.plugins.add('ping', {
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            onConnected: function () {
-                var promise = this._super.onConnected();
-                promise.done(converse.registerPingHandler);
-                return promise;
-            },
-            onReconnected: function () {
-                // We need to re-register the ping event handler on the newly
-                // created connection.
-                var promise = this._super.onReconnected();
-                promise.done(converse.registerPingHandler);
-                return promise;
-            }
-        },
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
@@ -11252,6 +11362,13 @@ return parser;
                     converse.ping(jid);
                 }
             });
+
+            var onConnected = function () {
+                // Wrapper so that we can spy on registerPingHandler in tests
+                converse.registerPingHandler();
+            };
+            converse.on('connected', onConnected);
+            converse.on('reconnected', onConnected);
         }
     });
 }));
@@ -11326,15 +11443,18 @@ return parser;
                 return true;
             };
 
-            converse.shouldNotifyOfMessage = function ($message) {
+            converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
-                var $forwarded = $message.find('forwarded');
+                var $message = $(message),
+                    $forwarded = $message.find('forwarded');
                 if ($forwarded.length) {
                     return false;
-                }
-                if ($message.attr('type') === 'groupchat') {
+                } else if ($message.attr('type') === 'groupchat') {
                     return converse.shouldNotifyOfGroupMessage($message);
+                } else if (utils.isHeadlineMessage(message)) {
+                    // We want to show notifications for headline messages.
+                    return true;
                 }
                 var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
                 return !converse.isOnlyChatStateNotification($message) && !is_me;
@@ -11373,9 +11493,22 @@ return parser;
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
-                var contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
-                var roster_item = converse.roster.get(contact_jid);
-                var n = new Notification(__(___("%1$s says"), roster_item.get('fullname')), {
+                var n, title, contact_jid, roster_item,
+                    from_jid = $message.attr('from');
+                if ($message.attr('type') === 'headline' || from_jid.indexOf('@') === -1) {
+                    // XXX: 2nd check is workaround for Prosody which doesn't
+                    // give type "headline"
+                    title = __(___("Notification from %1$s"), from_jid);
+                } else {
+                    if (typeof converse.roster === 'undefined') {
+                        converse.log("Could not send notification, because roster is undefined", "error");
+                        return;
+                    }
+                    contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                    roster_item = converse.roster.get(contact_jid);
+                    title = __(___("%1$s says"), roster_item.get('fullname'));
+                }
+                n = new Notification(title, {
                         body: $message.children('body').text(),
                         lang: converse.i18n.locale_data.converse[""].lang,
                         icon: converse.notification_icon
@@ -11387,7 +11520,7 @@ return parser;
                 /* Creates an HTML5 Notification to inform of a change in a
                  * contact's chat state.
                  */
-                if (_.contains(converse.chatstate_notification_blacklist, contact.get('jid'))) {
+                if (_.contains(converse.chatstate_notification_blacklist, contact.jid)) {
                     // Don't notify if the user is being ignored.
                     return;
                 }
@@ -11437,7 +11570,7 @@ return parser;
                  * to play sounds and show HTML5 notifications.
                  */
                 var $message = $(message);
-                if (!converse.shouldNotifyOfMessage($message)) {
+                if (!converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }
                 converse.playSoundNotification($message);
@@ -11474,25 +11607,115 @@ return parser;
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define */
+/*global define, window */
 
 (function (root, factory) {
     define("converse-headline", [
             "converse-core",
             "converse-api",
-            // TODO: remove this dependency
             "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
+    var $ = converse_api.env.jQuery,
+        _ = converse_api.env._,
+        utils = converse_api.env.utils,
+        __ = utils.__.bind(converse);
+
+    var onHeadlineMessage = function (message) {
+        /* Handler method for all incoming messages of type "headline".
+         */
+        var $message = $(message),
+            from_jid = $message.attr('from');
+        if (utils.isHeadlineMessage(message)) {
+            converse.chatboxes.create({
+                'id': from_jid,
+                'jid': from_jid,
+                'fullname':  from_jid,
+                'type': 'headline'
+            }).createMessage($message);
+            converse.emit('message', message);
+        }
+        return true;
+    };
 
     converse_api.plugins.add('headline', {
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // New functions which don't exist yet can also be added.
+            
+            ChatBoxViews: {
+                onChatBoxAdded: function (item) {
+                    var view = this.get(item.get('id'));
+                    if (!view && item.get('type') === 'headline') {
+                        view = new converse.HeadlinesBoxView({model: item});
+                        this.add(item.get('id'), view);
+                        return view;
+                    } else {
+                        return this._super.onChatBoxAdded.apply(this, arguments);
+                    }
+                }
+            }
+        },
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            // TODO
+            converse.HeadlinesBoxView = converse.ChatBoxView.extend({
+                className: 'chatbox headlines',
+
+                events: {
+                    'click .close-chatbox-button': 'close',
+                    'click .toggle-chatbox-button': 'minimize',
+                    'keypress textarea.chat-textarea': 'keyPressed',
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize: function () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    this.model.messages.on('add', this.onMessageAdded, this);
+                    this.model.on('show', this.show, this);
+                    this.model.on('destroy', this.hide, this);
+                    this.model.on('change:minimized', this.onMinimizedChanged, this);
+                    this.render().fetchMessages().insertIntoPage().hide();
+                    converse.emit('chatBoxInitialized', this);
+                },
+
+                render: function () {
+                    this.$el.attr('id', this.model.get('box_id'))
+                        .html(converse.templates.chatbox(
+                                _.extend(this.model.toJSON(), {
+                                        show_toolbar: converse.show_toolbar,
+                                        show_textarea: false,
+                                        title: this.model.get('fullname'),
+                                        info_close: __('Close this box'),
+                                        info_minimize: __('Minimize this box'),
+                                        label_personal_message: ''
+                                    }
+                                )
+                            )
+                        );
+                    this.setWidth();
+                    this.$content = this.$el.find('.chat-content');
+                    converse.emit('chatBoxOpened', this);
+                    window.setTimeout(utils.refreshWebkit, 50);
+                    return this;
+                },
+            });
+
+            var registerHeadlineHandler = function () {
+                converse.connection.addHandler(
+                        onHeadlineMessage, null, 'message');
+            };
+            converse.on('connected', registerHeadlineHandler);
+            converse.on('reconnected', registerHeadlineHandler);
         }
     });
 }));

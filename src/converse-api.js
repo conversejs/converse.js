@@ -155,7 +155,7 @@
                 converse.connection.addHandler(
                     handler,
                     options.ns,
-                    options.name,
+                    name,
                     options.type,
                     options.id,
                     options.from,

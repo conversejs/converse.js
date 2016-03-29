@@ -378,6 +378,22 @@ message, pass in the ``before`` parameter with an empty string value ``''``.
         converse.archive.query(rsm, callback, errback);
     }
 
+The "connection" grouping
+-------------------------
+
+This grouping collects API functions related to the XMPP connection.
+
+connected
+~~~~~~~~~
+
+Returns a boolean value (`true` or `false`) depending on whether there is an
+established connection.
+
+disconnect
+~~~~~~~~~~
+
+Terminates the connection.
+
 
 The "user" grouping
 -------------------

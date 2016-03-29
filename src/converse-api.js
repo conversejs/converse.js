@@ -25,8 +25,13 @@
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
-        'disconnect': function () {
-              converse.connection.disconnect();
+        'connection': {
+            'connected': function () {
+                return converse.connection.connected;
+            },
+            'disconnect': function () {
+                converse.connection.disconnect();
+            },
         },
         'user': {
             'logout': function () {

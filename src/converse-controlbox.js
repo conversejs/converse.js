@@ -85,10 +85,16 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
-                    var view = this.get(item.get('id'));
-                    if (!view && item.get('box_id') === 'controlbox') {
-                        view = new converse.ControlBoxView({model: item});
-                        return this.add(item.get('id'), view);
+                    if (item.get('box_id') === 'controlbox') {
+                        var view = this.get(item.get('id'));
+                        if (view) {
+                            view.model = item;
+                            view.initialize();
+                            return view;
+                        } else {
+                            view = new converse.ControlBoxView({model: item});
+                            return this.add(item.get('id'), view);
+                        }
                     } else {
                         return this._super.onChatBoxAdded.apply(this, arguments);
                     }

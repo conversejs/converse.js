@@ -1432,18 +1432,10 @@
             },
 
             onChatBoxAdded: function (item) {
-                var view = this.get(item.get('id'));
-                // Views aren't created here, since the core code doesn't have
+                // Views aren't created here, since the core code doesn't
                 // contain any views. Instead, they're created in overrides in
-                // converse-chatiew.js and/or converse-muc.js
-                if (view) {
-                    // This is an optimization. We don't remove older views, so
-                    // when one is available, we reuse it.
-                    delete view.model; // Remove ref to old model to help garbage collection
-                    view.model = item;
-                    view.initialize();
-                }
-                return view;
+                // plugins, such as in converse-chatview.js and converse-muc.js
+                return this.get(item.get('id'));
             },
 
             removeChat: function (item) {

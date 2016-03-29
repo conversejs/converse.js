@@ -5,9 +5,7 @@
   "license": "MPL-2.0",
   "devDependencies": {
     "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
-    "otr": "0.2.12",
-    "requirejs-text": "~2.0.10",
-    "requirejs-tpl-jcbrand": "*"
+    "sinon": "^1.17.3"
   },
   "dependencies": {
     "requirejs": "~2.1.15",
@@ -27,11 +25,9 @@
     "bootstrap": "~3.2.0",
     "fontawesome": "~4.1.0",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js",
-    "skeleton-sass": "~2.0.3",
     "strophejs": "1.2.4",
     "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#amd",
-    "bourbon": "~4.2.3",
-    "sinon": "^1.17.3"
+    "bourbon": "~4.2.3"
   },
   "resolutions": {
     "backbone": "1.1.2"

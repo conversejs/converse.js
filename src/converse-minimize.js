@@ -186,15 +186,17 @@
                     return chatbox;
                 },
 
-                onChatBoxAdded: function (item) {
-                    this.trimChats(this._super.onChatBoxAdded.apply(this, arguments));
-                },
-
                 getChatBoxWidth: function (view) {
                     if (!view.model.get('minimized') && view.$el.is(':visible')) {
                         return view.$el.outerWidth(true);
                     }
                     return 0;
+                },
+
+                getShownChats: function () {
+                    return this.filter(function (view) {
+                        return (!view.model.get('minimized') && view.$el.is(':visible'));
+                    });
                 },
 
                 trimChats: function (newchat) {
@@ -205,7 +207,14 @@
                      * another chat box. Otherwise it minimizes the oldest chat box
                      * to create space.
                      */
-                    if (converse.no_trimming || (this.model.length <= 1)) {
+                    var shown_chats = this.getShownChats();
+                    if (converse.no_trimming || shown_chats.length <= 1) {
+                        return;
+                    }
+                    if (this.getChatBoxWidth(shown_chats[0]) === $('body').outerWidth(true)) {
+                        // If the chats shown are the same width as the body,
+                        // then we're in responsive mode and the chats are
+                        // fullscreen. In this case we don't trim.
                         return;
                     }
                     var oldest_chat, boxes_width, view,
@@ -361,7 +370,7 @@
                 render: function () {
                     if (this.keys().length === 0) {
                         this.$el.hide('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
-                    } else if (this.keys().length === 1) {
+                    } else if (this.keys().length === 1 && !this.$el.is(':visible')) {
                         this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
                     }
                     return this.$el;

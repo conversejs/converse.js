@@ -123,6 +123,7 @@
                 },
 
                 onScroll: function (ev) {
+                    // XXX: This should go into converse-mam.js
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
                             'before': this.model.messages.at(0).get('archive_id'),
@@ -141,6 +142,7 @@
                     this.model.messages.fetch({
                         'add': true,
                         'success': function () {
+                                // XXX: This should go into converse-mam.js
                                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                                     return;
                                 }
@@ -162,6 +164,7 @@
                      * Then, upon receiving them, call onMessage on the chat box,
                      * so that they are displayed inside it.
                      */
+                    // XXX: This should go into converse-mam.js
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;

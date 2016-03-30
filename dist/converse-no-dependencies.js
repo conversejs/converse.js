@@ -3857,18 +3857,10 @@ define("polyfill", function(){});
             },
 
             onChatBoxAdded: function (item) {
-                var view = this.get(item.get('id'));
-                // Views aren't created here, since the core code doesn't have
+                // Views aren't created here, since the core code doesn't
                 // contain any views. Instead, they're created in overrides in
-                // converse-chatiew.js and/or converse-muc.js
-                if (view) {
-                    // This is an optimization. We don't remove older views, so
-                    // when one is available, we reuse it.
-                    delete view.model; // Remove ref to old model to help garbage collection
-                    view.model = item;
-                    view.initialize();
-                }
-                return view;
+                // plugins, such as in converse-chatview.js and converse-muc.js
+                return this.get(item.get('id'));
             },
 
             removeChat: function (item) {
@@ -4344,8 +4336,13 @@ define("polyfill", function(){});
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
-        'disconnect': function () {
-              converse.connection.disconnect();
+        'connection': {
+            'connected': function () {
+                return converse.connection && converse.connection.connected || false;
+            },
+            'disconnect': function () {
+                converse.connection.disconnect();
+            },
         },
         'user': {
             'logout': function () {
@@ -4474,7 +4471,7 @@ define("polyfill", function(){});
                 converse.connection.addHandler(
                     handler,
                     options.ns,
-                    options.name,
+                    name,
                     options.type,
                     options.id,
                     options.from,
@@ -5680,6 +5677,7 @@ return parser;
                 },
 
                 onScroll: function (ev) {
+                    // XXX: This should go into converse-mam.js
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
                             'before': this.model.messages.at(0).get('archive_id'),
@@ -5698,6 +5696,7 @@ return parser;
                     this.model.messages.fetch({
                         'add': true,
                         'success': function () {
+                                // XXX: This should go into converse-mam.js
                                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                                     return;
                                 }
@@ -5719,6 +5718,7 @@ return parser;
                      * Then, upon receiving them, call onMessage on the chat box,
                      * so that they are displayed inside it.
                      */
+                    // XXX: This should go into converse-mam.js
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
@@ -7501,10 +7501,16 @@ return parser;
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
-                    var view = this.get(item.get('id'));
-                    if (!view && item.get('box_id') === 'controlbox') {
-                        view = new converse.ControlBoxView({model: item});
-                        return this.add(item.get('id'), view);
+                    if (item.get('box_id') === 'controlbox') {
+                        var view = this.get(item.get('id'));
+                        if (view) {
+                            view.model = item;
+                            view.initialize();
+                            return view;
+                        } else {
+                            view = new converse.ControlBoxView({model: item});
+                            return this.add(item.get('id'), view);
+                        }
                     } else {
                         return this._super.onChatBoxAdded.apply(this, arguments);
                     }
@@ -9932,15 +9938,17 @@ return parser;
                     return chatbox;
                 },
 
-                onChatBoxAdded: function (item) {
-                    this.trimChats(this._super.onChatBoxAdded.apply(this, arguments));
-                },
-
                 getChatBoxWidth: function (view) {
                     if (!view.model.get('minimized') && view.$el.is(':visible')) {
                         return view.$el.outerWidth(true);
                     }
                     return 0;
+                },
+
+                getShownChats: function () {
+                    return this.filter(function (view) {
+                        return (!view.model.get('minimized') && view.$el.is(':visible'));
+                    });
                 },
 
                 trimChats: function (newchat) {
@@ -9951,7 +9959,14 @@ return parser;
                      * another chat box. Otherwise it minimizes the oldest chat box
                      * to create space.
                      */
-                    if (converse.no_trimming || (this.model.length <= 1)) {
+                    var shown_chats = this.getShownChats();
+                    if (converse.no_trimming || shown_chats.length <= 1) {
+                        return;
+                    }
+                    if (this.getChatBoxWidth(shown_chats[0]) === $('body').outerWidth(true)) {
+                        // If the chats shown are the same width as the body,
+                        // then we're in responsive mode and the chats are
+                        // fullscreen. In this case we don't trim.
                         return;
                     }
                     var oldest_chat, boxes_width, view,
@@ -10107,7 +10122,7 @@ return parser;
                 render: function () {
                     if (this.keys().length === 0) {
                         this.$el.hide('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
-                    } else if (this.keys().length === 1) {
+                    } else if (this.keys().length === 1 && !this.$el.is(':visible')) {
                         this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
                     }
                     return this.$el;

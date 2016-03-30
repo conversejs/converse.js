@@ -337,7 +337,7 @@ csi_waiting_time
 
 * Default: ``0``
 
-This option adds support for **XEP-0085 Chat State Indication**.
+This option adds support for `XEP-0352 Client State Indication <http://xmpp.org/extensions/xep-0352.html>_`
 
 If converse.js is idle for the configured amount of seconds, a chat state
 indication of ``inactive`` will be sent out to the XMPP server (if the server
@@ -345,6 +345,8 @@ supports CSI).
 
 Afterwards, ss soon as there is any activity (for example, the mouse moves),
 a chat state indication of ``active`` will be sent out.
+
+A value of ``0`` means that this feature is disabled.
 
 debug
 -----

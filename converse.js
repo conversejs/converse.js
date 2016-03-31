@@ -169,7 +169,8 @@ require.config({
         "toolbar":                  "src/templates/toolbar",
         "toolbar_otr":              "src/templates/toolbar_otr",
         "trimmed_chat":             "src/templates/trimmed_chat",
-        "vcard":                    "src/templates/vcard"
+        "vcard":                    "src/templates/vcard",
+        "chatbox_minimize":         "src/templates/chatbox_minimize"
     },
 
     map: {

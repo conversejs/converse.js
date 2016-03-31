@@ -98,8 +98,6 @@
                                         show_textarea: true,
                                         title: this.model.get('fullname'),
                                         info_close: __('Close this chat box'),
-                                        // FIXME: leaky-abstraction from converse-minimize
-                                        info_minimize: __('Minimize this chat box'),
                                         label_personal_message: __('Personal message')
                                     }
                                 )
@@ -110,6 +108,7 @@
                     this.renderToolbar().renderAvatar();
                     this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     converse.emit('chatBoxOpened', this);
+                    converse.emit('chatRoomOpened', this);
                     window.setTimeout(utils.refreshWebkit, 50);
                     return this.showStatusMessage();
                 },

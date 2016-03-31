@@ -584,7 +584,7 @@
                 it("received for a minimized chat box will increment a counter on its header", function () {
                     var contact_name = mock.cur_names[0];
                     var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    spyOn(this, 'emit');
+                    spyOn(this, 'emit').andCallThrough();
                     test_utils.openChatBoxFor(contact_jid);
                     var chatview = this.chatboxviews.get(contact_jid);
                     expect(chatview.$el.is(':visible')).toBeTruthy();

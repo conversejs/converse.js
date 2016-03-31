@@ -169,7 +169,6 @@
                 is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'click .toggle-chatbox-button': 'minimize',
                     'click .configure-chatroom-button': 'configureChatRoom',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
@@ -185,33 +184,18 @@
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.model.messages.on('add', this.onMessageAdded, this);
-                    this.model.on('change:minimized', function (item) {
-                        if (item.get('minimized')) {
-                            this.hide();
-                        } else {
-                            this.maximize();
-                        }
-                    }, this);
-
                     this.occupantsview = new converse.ChatRoomOccupantsView({
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
                     });
                     var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
-
                     this.occupantsview.chatroomview = this;
                     this.render().$el.hide();
                     this.occupantsview.model.fetch({add:true});
                     this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                     this.fetchMessages();
-                    converse.emit('chatRoomOpened', this);
-
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                    if (this.model.get('minimized')) {
-                        this.hide();
-                    } else {
-                        this.show();
-                    }
+                    converse.emit('chatRoomOpened', this);
                 },
 
                 render: function () {

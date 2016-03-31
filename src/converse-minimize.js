@@ -10,7 +10,9 @@
     define("converse-minimize", [
             "converse-core",
             "converse-api",
-            "converse-chatview"
+            "converse-controlbox",
+            "converse-chatview",
+            "converse-muc"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -152,9 +154,10 @@
                 },
 
                 maximize: function () {
-                    // Restore a minimized chat box
-                    $('#conversejs').prepend(this.$el);
-                    this.$el.show('fast', this.onMaximized.bind(this));
+                    // Restores a minimized chat box
+                    var chatboxviews = converse.chatboxviews;
+                    this.$el.insertAfter(chatboxviews.get("controlbox").$el)
+                        .show('fast', this.onMaximized.bind(this));
                     return this;
                 },
 
@@ -165,7 +168,29 @@
                     this.setChatState(converse.INACTIVE).model.minimize();
                     this.$el.hide('fast', this.onMinimized.bind(this));
                 },
+            },
 
+            ChatRoomView: {
+                events: {
+                    'click .toggle-chatbox-button': 'minimize',
+                },
+
+                initialize: function () {
+                    this.model.on('change:minimized', function (item) {
+                        if (item.get('minimized')) {
+                            this.hide();
+                        } else {
+                            this.maximize();
+                        }
+                    }, this);
+                    var result = this._super.initialize.apply(this, arguments);
+                    if (this.model.get('minimized')) {
+                        this.hide();
+                    } else {
+                        this.show();
+                    }
+                    return result;
+                }
             },
 
             ChatBoxes: {
@@ -244,6 +269,7 @@
 
                 getOldestMaximizedChat: function (exclude_ids) {
                     // Get oldest view (if its id is not excluded)
+                    exclude_ids.push('controlbox');
                     var i = 0;
                     var model = this.model.sort().at(i);
                     while (_.contains(exclude_ids, model.get('id')) ||
@@ -264,7 +290,6 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-
             this.updateSettings({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             });
@@ -284,6 +309,9 @@
                         }
                     }, this);
                     this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
+                    // OTR stuff, doesn't require this module to depend on OTR.
+                    this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
+                    this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
                 },
 
                 render: function () {
@@ -456,6 +484,21 @@
                     return this.$el;
                 }
             });
+
+            var renderMinimizeButton = function (evt, view) {
+                // Inserts a "minimize" button in the chatview's header
+                var $el = view.$el.find('.toggle-chatbox-button');
+                var $new_el = converse.templates.chatbox_minimize(
+                    _.extend({info_minimize: __('Minimize this chat box')})
+                );
+                if ($el.length) {
+                    $el.replaceWith($new_el);
+                } else {
+                    view.$el.find('.close-chatbox-button').after($new_el);
+                }
+            };
+            converse.on('chatBoxOpened', renderMinimizeButton);
+            converse.on('chatRoomOpened', renderMinimizeButton);
 
             converse.on('controlBoxOpened', function (evt, chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

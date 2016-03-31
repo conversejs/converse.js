@@ -13,8 +13,7 @@
     define("converse-otr", [
             "otr",
             "converse-core",
-            "converse-api",
-            "converse-minimize"
+            "converse-api"
     ], factory);
 }(this, function (otr, converse, converse_api) {
     "use strict";
@@ -458,14 +457,6 @@
                             ));
                     return this;
                 }
-            },
-
-            MinimizedChatBoxView: {
-                initialize: function () {
-                    this._super.initialize.apply(this, arguments);
-                    this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
-                    this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
-                },
             }
         },
 

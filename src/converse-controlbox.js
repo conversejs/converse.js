@@ -109,11 +109,6 @@
                     return this;
                 },
 
-                getOldestMaximizedChat: function (exclude_ids) {
-                    exclude_ids.push('controlbox');
-                    return this._super.getOldestMaximizedChat.apply(this, arguments);
-                },
-
                 getChatBoxWidth: function (view) {
                     var controlbox = this.get('controlbox');
                     if (view.model.get('id') === 'controlbox') {
@@ -150,13 +145,6 @@
             ChatBoxView: {
                 insertIntoPage: function () {
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                    return this;
-                },
-
-                maximize: function () {
-                    var chatboxviews = converse.chatboxviews;
-                    // Restores a minimized chat box
-                    this.$el.insertAfter(chatboxviews.get("controlbox").$el).show('fast', this.onMaximized.bind(this));
                     return this;
                 }
             }

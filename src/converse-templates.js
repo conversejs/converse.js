@@ -52,6 +52,11 @@ define("converse-templates", [
     "tpl!toolbar_otr",
     "tpl!trimmed_chat",
     "tpl!vcard",
+
+    // Can be removed together with converse-minimize.js
+    // if minimization/trimming features not needed (for example for mobile
+    // apps).
+    "tpl!chatbox_minimize",
 ], function () {
     return {
         action:                 arguments[0],
@@ -106,6 +111,7 @@ define("converse-templates", [
         toolbar:                arguments[49],
         toolbar_otr:            arguments[50],
         trimmed_chat:           arguments[51],
-        vcard:                  arguments[52]
+        vcard:                  arguments[52],
+        chatbox_minimize:       arguments[53]
     };
 });

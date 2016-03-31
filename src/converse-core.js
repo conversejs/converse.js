@@ -429,23 +429,14 @@
             converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
             window.clearTimeout(converse.reconnectTimeout);
             converse.reconnectTimeout = window.setTimeout(function () {
+                converse.clearSession();
+                converse._tearDown();
                 if (converse.authentication !== "prebind") {
-                    this.connection.connect(
-                        this.connection.jid,
-                        this.connection.pass,
-                        function (status, condition) {
-                            this.onConnectStatusChanged(status, condition, true);
-                        }.bind(this),
-                        this.connection.wait,
-                        this.connection.hold,
-                        this.connection.route
-                    );
+                    converse.attemptNonPreboundSession();
                 } else if (converse.prebind_url) {
-                    this.clearSession();
-                    this._tearDown();
-                    this.startNewBOSHSession();
+                    converse.startNewBOSHSession();
                 }
-            }.bind(this), 5000);
+            }, 5000);
         };
 
         this.onDisconnected = function (condition) {

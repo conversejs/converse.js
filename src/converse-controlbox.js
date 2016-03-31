@@ -48,6 +48,13 @@
                 }
             },
 
+            onDisconnected: function () {
+                if (!converse.auto_reconnect) {
+                    converse.renderLoginPanel();
+                }
+                return this._super.onDisconnected.apply(this, arguments);
+            },
+
             _tearDown: function () {
                 this._super._tearDown.apply(this, arguments);
                 if (this.rosterview) {

@@ -448,6 +448,20 @@
             }.bind(this), 5000);
         };
 
+        this.onDisconnected = function (condition) {
+            if (!converse.auto_reconnect) { return; }
+            if ( converse.disconnection_cause === Strophe.Status.CONNFAIL ||
+                    (  converse.disconnection_cause === Strophe.Status.AUTHFAIL &&
+                        converse.credentials_url &&
+                        converse.auto_login
+                    )
+                ) {
+                converse.reconnect(condition);
+            } else {
+                converse.giveFeedback(__('Disconnected'), 'error');
+            }
+        };
+
         this.onConnectStatusChanged = function (status, condition, reconnect) {
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
@@ -470,12 +484,7 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
-                    converse.reconnect(condition);
-                } else {
-                    // FIXME: leaky abstraction from converse-controlbox.js
-                    converse.renderLoginPanel();
-                }
+                converse.onDisconnected(condition);
             } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(__('Error'), 'error');
             } else if (status === Strophe.Status.CONNECTING) {
@@ -489,9 +498,9 @@
             } else if (status === Strophe.Status.CONNFAIL) {
                 converse.disconnection_cause = Strophe.Status.CONNFAIL;
             } else if (status === Strophe.Status.DISCONNECTING) {
-                // FIXME: what about prebind?
                 if (!converse.connection.connected) {
                     // FIXME: leaky abstraction from converse-controlbox.js
+                    // Is this needed at all?
                     converse.renderLoginPanel();
                 }
                 if (condition) {

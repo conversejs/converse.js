@@ -195,6 +195,7 @@
                     this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                     this.fetchMessages();
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    this.show();
                     converse.emit('chatRoomOpened', this);
                 },
 

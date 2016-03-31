@@ -186,8 +186,6 @@
                     var result = this._super.initialize.apply(this, arguments);
                     if (this.model.get('minimized')) {
                         this.hide();
-                    } else {
-                        this.show();
                     }
                     return result;
                 }

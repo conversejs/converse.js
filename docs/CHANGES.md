@@ -2,6 +2,7 @@
 
 ## 1.0.0 (Unreleased)
 
+- Split converse.js up into different plugin modules. [jcbrand]
 - Add support for messages with type `headline`, often used for notifications
   from the server. [jcbrand]
 - Add stanza-specific event listener `converse.listen.stanza`.
@@ -10,7 +11,8 @@
 - Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
 - Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
 - New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate_notification_blacklist) [jcbrand]
-- Split converse.js up into different plugin modules. [jcbrand]
+- New config option [sticky_controlbox](https://conversejs.org/docs/html/configuration.html#sticky_controlbox) [jcbrand]
+- New config option [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials_url) [jcbrand]
 - Don't play sound notifications for OTR messages which are setting up an
   encrypted session. [jcbrand]
 - Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]

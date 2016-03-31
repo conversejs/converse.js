@@ -180,6 +180,15 @@
                 setTimeout(n.close.bind(n), 5000);
             };
 
+            converse.showErrorNotification = function (data) {
+                var n = new Notification(__('An error has occured'), {
+                        body: data.message,
+                        lang: converse.i18n.locale_data.converse[""].lang,
+                        icon: 'logo/conversejs.png'
+                    });
+                setTimeout(n.close.bind(n), 5000);
+            };
+
             converse.handleChatStateNotification = function (evt, contact) {
                 /* Event handler for on('contactStatusChanged').
                  * Will show an HTML5 notification to indicate that the chat
@@ -210,6 +219,12 @@
                 }
             };
 
+            converse.handleFeedback = function (evt, data) {
+                if (data.klass === 'error' && converse.areDesktopNotificationsEnabled(true)) {
+                    converse.showErrorNotification(data);
+                }
+            };
+
             converse.requestPermission = function (evt) {
                 if (supports_html5_notification &&
                     ! _.contains(['denied', 'granted'], Notification.permission)) {
@@ -221,6 +236,7 @@
             converse.on('contactRequest',  converse.handleContactRequestNotification);
             converse.on('contactStatusChanged',  converse.handleChatStateNotification);
             converse.on('message',  converse.handleMessageNotification);
+            converse.on('feedback', converse.handleFeedback);
             converse.on('connected', converse.requestPermission);
         }
     });

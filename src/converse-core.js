@@ -406,6 +406,7 @@
                     $el.removeClass('error');
                 }
             });
+            converse.emit('feedback', {'message': message, 'klass': klass});
         };
 
         this.rejectPresenceSubscription = function (jid, message) {

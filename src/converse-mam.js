@@ -12,6 +12,7 @@
     define("converse-mam", [
             "converse-core",
             "converse-api",
+            "converse-chatview", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
 }(this, function (converse, converse_api) {
@@ -53,6 +54,68 @@
                         archive_id: $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id')
                     });
                 }
+            },
+
+            ChatBoxView: {
+                render: function () {
+                    var result = this._super.render.apply(this, arguments);
+                    if (!this.disable_mam) {
+                        this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                    }
+                    return result;
+                },
+
+                afterMessagesFetched: function () {
+                    if (this.disable_mam || !converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                        return this._super.afterMessagesFetched.apply(this, arguments);
+                    }
+                    if (this.model.messages.length < converse.archived_messages_page_size) {
+                        this.fetchArchivedMessages({
+                            'before': '', // Page backwards from the most recent message
+                            'with': this.model.get('jid'),
+                            'max': converse.archived_messages_page_size
+                        });
+                    }
+                    return this._super.afterMessagesFetched.apply(this, arguments);
+                },
+
+                fetchArchivedMessages: function (options) {
+                    /* Fetch archived chat messages from the XMPP server.
+                     *
+                     * Then, upon receiving them, call onMessage on the chat box,
+                     * so that they are displayed inside it.
+                     */
+                    if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                        converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
+                        return;
+                    }
+                    if (this.disable_mam) {
+                        return;
+                    }
+                    this.addSpinner();
+                    converse.queryForArchivedMessages(options, function (messages) {
+                            this.clearSpinner();
+                            if (messages.length) {
+                                _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                            }
+                        }.bind(this),
+                        function () {
+                            this.clearSpinner();
+                            converse.log("Error or timeout while trying to fetch archived messages", "error");
+                        }.bind(this)
+                    );
+                },
+
+                onScroll: function (ev) {
+                    if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
+                        this.fetchArchivedMessages({
+                            'before': this.model.messages.at(0).get('archive_id'),
+                            'with': this.model.get('jid'),
+                            'max': converse.archived_messages_page_size
+                        });
+                    }
+                },
+
             }
         },
 

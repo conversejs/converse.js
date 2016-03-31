@@ -106,9 +106,7 @@
                     this.setWidth();
                     this.$content = this.$el.find('.chat-content');
                     this.renderToolbar().renderAvatar();
-                    this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     converse.emit('chatBoxOpened', this);
-                    converse.emit('chatRoomOpened', this);
                     window.setTimeout(utils.refreshWebkit, 50);
                     return this.showStatusMessage();
                 },
@@ -121,65 +119,17 @@
                     }
                 },
 
-                onScroll: function (ev) {
-                    // XXX: This should go into converse-mam.js
-                    if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
-                        this.fetchArchivedMessages({
-                            'before': this.model.messages.at(0).get('archive_id'),
-                            'with': this.model.get('jid'),
-                            'max': converse.archived_messages_page_size
-                        });
-                    }
+                afterMessagesFetched: function () {
+                    // Provides a hook for plugins, such as converse-mam.
+                    return;
                 },
 
                 fetchMessages: function () {
-                    /* Responsible for fetching previously sent messages, first
-                     * from session storage, and then once that's done by calling
-                     * fetchArchivedMessages, which fetches from the XMPP server if
-                     * applicable.
-                     */
                     this.model.messages.fetch({
                         'add': true,
-                        'success': function () {
-                                // XXX: This should go into converse-mam.js
-                                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                                    return;
-                                }
-                                if (this.model.messages.length < converse.archived_messages_page_size) {
-                                    this.fetchArchivedMessages({
-                                        'before': '', // Page backwards from the most recent message
-                                        'with': this.model.get('jid'),
-                                        'max': converse.archived_messages_page_size
-                                    });
-                                }
-                            }.bind(this)
+                        'success': this.afterMessagesFetched.bind(this)
                     });
                     return this;
-                },
-
-                fetchArchivedMessages: function (options) {
-                    /* Fetch archived chat messages from the XMPP server.
-                     *
-                     * Then, upon receiving them, call onMessage on the chat box,
-                     * so that they are displayed inside it.
-                     */
-                    // XXX: This should go into converse-mam.js
-                    if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
-                        return;
-                    }
-                    this.addSpinner();
-                    converse.queryForArchivedMessages(options, function (messages) {
-                            this.clearSpinner();
-                            if (messages.length) {
-                                _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
-                            }
-                        }.bind(this),
-                        function () {
-                            this.clearSpinner();
-                            converse.log("Error or timeout while trying to fetch archived messages", "error");
-                        }.bind(this)
-                    );
                 },
 
                 insertIntoPage: function () {

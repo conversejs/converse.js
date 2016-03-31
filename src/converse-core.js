@@ -253,6 +253,7 @@
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             bosh_service_url: undefined, // The BOSH connection manager URL.
+            credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
             expose_rid_and_sid: false,
@@ -1635,6 +1636,27 @@
             }
         };
 
+        this.fetchLoginCredentials = function () {
+            var deferred = new $.Deferred();
+            $.ajax({
+                url:  converse.credentials_url,
+                type: 'GET',
+                dataType: "json",
+                success: function (response) {
+                    deferred.resolve({
+                        'jid': response.jid,
+                        'password': response.password
+                    });
+                },
+                error: function (response) {
+                    delete converse.connection;
+                    converse.emit('noResumeableSession');
+                    deferred.reject(response);
+                }
+            });
+            return deferred.promise();
+        };
+
         this.startNewBOSHSession = function () {
             $.ajax({
                 url:  this.prebind_url,
@@ -1685,6 +1707,30 @@
             }
         };
 
+        this.autoLogin = function (credentials) {
+            if (credentials) {
+                // If passed in, then they come from login_credentials, so we
+                // set them on the converse object.
+                this.jid = credentials.jid;
+                this.password = credentials.password;
+            }
+            if (this.authentication === converse.ANONYMOUS) {
+                this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
+            } else if (this.authentication === converse.LOGIN) {
+                if (!this.password) {
+                    throw new Error("initConnection: If you use auto_login and "+
+                        "authentication='login' then you also need to provide a password.");
+                }
+                var resource = Strophe.getResourceFromJid(this.jid);
+                if (!resource) {
+                    this.jid = this.jid.toLowerCase() + converse.generateResource();
+                } else {
+                    this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
+                }
+                this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
+            }
+        };
+
         this.attemptNonPreboundSession = function () {
             /* Handle session resumption or initialization when prebind is not being used.
              *
@@ -1701,23 +1747,17 @@
                 }
             }
             if (this.auto_login) {
-                if (!this.jid) {
-                    throw new Error("initConnection: If you use auto_login, you also need to provide a jid value");
-                }
-                if (this.authentication === converse.ANONYMOUS) {
-                    this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
-                } else if (this.authentication === converse.LOGIN) {
-                    if (!this.password) {
-                        throw new Error("initConnection: If you use auto_login and "+
-                            "authentication='login' then you also need to provide a password.");
-                    }
-                    var resource = Strophe.getResourceFromJid(this.jid);
-                    if (!resource) {
-                        this.jid = this.jid.toLowerCase() + converse.generateResource();
-                    } else {
-                        this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
-                    }
-                    this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
+                if (this.credentials_url) {
+                    this.fetchLoginCredentials().done(this.autoLogin.bind(this));
+                } else if (!this.jid) {
+                    throw new Error(
+                        "initConnection: If you use auto_login, you also need"+
+                        "to give either a jid value (and if applicable a "+
+                        "password) or you need to pass in a URL from where the "+
+                        "username and password can be fetched (via credentials_url)."
+                    );
+                } else {
+                    this.autoLogin();
                 }
             }
         };

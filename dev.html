@@ -53,6 +53,7 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
+            auto_reconnect: true,
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             keepalive: true,
             message_carbons: true,

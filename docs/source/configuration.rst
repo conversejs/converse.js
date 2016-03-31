@@ -315,8 +315,8 @@ This setting can only be used together with ``allow_otr = true``.
     to retrieve your private key and read your all the chat messages in your
     current session. Previous sessions however cannot be decrypted.
 
- chatstate_notification_blacklist
----------------------------------
+chatstate_notification_blacklist
+--------------------------------
 
 * Default: ``[]``
 
@@ -331,6 +331,26 @@ then you'll receive notification messages each time this happens.
 
 Receiving constant notifications that a user's client is connecting and disconnecting
 is annoying, so this option allows you to ignore those JIDs.
+
+credentials_url
+---------------
+
+* Default:  ``null``
+* Type:  URL
+
+This setting should be used in conjunction with ``authentication`` set to ``login`` and :ref:`keepalive` set to ``true``.
+
+It allows you to specify a URL which converse.js will call when it needs to get
+the username and password (or authentication token) which converse.js will use
+to automatically log the user in.
+
+The server behind ``credentials_url`` should return a JSON encoded object::
+
+    {
+        "jid": "me@example.com/resource",
+        "password": "Ilikecats!",
+    }
+
 
 csi_waiting_time
 ----------------

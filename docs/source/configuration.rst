@@ -773,6 +773,21 @@ Data in localStorage on the other hand is kept indefinitely.
     roster contact statuses will not become out of sync in a single session,
     only across more than one session.
 
+sticky_controlbox
+-----------------
+
+* Default: ``false``
+
+If set to ``true``, the control box (which includes the login, registration,
+contacts and rooms tabs) will not be closeable. It won't have a close button at
+all.
+
+The idea behind this setting is to provide a better experience on mobile
+devices when the intent is to use converse.js as a web app. In this case
+it doesn't make sense to close the control box, as there's often then nothing
+"behind" it that's relevant to the user.
+
+
 strict_plugin_dependencies
 --------------------------
 

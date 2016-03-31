@@ -159,6 +159,7 @@
                 allow_logout: true,
                 default_domain: undefined,
                 show_controlbox_by_default: false,
+                sticky_controlbox: false,
                 xhr_user_search: false,
                 xhr_user_search_url: ''
             });
@@ -216,6 +217,11 @@
                 },
 
                 render: function () {
+                    this.$el.html(converse.templates.controlbox(
+                        _.extend(this.model.toJSON(), {
+                            sticky_controlbox: converse.sticky_controlbox
+                        }))
+                    );
                     if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
                         // TODO: we might need to take prebinding into consideration here.
                         this.renderLoginPanel();
@@ -254,7 +260,6 @@
 
                 renderLoginPanel: function () {
                     var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
-                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                     var cfg = {
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
@@ -273,7 +278,6 @@
                 },
 
                 renderContactsPanel: function () {
-                    this.$el.html(converse.templates.controlbox(this.model.toJSON()));
                     this.contactspanel = new converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
                     });

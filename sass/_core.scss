@@ -9,8 +9,12 @@
     left: 0;
     right: 0;
     width: auto;
-    z-index: 30;
-    @media screen and (max-width: $mobile-landscape-length) {
+    z-index: 1031; // One more than bootstrap navbar
+    @media screen and (max-height: $mobile-landscape-height) {
+        width: 100%;
+        width: 100vw;
+    }
+    @media screen and (max-width: $mobile-portrait-length) {
         width: 100%;
         width: 100vw;
     }

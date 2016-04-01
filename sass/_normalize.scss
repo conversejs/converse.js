@@ -8,7 +8,13 @@
         @include box-sizing(border-box);
     }
 
-    @media screen and (max-width: $mobile-landscape-length) {
+    @media screen and (max-width: $mobile-portrait-length) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+    @media screen and (max-height: $mobile-landscape-height) {
         margin: 0;
         right: 10px;
         left: 10px;

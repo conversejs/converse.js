@@ -17,16 +17,24 @@
 
     .chatroom {
         width: $chatroom-width;
-        @media screen and (max-width: $mobile-landscape-length) {
+        @media screen and (max-height: $mobile-landscape-height){
+            width: $mobile-chat-width;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
             width: $mobile-chat-width;
         }
         .box-flyout {
             min-width: $chatroom-width;
             width: $chatroom-width;
-            @media screen and (max-width: $mobile-landscape-length) {
+            @media screen and (max-height: $mobile-landscape-height) {
                 height: $mobile-chat-height;
                 width: $mobile-chat-width;
-                height: 99vh;
+                height: 100vh;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                height: $mobile-chat-height;
+                width: $mobile-chat-width;
+                height: 100vh;
             }
             .chatroom-body {
                 height: 289px;

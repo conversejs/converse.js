@@ -2,6 +2,7 @@
 
 ## 1.0.0 (Unreleased)
 
+- Better Sass/CSS for responsive/mobile views. [jcbrand]
 - Split converse.js up into different plugin modules. [jcbrand]
 - Add support for messages with type `headline`, often used for notifications
   from the server. [jcbrand]

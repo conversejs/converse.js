@@ -2,13 +2,24 @@
     #controlbox {
         display: none;
         margin-right: 2*$chat-gutter;
-        @media screen and (max-width: $mobile-landscape-length) {
+        @media screen and (max-width: $mobile-portrait-length) {
+            margin: 0;
+        }
+        @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;
         }
         .controlbox-head {
             background-color: $controlbox-head-color;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
+            @media screen and (max-height: $mobile-landscape-height) {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
             color: $chat-head-inverse-text-color;
             height: $chat-head-height;
             margin: 0;

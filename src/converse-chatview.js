@@ -68,14 +68,10 @@
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
-                    'click .toggle-call': 'toggleCall',
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                    'click .toggle-call': 'toggleCall'
                 },
 
                 initialize: function () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -103,20 +99,11 @@
                                 )
                             )
                         );
-                    this.setWidth();
                     this.$content = this.$el.find('.chat-content');
                     this.renderToolbar().renderAvatar();
                     converse.emit('chatBoxOpened', this);
                     window.setTimeout(utils.refreshWebkit, 50);
                     return this.showStatusMessage();
-                },
-
-                setWidth: function () {
-                    // If a custom width is applied (due to drag-resizing),
-                    // then we need to set the width of the .chatbox element as well.
-                    if (this.model.get('width')) {
-                        this.$el.css('width', this.model.get('width'));
-                    }
                 },
 
                 afterMessagesFetched: function () {
@@ -138,56 +125,6 @@
                      */
                     $('#conversejs').prepend(this.$el);
                     return this;
-                },
-
-                adjustToViewport: function () {
-                    /* Event handler called when viewport gets resized. We remove
-                     * custom width/height from chat boxes.
-                     */
-                    var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-                    var viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                    if (viewport_width <= 480) {
-                        this.model.set('height', undefined);
-                        this.model.set('width', undefined);
-                    } else if (viewport_width <= this.model.get('width')) {
-                        this.model.set('width', undefined);
-                    } else if (viewport_height <= this.model.get('height')) {
-                        this.model.set('height', undefined);
-                    }
-                },
-
-                initDragResize: function () {
-                    /* Determine and store the default box size.
-                     * We need this information for the drag-resizing feature.
-                     */
-                    var $flyout = this.$el.find('.box-flyout');
-                    if (typeof this.model.get('height') === 'undefined') {
-                        var height = $flyout.height();
-                        var width = $flyout.width();
-                        this.model.set('height', height);
-                        this.model.set('default_height', height);
-                        this.model.set('width', width);
-                        this.model.set('default_width', width);
-                    }
-                    var min_width = $flyout.css('min-width');
-                    var min_height = $flyout.css('min-height');
-                    this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
-                    this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
-                    // Initialize last known mouse position
-                    this.prev_pageY = 0;
-                    this.prev_pageX = 0;
-                    if (converse.connection.connected) {
-                        this.height = this.model.get('height');
-                        this.width = this.model.get('width');
-                    }
-                    return this;
-                },
-
-                setDimensions: function () {
-                    // Make sure the chat box has the right height and width.
-                    this.adjustToViewport();
-                    this.setChatBoxHeight(this.model.get('height'));
-                    this.setChatBoxWidth(this.model.get('width'));
                 },
 
                 clearStatusNotification: function () {
@@ -569,72 +506,6 @@
                     }
                 },
 
-                onStartVerticalResize: function (ev) {
-                    if (!converse.allow_dragresize) { return true; }
-                    // Record element attributes for mouseMove().
-                    this.height = this.$el.children('.box-flyout').height();
-                    converse.resizing = {
-                        'chatbox': this,
-                        'direction': 'top'
-                    };
-                    this.prev_pageY = ev.pageY;
-                },
-
-                onStartHorizontalResize: function (ev) {
-                    if (!converse.allow_dragresize) { return true; }
-                    this.width = this.$el.children('.box-flyout').width();
-                    converse.resizing = {
-                        'chatbox': this,
-                        'direction': 'left'
-                    };
-                    this.prev_pageX = ev.pageX;
-                },
-
-                onStartDiagonalResize: function (ev) {
-                    this.onStartHorizontalResize(ev);
-                    this.onStartVerticalResize(ev);
-                    converse.resizing.direction = 'topleft';
-                },
-
-                setChatBoxHeight: function (height) {
-                    if (height) {
-                        height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
-                    } else {
-                        height = "";
-                    }
-                    this.$el.children('.box-flyout')[0].style.height = height;
-                },
-
-                setChatBoxWidth: function (width) {
-                    if (width) {
-                        width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
-                    } else {
-                        width = "";
-                    }
-                    this.$el[0].style.width = width;
-                    this.$el.children('.box-flyout')[0].style.width = width;
-                },
-
-                resizeChatBox: function (ev) {
-                    var diff;
-                    if (converse.resizing.direction.indexOf('top') === 0) {
-                        diff = ev.pageY - this.prev_pageY;
-                        if (diff) {
-                            this.height = ((this.height-diff) > (this.model.get('min_height') || 0)) ? (this.height-diff) : this.model.get('min_height');
-                            this.prev_pageY = ev.pageY;
-                            this.setChatBoxHeight(this.height);
-                        }
-                    }
-                    if (converse.resizing.direction.indexOf('left') !== -1) {
-                        diff = this.prev_pageX - ev.pageX;
-                        if (diff) {
-                            this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
-                            this.prev_pageX = ev.pageX;
-                            this.setChatBoxWidth(this.width);
-                        }
-                    }
-                },
-
                 clearMessages: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
@@ -792,20 +663,22 @@
                     }
                 },
 
+                _show: function (focus) {
+                    /* Inner show method that gets debounced */
+                    if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
+                        if (focus) { this.focus(); }
+                        return;
+                    }
+                    this.$el.fadeIn(this.afterShown.bind(this));
+                },
+
                 show: function (focus) {
                     if (typeof this.debouncedShow === 'undefined') {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
                          * Debouncing it on the class-level is too broad.
                          */
-                        this.debouncedShow = _.debounce(function (focus) {
-                            if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
-                                if (focus) { this.focus(); }
-                                return;
-                            }
-                            this.initDragResize().setDimensions();
-                            this.$el.fadeIn(this.afterShown.bind(this));
-                        }, 250, true);
+                        this.debouncedShow = _.debounce(this._show, 250, true);
                     }
                     this.debouncedShow.apply(this, arguments);
                     return this;

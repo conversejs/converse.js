@@ -13,6 +13,7 @@
             "converse-core",
             "converse-api",
             "converse-chatview", // Could be made a soft dependency
+            "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
 }(this, function (converse, converse_api) {
@@ -115,8 +116,19 @@
                         });
                     }
                 },
+            },
+
+            ChatRoomView: {
+                render: function () {
+                    var result = this._super.render.apply(this, arguments);
+                    if (!this.disable_mam) {
+                        this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
+                    }
+                    return result;
+                },
 
             }
+
         },
 
 

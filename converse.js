@@ -48,6 +48,7 @@ require.config({
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
+        "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
@@ -242,6 +243,7 @@ if (typeof define !== 'undefined') {
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications
         "converse-minimize",    // Allows chat boxes to be minimized
+        "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
 

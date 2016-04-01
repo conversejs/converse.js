@@ -137,11 +137,10 @@
             ChatBox: {
                 initialize: function () {
                     if (this.get('id') === 'controlbox') {
-                        this.set(
-                            _.extend(
-                                this.getDefaultSettings(),
-                                { 'time_opened': moment(0).valueOf() }
-                            ));
+                        this.set({
+                            'time_opened': moment(0).valueOf(),
+                            'num_unread': 0
+                        });
                     } else {
                         this._super.initialize.apply(this, arguments);
                     }
@@ -196,14 +195,10 @@
                 events: {
                     'click a.close-chatbox-button': 'close',
                     'click ul#controlbox-tabs li a': 'switchTab',
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
 
                 initialize: function () {
                     this.$el.insertAfter(converse.controlboxtoggle.$el);
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -277,7 +272,6 @@
                         this.loginpanel.delegateEvents().initialize(cfg);
                     }
                     this.loginpanel.render();
-                    this.initDragResize().setDimensions();
                     if ($feedback.length && $feedback.text() !== __('Connecting')) {
                         this.$('.conn-feedback').replaceWith($feedback);
                     }
@@ -293,7 +287,6 @@
                         'model': converse.xmppstatus
                     });
                     converse.xmppstatusview.render();
-                    this.initDragResize().setDimensions();
                 },
 
                 close: function (ev) {

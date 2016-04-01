@@ -51,13 +51,12 @@
             },
 
             registerGlobalEventHandlers: function () {
-                this._super.registerGlobalEventHandlers.apply(this, arguments);
-
                 $(window).on("resize", _.debounce(function (ev) {
                     if (converse.connection.connected) {
                         converse.chatboxviews.trimChats();
                     }
                 }, 200));
+                return this._super.registerGlobalEventHandlers.apply(this, arguments);
             },
 
             wrappedChatBox: function (chatbox) {

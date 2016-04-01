@@ -244,7 +244,6 @@
         // ----------------------------
         this.default_settings = {
             allow_contact_requests: true,
-            allow_dragresize: true,
             animate: true,
             authentication: 'login', // Available values are "login", "prebind", "anonymous".
             auto_away: 0, // Seconds after which user status is set to 'away'
@@ -500,24 +499,6 @@
             }
         };
 
-        this.applyDragResistance = function (value, default_value) {
-            /* This method applies some resistance around the
-             * default_value. If value is close enough to
-             * default_value, then default_value is returned instead.
-             */
-            if (typeof value === 'undefined') {
-                return undefined;
-            } else if (typeof default_value === 'undefined') {
-                return value;
-            }
-            var resistance = 10;
-            if ((value !== default_value) &&
-                (Math.abs(value- default_value) < resistance)) {
-                return default_value;
-            }
-            return value;
-        };
-
         this.updateMsgCounter = function () {
             if (this.msg_counter > 0) {
                 if (document.title.search(/^Messages \(\d+\) /) === -1) {
@@ -579,33 +560,6 @@
         };
 
         this.registerGlobalEventHandlers = function () {
-            $(document).on('mousemove', function (ev) {
-                if (!this.resizing || !this.allow_dragresize) { return true; }
-                ev.preventDefault();
-                this.resizing.chatbox.resizeChatBox(ev);
-            }.bind(this));
-
-            $(document).on('mouseup', function (ev) {
-                if (!this.resizing || !this.allow_dragresize) { return true; }
-                ev.preventDefault();
-                var height = this.applyDragResistance(
-                        this.resizing.chatbox.height,
-                        this.resizing.chatbox.model.get('default_height')
-                );
-                var width = this.applyDragResistance(
-                        this.resizing.chatbox.width,
-                        this.resizing.chatbox.model.get('default_width')
-                );
-                if (this.connection.connected) {
-                    this.resizing.chatbox.model.save({'height': height});
-                    this.resizing.chatbox.model.save({'width': width});
-                } else {
-                    this.resizing.chatbox.model.set({'height': height});
-                    this.resizing.chatbox.model.set({'width': width});
-                }
-                this.resizing = null;
-            }.bind(this));
-
             $(window).on("blur focus", function (ev) {
                 if ((converse.windowState !== ev.type) && (ev.type === 'focus')) {
                     converse.clearMsgCounter();
@@ -1204,25 +1158,16 @@
                 this.messages = new converse.Messages();
                 this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
                     b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
-                this.save(_.extend(this.getDefaultSettings(), {
+                this.save({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-                    'chat_state': undefined,
                     'box_id' : b64_sha1(this.get('jid')),
+                    'chat_state': undefined,
+                    'num_unread': this.get('num_unread') || 0,
                     'time_opened': this.get('time_opened') || moment().valueOf(),
                     'url': '',
                     'user_id' : Strophe.getNodeFromJid(this.get('jid'))
-                }));
-            },
-
-            getDefaultSettings: function () {
-                var height = this.get('height'),
-                    width = this.get('width');
-                return {
-                    'height': converse.applyDragResistance(height, this.get('default_height')),
-                    'width': converse.applyDragResistance(width, this.get('default_width')),
-                    'num_unread': this.get('num_unread') || 0
-                };
+                });
             },
 
             createMessage: function ($message, $delay) {

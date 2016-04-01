@@ -176,13 +176,9 @@
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants a': 'toggleOccupants',
                     'keypress textarea.chat-textarea': 'keyPressed',
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
                 },
 
                 initialize: function () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.occupantsview = new converse.ChatRoomOccupantsView({
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
@@ -203,8 +199,6 @@
                     this.$el.attr('id', this.model.get('box_id'))
                             .html(converse.templates.chatroom(this.model.toJSON()));
                     this.renderChatArea();
-                    this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
-                    this.setWidth();
                     window.setTimeout(converse.refreshWebkit, 50);
                     return this;
                 },

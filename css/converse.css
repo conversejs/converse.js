@@ -1883,13 +1883,15 @@
   width: 300px; }
   @media screen and (max-width: 480px) {
     #conversejs .chatroom {
-      width: 100%; }
-      #conversejs .chatroom .box-flyout {
-        min-width: 100%;
-        width: 100%; } }
+      width: 100%; } }
   #conversejs .chatroom .box-flyout {
     min-width: 300px;
     width: 300px; }
+    @media screen and (max-width: 480px) {
+      #conversejs .chatroom .box-flyout {
+        height: 400px;
+        width: 100%;
+        height: 99vh; } }
     #conversejs .chatroom .box-flyout .chatroom-body {
       height: 289px;
       border-bottom-left-radius: 4px;

@@ -19,14 +19,15 @@
         width: $chatroom-width;
         @media screen and (max-width: $mobile-landscape-length) {
             width: $mobile-chat-width;
-            .box-flyout {
-                min-width: $mobile-chat-width;
-                width: $mobile-chat-width;
-            }
         }
         .box-flyout {
             min-width: $chatroom-width;
             width: $chatroom-width;
+            @media screen and (max-width: $mobile-landscape-length) {
+                height: $mobile-chat-height;
+                width: $mobile-chat-width;
+                height: 99vh;
+            }
             .chatroom-body {
                 height: 289px;
                 @include border-bottom-radius($chatbox-border-radius);

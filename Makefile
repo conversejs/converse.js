@@ -19,6 +19,7 @@ SOURCES	= $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
 JSHINTEXCEPTIONS = $(GENERATED) \
 		   src/otr.js \
 		   src/crypto.js \
+		   src/build-mobile.js \
 		   src/build-no-jquery.js \
 		   src/build-no-dependencies.js \
 		   src/build.js \
@@ -137,6 +138,8 @@ watch: stamp-bundler
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
+         dist/converse-mobile.js \
+         dist/converse-mobile.min.js \
          dist/converse.nojquery.js \
  		 dist/converse.nojquery.min.js \
 		 dist/converse-no-dependencies.min.js \
@@ -154,6 +157,10 @@ dist/converse-no-dependencies.min.js: stamp-bower src locale components *.js
 	$(RJS) -o src/build-no-dependencies.js
 dist/converse-no-dependencies.js: stamp-bower src locale components *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
+dist/converse-mobile.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-mobile.js
+dist/converse-mobile.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-mobile.js optimize=none out=dist/converse-mobile.js
 
 .PHONY: jsmin
 jsmin: $(BUILDS)

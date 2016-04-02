@@ -447,8 +447,10 @@
                     )
                 ) {
                 converse.reconnect(condition);
+                return 'reconnecting';
             } else {
-                converse.giveFeedback(__('Disconnected'), 'error');
+                converse.giveFeedback(__('Disconnected'));
+                return 'disconnected';
             }
         };
 

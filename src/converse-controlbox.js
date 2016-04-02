@@ -49,10 +49,10 @@
             },
 
             onDisconnected: function () {
-                if (!converse.auto_reconnect) {
+                var result = this._super.onDisconnected.apply(this, arguments);
+                if (result === 'disconnected') {
                     converse.renderLoginPanel();
                 }
-                return this._super.onDisconnected.apply(this, arguments);
             },
 
             _tearDown: function () {

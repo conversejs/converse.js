@@ -24,16 +24,6 @@
             height: $chat-head-height;
             margin: 0;
             padding: 6px 6px 6px 0;
-
-            .chatbox-btn.close-chatbox-button {
-                @media screen and (max-height: $mobile-landscape-height) {
-                    display: none;
-                }
-                @media screen and (max-width: $mobile-portrait-length) {
-                    display: none;
-                }
-            }
-
         }
         form.search-xmpp-contact {
             margin: 0;

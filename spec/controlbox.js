@@ -138,28 +138,38 @@
                 test_utils.openControlBox();
             });
 
-            it("will only appear when roster contacts flow over the visible area", $.proxy(function () {
-                _clearContacts();
+            it("will only appear when roster contacts flow over the visible area", function () {
                 var $filter = converse.rosterview.$('.roster-filter');
                 var names = mock.cur_names;
-                expect($filter.length).toBe(1);
-                expect($filter.is(':visible')).toBeFalsy();
-                for (var i=0; i<names.length; i++) {
-                    converse.roster.create({
-                        ask: null,
-                        fullname: names[i],
-                        jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        requesting: 'false',
-                        subscription: 'both'
-                    });
+                runs(function () {
+                    _clearContacts();
                     converse.rosterview.update(); // XXX: Will normally called as event handler
+                });
+                waits(5); // Needed, due to debounce
+                runs(function () {
+                    expect($filter.length).toBe(1);
+                    expect($filter.is(':visible')).toBeFalsy();
+                    for (var i=0; i<names.length; i++) {
+                        converse.roster.create({
+                            ask: null,
+                            fullname: names[i],
+                            jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            requesting: 'false',
+                            subscription: 'both'
+                        });
+                        converse.rosterview.update(); // XXX: Will normally called as event handler
+                    }
+                });
+                waits(5); // Needed, due to debounce
+                runs(function () {
+                    $filter = converse.rosterview.$('.roster-filter');
                     if (converse.rosterview.$roster.hasScrollBar()) {
                         expect($filter.is(':visible')).toBeTruthy();
                     } else {
                         expect($filter.is(':visible')).toBeFalsy();
                     }
-                }
-            }, converse));
+                });
+            });
 
             it("can be used to filter the contacts shown", function () {
                 var $filter;
@@ -171,8 +181,9 @@
                     $filter = converse.rosterview.$('.roster-filter');
                     $roster = converse.rosterview.$roster;
                 });
-                waits(350); // Needed, due to debounce
+                waits(5); // Needed, due to debounce in "update" method
                 runs(function () {
+                    converse.rosterview.filter_view.delegateEvents();
                     expect($roster.find('dd:visible').length).toBe(15);
                     expect($roster.find('dt:visible').length).toBe(5);
                     $filter.val("candice");
@@ -180,30 +191,33 @@
                     expect($roster.find('dt:visible').length).toBe(5);  // ditto
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs (function () {
                     expect($roster.find('dd:visible').length).toBe(1);
                     expect($roster.find('dd:visible').eq(0).text().trim()).toBe('Candice van der Knijff');
                     expect($roster.find('dt:visible').length).toBe(1);
                     expect($roster.find('dt:visible').eq(0).text()).toBe('colleagues');
+                    $filter = converse.rosterview.$('.roster-filter');
                     $filter.val("an");
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs (function () {
                     expect($roster.find('dd:visible').length).toBe(5);
                     expect($roster.find('dt:visible').length).toBe(4);
+                    $filter = converse.rosterview.$('.roster-filter');
                     $filter.val("xxx");
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs (function () {
                     expect($roster.find('dd:visible').length).toBe(0);
                     expect($roster.find('dt:visible').length).toBe(0);
+                    $filter = converse.rosterview.$('.roster-filter');
                     $filter.val("");  // Check that contacts are shown again, when the filter string is cleared.
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs(function () {
                     expect($roster.find('dd:visible').length).toBe(15);
                     expect($roster.find('dt:visible').length).toBe(5);
@@ -219,12 +233,13 @@
                     converse.roster_groups = true;
                     _clearContacts();
                     utils.createGroupedContacts();
+                    converse.rosterview.filter_view.delegateEvents();
                     $filter = converse.rosterview.$('.roster-filter');
                     $roster = converse.rosterview.$roster;
                     $type = converse.rosterview.$('.filter-type');
                     $type.val('groups');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs(function () {
                     expect($roster.find('dd:visible').length).toBe(15);
                     expect($roster.find('dt:visible').length).toBe(5);
@@ -233,22 +248,24 @@
                     expect($roster.find('dt:visible').length).toBe(5);  // ditto
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs (function () {
                     expect($roster.find('dt:visible').length).toBe(1);
                     expect($roster.find('dt:visible').eq(0).text()).toBe('colleagues');
                     // Check that all contacts under the group are shown
                     expect($roster.find('dt:visible').nextUntil('dt', 'dd:hidden').length).toBe(0);
+                    $filter = converse.rosterview.$('.roster-filter');
                     $filter.val("xxx");
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs (function () {
                     expect($roster.find('dt:visible').length).toBe(0);
+                    $filter = converse.rosterview.$('.roster-filter');
                     $filter.val(""); // Check that groups are shown again, when the filter string is cleared.
                     $filter.trigger('keydown');
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs(function () {
                     expect($roster.find('dd:visible').length).toBe(15);
                     expect($roster.find('dt:visible').length).toBe(5);
@@ -262,12 +279,14 @@
                 utils.createGroupedContacts();
                 var $filter = converse.rosterview.$('.roster-filter');
                 runs (function () {
+                    converse.rosterview.filter_view.delegateEvents();
                     $filter.val("xxx");
                     $filter.trigger('keydown');
                     expect($filter.hasClass("x")).toBeFalsy();
                 });
-                waits(350); // Needed, due to debounce
+                waits(550); // Needed, due to debounce
                 runs (function () {
+                    $filter = converse.rosterview.$('.roster-filter');
                     expect($filter.hasClass("x")).toBeTruthy();
                     $filter.addClass("onX").click();
                     expect($filter.val()).toBe("");

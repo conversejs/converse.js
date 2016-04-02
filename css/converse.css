@@ -1848,6 +1848,15 @@
       background-position: right 3px center; }
     #conversejs #converse-roster .roster-filter-group .roster-filter.onX {
       cursor: pointer; }
+    #conversejs #converse-roster .roster-filter-group .state-type {
+      float: left;
+      border: 1px solid #999;
+      font-size: calc(14px - 2px);
+      height: 25px;
+      margin: 0;
+      padding: 0;
+      padding-left: 0.4em;
+      width: 53%; }
     #conversejs #converse-roster .roster-filter-group .filter-type {
       display: table-cell;
       float: right;

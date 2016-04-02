@@ -44,6 +44,16 @@
         .roster-filter.onX {
             cursor: pointer;
         }
+        .state-type {
+            float: left;
+            border: 1px solid #999;
+            font-size: calc(#{$font-size} - 2px);
+            height: $controlbox-dropdown-height;
+            margin: 0;
+            padding: 0;
+            padding-left: 0.4em;
+            width: 53%;
+        }
         .filter-type {
             display: table-cell;
             float: right;

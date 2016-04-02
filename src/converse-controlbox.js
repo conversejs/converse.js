@@ -324,7 +324,7 @@
                 onControlBoxToggleHidden: function () {
                     this.$el.show('fast', function () {
                         if (converse.rosterview) {
-                            converse.rosterview.update();
+                            converse.rosterview.updateOnlineCount();
                         }
                         utils.refreshWebkit();
                         converse.emit('controlBoxOpened', this);

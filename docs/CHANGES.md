@@ -2,8 +2,10 @@
 
 ## 1.0.0 (Unreleased)
 
-- Better Sass/CSS for responsive/mobile views. [jcbrand]
 - Split converse.js up into different plugin modules. [jcbrand]
+- Better Sass/CSS for responsive/mobile views. New mobile-only build. [jcbrand]
+- Roster contacts can now be filtered by chat state and roster filters are
+  remembered across page loads. [jcbrand]
 - Add support for messages with type `headline`, often used for notifications
   from the server. [jcbrand]
 - Add stanza-specific event listener `converse.listen.stanza`.

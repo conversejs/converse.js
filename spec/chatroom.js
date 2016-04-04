@@ -642,7 +642,7 @@
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist");
             }.bind(converse));
 
-            it("will show an error message if the room has reached it's maximum number of occupants", function () {
+            it("will show an error message if the room has reached its maximum number of occupants", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -654,7 +654,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached it's maximum number of occupants");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants");
             }.bind(converse));
         }.bind(converse));
     }.bind(converse, mock, test_utils));

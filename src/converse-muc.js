@@ -802,7 +802,7 @@
                         } else if ($error.find('item-not-found').length) {
                             this.showDisconnectMessage(__("This room does not (yet) exist"));
                         } else if ($error.find('service-unavailable').length) {
-                            this.showDisconnectMessage(__("This room has reached it's maximum number of occupants"));
+                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
                         }
                     }
                 },

@@ -191,8 +191,8 @@
             },
 
             ChatBoxes: {
-                chatBoxShouldBeShown: function (chatbox) {
-                    return this._super.chatBoxShouldBeShown.apply(this, arguments) &&
+                chatBoxMayBeShown: function (chatbox) {
+                    return this._super.chatBoxMayBeShown.apply(this, arguments) &&
                            !chatbox.get('minimized');
                 },
             },

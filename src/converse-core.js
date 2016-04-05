@@ -1215,7 +1215,7 @@
                     }.bind(this), null, 'message', 'chat');
             },
 
-            chatBoxShouldBeShown: function (chatbox) {
+            chatBoxMayBeShown: function (chatbox) {
                 return true;
             },
 
@@ -1226,10 +1226,11 @@
                  * if the controlbox plugin is active.
                  */
                 collection.each(function (chatbox) {
-                    if (this.chatBoxShouldBeShown(chatbox)) {
+                    if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
                 }.bind(this));
+                converse.emit('chatBoxesFetched');
             },
 
             onConnected: function () {
@@ -1385,8 +1386,13 @@
                 return this;
             },
 
+            chatBoxMayBeShown: function (chatbox) {
+                return this.model.chatBoxMayBeShown(chatbox);
+            },
+
             showChat: function (attrs) {
-                /* Find the chat box and show it. If it doesn't exist, create it.
+                /* Find the chat box and show it (if it may be shown).
+                 * If it doesn't exist, create it.
                  */
                 var chatbox  = this.model.get(attrs.jid);
                 if (!chatbox) {
@@ -1396,7 +1402,9 @@
                         }
                     });
                 }
-                chatbox.trigger('show', true);
+                if (this.chatBoxMayBeShown(chatbox)) {
+                    chatbox.trigger('show', true);
+                }
                 return chatbox;
             }
         });

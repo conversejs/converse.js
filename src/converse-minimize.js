@@ -394,7 +394,8 @@
 
                 render: function () {
                     if (this.keys().length === 0) {
-                        this.$el.hide('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
+                        this.$el.hide();
+                        converse.chatboxviews.trimChats.bind(converse.chatboxviews);
                     } else if (this.keys().length === 1 && !this.$el.is(':visible')) {
                         this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
                     }

@@ -144,6 +144,7 @@
                     utils.refreshWebkit();
                     this.$content.scrollTop(this.model.get('scroll'));
                     this.setChatState(converse.ACTIVE).focus();
+                    this.scrollDown();
                     converse.emit('chatBoxMaximized', this);
                 },
 

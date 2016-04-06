@@ -226,7 +226,6 @@
                      * Debounced so that it doesn't get called for every
                      * contact fetched from browser storage.
                      */
-                    converse.log('updateFilter called!!!!!!');
                     var type = this.filter_view.model.get('filter_type');
                     if (type === 'state') {
                         this.filter(this.filter_view.model.get('chat_state'), type);
@@ -244,16 +243,7 @@
                     delete this.presence_ref;
                 },
 
-                updateOnlineCount: function () {
-                    var $count = $('#online-count');
-                    $count.text('('+converse.roster.getNumOnlineContacts()+')');
-                    if (!$count.is(':visible')) {
-                        $count.show();
-                    }
-                },
-
                 update: _.debounce(function () {
-                    this.updateOnlineCount();
                     if (this.$roster.parent().length === 0) {
                         this.$el.append(this.$roster.show());
                     }

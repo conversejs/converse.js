@@ -323,9 +323,7 @@
 
                 onControlBoxToggleHidden: function () {
                     this.$el.show('fast', function () {
-                        if (converse.rosterview) {
-                            converse.rosterview.updateOnlineCount();
-                        }
+                        converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
                         converse.emit('controlBoxOpened', this);
                     }.bind(this));
@@ -680,6 +678,12 @@
 
                 initialize: function () {
                     this.render();
+                    converse.on('initialized', function () {
+                        converse.roster.on("add", this.updateOnlineCount, this);
+                        converse.roster.on('change', this.updateOnlineCount, this);
+                        converse.roster.on("destroy", this.updateOnlineCount, this);
+                        converse.roster.on("remove", this.updateOnlineCount, this);
+                    }.bind(this));
                 },
 
                 render: function () {
@@ -694,6 +698,14 @@
                     // seconds later be hidden in favor of the control box).
                     this.$el.hide();
                     return this;
+                },
+
+                updateOnlineCount: function () {
+                    var $count = this.$('#online-count');
+                    $count.text('('+converse.roster.getNumOnlineContacts()+')');
+                    if (!$count.is(':visible')) {
+                        $count.show();
+                    }
                 },
 
                 hide: function (callback) {

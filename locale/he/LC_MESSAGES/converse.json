@@ -7,133 +7,9 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "he"
          },
-         " e.g. conversejs.org": [
-            null,
-            " למשל conversejs.org"
-         ],
-         "unencrypted": [
-            null,
-            "לא מוצפנת"
-         ],
-         "unverified": [
-            null,
-            "לא מאומתת"
-         ],
-         "verified": [
-            null,
-            "מאומתת"
-         ],
-         "finished": [
-            null,
-            "מוגמרת"
-         ],
-         "This contact is busy": [
-            null,
-            "איש קשר זה עסוק"
-         ],
-         "This contact is online": [
-            null,
-            "איש קשר זה מקוון"
-         ],
-         "This contact is offline": [
-            null,
-            "איש קשר זה אינו מקוון"
-         ],
-         "This contact is unavailable": [
-            null,
-            "איש קשר זה לא זמין"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "איש קשר זה נעדר למשך זמן ממושך"
-         ],
-         "This contact is away": [
-            null,
-            "איש קשר זה הינו נעדר"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "לחץ כדי להסתיר את אנשי קשר אלה"
-         ],
-         "My contacts": [
-            null,
-            "האנשי קשר שלי"
-         ],
-         "Pending contacts": [
-            null,
-            "אנשי קשר ממתינים"
-         ],
-         "Contact requests": [
-            null,
-            "בקשות איש קשר"
-         ],
-         "Ungrouped": [
-            null,
-            "ללא קבוצה"
-         ],
-         "Contacts": [
-            null,
-            "אנשי קשר"
-         ],
-         "Groups": [
-            null,
-            "קבוצות"
-         ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            "מנסה להתחבר בעוד 5 שניות"
-         ],
-         "Error": [
-            null,
-            "שגיאה"
-         ],
-         "Connecting": [
-            null,
-            "כעת מתחבר"
-         ],
-         "Authenticating": [
-            null,
-            "כעת מאמת"
-         ],
-         "Authentication Failed": [
-            null,
-            "אימות נכשל"
-         ],
-         "Re-establishing encrypted session": [
-            null,
-            "בסס מחדש ישיבה מוצפנת"
-         ],
-         "Generating private key.": [
-            null,
-            "כעת מפיק מפתח פרטי."
-         ],
-         "Your browser might become unresponsive.": [
-            null,
-            "הדפדפן שלך עשוי שלא להגיב."
-         ],
-         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
-            "בקשת אימות מאת %1$s\n\nהאיש קשר שלך מנסה לאמת את הזהות שלך, בעזרת שאילת השאלה שלהלן.\n\n%2$s"
-         ],
-         "Could not verify this user's identify.": [
-            null,
-            "לא היתה אפשרות לאמת את זהות משתמש זה."
-         ],
-         "Exchanging private key with contact.": [
-            null,
-            "מחליף מפתח פרטי עם איש קשר."
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
          "Personal message": [
             null,
             "הודעה אישית"
-         ],
-         "Are you sure you want to clear the messages from this room?": [
-            null,
-            "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"
          ],
          "me": [
             null,
@@ -167,38 +43,6 @@
             null,
             "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך תיבת שיחה זה?"
          ],
-         "Your message could not be sent": [
-            null,
-            "ההודעה שלך לא היתה יכולה להישלח"
-         ],
-         "We received an unencrypted message": [
-            null,
-            "אנחנו קיבלנו הודעה לא מוצפנת"
-         ],
-         "We received an unreadable encrypted message": [
-            null,
-            "אנחנו קיבלנו הודעה מוצפנת לא קריאה"
-         ],
-         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
-            "הרי טביעות האצבע, אנא אמת אותן עם %1$s, מחוץ לשיחה זו.\n\nטביעת אצבע עבורך, %2$s: %3$s\n\nטביעת אצבע עבור %1$s: %4$s\n\nהיה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."
-         ],
-         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
-            "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\n\nהאיש קשר יתבקש עובר זאת לאותה שאלת אבטחה ואם אלו יקלידו את אותה התשובה במדויק (case sensitive), זהותם תאומת."
-         ],
-         "What is your security question?": [
-            null,
-            "מהי שאלת האבטחה שלך?"
-         ],
-         "What is the answer to the security question?": [
-            null,
-            "מהי התשובה לשאלת האבטחה?"
-         ],
-         "Invalid authentication scheme provided": [
-            null,
-            "סופקה סכימת אימות שגויה"
-         ],
          "has gone offline": [
             null,
             "כבר לא מקוון"
@@ -207,73 +51,93 @@
             null,
             "עסוק(ה) כעת"
          ],
-         "Your messages are not encrypted anymore": [
-            null,
-            "ההודעות שלך אינן מוצפנות עוד"
-         ],
-         "Your messages are now encrypted but your contact's identity has not been verified.": [
-            null,
-            "ההודעות שלך מוצפנות כעת אך זהות האיש קשר שלך טרם אומתה."
-         ],
-         "Your contact's identify has been verified.": [
-            null,
-            "זהות האיש קשר שלך אומתה."
-         ],
-         "Your contact has ended encryption on their end, you should do the same.": [
-            null,
-            "האיש קשר סיים הצפנה בקצה שלהם, עליך לעשות זאת גם כן."
-         ],
-         "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
-            "ההודעות שלך אינן מוצפנות. לחץ כאן כדי לאפשר OTR."
-         ],
-         "Your messages are encrypted, but your contact has not been verified.": [
-            null,
-            "ההודעות שלך מוצפנות כעת, אך האיש קשר שלך טרם אומת."
-         ],
-         "Your messages are encrypted and your contact verified.": [
-            null,
-            "ההודעות שלך מוצפנות כעת והאיש קשר שלך אומת."
-         ],
-         "Your contact has closed their end of the private session, you should do the same": [
-            null,
-            "האיש קשר סגר את קצה ישיבה פרטית שלהם, עליך לעשות זאת גם כן"
-         ],
          "Clear all messages": [
             null,
             "טהר את כל ההודעות"
-         ],
-         "End encrypted conversation": [
-            null,
-            "סיים ישיבה מוצפנת"
          ],
          "Insert a smiley": [
             null,
             "הכנס סמיילי"
          ],
-         "Refresh encrypted conversation": [
-            null,
-            "רענן ישיבה מוצפנת"
-         ],
          "Start a call": [
             null,
             "התחל שיחה"
          ],
-         "Start encrypted conversation": [
+         "Contacts": [
             null,
-            "התחל ישיבה מוצפנת"
+            "אנשי קשר"
          ],
-         "Verify with fingerprints": [
+         "Connecting": [
             null,
-            "אמת בעזרת טביעות אצבע"
+            "כעת מתחבר"
          ],
-         "Verify with SMP": [
+         "XMPP Username:": [
             null,
-            "אמת בעזרת SMP"
+            "שם משתמש XMPP:"
          ],
-         "What's this?": [
+         "Password:": [
             null,
-            "מה זה?"
+            "סיסמה:"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "לחץ כאן כדי להתחבר באופן אנונימי"
+         ],
+         "Log In": [
+            null,
+            "כניסה"
+         ],
+         "user@server": [
+            null,
+            ""
+         ],
+         "password": [
+            null,
+            "סיסמה"
+         ],
+         "Sign in": [
+            null,
+            "התחברות"
+         ],
+         "I am %1$s": [
+            null,
+            "מצבי כעת הינו %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
+         ],
+         "Click to change your chat status": [
+            null,
+            "לחץ כדי לשנות את הודעת השיחה שלך"
+         ],
+         "Custom status": [
+            null,
+            "מצב מותאם"
+         ],
+         "Save": [
+            null,
+            "שמור"
+         ],
+         "online": [
+            null,
+            "מקוון"
+         ],
+         "busy": [
+            null,
+            "עסוק"
+         ],
+         "away for long": [
+            null,
+            "נעדר לזמן מה"
+         ],
+         "away": [
+            null,
+            "נעדר"
+         ],
+         "offline": [
+            null,
+            "לא מקוון"
          ],
          "Online": [
             null,
@@ -303,10 +167,6 @@
             null,
             "חיפוש"
          ],
-         "e.g. user@example.com": [
-            null,
-            "למשל user@example.com"
-         ],
          "Add": [
             null,
             "הוסף"
@@ -327,129 +187,49 @@
             null,
             "לחץ כדי להוסיף בתור איש קשר שיחה"
          ],
-         "Room name": [
+         "Toggle chat": [
             null,
-            "שם חדר"
+            "הפעל שיח"
          ],
-         "Nickname": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "שם כינוי"
+            "מנסה להתחבר בעוד 5 שניות"
          ],
-         "Server": [
+         "Disconnected": [
             null,
-            "שרת"
+            "מנותק"
          ],
-         "Join Room": [
+         "Error": [
             null,
-            "הצטרף לחדר"
+            "שגיאה"
          ],
-         "Show rooms": [
+         "Authenticating": [
             null,
-            "הצג חדרים"
+            "כעת מאמת"
          ],
-         "Rooms": [
+         "Authentication Failed": [
             null,
-            "חדרים"
+            "אימות נכשל"
          ],
-         "No rooms on %1$s": [
+         "Sorry, there was an error while trying to add ": [
             null,
-            "אין חדרים על %1$s"
+            "מצטערים, היתה שגיאה במהלך ניסיון הוספת "
          ],
-         "Rooms on %1$s": [
+         "This client does not allow presence subscriptions": [
             null,
-            "חדרים על %1$s"
+            "לקוח זה לא מתיר הרשמות נוכחות"
          ],
-         "Click to open this room": [
+         "Click to restore this chat": [
             null,
-            "לחץ כדי לפתוח את חדר זה"
+            "לחץ כדי לשחזר את שיחה זו"
          ],
-         "Show more information on this room": [
+         "Minimized": [
             null,
-            "הצג עוד מידע אודות חדר זה"
+            "ממוזער"
          ],
-         "Description:": [
+         "Minimize this chat box": [
             null,
-            "תיאור:"
-         ],
-         "Occupants:": [
-            null,
-            "נוכחים:"
-         ],
-         "Features:": [
-            null,
-            "תכונות:"
-         ],
-         "Requires authentication": [
-            null,
-            "מצריך אישור"
-         ],
-         "Hidden": [
-            null,
-            "נסתר"
-         ],
-         "Requires an invitation": [
-            null,
-            "מצריך הזמנה"
-         ],
-         "Moderated": [
-            null,
-            "מבוקר"
-         ],
-         "Non-anonymous": [
-            null,
-            "לא-אנונימי"
-         ],
-         "Open room": [
-            null,
-            "חדר פתוח"
-         ],
-         "Permanent room": [
-            null,
-            "חדר צמיתה"
-         ],
-         "Public": [
-            null,
-            "פומבי"
-         ],
-         "Semi-anonymous": [
-            null,
-            "אנונימי-למחצה"
-         ],
-         "Temporary room": [
-            null,
-            "חדר זמני"
-         ],
-         "Unmoderated": [
-            null,
-            "לא מבוקר"
-         ],
-         "This user is a moderator": [
-            null,
-            "משתמש זה הינו אחראי"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "משתמש זה מסוגל לשלוח הודעות בתוך חדר זה"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "משתמש זה ﬥﬡ מסוגל לשלוח הודעות בתוך חדר זה"
-         ],
-         "Invite...": [
-            null,
-            "הזמנה..."
-         ],
-         "Occupants": [
-            null,
-            "נוכחים"
-         ],
-         "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
-            "אתה עומד להזמין את %1$s לחדר שיחה \"%2$s\". "
-         ],
-         "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
-            "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."
+            ""
          ],
          "Message": [
             null,
@@ -462,6 +242,10 @@
          "Error: the \"": [
             null,
             ""
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -510,10 +294,6 @@
          "Allow muted user to post messages": [
             null,
             "התר למשתמש מושתק לפרסם הודעות"
-         ],
-         "Save": [
-            null,
-            "שמור"
          ],
          "Cancel": [
             null,
@@ -651,13 +431,133 @@
             null,
             "חדר זה (עדיין) לא קיים"
          ],
-         "This room has reached it's maximum number of occupants": [
-            null,
-            "חדר זה הגיע לסף הנוכחים המרבי שלו"
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "נושא חדר זה נקבע על ידי %1$s אל: %2$s"
+         ],
+         "This user is a moderator": [
+            null,
+            "משתמש זה הינו אחראי"
+         ],
+         "This user can send messages in this room": [
+            null,
+            "משתמש זה מסוגל לשלוח הודעות בתוך חדר זה"
+         ],
+         "This user can NOT send messages in this room": [
+            null,
+            "משתמש זה ﬥﬡ מסוגל לשלוח הודעות בתוך חדר זה"
+         ],
+         "Invite": [
+            null,
+            "הזמנה"
+         ],
+         "Occupants": [
+            null,
+            "נוכחים"
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            "אתה עומד להזמין את %1$s לחדר שיחה \"%2$s\". "
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."
+         ],
+         "Room name": [
+            null,
+            "שם חדר"
+         ],
+         "Nickname": [
+            null,
+            "שם כינוי"
+         ],
+         "Server": [
+            null,
+            "שרת"
+         ],
+         "Join Room": [
+            null,
+            "הצטרף לחדר"
+         ],
+         "Show rooms": [
+            null,
+            "הצג חדרים"
+         ],
+         "Rooms": [
+            null,
+            "חדרים"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "אין חדרים על %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "חדרים על %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "לחץ כדי לפתוח את חדר זה"
+         ],
+         "Show more information on this room": [
+            null,
+            "הצג עוד מידע אודות חדר זה"
+         ],
+         "Description:": [
+            null,
+            "תיאור:"
+         ],
+         "Occupants:": [
+            null,
+            "נוכחים:"
+         ],
+         "Features:": [
+            null,
+            "תכונות:"
+         ],
+         "Requires authentication": [
+            null,
+            "מצריך אישור"
+         ],
+         "Hidden": [
+            null,
+            "נסתר"
+         ],
+         "Requires an invitation": [
+            null,
+            "מצריך הזמנה"
+         ],
+         "Moderated": [
+            null,
+            "מבוקר"
+         ],
+         "Non-anonymous": [
+            null,
+            "לא-אנונימי"
+         ],
+         "Open room": [
+            null,
+            "חדר פתוח"
+         ],
+         "Permanent room": [
+            null,
+            "חדר צמיתה"
+         ],
+         "Public": [
+            null,
+            "פומבי"
+         ],
+         "Semi-anonymous": [
+            null,
+            "אנונימי-למחצה"
+         ],
+         "Temporary room": [
+            null,
+            "חדר זמני"
+         ],
+         "Unmoderated": [
+            null,
+            "לא מבוקר"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -667,93 +567,153 @@
             null,
             "%1$s הזמינך להצטרף לחדר שיחה: %2$s, והשאיר את הסיבה הבאה: \"%3$s\""
          ],
-         "Click to restore this chat": [
+         "Notification from %1$s": [
             null,
-            "לחץ כדי לשחזר את שיחה זו"
+            ""
          ],
-         "Minimized": [
+         "%1$s says": [
             null,
-            "ממוזער"
+            ""
          ],
-         "Click to remove this contact": [
+         "wants to be your contact": [
             null,
-            "לחץ כדי להסיר את איש קשר זה"
+            ""
          ],
-         "Click to accept this contact request": [
+         "An error has occured": [
             null,
-            "לחץ כדי לקבל את בקשת איש קשר זה"
+            ""
          ],
-         "Click to decline this contact request": [
+         "Re-establishing encrypted session": [
             null,
-            "לחץ כדי לסרב את בקשת איש קשר זה"
+            "בסס מחדש ישיבה מוצפנת"
          ],
-         "Click to chat with this contact": [
+         "Generating private key.": [
             null,
-            "לחץ כדי לשוחח עם איש קשר זה"
+            "כעת מפיק מפתח פרטי."
          ],
-         "Name": [
+         "Your browser might become unresponsive.": [
             null,
-            "שם"
+            "הדפדפן שלך עשוי שלא להגיב."
          ],
-         "Are you sure you want to remove this contact?": [
+         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
+            "בקשת אימות מאת %1$s\n\nהאיש קשר שלך מנסה לאמת את הזהות שלך, בעזרת שאילת השאלה שלהלן.\n\n%2$s"
          ],
-         "Sorry, there was an error while trying to remove ": [
+         "Could not verify this user's identify.": [
             null,
-            "מצטערים, היתה שגיאה במהלך ניסיון להסיר את "
+            "לא היתה אפשרות לאמת את זהות משתמש זה."
          ],
-         "Are you sure you want to decline this contact request?": [
+         "Exchanging private key with contact.": [
             null,
-            "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
+            "מחליף מפתח פרטי עם איש קשר."
          ],
-         "Sorry, there was an error while trying to add ": [
+         "Your messages are not encrypted anymore": [
             null,
-            "מצטערים, היתה שגיאה במהלך ניסיון הוספת "
+            "ההודעות שלך אינן מוצפנות עוד"
          ],
-         "This client does not allow presence subscriptions": [
+         "Your messages are now encrypted but your contact's identity has not been verified.": [
             null,
-            "לקוח זה לא מתיר הרשמות נוכחות"
+            "ההודעות שלך מוצפנות כעת אך זהות האיש קשר שלך טרם אומתה."
          ],
-         "Type to filter": [
+         "Your contact's identify has been verified.": [
             null,
-            "הקלד כדי לסנן"
+            "זהות האיש קשר שלך אומתה."
          ],
-         "I am %1$s": [
+         "Your contact has ended encryption on their end, you should do the same.": [
             null,
-            "מצבי כעת הינו %1$s"
+            "האיש קשר סיים הצפנה בקצה שלהם, עליך לעשות זאת גם כן."
          ],
-         "Click here to write a custom status message": [
+         "Your message could not be sent": [
             null,
-            "לחץ כאן כדי לכתוב הודעת מצב מותאמת"
+            "ההודעה שלך לא היתה יכולה להישלח"
          ],
-         "Click to change your chat status": [
+         "We received an unencrypted message": [
             null,
-            "לחץ כדי לשנות את הודעת השיחה שלך"
+            "אנחנו קיבלנו הודעה לא מוצפנת"
          ],
-         "Custom status": [
+         "We received an unreadable encrypted message": [
             null,
-            "מצב מותאם"
+            "אנחנו קיבלנו הודעה מוצפנת לא קריאה"
          ],
-         "online": [
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
-            "מקוון"
+            "הרי טביעות האצבע, אנא אמת אותן עם %1$s, מחוץ לשיחה זו.\n\nטביעת אצבע עבורך, %2$s: %3$s\n\nטביעת אצבע עבור %1$s: %4$s\n\nהיה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."
          ],
-         "busy": [
+         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
-            "עסוק"
+            "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\n\nהאיש קשר יתבקש עובר זאת לאותה שאלת אבטחה ואם אלו יקלידו את אותה התשובה במדויק (case sensitive), זהותם תאומת."
          ],
-         "away for long": [
+         "What is your security question?": [
             null,
-            "נעדר לזמן מה"
+            "מהי שאלת האבטחה שלך?"
          ],
-         "away": [
+         "What is the answer to the security question?": [
             null,
-            "נעדר"
+            "מהי התשובה לשאלת האבטחה?"
          ],
-         "offline": [
+         "Invalid authentication scheme provided": [
             null,
-            "לא מקוון"
+            "סופקה סכימת אימות שגויה"
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "ההודעות שלך אינן מוצפנות. לחץ כאן כדי לאפשר OTR."
+         ],
+         "Your messages are encrypted, but your contact has not been verified.": [
+            null,
+            "ההודעות שלך מוצפנות כעת, אך האיש קשר שלך טרם אומת."
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            "ההודעות שלך מוצפנות כעת והאיש קשר שלך אומת."
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            "האיש קשר סגר את קצה ישיבה פרטית שלהם, עליך לעשות זאת גם כן"
+         ],
+         "End encrypted conversation": [
+            null,
+            "סיים ישיבה מוצפנת"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "רענן ישיבה מוצפנת"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "התחל ישיבה מוצפנת"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "אמת בעזרת טביעות אצבע"
+         ],
+         "Verify with SMP": [
+            null,
+            "אמת בעזרת SMP"
+         ],
+         "What's this?": [
+            null,
+            "מה זה?"
+         ],
+         "unencrypted": [
+            null,
+            "לא מוצפנת"
+         ],
+         "unverified": [
+            null,
+            "לא מאומתת"
+         ],
+         "verified": [
+            null,
+            "מאומתת"
+         ],
+         "finished": [
+            null,
+            "מוגמרת"
+         ],
+         " e.g. conversejs.org": [
+            null,
+            " למשל conversejs.org"
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -799,37 +759,105 @@
             null,
             "חזור"
          ],
-         "XMPP Username:": [
+         "This contact is busy": [
             null,
-            "שם משתמש XMPP:"
+            "איש קשר זה עסוק"
          ],
-         "Password:": [
+         "This contact is online": [
             null,
-            "סיסמה:"
+            "איש קשר זה מקוון"
          ],
-         "Click here to log in anonymously": [
+         "This contact is offline": [
             null,
-            "לחץ כאן כדי להתחבר באופן אנונימי"
+            "איש קשר זה אינו מקוון"
          ],
-         "Log In": [
+         "This contact is unavailable": [
             null,
-            "כניסה"
+            "איש קשר זה לא זמין"
          ],
-         "user@server": [
+         "This contact is away for an extended period": [
+            null,
+            "איש קשר זה נעדר למשך זמן ממושך"
+         ],
+         "This contact is away": [
+            null,
+            "איש קשר זה הינו נעדר"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "לחץ כדי להסתיר את אנשי קשר אלה"
+         ],
+         "Groups": [
+            null,
+            "קבוצות"
+         ],
+         "My contacts": [
+            null,
+            "האנשי קשר שלי"
+         ],
+         "Pending contacts": [
+            null,
+            "אנשי קשר ממתינים"
+         ],
+         "Contact requests": [
+            null,
+            "בקשות איש קשר"
+         ],
+         "Ungrouped": [
+            null,
+            "ללא קבוצה"
+         ],
+         "Filter": [
             null,
             ""
          ],
-         "password": [
+         "State": [
             null,
-            "סיסמה"
+            ""
          ],
-         "Sign in": [
+         "Any": [
             null,
-            "התחברות"
+            ""
          ],
-         "Toggle chat": [
+         "Chatty": [
             null,
-            "הפעל שיח"
+            ""
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "לחץ כדי להסיר את איש קשר זה"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "לחץ כדי לקבל את בקשת איש קשר זה"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "לחץ כדי לסרב את בקשת איש קשר זה"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "לחץ כדי לשוחח עם איש קשר זה"
+         ],
+         "Name": [
+            null,
+            "שם"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            "מצטערים, היתה שגיאה במהלך ניסיון להסיר את "
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
          ]
       }
    }

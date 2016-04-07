@@ -932,7 +932,7 @@
                 render: function () {
                     this.$el.html(
                         converse.templates.chatroom_sidebar({
-                            'label_invitation': __('Invite...'),
+                            'label_invitation': __('Invite'),
                             'label_occupants': __('Occupants')
                         })
                     );

@@ -94,7 +94,7 @@
                 render: function () {
                     this.$el.html(converse.templates.roster(
                         _.extend(this.model.toJSON(), {
-                            placeholder: __('Type to filter'),
+                            placeholder: __('Filter'),
                             label_contacts: LABEL_CONTACTS,
                             label_groups: LABEL_GROUPS,
                             label_state: __('State'),

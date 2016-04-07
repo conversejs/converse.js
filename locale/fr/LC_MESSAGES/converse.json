@@ -7,133 +7,9 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "fr"
          },
-         " e.g. conversejs.org": [
-            null,
-            ""
-         ],
-         "unencrypted": [
-            null,
-            "non crypté"
-         ],
-         "unverified": [
-            null,
-            "non vérifié"
-         ],
-         "verified": [
-            null,
-            "vérifié"
-         ],
-         "finished": [
-            null,
-            "terminé"
-         ],
-         "This contact is busy": [
-            null,
-            "Ce contact est occupé"
-         ],
-         "This contact is online": [
-            null,
-            "Ce contact est connecté"
-         ],
-         "This contact is offline": [
-            null,
-            "Ce contact est déconnecté"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Ce contact est indisponible"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Ce contact est absent"
-         ],
-         "This contact is away": [
-            null,
-            "Ce contact est absent"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Cliquez pour cacher ces contacts"
-         ],
-         "My contacts": [
-            null,
-            "Mes contacts"
-         ],
-         "Pending contacts": [
-            null,
-            "Contacts en attente"
-         ],
-         "Contact requests": [
-            null,
-            "Demandes de contacts"
-         ],
-         "Ungrouped": [
-            null,
-            "Sans groupe"
-         ],
-         "Contacts": [
-            null,
-            "Contacts"
-         ],
-         "Groups": [
-            null,
-            "Groupes"
-         ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
-         ],
-         "Error": [
-            null,
-            "Erreur"
-         ],
-         "Connecting": [
-            null,
-            "Connexion"
-         ],
-         "Authenticating": [
-            null,
-            "Authentification"
-         ],
-         "Authentication Failed": [
-            null,
-            "L'authentification a échoué"
-         ],
-         "Re-establishing encrypted session": [
-            null,
-            "Rétablissement de la session encryptée"
-         ],
-         "Generating private key.": [
-            null,
-            "Génération de la clé privée"
-         ],
-         "Your browser might become unresponsive.": [
-            null,
-            "Votre navigateur pourrait ne plus répondre"
-         ],
-         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
-            "Demande d'authentification de %1$s\n\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\n\n%2$s"
-         ],
-         "Could not verify this user's identify.": [
-            null,
-            "L'identité de cet utilisateur ne peut pas être vérifiée"
-         ],
-         "Exchanging private key with contact.": [
-            null,
-            "Échange de clé privée avec le contact"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
          "Personal message": [
             null,
             "Message personnel"
-         ],
-         "Are you sure you want to clear the messages from this room?": [
-            null,
-            "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
          ],
          "me": [
             null,
@@ -167,38 +43,6 @@
             null,
             "Êtes-vous sûr de vouloir supprimer les messages de cette conversation?"
          ],
-         "Your message could not be sent": [
-            null,
-            "Votre message ne peut pas être envoyé"
-         ],
-         "We received an unencrypted message": [
-            null,
-            "Un message non crypté a été reçu"
-         ],
-         "We received an unreadable encrypted message": [
-            null,
-            "Un message crypté illisible a été reçu"
-         ],
-         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
-            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\n\nEmpreinte pour vous, %2$s: %3$s\n\nEmpreinte pour %1$s: %4$s\n\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."
-         ],
-         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
-            "Vous allez être invité à fournir une question de sécurité et une réponse à cette question.\n\nVotre contact devra répondre à la même question et s'il fournit la même réponse (sensible à la casse), son identité sera vérifiée."
-         ],
-         "What is your security question?": [
-            null,
-            "Quelle est votre question de sécurité?"
-         ],
-         "What is the answer to the security question?": [
-            null,
-            "Quelle est la réponse à la question de sécurité?"
-         ],
-         "Invalid authentication scheme provided": [
-            null,
-            "Schéma d'authentification fourni non valide"
-         ],
          "has gone offline": [
             null,
             "s'est déconnecté"
@@ -207,73 +51,85 @@
             null,
             "est occupé"
          ],
-         "Your messages are not encrypted anymore": [
-            null,
-            "Vos messages ne sont plus cryptés"
-         ],
-         "Your messages are now encrypted but your contact's identity has not been verified.": [
-            null,
-            "Vos messages sont maintenant cryptés mais l'identité de votre contact n'a pas econre été véfifiée"
-         ],
-         "Your contact's identify has been verified.": [
-            null,
-            "L'identité de votre contact a été vérifiée"
-         ],
-         "Your contact has ended encryption on their end, you should do the same.": [
-            null,
-            "Votre contact a arrêté le cryptage de son côté, vous devriez le faire aussi"
-         ],
-         "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
-            "Vos messges ne sont pas cryptés. Cliquez ici pour activer le cryptage OTR"
-         ],
-         "Your messages are encrypted, but your contact has not been verified.": [
-            null,
-            "Vos messges sont cryptés, mais votre contact n'a pas été vérifié"
-         ],
-         "Your messages are encrypted and your contact verified.": [
-            null,
-            "Vos messages sont cryptés et votre contact est vérifié"
-         ],
-         "Your contact has closed their end of the private session, you should do the same": [
-            null,
-            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"
-         ],
          "Clear all messages": [
             null,
             "Supprimer tous les messages"
-         ],
-         "End encrypted conversation": [
-            null,
-            "Terminer la conversation cryptée"
          ],
          "Insert a smiley": [
             null,
             ""
          ],
-         "Refresh encrypted conversation": [
-            null,
-            "Actualiser la conversation cryptée"
-         ],
          "Start a call": [
             null,
             "Démarrer un appel"
          ],
-         "Start encrypted conversation": [
+         "Contacts": [
             null,
-            "Démarrer une conversation cryptée"
+            "Contacts"
          ],
-         "Verify with fingerprints": [
+         "Connecting": [
             null,
-            "Vérifier par empreintes de sécurité"
+            "Connexion"
          ],
-         "Verify with SMP": [
+         "XMPP Username:": [
             null,
-            "Vérifier par Question/Réponse"
+            "Nom d'utilisateur XMPP/Jabber"
          ],
-         "What's this?": [
+         "Password:": [
             null,
-            "Qu'est-ce qu'une conversation cryptée?"
+            "Mot de passe:"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Cliquez ici pour se connecter anonymement"
+         ],
+         "Log In": [
+            null,
+            "Se connecter"
+         ],
+         "user@server": [
+            null,
+            ""
+         ],
+         "Sign in": [
+            null,
+            "S'inscrire"
+         ],
+         "I am %1$s": [
+            null,
+            "Je suis %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "Cliquez ici pour indiquer votre statut personnel"
+         ],
+         "Click to change your chat status": [
+            null,
+            "Cliquez pour changer votre statut"
+         ],
+         "Custom status": [
+            null,
+            "Statut personnel"
+         ],
+         "Save": [
+            null,
+            "Enregistrer"
+         ],
+         "online": [
+            null,
+            "en ligne"
+         ],
+         "busy": [
+            null,
+            "occupé"
+         ],
+         "away for long": [
+            null,
+            "absent pour une longue durée"
+         ],
+         "away": [
+            null,
+            "absent"
          ],
          "Online": [
             null,
@@ -303,7 +159,7 @@
             null,
             "Rechercher"
          ],
-         "e.g. user@example.com": [
+         "e.g. user@example.org": [
             null,
             ""
          ],
@@ -327,129 +183,49 @@
             null,
             "Cliquer pour ajouter aux contacts"
          ],
-         "Room name": [
+         "Toggle chat": [
             null,
-            "Nom du salon"
+            "Ouvrir IM"
          ],
-         "Nickname": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Alias"
+            ""
          ],
-         "Server": [
+         "Disconnected": [
             null,
-            "Serveur"
+            "Déconnecté"
          ],
-         "Join Room": [
+         "Error": [
             null,
-            "Rejoindre"
+            "Erreur"
          ],
-         "Show rooms": [
+         "Authenticating": [
             null,
-            "Afficher les salons"
+            "Authentification"
          ],
-         "Rooms": [
+         "Authentication Failed": [
             null,
-            "Salons"
+            "L'authentification a échoué"
          ],
-         "No rooms on %1$s": [
+         "Sorry, there was an error while trying to add ": [
             null,
-            "Aucun salon dans %1$s"
+            ""
          ],
-         "Rooms on %1$s": [
+         "This client does not allow presence subscriptions": [
             null,
-            "Salons dans %1$s"
+            ""
          ],
-         "Click to open this room": [
+         "Click to restore this chat": [
             null,
-            "Cliquer pour ouvrir ce salon"
+            "Cliquez pour afficher cette discussion"
          ],
-         "Show more information on this room": [
+         "Minimized": [
             null,
-            "Afficher davantage d'informations sur ce salon"
+            "Réduit(s)"
          ],
-         "Description:": [
+         "Minimize this chat box": [
             null,
-            "Description:"
-         ],
-         "Occupants:": [
-            null,
-            "Participants:"
-         ],
-         "Features:": [
-            null,
-            "Caractéristiques:"
-         ],
-         "Requires authentication": [
-            null,
-            "Nécessite une authentification"
-         ],
-         "Hidden": [
-            null,
-            "Masqué"
-         ],
-         "Requires an invitation": [
-            null,
-            "Nécessite une invitation"
-         ],
-         "Moderated": [
-            null,
-            "Modéré"
-         ],
-         "Non-anonymous": [
-            null,
-            "Non-anonyme"
-         ],
-         "Open room": [
-            null,
-            "Ouvrir un salon"
-         ],
-         "Permanent room": [
-            null,
-            "Salon permanent"
-         ],
-         "Public": [
-            null,
-            "Public"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Semi-anonyme"
-         ],
-         "Temporary room": [
-            null,
-            "Salon temporaire"
-         ],
-         "Unmoderated": [
-            null,
-            "Non modéré"
-         ],
-         "This user is a moderator": [
-            null,
-            "Cet utilisateur est modérateur"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Cet utilisateur peut envoyer des messages dans ce salon"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon"
-         ],
-         "Invite...": [
-            null,
-            "Inviter..."
-         ],
-         "Occupants": [
-            null,
-            "Participants:"
-         ],
-         "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
-            "Vous vous apprêtez à inviter %1$s dans le salon \"%2$s\". "
-         ],
-         "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
-            "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."
+            ""
          ],
          "Message": [
             null,
@@ -462,6 +238,10 @@
          "Error: the \"": [
             null,
             ""
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -510,10 +290,6 @@
          "Allow muted user to post messages": [
             null,
             "Autoriser les utilisateurs muets à poster des messages"
-         ],
-         "Save": [
-            null,
-            "Enregistrer"
          ],
          "Cancel": [
             null,
@@ -651,13 +427,133 @@
             null,
             "Ce salon n'existe pas encore"
          ],
-         "This room has reached it's maximum number of occupants": [
-            null,
-            "Ce salon a atteint la limite maximale d'occupants"
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Le sujet '%2$s' a été défini par %1$s"
+         ],
+         "This user is a moderator": [
+            null,
+            "Cet utilisateur est modérateur"
+         ],
+         "This user can send messages in this room": [
+            null,
+            "Cet utilisateur peut envoyer des messages dans ce salon"
+         ],
+         "This user can NOT send messages in this room": [
+            null,
+            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon"
+         ],
+         "Invite": [
+            null,
+            "Inviter"
+         ],
+         "Occupants": [
+            null,
+            "Participants:"
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            "Vous vous apprêtez à inviter %1$s dans le salon \"%2$s\". "
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."
+         ],
+         "Room name": [
+            null,
+            "Nom du salon"
+         ],
+         "Nickname": [
+            null,
+            "Alias"
+         ],
+         "Server": [
+            null,
+            "Serveur"
+         ],
+         "Join Room": [
+            null,
+            "Rejoindre"
+         ],
+         "Show rooms": [
+            null,
+            "Afficher les salons"
+         ],
+         "Rooms": [
+            null,
+            "Salons"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "Aucun salon dans %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "Salons dans %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Cliquer pour ouvrir ce salon"
+         ],
+         "Show more information on this room": [
+            null,
+            "Afficher davantage d'informations sur ce salon"
+         ],
+         "Description:": [
+            null,
+            "Description:"
+         ],
+         "Occupants:": [
+            null,
+            "Participants:"
+         ],
+         "Features:": [
+            null,
+            "Caractéristiques:"
+         ],
+         "Requires authentication": [
+            null,
+            "Nécessite une authentification"
+         ],
+         "Hidden": [
+            null,
+            "Masqué"
+         ],
+         "Requires an invitation": [
+            null,
+            "Nécessite une invitation"
+         ],
+         "Moderated": [
+            null,
+            "Modéré"
+         ],
+         "Non-anonymous": [
+            null,
+            "Non-anonyme"
+         ],
+         "Open room": [
+            null,
+            "Ouvrir un salon"
+         ],
+         "Permanent room": [
+            null,
+            "Salon permanent"
+         ],
+         "Public": [
+            null,
+            "Public"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi-anonyme"
+         ],
+         "Temporary room": [
+            null,
+            "Salon temporaire"
+         ],
+         "Unmoderated": [
+            null,
+            "Non modéré"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -667,89 +563,153 @@
             null,
             "%1$s vous invite à rejoindre le salon: %2$s, avec le message suivant:\"%3$s\""
          ],
-         "Click to restore this chat": [
-            null,
-            "Cliquez pour afficher cette discussion"
-         ],
-         "Minimized": [
-            null,
-            "Réduit(s)"
-         ],
-         "Click to remove this contact": [
-            null,
-            "Cliquez pour supprimer ce contact"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Cliquez pour accepter la demande de ce contact"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Cliquez pour refuser la demande de ce contact"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Cliquez pour discuter avec ce contact"
-         ],
-         "Name": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Êtes-vous sûr de vouloir supprimer ce contact?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
+         "%1$s says": [
             null,
             ""
          ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Êtes-vous sûr de vouloir refuser la demande de ce contact?"
-         ],
-         "Sorry, there was an error while trying to add ": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "This client does not allow presence subscriptions": [
+         "An error has occured": [
             null,
             ""
          ],
-         "Type to filter": [
+         "Re-establishing encrypted session": [
             null,
-            "Filtrer"
+            "Rétablissement de la session encryptée"
          ],
-         "I am %1$s": [
+         "Generating private key.": [
             null,
-            "Je suis %1$s"
+            "Génération de la clé privée"
          ],
-         "Click here to write a custom status message": [
+         "Your browser might become unresponsive.": [
             null,
-            "Cliquez ici pour indiquer votre statut personnel"
+            "Votre navigateur pourrait ne plus répondre"
          ],
-         "Click to change your chat status": [
+         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            "Cliquez pour changer votre statut"
+            "Demande d'authentification de %1$s\n\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\n\n%2$s"
          ],
-         "Custom status": [
+         "Could not verify this user's identify.": [
             null,
-            "Statut personnel"
+            "L'identité de cet utilisateur ne peut pas être vérifiée"
          ],
-         "online": [
+         "Exchanging private key with contact.": [
             null,
-            "en ligne"
+            "Échange de clé privée avec le contact"
          ],
-         "busy": [
+         "Your messages are not encrypted anymore": [
             null,
-            "occupé"
+            "Vos messages ne sont plus cryptés"
          ],
-         "away for long": [
+         "Your messages are now encrypted but your contact's identity has not been verified.": [
             null,
-            "absent pour une longue durée"
+            "Vos messages sont maintenant cryptés mais l'identité de votre contact n'a pas econre été véfifiée"
          ],
-         "away": [
+         "Your contact's identify has been verified.": [
             null,
-            "absent"
+            "L'identité de votre contact a été vérifiée"
+         ],
+         "Your contact has ended encryption on their end, you should do the same.": [
+            null,
+            "Votre contact a arrêté le cryptage de son côté, vous devriez le faire aussi"
+         ],
+         "Your message could not be sent": [
+            null,
+            "Votre message ne peut pas être envoyé"
+         ],
+         "We received an unencrypted message": [
+            null,
+            "Un message non crypté a été reçu"
+         ],
+         "We received an unreadable encrypted message": [
+            null,
+            "Un message crypté illisible a été reçu"
+         ],
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+            null,
+            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\n\nEmpreinte pour vous, %2$s: %3$s\n\nEmpreinte pour %1$s: %4$s\n\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."
+         ],
+         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+            null,
+            "Vous allez être invité à fournir une question de sécurité et une réponse à cette question.\n\nVotre contact devra répondre à la même question et s'il fournit la même réponse (sensible à la casse), son identité sera vérifiée."
+         ],
+         "What is your security question?": [
+            null,
+            "Quelle est votre question de sécurité?"
+         ],
+         "What is the answer to the security question?": [
+            null,
+            "Quelle est la réponse à la question de sécurité?"
+         ],
+         "Invalid authentication scheme provided": [
+            null,
+            "Schéma d'authentification fourni non valide"
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "Vos messges ne sont pas cryptés. Cliquez ici pour activer le cryptage OTR"
+         ],
+         "Your messages are encrypted, but your contact has not been verified.": [
+            null,
+            "Vos messges sont cryptés, mais votre contact n'a pas été vérifié"
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            "Vos messages sont cryptés et votre contact est vérifié"
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"
+         ],
+         "End encrypted conversation": [
+            null,
+            "Terminer la conversation cryptée"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "Actualiser la conversation cryptée"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "Démarrer une conversation cryptée"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "Vérifier par empreintes de sécurité"
+         ],
+         "Verify with SMP": [
+            null,
+            "Vérifier par Question/Réponse"
+         ],
+         "What's this?": [
+            null,
+            "Qu'est-ce qu'une conversation cryptée?"
+         ],
+         "unencrypted": [
+            null,
+            "non crypté"
+         ],
+         "unverified": [
+            null,
+            "non vérifié"
+         ],
+         "verified": [
+            null,
+            "vérifié"
+         ],
+         "finished": [
+            null,
+            "terminé"
+         ],
+         " e.g. conversejs.org": [
+            null,
+            ""
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -795,33 +755,105 @@
             null,
             "Retourner"
          ],
-         "XMPP Username:": [
+         "This contact is busy": [
             null,
-            "Nom d'utilisateur XMPP/Jabber"
+            "Ce contact est occupé"
          ],
-         "Password:": [
+         "This contact is online": [
             null,
-            "Mot de passe:"
+            "Ce contact est connecté"
          ],
-         "Click here to log in anonymously": [
+         "This contact is offline": [
             null,
-            "Cliquez ici pour se connecter anonymement"
+            "Ce contact est déconnecté"
          ],
-         "Log In": [
+         "This contact is unavailable": [
             null,
-            "Se connecter"
+            "Ce contact est indisponible"
          ],
-         "user@server": [
+         "This contact is away for an extended period": [
+            null,
+            "Ce contact est absent"
+         ],
+         "This contact is away": [
+            null,
+            "Ce contact est absent"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Cliquez pour cacher ces contacts"
+         ],
+         "Groups": [
+            null,
+            "Groupes"
+         ],
+         "My contacts": [
+            null,
+            "Mes contacts"
+         ],
+         "Pending contacts": [
+            null,
+            "Contacts en attente"
+         ],
+         "Contact requests": [
+            null,
+            "Demandes de contacts"
+         ],
+         "Ungrouped": [
+            null,
+            "Sans groupe"
+         ],
+         "Filter": [
             null,
             ""
          ],
-         "Sign in": [
+         "State": [
             null,
-            "S'inscrire"
+            ""
          ],
-         "Toggle chat": [
+         "Any": [
             null,
-            "Ouvrir IM"
+            ""
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "Cliquez pour supprimer ce contact"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "Cliquez pour accepter la demande de ce contact"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "Cliquez pour refuser la demande de ce contact"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Cliquez pour discuter avec ce contact"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Êtes-vous sûr de vouloir supprimer ce contact?"
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Êtes-vous sûr de vouloir refuser la demande de ce contact?"
          ]
       }
    }

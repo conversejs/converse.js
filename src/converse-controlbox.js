@@ -594,7 +594,7 @@
                         });
                     } else {
                         markup = converse.templates.add_contact_form({
-                            label_contact_username: __('e.g. user@example.com'),
+                            label_contact_username: __('e.g. user@example.org'),
                             label_add: __('Add')
                         });
                     }

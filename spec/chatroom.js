@@ -127,7 +127,7 @@
                 var $hint = view.$el.find('input.invited-contact.tt-hint');
                 runs (function () {
                     expect($input.length).toBe(1);
-                    expect($input.attr('placeholder')).toBe('Invite...');
+                    expect($input.attr('placeholder')).toBe('Invite');
                     $input.val("Felix");
                     $input.trigger('input');
                 });

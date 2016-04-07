@@ -700,13 +700,13 @@
                     return this;
                 },
 
-                updateOnlineCount: function () {
+                updateOnlineCount: _.debounce(function () {
                     var $count = this.$('#online-count');
                     $count.text('('+converse.roster.getNumOnlineContacts()+')');
                     if (!$count.is(':visible')) {
                         $count.show();
                     }
-                },
+                }, converse.animate ? 100 : 0),
 
                 hide: function (callback) {
                     this.$el.fadeOut('fast', callback);

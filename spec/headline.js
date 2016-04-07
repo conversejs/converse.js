@@ -11,9 +11,42 @@
     var $msg = converse_api.env.$msg,
         _ = converse_api.env._;
 
-    describe("When a headline message is received", function () {
+    describe("A headlines box", function () {
 
-        it("a chat box will open and display it", function () {
+        it("will not open nor display non-headline messages", function () {
+            /* XMPP spam message:
+             *
+             *  <message xmlns="jabber:client"
+             *          to="dummy@localhost"
+             *          type="chat"
+             *          from="gapowa20102106@rds-rostov.ru/Adium">
+             *      <nick xmlns="http://jabber.org/protocol/nick">-wwdmz</nick>
+             *      <body>SORRY FOR THIS ADVERT</body
+             *  </message
+             */
+            sinon.spy(utils, 'isHeadlineMessage');
+            runs(function () {
+                var stanza = $msg({
+                        'xmlns': 'jabber:client',
+                        'to': 'dummy@localhost',
+                        'type': 'chat',
+                        'from': 'gapowa20102106@rds-rostov.ru/Adium',
+                    })
+                    .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
+                    .c('body').t('SORRY FOR THIS ADVERT');
+                converse.connection._dataRecv(test_utils.createRequest(stanza));
+            });
+            waits(250);
+            runs(function () {
+                expect(utils.isHeadlineMessage.called).toBeTruthy();
+                expect(utils.isHeadlineMessage.returned(false)).toBeTruthy();
+                utils.isHeadlineMessage.restore();
+            });
+
+        });
+
+
+        it("will open and display headline messages", function () {
             /*
              *  <message from='notify.example.com'
              *          to='romeo@im.example.com'

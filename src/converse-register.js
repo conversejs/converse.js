@@ -56,18 +56,12 @@
                      * login panel.
                      */
                     this._super.renderLoginPanel.apply(this, arguments);
-                    var converse = this._super.converse,
-                        cfg;
+                    var converse = this._super.converse;
                     if (converse.allow_registration) {
-                        cfg = {
+                        this.registerpanel = new converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
                             'model': this
-                        };
-                        if (typeof this.registerpanel === 'undefined') {
-                            this.registerpanel = new converse.RegisterPanel(cfg);
-                        } else {
-                            this.registerpanel.delegateEvents().initialize(cfg);
-                        }
+                        });
                         this.registerpanel.render().$el.hide();
                     }
                     return this;

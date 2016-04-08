@@ -51,7 +51,11 @@
             onDisconnected: function () {
                 var result = this._super.onDisconnected.apply(this, arguments);
                 if (result === 'disconnected') {
-                    converse.renderLoginPanel();
+                    converse._tearDown();
+                    var view = converse.chatboxviews.get('controlbox');
+                    view.model.set({connected:false});
+                    view.$('#controlbox-tabs').empty();
+                    view.renderLoginPanel();
                 }
             },
 
@@ -180,14 +184,6 @@
                 });
             };
 
-            converse.renderLoginPanel = function () {
-                converse._tearDown();
-                var view = converse.chatboxviews.get('controlbox');
-                view.model.set({connected:false});
-                view.renderLoginPanel();
-            };
-
-
             converse.ControlBoxView = converse.ChatBoxView.extend({
                 tagName: 'div',
                 className: 'chatbox',
@@ -225,7 +221,6 @@
                         }))
                     );
                     if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
-                        // TODO: we might need to take prebinding into consideration here.
                         this.renderLoginPanel();
                     } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
                         this.renderContactsPanel();
@@ -262,15 +257,10 @@
 
                 renderLoginPanel: function () {
                     var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
-                    var cfg = {
+                    this.loginpanel = new converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
-                    };
-                    if (!this.loginpanel) {
-                        this.loginpanel = new converse.LoginPanel(cfg);
-                    } else {
-                        this.loginpanel.delegateEvents().initialize(cfg);
-                    }
+                    });
                     this.loginpanel.render();
                     if ($feedback.length && $feedback.text() !== __('Connecting')) {
                         this.$('.conn-feedback').replaceWith($feedback);
@@ -701,6 +691,9 @@
                 },
 
                 updateOnlineCount: _.debounce(function () {
+                    if (typeof converse.roster === 'undefined') {
+                        return;
+                    }
                     var $count = this.$('#online-count');
                     $count.text('('+converse.roster.getNumOnlineContacts()+')');
                     if (!$count.is(':visible')) {

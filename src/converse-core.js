@@ -321,7 +321,6 @@
          */
         this.send_initial_presence = true;
         this.msg_counter = 0;
-        this.reconnectTimeout = undefined;
 
         // Module-level functions
         // ----------------------
@@ -334,50 +333,54 @@
             /* Send out a Chat Status Notification (XEP-0352) */
             if (converse.features[Strophe.NS.CSI] || true) {
                 converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-                this.inactive = (stat === converse.INACTIVE) ? true : false;
+                converse.inactive = (stat === converse.INACTIVE) ? true : false;
             }
         };
 
         this.onUserActivity = function () {
             /* Resets counters and flags relating to CSI and auto_away/auto_xa */
-            if (this.idle_seconds > 0) {
-                this.idle_seconds = 0;
+            if (converse.idle_seconds > 0) {
+                converse.idle_seconds = 0;
             }
             if (!converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
-                // This can happen when the connection reconnects.
+                // converse can happen when the connection reconnects.
                 return;
             }
-            if (this.inactive) {
-                this.sendCSI(converse.ACTIVE);
+            if (converse.inactive) {
+                converse.sendCSI(converse.ACTIVE);
             }
-            if (this.auto_changed_status === true) {
-                this.auto_changed_status = false;
-                this.xmppstatus.setStatus('online');
+            if (converse.auto_changed_status === true) {
+                converse.auto_changed_status = false;
+                converse.xmppstatus.setStatus('online');
             }
         };
 
         this.onEverySecond = function () {
             /* An interval handler running every second.
-             * Used for CSI and the auto_away and auto_xa
-             * features.
+             * Used for CSI and the auto_away and auto_xa features.
              */
             if (!converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // This can happen when the connection reconnects.
                 return;
             }
-            var stat = this.xmppstatus.getStatus();
-            this.idle_seconds++;
-            if (this.csi_waiting_time > 0 && this.idle_seconds > this.csi_waiting_time && !this.inactive) {
-                this.sendCSI(converse.INACTIVE);
+            var stat = converse.xmppstatus.getStatus();
+            converse.idle_seconds++;
+            if (converse.csi_waiting_time > 0 &&
+                    converse.idle_seconds > converse.csi_waiting_time &&
+                    !converse.inactive) {
+                converse.sendCSI(converse.INACTIVE);
             }
-            if (this.auto_away > 0 && this.idle_seconds > this.auto_away && stat !== 'away' && stat !== 'xa') {
-                this.auto_changed_status = true;
-                this.xmppstatus.setStatus('away');
-            } else if (this.auto_xa > 0 && this.idle_seconds > this.auto_xa && stat !== 'xa') {
-                this.auto_changed_status = true;
-                this.xmppstatus.setStatus('xa');
+            if (converse.auto_away > 0 &&
+                    converse.idle_seconds > converse.auto_away &&
+                    stat !== 'away' && stat !== 'xa') {
+                converse.auto_changed_status = true;
+                converse.xmppstatus.setStatus('away');
+            } else if (converse.auto_xa > 0 &&
+                    converse.idle_seconds > converse.auto_xa && stat !== 'xa') {
+                converse.auto_changed_status = true;
+                converse.xmppstatus.setStatus('xa');
             }
         };
 
@@ -385,14 +388,14 @@
             /* Set an interval of one second and register a handler for it.
              * Required for the auto_away, auto_xa and csi_waiting_time features.
              */
-            if (this.auto_away < 1 && this.auto_xa < 1 && this.csi_waiting_time < 1) {
+            if (converse.auto_away < 1 && converse.auto_xa < 1 && converse.csi_waiting_time < 1) {
                 // Waiting time of less then one second means features aren't used.
                 return;
             }
-            this.idle_seconds = 0;
-            this.auto_changed_status = false; // Was the user's status changed by converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent , this.onUserActivity.bind(this));
-            window.setInterval(this.onEverySecond.bind(this), 1000);
+            converse.idle_seconds = 0;
+            converse.auto_changed_status = false; // Was the user's status changed by converse.js?
+            $(window).on('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
+            converse.everySecondTrigger = window.setInterval(converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (message, klass) {
@@ -421,35 +424,31 @@
         };
 
 
-        this.reconnect = function (condition) {
-            this.connection.disconnect('re-connecting');
-            this.connection.reset();
-            converse.log('Attempting to reconnect in 5 seconds');
-            converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
-            window.clearTimeout(converse.reconnectTimeout);
-            converse.reconnectTimeout = window.setTimeout(function () {
-                converse.clearSession();
-                converse._tearDown();
-                if (converse.authentication !== "prebind") {
-                    converse.attemptNonPreboundSession();
-                } else if (converse.prebind_url) {
-                    converse.startNewBOSHSession();
-                }
-            }, 5000);
-        };
+        this.reconnect = _.debounce(function (condition) {
+            converse.connection.disconnect('re-connecting');
+            converse.connection.reset();
+            converse.log('Attempting to reconnect');
+            converse.giveFeedback(__('Attempting to reconnect'), 'error');
+            converse.clearSession();
+            converse._tearDown();
+            if (converse.authentication !== "prebind") {
+                converse.attemptNonPreboundSession();
+            } else if (converse.prebind_url) {
+                converse.startNewBOSHSession();
+            }
+        }, 1000);
 
         this.onDisconnected = function (condition) {
             if (!converse.auto_reconnect) { return; }
-            if ( converse.disconnection_cause === Strophe.Status.CONNFAIL ||
-                    (  converse.disconnection_cause === Strophe.Status.AUTHFAIL &&
-                        converse.credentials_url &&
-                        converse.auto_login
+            if (converse.disconnection_cause === Strophe.Status.CONNFAIL ||
+                    (converse.disconnection_cause === Strophe.Status.AUTHFAIL &&
+                     converse.credentials_url &&
+                     converse.auto_login
                     )
                 ) {
                 converse.reconnect(condition);
                 return 'reconnecting';
             } else {
-                converse.giveFeedback(__('Disconnected'));
                 return 'disconnected';
             }
         };
@@ -460,10 +459,6 @@
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
-                if (!!converse.reconnectTimeout) {
-                    window.clearTimeout(converse.reconnectTimeout);
-                    delete converse.reconnectTimeout;
-                }
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
@@ -488,13 +483,14 @@
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.disconnection_cause = Strophe.Status.CONNFAIL;
-            } else if (status === Strophe.Status.DISCONNECTING) {
-                if (!converse.connection.connected) {
-                    // FIXME: leaky abstraction from converse-controlbox.js
-                    // Is this needed at all?
-                    converse.renderLoginPanel();
+                if (converse.connection.authenticated) {
+                    // Only set the disconnection_cause if we're still
+                    // authenticated. If we're not, then the user logged out,
+                    // and it's therefore not strictly speaking a connection
+                    // failure (so we won't automatically reconnect).
+                    converse.disconnection_cause = Strophe.Status.CONNFAIL;
                 }
+            } else if (status === Strophe.Status.DISCONNECTING) {
                 if (condition) {
                     converse.giveFeedback(condition, 'error');
                 }
@@ -559,6 +555,7 @@
             converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
             converse.connection.disconnect();
+            converse.connection.reset();
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -1741,6 +1738,8 @@
             if (this.features) {
                 this.features.reset();
             }
+            $(window).off('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
+            window.clearInterval(converse.everySecondTrigger);
             return this;
         };
 

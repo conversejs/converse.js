@@ -443,7 +443,7 @@
             if (converse.disconnection_cause === Strophe.Status.CONNFAIL ||
                     (converse.disconnection_cause === Strophe.Status.AUTHFAIL &&
                      converse.credentials_url &&
-                     converse.auto_login
+                     !converse.logged_out
                     )
                 ) {
                 converse.reconnect(condition);
@@ -1703,6 +1703,20 @@
             }
         };
 
+        this.logIn = function (credentials) {
+            if (credentials) {
+                this.autoLogin(credentials);
+            } else {
+                // We now try to resume or automatically set up a new session.
+                // Otherwise the user will be shown a login form.
+                if (this.authentication === converse.PREBIND) {
+                    this.attemptPreboundSession();
+                } else {
+                    this.attemptNonPreboundSession();
+                }
+            }
+        };
+
         this.initConnection = function () {
             if (this.connection && this.connection.connected) {
                 this.setUpXMLLogging();
@@ -1719,13 +1733,7 @@
                     throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
                 }
                 this.setUpXMLLogging();
-                // We now try to resume or automatically set up a new session.
-                // Otherwise the user will be shown a login form.
-                if (this.authentication === converse.PREBIND) {
-                    this.attemptPreboundSession();
-                } else {
-                    this.attemptNonPreboundSession();
-                }
+                this.logIn();
             }
         };
 

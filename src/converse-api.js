@@ -34,6 +34,9 @@
             },
         },
         'user': {
+            'login': function (credentials) {
+                converse.logIn(credentials);
+            },
             'logout': function () {
                 converse.logOut();
             },

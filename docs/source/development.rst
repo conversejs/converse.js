@@ -400,6 +400,22 @@ The "user" grouping
 
 This grouping collects API functions related to the current logged in user.
 
+login
+~~~~~
+
+Logs the user in. This method can accept a map with the credentials, like this:
+
+.. code-block:: javascript
+
+    converse.user.login({
+        'jid': 'dummy@example.com',
+        'password': 'secret'
+    });
+
+or it can be called without any parameters, in which case converse.js will try
+to log the user in by calling the `prebind_url` or `credentials_url` depending
+on whether prebinding is used or not.
+
 logout
 ~~~~~~
 

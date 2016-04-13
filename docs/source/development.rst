@@ -873,6 +873,13 @@ When a chat buddy's custom status message has changed.
 
 ``converse.listen.on('contactStatusMessageChanged', function (event, data) { ... });``
 
+disconnected
+~~~~~~~~~~~~
+
+After converse.js has disconnected from the XMPP server.
+
+``converse.listen.on('disconnected', function (event) { ... });``
+
 initialized
 ~~~~~~~~~~~
 

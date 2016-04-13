@@ -440,15 +440,11 @@
 
         this.onDisconnected = function (condition) {
             if (!converse.auto_reconnect) { return; }
-            if (converse.disconnection_cause === Strophe.Status.CONNFAIL ||
-                    (converse.disconnection_cause === Strophe.Status.AUTHFAIL &&
-                     converse.credentials_url &&
-                     !converse.logged_out
-                    )
-                ) {
+            if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                 converse.reconnect(condition);
                 return 'reconnecting';
             } else {
+                converse.emit('disconnected');
                 return 'disconnected';
             }
         };
@@ -551,7 +547,6 @@
         };
 
         this.logOut = function () {
-            converse.auto_login = false;
             converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
             if (typeof converse.connection !== 'undefined') {
@@ -1650,7 +1645,7 @@
 
         this.autoLogin = function (credentials) {
             if (credentials) {
-                // If passed in, then they come from login_credentials, so we
+                // If passed in, then they come from credentials_url, so we
                 // set them on the converse object.
                 this.jid = credentials.jid;
                 this.password = credentials.password;

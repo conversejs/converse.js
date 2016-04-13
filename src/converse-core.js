@@ -554,8 +554,10 @@
             converse.auto_login = false;
             converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
-            converse.connection.disconnect();
-            converse.connection.reset();
+            if (typeof converse.connection !== 'undefined') {
+                converse.connection.disconnect();
+                converse.connection.reset();
+            }
         };
 
         this.registerGlobalEventHandlers = function () {

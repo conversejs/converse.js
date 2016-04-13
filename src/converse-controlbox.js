@@ -71,7 +71,7 @@
 
             clearSession: function () {
                 this._super.clearSession.apply(this, arguments);
-                if (this.connection.connected) {
+                if (typeof this.connection !== 'undefined' && this.connection.connected) {
                     this.chatboxes.get('controlbox').save({'connected': false});
                 }
             },

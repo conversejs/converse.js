@@ -13,6 +13,11 @@
 
     describe("A headlines box", function () {
 
+        beforeEach(function () {
+            test_utils.openControlBox();
+            test_utils.openContactsPanel();
+        });
+
         it("will not open nor display non-headline messages", function () {
             /* XMPP spam message:
              *

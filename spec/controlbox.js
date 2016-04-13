@@ -136,6 +136,7 @@
         describe("The live filter", $.proxy(function () {
             beforeEach(function () {
                 test_utils.openControlBox();
+                test_utils.openContactsPanel();
             });
 
             it("will only appear when roster contacts flow over the visible area", function () {

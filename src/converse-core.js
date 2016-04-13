@@ -1620,7 +1620,8 @@
                 return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
             } else if (this.keepalive) {
                 if (!this.jid) {
-                    throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                    throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
+                                    "you must supply the JID of the current user.");
                 }
                 try {
                     return this.connection.restore(this.jid, this.onConnectStatusChanged);
@@ -1629,7 +1630,7 @@
                     this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
             } else {
-                throw new Error("initConnection: If you use prebind and not keepalive, "+
+                throw new Error("attemptPreboundSession: If you use prebind and not keepalive, "+
                     "then you MUST supply JID, RID and SID values");
             }
             // We haven't been able to attach yet. Let's see if there
@@ -1700,6 +1701,8 @@
 
         this.logIn = function (credentials) {
             if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
                 this.autoLogin(credentials);
             } else {
                 // We now try to resume or automatically set up a new session.
@@ -1713,22 +1716,18 @@
         };
 
         this.initConnection = function () {
-            if (this.connection && this.connection.connected) {
-                this.setUpXMLLogging();
-                this.onConnected();
+            if (this.connection) {
+                return;
+            }
+            if (!this.bosh_service_url && ! this.websocket_url) {
+                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+            }
+            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                this.connection = new Strophe.Connection(this.websocket_url);
+            } else if (this.bosh_service_url) {
+                this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
             } else {
-                if (!this.bosh_service_url && ! this.websocket_url) {
-                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-                }
-                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                    this.connection = new Strophe.Connection(this.websocket_url);
-                } else if (this.bosh_service_url) {
-                    this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
-                } else {
-                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-                }
-                this.setUpXMLLogging();
-                this.logIn();
+                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
             }
         };
 
@@ -1753,6 +1752,8 @@
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
             this.initSession();
             this.initConnection();
+            this.setUpXMLLogging();
+            this.logIn();
             return this;
         };
 

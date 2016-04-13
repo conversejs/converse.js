@@ -47,9 +47,13 @@ require([
         converse.initialize({
             i18n: window.locales.en,
             auto_subscribe: false,
-            animate: false,
+            bosh_service_url: 'localhost',
             connection: mock.mock_connection,
+            animate: false,
             no_trimming: true,
+            auto_login: true,
+            jid: 'dummy@localhost',
+            password: 'secret',
             debug: false
         }, function (converse) {
             window.converse = converse;
@@ -64,6 +68,7 @@ require([
             require([
                 "console-runner",
                 "spec/converse",
+                "spec/headline",
                 "spec/disco",
                 "spec/protocol",
                 "spec/mam",
@@ -76,9 +81,8 @@ require([
                 "spec/notification",
                 "spec/profiling",
                 "spec/ping",
-                "spec/headline",
                 "spec/register",
-                "spec/xmppstatus"
+                "spec/xmppstatus",
             ], function () {
                 // Make sure this callback is only called once.
                 delete converse.callback;

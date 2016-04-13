@@ -35,6 +35,7 @@
         },
         'user': {
             'login': function (credentials) {
+                converse.initConnection();
                 converse.logIn(credentials);
             },
             'logout': function () {

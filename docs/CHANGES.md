@@ -2,6 +2,7 @@
 
 ## 1.0.0 (Unreleased)
 
+- Add catalan language
 - Split converse.js up into different plugin modules. [jcbrand]
 - Better Sass/CSS for responsive/mobile views. New mobile-only build. [jcbrand]
 - Roster contacts can now be filtered by chat state and roster filters are

@@ -1,0 +1,954 @@
+# Catalan translations for Converse.js package.
+# Copyright (C) 2013 Jan-Carel Brand
+# This file is distributed under the same license as the Converse.js package.
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: Converse.js 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-05 11:09+0000\n"
+"PO-Revision-Date: 2016-01-25 17:25+0100\n"
+"Last-Translator: Ruben Mansilla <ramansilla@gmail.com>\n"
+"Language-Team: CA <product@spamina.com>\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"plural_forms: nplurals=2; plural=(n != 1);\n"
+"lang: ca\n"
+"Language-Code: ca\n"
+"Language-Name: Catalán\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: converse\n"
+"domain: converse\n"
+"X-Is-Fallback-For: es-ar es-bo es-cl es-co es-cr es-do es-ec es-es es-sv es-"
+"gt es-hn es-mx es-ni es-pa es-py es-pe es-pr es-us es-uy es-ve\n"
+"X-Generator: Poedit 1.8.6\n"
+
+#: converse.js:311
+msgid " e.g. conversejs.org"
+msgstr "p. ex. conversejs.org"
+
+#: converse.js:391
+msgid "unencrypted"
+msgstr "sense xifrar"
+
+#: converse.js:392
+msgid "unverified"
+msgstr "sense verificar"
+
+#: converse.js:393
+msgid "verified"
+msgstr "verificat"
+
+#: converse.js:394
+msgid "finished"
+msgstr "acabat"
+
+#: converse.js:397
+msgid "This contact is busy"
+msgstr "Aquest contacte està ocupat"
+
+#: converse.js:398
+msgid "This contact is online"
+msgstr "Aquest contacte està en línia"
+
+#: converse.js:399
+msgid "This contact is offline"
+msgstr "Aquest contacte està desconnectat"
+
+#: converse.js:400
+msgid "This contact is unavailable"
+msgstr "Aquest contacte no està disponible"
+
+#: converse.js:401
+msgid "This contact is away for an extended period"
+msgstr "Aquest contacte està absent durant un període prolongat"
+
+#: converse.js:402
+msgid "This contact is away"
+msgstr "Aquest contacte està absent"
+
+#: converse.js:404
+msgid "Click to hide these contacts"
+msgstr "Feu clic per amagar aquests contactes"
+
+#: converse.js:406
+msgid "My contacts"
+msgstr "Els meus contactes"
+
+#: converse.js:407
+msgid "Pending contacts"
+msgstr "Contactes pendents"
+
+#: converse.js:408
+msgid "Contact requests"
+msgstr "Sol·licituds de contacte"
+
+#: converse.js:409
+msgid "Ungrouped"
+msgstr "Sense agrupar"
+
+#: converse.js:411 converse.js:849 converse.js:893
+msgid "Contacts"
+msgstr "Contactes"
+
+#: converse.js:412
+msgid "Groups"
+msgstr "Grups"
+
+#: converse.js:595
+msgid "Attempting to reconnect in 5 seconds"
+msgstr "S'intentarà tornar a establir la connexió en 5 segons"
+
+#: converse.js:641
+msgid "Error"
+msgstr "Error"
+
+#: converse.js:643 converse.js:2605
+msgid "Connecting"
+msgstr "S'està establint la connexió"
+
+#: converse.js:645
+msgid "Authenticating"
+msgstr "S'està efectuant l'autenticació"
+
+#: converse.js:647 converse.js:648
+msgid "Authentication Failed"
+msgstr "Error d'autenticació"
+
+#: converse.js:1018
+msgid "Re-establishing encrypted session"
+msgstr "S'està tornant a establir la sessió xifrada"
+
+#: converse.js:1030
+msgid "Generating private key."
+msgstr "S'està generant la clau privada"
+
+#: converse.js:1031
+msgid "Your browser might become unresponsive."
+msgstr "És possible que el navegador no respongui."
+
+#: converse.js:1067
+msgid ""
+"Authentication request from %1$s\n"
+"\n"
+"Your chat contact is attempting to verify your identity, by asking you the "
+"question below.\n"
+"\n"
+"%2$s"
+msgstr ""
+"Sol·licitud d'autenticació de %1$s\n"
+"\n"
+"El contacte del xat està intentant verificar la vostra identitat mitjançant "
+"la pregunta següent.\n"
+"\n"
+"%2$s"
+
+#: converse.js:1076
+msgid "Could not verify this user's identify."
+msgstr "No s'ha pogut verificar la identitat d'aquest usuari."
+
+#: converse.js:1115
+msgid "Exchanging private key with contact."
+msgstr "S'està intercanviant la clau privada amb el contacte."
+
+#: converse.js:1257
+msgid "Close this chat box"
+msgstr "Tanca aquest quadre del xat"
+
+#: converse.js:1258
+msgid "Minimize this chat box"
+msgstr "Minimitza aquest quadre del xat"
+
+#: converse.js:1259
+msgid "View more information on this person"
+msgstr "Mostra més informació d'aquesta persona"
+
+#: converse.js:1260
+msgid "Personal message"
+msgstr "Missatge personal"
+
+#: converse.js:1414
+msgid "Are you sure you want to clear the messages from this room?"
+msgstr "Segur que voleu esborrar els missatges d'aquesta sala?"
+
+#: converse.js:1568
+msgid "me"
+msgstr "jo"
+
+#: converse.js:1615
+msgid "is typing"
+msgstr "està escrivint"
+
+#: converse.js:1619
+msgid "has stopped typing"
+msgstr "ha deixat d'escriure"
+
+#: converse.js:1625 converse.js:1957
+msgid "has gone away"
+msgstr "ha marxat"
+
+#: converse.js:1684 converse.js:3086
+msgid "Show this menu"
+msgstr "Mostra aquest menú"
+
+#: converse.js:1685
+msgid "Write in the third person"
+msgstr "Escriu en tercera persona"
+
+#: converse.js:1686 converse.js:3084
+msgid "Remove messages"
+msgstr "Elimina els missatges"
+
+#: converse.js:1850
+msgid "Are you sure you want to clear the messages from this chat box?"
+msgstr "Segur que voleu esborrar els missatges d'aquest quadre del xat?"
+
+#: converse.js:1885
+msgid "Your message could not be sent"
+msgstr "No s'ha pogut enviar el missatge"
+
+#: converse.js:1888
+msgid "We received an unencrypted message"
+msgstr "Hem rebut un missatge sense xifrar"
+
+#: converse.js:1891
+msgid "We received an unreadable encrypted message"
+msgstr "Hem rebut un missatge xifrat il·legible"
+
+#: converse.js:1917
+msgid ""
+"Here are the fingerprints, please confirm them with %1$s, outside of this "
+"chat.\n"
+"\n"
+"Fingerprint for you, %2$s: %3$s\n"
+"\n"
+"Fingerprint for %1$s: %4$s\n"
+"\n"
+"If you have confirmed that the fingerprints match, click OK, otherwise click "
+"Cancel."
+msgstr ""
+"Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d'aquest xat.\n"
+"\n"
+"Empremta de l'usuari %2$s: %3$s\n"
+"\n"
+"Empremta de %1$s: %4$s\n"
+"\n"
+"Si heu confirmat que les empremtes coincideixen, feu clic a D'acord; en cas "
+"contrari, feu clic a Cancel·la."
+
+#: converse.js:1930
+msgid ""
+"You will be prompted to provide a security question and then an answer to "
+"that question.\n"
+"\n"
+"Your contact will then be prompted the same question and if they type the "
+"exact same answer (case sensitive), their identity will be verified."
+msgstr ""
+"Se us demanarà que indiqueu una pregunta de seguretat i la resposta "
+"corresponent.\n"
+"\n"
+"Es farà la mateixa pregunta al vostre contacte i, si escriu exactament la "
+"mateixa resposta (es distingeix majúscules de minúscules), se'n verificarà "
+"la identitat."
+
+#: converse.js:1931
+msgid "What is your security question?"
+msgstr "Quina és la vostra pregunta de seguretat?"
+
+#: converse.js:1933
+msgid "What is the answer to the security question?"
+msgstr "Quina és la resposta a la pregunta de seguretat?"
+
+#: converse.js:1937
+msgid "Invalid authentication scheme provided"
+msgstr "S'ha indicat un esquema d'autenticació no vàlid"
+
+#: converse.js:1955
+msgid "has gone offline"
+msgstr "s'ha desconnectat"
+
+#: converse.js:1959
+msgid "is busy"
+msgstr "està ocupat"
+
+#: converse.js:2053
+msgid "Your messages are not encrypted anymore"
+msgstr "Els vostres missatges ja no estan xifrats"
+
+#: converse.js:2055
+msgid ""
+"Your messages are now encrypted but your contact's identity has not been "
+"verified."
+msgstr ""
+"Ara, els vostres missatges estan xifrats, però no s'ha verificat la "
+"identitat del contacte."
+
+#: converse.js:2057
+msgid "Your contact's identify has been verified."
+msgstr "S'ha verificat la identitat del contacte."
+
+#: converse.js:2059
+msgid "Your contact has ended encryption on their end, you should do the same."
+msgstr "El contacte ha conclòs el xifratge; cal que feu el mateix."
+
+#: converse.js:2068
+msgid "Your messages are not encrypted. Click here to enable OTR encryption."
+msgstr ""
+"Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el "
+"xifratge OTR."
+
+#: converse.js:2070
+msgid "Your messages are encrypted, but your contact has not been verified."
+msgstr ""
+"Els vostres missatges estan xifrats, però no s'ha verificat el contacte."
+
+#: converse.js:2072
+msgid "Your messages are encrypted and your contact verified."
+msgstr "Els vostres missatges estan xifrats i s'ha verificat el contacte."
+
+#: converse.js:2074
+msgid ""
+"Your contact has closed their end of the private session, you should do the "
+"same"
+msgstr ""
+"El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."
+
+#: converse.js:2084
+msgid "Clear all messages"
+msgstr "Esborra tots els missatges"
+
+#: converse.js:2085
+msgid "End encrypted conversation"
+msgstr "Finalitza la conversa xifrada"
+
+#: converse.js:2086
+msgid "Insert a smiley"
+msgstr "Insereix una cara somrient"
+
+#: converse.js:2087
+msgid "Hide the list of occupants"
+msgstr "Amaga la llista d'ocupants"
+
+#: converse.js:2088
+msgid "Refresh encrypted conversation"
+msgstr "Actualitza la conversa xifrada"
+
+#: converse.js:2089
+msgid "Start a call"
+msgstr "Inicia una trucada"
+
+#: converse.js:2090
+msgid "Start encrypted conversation"
+msgstr "Comença la conversa xifrada"
+
+#: converse.js:2091
+msgid "Verify with fingerprints"
+msgstr "Verifica amb empremtes"
+
+#: converse.js:2092
+msgid "Verify with SMP"
+msgstr "Verifica amb SMP"
+
+#: converse.js:2093
+msgid "What's this?"
+msgstr "Què és això?"
+
+#: converse.js:2201
+msgid "Online"
+msgstr "En línia"
+
+#: converse.js:2202
+msgid "Busy"
+msgstr "Ocupat"
+
+#: converse.js:2203
+msgid "Away"
+msgstr "Absent"
+
+#: converse.js:2204
+msgid "Offline"
+msgstr "Desconnectat"
+
+#: converse.js:2205
+msgid "Log out"
+msgstr "Tanca la sessió"
+
+#: converse.js:2211
+msgid "Contact name"
+msgstr "Nom del contacte"
+
+#: converse.js:2212
+msgid "Search"
+msgstr "Cerca"
+
+#: converse.js:2216
+msgid "e.g. user@example.com"
+msgstr "p. ex. usuari@exemple.com"
+
+#: converse.js:2217
+msgid "Add"
+msgstr "Afegeix"
+
+#: converse.js:2222
+msgid "Click to add new chat contacts"
+msgstr "Feu clic per afegir contactes nous al xat"
+
+#: converse.js:2223
+msgid "Add a contact"
+msgstr "Afegeix un contacte"
+
+#: converse.js:2247
+msgid "No users found"
+msgstr "No s'ha trobat cap usuari"
+
+#: converse.js:2253
+msgid "Click to add as a chat contact"
+msgstr "Feu clic per afegir com a contacte del xat"
+
+#: converse.js:2311
+msgid "Room name"
+msgstr "Nom de la sala"
+
+#: converse.js:2312
+msgid "Nickname"
+msgstr "Àlies"
+
+#: converse.js:2313
+msgid "Server"
+msgstr "Servidor"
+
+#: converse.js:2314
+msgid "Join Room"
+msgstr "Uneix-me a la sala"
+
+#: converse.js:2315
+msgid "Show rooms"
+msgstr "Mostra les sales"
+
+#: converse.js:2319
+msgid "Rooms"
+msgstr "Sales"
+
+#. For translators: %1$s is a variable and will be replaced with the XMPP server name
+#: converse.js:2339
+msgid "No rooms on %1$s"
+msgstr "No hi ha cap sala a %1$s"
+
+#. For translators: %1$s is a variable and will be
+#. replaced with the XMPP server name
+#: converse.js:2353
+msgid "Rooms on %1$s"
+msgstr "Sales a %1$s"
+
+#: converse.js:2362
+msgid "Click to open this room"
+msgstr "Feu clic per obrir aquesta sala"
+
+#: converse.js:2363
+msgid "Show more information on this room"
+msgstr "Mostra més informació d'aquesta sala"
+
+#: converse.js:2435
+msgid "Description:"
+msgstr "Descripció:"
+
+#: converse.js:2436
+msgid "Occupants:"
+msgstr "Ocupants:"
+
+#: converse.js:2437
+msgid "Features:"
+msgstr "Característiques:"
+
+#: converse.js:2438
+msgid "Requires authentication"
+msgstr "Cal autenticar-se"
+
+#: converse.js:2439
+msgid "Hidden"
+msgstr "Amagat"
+
+#: converse.js:2440
+msgid "Requires an invitation"
+msgstr "Cal tenir una invitació"
+
+#: converse.js:2441
+msgid "Moderated"
+msgstr "Moderada"
+
+#: converse.js:2442
+msgid "Non-anonymous"
+msgstr "No és anònima"
+
+#: converse.js:2443
+msgid "Open room"
+msgstr "Obre la sala"
+
+#: converse.js:2444
+msgid "Permanent room"
+msgstr "Sala permanent"
+
+#: converse.js:2445
+msgid "Public"
+msgstr "Pública"
+
+#: converse.js:2446
+msgid "Semi-anonymous"
+msgstr "Semianònima"
+
+#: converse.js:2447
+msgid "Temporary room"
+msgstr "Sala temporal"
+
+#: converse.js:2448
+msgid "Unmoderated"
+msgstr "No moderada"
+
+#: converse.js:2720
+msgid "This user is a moderator"
+msgstr "Aquest usuari és un moderador"
+
+#: converse.js:2721
+msgid "This user can send messages in this room"
+msgstr "Aquest usuari pot enviar missatges a aquesta sala"
+
+#: converse.js:2722
+msgid "This user can NOT send messages in this room"
+msgstr "Aquest usuari NO pot enviar missatges a aquesta sala"
+
+#: converse.js:2750
+msgid "Invite..."
+msgstr "Convida..."
+
+#: converse.js:2751
+msgid "Occupants"
+msgstr "Ocupants"
+
+#: converse.js:2847
+msgid "You are about to invite %1$s to the chat room \"%2$s\". "
+msgstr "Esteu a punt de convidar %1$s a la sala de xat \"%2$s\". "
+
+#: converse.js:2848
+msgid ""
+"You may optionally include a message, explaining the reason for the "
+"invitation."
+msgstr ""
+"Teniu l'opció d'incloure un missatge per explicar el motiu de la invitació."
+
+#: converse.js:2931
+msgid "Message"
+msgstr "Missatge"
+
+#: converse.js:2983
+msgid "Error: could not execute the command"
+msgstr "Error: no s'ha pogut executar l'ordre"
+
+#: converse.js:3041
+msgid "Error: the \""
+msgstr "Error: el \""
+
+#: converse.js:3082
+msgid "Change user's affiliation to admin"
+msgstr "Canvia l'afiliació de l'usuari a administrador"
+
+#: converse.js:3083
+msgid "Ban user from room"
+msgstr "Expulsa l'usuari de la sala"
+
+#: converse.js:3085
+msgid "Change user role to occupant"
+msgstr "Canvia el rol de l'usuari a ocupant"
+
+#: converse.js:3087
+msgid "Kick user from room"
+msgstr "Expulsa l'usuari de la sala"
+
+#: converse.js:3088
+msgid "Write in 3rd person"
+msgstr "Escriu en tercera persona"
+
+#: converse.js:3089
+msgid "Grant membership to a user"
+msgstr "Atorga una afiliació a un usuari"
+
+#: converse.js:3090
+msgid "Remove user's ability to post messages"
+msgstr "Elimina la capacitat de l'usuari de publicar missatges"
+
+#: converse.js:3091
+msgid "Change your nickname"
+msgstr "Canvieu el vostre àlies"
+
+#: converse.js:3092
+msgid "Grant moderator role to user"
+msgstr "Atorga el rol de moderador a l'usuari"
+
+#: converse.js:3093
+msgid "Grant ownership of this room"
+msgstr "Atorga la propietat d'aquesta sala"
+
+#: converse.js:3094
+msgid "Revoke user's membership"
+msgstr "Revoca l'afiliació de l'usuari"
+
+#: converse.js:3095
+msgid "Set room topic"
+msgstr "Defineix un tema per a la sala"
+
+#: converse.js:3096
+msgid "Allow muted user to post messages"
+msgstr "Permet que un usuari silenciat publiqui missatges"
+
+#: converse.js:3252 converse.js:5356
+msgid "Save"
+msgstr "Desa"
+
+#: converse.js:3253 converse.js:5682 converse.js:5797
+msgid "Cancel"
+msgstr "Cancel·la"
+
+#: converse.js:3296
+msgid "An error occurred while trying to save the form."
+msgstr "S'ha produït un error en intentar desar el formulari."
+
+#: converse.js:3338
+msgid "This chatroom requires a password"
+msgstr "Aquesta sala de xat requereix una contrasenya"
+
+#: converse.js:3339
+msgid "Password: "
+msgstr "Contrasenya:"
+
+#: converse.js:3340
+msgid "Submit"
+msgstr "Envia"
+
+#: converse.js:3375
+msgid "This room is not anonymous"
+msgstr "Aquesta sala no és anònima"
+
+#: converse.js:3376
+msgid "This room now shows unavailable members"
+msgstr "Aquesta sala ara mostra membres no disponibles"
+
+#: converse.js:3377
+msgid "This room does not show unavailable members"
+msgstr "Aquesta sala no mostra membres no disponibles"
+
+#: converse.js:3378
+msgid "Non-privacy-related room configuration has changed"
+msgstr ""
+"S'ha canviat la configuració de la sala no relacionada amb la privadesa"
+
+#: converse.js:3379
+msgid "Room logging is now enabled"
+msgstr "El registre de la sala està habilitat"
+
+#: converse.js:3380
+msgid "Room logging is now disabled"
+msgstr "El registre de la sala està deshabilitat"
+
+#: converse.js:3381
+msgid "This room is now non-anonymous"
+msgstr "Aquesta sala ara no és anònima"
+
+#: converse.js:3382
+msgid "This room is now semi-anonymous"
+msgstr "Aquesta sala ara és parcialment anònima"
+
+#: converse.js:3383
+msgid "This room is now fully-anonymous"
+msgstr "Aquesta sala ara és totalment anònima"
+
+#: converse.js:3384
+msgid "A new room has been created"
+msgstr "S'ha creat una sala nova"
+
+#: converse.js:3388 converse.js:3487
+msgid "You have been banned from this room"
+msgstr "Se us ha expulsat d'aquesta sala"
+
+#: converse.js:3389
+msgid "You have been kicked from this room"
+msgstr "Se us ha expulsat d'aquesta sala"
+
+#: converse.js:3390
+msgid "You have been removed from this room because of an affiliation change"
+msgstr "Se us ha eliminat d'aquesta sala a causa d'un canvi d'afiliació"
+
+#: converse.js:3391
+msgid ""
+"You have been removed from this room because the room has changed to members-"
+"only and you're not a member"
+msgstr ""
+"Se us ha eliminat d'aquesta sala perquè ara només permet membres i no en sou "
+"membre"
+
+#: converse.js:3392
+msgid ""
+"You have been removed from this room because the MUC (Multi-user chat) "
+"service is being shut down."
+msgstr ""
+"Se us ha eliminat d'aquesta sala perquè s'està tancant el servei MUC (xat "
+"multiusuari)."
+
+#: converse.js:3406
+msgid "<strong>%1$s</strong> has been banned"
+msgstr "S'ha expulsat <strong>%1$s</strong>"
+
+#: converse.js:3407
+msgid "<strong>%1$s</strong>'s nickname has changed"
+msgstr "L'àlies de <strong>%1$s</strong> ha canviat"
+
+#: converse.js:3408
+msgid "<strong>%1$s</strong> has been kicked out"
+msgstr "S'ha expulsat <strong>%1$s</strong>"
+
+#: converse.js:3409
+msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
+msgstr "S'ha eliminat <strong>%1$s</strong> a causa d'un canvi d'afiliació"
+
+#: converse.js:3410
+msgid "<strong>%1$s</strong> has been removed for not being a member"
+msgstr "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
+
+#: converse.js:3414
+msgid "Your nickname has been automatically changed to: <strong>%1$s</strong>"
+msgstr "El vostre àlies ha canviat automàticament a: <strong>%1$s</strong>"
+
+#: converse.js:3415
+msgid "Your nickname has been changed to: <strong>%1$s</strong>"
+msgstr "El vostre àlies ha canviat a: <strong>%1$s</strong>"
+
+#: converse.js:3463 converse.js:3472
+msgid "The reason given is: \""
+msgstr "El motiu indicat és: \""
+
+#: converse.js:3485
+msgid "You are not on the member list of this room"
+msgstr "No sou a la llista de membres d'aquesta sala"
+
+#: converse.js:3491
+msgid "No nickname was specified"
+msgstr "No s'ha especificat cap àlies"
+
+#: converse.js:3495
+msgid "You are not allowed to create new rooms"
+msgstr "No teniu permís per crear sales noves"
+
+#: converse.js:3497
+msgid "Your nickname doesn't conform to this room's policies"
+msgstr "El vostre àlies no s'ajusta a les polítiques d'aquesta sala"
+
+#: converse.js:3501
+msgid "Your nickname is already taken"
+msgstr "El vostre àlies ja està en ús"
+
+#: converse.js:3503
+msgid "This room does not (yet) exist"
+msgstr "Aquesta sala (encara) no existeix"
+
+#: converse.js:3505
+msgid "This room has reached it's maximum number of occupants"
+msgstr "Aquesta sala ha assolit el nombre màxim d'ocupants"
+
+#: converse.js:3555
+msgid "Topic set by %1$s to: %2$s"
+msgstr "Tema definit per %1$s en: %2$s"
+
+#: converse.js:3638
+msgid "%1$s has invited you to join a chat room: %2$s"
+msgstr "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"
+
+#: converse.js:3642
+msgid ""
+"%1$s has invited you to join a chat room: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr ""
+"%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el "
+"següent motiu: \"%3$s\""
+
+#: converse.js:3916
+msgid "Click to restore this chat"
+msgstr "Feu clic per restaurar aquest xat"
+
+#: converse.js:4058
+msgid "Minimized"
+msgstr "Minimitzat"
+
+#: converse.js:4257 converse.js:4278
+msgid "Click to remove this contact"
+msgstr "Feu clic per eliminar aquest contacte"
+
+#: converse.js:4265
+msgid "Click to accept this contact request"
+msgstr "Feu clic per acceptar aquesta sol·licitud de contacte"
+
+#: converse.js:4266
+msgid "Click to decline this contact request"
+msgstr "Feu clic per rebutjar aquesta sol·licitud de contacte"
+
+#: converse.js:4277
+msgid "Click to chat with this contact"
+msgstr "Feu clic per conversar amb aquest contacte"
+
+#: converse.js:4279
+msgid "Name"
+msgstr "Nom"
+
+#: converse.js:4295
+msgid "Are you sure you want to remove this contact?"
+msgstr "Segur que voleu eliminar aquest contacte?"
+
+#: converse.js:4306
+msgid "Sorry, there was an error while trying to remove "
+msgstr "S'ha produït un error en intentar eliminar "
+
+#: converse.js:4325
+msgid "Are you sure you want to decline this contact request?"
+msgstr "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
+
+#: converse.js:4424
+msgid "Sorry, there was an error while trying to add "
+msgstr "S'ha produït un error en intentar afegir "
+
+#: converse.js:4596
+msgid "This client does not allow presence subscriptions"
+msgstr "Aquest client no admet les subscripcions de presència"
+
+#: converse.js:4912
+msgid "Type to filter"
+msgstr "Escriviu per filtrar"
+
+#. For translators: the %1$s part gets replaced with the status
+#. Example, I am online
+#: converse.js:5327 converse.js:5402
+msgid "I am %1$s"
+msgstr "Estic %1$s"
+
+#: converse.js:5329 converse.js:5407
+msgid "Click here to write a custom status message"
+msgstr "Feu clic aquí per escriure un missatge d'estat personalitzat"
+
+#: converse.js:5330 converse.js:5408
+msgid "Click to change your chat status"
+msgstr "Feu clic per canviar l'estat del xat"
+
+#: converse.js:5355
+msgid "Custom status"
+msgstr "Estat personalitzat"
+
+#: converse.js:5384 converse.js:5394
+msgid "online"
+msgstr "en línia"
+
+#: converse.js:5386
+msgid "busy"
+msgstr "ocupat"
+
+#: converse.js:5388
+msgid "away for long"
+msgstr "absent durant una estona"
+
+#: converse.js:5390
+msgid "away"
+msgstr "absent"
+
+#: converse.js:5392
+msgid "offline"
+msgstr "desconnectat"
+
+#: converse.js:5569
+msgid "Your XMPP provider's domain name:"
+msgstr "Nom de domini del vostre proveïdor XMPP:"
+
+#: converse.js:5570
+msgid "Fetch registration form"
+msgstr "Obtingues un formulari de registre"
+
+#: converse.js:5571
+msgid "Tip: A list of public XMPP providers is available"
+msgstr "Consell: hi ha disponible una llista de proveïdors XMPP públics"
+
+#: converse.js:5572
+msgid "here"
+msgstr "aquí"
+
+#: converse.js:5577 converse.js:5795
+msgid "Register"
+msgstr "Registre"
+
+#: converse.js:5623
+msgid ""
+"Sorry, the given provider does not support in band account registration. "
+"Please try with a different provider."
+msgstr ""
+"El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre "
+"proveïdor."
+
+#: converse.js:5683
+msgid "Requesting a registration form from the XMPP server"
+msgstr "S'està sol·licitant un formulari de registre del servidor XMPP"
+
+#: converse.js:5718
+msgid ""
+"Something went wrong while establishing a connection with \"%1$s\". Are you "
+"sure it exists?"
+msgstr ""
+"Ha passat alguna cosa mentre s'establia la connexió amb \"%1$s\". Segur que "
+"existeix?"
+
+#: converse.js:5737
+msgid "Now logging you in"
+msgstr "S'està iniciant la vostra sessió"
+
+#: converse.js:5741
+msgid "Registered successfully"
+msgstr "Registre correcte"
+
+#: converse.js:5800
+msgid "Return"
+msgstr "Torna"
+
+#: converse.js:5832
+msgid ""
+"The provider rejected your registration attempt. Please check the values you "
+"entered for correctness."
+msgstr ""
+"El proveïdor ha rebutjat l'intent de registre. Comproveu que els valors que "
+"heu introduït siguin correctes."
+
+#: converse.js:5988
+msgid "XMPP Username:"
+msgstr "Nom d'usuari XMPP:"
+
+#: converse.js:5989
+msgid "Password:"
+msgstr "Contrasenya:"
+
+#: converse.js:5990
+msgid "Click here to log in anonymously"
+msgstr "Feu clic aquí per iniciar la sessió de manera anònima"
+
+#: converse.js:5991
+msgid "Log In"
+msgstr "Inicia la sessió"
+
+#: converse.js:5992
+msgid "user@server"
+msgstr "usuari@servidor"
+
+#: converse.js:5993
+msgid "password"
+msgstr "contrasenya"
+
+#: converse.js:6000
+msgid "Sign in"
+msgstr "Inicia la sessió"
+
+#: converse.js:6074
+msgid "Toggle chat"
+msgstr "Canvia de xat"

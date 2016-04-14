@@ -39,13 +39,18 @@ For now, suffice to say that although its useful to have OTR support in
 Converse.js in order to avoid most eavesdroppers, if you need serious
 communications privacy, then you're much better off using native software.
 
-Sound Notifications
-===================
+Notifications
+=============
 
 From version 0.8.1 Converse.js can play a sound notification when you receive a
 message.
 
-For more info, please see the :ref:`play-sounds` configuration setting.
+For more info, refer to the :ref:`play-sounds` configuration setting.
+
+It can also show `desktop notification messages <https://developer.mozilla.org/en-US/docs/Web/API/notification>`_
+when the browser is not currently visible.
+
+For more info, refer to the :ref:`show-desktop-notifications` configuration setting.
 
 Multilingual Support
 ====================

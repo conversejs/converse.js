@@ -50,10 +50,6 @@
     mock.mock_connection = function ()  {
         Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
         var c = new Strophe.Connection('jasmine tests');
-        c.authenticated = true;
-        c.connected = true;
-        c.mock = true;
-        c.jid = 'dummy@localhost/resource';
         c.vcard = {
             'get': function (callback, jid) {
                 var fullname;
@@ -71,8 +67,13 @@
                 callback(vcard.tree());
             }
         };
-        c._changeConnectStatus(Strophe.Status.CONNECTED);
-        c.attach(c.jid);
+        c._proto._connect = function () {
+            c.authenticated = true;
+            c.connected = true;
+            c.mock = true;
+            c.jid = 'dummy@localhost/resource';
+            c._changeConnectStatus(Strophe.Status.CONNECTED);
+        };
         return c;
     }();
     return mock;

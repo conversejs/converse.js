@@ -1,13 +1,33 @@
 #conversejs {
     .flyout {
         border-radius: $chatbox-border-radius;
+        @media screen and (max-height: $mobile-landscape-height) {
+            border-radius: 0;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            border-radius: 0;
+        }
         bottom: $chatbox-hover-height;
         display: block;
         position: absolute;
+        @media screen and (max-height: $mobile-landscape-height) {
+            bottom: 0;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            bottom: 0;
+        }
     }
     .chat-head {
         border-top-left-radius: $chatbox-border-radius;
         border-top-right-radius: $chatbox-border-radius;
+        @media screen and (max-height: $mobile-landscape-height) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
         color: #ffffff;
         font-size: 100%;
         height: $chat-head-height;
@@ -58,7 +78,11 @@
         height: $bottom-gutter-height;
         margin: 0 $chat-gutter;
         width: $chat-width;
-        @media screen and (max-width: $mobile-landscape-length) {
+        @media screen and (max-height: $mobile-landscape-height) {
+            margin: 0;
+            width: $mobile-chat-width;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
             margin: 0;
             width: $mobile-chat-width;
         }
@@ -70,10 +94,15 @@
             min-width: $chat-width;
             width: $chat-width;
             z-index: 1;
-            @media screen and (max-width: $mobile-landscape-length) {
+            @media screen and (max-height: $mobile-landscape-height) {
                 height: $mobile-chat-height;
                 width: $mobile-chat-width;
-                height: 99vh;
+                height: 100vh;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                height: $mobile-chat-height;
+                width: $mobile-chat-width;
+                height: 100vh;
             }
         }
         .chat-title {
@@ -92,6 +121,14 @@
             background-color: white;
             border-bottom-left-radius: $chatbox-border-radius;
             border-bottom-right-radius: $chatbox-border-radius;
+            @media screen and (max-height: $mobile-landscape-height) {
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
             border-top: 0;
             height: 289px;
             @include calc(height, '100% - #{$chat-head-height}');
@@ -184,7 +221,10 @@
             position: relative;
             height: #{$chat-textarea-height + $toolbar-height};
             min-width: $chat-width;
-            @media screen and (max-width: $mobile-landscape-length) {
+            @media screen and (max-height: $mobile-landscape-height) {
+                width: 100%;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
                 width: 100%;
             }
             .chat-textarea {

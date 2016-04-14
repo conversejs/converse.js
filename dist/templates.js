@@ -112,27 +112,41 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="chatbox-btn close-chatbox-button icon-close" title="' +
 ((__t = (info_close)) == null ? '' : __t) +
-'"></a>\n        <a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
-((__t = (info_minimize)) == null ? '' : __t) +
 '"></a>\n        <div class="chat-title">\n            ';
  if (url) { ;
 __p += '\n                <a href="' +
 ((__t = (url)) == null ? '' : __t) +
-'" target="_blank" class="user">\n            ';
+'" target="_blank" rel="noopener" class="user">\n            ';
  } ;
 __p += '\n                    ' +
-((__t = ( fullname )) == null ? '' : __t) +
+((__t = ( title )) == null ? '' : __t) +
 '\n            ';
  if (url) { ;
 __p += '\n                </a>\n            ';
  } ;
-__p += '\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
+__p += '\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        ';
+ if (show_textarea) { ;
+__p += '\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
  if (show_toolbar) { ;
 __p += '\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
  } ;
 __p += '\n        <textarea\n            type="text"\n            class="chat-textarea"\n            placeholder="' +
 ((__t = (label_personal_message)) == null ? '' : __t) +
-'"/>\n        </form>\n    </div>\n</div>\n';
+'"/>\n        </form>\n        ';
+ } ;
+__p += '\n    </div>\n</div>\n';
+
+}
+return __p
+};
+
+this["templates"]["chatbox_minimize"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
+((__t = (info_minimize)) == null ? '' : __t) +
+'"></a>\n';
 
 }
 return __p
@@ -142,7 +156,7 @@ this["templates"]["chatroom"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        <a class="chatbox-btn toggle-chatbox-button icon-minus"></a>\n        <a class="chatbox-btn configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatroom">\n        <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        <a class="chatbox-btn configure-chatroom-button icon-wrench" style="display:none"></a>\n        <div class="chat-title"> ' +
 ((__t = ( _.escape(name) )) == null ? '' : __t) +
 ' </div>\n        <p class="chatroom-topic"><p/>\n    </div>\n    <div class="chat-body chatroom-body"><span class="spinner centered"/></div>\n</div>\n';
 
@@ -233,9 +247,13 @@ __p += '<form class="pure-form set-xmpp-status" action="" method="post">\n    <s
 ((__t = (label_busy)) == null ? '' : __t) +
 '</option>\n            <option value="away">' +
 ((__t = (label_away)) == null ? '' : __t) +
-'</option>\n            <option value="offline">' +
+'</option>\n            ';
+ if (include_offline_state)  { ;
+__p += '\n            <option value="offline">' +
 ((__t = (label_offline)) == null ? '' : __t) +
 '</option>\n            ';
+ } ;
+__p += '\n            ';
  if (allow_logout)  { ;
 __p += '\n            <option value="logout">' +
 ((__t = (label_logout)) == null ? '' : __t) +
@@ -261,9 +279,14 @@ return __p
 
 this["templates"]["controlbox"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        <a class="chatbox-btn close-chatbox-button icon-close"></a>\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        ';
+ if (!sticky_controlbox) { ;
+__p += '\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        ';
+ } ;
+__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 
 }
 return __p
@@ -665,7 +688,7 @@ __p += '<form id="converse-register" class="pure-form converse-form">\n    <span
 ((__t = (help_providers)) == null ? '' : __t) +
 ' <a href="' +
 ((__t = (href_providers)) == null ? '' : __t) +
-'" class="url" target="_blank">' +
+'" class="url" target="_blank" rel="noopener">' +
 ((__t = (help_providers_link)) == null ? '' : __t) +
 '</a>.</p>\n    <input class="pure-button button-primary" type="submit" value="' +
 ((__t = (label_register)) == null ? '' : __t) +
@@ -1057,6 +1080,17 @@ __p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
 '"></a></li>\n';
  } ;
 __p += '\n';
+
+}
+return __p
+};
+
+this["templates"]["toolbar_otr"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
  if (allow_otr)  { ;
 __p += '\n    <li class="toggle-otr ' +
 ((__t = (otr_status_class)) == null ? '' : __t) +
@@ -1102,7 +1136,7 @@ __p += '\n               <li><a class="auth-otr" data-scheme="fingerprint" href=
 ((__t = (label_verify_with_fingerprints)) == null ? '' : __t) +
 '</a></li>\n            ';
  } ;
-__p += '\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank">' +
+__p += '\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">' +
 ((__t = (label_whats_this)) == null ? '' : __t) +
 '</a></li>\n        </ul>\n    </li>\n';
  } ;

@@ -9,6 +9,7 @@
 .project
 .pydevproject
 analytics.js
+.idea
 
 # Ruby/Sass/Bundler
 .bundle
@@ -42,12 +43,17 @@ develop-eggs
 .DS_Store
 
 # Builds
-builds/converse-no-locales-no-otr.js
-builds/converse-no-locales-no-otr.min.js
-builds/converse-no-otr.js
-builds/converse-no-otr.min.js
-builds/converse.js
-builds/converse.nojquery.js
-builds/converse.nojquery.min.js
+dist/converse-no-dependencies.min.js
+dist/converse-no-locales-no-otr.js
+dist/converse-no-locales-no-otr.min.js
+dist/converse-no-otr.js
+dist/converse-no-otr.min.js
+dist/converse.min.js
+dist/converse.nojquery.js
+dist/converse.nojquery.min.js
+dist/converse-mobile.min.js
 
 css/converse.css.map
+css/converse.min.css
+
+.sv?

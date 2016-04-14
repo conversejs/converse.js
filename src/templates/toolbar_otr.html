@@ -1,0 +1,31 @@
+{[ if (allow_otr)  { ]}
+    <li class="toggle-otr {{otr_status_class}}" title="{{otr_tooltip}}">
+        <span class="chat-toolbar-text">{{otr_translated_status}}</span>
+        {[ if (otr_status == UNENCRYPTED) { ]}
+            <span class="icon-unlocked"></span>
+        {[ } ]}
+        {[ if (otr_status == UNVERIFIED) { ]}
+            <span class="icon-lock"></span>
+        {[ } ]}
+        {[ if (otr_status == VERIFIED) { ]}
+            <span class="icon-lock"></span>
+        {[ } ]}
+        {[ if (otr_status == FINISHED) { ]}
+            <span class="icon-unlocked"></span>
+        {[ } ]}
+        <ul>
+            {[ if (otr_status == UNENCRYPTED) { ]}
+               <li><a class="start-otr" href="#">{{label_start_encrypted_conversation}}</a></li>
+            {[ } ]}
+            {[ if (otr_status != UNENCRYPTED) { ]}
+               <li><a class="start-otr" href="#">{{label_refresh_encrypted_conversation}}</a></li>
+               <li><a class="end-otr" href="#">{{label_end_encrypted_conversation}}</a></li>
+               <li><a class="auth-otr" data-scheme="smp" href="#">{{label_verify_with_smp}}</a></li>
+            {[ } ]}
+            {[ if (otr_status == UNVERIFIED) { ]}
+               <li><a class="auth-otr" data-scheme="fingerprint" href="#">{{label_verify_with_fingerprints}}</a></li>
+            {[ } ]}
+            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">{{label_whats_this}}</a></li>
+        </ul>
+    </li>
+{[ } ]}

@@ -127,7 +127,7 @@
                 var $hint = view.$el.find('input.invited-contact.tt-hint');
                 runs (function () {
                     expect($input.length).toBe(1);
-                    expect($input.attr('placeholder')).toBe('Invite...');
+                    expect($input.attr('placeholder')).toBe('Invite');
                     $input.val("Felix");
                     $input.trigger('input');
                 });
@@ -163,7 +163,7 @@
                 )[0];
                 expect(converse.chatboxes.models.length).toBe(1);
                 expect(converse.chatboxes.models[0].id).toBe("controlbox");
-                converse.chatboxes.onInvite(message);
+                converse.onDirectMUCInvitation(message);
                 expect(window.confirm).toHaveBeenCalledWith(
                     name + ' has invited you to join a chat room: '+ room_jid +
                     ', and left the following reason: "'+reason+'"');
@@ -190,46 +190,6 @@
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-msg-content').text()).toBe(text);
                 expect(converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
-            }.bind(converse));
-
-            it("plays a sound when the current user is mentioned (if configured)", function () {
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                spyOn(converse, 'emit');
-                converse.play_sounds = true;
-                spyOn(converse, 'playNotification');
-                var view = this.chatboxviews.get('lounge@localhost');
-                if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                var text = 'This message will play a sound because it mentions dummy';
-                var message = $msg({
-                    from: 'lounge@localhost/otheruser',
-                    id: '1',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.onChatRoomMessage(message.nodeTree);
-                expect(converse.playNotification).toHaveBeenCalled();
-
-                text = "This message won't play a sound";
-                message = $msg({
-                    from: 'lounge@localhost/otheruser',
-                    id: '2',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.onChatRoomMessage(message.nodeTree);
-                expect(converse.playNotification, 1);
-                converse.play_sounds = false;
-
-                text = "This message won't play a sound because it is sent by dummy";
-                message = $msg({
-                    from: 'lounge@localhost/dummy',
-                    id: '3',
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(text);
-                view.onChatRoomMessage(message.nodeTree);
-                expect(converse.playNotification, 1);
-                converse.play_sounds = false;
             }.bind(converse));
 
             it("shows sent groupchat messages", function () {
@@ -682,7 +642,7 @@
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist");
             }.bind(converse));
 
-            it("will show an error message if the room has reached it's maximum number of occupants", function () {
+            it("will show an error message if the room has reached its maximum number of occupants", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
@@ -694,7 +654,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached it's maximum number of occupants");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants");
             }.bind(converse));
         }.bind(converse));
     }.bind(converse, mock, test_utils));

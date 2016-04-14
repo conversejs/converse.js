@@ -202,6 +202,23 @@ Example:
             roster_groups: true
         });
 
+send
+----
+
+Allows you to send XML stanzas.
+
+For example, to send a message stanza:
+
+.. code-block:: javascript
+
+    var msg = converse.env.$msg({
+        from: 'juliet@example.com/balcony',
+        to:'romeo@example.net',
+        type:'chat'
+    });
+    converse.send(msg);
+
+
 The "archive" grouping
 ----------------------
 
@@ -229,7 +246,6 @@ It accepts the following optional parameters:
 Examples
 ^^^^^^^^
 
-
 **Requesting all archived messages**
 
 The simplest query that can be made is to simply not pass in any parameters.
@@ -249,6 +265,7 @@ the returned messages.
         // Do something with the messages, like showing them in your webpage.
     }
     converse.archive.query(callback, errback))
+
 
 **Waiting until server support has been determined**
 
@@ -361,11 +378,43 @@ message, pass in the ``before`` parameter with an empty string value ``''``.
         converse.archive.query(rsm, callback, errback);
     }
 
+The "connection" grouping
+-------------------------
+
+This grouping collects API functions related to the XMPP connection.
+
+connected
+~~~~~~~~~
+
+A boolean attribute (i.e. not a callable) which is set to `true` or `false` depending
+on whether there is an established connection.
+
+disconnect
+~~~~~~~~~~
+
+Terminates the connection.
+
 
 The "user" grouping
 -------------------
 
 This grouping collects API functions related to the current logged in user.
+
+login
+~~~~~
+
+Logs the user in. This method can accept a map with the credentials, like this:
+
+.. code-block:: javascript
+
+    converse.user.login({
+        'jid': 'dummy@example.com',
+        'password': 'secret'
+    });
+
+or it can be called without any parameters, in which case converse.js will try
+to log the user in by calling the `prebind_url` or `credentials_url` depending
+on whether prebinding is used or not.
 
 logout
 ~~~~~~
@@ -500,13 +549,13 @@ Add a contact.
 
 Provide the JID of the contact you want to add:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.contacts.add('buddy@example.com')
 
 You may also provide the fullname. If not present, we use the jid as fullname:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.contacts.add('buddy@example.com', 'Buddy')
 
@@ -521,13 +570,13 @@ Returns an object representing a chat box.
 To return a single chat box, provide the JID of the contact you're chatting
 with in that chat box:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.chats.get('buddy@example.com')
 
 To return an array of chat boxes, provide an array of JIDs:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
 
@@ -542,13 +591,13 @@ Opens a chat box and returns an object representing a chat box.
 
 To open a single chat box, provide the JID of the contact:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.chats.open('buddy@example.com')
 
 To return an array of chat boxes, provide an array of JIDs:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
 
@@ -603,19 +652,19 @@ Similar to chats.get API
 
 To open a single multi user chat box, provide the JID of the room:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.rooms.open('group@muc.example.com')
 
 To return an array of rooms, provide an array of room JIDs:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
 
 To setup a custom nickname when joining the room, provide the optional nick argument:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.rooms.open('group@muc.example.com', 'mycustomnick')
 
@@ -666,9 +715,12 @@ Returns a token, either the RID or SID token depending on what's asked for.
 
 Example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
     converse.tokens.get('rid')
+
+
+.. _`listen-grouping`:
 
 The "listen" grouping
 ---------------------
@@ -691,7 +743,7 @@ grouping:
 
     For example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
         converse.listen.on('message', function (event, messageXML) { ... });
 
@@ -707,7 +759,7 @@ grouping:
 
     For example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
         converse.listen.once('message', function (event, messageXML) { ... });
 
@@ -722,65 +774,198 @@ grouping:
 
     For example:
 
-    .. code-block:: javascript
+.. code-block:: javascript
 
         converse.listen.not('message', function (event, messageXML) { ... });
 
 Events
 ======
 
-.. note:: see also the `"listen" grouping`_ API section above.
+.. note:: see also :ref:`listen-grouping` above.
 
 Event Types
 -----------
 
 Here are the different events that are emitted:
 
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| Event Type                      | When is it triggered?                                                                             | Example                                                                                              |
-+=================================+===================================================================================================+======================================================================================================+
-| **callButtonClicked**           | When a call button (i.e. with class .toggle-call) on a chat box has been clicked.                 | ``converse.listen.on('callButtonClicked', function (event, connection, model) { ... });``            |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **chatBoxOpened**               | When a chat box has been opened.                                                                  | ``converse.listen.on('chatBoxOpened', function (event, chatbox) { ... });``                          |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **chatRoomOpened**              | When a chat room has been opened.                                                                 | ``converse.listen.on('chatRoomOpened', function (event, chatbox) { ... });``                         |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **chatBoxClosed**               | When a chat box has been closed.                                                                  | ``converse.listen.on('chatBoxClosed', function (event, chatbox) { ... });``                          |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **chatBoxFocused**              | When the focus has been moved to a chat box.                                                      | ``converse.listen.on('chatBoxFocused', function (event, chatbox) { ... });``                         |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **chatBoxToggled**              | When a chat box has been minimized or maximized.                                                  | ``converse.listen.on('chatBoxToggled', function (event, chatbox) { ... });``                         |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **contactStatusChanged**        | When a chat buddy's chat status has changed.                                                      | ``converse.listen.on('contactStatusChanged', function (event, buddy, status) { ... });``             |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **contactStatusMessageChanged** | When a chat buddy's custom status message has changed.                                            | ``converse.listen.on('contactStatusMessageChanged', function (event, buddy, messageText) { ... });`` |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **message**                     | When a message is received.                                                                       | ``converse.listen.on('message', function (event, messageXML) { ... });``                             |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **messageSend**                 | When a message will be sent out.                                                                  | ``storage_memoryconverse.listen.on('messageSend', function (event, messageText) { ... });``          |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **noResumeableSession**         | When keepalive=true but there aren't any stored prebind tokens.                                   | ``converse.listen.on('noResumeableSession', function (event) { ... });``                             |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **initialized**                 | Once converse.js has been initialized.                                                            | ``converse.listen.on('initialized', function (event) { ... });``                                     |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **ready**                       | After connection has been established and converse.js has got all its ducks in a row.             | ``converse.listen.on('ready', function (event) { ... });``                                           |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **reconnect**                   | After the connection has dropped. Converse.js will attempt to reconnect when not in prebind mode. | ``converse.listen.on('reconnect', function (event) { ... });``                                       |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **roomInviteSent**              | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.listen.on('roomInvite', function (event, roomview, invitee_jid, reason) { ... });``       |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **roomInviteReceived**          | After the user has sent out a direct invitation, to a roster contact, asking them to join a room. | ``converse.listen.on('roomInvite', function (event, roomview, invitee_jid, reason) { ... });``       |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **roster**                      | When the roster is updated.                                                                       | ``converse.listen.on('roster', function (event, items) { ... });``                                   |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **rosterPush**                  | When the roster receives a push event from server. (i.e. New entry in your buddy list)            | ``converse.listen.on('rosterPush', function (event, items) { ... });``                               |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **statusChanged**               | When own chat status has changed.                                                                 | ``converse.listen.on('statusChanged', function (event, status) { ... });``                           |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **statusMessageChanged**        | When own custom status message has changed.                                                       | ``converse.listen.on('statusMessageChanged', function (event, message) { ... });``                   |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **serviceDiscovered**           | When converse.js has learned of a service provided by the XMPP server. See XEP-0030.              | ``converse.listen.on('serviceDiscovered', function (event, service) { ... });``                      |
-+---------------------------------+---------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------+
+callButtonClicked
+~~~~~~~~~~~~~~~~~
+
+When a call button (i.e. with class .toggle-call) on a chat box has been clicked.
+
+``converse.listen.on('callButtonClicked', function (event, connection, model) { ... });``
+
+chatBoxInitialized
+~~~~~~~~~~~~~~~~~~
+
+When a chat box has been initialized. Relevant to converse-chatview.js plugin.
+
+``converse.listen.on('chatBoxInitialized', function (event, chatbox) { ... });``
+
+chatBoxOpened
+~~~~~~~~~~~~~
+
+When a chat box has been opened. Relevant to converse-chatview.js plugin.
+
+``converse.listen.on('chatBoxOpened', function (event, chatbox) { ... });``
+
+chatRoomOpened
+~~~~~~~~~~~~~~
+
+When a chat room has been opened. Relevant to converse-chatview.js plugin.
+
+``converse.listen.on('chatRoomOpened', function (event, chatbox) { ... });``
+
+chatBoxClosed
+~~~~~~~~~~~~~
+
+When a chat box has been closed. Relevant to converse-chatview.js plugin.
+
+``converse.listen.on('chatBoxClosed', function (event, chatbox) { ... });``
+
+chatBoxFocused
+~~~~~~~~~~~~~~
+
+When the focus has been moved to a chat box. Relevant to converse-chatview.js plugin.
+
+``converse.listen.on('chatBoxFocused', function (event, chatbox) { ... });``
+
+chatBoxToggled
+~~~~~~~~~~~~~~
+
+When a chat box has been minimized or maximized. Relevant to converse-chatview.js plugin.
+
+``converse.listen.on('chatBoxToggled', function (event, chatbox) { ... });``
+
+connected
+~~~~~~~~~
+
+After connection has been established and converse.js has got all its ducks in a row.
+
+``converse.listen.on('connected', function (event) { ... });``
+
+contactRequest
+~~~~~~~~~~~~~~
+
+Someone has requested to subscribe to your presence (i.e. to be your contact).
+
+``converse.listen.on('contactRequest', function (event, user_data) { ... });``
+
+contactRemoved
+~~~~~~~~~~~~~~
+
+The user has removed a contact.
+
+``converse.listen.on('contactRemoved', function (event, data) { ... });``
+
+
+contactStatusChanged
+~~~~~~~~~~~~~~~~~~~~
+
+When a chat buddy's chat status has changed.
+
+``converse.listen.on('contactStatusChanged', function (event, buddy) { ... });``
+
+contactStatusMessageChanged
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When a chat buddy's custom status message has changed.
+
+``converse.listen.on('contactStatusMessageChanged', function (event, data) { ... });``
+
+disconnected
+~~~~~~~~~~~~
+
+After converse.js has disconnected from the XMPP server.
+
+``converse.listen.on('disconnected', function (event) { ... });``
+
+initialized
+~~~~~~~~~~~
+
+Once converse.js has been initialized.
+
+``converse.listen.on('initialized', function (event) { ... });``
+
+messageSend
+~~~~~~~~~~~
+
+When a message will be sent out.
+
+``storage_memoryconverse.listen.on('messageSend', function (event, messageText) { ... });``
+
+noResumeableSession
+~~~~~~~~~~~~~~~~~~~
+
+When keepalive=true but there aren't any stored prebind tokens.
+
+``converse.listen.on('noResumeableSession', function (event) { ... });``
+
+reconnected
+~~~~~~~~~~~
+
+After the connection has dropped and converse.js has reconnected.
+Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
+have to be registered anew.
+
+``converse.listen.on('reconnected', function (event) { ... });``
+
+roomInviteSent
+~~~~~~~~~~~~~~
+
+After the user has sent out a direct invitation, to a roster contact, asking them to join a room.
+
+``converse.listen.on('roomInvite', function (event, data) { ... });``
+
+roomInviteReceived
+~~~~~~~~~~~~~~~~~~
+
+After the user has sent out a direct invitation, to a roster contact, asking them to join a room.
+
+``converse.listen.on('roomInvite', function (event, data) { ... });``
+
+roster
+~~~~~~
+
+When the roster is updated.
+
+``converse.listen.on('roster', function (event, items) { ... });``
+
+rosterPush
+~~~~~~~~~~
+
+When the roster receives a push event from server. (i.e. New entry in your buddy list)
+
+``converse.listen.on('rosterPush', function (event, items) { ... });``
+
+statusInitialized
+~~~~~~~~~~~~~~~~~
+
+When own chat status has been initialized.
+
+``converse.listen.on('statusInitialized', function (event, status) { ... });``
+
+statusChanged
+~~~~~~~~~~~~~
+
+When own chat status has changed.
+
+``converse.listen.on('statusChanged', function (event, status) { ... });``
+
+statusMessageChanged
+~~~~~~~~~~~~~~~~~~~~
+
+When own custom status message has changed.
+
+``converse.listen.on('statusMessageChanged', function (event, message) { ... });``
+
+serviceDiscovered
+~~~~~~~~~~~~~~~~~
+
+When converse.js has learned of a service provided by the XMPP server. See XEP-0030.
+
+``converse.listen.on('serviceDiscovered', function (event, service) { ... });``
+
 
 
 Writing a converse.js plugin
@@ -821,21 +1006,55 @@ An example plugin
 
     (function (root, factory) {
         if (typeof define === 'function' && define.amd) {
-            define("myplugin", ["jquery", "strophe", "utils", "converse"], factory);
+            // AMD. Register as a module called "myplugin"
+            define("myplugin", ["converse"], factory);
+        } else {
+            // Browser globals. If you're not using a module loader such as require.js,
+            // then this line below executes. Make sure that your plugin's <script> tag
+            // appears after the one from converse.js.
+            factory(converse);
         }
-    }(this, function ($, strophe, utils, converse_api) {
+    }(this, function (converse_api) {
 
-        // Wrap your UI strings with the __ function for translation support.
-        var __ = $.proxy(utils.__, this);
+        // Commonly used utilities and variables can be found under the "env"
+        // namespace of converse_api
 
         // Strophe methods for building stanzas
-        var Strophe = strophe.Strophe;
-        $iq = strophe.$iq;
-        $msg = strophe.$msg;
-        $build = strophe.$build;
+        var Strophe = converse_api.env.Strophe,
+            $iq = converse_api.env.$iq,
+            $msg = converse_api.env.$msg,
+            $pres = converse_api.env.$pres,
+            $build = converse_api.env.$build,
+            b64_sha1 = converse_api.env.b64_sha1;
+
+        // Other frequently used utilities
+        var $ = converse_api.env.jQuery,
+            _ = converse_api.env._,
+            moment = converse_api.env.moment;
+
 
         // The following line registers your plugin.
         converse_api.plugins.add('myplugin', {
+
+            initialize: function () {
+                // Converse.js's plugin mechanism will call the initialize
+                // method on any plugin (if it exists) as soon as the plugin has
+                // been loaded.
+
+                // Inside this method, you have access to the protected "inner"
+                // converse object, from which you can get any configuration
+                // options that the user might have passed in via
+                // converse.initialize. These values are stored in the
+                // "user_settings" attribute.
+
+                // Let's assume the user might in a custom setting, like so:
+                // converse.initialize({
+                //      "initialize_message": "My plugin has been initialized"
+                // });
+                //
+                // Then we can alert that message, like so:
+                alert(this.converse.user_settings.initialize_message);
+            },
 
             myFunction: function () {
                 // This is a function which does not override anything in
@@ -854,27 +1073,38 @@ An example plugin
                 // For example, the inner protected *converse* object has a
                 // method "onConnected". You can override that method as follows:
                 onConnected: function () {
-                    // Override the onConnected method in converse.js
-                    // You have access to the protected converse object via the
-                    // _super attribute.
-                    var converse = this._super.converse;
+                    // Overrides the onConnected method in converse.js
+
+                    // Top-level functions in "overrides" are bound to the
+                    // inner "converse" object.
+                    var converse = this;
 
                     // Your custom code comes here.
                     // ...
 
                     // You can access the original function being overridden
-                    // vai the _super attribute.
-                    this._super.onConnected();
+                    // via the _super attribute.
+                    // Make sure to pass on the arguments supplied to this
+                    // function and also to apply the proper "this" object.
+                    this._super.onConnected.apply(this, arguments);
                 },
 
                 XMPPStatus: {
                     // Override converse.js's XMPPStatus Backbone model so that we can override the
                     // function that sends out the presence stanza.
                     sendPresence: function (type, status_message, jid) {
+                        // The "converse" object is available via the _super
+                        // attribute.
                         var converse = this._super.converse;
+
                         // Custom code can come here
                         // ...
-                        this._super.sendPresence(type, status_message, jid);
+
+                        // You can call the original overridden method, by
+                        // accessing it via the _super attribute.
+                        // When calling it, you need to apply the proper
+                        // context as reference by the "this" variable.
+                        this._super.sendPresence.apply(this, arguments);
                     }
                 },
             }

@@ -7,133 +7,9 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "nb"
          },
-         " e.g. conversejs.org": [
-            null,
-            ""
-         ],
-         "unencrypted": [
-            null,
-            "ukryptertß"
-         ],
-         "unverified": [
-            null,
-            "uverifisert"
-         ],
-         "verified": [
-            null,
-            "verifisert"
-         ],
-         "finished": [
-            null,
-            "ferdig"
-         ],
-         "This contact is busy": [
-            null,
-            "Denne kontakten er opptatt"
-         ],
-         "This contact is online": [
-            null,
-            "Kontakten er pålogget"
-         ],
-         "This contact is offline": [
-            null,
-            "Kontakten er avlogget"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Kontakten er utilgjengelig"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Kontakten er borte for en lengre periode"
-         ],
-         "This contact is away": [
-            null,
-            "Kontakten er borte"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Klikk for å skjule disse kontaktene"
-         ],
-         "My contacts": [
-            null,
-            "Mine Kontakter"
-         ],
-         "Pending contacts": [
-            null,
-            "Kontakter som venter på godkjenning"
-         ],
-         "Contact requests": [
-            null,
-            "Kontaktforespørsler"
-         ],
-         "Ungrouped": [
-            null,
-            "Ugrupperte"
-         ],
-         "Contacts": [
-            null,
-            "Kontakter"
-         ],
-         "Groups": [
-            null,
-            "Grupper"
-         ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
-         ],
-         "Error": [
-            null,
-            "Feil"
-         ],
-         "Connecting": [
-            null,
-            "Kobler til"
-         ],
-         "Authenticating": [
-            null,
-            "Godkjenner"
-         ],
-         "Authentication Failed": [
-            null,
-            "Godkjenning mislyktes"
-         ],
-         "Re-establishing encrypted session": [
-            null,
-            "Gjenopptar kryptert økt"
-         ],
-         "Generating private key.": [
-            null,
-            "Genererer privat nøkkel"
-         ],
-         "Your browser might become unresponsive.": [
-            null,
-            "Din nettleser kan bli uresponsiv"
-         ],
-         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
-            null,
-            "Godkjenningsforespørsel fra %1$s\n\nDin nettpratkontakt forsøker å bekrefte din identitet, ved å spørre deg spørsmålet under.\n\n%2$s"
-         ],
-         "Could not verify this user's identify.": [
-            null,
-            "Kunne ikke bekrefte denne brukerens identitet"
-         ],
-         "Exchanging private key with contact.": [
-            null,
-            "Bytter private nøkler med kontakt"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
          "Personal message": [
             null,
             "Personlig melding"
-         ],
-         "Are you sure you want to clear the messages from this room?": [
-            null,
-            "Er du sikker på at du vil fjerne meldingene fra dette rommet?"
          ],
          "me": [
             null,
@@ -163,105 +39,81 @@
             null,
             "Er du sikker på at du vil fjerne meldingene fra denne meldingsboksen?"
          ],
-         "Your message could not be sent": [
-            null,
-            "Beskjeden din kunne ikke sendes"
-         ],
-         "We received an unencrypted message": [
-            null,
-            "Vi mottok en ukryptert beskjed"
-         ],
-         "We received an unreadable encrypted message": [
-            null,
-            "Vi mottok en uleselig melding"
-         ],
-         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
-            "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nOm du har bekreftet at avtrykkene matcher, klikk OK. I motsatt fall, trykk Avbryt."
-         ],
-         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
-            null,
-            "Du vil bli spurt etter å tilby et sikkerhetsspørsmål og siden svare på dette.\n\nDin kontakt vil så bli spurt om det samme spørsmålet, og om de svarer det nøyaktig samme svaret (det er forskjell på små og store bokstaver), vil identiteten verifiseres."
-         ],
-         "What is your security question?": [
-            null,
-            "Hva er ditt Sikkerhetsspørsmål?"
-         ],
-         "What is the answer to the security question?": [
-            null,
-            "Hva er svaret på ditt Sikkerhetsspørsmål?"
-         ],
-         "Invalid authentication scheme provided": [
-            null,
-            "Du har vedlagt en ugyldig godkjenningsplan."
-         ],
-         "Your messages are not encrypted anymore": [
-            null,
-            "Dine meldinger er ikke kryptert lenger."
-         ],
-         "Your messages are now encrypted but your contact's identity has not been verified.": [
-            null,
-            "Dine meldinger er nå krypterte, men identiteten til din kontakt har ikke blitt verifisert."
-         ],
-         "Your contact's identify has been verified.": [
-            null,
-            "Din kontakts identitet har blitt verifisert."
-         ],
-         "Your contact has ended encryption on their end, you should do the same.": [
-            null,
-            "Din kontakt har avsluttet kryptering i sin ende, dette burde du også gjøre."
-         ],
-         "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
-            "Dine meldinger er ikke krypterte. Klikk her for å aktivere OTR-kryptering."
-         ],
-         "Your messages are encrypted, but your contact has not been verified.": [
-            null,
-            "Dine meldinger er krypterte, men din kontakt har ikke blitt verifisert."
-         ],
-         "Your messages are encrypted and your contact verified.": [
-            null,
-            "Dine meldinger er krypterte og din kontakt er verifisert."
-         ],
-         "Your contact has closed their end of the private session, you should do the same": [
-            null,
-            "Din kontakt har avsluttet økten i sin ende, dette burde du også gjøre."
-         ],
          "Clear all messages": [
             null,
             "Fjern alle meldinger"
-         ],
-         "End encrypted conversation": [
-            null,
-            "Avslutt kryptert økt"
          ],
          "Insert a smiley": [
             null,
             ""
          ],
-         "Refresh encrypted conversation": [
-            null,
-            "Last inn kryptert samtale på nytt"
-         ],
          "Start a call": [
             null,
             "Start en samtale"
          ],
-         "Start encrypted conversation": [
+         "Contacts": [
             null,
-            "Start en kryptert samtale"
+            "Kontakter"
          ],
-         "Verify with fingerprints": [
+         "Connecting": [
             null,
-            "Verifiser med Avtrykk"
+            "Kobler til"
          ],
-         "Verify with SMP": [
+         "XMPP Username:": [
             null,
-            "Verifiser med SMP"
+            "XMPP Brukernavn:"
          ],
-         "What's this?": [
+         "Password:": [
             null,
-            "Hva er dette?"
+            "Passord:"
+         ],
+         "Log In": [
+            null,
+            "Logg inn"
+         ],
+         "user@server": [
+            null,
+            ""
+         ],
+         "Sign in": [
+            null,
+            "Innlogging"
+         ],
+         "I am %1$s": [
+            null,
+            "Jeg er %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "Klikk her for å skrive en personlig statusmelding"
+         ],
+         "Click to change your chat status": [
+            null,
+            "Klikk for å endre din meldingsstatus"
+         ],
+         "Custom status": [
+            null,
+            "Personlig status"
+         ],
+         "Save": [
+            null,
+            "Lagre"
+         ],
+         "online": [
+            null,
+            "pålogget"
+         ],
+         "busy": [
+            null,
+            "opptatt"
+         ],
+         "away for long": [
+            null,
+            "borte lenge"
+         ],
+         "away": [
+            null,
+            "borte"
          ],
          "Online": [
             null,
@@ -291,7 +143,7 @@
             null,
             "Søk"
          ],
-         "e.g. user@example.com": [
+         "e.g. user@example.org": [
             null,
             ""
          ],
@@ -315,125 +167,49 @@
             null,
             "Klikk for å legge til som meldingskontakt"
          ],
-         "Room name": [
+         "Toggle chat": [
             null,
-            "Romnavn"
+            "Endre chatten"
          ],
-         "Nickname": [
+         "Attempting to reconnect in 5 seconds": [
             null,
-            "Kallenavn"
+            ""
          ],
-         "Server": [
+         "Disconnected": [
             null,
-            "Server"
+            ""
          ],
-         "Show rooms": [
+         "Error": [
             null,
-            "Vis Rom"
+            "Feil"
          ],
-         "Rooms": [
+         "Authenticating": [
             null,
-            "Rom"
+            "Godkjenner"
          ],
-         "No rooms on %1$s": [
+         "Authentication Failed": [
             null,
-            "Ingen rom på %1$s"
+            "Godkjenning mislyktes"
          ],
-         "Rooms on %1$s": [
+         "Sorry, there was an error while trying to add ": [
             null,
-            "Rom på %1$s"
+            ""
          ],
-         "Click to open this room": [
+         "This client does not allow presence subscriptions": [
             null,
-            "Klikk for å åpne dette rommet"
+            ""
          ],
-         "Show more information on this room": [
+         "Click to restore this chat": [
             null,
-            "Vis mer informasjon om dette rommet"
+            "Klikk for å gjenopprette denne samtalen"
          ],
-         "Description:": [
+         "Minimized": [
             null,
-            "Beskrivelse:"
+            "Minimert"
          ],
-         "Occupants:": [
+         "Minimize this chat box": [
             null,
-            "Brukere her:"
-         ],
-         "Features:": [
-            null,
-            "Egenskaper:"
-         ],
-         "Requires authentication": [
-            null,
-            "Krever Godkjenning"
-         ],
-         "Hidden": [
-            null,
-            "Skjult"
-         ],
-         "Requires an invitation": [
-            null,
-            "Krever en invitasjon"
-         ],
-         "Moderated": [
-            null,
-            "Moderert"
-         ],
-         "Non-anonymous": [
-            null,
-            "Ikke-Anonym"
-         ],
-         "Open room": [
-            null,
-            "Åpent Rom"
-         ],
-         "Permanent room": [
-            null,
-            "Permanent Rom"
-         ],
-         "Public": [
-            null,
-            "Alle"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Semi-anonymt"
-         ],
-         "Temporary room": [
-            null,
-            "Midlertidig Rom"
-         ],
-         "Unmoderated": [
-            null,
-            "Umoderert"
-         ],
-         "This user is a moderator": [
-            null,
-            "Denne brukeren er moderator"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Denne brukeren kan skrive meldinger i dette rommet"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Denne brukeren kan IKKE sende meldinger i dette rommet"
-         ],
-         "Invite...": [
-            null,
-            "Invitér..."
-         ],
-         "Occupants": [
-            null,
-            "Brukere her:"
-         ],
-         "You are about to invite %1$s to the chat room \"%2$s\". ": [
-            null,
-            "Du er i ferd med å invitere %1$s til samtalerommet \"%2$s\". "
-         ],
-         "You may optionally include a message, explaining the reason for the invitation.": [
-            null,
-            "Du kan eventuelt inkludere en melding og forklare årsaken til invitasjonen."
+            ""
          ],
          "Message": [
             null,
@@ -446,6 +222,10 @@
          "Error: the \"": [
             null,
             ""
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Er du sikker på at du vil fjerne meldingene fra dette rommet?"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -490,10 +270,6 @@
          "Allow muted user to post messages": [
             null,
             "Tillat stumme brukere å skrive meldinger"
-         ],
-         "Save": [
-            null,
-            "Lagre"
          ],
          "Cancel": [
             null,
@@ -631,13 +407,129 @@
             null,
             "Dette rommet eksisterer ikke (enda)"
          ],
-         "This room has reached it's maximum number of occupants": [
-            null,
-            "Dette rommet har nådd maksimalt antall brukere"
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Emnet ble endret den %1$s til: %2$s"
+         ],
+         "This user is a moderator": [
+            null,
+            "Denne brukeren er moderator"
+         ],
+         "This user can send messages in this room": [
+            null,
+            "Denne brukeren kan skrive meldinger i dette rommet"
+         ],
+         "This user can NOT send messages in this room": [
+            null,
+            "Denne brukeren kan IKKE sende meldinger i dette rommet"
+         ],
+         "Invite": [
+            null,
+            "Invitér"
+         ],
+         "Occupants": [
+            null,
+            "Brukere her:"
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            "Du er i ferd med å invitere %1$s til samtalerommet \"%2$s\". "
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            "Du kan eventuelt inkludere en melding og forklare årsaken til invitasjonen."
+         ],
+         "Room name": [
+            null,
+            "Romnavn"
+         ],
+         "Nickname": [
+            null,
+            "Kallenavn"
+         ],
+         "Server": [
+            null,
+            "Server"
+         ],
+         "Show rooms": [
+            null,
+            "Vis Rom"
+         ],
+         "Rooms": [
+            null,
+            "Rom"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "Ingen rom på %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "Rom på %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Klikk for å åpne dette rommet"
+         ],
+         "Show more information on this room": [
+            null,
+            "Vis mer informasjon om dette rommet"
+         ],
+         "Description:": [
+            null,
+            "Beskrivelse:"
+         ],
+         "Occupants:": [
+            null,
+            "Brukere her:"
+         ],
+         "Features:": [
+            null,
+            "Egenskaper:"
+         ],
+         "Requires authentication": [
+            null,
+            "Krever Godkjenning"
+         ],
+         "Hidden": [
+            null,
+            "Skjult"
+         ],
+         "Requires an invitation": [
+            null,
+            "Krever en invitasjon"
+         ],
+         "Moderated": [
+            null,
+            "Moderert"
+         ],
+         "Non-anonymous": [
+            null,
+            "Ikke-Anonym"
+         ],
+         "Open room": [
+            null,
+            "Åpent Rom"
+         ],
+         "Permanent room": [
+            null,
+            "Permanent Rom"
+         ],
+         "Public": [
+            null,
+            "Alle"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi-anonymt"
+         ],
+         "Temporary room": [
+            null,
+            "Midlertidig Rom"
+         ],
+         "Unmoderated": [
+            null,
+            "Umoderert"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -647,89 +539,153 @@
             null,
             "%1$s har invitert deg til å bli med i chatterommet: %2$s, og forlot selv av følgende grunn:  \"%3$s\""
          ],
-         "Click to restore this chat": [
-            null,
-            "Klikk for å gjenopprette denne samtalen"
-         ],
-         "Minimized": [
-            null,
-            "Minimert"
-         ],
-         "Click to remove this contact": [
-            null,
-            "Klikk for å fjerne denne kontakten"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Klikk for å Godta denne kontaktforespørselen"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Klikk for å avslå denne kontaktforespørselen"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Klikk for å chatte med denne kontakten"
-         ],
-         "Name": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Er du sikker på at du vil fjerne denne kontakten?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
+         "%1$s says": [
             null,
             ""
          ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Er du sikker på at du vil avslå denne kontaktforespørselen?"
-         ],
-         "Sorry, there was an error while trying to add ": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "This client does not allow presence subscriptions": [
+         "An error has occured": [
             null,
             ""
          ],
-         "Type to filter": [
+         "Re-establishing encrypted session": [
             null,
-            "Skriv til filter"
+            "Gjenopptar kryptert økt"
          ],
-         "I am %1$s": [
+         "Generating private key.": [
             null,
-            "Jeg er %1$s"
+            "Genererer privat nøkkel"
          ],
-         "Click here to write a custom status message": [
+         "Your browser might become unresponsive.": [
             null,
-            "Klikk her for å skrive en personlig statusmelding"
+            "Din nettleser kan bli uresponsiv"
          ],
-         "Click to change your chat status": [
+         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
             null,
-            "Klikk for å endre din meldingsstatus"
+            "Godkjenningsforespørsel fra %1$s\n\nDin nettpratkontakt forsøker å bekrefte din identitet, ved å spørre deg spørsmålet under.\n\n%2$s"
          ],
-         "Custom status": [
+         "Could not verify this user's identify.": [
             null,
-            "Personlig status"
+            "Kunne ikke bekrefte denne brukerens identitet"
          ],
-         "online": [
+         "Exchanging private key with contact.": [
             null,
-            "pålogget"
+            "Bytter private nøkler med kontakt"
          ],
-         "busy": [
+         "Your messages are not encrypted anymore": [
             null,
-            "opptatt"
+            "Dine meldinger er ikke kryptert lenger."
          ],
-         "away for long": [
+         "Your messages are now encrypted but your contact's identity has not been verified.": [
             null,
-            "borte lenge"
+            "Dine meldinger er nå krypterte, men identiteten til din kontakt har ikke blitt verifisert."
          ],
-         "away": [
+         "Your contact's identify has been verified.": [
             null,
-            "borte"
+            "Din kontakts identitet har blitt verifisert."
+         ],
+         "Your contact has ended encryption on their end, you should do the same.": [
+            null,
+            "Din kontakt har avsluttet kryptering i sin ende, dette burde du også gjøre."
+         ],
+         "Your message could not be sent": [
+            null,
+            "Beskjeden din kunne ikke sendes"
+         ],
+         "We received an unencrypted message": [
+            null,
+            "Vi mottok en ukryptert beskjed"
+         ],
+         "We received an unreadable encrypted message": [
+            null,
+            "Vi mottok en uleselig melding"
+         ],
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+            null,
+            "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nOm du har bekreftet at avtrykkene matcher, klikk OK. I motsatt fall, trykk Avbryt."
+         ],
+         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+            null,
+            "Du vil bli spurt etter å tilby et sikkerhetsspørsmål og siden svare på dette.\n\nDin kontakt vil så bli spurt om det samme spørsmålet, og om de svarer det nøyaktig samme svaret (det er forskjell på små og store bokstaver), vil identiteten verifiseres."
+         ],
+         "What is your security question?": [
+            null,
+            "Hva er ditt Sikkerhetsspørsmål?"
+         ],
+         "What is the answer to the security question?": [
+            null,
+            "Hva er svaret på ditt Sikkerhetsspørsmål?"
+         ],
+         "Invalid authentication scheme provided": [
+            null,
+            "Du har vedlagt en ugyldig godkjenningsplan."
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "Dine meldinger er ikke krypterte. Klikk her for å aktivere OTR-kryptering."
+         ],
+         "Your messages are encrypted, but your contact has not been verified.": [
+            null,
+            "Dine meldinger er krypterte, men din kontakt har ikke blitt verifisert."
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            "Dine meldinger er krypterte og din kontakt er verifisert."
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            "Din kontakt har avsluttet økten i sin ende, dette burde du også gjøre."
+         ],
+         "End encrypted conversation": [
+            null,
+            "Avslutt kryptert økt"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "Last inn kryptert samtale på nytt"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "Start en kryptert samtale"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "Verifiser med Avtrykk"
+         ],
+         "Verify with SMP": [
+            null,
+            "Verifiser med SMP"
+         ],
+         "What's this?": [
+            null,
+            "Hva er dette?"
+         ],
+         "unencrypted": [
+            null,
+            "ukryptertß"
+         ],
+         "unverified": [
+            null,
+            "uverifisert"
+         ],
+         "verified": [
+            null,
+            "verifisert"
+         ],
+         "finished": [
+            null,
+            "ferdig"
+         ],
+         " e.g. conversejs.org": [
+            null,
+            ""
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -775,29 +731,105 @@
             null,
             "Tilbake"
          ],
-         "XMPP Username:": [
+         "This contact is busy": [
             null,
-            "XMPP Brukernavn:"
+            "Denne kontakten er opptatt"
          ],
-         "Password:": [
+         "This contact is online": [
             null,
-            "Passord:"
+            "Kontakten er pålogget"
          ],
-         "Log In": [
+         "This contact is offline": [
             null,
-            "Logg inn"
+            "Kontakten er avlogget"
          ],
-         "user@server": [
+         "This contact is unavailable": [
+            null,
+            "Kontakten er utilgjengelig"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Kontakten er borte for en lengre periode"
+         ],
+         "This contact is away": [
+            null,
+            "Kontakten er borte"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Klikk for å skjule disse kontaktene"
+         ],
+         "Groups": [
+            null,
+            "Grupper"
+         ],
+         "My contacts": [
+            null,
+            "Mine Kontakter"
+         ],
+         "Pending contacts": [
+            null,
+            "Kontakter som venter på godkjenning"
+         ],
+         "Contact requests": [
+            null,
+            "Kontaktforespørsler"
+         ],
+         "Ungrouped": [
+            null,
+            "Ugrupperte"
+         ],
+         "Filter": [
             null,
             ""
          ],
-         "Sign in": [
+         "State": [
             null,
-            "Innlogging"
+            ""
          ],
-         "Toggle chat": [
+         "Any": [
             null,
-            "Endre chatten"
+            ""
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "Klikk for å fjerne denne kontakten"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "Klikk for å Godta denne kontaktforespørselen"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "Klikk for å avslå denne kontaktforespørselen"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Klikk for å chatte med denne kontakten"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Er du sikker på at du vil fjerne denne kontakten?"
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Er du sikker på at du vil avslå denne kontaktforespørselen?"
          ]
       }
    }

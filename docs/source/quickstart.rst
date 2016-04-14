@@ -8,19 +8,25 @@ Quickstart (to get a demo up and running)
 
 When you download a specific release of *Converse.js* there will be two minified files inside the zip file.
 
-* builds/converse.min.js
+* dist/converse.js
 * css/converse.min.css
 
-You can include these two files inside the *<head>* element of your website via the *script* and *link*
-tags:
+You can include these two files inside the *<head>* element of your website via the *script* and *link* tags:
 
 .. code-block:: html
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/converse.min.css">
-    <script src="builds/converse.min.js"></script>
+    <script src="dist/converse.js"></script>
 
-You need to initialize Converse.js with configuration settings according to
-your requirements.
+.. note::
+    Note that the Javascript file ``converse.js`` contains **all** the dependencies
+    of converse.js and is unminified, so it's very large. Before you host
+    converse.js yourself, you'll definitely want to generate a minified version
+    first. There are various ways to do this. One option is to simply run ``make dist``,
+    in your converse.js repo checkout. A minified file ``dist/converse.min.js`` will
+    then be created for you, which you can use.
+
+You need to initialize Converse.js with configuration settings according to your requirements.
 
 Please refer to the :ref:`configuration-variables` section for info on all the available configuration settings.
 

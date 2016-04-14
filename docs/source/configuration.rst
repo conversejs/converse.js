@@ -256,6 +256,23 @@ auto_join_on_invite
 
 If true, the user will automatically join a chatroom on invite without any confirm.
 
+
+auto_join_rooms
+---------------
+
+* Default:  ``[]``
+
+This settings allows you to provide a list of groupchat conversations to be
+automatically joined once the user has logged in.
+
+You can either specify a simple list of room JIDs, in which case your nickname
+will be taken from your JID, or you can specify a list of maps, where each map
+specifies the room's JID and the nickname that should be used.
+
+For example:
+
+    `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
+
 .. _`bosh-service-url`:
 
 bosh_service_url
@@ -298,12 +315,49 @@ This setting can only be used together with ``allow_otr = true``.
     to retrieve your private key and read your all the chat messages in your
     current session. Previous sessions however cannot be decrypted.
 
+chatstate_notification_blacklist
+--------------------------------
+
+* Default: ``[]``
+
+A list of JIDs to be ignored when showing desktop notifications of changed chat states.
+
+Some user's clients routinely connect and disconnect (likely on mobile) and
+each time a chat state notificaion is received (``online`` when connecting and
+then ``offline`` when disconnecting).
+
+When desktop notifications are turned on (see `show-desktop-notifications`_),
+then you'll receive notification messages each time this happens.
+
+Receiving constant notifications that a user's client is connecting and disconnecting
+is annoying, so this option allows you to ignore those JIDs.
+
+credentials_url
+---------------
+
+* Default:  ``null``
+* Type:  URL
+
+This setting should be used in conjunction with ``authentication`` set to ``login`` and :ref:`keepalive` set to ``true``.
+
+It allows you to specify a URL which converse.js will call when it needs to get
+the username and password (or authentication token) which converse.js will use
+to automatically log the user in.
+
+The server behind ``credentials_url`` should return a JSON encoded object::
+
+    {
+        "jid": "me@example.com/resource",
+        "password": "Ilikecats!",
+    }
+
+
 csi_waiting_time
 ----------------
 
 * Default: ``0``
 
-This option adds support for **XEP-0085 Chat State Indication**.
+This option adds support for `XEP-0352 Client State Indication <http://xmpp.org/extensions/xep-0352.html>_`
 
 If converse.js is idle for the configured amount of seconds, a chat state
 indication of ``inactive`` will be sent out to the XMPP server (if the server
@@ -311,6 +365,8 @@ supports CSI).
 
 Afterwards, ss soon as there is any activity (for example, the mouse moves),
 a chat state indication of ``active`` will be sent out.
+
+A value of ``0`` means that this feature is disabled.
 
 debug
 -----
@@ -417,7 +473,7 @@ state. The only defined states are:
 * dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
 * xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
 
-Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info. 
+Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info.
 
 What used to happen in converse.js when the `offline` state was chosen, is
 that a presence stanza with a `type` of `unavailable` was sent out.
@@ -500,6 +556,17 @@ This sets the default archiving preference. Valid values are ``never``, ``always
 ``roster`` means that only messages to and from JIDs in your roster will be
 archived. The other two values are self-explanatory.
 
+
+message_archiving_timeout
+-------------------------
+
+* Default:  ``8000``
+
+The amount of time (in milliseconds) to wait when requesting archived messages
+from the XMPP server.
+
+Used in conjunction with `message_archiving` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
+
 message_carbons
 ---------------
 
@@ -538,11 +605,19 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
+notification_icon
+-----------------
+
+* Default: ``'/logo/conversejs.png'``
+
+This option specifies which icon is shown in HTML5 notifications, as provided
+by the ``src/converse-notification.js`` plugin.
+
 
 ping_interval
 -------------
 
-* Default:  ``300``
+* Default:  ``180``
 
 Make ping to server in order to keep connection with server killing sessions after idle timeout.
 The ping are sent only if no messages are sent in the last ``ping_interval`` seconds
@@ -565,6 +640,8 @@ formatted sound files. We need both, because neither format is supported by all 
 
 You can set the URL where the sound files are hosted with the `sounds_path`_
 option.
+
+Requires the `src/converse-notification.js` plugin.
 
 .. _`prebind_url`:
 
@@ -631,6 +708,23 @@ However, be aware that even if this value is set to ``false``, if the
 controlbox is open, and the page is reloaded, then it will stay open on the new
 page as well.
 
+.. _`show-desktop-notifications`:
+
+show_desktop_notifications
+--------------------------
+
+* Default: ``true``
+
+Should HTML5 desktop notifications be shown?
+
+Notification will be shown in the following cases:
+
+* the browser is not visible nor focused and a private message is received.
+* the browser is not visible nor focused and a groupchat message is received which mentions you.
+* `auto_subscribe` is set to `false` and a new contact request is received.
+
+Requires the `src/converse-notification.js` plugin.
+
 show_only_online_users
 ----------------------
 
@@ -679,6 +773,50 @@ Data in localStorage on the other hand is kept indefinitely.
     roster contact statuses will not become out of sync in a single session,
     only across more than one session.
 
+sticky_controlbox
+-----------------
+
+* Default: ``false``
+
+If set to ``true``, the control box (which includes the login, registration,
+contacts and rooms tabs) will not be closeable. It won't have a close button at
+all.
+
+The idea behind this setting is to provide a better experience on mobile
+devices when the intent is to use converse.js as a web app. In this case
+it doesn't make sense to close the control box, as there's often then nothing
+"behind" it that's relevant to the user.
+
+
+strict_plugin_dependencies
+--------------------------
+
+* Default: ``false``
+
+When set to ``true`` and a plugin tries to override an object which doesn't
+exist (for example because the plugin which provides that object is not
+loaded), then an error will be raised.
+
+Otherwise a message will simply be logged and the override instruction ignored.
+
+This allows plugins to have "soft" dependencies which aren't declared as
+as dependencies.
+
+synchronize_availability
+--------------------
+
+* Default: ``true``
+
+Valid options: ``true``, ``false``, ``a resource name``.
+
+This option lets you synchronize your chat status (`online`, `busy`, `away`) with other chat clients. In other words,
+if you change your status to `busy` in a different chat client, your status will change to `busy` in converse.js as well.
+
+If set to ``true``, converse.js will synchronize with all other clients you are logged in with.
+
+If set to ``false``, this feature is disabled.
+
+If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
 
 use_otr_by_default
 ------------------
@@ -736,7 +874,7 @@ websocket_url
 
 * Default: ``undefined``
 
-This option is used to specify a 
+This option is used to specify a
 `websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which
 converse.js can connect to.
 
@@ -752,7 +890,7 @@ support.
     Please note that not older browsers do not support websockets. For older
     browsers you'll want to specify a BOSH URL. See the :ref:`bosh-service-url`
     configuration setting).
-    
+
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
 

@@ -1,11 +1,12 @@
-/*global jQuery, templates, escape, Jed, _ */
+/*global escape, locales, Jed */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(["jquery", "underscore", "converse-templates", "locales"], factory);
-    } else {
-        root.utils = factory(jQuery, _, templates);
-    }
-}(this, function ($, _, templates, locales) {
+    define([
+        "jquery",
+        "jquery.browser",
+        "underscore",
+        "converse-templates"
+    ], factory);
+}(this, function ($, dummy, _, templates) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -42,7 +43,7 @@
                     for (i=0; i<list.length; i++) {
                         var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], "<a target='_blank' href='" + prot + escaped_url + "'>"+ list[i] + "</a>" );
+                        x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
                     }
                 }
                 $(obj).html(x);
@@ -90,6 +91,11 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
+            if (typeof Jed === "undefined") {
+                return str;
+            }
+            // FIXME: this can be refactored to take the i18n obj as a
+            // parameter.
             // Translation factory
             if (typeof this.i18n === "undefined") {
                 this.i18n = locales.en;
@@ -110,13 +116,42 @@
 
         ___: function (str) {
             /* XXX: This is part of a hack to get gettext to scan strings to be
-                * translated. Strings we cannot send to the function above because
-                * they require variable interpolation and we don't yet have the
-                * variables at scan time.
-                *
-                * See actionInfoMessages
-                */
+             * translated. Strings we cannot send to the function above because
+             * they require variable interpolation and we don't yet have the
+             * variables at scan time.
+             *
+             * See actionInfoMessages in src/converse-muc.js
+             */
             return str;
+        },
+
+        isHeadlineMessage: function (message) {
+            var $message = $(message),
+                from_jid = $message.attr('from');
+            if ($message.attr('type') === 'headline' ||
+                // Some servers (I'm looking at you Prosody) don't set the message
+                // type to "headline" when sending server messages. For now we
+                // check if an @ signal is included, and if not, we assume it's
+                // a headline message.
+                (   $message.attr('type') !== 'error' &&
+                    typeof from_jid !== 'undefined' &&
+                    from_jid.indexOf('@') === -1
+                )) {
+                return true;
+            }
+            return false;
+        },
+
+        refreshWebkit: function () {
+            /* This works around a webkit bug. Refreshes the browser's viewport,
+             * otherwise chatboxes are not moved along when one is closed.
+             */
+            if ($.browser.webkit) {
+                var conversejs = document.getElementById('conversejs');
+                conversejs.style.display = 'none';
+                var tmp = conversejs.offsetHeight; // jshint ignore:line
+                conversejs.style.display = 'block';
+            }
         },
 
         webForm2xForm: function (field) {
@@ -144,6 +179,22 @@
                 name: $input.attr('name'),
                 value: value
             }))[0];
+        },
+
+        contains: function (attr, query) {
+            return function (item) {
+                if (typeof attr === 'object') {
+                    var value = false;
+                    _.each(attr, function (a) {
+                        value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    });
+                    return value;
+                } else if (typeof attr === 'string') {
+                    return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                } else {
+                    throw new TypeError('contains: wrong attribute type. Must be string or array.');
+                }
+            };
         },
 
         xForm2webForm: function ($field, $stanza) {
@@ -232,6 +283,12 @@
                 }
             }
         }
+    };
+
+    utils.contains.not = function (attr, query) {
+        return function (item) {
+            return !(utils.contains(attr, query)(item));
+        };
     };
     return utils;
 }));

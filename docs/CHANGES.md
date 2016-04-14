@@ -1,6 +1,46 @@
 # Changelog
 
-## 0.10.1 (Unreleased)
+## 1.0.0 (Unreleased)
+
+- Split converse.js up into different plugin modules. [jcbrand]
+- Better Sass/CSS for responsive/mobile views. New mobile-only build. [jcbrand]
+- Roster contacts can now be filtered by chat state and roster filters are
+  remembered across page loads. [jcbrand]
+- Add support for messages with type `headline`, often used for notifications
+  from the server. [jcbrand]
+- Add stanza-specific event listener `converse.listen.stanza`.
+  As a result `converse.listen.on('message');` has been deprecated, use
+  `converse.stanza.on('message');` instead. [jcbrand]
+- Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
+- Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
+- New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate_notification_blacklist) [jcbrand]
+- New config option [sticky_controlbox](https://conversejs.org/docs/html/configuration.html#sticky_controlbox) [jcbrand]
+- New config option [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials_url) [jcbrand]
+- Don't play sound notifications for OTR messages which are setting up an
+  encrypted session. [jcbrand]
+- Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]
+- Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
+- Use `rel=noopener` with links that contain `target=_blank` to prevent potential
+  phishing attacks. [More info here](https://mathiasbynens.github.io/rel-noopener/)
+  [jcbrand]
+- #156 Add the option `auto_join_rooms` which allows you to automatically
+  connect to certain rooms once logged in. [jcbrand]
+- #261 `show_controlbox_by_default` config not working [diditopher]
+- #443 HTML5 notifications of received messages [jcbrand]
+- #534 Updated Russian translation [badfiles]
+- #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
+- #573 xgettext build error: `'javascript' unknown` [jcbrand]
+- #577 New config variable [message_archiving_timeout](https://conversejs.org/docs/html/configuration.html#message_archiving_timeout) [jcbrand]
+- #587 Fix issue when logging out with `auto_logout=true` [davec82]
+- #589 Save scroll position on minimize and restore it on maximize [rlanvin]
+- #592 Add random resource for `auto_login`, add method generateResource to
+  generate random resource [davec82]
+- #598 Add option `synchronize_availability` [davec82]
+- #600 Fix change xmpp status also on icon-status click [davec82]
+- #616 converse-otr should depend on converse-minimize  [jcbrand]
+- #609 Remove split of fullname [lixmal]
+
+## 0.10.1 (2016-02-06)
 
 - #352 When the user has manually scrolled up in a chat window, don't scroll
   down on chat event notifications. [jcbrand]
@@ -16,6 +56,9 @@
   See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]
 - #487 Empty the resources array when the resource is null [rlanvin]
+- #534 Updated Russian translation [LaconicTranslator]
+- #555 The status restored from sessionStorage is never updated [jcbrand]
+- #559 Remove reconnection timer once connected succesfully [m0cs]
 
 ## 0.10.0 (2015-11-05)
 

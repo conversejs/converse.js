@@ -7,6 +7,7 @@ HTTPSERVE		?= ./node_modules/.bin/http-server
 JSHINT 			?= ./node_modules/.bin/jshint
 PAPER           =
 PHANTOMJS       ?= ./node_modules/.bin/phantomjs
+RJS				?= ./node_modules/.bin/r.js
 PO2JSON         ?= ./node_modules/.bin/po2json
 SASS            ?= ./.bundle/bin/sass
 SPHINXBUILD     ?= ./bin/sphinx-build
@@ -18,12 +19,15 @@ SOURCES	= $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
 JSHINTEXCEPTIONS = $(GENERATED) \
 		   src/otr.js \
 		   src/crypto.js \
+		   src/build-mobile.js \
 		   src/build-no-jquery.js \
-		   src/build-no-locales-no-otr.js \
-		   src/build-no-otr.js \
+		   src/build-no-dependencies.js \
 		   src/build.js \
 		   src/bigint.js
 CHECKSOURCES	= $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
+
+.PHONY: all
+all: dev
 
 .PHONY: help
 help:
@@ -38,6 +42,7 @@ help:
 	@echo " dev           Set up the development environment. To force a fresh start, run 'make clean' first."
 	@echo " epub          Export the documentation to epub."
 	@echo " html          Make standalone HTML files of the documentation."
+	@echo " doc           Same as "doc". Make standalone HTML files of the documentation."
 	@echo " linkcheck     Check all documentation external links for integrity."
 	@echo " po            Generate gettext PO files for each i18n language."
 	@echo " po2json       Generate JSON files from the language PO files."
@@ -49,22 +54,22 @@ help:
 	@echo " stamp-bundler Install Bundler (Ruby) dependencies and create the guard file stamp-bundler which will prevent those dependencies from being installed again."
 	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
 
-.PHONY: all
-all: dev
 
 ########################################################################
 ## Miscellaneous
 
 .PHONY: serve
 serve: stamp-npm
-	$(HTTPSERVE) -p 8000
+	$(HTTPSERVE) -p 8000 -c -1
 
 ########################################################################
 ## Translation machinery
 
+GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.10.1 -c
+
 .PHONY: pot
 pot:
-	xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot converse.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=0.7.0 -c --language="python";
+	$(GETTEXT) --language="javascript" 2>&1 > /dev/null; test $$? -eq 0 && exit 0 || $(GETTEXT) --language="python" && exit $$?;
 
 .PHONY: po
 po:
@@ -82,6 +87,7 @@ release:
 	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\.[0-9]\.[0-9]/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ bower.json
 	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ package.json
+	sed -i s/--package-version=[0-9]\.[0-9]\.[0-9]/--package-version=$(VERSION)/ Makefile
 	sed -i s/v[0-9]\.[0-9]\.[0-9]\.zip/v$(VERSION)\.zip/ index.html
 	sed -i s/v[0-9]\.[0-9]\.[0-9]\.tar\.gz/v$(VERSION)\.tar\.gz/ index.html
 	sed -i s/version\ =\ \'[0-9]\.[0-9]\.[0-9]\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
@@ -103,55 +109,85 @@ stamp-bower: stamp-npm bower.json
 	$(BOWER) install
 	touch stamp-bower
 
-stamp-bundler:
+stamp-bundler: Gemfile
 	mkdir -p .bundle
 	gem install --user bundler --bindir .bundle/bin
 	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
 	touch stamp-bundler
 
 .PHONY: clean
-clean::
-	rm -f stamp-npm stamp-bower stamp-bundler
-	rm -rf node_modules components .bundle
+clean:
+	-rm -f stamp-npm stamp-bower stamp-bundler
+	-rm -rf node_modules components .bundle
 
 .PHONY: dev
-dev: stamp-bower stamp-bundler
+dev: stamp-bower stamp-bundler build
 
 ########################################################################
 ## Builds
 
 .PHONY: css
-css: converse.css
+css: css/converse.css
 
-converse.css:: stamp-bundler stamp-bower
+css/converse.css:: stamp-bundler stamp-bower sass
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
 .PHONY: watch
 watch: stamp-bundler
 	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css
 
-.PHONY: jsmin
-jsmin:
-	$(GRUNT) jsmin
+BUILDS = dist/converse.js \
+		 dist/converse.min.js \
+         dist/converse-mobile.js \
+         dist/converse-mobile.min.js \
+         dist/converse.nojquery.js \
+ 		 dist/converse.nojquery.min.js \
+		 dist/converse-no-dependencies.min.js \
+		 dist/converse-no-dependencies.js
 
-.PHONY: watch
+dist/converse.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build.js
+dist/converse.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build.js optimize=none out=dist/converse.js
+dist/converse.nojquery.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-jquery.js
+dist/converse.nojquery.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-jquery.js optimize=none out=dist/converse.nojquery.js
+dist/converse-no-dependencies.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-dependencies.js
+dist/converse-no-dependencies.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
+dist/converse-mobile.min.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-mobile.js
+dist/converse-mobile.js: stamp-bower src locale components *.js
+	$(RJS) -o src/build-mobile.js optimize=none out=dist/converse-mobile.js
+
+.PHONY: jsmin
+jsmin: $(BUILDS)
+
+.PHONY: cssmin 
 cssmin: stamp-npm
 	$(GRUNT) cssmin
+
+.PHONY: dist
+dist:: build
 
 .PHONY: build
 build:: stamp-npm
 	$(GRUNT) jst
-	$(GRUNT) minify
+	$(GRUNT) cssmin
+	$(GRUNT) json
+	make jsmin
 
 ########################################################################
 ## Tests
 
 .PHONY: jshint
-jshint: stamp-npm
+jshint: stamp-bower
 	$(JSHINT) --config jshintrc $(CHECKSOURCES)
 
 .PHONY: watch
-check: stamp-npm jshint
+check: stamp-bower jshint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 
 ########################################################################
@@ -163,6 +199,9 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+.PHONY: html
+doc: html
 
 .PHONY: epub
 epub:

@@ -11,6 +11,8 @@
 analytics.js
 .idea
 
+converse-logs/*.html
+
 # Ruby/Sass/Bundler
 .bundle
 .sass-cache

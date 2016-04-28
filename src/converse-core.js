@@ -1567,8 +1567,8 @@
 
         this.setUpXMLLogging = function () {
             if (this.debug) {
-                this.connection.xmlInput = function (body) { converse.log(body); };
-                this.connection.xmlOutput = function (body) { converse.log(body); };
+                this.connection.xmlInput = function (body) { converse.log(body.outerHTML); };
+                this.connection.xmlOutput = function (body) { converse.log(body.outerHTML); };
             }
         };
 

@@ -125,13 +125,17 @@
                     // give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
                 } else {
-                    if (typeof converse.roster === 'undefined') {
-                        converse.log("Could not send notification, because roster is undefined", "error");
-                        return;
+                    if ($message.attr('type') === 'groupchat') {
+                        title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
+                    } else {
+                        if (typeof converse.roster === 'undefined') {
+                            converse.log("Could not send notification, because roster is undefined", "error");
+                            return;
+                        }
+                        contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                        roster_item = converse.roster.get(contact_jid);
+                        title = __(___("%1$s says"), roster_item.get('fullname'));
                     }
-                    contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
-                    roster_item = converse.roster.get(contact_jid);
-                    title = __(___("%1$s says"), roster_item.get('fullname'));
                 }
                 n = new Notification(title, {
                         body: $message.children('body').text(),

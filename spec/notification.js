@@ -26,7 +26,7 @@
             describe("And the desktop is not focused", function () {
                 describe("an HTML5 Notification", function () {
 
-                    it("is shown when a new message is received", function () {
+                    it("is shown when a new private message is received", function () {
                         // TODO: not yet testing show_desktop_notifications setting
                         spyOn(converse, 'showMessageNotification');
                         spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
@@ -43,6 +43,38 @@
                         converse.chatboxes.onMessage(msg); // This will emit 'message'
                         expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(converse.showMessageNotification).toHaveBeenCalled();
+                    });
+
+                    it("is shown when you are mentioned in a chat room", function () {
+                        test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                        var view = converse.chatboxviews.get('lounge@localhost');
+                        if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                        var no_notification = false;
+                        if (typeof window.Notification === 'undefined') {
+                            no_notification = true;
+                            window.Notification = function () {
+                                return {
+                                    'close': function () {}
+                                };
+                            };
+                        }
+                        spyOn(converse, 'showMessageNotification').andCallThrough();
+                        spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        
+                        var message = 'dummy: This message will show a desktop notification';
+                        var nick = mock.chatroom_names[0],
+                            msg = $msg({
+                                from: 'lounge@localhost/'+nick,
+                                id: (new Date()).getTime(),
+                                to: 'dummy@localhost',
+                                type: 'groupchat'
+                            }).c('body').t(message).tree();
+                        converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        expect(converse.showMessageNotification).toHaveBeenCalled();
+                        if (no_notification) {
+                            delete window.Notification;
+                        }
                     });
 
                     it("is shown when a user changes their chat state", function () {

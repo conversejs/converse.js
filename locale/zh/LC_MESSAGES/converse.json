@@ -162,13 +162,9 @@
             null,
             "折叠聊天窗口"
          ],
-         "Attempting to reconnect in 5 seconds": [
+         "Attempting to reconnect": [
             null,
             ""
-         ],
-         "Disconnected": [
-            null,
-            "连接已断开"
          ],
          "Error": [
             null,

@@ -183,11 +183,7 @@
             null,
             "Включити чат"
          ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
-         ],
-         "Disconnected": [
+         "Attempting to reconnect": [
             null,
             ""
          ],

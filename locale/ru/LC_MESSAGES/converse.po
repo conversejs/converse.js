@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-07 10:34+0000\n"
+"POT-Creation-Date: 2016-05-03 15:34+0000\n"
 "PO-Revision-Date: 2016-04-07 10:22+0000\n"
 "Last-Translator: Laconic Team <info@laconic.website>\n"
 "Language-Team: Laconic Team <info@laconic.website>\n"
@@ -38,7 +38,7 @@ msgid "has stopped typing"
 msgstr "перестал набирать"
 
 #: src/converse-chatview.js:337 src/converse-chatview.js:554
-#: src/converse-notification.js:157
+#: src/converse-notification.js:161
 msgid "has gone away"
 msgstr "отошёл"
 
@@ -58,11 +58,11 @@ msgstr "Удалить сообщения"
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "Вы уверены, что хотите очистить сообщения из окна чата?"
 
-#: src/converse-chatview.js:552 src/converse-notification.js:155
+#: src/converse-chatview.js:552 src/converse-notification.js:159
 msgid "has gone offline"
 msgstr "вышел из сети"
 
-#: src/converse-chatview.js:556 src/converse-notification.js:159
+#: src/converse-chatview.js:556 src/converse-notification.js:163
 msgid "is busy"
 msgstr "занят"
 
@@ -82,174 +82,170 @@ msgstr "Вставить смайлик"
 msgid "Start a call"
 msgstr "Инициировать звонок"
 
-#: src/converse-controlbox.js:173 src/converse-core.js:576
-#: src/converse-core.js:622 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:177 src/converse-core.js:570
+#: src/converse-core.js:616 src/converse-rosterview.js:58
 msgid "Contacts"
 msgstr "Контакты"
 
-#: src/converse-controlbox.js:275 src/converse-core.js:483
+#: src/converse-controlbox.js:265 src/converse-core.js:474
 msgid "Connecting"
 msgstr "Соединение"
 
-#: src/converse-controlbox.js:375
+#: src/converse-controlbox.js:365
 msgid "XMPP Username:"
 msgstr "XMPP Username:"
 
-#: src/converse-controlbox.js:376
+#: src/converse-controlbox.js:366
 msgid "Password:"
 msgstr "Пароль:"
 
-#: src/converse-controlbox.js:377
+#: src/converse-controlbox.js:367
 msgid "Click here to log in anonymously"
 msgstr "Нажмите здесь, чтобы войти анонимно"
 
-#: src/converse-controlbox.js:378
+#: src/converse-controlbox.js:368
 msgid "Log In"
 msgstr "Войти"
 
-#: src/converse-controlbox.js:379
+#: src/converse-controlbox.js:369
 #, fuzzy
 msgid "Username"
 msgstr "XMPP Username:"
 
-#: src/converse-controlbox.js:379
+#: src/converse-controlbox.js:369
 msgid "user@server"
 msgstr "user@server"
 
-#: src/converse-controlbox.js:380
+#: src/converse-controlbox.js:370
 msgid "password"
 msgstr "пароль"
 
-#: src/converse-controlbox.js:387
+#: src/converse-controlbox.js:377
 msgid "Sign in"
 msgstr "Вход"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: src/converse-controlbox.js:475 src/converse-controlbox.js:550
+#: src/converse-controlbox.js:465 src/converse-controlbox.js:540
 msgid "I am %1$s"
 msgstr "Я %1$s"
 
-#: src/converse-controlbox.js:477 src/converse-controlbox.js:555
+#: src/converse-controlbox.js:467 src/converse-controlbox.js:545
 msgid "Click here to write a custom status message"
 msgstr "Редактировать произвольный статус"
 
-#: src/converse-controlbox.js:478 src/converse-controlbox.js:556
+#: src/converse-controlbox.js:468 src/converse-controlbox.js:546
 msgid "Click to change your chat status"
 msgstr "Изменить ваш статус"
 
-#: src/converse-controlbox.js:503
+#: src/converse-controlbox.js:493
 msgid "Custom status"
 msgstr "Произвольный статус"
 
-#: src/converse-controlbox.js:504 src/converse-muc.js:556
+#: src/converse-controlbox.js:494 src/converse-muc.js:556
 msgid "Save"
 msgstr "Сохранить"
 
-#: src/converse-controlbox.js:532 src/converse-controlbox.js:542
+#: src/converse-controlbox.js:522 src/converse-controlbox.js:532
 msgid "online"
 msgstr "на связи"
 
-#: src/converse-controlbox.js:534
+#: src/converse-controlbox.js:524
 msgid "busy"
 msgstr "занят"
 
-#: src/converse-controlbox.js:536
+#: src/converse-controlbox.js:526
 msgid "away for long"
 msgstr "отошёл надолго"
 
-#: src/converse-controlbox.js:538
+#: src/converse-controlbox.js:528
 msgid "away"
 msgstr "отошёл"
 
-#: src/converse-controlbox.js:540
+#: src/converse-controlbox.js:530
 #, fuzzy
 msgid "offline"
 msgstr "Не в сети"
 
-#: src/converse-controlbox.js:581 src/converse-rosterview.js:102
+#: src/converse-controlbox.js:571 src/converse-rosterview.js:102
 msgid "Online"
 msgstr "В сети"
 
-#: src/converse-controlbox.js:582 src/converse-rosterview.js:104
+#: src/converse-controlbox.js:572 src/converse-rosterview.js:104
 msgid "Busy"
 msgstr "Занят"
 
-#: src/converse-controlbox.js:583 src/converse-rosterview.js:105
+#: src/converse-controlbox.js:573 src/converse-rosterview.js:105
 msgid "Away"
 msgstr "Отошёл"
 
-#: src/converse-controlbox.js:584 src/converse-rosterview.js:107
+#: src/converse-controlbox.js:574 src/converse-rosterview.js:107
 msgid "Offline"
 msgstr "Не в сети"
 
-#: src/converse-controlbox.js:585
+#: src/converse-controlbox.js:575
 msgid "Log out"
 msgstr "Выйти"
 
-#: src/converse-controlbox.js:592
+#: src/converse-controlbox.js:582
 msgid "Contact name"
 msgstr "Имя контакта"
 
-#: src/converse-controlbox.js:593
+#: src/converse-controlbox.js:583
 msgid "Search"
 msgstr "Поиск"
 
-#: src/converse-controlbox.js:597
+#: src/converse-controlbox.js:587
 #, fuzzy
 msgid "e.g. user@example.org"
 msgstr "например, user@example.com"
 
-#: src/converse-controlbox.js:598
+#: src/converse-controlbox.js:588
 msgid "Add"
 msgstr "Добавить"
 
-#: src/converse-controlbox.js:603
+#: src/converse-controlbox.js:593
 msgid "Click to add new chat contacts"
 msgstr "Добавить новый чат"
 
-#: src/converse-controlbox.js:604
+#: src/converse-controlbox.js:594
 msgid "Add a contact"
 msgstr "Добавть контакт"
 
-#: src/converse-controlbox.js:628
+#: src/converse-controlbox.js:618
 msgid "No users found"
 msgstr "Пользователи не найдены"
 
-#: src/converse-controlbox.js:634
+#: src/converse-controlbox.js:624
 msgid "Click to add as a chat contact"
 msgstr "Кликните, чтобы добавить контакт"
 
-#: src/converse-controlbox.js:692
+#: src/converse-controlbox.js:682
 msgid "Toggle chat"
 msgstr "Включить чат"
 
-#: src/converse-core.js:428
+#: src/converse-core.js:431
 #, fuzzy
-msgid "Attempting to reconnect in 5 seconds"
+msgid "Attempting to reconnect"
 msgstr "Попытка восстановить соединение через 5 секунд"
 
-#: src/converse-core.js:452
-msgid "Disconnected"
-msgstr "Отключено"
-
-#: src/converse-core.js:481
+#: src/converse-core.js:472
 msgid "Error"
 msgstr "Ошибка"
 
-#: src/converse-core.js:485
+#: src/converse-core.js:476
 msgid "Authenticating"
 msgstr "Авторизация"
 
-#: src/converse-core.js:487 src/converse-core.js:488
+#: src/converse-core.js:478 src/converse-core.js:479
 msgid "Authentication Failed"
 msgstr "Не удалось авторизоваться"
 
-#: src/converse-core.js:880
+#: src/converse-core.js:874
 msgid "Sorry, there was an error while trying to add "
 msgstr "Возникла ошибка при добавлении "
 
-#: src/converse-core.js:1051
+#: src/converse-core.js:1045
 msgid "This client does not allow presence subscriptions"
 msgstr "Программа не поддерживает уведомления о статусе"
 
@@ -345,8 +341,8 @@ msgstr "Установить тему"
 msgid "Allow muted user to post messages"
 msgstr "Разрешить заглушенным пользователям отправлять сообщения"
 
-#: src/converse-muc.js:557 src/converse-register.js:222
-#: src/converse-register.js:337
+#: src/converse-muc.js:557 src/converse-register.js:216
+#: src/converse-register.js:331
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -653,20 +649,20 @@ msgstr "%1$s пригласил вас в чат: %2$s, по следующей 
 msgid "Notification from %1$s"
 msgstr ""
 
-#: src/converse-notification.js:134
+#: src/converse-notification.js:129 src/converse-notification.js:137
 msgid "%1$s says"
 msgstr ""
 
-#: src/converse-notification.js:161
+#: src/converse-notification.js:165
 #, fuzzy
 msgid "has come online"
 msgstr "вышел из сети"
 
-#: src/converse-notification.js:176
+#: src/converse-notification.js:180
 msgid "wants to be your contact"
 msgstr ""
 
-#: src/converse-notification.js:184
+#: src/converse-notification.js:188
 msgid "An error has occured"
 msgstr ""
 
@@ -855,31 +851,31 @@ msgstr "проверено"
 msgid "finished"
 msgstr "закончено"
 
-#: src/converse-register.js:86
+#: src/converse-register.js:80
 msgid " e.g. conversejs.org"
 msgstr "например, conversejs.org"
 
-#: src/converse-register.js:109
+#: src/converse-register.js:103
 msgid "Your XMPP provider's domain name:"
 msgstr ""
 
-#: src/converse-register.js:110
+#: src/converse-register.js:104
 msgid "Fetch registration form"
 msgstr "Получить форму регистрации"
 
-#: src/converse-register.js:111
+#: src/converse-register.js:105
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Совет. Список публичных XMPP провайдеров доступен"
 
-#: src/converse-register.js:112
+#: src/converse-register.js:106
 msgid "here"
 msgstr "здесь"
 
-#: src/converse-register.js:117 src/converse-register.js:335
+#: src/converse-register.js:111 src/converse-register.js:329
 msgid "Register"
 msgstr "Регистрация"
 
-#: src/converse-register.js:163
+#: src/converse-register.js:157
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -887,11 +883,11 @@ msgstr ""
 "К сожалению, провайдер не поддерживает регистрацию аккаунта через клиентское "
 "приложение. Пожалуйста попробуйте выбрать другого провайдера."
 
-#: src/converse-register.js:223
+#: src/converse-register.js:217
 msgid "Requesting a registration form from the XMPP server"
 msgstr "Запрашивается регистрационная форма с XMPP сервера"
 
-#: src/converse-register.js:258
+#: src/converse-register.js:252
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
@@ -899,19 +895,19 @@ msgstr ""
 "Что-то пошло не так при установке связи с \"%1$s\". Вы уверены, что такой "
 "адрес существует?"
 
-#: src/converse-register.js:277
+#: src/converse-register.js:271
 msgid "Now logging you in"
 msgstr "Осуществляется вход"
 
-#: src/converse-register.js:281
+#: src/converse-register.js:275
 msgid "Registered successfully"
 msgstr "Зарегистрирован успешно"
 
-#: src/converse-register.js:340
+#: src/converse-register.js:334
 msgid "Return"
 msgstr "Назад"
 
-#: src/converse-register.js:372
+#: src/converse-register.js:366
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1018,6 +1014,9 @@ msgstr "Возникла ошибка при удалении "
 #: src/converse-rosterview.js:673
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Вы уверены, что хотите отклонить запрос от этого контакта?"
+
+#~ msgid "Disconnected"
+#~ msgstr "Отключено"
 
 #~ msgid "Type to filter"
 #~ msgstr "Текст для фильтра"

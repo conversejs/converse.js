@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-07 10:34+0000\n"
+"POT-Creation-Date: 2016-05-03 15:34+0000\n"
 "PO-Revision-Date: 2016-04-07 10:23+0000\n"
 "Last-Translator: Andreas Lorentsen <andreas.lorentsen@gmail.com>\n"
 "Language-Team: \n"
@@ -40,7 +40,7 @@ msgid "has stopped typing"
 msgstr "har stoppet å skrive"
 
 #: src/converse-chatview.js:337 src/converse-chatview.js:554
-#: src/converse-notification.js:157
+#: src/converse-notification.js:161
 #, fuzzy
 msgid "has gone away"
 msgstr "Kontakten er borte"
@@ -61,12 +61,12 @@ msgstr "Fjern meldinger"
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "Er du sikker på at du vil fjerne meldingene fra denne meldingsboksen?"
 
-#: src/converse-chatview.js:552 src/converse-notification.js:155
+#: src/converse-chatview.js:552 src/converse-notification.js:159
 #, fuzzy
 msgid "has gone offline"
 msgstr "Kontakten er avlogget"
 
-#: src/converse-chatview.js:556 src/converse-notification.js:159
+#: src/converse-chatview.js:556 src/converse-notification.js:163
 #, fuzzy
 msgid "is busy"
 msgstr "opptatt"
@@ -88,174 +88,170 @@ msgstr ""
 msgid "Start a call"
 msgstr "Start en samtale"
 
-#: src/converse-controlbox.js:173 src/converse-core.js:576
-#: src/converse-core.js:622 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:177 src/converse-core.js:570
+#: src/converse-core.js:616 src/converse-rosterview.js:58
 msgid "Contacts"
 msgstr "Kontakter"
 
-#: src/converse-controlbox.js:275 src/converse-core.js:483
+#: src/converse-controlbox.js:265 src/converse-core.js:474
 msgid "Connecting"
 msgstr "Kobler til"
 
-#: src/converse-controlbox.js:375
+#: src/converse-controlbox.js:365
 msgid "XMPP Username:"
 msgstr "XMPP Brukernavn:"
 
-#: src/converse-controlbox.js:376
+#: src/converse-controlbox.js:366
 msgid "Password:"
 msgstr "Passord:"
 
-#: src/converse-controlbox.js:377
+#: src/converse-controlbox.js:367
 #, fuzzy
 msgid "Click here to log in anonymously"
 msgstr "Dette rommet er ikke anonymt"
 
-#: src/converse-controlbox.js:378
+#: src/converse-controlbox.js:368
 msgid "Log In"
 msgstr "Logg inn"
 
-#: src/converse-controlbox.js:379
+#: src/converse-controlbox.js:369
 #, fuzzy
 msgid "Username"
 msgstr "XMPP Brukernavn:"
 
-#: src/converse-controlbox.js:379
+#: src/converse-controlbox.js:369
 msgid "user@server"
 msgstr ""
 
-#: src/converse-controlbox.js:380
+#: src/converse-controlbox.js:370
 #, fuzzy
 msgid "password"
 msgstr "Passord:"
 
-#: src/converse-controlbox.js:387
+#: src/converse-controlbox.js:377
 msgid "Sign in"
 msgstr "Innlogging"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: src/converse-controlbox.js:475 src/converse-controlbox.js:550
+#: src/converse-controlbox.js:465 src/converse-controlbox.js:540
 msgid "I am %1$s"
 msgstr "Jeg er %1$s"
 
-#: src/converse-controlbox.js:477 src/converse-controlbox.js:555
+#: src/converse-controlbox.js:467 src/converse-controlbox.js:545
 msgid "Click here to write a custom status message"
 msgstr "Klikk her for å skrive en personlig statusmelding"
 
-#: src/converse-controlbox.js:478 src/converse-controlbox.js:556
+#: src/converse-controlbox.js:468 src/converse-controlbox.js:546
 msgid "Click to change your chat status"
 msgstr "Klikk for å endre din meldingsstatus"
 
-#: src/converse-controlbox.js:503
+#: src/converse-controlbox.js:493
 msgid "Custom status"
 msgstr "Personlig status"
 
-#: src/converse-controlbox.js:504 src/converse-muc.js:556
+#: src/converse-controlbox.js:494 src/converse-muc.js:556
 msgid "Save"
 msgstr "Lagre"
 
-#: src/converse-controlbox.js:532 src/converse-controlbox.js:542
+#: src/converse-controlbox.js:522 src/converse-controlbox.js:532
 msgid "online"
 msgstr "pålogget"
 
-#: src/converse-controlbox.js:534
+#: src/converse-controlbox.js:524
 msgid "busy"
 msgstr "opptatt"
 
-#: src/converse-controlbox.js:536
+#: src/converse-controlbox.js:526
 msgid "away for long"
 msgstr "borte lenge"
 
-#: src/converse-controlbox.js:538
+#: src/converse-controlbox.js:528
 msgid "away"
 msgstr "borte"
 
-#: src/converse-controlbox.js:540
+#: src/converse-controlbox.js:530
 #, fuzzy
 msgid "offline"
 msgstr "Avlogget"
 
-#: src/converse-controlbox.js:581 src/converse-rosterview.js:102
+#: src/converse-controlbox.js:571 src/converse-rosterview.js:102
 msgid "Online"
 msgstr "Pålogget"
 
-#: src/converse-controlbox.js:582 src/converse-rosterview.js:104
+#: src/converse-controlbox.js:572 src/converse-rosterview.js:104
 msgid "Busy"
 msgstr "Opptatt"
 
-#: src/converse-controlbox.js:583 src/converse-rosterview.js:105
+#: src/converse-controlbox.js:573 src/converse-rosterview.js:105
 msgid "Away"
 msgstr "Borte"
 
-#: src/converse-controlbox.js:584 src/converse-rosterview.js:107
+#: src/converse-controlbox.js:574 src/converse-rosterview.js:107
 msgid "Offline"
 msgstr "Avlogget"
 
-#: src/converse-controlbox.js:585
+#: src/converse-controlbox.js:575
 msgid "Log out"
 msgstr "Logg Av"
 
-#: src/converse-controlbox.js:592
+#: src/converse-controlbox.js:582
 msgid "Contact name"
 msgstr "Kontaktnavn"
 
-#: src/converse-controlbox.js:593
+#: src/converse-controlbox.js:583
 msgid "Search"
 msgstr "Søk"
 
-#: src/converse-controlbox.js:597
+#: src/converse-controlbox.js:587
 msgid "e.g. user@example.org"
 msgstr ""
 
-#: src/converse-controlbox.js:598
+#: src/converse-controlbox.js:588
 msgid "Add"
 msgstr "Legg Til"
 
-#: src/converse-controlbox.js:603
+#: src/converse-controlbox.js:593
 msgid "Click to add new chat contacts"
 msgstr "Klikk for å legge til nye meldingskontakter"
 
-#: src/converse-controlbox.js:604
+#: src/converse-controlbox.js:594
 msgid "Add a contact"
 msgstr "Legg til en Kontakt"
 
-#: src/converse-controlbox.js:628
+#: src/converse-controlbox.js:618
 msgid "No users found"
 msgstr "Ingen brukere funnet"
 
-#: src/converse-controlbox.js:634
+#: src/converse-controlbox.js:624
 msgid "Click to add as a chat contact"
 msgstr "Klikk for å legge til som meldingskontakt"
 
-#: src/converse-controlbox.js:692
+#: src/converse-controlbox.js:682
 msgid "Toggle chat"
 msgstr "Endre chatten"
 
-#: src/converse-core.js:428
-msgid "Attempting to reconnect in 5 seconds"
+#: src/converse-core.js:431
+msgid "Attempting to reconnect"
 msgstr ""
 
-#: src/converse-core.js:452
-msgid "Disconnected"
-msgstr ""
-
-#: src/converse-core.js:481
+#: src/converse-core.js:472
 msgid "Error"
 msgstr "Feil"
 
-#: src/converse-core.js:485
+#: src/converse-core.js:476
 msgid "Authenticating"
 msgstr "Godkjenner"
 
-#: src/converse-core.js:487 src/converse-core.js:488
+#: src/converse-core.js:478 src/converse-core.js:479
 msgid "Authentication Failed"
 msgstr "Godkjenning mislyktes"
 
-#: src/converse-core.js:880
+#: src/converse-core.js:874
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1051
+#: src/converse-core.js:1045
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -351,8 +347,8 @@ msgstr "Endre rommets emne"
 msgid "Allow muted user to post messages"
 msgstr "Tillat stumme brukere å skrive meldinger"
 
-#: src/converse-muc.js:557 src/converse-register.js:222
-#: src/converse-register.js:337
+#: src/converse-muc.js:557 src/converse-register.js:216
+#: src/converse-register.js:331
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -666,20 +662,20 @@ msgstr ""
 msgid "Notification from %1$s"
 msgstr ""
 
-#: src/converse-notification.js:134
+#: src/converse-notification.js:129 src/converse-notification.js:137
 msgid "%1$s says"
 msgstr ""
 
-#: src/converse-notification.js:161
+#: src/converse-notification.js:165
 #, fuzzy
 msgid "has come online"
 msgstr "Kontakten er avlogget"
 
-#: src/converse-notification.js:176
+#: src/converse-notification.js:180
 msgid "wants to be your contact"
 msgstr ""
 
-#: src/converse-notification.js:184
+#: src/converse-notification.js:188
 msgid "An error has occured"
 msgstr ""
 
@@ -868,31 +864,31 @@ msgstr "verifisert"
 msgid "finished"
 msgstr "ferdig"
 
-#: src/converse-register.js:86
+#: src/converse-register.js:80
 msgid " e.g. conversejs.org"
 msgstr ""
 
-#: src/converse-register.js:109
+#: src/converse-register.js:103
 msgid "Your XMPP provider's domain name:"
 msgstr "Din XMPP-tilbyders domenenavn:"
 
-#: src/converse-register.js:110
+#: src/converse-register.js:104
 msgid "Fetch registration form"
 msgstr "Hent registreringsskjema"
 
-#: src/converse-register.js:111
+#: src/converse-register.js:105
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Tips: En liste med offentlige XMPP-tilbydere er tilgjengelig"
 
-#: src/converse-register.js:112
+#: src/converse-register.js:106
 msgid "here"
 msgstr "her"
 
-#: src/converse-register.js:117 src/converse-register.js:335
+#: src/converse-register.js:111 src/converse-register.js:329
 msgid "Register"
 msgstr "Registrér deg"
 
-#: src/converse-register.js:163
+#: src/converse-register.js:157
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -900,11 +896,11 @@ msgstr ""
 "Beklager, den valgte tilbyderen støtter ikke in band kontoregistrering. "
 "Vennligst prøv igjen med en annen tilbyder. "
 
-#: src/converse-register.js:223
+#: src/converse-register.js:217
 msgid "Requesting a registration form from the XMPP server"
 msgstr "Spør etter registreringsskjema fra XMPP-tjeneren"
 
-#: src/converse-register.js:258
+#: src/converse-register.js:252
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
@@ -912,19 +908,19 @@ msgstr ""
 "Noe gikk galt under etablering av forbindelse med \"%1$s\". Er du sikker på "
 "at denne eksisterer?"
 
-#: src/converse-register.js:277
+#: src/converse-register.js:271
 msgid "Now logging you in"
 msgstr "Logger deg inn"
 
-#: src/converse-register.js:281
+#: src/converse-register.js:275
 msgid "Registered successfully"
 msgstr "Registrering var vellykket"
 
-#: src/converse-register.js:340
+#: src/converse-register.js:334
 msgid "Return"
 msgstr "Tilbake"
 
-#: src/converse-register.js:372
+#: src/converse-register.js:366
 #, fuzzy
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "

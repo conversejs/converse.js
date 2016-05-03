@@ -933,14 +933,77 @@ return __p
 
 this["templates"]["roster"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="pure-form roster-filter-group input-button-group">\n    <input style="display: none;" class="roster-filter" placeholder="' +
+__p += '<form class="pure-form roster-filter-group input-button-group">\n    <input value="' +
+((__t = (filter_text)) == null ? '' : __t) +
+'" class="roster-filter"\n           placeholder="' +
 ((__t = (placeholder)) == null ? '' : __t) +
-'">\n    <select style="display: none;" class="filter-type">\n        <option value="contacts">' +
+'"\n           ';
+ if (filter_type === 'state') { ;
+__p += '  style="display: none" ';
+ } ;
+__p += ' >\n    <select class="state-type" ';
+ if (filter_type !== 'state') { ;
+__p += '  style="display: none" ';
+ } ;
+__p += ' >\n        <option value="">' +
+((__t = (label_any)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (chat_state === 'online') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="online">' +
+((__t = (label_online)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (chat_state === 'chatty') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="chatty">' +
+((__t = (label_chatty)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (chat_state === 'dnd') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="dnd">' +
+((__t = (label_busy)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (chat_state === 'away') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="away">' +
+((__t = (label_away)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (chat_state === 'xa') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="xa">' +
+((__t = (label_xa)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (chat_state === 'offline') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="offline">' +
+((__t = (label_offline)) == null ? '' : __t) +
+'</option>\n    </select>\n    <select class="filter-type">\n        <option ';
+ if (filter_type === 'contacts') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n                value="contacts">' +
 ((__t = (label_contacts)) == null ? '' : __t) +
-'</option>\n        <option value="groups">' +
+'</option>\n        <option ';
+ if (filter_type === 'groups') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n                value="groups">' +
 ((__t = (label_groups)) == null ? '' : __t) +
+'</option>\n        <option ';
+ if (filter_type === 'state') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n                value="state">' +
+((__t = (label_state)) == null ? '' : __t) +
 '</option>\n    </select>\n</form>\n';
 
 }

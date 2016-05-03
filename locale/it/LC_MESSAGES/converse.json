@@ -195,14 +195,6 @@
             null,
             "Attiva/disattiva chat"
          ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            "Attendi riconversione in 5 secondi"
-         ],
-         "Disconnected": [
-            null,
-            "Disconnesso"
-         ],
          "Error": [
             null,
             "Errore"

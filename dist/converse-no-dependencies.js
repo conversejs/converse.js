@@ -1,11 +1,9 @@
 /**
- * @license almond 0.3.1 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
- * Available via the MIT or new BSD license.
- * see: http://github.com/jrburke/almond for details
+ * @license almond 0.3.2 Copyright jQuery Foundation and other contributors.
+ * Released under MIT license, http://github.com/requirejs/almond/LICENSE
  */
 //Going sloppy to avoid 'use strict' string cost, but strict practices should
 //be followed.
-/*jslint sloppy: true */
 /*global setTimeout: false */
 
 var requirejs, require, define;
@@ -33,60 +31,58 @@ var requirejs, require, define;
      */
     function normalize(name, baseName) {
         var nameParts, nameSegment, mapValue, foundMap, lastIndex,
-            foundI, foundStarMap, starI, i, j, part,
+            foundI, foundStarMap, starI, i, j, part, normalizedBaseParts,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
             starMap = (map && map['*']) || {};
 
         //Adjust any relative paths.
-        if (name && name.charAt(0) === ".") {
-            //If have a base name, try to normalize against it,
-            //otherwise, assume it is a top-level require that will
-            //be relative to baseUrl in the end.
-            if (baseName) {
-                name = name.split('/');
-                lastIndex = name.length - 1;
+        if (name) {
+            name = name.split('/');
+            lastIndex = name.length - 1;
 
-                // Node .js allowance:
-                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
-                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
-                }
+            // If wanting node ID compatibility, strip .js from end
+            // of IDs. Have to do this here, and not in nameToUrl
+            // because node allows either .js or non .js to map
+            // to same file.
+            if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+            }
 
-                //Lop off the last part of baseParts, so that . matches the
-                //"directory" and not name of the baseName's module. For instance,
-                //baseName of "one/two/three", maps to "one/two/three.js", but we
-                //want the directory, "one/two" for this normalization.
-                name = baseParts.slice(0, baseParts.length - 1).concat(name);
+            // Starts with a '.' so need the baseName
+            if (name[0].charAt(0) === '.' && baseParts) {
+                //Convert baseName to array, and lop off the last part,
+                //so that . matches that 'directory' and not name of the baseName's
+                //module. For instance, baseName of 'one/two/three', maps to
+                //'one/two/three.js', but we want the directory, 'one/two' for
+                //this normalization.
+                normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
+                name = normalizedBaseParts.concat(name);
+            }
 
-                //start trimDots
-                for (i = 0; i < name.length; i += 1) {
-                    part = name[i];
-                    if (part === ".") {
-                        name.splice(i, 1);
-                        i -= 1;
-                    } else if (part === "..") {
-                        if (i === 1 && (name[2] === '..' || name[0] === '..')) {
-                            //End of the line. Keep at least one non-dot
-                            //path segment at the front so it can be mapped
-                            //correctly to disk. Otherwise, there is likely
-                            //no path mapping for a path starting with '..'.
-                            //This can still fail, but catches the most reasonable
-                            //uses of ..
-                            break;
-                        } else if (i > 0) {
-                            name.splice(i - 1, 2);
-                            i -= 2;
-                        }
+            //start trimDots
+            for (i = 0; i < name.length; i++) {
+                part = name[i];
+                if (part === '.') {
+                    name.splice(i, 1);
+                    i -= 1;
+                } else if (part === '..') {
+                    // If at the start, or previous value is still ..,
+                    // keep them so that when converted to a path it may
+                    // still work when converted to a path, even though
+                    // as an ID it is less than ideal. In larger point
+                    // releases, may be better to just kick out an error.
+                    if (i === 0 || (i === 1 && name[2] === '..') || name[i - 1] === '..') {
+                        continue;
+                    } else if (i > 0) {
+                        name.splice(i - 1, 2);
+                        i -= 2;
                     }
                 }
-                //end trimDots
-
-                name = name.join("/");
-            } else if (name.indexOf('./') === 0) {
-                // No baseName, so this is ID is resolved relative
-                // to baseUrl, pull off the leading dot.
-                name = name.substring(2);
             }
+            //end trimDots
+
+            name = name.join('/');
         }
 
         //Apply map config if available.
@@ -1763,12 +1759,74 @@ return __p;
 define('tpl!roster', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<form class="pure-form roster-filter-group input-button-group">\n    <input style="display: none;" class="roster-filter" placeholder="'+
+__p+='<form class="pure-form roster-filter-group input-button-group">\n    <input value="'+
+((__t=(filter_text))==null?'':__t)+
+'" class="roster-filter"\n           placeholder="'+
 ((__t=(placeholder))==null?'':__t)+
-'">\n    <select style="display: none;" class="filter-type">\n        <option value="contacts">'+
+'"\n           ';
+ if (filter_type === 'state') { 
+__p+='  style="display: none" ';
+ } 
+__p+=' >\n    <select class="state-type" ';
+ if (filter_type !== 'state') { 
+__p+='  style="display: none" ';
+ } 
+__p+=' >\n        <option value="">'+
+((__t=(label_any))==null?'':__t)+
+'</option>\n        <option ';
+ if (chat_state === 'online') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n            value="online">'+
+((__t=(label_online))==null?'':__t)+
+'</option>\n        <option ';
+ if (chat_state === 'chatty') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n            value="chatty">'+
+((__t=(label_chatty))==null?'':__t)+
+'</option>\n        <option ';
+ if (chat_state === 'dnd') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n            value="dnd">'+
+((__t=(label_busy))==null?'':__t)+
+'</option>\n        <option ';
+ if (chat_state === 'away') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n            value="away">'+
+((__t=(label_away))==null?'':__t)+
+'</option>\n        <option ';
+ if (chat_state === 'xa') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n            value="xa">'+
+((__t=(label_xa))==null?'':__t)+
+'</option>\n        <option ';
+ if (chat_state === 'offline') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n            value="offline">'+
+((__t=(label_offline))==null?'':__t)+
+'</option>\n    </select>\n    <select class="filter-type">\n        <option ';
+ if (filter_type === 'contacts') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n                value="contacts">'+
 ((__t=(label_contacts))==null?'':__t)+
-'</option>\n        <option value="groups">'+
+'</option>\n        <option ';
+ if (filter_type === 'groups') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n                value="groups">'+
 ((__t=(label_groups))==null?'':__t)+
+'</option>\n        <option ';
+ if (filter_type === 'state') { 
+__p+=' selected="selected" ';
+ } 
+__p+='\n                value="state">'+
+((__t=(label_state))==null?'':__t)+
 '</option>\n    </select>\n</form>\n';
 }
 return __p;
@@ -2767,7 +2825,6 @@ define("polyfill", function(){});
          */
         this.send_initial_presence = true;
         this.msg_counter = 0;
-        this.reconnectTimeout = undefined;
 
         // Module-level functions
         // ----------------------
@@ -2780,50 +2837,54 @@ define("polyfill", function(){});
             /* Send out a Chat Status Notification (XEP-0352) */
             if (converse.features[Strophe.NS.CSI] || true) {
                 converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-                this.inactive = (stat === converse.INACTIVE) ? true : false;
+                converse.inactive = (stat === converse.INACTIVE) ? true : false;
             }
         };
 
         this.onUserActivity = function () {
             /* Resets counters and flags relating to CSI and auto_away/auto_xa */
-            if (this.idle_seconds > 0) {
-                this.idle_seconds = 0;
+            if (converse.idle_seconds > 0) {
+                converse.idle_seconds = 0;
             }
             if (!converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
-                // This can happen when the connection reconnects.
+                // converse can happen when the connection reconnects.
                 return;
             }
-            if (this.inactive) {
-                this.sendCSI(converse.ACTIVE);
+            if (converse.inactive) {
+                converse.sendCSI(converse.ACTIVE);
             }
-            if (this.auto_changed_status === true) {
-                this.auto_changed_status = false;
-                this.xmppstatus.setStatus('online');
+            if (converse.auto_changed_status === true) {
+                converse.auto_changed_status = false;
+                converse.xmppstatus.setStatus('online');
             }
         };
 
         this.onEverySecond = function () {
             /* An interval handler running every second.
-             * Used for CSI and the auto_away and auto_xa
-             * features.
+             * Used for CSI and the auto_away and auto_xa features.
              */
             if (!converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // This can happen when the connection reconnects.
                 return;
             }
-            var stat = this.xmppstatus.getStatus();
-            this.idle_seconds++;
-            if (this.csi_waiting_time > 0 && this.idle_seconds > this.csi_waiting_time && !this.inactive) {
-                this.sendCSI(converse.INACTIVE);
+            var stat = converse.xmppstatus.getStatus();
+            converse.idle_seconds++;
+            if (converse.csi_waiting_time > 0 &&
+                    converse.idle_seconds > converse.csi_waiting_time &&
+                    !converse.inactive) {
+                converse.sendCSI(converse.INACTIVE);
             }
-            if (this.auto_away > 0 && this.idle_seconds > this.auto_away && stat !== 'away' && stat !== 'xa') {
-                this.auto_changed_status = true;
-                this.xmppstatus.setStatus('away');
-            } else if (this.auto_xa > 0 && this.idle_seconds > this.auto_xa && stat !== 'xa') {
-                this.auto_changed_status = true;
-                this.xmppstatus.setStatus('xa');
+            if (converse.auto_away > 0 &&
+                    converse.idle_seconds > converse.auto_away &&
+                    stat !== 'away' && stat !== 'xa') {
+                converse.auto_changed_status = true;
+                converse.xmppstatus.setStatus('away');
+            } else if (converse.auto_xa > 0 &&
+                    converse.idle_seconds > converse.auto_xa && stat !== 'xa') {
+                converse.auto_changed_status = true;
+                converse.xmppstatus.setStatus('xa');
             }
         };
 
@@ -2831,14 +2892,14 @@ define("polyfill", function(){});
             /* Set an interval of one second and register a handler for it.
              * Required for the auto_away, auto_xa and csi_waiting_time features.
              */
-            if (this.auto_away < 1 && this.auto_xa < 1 && this.csi_waiting_time < 1) {
+            if (converse.auto_away < 1 && converse.auto_xa < 1 && converse.csi_waiting_time < 1) {
                 // Waiting time of less then one second means features aren't used.
                 return;
             }
-            this.idle_seconds = 0;
-            this.auto_changed_status = false; // Was the user's status changed by converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent , this.onUserActivity.bind(this));
-            window.setInterval(this.onEverySecond.bind(this), 1000);
+            converse.idle_seconds = 0;
+            converse.auto_changed_status = false; // Was the user's status changed by converse.js?
+            $(window).on('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
+            converse.everySecondTrigger = window.setInterval(converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (message, klass) {
@@ -2867,34 +2928,28 @@ define("polyfill", function(){});
         };
 
 
-        this.reconnect = function (condition) {
-            this.connection.disconnect('re-connecting');
-            this.connection.reset();
-            converse.log('Attempting to reconnect in 5 seconds');
-            converse.giveFeedback(__('Attempting to reconnect in 5 seconds'), 'error');
-            window.clearTimeout(converse.reconnectTimeout);
-            converse.reconnectTimeout = window.setTimeout(function () {
-                converse.clearSession();
-                converse._tearDown();
-                if (converse.authentication !== "prebind") {
-                    converse.attemptNonPreboundSession();
-                } else if (converse.prebind_url) {
-                    converse.startNewBOSHSession();
-                }
-            }, 5000);
-        };
+        this.reconnect = _.debounce(function (condition) {
+            converse.connection.disconnect('re-connecting');
+            converse.connection.reset();
+            converse.log('Attempting to reconnect');
+            converse.giveFeedback(__('Attempting to reconnect'), 'error');
+            converse.clearSession();
+            converse._tearDown();
+            if (converse.authentication !== "prebind") {
+                converse.attemptNonPreboundSession();
+            } else if (converse.prebind_url) {
+                converse.startNewBOSHSession();
+            }
+        }, 1000);
 
         this.onDisconnected = function (condition) {
             if (!converse.auto_reconnect) { return; }
-            if ( converse.disconnection_cause === Strophe.Status.CONNFAIL ||
-                    (  converse.disconnection_cause === Strophe.Status.AUTHFAIL &&
-                        converse.credentials_url &&
-                        converse.auto_login
-                    )
-                ) {
+            if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                 converse.reconnect(condition);
+                return 'reconnecting';
             } else {
-                converse.giveFeedback(__('Disconnected'), 'error');
+                converse.emit('disconnected');
+                return 'disconnected';
             }
         };
 
@@ -2904,10 +2959,6 @@ define("polyfill", function(){});
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
-                if (!!converse.reconnectTimeout) {
-                    window.clearTimeout(converse.reconnectTimeout);
-                    delete converse.reconnectTimeout;
-                }
                 if ((typeof reconnect !== 'undefined') && (reconnect)) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
@@ -2932,13 +2983,14 @@ define("polyfill", function(){});
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.disconnection_cause = Strophe.Status.CONNFAIL;
-            } else if (status === Strophe.Status.DISCONNECTING) {
-                if (!converse.connection.connected) {
-                    // FIXME: leaky abstraction from converse-controlbox.js
-                    // Is this needed at all?
-                    converse.renderLoginPanel();
+                if (converse.connection.authenticated) {
+                    // Only set the disconnection_cause if we're still
+                    // authenticated. If we're not, then the user logged out,
+                    // and it's therefore not strictly speaking a connection
+                    // failure (so we won't automatically reconnect).
+                    converse.disconnection_cause = Strophe.Status.CONNFAIL;
                 }
+            } else if (status === Strophe.Status.DISCONNECTING) {
                 if (condition) {
                     converse.giveFeedback(condition, 'error');
                 }
@@ -2999,10 +3051,12 @@ define("polyfill", function(){});
         };
 
         this.logOut = function () {
-            converse.auto_login = false;
             converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
-            converse.connection.disconnect();
+            if (typeof converse.connection !== 'undefined') {
+                converse.connection.disconnect();
+                converse.connection.reset();
+            }
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -3223,20 +3277,6 @@ define("polyfill", function(){});
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
                 converse.connection.sendIQ(iq, callback, callback);
                 return this;
-            },
-
-            showInRoster: function () {
-                var chatStatus = this.get('chat_status');
-                if ((converse.show_only_online_users && chatStatus !== 'online') || (converse.hide_offline_users && chatStatus === 'offline')) {
-                    // If pending or requesting, show
-                    if ((this.get('ask') === 'subscribe') ||
-                            (this.get('subscription') === 'from') ||
-                            (this.get('requesting') === true)) {
-                        return true;
-                    }
-                    return false;
-                }
-                return true;
             }
         });
 
@@ -3673,7 +3713,7 @@ define("polyfill", function(){});
                     }.bind(this), null, 'message', 'chat');
             },
 
-            chatBoxShouldBeShown: function (chatbox) {
+            chatBoxMayBeShown: function (chatbox) {
                 return true;
             },
 
@@ -3684,10 +3724,11 @@ define("polyfill", function(){});
                  * if the controlbox plugin is active.
                  */
                 collection.each(function (chatbox) {
-                    if (this.chatBoxShouldBeShown(chatbox)) {
+                    if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
                 }.bind(this));
+                converse.emit('chatBoxesFetched');
             },
 
             onConnected: function () {
@@ -3843,8 +3884,13 @@ define("polyfill", function(){});
                 return this;
             },
 
+            chatBoxMayBeShown: function (chatbox) {
+                return this.model.chatBoxMayBeShown(chatbox);
+            },
+
             showChat: function (attrs) {
-                /* Find the chat box and show it. If it doesn't exist, create it.
+                /* Find the chat box and show it (if it may be shown).
+                 * If it doesn't exist, create it.
                  */
                 var chatbox  = this.model.get(attrs.jid);
                 if (!chatbox) {
@@ -3854,7 +3900,9 @@ define("polyfill", function(){});
                         }
                     });
                 }
-                chatbox.trigger('show', true);
+                if (this.chatBoxMayBeShown(chatbox)) {
+                    chatbox.trigger('show', true);
+                }
                 return chatbox;
             }
         });
@@ -4023,8 +4071,8 @@ define("polyfill", function(){});
 
         this.setUpXMLLogging = function () {
             if (this.debug) {
-                this.connection.xmlInput = function (body) { converse.log(body); };
-                this.connection.xmlOutput = function (body) { converse.log(body); };
+                this.connection.xmlInput = function (body) { converse.log(body.outerHTML); };
+                this.connection.xmlOutput = function (body) { converse.log(body.outerHTML); };
             }
         };
 
@@ -4076,7 +4124,8 @@ define("polyfill", function(){});
                 return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
             } else if (this.keepalive) {
                 if (!this.jid) {
-                    throw new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user.");
+                    throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
+                                    "you must supply the JID of the current user.");
                 }
                 try {
                     return this.connection.restore(this.jid, this.onConnectStatusChanged);
@@ -4085,7 +4134,7 @@ define("polyfill", function(){});
                     this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
             } else {
-                throw new Error("initConnection: If you use prebind and not keepalive, "+
+                throw new Error("attemptPreboundSession: If you use prebind and not keepalive, "+
                     "then you MUST supply JID, RID and SID values");
             }
             // We haven't been able to attach yet. Let's see if there
@@ -4101,7 +4150,7 @@ define("polyfill", function(){});
 
         this.autoLogin = function (credentials) {
             if (credentials) {
-                // If passed in, then they come from login_credentials, so we
+                // If passed in, then they come from credentials_url, so we
                 // set them on the converse object.
                 this.jid = credentials.jid;
                 this.password = credentials.password;
@@ -4154,22 +4203,12 @@ define("polyfill", function(){});
             }
         };
 
-        this.initConnection = function () {
-            if (this.connection && this.connection.connected) {
-                this.setUpXMLLogging();
-                this.onConnected();
+        this.logIn = function (credentials) {
+            if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
+                this.autoLogin(credentials);
             } else {
-                if (!this.bosh_service_url && ! this.websocket_url) {
-                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-                }
-                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                    this.connection = new Strophe.Connection(this.websocket_url);
-                } else if (this.bosh_service_url) {
-                    this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
-                } else {
-                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-                }
-                this.setUpXMLLogging();
                 // We now try to resume or automatically set up a new session.
                 // Otherwise the user will be shown a login form.
                 if (this.authentication === converse.PREBIND) {
@@ -4177,6 +4216,22 @@ define("polyfill", function(){});
                 } else {
                     this.attemptNonPreboundSession();
                 }
+            }
+        };
+
+        this.initConnection = function () {
+            if (this.connection) {
+                return;
+            }
+            if (!this.bosh_service_url && ! this.websocket_url) {
+                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+            }
+            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                this.connection = new Strophe.Connection(this.websocket_url);
+            } else if (this.bosh_service_url) {
+                this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
+            } else {
+                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
             }
         };
 
@@ -4191,6 +4246,8 @@ define("polyfill", function(){});
             if (this.features) {
                 this.features.reset();
             }
+            $(window).off('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
+            window.clearInterval(converse.everySecondTrigger);
             return this;
         };
 
@@ -4199,6 +4256,8 @@ define("polyfill", function(){});
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
             this.initSession();
             this.initConnection();
+            this.setUpXMLLogging();
+            this.logIn();
             return this;
         };
 
@@ -4352,6 +4411,10 @@ define("polyfill", function(){});
             },
         },
         'user': {
+            'login': function (credentials) {
+                converse.initConnection();
+                converse.logIn(credentials);
+            },
             'logout': function () {
                 converse.logOut();
             },
@@ -4536,10 +4599,11 @@ define("polyfill", function(){});
     };
 }));
 
-/**
- * @preserve jed.js https://github.com/SlexAxton/Jed
- */
 /*
+jed.js
+v0.5.0beta
+
+https://github.com/SlexAxton/Jed
 -----------
 A gettext compatible i18n library for modern JavaScript Applications
 
@@ -4628,9 +4692,7 @@ in order to offer easy upgrades -- jsgettext.berlios.de
         }
       },
       // The default domain if one is missing
-      "domain" : "messages",
-      // enable debug mode to log untranslated strings to the console
-      "debug" : false
+      "domain" : "messages"
     };
 
     // Mix in the sent options with the default options
@@ -4675,7 +4737,7 @@ in order to offer easy upgrades -- jsgettext.berlios.de
     },
     fetch : function ( sArr ) {
       if ( {}.toString.call( sArr ) != '[object Array]' ) {
-        sArr = [].slice.call(arguments, 0);
+        sArr = [].slice.call(arguments);
       }
       return ( sArr && sArr.length ? Jed.sprintf : function(x){ return x; } )(
         this._i18n.dcnpgettext(this._domain, this._context, this._key, this._pkey, this._val),
@@ -4760,6 +4822,9 @@ in order to offer easy upgrades -- jsgettext.berlios.de
       // isn't explicitly passed in
       domain = domain || this._textdomain;
 
+      // Default the value to the singular case
+      val = typeof val == 'undefined' ? 1 : val;
+
       var fallback;
 
       // Handle special cases
@@ -4793,33 +4858,22 @@ in order to offer easy upgrades -- jsgettext.berlios.de
         throw new Error('No translation key found.');
       }
 
+      // Handle invalid numbers, but try casting strings for good measure
+      if ( typeof val != 'number' ) {
+        val = parseInt( val, 10 );
+
+        if ( isNaN( val ) ) {
+          throw new Error('The number that was passed in is not a number.');
+        }
+      }
+
       var key  = context ? context + Jed.context_delimiter + singular_key : singular_key,
           locale_data = this.options.locale_data,
           dict = locale_data[ domain ],
-          defaultConf = (locale_data.messages || this.defaults.locale_data.messages)[""],
-          pluralForms = dict[""].plural_forms || dict[""]["Plural-Forms"] || dict[""]["plural-forms"] || defaultConf.plural_forms || defaultConf["Plural-Forms"] || defaultConf["plural-forms"],
+          pluralForms = dict[""].plural_forms || (locale_data.messages || this.defaults.locale_data.messages)[""].plural_forms,
+          val_idx = getPluralFormFunc(pluralForms)(val) + 1,
           val_list,
           res;
-
-      var val_idx;
-      if (val === undefined) {
-        // No value passed in; assume singular key lookup.
-        val_idx = 0;
-
-      } else {
-        // Value has been passed in; use plural-forms calculations.
-
-        // Handle invalid numbers, but try casting strings for good measure
-        if ( typeof val != 'number' ) {
-          val = parseInt( val, 10 );
-
-          if ( isNaN( val ) ) {
-            throw new Error('The number that was passed in is not a number.');
-          }
-        }
-
-        val_idx = getPluralFormFunc(pluralForms)(val);
-      }
 
       // Throw an error if a domain isn't found
       if ( ! dict ) {
@@ -4830,25 +4884,20 @@ in order to offer easy upgrades -- jsgettext.berlios.de
 
       // If there is no match, then revert back to
       // english style singular/plural with the keys passed in.
-      if ( ! val_list || val_idx > val_list.length ) {
+      if ( ! val_list || val_idx >= val_list.length ) {
         if (this.options.missing_key_callback) {
-          this.options.missing_key_callback(key, domain);
+          this.options.missing_key_callback(key);
         }
-        res = [ singular_key, plural_key ];
-
-        // collect untranslated strings
-        if (this.options.debug===true) {
-          console.log(res[ getPluralFormFunc(pluralForms)( val ) ]);
-        }
-        return res[ getPluralFormFunc()( val ) ];
+        res = [ null, singular_key, plural_key ];
+        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
       }
 
       res = val_list[ val_idx ];
 
       // This includes empty strings on purpose
       if ( ! res  ) {
-        res = [ singular_key, plural_key ];
-        return res[ getPluralFormFunc()( val ) ];
+        res = [ null, singular_key, plural_key ];
+        return res[ getPluralFormFunc(pluralForms)( val ) + 1 ];
       }
       return res;
     }
@@ -5152,15 +5201,15 @@ performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: return { type : 'GROUP', expr: $$[$0-1] };
+case 1: return { type : 'GROUP', expr: $$[$0-1] }; 
 break;
-case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] };
+case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] }; 
 break;
 case 3:this.$ = { type: "OR", left: $$[$0-2], right: $$[$0] };
 break;
 case 4:this.$ = { type: "AND", left: $$[$0-2], right: $$[$0] };
 break;
-case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] };
+case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] }; 
 break;
 case 6:this.$ = { type: 'LTE', left: $$[$0-2], right: $$[$0] };
 break;
@@ -5174,11 +5223,11 @@ case 10:this.$ = { type: 'EQ', left: $$[$0-2], right: $$[$0] };
 break;
 case 11:this.$ = { type: 'MOD', left: $$[$0-2], right: $$[$0] };
 break;
-case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] };
+case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] }; 
 break;
-case 13:this.$ = { type: 'VAR' };
+case 13:this.$ = { type: 'VAR' }; 
 break;
-case 14:this.$ = { type: 'NUM', val: Number(yytext) };
+case 14:this.$ = { type: 'NUM', val: Number(yytext) }; 
 break;
 }
 },
@@ -5464,7 +5513,7 @@ next:function () {
         if (this._input === "") {
             return this.EOF;
         } else {
-            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(),
+            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(), 
                     {text: "", token: null, line: this.yylineno});
         }
     },
@@ -5558,6 +5607,9 @@ return parser;
   }
 
 })(this);
+
+
+define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "Connecting": [\n            null,\n            "S\'està establint la connexió"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Feu clic per afegir com a contacte del xat"\n         ],\n         "Toggle chat": [\n            null,\n            "Canvia de xat"\n         ],\n         "Error": [\n            null,\n            "Error"\n         ],\n         "Authenticating": [\n            null,\n            "S\'està efectuant l\'autenticació"\n         ],\n         "Authentication Failed": [\n            null,\n            "Error d\'autenticació"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            "S\'ha produït un error en intentar afegir "\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Error: the \\"": [\n            null,\n            "Error: el \\""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room topic": [\n            null,\n            "Defineix un tema per a la sala"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "S\'ha produït un error en intentar desar el formulari."\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "S\'ha canviat la configuració de la sala no relacionada amb la privadesa"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Aquesta sala ara no és anònima"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong>\'s nickname has changed": [\n            null,\n            "L\'àlies de <strong>%1$s</strong> ha canviat"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> a causa d\'un canvi d\'afiliació"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> perquè no és membre"\n         ],\n         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat automàticament a: <strong>%1$s</strong>"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat a: <strong>%1$s</strong>"\n         ],\n         "The reason given is: \\"": [\n            null,\n            "El motiu indicat és: \\""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "No sou a la llista de membres d\'aquesta sala"\n         ],\n         "No nickname was specified": [\n            null,\n            "No s\'ha especificat cap àlies"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "No teniu permís per crear sales noves"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "El vostre àlies no s\'ajusta a les polítiques d\'aquesta sala"\n         ],\n         "Your nickname is already taken": [\n            null,\n            "El vostre àlies ja està en ús"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Aquesta sala (encara) no existeix"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "This user is a moderator": [\n            null,\n            "Aquest usuari és un moderador"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Aquest usuari pot enviar missatges a aquesta sala"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Aquest usuari NO pot enviar missatges a aquesta sala"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Sales a %1$s"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "An error has occured": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "Return": [\n            null,\n            "Torna"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to remove this contact": [\n            null,\n            "Feu clic per eliminar aquest contacte"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Feu clic per acceptar aquesta sol·licitud de contacte"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Feu clic per rebutjar aquesta sol·licitud de contacte"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            "S\'ha produït un error en intentar eliminar "\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -6332,16 +6384,126 @@ return parser;
             HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
             HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
+            converse.RosterFilter = Backbone.Model.extend({
+                initialize: function () {
+                    this.set({
+                        'filter_text': '',
+                        'filter_type': 'contacts',
+                        'chat_state': ''
+                    });
+                },
+            });
+
+            converse.RosterFilterView = Backbone.View.extend({
+                tagName: 'span',
+                events: {
+                    "keydown .roster-filter": "liveFilter",
+                    "click .onX": "clearFilter",
+                    "mousemove .x": "toggleX",
+                    "change .filter-type": "changeTypeFilter",
+                    "change .state-type": "changeChatStateFilter"
+                },
+
+                initialize: function () {
+                    this.model.on('change', this.render, this);
+                },
+
+                render: function () {
+                    this.$el.html(converse.templates.roster(
+                        _.extend(this.model.toJSON(), {
+                            placeholder: __('Filter'),
+                            label_contacts: LABEL_CONTACTS,
+                            label_groups: LABEL_GROUPS,
+                            label_state: __('State'),
+                            label_any: __('Any'),
+                            label_online: __('Online'),
+                            label_chatty: __('Chatty'),
+                            label_busy: __('Busy'),
+                            label_away: __('Away'),
+                            label_xa: __('Extended Away'),
+                            label_offline: __('Offline')
+                        })
+                    ));
+                    var $roster_filter = this.$('.roster-filter');
+                    $roster_filter[this.tog($roster_filter.val())]('x');
+                    return this.$el;
+                },
+
+                tog: function (v) {
+                    return v?'addClass':'removeClass';
+                },
+
+                toggleX: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var el = ev.target;
+                    $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
+                },
+
+                changeChatStateFilter: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.model.save({
+                        'chat_state': this.$('.state-type').val()
+                    });
+                },
+
+                changeTypeFilter: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var type = ev.target.value;
+                    if (type === 'state') {
+                        this.model.save({
+                            'filter_type': type,
+                            'chat_state': this.$('.state-type').val()
+                        });
+                    } else {
+                        this.model.save({
+                            'filter_type': type,
+                            'filter_text': this.$('.roster-filter').val(),
+                        });
+                    }
+                },
+
+                liveFilter: _.debounce(function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.model.save({
+                        'filter_type': this.$('.filter-type').val(),
+                        'filter_text': this.$('.roster-filter').val()
+                    });
+                }, 250),
+
+                show: function () {
+                    if (this.$el.is(':visible')) { return this; }
+                    this.$el.show();
+                    return this;
+                },
+
+                hide: function () {
+                    if (!this.$el.is(':visible')) { return this; }
+                    if (this.$('.roster-filter').val().length > 0) {
+                        // Don't hide if user is currently filtering.
+                        return;
+                    }
+                    this.model.save({
+                        'filter_text': '',
+                        'chat_state': ''
+                    });
+                    this.$el.hide();
+                    return this;
+                },
+
+                clearFilter: function (ev) {
+                    if (ev && ev.preventDefault) {
+                        ev.preventDefault();
+                        $(ev.target).removeClass('x onX').val('');
+                    }
+                    this.model.save({
+                        'filter_text': ''
+                    });
+                }
+            });
 
             converse.RosterView = Backbone.Overview.extend({
                 tagName: 'div',
                 id: 'converse-roster',
-                events: {
-                    "keydown .roster-filter": "liveFilter",
-                    "click .onX": "clearFilter",
-                    "mousemove .x": "togglePointer",
-                    "change .filter-type": "changeFilterType"
-                },
 
                 initialize: function () {
                     this.roster_handler_ref = this.registerRosterHandler();
@@ -6354,7 +6516,40 @@ return parser;
                     this.model.on("add", this.onGroupAdd, this);
                     this.model.on("reset", this.reset, this);
                     this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
+                    // Create a model on which we can store filter properties
+                    var model = new converse.RosterFilter();
+                    model.id = b64_sha1('converse.rosterfilter'+converse.bare_jid);
+                    model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+                    this.filter_view = new converse.RosterFilterView({'model': model});
+                    this.filter_view.model.on('change', this.updateFilter, this);
+                    this.filter_view.model.fetch();
                 },
+
+                render: function () {
+                    this.$el.html(this.filter_view.render());
+                    if (!converse.allow_contact_requests) {
+                        // XXX: if we ever support live editing of config then
+                        // we'll need to be able to remove this class on the fly.
+                        this.$el.addClass('no-contact-requests');
+                    }
+                    return this;
+                },
+
+                updateFilter: _.debounce(function () {
+                    /* Filter the roster again.
+                     * Called whenever the filter settings have been changed or
+                     * when contacts have been added, removed or changed.
+                     *
+                     * Debounced so that it doesn't get called for every
+                     * contact fetched from browser storage.
+                     */
+                    var type = this.filter_view.model.get('filter_type');
+                    if (type === 'state') {
+                        this.filter(this.filter_view.model.get('chat_state'), type);
+                    } else {
+                        this.filter(this.filter_view.model.get('filter_text'), type);
+                    }
+                }, 100),
 
                 unregisterHandlers: function () {
                     converse.connection.deleteHandler(this.roster_handler_ref);
@@ -6366,27 +6561,20 @@ return parser;
                 },
 
                 update: _.debounce(function () {
-                    var $count = $('#online-count');
-                    $count.text('('+converse.roster.getNumOnlineContacts()+')');
-                    if (!$count.is(':visible')) {
-                        $count.show();
-                    }
                     if (this.$roster.parent().length === 0) {
                         this.$el.append(this.$roster.show());
                     }
                     return this.showHideFilter();
                 }, converse.animate ? 100 : 0),
 
-                render: function () {
-                    this.$el.html(converse.templates.roster({
-                        placeholder: __('Type to filter'),
-                        label_contacts: LABEL_CONTACTS,
-                        label_groups: LABEL_GROUPS
-                    }));
-                    if (!converse.allow_contact_requests) {
-                        // XXX: if we ever support live editing of config then
-                        // we'll need to be able to remove this class on the fly.
-                        this.$el.addClass('no-contact-requests');
+                showHideFilter: function () {
+                    if (!this.$el.is(':visible')) {
+                        return;
+                    }
+                    if (this.$roster.hasScrollBar()) {
+                        this.filter_view.show();
+                    } else {
+                        this.filter_view.hide();
                     }
                     return this;
                 },
@@ -6428,26 +6616,15 @@ return parser;
                     return this;
                 },
 
-                changeFilterType: function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.clearFilter();
-                    this.filter(
-                        this.$('.roster-filter').val(),
-                        ev.target.value
-                    );
-                },
-
-                tog: function (v) {
-                    return v?'addClass':'removeClass';
-                },
-
-                togglePointer: function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var el = ev.target;
-                    $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
-                },
-
                 filter: function (query, type) {
+                    // First we make sure the filter is restored to its
+                    // original state
+                    _.each(this.getAll(), function (view) {
+                        if (view.model.contacts.length > 0) {
+                            view.show().filter('');
+                        }
+                    });
+                    // Now we can filter
                     query = query.toLowerCase();
                     if (type === 'groups') {
                         _.each(this.getAll(), function (view, idx) {
@@ -6462,46 +6639,6 @@ return parser;
                             view.filter(query, type);
                         });
                     }
-                },
-
-                liveFilter: _.debounce(function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var $filter = this.$('.roster-filter');
-                    var q = $filter.val();
-                    var t = this.$('.filter-type').val();
-                    $filter[this.tog(q)]('x');
-                    this.filter(q, t);
-                }, 300),
-
-                clearFilter: function (ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                        $(ev.target).removeClass('x onX').val('');
-                    }
-                    this.filter('');
-                },
-
-                showHideFilter: function () {
-                    if (!this.$el.is(':visible')) {
-                        return;
-                    }
-                    var $filter = this.$('.roster-filter');
-                    var $type  = this.$('.filter-type');
-                    var visible = $filter.is(':visible');
-                    if (visible && $filter.val().length > 0) {
-                        // Don't hide if user is currently filtering.
-                        return;
-                    }
-                    if (this.$roster.hasScrollBar()) {
-                        if (!visible) {
-                            $filter.show();
-                            $type.show();
-                        }
-                    } else {
-                        $filter.hide();
-                        $type.hide();
-                    }
-                    return this;
                 },
 
                 reset: function () {
@@ -6553,6 +6690,7 @@ return parser;
 
                 onContactAdd: function (contact) {
                     this.addRosterContact(contact).update();
+                    this.updateFilter();
                 },
 
                 onContactChange: function (contact) {
@@ -6570,7 +6708,7 @@ return parser;
                     if (_.has(contact.changed, 'subscription') && contact.changed.requesting === 'true') {
                         this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
                     }
-                    this.liveFilter();
+                    this.updateFilter();
                 },
 
                 updateChatBox: function (contact) {
@@ -6703,11 +6841,9 @@ return parser;
                 },
 
                 render: function () {
-                    if (!this.model.showInRoster()) {
+                    if (!this.mayBeShown()) {
                         this.$el.hide();
                         return this;
-                    } else if (this.$el[0].style.display === "none") {
-                        this.$el.show();
                     }
                     var item = this.model,
                         ask = item.get('ask'),
@@ -6772,6 +6908,45 @@ return parser;
                         ));
                     }
                     return this;
+                },
+
+                isGroupCollapsed: function () {
+                    /* Check whether the group in which this contact appears is
+                     * collapsed.
+                     */
+                    // XXX: this sucks and is fragile.
+                    // It's because I tried to do the "right thing"
+                    // and use definition lists to represent roster groups.
+                    // If roster group items were inside the group elements, we
+                    // would simplify things by not having to check whether the
+                    // group is collapsed or not.
+                    var name = this.$el.prevAll('dt:first').data('group');
+                    var group = converse.rosterview.model.where({'name': name})[0];
+                    if (group.get('state') === converse.CLOSED) {
+                        return true;
+                    }
+                    return false;
+                },
+
+                mayBeShown: function () {
+                    /* Return a boolean indicating whether this contact should
+                     * generally be visible in the roster.
+                     *
+                     * It doesn't check for the more specific case of whether
+                     * the group it's in is collapsed (see isGroupCollapsed).
+                     */
+                    var chatStatus = this.model.get('chat_status');
+                    if ((converse.show_only_online_users && chatStatus !== 'online') ||
+                        (converse.hide_offline_users && chatStatus === 'offline')) {
+                        // If pending or requesting, show
+                        if ((this.model.get('ask') === 'subscribe') ||
+                                (this.model.get('subscription') === 'from') ||
+                                (this.model.get('requesting') === true)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    return true;
                 },
 
                 openChat: function (ev) {
@@ -6871,7 +7046,7 @@ return parser;
                     var view = new converse.RosterContactView({model: contact});
                     this.add(contact.get('id'), view);
                     view = this.positionContact(contact).render();
-                    if (contact.showInRoster()) {
+                    if (view.mayBeShown()) {
                         if (this.model.get('state') === converse.CLOSED) {
                             if (view.$el[0].style.display !== "none") { view.$el.hide(); }
                             if (!this.$el.is(':visible')) { this.$el.show(); }
@@ -6900,18 +7075,19 @@ return parser;
 
                 show: function () {
                     this.$el.show();
-                    _.each(this.getAll(), function (contactView) {
-                        if (contactView.model.showInRoster()) {
-                            contactView.$el.show();
+                    _.each(this.getAll(), function (view) {
+                        if (view.mayBeShown() && !view.isGroupCollapsed()) {
+                            view.$el.show();
                         }
                     });
+                    return this;
                 },
 
                 hide: function () {
                     this.$el.nextUntil('dt').addBack().hide();
                 },
 
-                filter: function (q) {
+                filter: function (q, type) {
                     /* Filter the group's contacts based on the query "q".
                      * The query is matched against the contact's full name.
                      * If all contacts are filtered out (i.e. hidden), then the
@@ -6921,16 +7097,26 @@ return parser;
                     if (q.length === 0) {
                         if (this.model.get('state') === converse.OPENED) {
                             this.model.contacts.each(function (item) {
-                                if (item.showInRoster()) {
-                                    this.get(item.get('id')).$el.show();
+                                var view = this.get(item.get('id'));
+                                if (view.mayBeShown() && !view.isGroupCollapsed()) {
+                                    view.$el.show();
                                 }
                             }.bind(this));
                         }
                         this.showIfNecessary();
                     } else {
                         q = q.toLowerCase();
-                        matches = this.model.contacts.filter(utils.contains.not('fullname', q));
-                        if (matches.length === this.model.contacts.length) { // hide the whole group
+                        if (type === 'state') {
+                            matches = this.model.contacts.filter(
+                                utils.contains.not('chat_status', q)
+                            );
+                        } else  {
+                            matches = this.model.contacts.filter(
+                                utils.contains.not('fullname', q)
+                            );
+                        }
+                        if (matches.length === this.model.contacts.length) {
+                            // hide the whole group
                             this.hide();
                         } else {
                             _.each(matches, function (item) {
@@ -6961,7 +7147,7 @@ return parser;
                         $el.removeClass("icon-closed").addClass("icon-opened");
                         this.model.save({state: converse.OPENED});
                         this.filter(
-                            converse.rosterview.$('.roster-filter').val(),
+                            converse.rosterview.$('.roster-filter').val() || '',
                             converse.rosterview.$('.filter-type').val()
                         );
                     }
@@ -7076,10 +7262,14 @@ return parser;
             },
 
             onDisconnected: function () {
-                if (!converse.auto_reconnect) {
-                    converse.renderLoginPanel();
+                var result = this._super.onDisconnected.apply(this, arguments);
+                if (result === 'disconnected') {
+                    converse._tearDown();
+                    var view = converse.chatboxviews.get('controlbox');
+                    view.model.set({connected:false});
+                    view.$('#controlbox-tabs').empty();
+                    view.renderLoginPanel();
                 }
-                return this._super.onDisconnected.apply(this, arguments);
             },
 
             _tearDown: function () {
@@ -7094,14 +7284,14 @@ return parser;
 
             clearSession: function () {
                 this._super.clearSession.apply(this, arguments);
-                if (this.connection.connected) {
+                if (typeof this.connection !== 'undefined' && this.connection.connected) {
                     this.chatboxes.get('controlbox').save({'connected': false});
                 }
             },
 
             ChatBoxes: {
-                chatBoxShouldBeShown: function (chatbox) {
-                    return this._super.chatBoxShouldBeShown.apply(this, arguments) &&
+                chatBoxMayBeShown: function (chatbox) {
+                    return this._super.chatBoxMayBeShown.apply(this, arguments) &&
                            chatbox.get('id') !== 'controlbox';
                 },
 
@@ -7207,14 +7397,6 @@ return parser;
                 });
             };
 
-            converse.renderLoginPanel = function () {
-                converse._tearDown();
-                var view = converse.chatboxviews.get('controlbox');
-                view.model.set({connected:false});
-                view.renderLoginPanel();
-            };
-
-
             converse.ControlBoxView = converse.ChatBoxView.extend({
                 tagName: 'div',
                 className: 'chatbox',
@@ -7252,7 +7434,6 @@ return parser;
                         }))
                     );
                     if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
-                        // TODO: we might need to take prebinding into consideration here.
                         this.renderLoginPanel();
                     } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
                         this.renderContactsPanel();
@@ -7289,15 +7470,10 @@ return parser;
 
                 renderLoginPanel: function () {
                     var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
-                    var cfg = {
+                    this.loginpanel = new converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
-                    };
-                    if (!this.loginpanel) {
-                        this.loginpanel = new converse.LoginPanel(cfg);
-                    } else {
-                        this.loginpanel.delegateEvents().initialize(cfg);
-                    }
+                    });
                     this.loginpanel.render();
                     if ($feedback.length && $feedback.text() !== __('Connecting')) {
                         this.$('.conn-feedback').replaceWith($feedback);
@@ -7350,9 +7526,7 @@ return parser;
 
                 onControlBoxToggleHidden: function () {
                     this.$el.show('fast', function () {
-                        if (converse.rosterview) {
-                            converse.rosterview.update();
-                        }
+                        converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
                         converse.emit('controlBoxOpened', this);
                     }.bind(this));
@@ -7623,7 +7797,7 @@ return parser;
                         });
                     } else {
                         markup = converse.templates.add_contact_form({
-                            label_contact_username: __('e.g. user@example.com'),
+                            label_contact_username: __('e.g. user@example.org'),
                             label_add: __('Add')
                         });
                     }
@@ -7707,6 +7881,12 @@ return parser;
 
                 initialize: function () {
                     this.render();
+                    converse.on('initialized', function () {
+                        converse.roster.on("add", this.updateOnlineCount, this);
+                        converse.roster.on('change', this.updateOnlineCount, this);
+                        converse.roster.on("destroy", this.updateOnlineCount, this);
+                        converse.roster.on("remove", this.updateOnlineCount, this);
+                    }.bind(this));
                 },
 
                 render: function () {
@@ -7722,6 +7902,17 @@ return parser;
                     this.$el.hide();
                     return this;
                 },
+
+                updateOnlineCount: _.debounce(function () {
+                    if (typeof converse.roster === 'undefined') {
+                        return;
+                    }
+                    var $count = this.$('#online-count');
+                    $count.text('('+converse.roster.getNumOnlineContacts()+')');
+                    if (!$count.is(':visible')) {
+                        $count.show();
+                    }
+                }, converse.animate ? 100 : 0),
 
                 hide: function (callback) {
                     this.$el.fadeOut('fast', callback);
@@ -7943,6 +8134,9 @@ return parser;
 
                 initialize: function () {
                     this.model.messages.on('add', this.onMessageAdded, this);
+                    this.model.on('show', this.show, this);
+                    this.model.on('destroy', this.hide, this);
+
                     this.occupantsview = new converse.ChatRoomOccupantsView({
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
                     });
@@ -7954,7 +8148,6 @@ return parser;
                     this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                     this.fetchMessages();
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
-                    this.show();
                     converse.emit('chatRoomOpened', this);
                 },
 
@@ -8565,7 +8758,7 @@ return parser;
                         } else if ($error.find('item-not-found').length) {
                             this.showDisconnectMessage(__("This room does not (yet) exist"));
                         } else if ($error.find('service-unavailable').length) {
-                            this.showDisconnectMessage(__("This room has reached it's maximum number of occupants"));
+                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
                         }
                     }
                 },
@@ -8693,7 +8886,7 @@ return parser;
                 render: function () {
                     this.$el.html(
                         converse.templates.chatroom_sidebar({
-                            'label_invitation': __('Invite...'),
+                            'label_invitation': __('Invite'),
                             'label_occupants': __('Occupants')
                         })
                     );
@@ -9075,12 +9268,8 @@ return parser;
                     }
                 }
             };
-            var onConnected = function () {
-                converse.connection.addHandler(
-                    function (message) {
-                        converse.onDirectMUCInvitation(message);
-                        return true;
-                    }, 'jabber:x:conference', 'message');
+
+            var autoJoinRooms = function () {
                 _.each(converse.auto_join_rooms, function (room) {
                     if (typeof room === 'string') {
                         converse_api.rooms.open(room);
@@ -9090,6 +9279,15 @@ return parser;
                         converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
                     }
                 });
+            };
+            converse.on('chatBoxesFetched', autoJoinRooms);
+
+            var onConnected = function () {
+                converse.connection.addHandler(
+                    function (message) {
+                        converse.onDirectMUCInvitation(message);
+                        return true;
+                    }, 'jabber:x:conference', 'message');
             };
             converse.on('connected', onConnected);
             converse.on('reconnected', onConnected);
@@ -10218,18 +10416,12 @@ return parser;
                      * login panel.
                      */
                     this._super.renderLoginPanel.apply(this, arguments);
-                    var converse = this._super.converse,
-                        cfg;
+                    var converse = this._super.converse;
                     if (converse.allow_registration) {
-                        cfg = {
+                        this.registerpanel = new converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
                             'model': this
-                        };
-                        if (typeof this.registerpanel === 'undefined') {
-                            this.registerpanel = new converse.RegisterPanel(cfg);
-                        } else {
-                            this.registerpanel.delegateEvents().initialize(cfg);
-                        }
+                        });
                         this.registerpanel.render().$el.hide();
                     }
                     return this;
@@ -10911,13 +11103,17 @@ return parser;
                     // give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
                 } else {
-                    if (typeof converse.roster === 'undefined') {
-                        converse.log("Could not send notification, because roster is undefined", "error");
-                        return;
+                    if ($message.attr('type') === 'groupchat') {
+                        title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
+                    } else {
+                        if (typeof converse.roster === 'undefined') {
+                            converse.log("Could not send notification, because roster is undefined", "error");
+                            return;
+                        }
+                        contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                        roster_item = converse.roster.get(contact_jid);
+                        title = __(___("%1$s says"), roster_item.get('fullname'));
                     }
-                    contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
-                    roster_item = converse.roster.get(contact_jid);
-                    title = __(___("%1$s says"), roster_item.get('fullname'));
                 }
                 n = new Notification(title, {
                         body: $message.children('body').text(),
@@ -11174,6 +11370,7 @@ return parser;
                     utils.refreshWebkit();
                     this.$content.scrollTop(this.model.get('scroll'));
                     this.setChatState(converse.ACTIVE).focus();
+                    this.scrollDown();
                     converse.emit('chatBoxMaximized', this);
                 },
 
@@ -11221,8 +11418,8 @@ return parser;
             },
 
             ChatBoxes: {
-                chatBoxShouldBeShown: function (chatbox) {
-                    return this._super.chatBoxShouldBeShown.apply(this, arguments) &&
+                chatBoxMayBeShown: function (chatbox) {
+                    return this._super.chatBoxMayBeShown.apply(this, arguments) &&
                            !chatbox.get('minimized');
                 },
             },
@@ -11424,7 +11621,8 @@ return parser;
 
                 render: function () {
                     if (this.keys().length === 0) {
-                        this.$el.hide('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
+                        this.$el.hide();
+                        converse.chatboxviews.trimChats.bind(converse.chatboxviews);
                     } else if (this.keys().length === 1 && !this.$el.is(':visible')) {
                         this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
                     }
@@ -12040,6 +12238,7 @@ require.config({
         "locales":   "src/locales",
         "jed":       "components/jed/jed",
         "af":        "locale/af/LC_MESSAGES/converse.json",
+        "ca":        "locale/ca/LC_MESSAGES/converse.json",
         "de":        "locale/de/LC_MESSAGES/converse.json",
         "en":        "locale/en/LC_MESSAGES/converse.json",
         "es":        "locale/es/LC_MESSAGES/converse.json",

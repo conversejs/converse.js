@@ -191,11 +191,7 @@
             null,
             "Przełącz rozmowę"
          ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
-         ],
-         "Disconnected": [
+         "Attempting to reconnect": [
             null,
             ""
          ],

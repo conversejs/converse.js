@@ -163,13 +163,9 @@
             null,
             "Chat"
          ],
-         "Attempting to reconnect in 5 seconds": [
+         "Attempting to reconnect": [
             null,
             ""
-         ],
-         "Disconnected": [
-            null,
-            "Desconectado"
          ],
          "Error": [
             null,

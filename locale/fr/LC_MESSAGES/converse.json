@@ -187,13 +187,9 @@
             null,
             "Ouvrir IM"
          ],
-         "Attempting to reconnect in 5 seconds": [
+         "Attempting to reconnect": [
             null,
             ""
-         ],
-         "Disconnected": [
-            null,
-            "Déconnecté"
          ],
          "Error": [
             null,

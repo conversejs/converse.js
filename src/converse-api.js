@@ -34,6 +34,9 @@
             },
         },
         'user': {
+            'jid': function () {
+                return converse.connection.jid;
+            },
             'login': function (credentials) {
                 converse.initConnection();
                 converse.logIn(credentials);

@@ -400,6 +400,16 @@ The "user" grouping
 
 This grouping collects API functions related to the current logged in user.
 
+jid
+~~~
+
+Return's the current user's full JID (Jabber ID).
+
+.. code-block:: javascript
+
+    converse.user.jid()
+    // Returns for example jc@opkode.com/conversejs-351236
+
 login
 ~~~~~
 

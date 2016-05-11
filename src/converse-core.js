@@ -637,6 +637,18 @@
             // know whether these boxes are of the same account or not, so we
             // close them now.
             var deferred = new $.Deferred();
+            // XXX: ran into an issue where a returned PubSub BOSH response was
+            // not received by the browser. The solution was to flush the
+            // connection early on. I don't know what the underlying cause of
+            // this issue is, and whether it's a Strophe.js or Prosody bug.
+            // My suspicion is that Prosody replies to an invalid/expired
+            // Request, which is why the browser then doesn't receive it.
+            // In any case, flushing here (sending out a new BOSH request)
+            // solves the problem.
+            converse.connection.flush();
+            /* Called as soon as a new connection has been established, either
+             * by logging in or by attaching to an existing BOSH session.
+             */
             this.chatboxviews.closeAllChatBoxes();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);

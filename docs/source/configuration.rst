@@ -53,6 +53,8 @@ This enables anonymous login if the XMPP server supports it. This option can be
 used together with `auto_login`_ to automatically and anonymously log a user in
 as soon as the page loads.
 
+The server's domain is passed in via the `jid`_ setting.
+
 prebind
 ~~~~~~~
 
@@ -205,6 +207,9 @@ It should be used either with ``authentication`` set to ``anonymous`` or to ``lo
 
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values.
+
+If ``authentication`` is set to ``anonymous``, then you will also need to provide the
+server's domain via the `jid`_ setting.
 
 This is a useful setting if you'd like to create a custom login form in your
 website. You'll need to write some Javascript to accept that custom form's

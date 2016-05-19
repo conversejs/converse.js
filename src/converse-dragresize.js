@@ -60,7 +60,7 @@
             },
 
             ChatBox: {
-                initializhe: function () {
+                initialize: function () {
                     var result = this._super.initialize.apply(this, arguments),
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);

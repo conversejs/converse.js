@@ -47,13 +47,13 @@ Screencasts
 
 ### Integration into other frameworks
 
--   [Django](http://www.djangoproject.com): [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
--   [Plone](http://plone.org): [collective.xmpp.chat](http://github.com/collective/collective.xmpp.chat)
--   [Roundcube](http://roundcube.net): [roundcube-converse.js-xmpp-plugin](https://github.com/priyadi/roundcube-converse.js-xmpp-plugin)
--   [Wordpress](http://wordpress.org): [ConverseJS](http://wordpress.org/plugins/conversejs)
--   [Patternslib](http://patternslib.com): [patterns.converse](https://github.com/jcbrand/patterns.converse)
--   [Alfresco](http://www.alfresco.com): [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
--   [Friendica](http://friendica.com): [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
+-   **[Django](http://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
+-   **[Plone](http://plone.org)**: [collective.xmpp.chat](http://github.com/collective/collective.xmpp.chat)
+-   **[Roundcube](http://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/priyadi/roundcube-converse.js-xmpp-plugin)
+-   **[Wordpress](http://wordpress.org)**: [ConverseJS](http://wordpress.org/plugins/conversejs)
+-   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
+-   **[Alfresco](http://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
+-   **[Friendica](http://friendica.com)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 
 Demo
 ----

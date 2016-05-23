@@ -186,7 +186,7 @@ build:: stamp-npm
 jshint: stamp-bower
 	$(JSHINT) --config jshintrc $(CHECKSOURCES)
 
-.PHONY: watch
+.PHONY: check
 check: stamp-bower jshint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 

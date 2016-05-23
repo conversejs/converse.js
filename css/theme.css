@@ -339,3 +339,8 @@ ul.features {
     margin-left: 0;
     margin-right: 0;
 }
+.sponsors {
+    clear: both;
+    font-size: 1.1em;
+    padding: 6em 0 7em 0;
+}

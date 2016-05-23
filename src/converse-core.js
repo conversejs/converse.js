@@ -68,6 +68,9 @@
             $(event_context).one(evt, handler);
         },
         on: function (evt, handler) {
+            if (_.contains(['ready', 'initialized'], evt)) {
+                converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
+            }
             $(event_context).bind(evt, handler);
         },
         off: function (evt, handler) {

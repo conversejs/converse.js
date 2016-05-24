@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 (Unreleased)
+
+- Bugfix. Roster filter sometimes gets hidden when it shouldn't.
+- Chat boxes weren't being initialized due to typo.
+- Flush request queue just after connection. Solves a problem with PubSub and
+  Prosody, whereby BOSH HTTP responses weren't being received.
+
 ## 1.0.0 (2016-05-03)
 
 - Add catalan language [JoseMariaRubioMoral]

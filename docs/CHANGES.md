@@ -1,11 +1,16 @@
 # Changelog
 
+## 1.0.2 (2016-05-24)
+
+- Bugfix. Bind `sendPresence` to the right context. Bug that slipped in during
+  the release of `1.0.1`. [jcbrand]
+
 ## 1.0.1 (2016-05-24)
 
-- Bugfix. Roster filter sometimes gets hidden when it shouldn't.
-- Chat boxes weren't being initialized due to typo.
+- Bugfix. Roster filter sometimes gets hidden when it shouldn't. [jcbrand]
+- Chat boxes weren't being initialized due to typo. [jcbrand]
 - Flush request queue just after connection. Solves a problem with PubSub and
-  Prosody, whereby BOSH HTTP responses weren't being received.
+  Prosody, whereby BOSH HTTP responses weren't being received. [jcbrand]
 
 ## 1.0.0 (2016-05-03)
 

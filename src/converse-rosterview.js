@@ -292,7 +292,8 @@
                                          * fetching the roster we are ready to receive presence
                                          * updates from our contacts.
                                          */
-                                        converse.roster.fetchFromServer(converse.xmppstatus.sendPresence);
+                                        converse.roster.fetchFromServer(
+                                                converse.xmppstatus.sendPresence.bind(converse.xmppstatus));
                                     } else if (converse.send_initial_presence) {
                                         /* We're not going to fetch the roster again because we have
                                          * it already cached in sessionStorage, but we still need to

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-24 08:15+0000\n"
+"POT-Creation-Date: 2016-05-24 08:43+0000\n"
 "PO-Revision-Date: 2014-01-07 11:32+0900\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Language JA\n"
@@ -996,38 +996,38 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:575 src/converse-rosterview.js:596
+#: src/converse-rosterview.js:576 src/converse-rosterview.js:597
 msgid "Click to remove this contact"
-msgstr "クリックしてこの相手先を削除"
-
-#: src/converse-rosterview.js:583
-#, fuzzy
-msgid "Click to accept this contact request"
 msgstr "クリックしてこの相手先を削除"
 
 #: src/converse-rosterview.js:584
 #, fuzzy
+msgid "Click to accept this contact request"
+msgstr "クリックしてこの相手先を削除"
+
+#: src/converse-rosterview.js:585
+#, fuzzy
 msgid "Click to decline this contact request"
 msgstr "クリックしてこの相手先を削除"
 
-#: src/converse-rosterview.js:595
+#: src/converse-rosterview.js:596
 msgid "Click to chat with this contact"
 msgstr "クリックしてこの相手先とチャット"
 
-#: src/converse-rosterview.js:597
+#: src/converse-rosterview.js:598
 msgid "Name"
 msgstr ""
 
-#: src/converse-rosterview.js:652
+#: src/converse-rosterview.js:653
 #, fuzzy
 msgid "Are you sure you want to remove this contact?"
 msgstr "クリックしてこの相手先を削除"
 
-#: src/converse-rosterview.js:663
+#: src/converse-rosterview.js:664
 msgid "Sorry, there was an error while trying to remove "
 msgstr ""
 
-#: src/converse-rosterview.js:682
+#: src/converse-rosterview.js:683
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "クリックしてこの相手先を削除"

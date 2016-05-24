@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-24 08:15+0000\n"
+"POT-Creation-Date: 2016-05-24 08:43+0000\n"
 "PO-Revision-Date: 2016-01-25 17:25+0100\n"
 "Last-Translator: Ruben Mansilla <ramansilla@gmail.com>\n"
 "Language-Team: CA <product@spamina.com>\n"
@@ -995,35 +995,35 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:575 src/converse-rosterview.js:596
+#: src/converse-rosterview.js:576 src/converse-rosterview.js:597
 msgid "Click to remove this contact"
 msgstr "Feu clic per eliminar aquest contacte"
 
-#: src/converse-rosterview.js:583
+#: src/converse-rosterview.js:584
 msgid "Click to accept this contact request"
 msgstr "Feu clic per acceptar aquesta sol·licitud de contacte"
 
-#: src/converse-rosterview.js:584
+#: src/converse-rosterview.js:585
 msgid "Click to decline this contact request"
 msgstr "Feu clic per rebutjar aquesta sol·licitud de contacte"
 
-#: src/converse-rosterview.js:595
+#: src/converse-rosterview.js:596
 msgid "Click to chat with this contact"
 msgstr "Feu clic per conversar amb aquest contacte"
 
-#: src/converse-rosterview.js:597
+#: src/converse-rosterview.js:598
 msgid "Name"
 msgstr "Nom"
 
-#: src/converse-rosterview.js:652
+#: src/converse-rosterview.js:653
 msgid "Are you sure you want to remove this contact?"
 msgstr "Segur que voleu eliminar aquest contacte?"
 
-#: src/converse-rosterview.js:663
+#: src/converse-rosterview.js:664
 msgid "Sorry, there was an error while trying to remove "
 msgstr "S'ha produït un error en intentar eliminar "
 
-#: src/converse-rosterview.js:682
+#: src/converse-rosterview.js:683
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
 

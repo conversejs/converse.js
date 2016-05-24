@@ -153,6 +153,17 @@
                     });
                 }, 250),
 
+                isActive: function () {
+                    /* Returns true if the filter is enabled (i.e. if the user
+                     * has added values to the filter).
+                     */
+                    if (this.model.get('filter_type') === 'state' ||
+                        this.model.get('filter_text')) {
+                        return true;
+                    }
+                    return false;
+                },
+
                 show: function () {
                     if (this.$el.is(':visible')) { return this; }
                     this.$el.show();
@@ -256,7 +267,7 @@
                     }
                     if (this.$roster.hasScrollBar()) {
                         this.filter_view.show();
-                    } else {
+                    } else if (!this.filter_view.isActive()) {
                         this.filter_view.hide();
                     }
                     return this;
@@ -281,9 +292,7 @@
                                          * fetching the roster we are ready to receive presence
                                          * updates from our contacts.
                                          */
-                                        converse.roster.fetchFromServer(function () {
-                                            converse.xmppstatus.sendPresence();
-                                        });
+                                        converse.roster.fetchFromServer(converse.xmppstatus.sendPresence);
                                     } else if (converse.send_initial_presence) {
                                         /* We're not going to fetch the roster again because we have
                                          * it already cached in sessionStorage, but we still need to

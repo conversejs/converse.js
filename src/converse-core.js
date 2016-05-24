@@ -1438,10 +1438,10 @@
             },
 
             constructPresence: function (type, status_message) {
-                if (typeof type === 'undefined') {
+                if (typeof type !== 'string') {
                     type = this.get('status') || 'online';
                 }
-                if (typeof status_message === 'undefined') {
+                if (typeof status_message !== 'string') {
                     status_message = this.get('status_message');
                 }
                 var presence;

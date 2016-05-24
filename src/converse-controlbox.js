@@ -57,6 +57,7 @@
                     view.$('#controlbox-tabs').empty();
                     view.renderLoginPanel();
                 }
+                return result;
             },
 
             _tearDown: function () {

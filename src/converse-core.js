@@ -442,7 +442,7 @@
         }, 1000);
 
         this.onDisconnected = function (condition) {
-            if (!converse.auto_reconnect) { return; }
+            if (!converse.auto_reconnect) { return 'disconnected'; }
             if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                 converse.reconnect(condition);
                 return 'reconnecting';

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 (Unreleased)
+
+- Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` 
+  [jcbrand]
+
 ## 1.0.2 (2016-05-24)
 
 - Bugfix. Bind `sendPresence` to the right context. Bug that slipped in during

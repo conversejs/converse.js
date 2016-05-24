@@ -550,9 +550,6 @@
         };
 
         this.logOut = function () {
-            if (converse.xmppstatus) {
-                converse.xmppstatus.sendPresence('unavailable');
-            }
             converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
             if (typeof converse.connection !== 'undefined') {

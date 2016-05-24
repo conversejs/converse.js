@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-03 15:34+0000\n"
+"POT-Creation-Date: 2016-05-24 08:15+0000\n"
 "PO-Revision-Date: 2016-04-07 10:21+0000\n"
 "Last-Translator: GreenLunar <https://github.com/GreenLunar>\n"
 "Language-Team: Rahut <http://sourceforge.net/projects/rahut/>\n"
@@ -87,12 +87,12 @@ msgstr "הכנס סמיילי"
 msgid "Start a call"
 msgstr "התחל שיחה"
 
-#: src/converse-controlbox.js:177 src/converse-core.js:570
-#: src/converse-core.js:616 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:177 src/converse-core.js:573
+#: src/converse-core.js:619 src/converse-rosterview.js:58
 msgid "Contacts"
 msgstr "אנשי קשר"
 
-#: src/converse-controlbox.js:265 src/converse-core.js:474
+#: src/converse-controlbox.js:265 src/converse-core.js:477
 msgid "Connecting"
 msgstr "כעת מתחבר"
 
@@ -229,28 +229,28 @@ msgstr "לחץ כדי להוסיף בתור איש קשר שיחה"
 msgid "Toggle chat"
 msgstr "הפעל שיח"
 
-#: src/converse-core.js:431
+#: src/converse-core.js:434
 #, fuzzy
 msgid "Attempting to reconnect"
 msgstr "מנסה להתחבר בעוד 5 שניות"
 
-#: src/converse-core.js:472
+#: src/converse-core.js:475
 msgid "Error"
 msgstr "שגיאה"
 
-#: src/converse-core.js:476
+#: src/converse-core.js:479
 msgid "Authenticating"
 msgstr "כעת מאמת"
 
-#: src/converse-core.js:478 src/converse-core.js:479
+#: src/converse-core.js:481 src/converse-core.js:482
 msgid "Authentication Failed"
 msgstr "אימות נכשל"
 
-#: src/converse-core.js:874
+#: src/converse-core.js:889
 msgid "Sorry, there was an error while trying to add "
 msgstr "מצטערים, היתה שגיאה במהלך ניסיון הוספת "
 
-#: src/converse-core.js:1045
+#: src/converse-core.js:1060
 msgid "This client does not allow presence subscriptions"
 msgstr "לקוח זה לא מתיר הרשמות נוכחות"
 
@@ -983,35 +983,35 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:566 src/converse-rosterview.js:587
+#: src/converse-rosterview.js:575 src/converse-rosterview.js:596
 msgid "Click to remove this contact"
 msgstr "לחץ כדי להסיר את איש קשר זה"
 
-#: src/converse-rosterview.js:574
+#: src/converse-rosterview.js:583
 msgid "Click to accept this contact request"
 msgstr "לחץ כדי לקבל את בקשת איש קשר זה"
 
-#: src/converse-rosterview.js:575
+#: src/converse-rosterview.js:584
 msgid "Click to decline this contact request"
 msgstr "לחץ כדי לסרב את בקשת איש קשר זה"
 
-#: src/converse-rosterview.js:586
+#: src/converse-rosterview.js:595
 msgid "Click to chat with this contact"
 msgstr "לחץ כדי לשוחח עם איש קשר זה"
 
-#: src/converse-rosterview.js:588
+#: src/converse-rosterview.js:597
 msgid "Name"
 msgstr "שם"
 
-#: src/converse-rosterview.js:643
+#: src/converse-rosterview.js:652
 msgid "Are you sure you want to remove this contact?"
 msgstr "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
 
-#: src/converse-rosterview.js:654
+#: src/converse-rosterview.js:663
 msgid "Sorry, there was an error while trying to remove "
 msgstr "מצטערים, היתה שגיאה במהלך ניסיון להסיר את "
 
-#: src/converse-rosterview.js:673
+#: src/converse-rosterview.js:682
 msgid "Are you sure you want to decline this contact request?"
 msgstr "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
 

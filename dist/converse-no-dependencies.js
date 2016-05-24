@@ -2572,6 +2572,9 @@ define("polyfill", function(){});
             $(event_context).one(evt, handler);
         },
         on: function (evt, handler) {
+            if (_.contains(['ready', 'initialized'], evt)) {
+                converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
+            }
             $(event_context).bind(evt, handler);
         },
         off: function (evt, handler) {
@@ -3141,6 +3144,18 @@ define("polyfill", function(){});
             // know whether these boxes are of the same account or not, so we
             // close them now.
             var deferred = new $.Deferred();
+            // XXX: ran into an issue where a returned PubSub BOSH response was
+            // not received by the browser. The solution was to flush the
+            // connection early on. I don't know what the underlying cause of
+            // this issue is, and whether it's a Strophe.js or Prosody bug.
+            // My suspicion is that Prosody replies to an invalid/expired
+            // Request, which is why the browser then doesn't receive it.
+            // In any case, flushing here (sending out a new BOSH request)
+            // solves the problem.
+            converse.connection.flush();
+            /* Called as soon as a new connection has been established, either
+             * by logging in or by attaching to an existing BOSH session.
+             */
             this.chatboxviews.closeAllChatBoxes();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
@@ -3924,10 +3939,10 @@ define("polyfill", function(){});
             },
 
             constructPresence: function (type, status_message) {
-                if (typeof type === 'undefined') {
+                if (typeof type !== 'string') {
                     type = this.get('status') || 'online';
                 }
-                if (typeof status_message === 'undefined') {
+                if (typeof status_message !== 'string') {
                     status_message = this.get('status_message');
                 }
                 var presence;
@@ -4411,6 +4426,9 @@ define("polyfill", function(){});
             },
         },
         'user': {
+            'jid': function () {
+                return converse.connection.jid;
+            },
             'login': function (credentials) {
                 converse.initConnection();
                 converse.logIn(credentials);
@@ -6470,6 +6488,17 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     });
                 }, 250),
 
+                isActive: function () {
+                    /* Returns true if the filter is enabled (i.e. if the user
+                     * has added values to the filter).
+                     */
+                    if (this.model.get('filter_type') === 'state' ||
+                        this.model.get('filter_text')) {
+                        return true;
+                    }
+                    return false;
+                },
+
                 show: function () {
                     if (this.$el.is(':visible')) { return this; }
                     this.$el.show();
@@ -6573,7 +6602,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                     if (this.$roster.hasScrollBar()) {
                         this.filter_view.show();
-                    } else {
+                    } else if (!this.filter_view.isActive()) {
                         this.filter_view.hide();
                     }
                     return this;
@@ -6598,9 +6627,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                                          * fetching the roster we are ready to receive presence
                                          * updates from our contacts.
                                          */
-                                        converse.roster.fetchFromServer(function () {
-                                            converse.xmppstatus.sendPresence();
-                                        });
+                                        converse.roster.fetchFromServer(converse.xmppstatus.sendPresence);
                                     } else if (converse.send_initial_presence) {
                                         /* We're not going to fetch the roster again because we have
                                          * it already cached in sessionStorage, but we still need to
@@ -11798,7 +11825,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             },
 
             ChatBox: {
-                initializhe: function () {
+                initialize: function () {
                     var result = this._super.initialize.apply(this, arguments),
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);

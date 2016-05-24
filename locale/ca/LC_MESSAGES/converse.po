@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-03 15:34+0000\n"
+"POT-Creation-Date: 2016-05-24 08:15+0000\n"
 "PO-Revision-Date: 2016-01-25 17:25+0100\n"
 "Last-Translator: Ruben Mansilla <ramansilla@gmail.com>\n"
 "Language-Team: CA <product@spamina.com>\n"
@@ -91,12 +91,12 @@ msgstr "Insereix una cara somrient"
 msgid "Start a call"
 msgstr "Inicia una trucada"
 
-#: src/converse-controlbox.js:177 src/converse-core.js:570
-#: src/converse-core.js:616 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:177 src/converse-core.js:573
+#: src/converse-core.js:619 src/converse-rosterview.js:58
 msgid "Contacts"
 msgstr "Contactes"
 
-#: src/converse-controlbox.js:265 src/converse-core.js:474
+#: src/converse-controlbox.js:265 src/converse-core.js:477
 msgid "Connecting"
 msgstr "S'està establint la connexió"
 
@@ -232,28 +232,28 @@ msgstr "Feu clic per afegir com a contacte del xat"
 msgid "Toggle chat"
 msgstr "Canvia de xat"
 
-#: src/converse-core.js:431
+#: src/converse-core.js:434
 #, fuzzy
 msgid "Attempting to reconnect"
 msgstr "S'intentarà tornar a establir la connexió en 5 segons"
 
-#: src/converse-core.js:472
+#: src/converse-core.js:475
 msgid "Error"
 msgstr "Error"
 
-#: src/converse-core.js:476
+#: src/converse-core.js:479
 msgid "Authenticating"
 msgstr "S'està efectuant l'autenticació"
 
-#: src/converse-core.js:478 src/converse-core.js:479
+#: src/converse-core.js:481 src/converse-core.js:482
 msgid "Authentication Failed"
 msgstr "Error d'autenticació"
 
-#: src/converse-core.js:874
+#: src/converse-core.js:889
 msgid "Sorry, there was an error while trying to add "
 msgstr "S'ha produït un error en intentar afegir "
 
-#: src/converse-core.js:1045
+#: src/converse-core.js:1060
 msgid "This client does not allow presence subscriptions"
 msgstr "Aquest client no admet les subscripcions de presència"
 
@@ -995,35 +995,35 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:566 src/converse-rosterview.js:587
+#: src/converse-rosterview.js:575 src/converse-rosterview.js:596
 msgid "Click to remove this contact"
 msgstr "Feu clic per eliminar aquest contacte"
 
-#: src/converse-rosterview.js:574
+#: src/converse-rosterview.js:583
 msgid "Click to accept this contact request"
 msgstr "Feu clic per acceptar aquesta sol·licitud de contacte"
 
-#: src/converse-rosterview.js:575
+#: src/converse-rosterview.js:584
 msgid "Click to decline this contact request"
 msgstr "Feu clic per rebutjar aquesta sol·licitud de contacte"
 
-#: src/converse-rosterview.js:586
+#: src/converse-rosterview.js:595
 msgid "Click to chat with this contact"
 msgstr "Feu clic per conversar amb aquest contacte"
 
-#: src/converse-rosterview.js:588
+#: src/converse-rosterview.js:597
 msgid "Name"
 msgstr "Nom"
 
-#: src/converse-rosterview.js:643
+#: src/converse-rosterview.js:652
 msgid "Are you sure you want to remove this contact?"
 msgstr "Segur que voleu eliminar aquest contacte?"
 
-#: src/converse-rosterview.js:654
+#: src/converse-rosterview.js:663
 msgid "Sorry, there was an error while trying to remove "
 msgstr "S'ha produït un error en intentar eliminar "
 
-#: src/converse-rosterview.js:673
+#: src/converse-rosterview.js:682
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-03 15:34+0000\n"
+"POT-Creation-Date: 2016-05-24 08:15+0000\n"
 "PO-Revision-Date: 2016-04-07 10:21+0000\n"
 "Last-Translator: Javier Lopez <m@javier.io>\n"
 "Language-Team: ES <LL@li.org>\n"
@@ -95,12 +95,12 @@ msgstr ""
 msgid "Start a call"
 msgstr ""
 
-#: src/converse-controlbox.js:177 src/converse-core.js:570
-#: src/converse-core.js:616 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:177 src/converse-core.js:573
+#: src/converse-core.js:619 src/converse-rosterview.js:58
 msgid "Contacts"
 msgstr "Contactos"
 
-#: src/converse-controlbox.js:265 src/converse-core.js:474
+#: src/converse-controlbox.js:265 src/converse-core.js:477
 msgid "Connecting"
 msgstr "Conectando"
 
@@ -240,27 +240,27 @@ msgstr "Haga click para agregar como contacto de chat"
 msgid "Toggle chat"
 msgstr "Chat"
 
-#: src/converse-core.js:431
+#: src/converse-core.js:434
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: src/converse-core.js:472
+#: src/converse-core.js:475
 msgid "Error"
 msgstr "Error"
 
-#: src/converse-core.js:476
+#: src/converse-core.js:479
 msgid "Authenticating"
 msgstr "Autenticando"
 
-#: src/converse-core.js:478 src/converse-core.js:479
+#: src/converse-core.js:481 src/converse-core.js:482
 msgid "Authentication Failed"
 msgstr "La autenticación falló"
 
-#: src/converse-core.js:874
+#: src/converse-core.js:889
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1045
+#: src/converse-core.js:1060
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -1009,37 +1009,37 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:566 src/converse-rosterview.js:587
+#: src/converse-rosterview.js:575 src/converse-rosterview.js:596
 msgid "Click to remove this contact"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-rosterview.js:574
+#: src/converse-rosterview.js:583
 #, fuzzy
 msgid "Click to accept this contact request"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-rosterview.js:575
+#: src/converse-rosterview.js:584
 #, fuzzy
 msgid "Click to decline this contact request"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-rosterview.js:586
+#: src/converse-rosterview.js:595
 msgid "Click to chat with this contact"
 msgstr "Haga click para conversar con este contacto"
 
-#: src/converse-rosterview.js:588
+#: src/converse-rosterview.js:597
 msgid "Name"
 msgstr ""
 
-#: src/converse-rosterview.js:643
+#: src/converse-rosterview.js:652
 msgid "Are you sure you want to remove this contact?"
 msgstr "¿Esta seguro de querer eliminar este contacto?"
 
-#: src/converse-rosterview.js:654
+#: src/converse-rosterview.js:663
 msgid "Sorry, there was an error while trying to remove "
 msgstr ""
 
-#: src/converse-rosterview.js:673
+#: src/converse-rosterview.js:682
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "¿Esta seguro de querer eliminar este contacto?"

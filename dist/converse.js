@@ -20173,19 +20173,17 @@ Strophe.Handler.prototype = {
             result = this.handler(elem);
         } catch (e) {
             if (e.sourceURL) {
-                Strophe.fatal(
-                    "error: " + this.handler +
-                    " " + e.sourceURL + ":" + e.line +
-                    " - " + e.name + ": " + e.message + "\n" + e.stack);
+                Strophe.fatal("error: " + this.handler +
+                              " " + e.sourceURL + ":" +
+                              e.line + " - " + e.name + ": " + e.message);
             } else if (e.fileName) {
                 if (typeof(console) != "undefined") {
                     console.trace();
-                    console.error(this.handler, " - error - ", e,
-                    e.message + "\n" + e.stack);
+                    console.error(this.handler, " - error - ", e, e.message);
                 }
                 Strophe.fatal("error: " + this.handler + " " +
                               e.fileName + ":" + e.lineNumber + " - " +
-                              e.name + ": " + e.message + "\n" + e.stack);
+                              e.name + ": " + e.message);
             } else {
                 Strophe.fatal("error: " + e.message + "\n" + e.stack);
             }
@@ -21140,7 +21138,7 @@ Strophe.Connection.prototype = {
                         plugin.statusChanged(status, condition);
                     } catch (err) {
                         Strophe.error("" + k + " plugin caused an exception " +
-                                      "changing status: " + err.stack);
+                                      "changing status: " + err);
                     }
                 }
             }
@@ -21152,7 +21150,7 @@ Strophe.Connection.prototype = {
                 this.connect_callback(status, condition);
             } catch (e) {
                 Strophe.error("User connection callback caused an " +
-                              "exception: " + e.stack);
+                              "exception: " + e);
             }
         }
     },
@@ -22023,6 +22021,7 @@ Strophe.SASLMechanism.prototype = {
    *  Strophe.SASLPlain - SASL Plain authentication.
    *  Strophe.SASLMD5 - SASL Digest-MD5 authentication
    *  Strophe.SASLSHA1 - SASL SCRAM-SHA1 authentication
+   *  Strophe.SASLOAuthBearer - SASL OAuth Bearer authentication
    */
 
 // Building SASL callbacks
@@ -22236,6 +22235,32 @@ Strophe.SASLMD5.prototype.onChallenge = function(connection, challenge, test_cno
 };
 
 Strophe.Connection.prototype.mechanisms[Strophe.SASLMD5.prototype.name] = Strophe.SASLMD5;
+
+/** PrivateConstructor: SASLOAuthBearer
+ *  SASL OAuth Bearer authentication.
+ */
+Strophe.SASLOAuthBearer = function() {};
+
+Strophe.SASLOAuthBearer.prototype = new Strophe.SASLMechanism("OAUTHBEARER", true, 80);
+
+Strophe.SASLOAuthBearer.test = function(connection) {
+  return connection.authcid !== null;
+};
+
+Strophe.SASLOAuthBearer.prototype.onChallenge = function(connection) {
+  var auth_str = 'n,a=';
+  auth_str = auth_str + connection.authzid;
+  auth_str = auth_str + ','
+  auth_str = auth_str + "\u0001";
+  auth_str = auth_str + 'auth=Bearer ';
+  auth_str = auth_str + connection.pass;
+  auth_str = auth_str + "\u0001";
+  auth_str = auth_str + "\u0001";
+
+  return utils.utf16to8(auth_str);
+};
+
+Strophe.Connection.prototype.mechanisms[Strophe.SASLOAuthBearer.prototype.name] = Strophe.SASLOAuthBearer;
 
 return {
     Strophe:        Strophe,
@@ -23521,7 +23546,7 @@ Strophe.Websocket.prototype = {
      */
     _onClose: function() {
         if(this._conn.connected && !this._conn.disconnecting) {
-            Strophe.error("Websocket closed unexcectedly");
+            Strophe.error("Websocket closed unexpectedly");
             this._conn._doDisconnect();
         } else {
             Strophe.info("Websocket closed");
@@ -28286,6 +28311,9 @@ return Backbone.BrowserStorage;
             $(event_context).one(evt, handler);
         },
         on: function (evt, handler) {
+            if (_.contains(['ready', 'initialized'], evt)) {
+                converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
+            }
             $(event_context).bind(evt, handler);
         },
         off: function (evt, handler) {
@@ -28855,6 +28883,18 @@ return Backbone.BrowserStorage;
             // know whether these boxes are of the same account or not, so we
             // close them now.
             var deferred = new $.Deferred();
+            // XXX: ran into an issue where a returned PubSub BOSH response was
+            // not received by the browser. The solution was to flush the
+            // connection early on. I don't know what the underlying cause of
+            // this issue is, and whether it's a Strophe.js or Prosody bug.
+            // My suspicion is that Prosody replies to an invalid/expired
+            // Request, which is why the browser then doesn't receive it.
+            // In any case, flushing here (sending out a new BOSH request)
+            // solves the problem.
+            converse.connection.flush();
+            /* Called as soon as a new connection has been established, either
+             * by logging in or by attaching to an existing BOSH session.
+             */
             this.chatboxviews.closeAllChatBoxes();
             this.jid = this.connection.jid;
             this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
@@ -29638,10 +29678,10 @@ return Backbone.BrowserStorage;
             },
 
             constructPresence: function (type, status_message) {
-                if (typeof type === 'undefined') {
+                if (typeof type !== 'string') {
                     type = this.get('status') || 'online';
                 }
-                if (typeof status_message === 'undefined') {
+                if (typeof status_message !== 'string') {
                     status_message = this.get('status_message');
                 }
                 var presence;
@@ -30125,6 +30165,9 @@ return Backbone.BrowserStorage;
             },
         },
         'user': {
+            'jid': function () {
+                return converse.connection.jid;
+            },
             'login': function (credentials) {
                 converse.initConnection();
                 converse.logIn(credentials);
@@ -33484,6 +33527,17 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     });
                 }, 250),
 
+                isActive: function () {
+                    /* Returns true if the filter is enabled (i.e. if the user
+                     * has added values to the filter).
+                     */
+                    if (this.model.get('filter_type') === 'state' ||
+                        this.model.get('filter_text')) {
+                        return true;
+                    }
+                    return false;
+                },
+
                 show: function () {
                     if (this.$el.is(':visible')) { return this; }
                     this.$el.show();
@@ -33587,7 +33641,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                     if (this.$roster.hasScrollBar()) {
                         this.filter_view.show();
-                    } else {
+                    } else if (!this.filter_view.isActive()) {
                         this.filter_view.hide();
                     }
                     return this;
@@ -33612,9 +33666,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                                          * fetching the roster we are ready to receive presence
                                          * updates from our contacts.
                                          */
-                                        converse.roster.fetchFromServer(function () {
-                                            converse.xmppstatus.sendPresence();
-                                        });
+                                        converse.roster.fetchFromServer(converse.xmppstatus.sendPresence);
                                     } else if (converse.send_initial_presence) {
                                         /* We're not going to fetch the roster again because we have
                                          * it already cached in sessionStorage, but we still need to
@@ -46662,7 +46714,7 @@ Strophe.addConnectionPlugin('ping', {
             },
 
             ChatBox: {
-                initializhe: function () {
+                initialize: function () {
                     var result = this._super.initialize.apply(this, arguments),
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);

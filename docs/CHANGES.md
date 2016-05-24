@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.1 (Unreleased)
+## 1.0.1 (2016-05-24)
 
 - Bugfix. Roster filter sometimes gets hidden when it shouldn't.
 - Chat boxes weren't being initialized due to typo.

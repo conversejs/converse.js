@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-03 15:34+0000\n"
+"POT-Creation-Date: 2016-05-24 08:15+0000\n"
 "PO-Revision-Date: 2016-04-07 10:23+0000\n"
 "Last-Translator: Meskó Balázs <meskobalazs@gmail.com>\n"
 "Language-Team: Hungarian\n"
@@ -85,12 +85,12 @@ msgstr "Hangulatjel beszúrása"
 msgid "Start a call"
 msgstr "Hívás indítása"
 
-#: src/converse-controlbox.js:177 src/converse-core.js:570
-#: src/converse-core.js:616 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:177 src/converse-core.js:573
+#: src/converse-core.js:619 src/converse-rosterview.js:58
 msgid "Contacts"
 msgstr "Kapcsolatok"
 
-#: src/converse-controlbox.js:265 src/converse-core.js:474
+#: src/converse-controlbox.js:265 src/converse-core.js:477
 msgid "Connecting"
 msgstr "Kapcsolódás"
 
@@ -226,28 +226,28 @@ msgstr "Felvétel a csevegőpartnerek közé"
 msgid "Toggle chat"
 msgstr "Csevegőablak"
 
-#: src/converse-core.js:431
+#: src/converse-core.js:434
 #, fuzzy
 msgid "Attempting to reconnect"
 msgstr "Újrakapcsolódás 5 másodperc múlva"
 
-#: src/converse-core.js:472
+#: src/converse-core.js:475
 msgid "Error"
 msgstr "Hiba"
 
-#: src/converse-core.js:476
+#: src/converse-core.js:479
 msgid "Authenticating"
 msgstr "Azonosítás"
 
-#: src/converse-core.js:478 src/converse-core.js:479
+#: src/converse-core.js:481 src/converse-core.js:482
 msgid "Authentication Failed"
 msgstr "Azonosítási hiba"
 
-#: src/converse-core.js:874
+#: src/converse-core.js:889
 msgid "Sorry, there was an error while trying to add "
 msgstr "Sajnáljuk, hiba történt a hozzáadás során"
 
-#: src/converse-core.js:1045
+#: src/converse-core.js:1060
 msgid "This client does not allow presence subscriptions"
 msgstr "Ez a kliens nem engedélyezi a jelenlét követését"
 
@@ -978,35 +978,35 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:566 src/converse-rosterview.js:587
+#: src/converse-rosterview.js:575 src/converse-rosterview.js:596
 msgid "Click to remove this contact"
 msgstr "Partner törlése"
 
-#: src/converse-rosterview.js:574
+#: src/converse-rosterview.js:583
 msgid "Click to accept this contact request"
 msgstr "Partner felvételének elfogadása"
 
-#: src/converse-rosterview.js:575
+#: src/converse-rosterview.js:584
 msgid "Click to decline this contact request"
 msgstr "Partner felvételének megtagadása"
 
-#: src/converse-rosterview.js:586
+#: src/converse-rosterview.js:595
 msgid "Click to chat with this contact"
 msgstr "Csevegés indítása ezzel a partnerünkkel"
 
-#: src/converse-rosterview.js:588
+#: src/converse-rosterview.js:597
 msgid "Name"
 msgstr "Név"
 
-#: src/converse-rosterview.js:643
+#: src/converse-rosterview.js:652
 msgid "Are you sure you want to remove this contact?"
 msgstr "Valóban törölni szeretné a csevegőpartnerét?"
 
-#: src/converse-rosterview.js:654
+#: src/converse-rosterview.js:663
 msgid "Sorry, there was an error while trying to remove "
 msgstr "Sajnáljuk, hiba történt a törlés során"
 
-#: src/converse-rosterview.js:673
+#: src/converse-rosterview.js:682
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Valóban elutasítja ezt a partnerkérelmet?"
 

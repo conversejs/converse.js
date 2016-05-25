@@ -1134,7 +1134,6 @@
 
 
         this.Message = Backbone.Model.extend({
-            idAttribute: 'msgid',
             defaults: function(){
                 return {
                     msgid: converse.connection.getUniqueId()
@@ -1173,7 +1172,6 @@
                     delayed = $delay.length > 0,
                     fullname = this.get('fullname'),
                     is_groupchat = $message.attr('type') === 'groupchat',
-                    msgid = $message.attr('id'),
                     chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
                         $message.find(converse.PAUSED).length && converse.PAUSED ||
                         $message.find(converse.INACTIVE).length && converse.INACTIVE ||
@@ -1205,13 +1203,13 @@
                     delayed: delayed,
                     fullname: fullname,
                     message: body || undefined,
-                    msgid: msgid,
+                    msgid: $message.attr('id'),
                     sender: sender,
                     time: time
                 });
             }
         });
-        
+
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
             comparator: 'time_opened',

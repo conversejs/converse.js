@@ -5,6 +5,8 @@
 - Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` 
   [jcbrand]
 - Also indicate new day for the first day's messages. [jcbrand]
+- Chat bot messages don't appear when they have the same ids as their commands.
+  [jcbrand]
 
 ## 1.0.2 (2016-05-24)
 

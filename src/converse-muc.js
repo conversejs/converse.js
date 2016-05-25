@@ -844,7 +844,7 @@
                             // original message. So we also check the sender.
                             return msg.get('msgid') === msgid && msg.get('fullname') === sender;
                         });
-                    if (dupes.length) {
+                    if (dupes && dupes.length) {
                         return true;
                     }
                     if (subject) {

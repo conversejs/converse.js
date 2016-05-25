@@ -195,7 +195,7 @@
             it("shows sent groupchat messages", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
-                var view = this.chatboxviews.get('lounge@localhost');
+                var view = converse.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                 var text = 'This is a sent message';
                 view.$el.find('.chat-textarea').text(text);
@@ -214,7 +214,23 @@
                 expect($chat_content.find('.chat-msg-content').last().text()).toBe(text);
                 // We don't emit an event if it's our own message
                 expect(converse.emit.callCount, 1);
-            }.bind(converse));
+            });
+
+            it("shows received chatroom subject messages", function () {
+                var text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
+                var stanza = Strophe.xmlHtmlNode(
+                    '<message xmlns="jabber:client" to="jc@opkode.com/converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">'+
+                    '    <subject>'+text+'</subject>'+
+                    '    <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>'+
+                    '    <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>'+
+                    '</message>').firstChild;
+                test_utils.openChatRoom('jdev', 'conference.jabber.org', 'jc');
+                converse.connection._dataRecv(test_utils.createRequest(stanza));
+                var view = converse.chatboxviews.get('jdev@conference.jabber.org');
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.find('.chat-info').length).toBe(1);
+                expect($chat_content.find('.chat-info').text()).toBe('Topic set by ralphm to: '+text);
+            });
 
             it("informs users if their nicknames has been changed.", function () {
                 /* The service then sends two presence stanzas to the full JID

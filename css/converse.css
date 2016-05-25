@@ -1347,7 +1347,7 @@
         font-weight: bold; }
       #conversejs .chatbox .chat-body .chat-info.chat-date {
         display: inline-block;
-        margin-top: 2em; }
+        margin-top: 1em; }
     #conversejs .chatbox .chat-body .chat-message {
       margin: 0.3em; }
       #conversejs .chatbox .chat-body .chat-message span {

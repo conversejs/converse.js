@@ -1,9 +1,10 @@
 # Changelog
 
-## 1.0.2 (Unreleased)
+## 1.0.3 (Unreleased)
 
 - Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` 
   [jcbrand]
+- Also indicate new day for the first day's messages. [jcbrand]
 
 ## 1.0.2 (2016-05-24)
 

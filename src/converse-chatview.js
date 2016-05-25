@@ -154,30 +154,37 @@
                     }
                 },
 
-                prependDayIndicator: function (date) {
-                    /* Prepends an indicator into the chat area, showing the day as
-                     * given by the passed in date.
+                insertDayIndicator: function (date, prepend) {
+                    /* Appends (or prepends if "prepend" is truthy) an indicator
+                     * into the chat area, showing the day as given by the
+                     * passed in date.
                      *
                      * Parameters:
                      *  (String) date - An ISO8601 date string.
                      */
                     var day_date = moment(date).startOf('day');
-                    this.$content.prepend(converse.templates.new_day({
+                    var insert = prepend ? this.$content.prepend: this.$content.append;
+                    insert.call(this.$content, converse.templates.new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
                 },
 
-                appendMessage: function (attrs) {
-                    /* Helper method which appends a message to the end of the chat
-                     * box's content area.
+                insertMessage: function (attrs, prepend) {
+                    /* Helper method which appends a message (or prepends if the
+                     * 2nd parameter is set to true) to the end of the chat box's
+                     * content area.
                      *
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
+                    var insert = prepend ? this.$content.prepend : this.$content.append;
                     _.compose(
-                        _.debounce(this.scrollDown.bind(this), 50),
-                        this.$content.append.bind(this.$content)
+                        this.scrollDownMessageHeight.bind(this),
+                        function ($el) {
+                            insert.call(this.$content, $el);
+                            return $el;
+                        }.bind(this)
                     )(this.renderMessage(attrs));
                 },
 
@@ -192,79 +199,54 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    var $first_msg = this.$content.children('.chat-message:first'),
+                    var msg_dates, idx,
+                        $first_msg = this.$content.children('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
-                        last_msg_date, current_msg_date, day_date, $msgs, msg_dates, idx;
+                        current_msg_date = moment(attrs.time) || moment,
+                        last_msg_date = this.$content.children('.chat-message:last').data('isodate');
+
                     if (!first_msg_date) {
-                        this.appendMessage(attrs);
+                        // This is the first received message, so we insert a
+                        // date indicator before it.
+                        this.insertDayIndicator(current_msg_date);
+                        this.insertMessage(attrs);
                         return;
                     }
-                    current_msg_date = moment(attrs.time) || moment;
-                    last_msg_date = this.$content.children('.chat-message:last').data('isodate');
-
-                    if (typeof last_msg_date !== "undefined" && (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date))) {
+                    if (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
                         if (current_msg_date.isAfter(last_msg_date, 'day')) {
                             // Append a new day indicator
-                            day_date = moment(current_msg_date).startOf('day');
-                            this.$content.append(converse.templates.new_day({
-                                isodate: current_msg_date.format(),
-                                datestring: current_msg_date.format("dddd MMM Do YYYY")
-                            }));
+                            this.insertDayIndicator(current_msg_date);
                         }
-                        this.appendMessage(attrs);
+                        this.insertMessage(attrs);
                         return;
                     }
-
-                    if (typeof first_msg_date !== "undefined" &&
-                            (current_msg_date.isBefore(first_msg_date) ||
-                                (current_msg_date.isSame(first_msg_date) && !current_msg_date.isSame(last_msg_date)))) {
-                        // The new message is before the first message
-
-                        if ($first_msg.prev().length === 0) {
-                            // There's no day indicator before the first message, so we prepend one.
-                            this.prependDayIndicator(first_msg_date);
-                        }
+                    if (current_msg_date.isBefore(first_msg_date) || current_msg_date.isSame(first_msg_date)) {
+                        // The message is before the first, but on the same day.
+                        // We need to prepend the message immediately before the
+                        // first message (so that it'll still be after the day indicator).
+                        this.insertMessage(attrs, 'prepend');
                         if (current_msg_date.isBefore(first_msg_date, 'day')) {
-                            _.compose(
-                                    this.scrollDownMessageHeight.bind(this),
-                                    function ($el) {
-                                        this.$content.prepend($el);
-                                        return $el;
-                                    }.bind(this)
-                                )(this.renderMessage(attrs));
-                            // This message is on a different day, so we add a day indicator.
-                            this.prependDayIndicator(current_msg_date);
-                        } else {
-                            // The message is before the first, but on the same day.
-                            // We need to prepend the message immediately before the
-                            // first message (so that it'll still be after the day indicator).
-                            _.compose(
-                                    this.scrollDownMessageHeight.bind(this),
-                                    function ($el) {
-                                        $el.insertBefore($first_msg);
-                                        return $el;
-                                    }
-                                )(this.renderMessage(attrs));
+                            // This message is also on a different day, so we prepend a day indicator.
+                            this.insertDayIndicator(current_msg_date, 'prepend');
                         }
-                    } else {
-                        // We need to find the correct place to position the message
-                        current_msg_date = current_msg_date.format();
-                        $msgs = this.$content.children('.chat-message');
-                        msg_dates = _.map($msgs, function (el) {
-                            return $(el).data('isodate');
-                        });
-                        msg_dates.push(current_msg_date);
-                        msg_dates.sort();
-                        idx = msg_dates.indexOf(current_msg_date)-1;
-                        _.compose(
-                                this.scrollDownMessageHeight.bind(this),
-                                function ($el) {
-                                    $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
-                                    return $el;
-                                }.bind(this)
-                            )(this.renderMessage(attrs));
+                        return;
                     }
+                    // Find the correct place to position the message
+                    current_msg_date = current_msg_date.format();
+                    msg_dates = _.map(this.$content.children('.chat-message'), function (el) {
+                        return $(el).data('isodate');
+                    });
+                    msg_dates.push(current_msg_date);
+                    msg_dates.sort();
+                    idx = msg_dates.indexOf(current_msg_date)-1;
+                    _.compose(
+                            this.scrollDownMessageHeight.bind(this),
+                            function ($el) {
+                                $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
+                                return $el;
+                            }.bind(this)
+                        )(this.renderMessage(attrs));
                 },
 
                 renderMessage: function (attrs) {

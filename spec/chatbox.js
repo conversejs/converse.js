@@ -664,6 +664,12 @@
                     sender_txt = $chat_content.find('span.chat-msg-them').text();
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
 
+                    var $time = $chat_content.find('time');
+                    expect($time.length).toEqual(1);
+                    expect($time.attr('class')).toEqual('chat-info chat-date');
+                    expect($time.data('isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
+                    expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
+
                     message = 'This is a current message';
                     msg = $msg({
                         from: contact_jid,
@@ -676,12 +682,13 @@
                     expect(converse.emit).toHaveBeenCalledWith('message', msg);
                     // Check that there is a <time> element, with the required
                     // props.
-                    var $time = $chat_content.find('time');
+                    $time = $chat_content.find('time');
+                    expect($time.length).toEqual(2); // There are now two time elements
+                    $time = $chat_content.find('time:last'); // We check the last one
                     var message_date = new Date();
-                    expect($time.length).toEqual(1);
                     expect($time.attr('class')).toEqual('chat-info chat-date');
-                    expect($time.data('isodate')).toEqual(moment(message_date).format());
-                    expect($time.text()).toEqual(moment(message_date).format("dddd MMM Do YYYY"));
+                    expect($time.data('isodate')).toEqual(moment(message_date).startOf('day').format());
+                    expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
                     // Normal checks for the 2nd message
                     expect(chatbox.messages.length).toEqual(2);

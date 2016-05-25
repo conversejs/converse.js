@@ -286,10 +286,8 @@
                     }).c("body").t(text).up()
                     .c("x", {xmlns: "jabber:x:event"}).c("composing");
                     converse.connection.send(msg);
-
-                    var fullname = converse.xmppstatus.get('fullname');
                     this.model.messages.create({
-                        fullname: _.isEmpty(fullname)? converse.bare_jid: fullname,
+                        fullname: this.model.get('nick'),
                         sender: 'me',
                         time: moment().format(),
                         message: text,

@@ -175,7 +175,7 @@
                     'click .toggle-clear': 'clearChatRoomMessages',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants a': 'toggleOccupants',
-                    'keypress textarea.chat-textarea': 'keyPressed',
+                    'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
                 initialize: function () {
@@ -194,6 +194,12 @@
                     this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                     this.fetchMessages();
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    // XXX: adding the event below to the events map above doesn't work.
+                    // The code that gets executed because of that looks like this:
+                    //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
+                    // Which for some reason doesn't work.
+                    // So working around that fact here:
+                    this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
                     converse.emit('chatRoomOpened', this);
                 },
 

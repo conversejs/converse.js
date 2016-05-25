@@ -83,6 +83,12 @@
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
                     this.render().fetchMessages().insertIntoPage().hide();
+                    // XXX: adding the event below to the events map above doesn't work.
+                    // The code that gets executed because of that looks like this:
+                    //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
+                    // Which for some reason doesn't work.
+                    // So working around that fact here:
+                    this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
                     converse.emit('chatBoxInitialized', this);
                 },
 
@@ -135,11 +141,8 @@
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
-                    var was_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight;
                     this.$content.append($('<div class="chat-info chat-event"></div>').text(message));
-                    if (was_at_bottom) {
-                        this.scrollDown();
-                    }
+                    this.scrollDown();
                 },
 
                 addSpinner: function () {
@@ -326,7 +329,7 @@
 
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if ((message.get('sender') !== 'me') && (converse.windowState === 'blur')) {
+                    if ((message.get('sender') !== 'me') && (converse.windowState === 'blur') || this.model.get('scrolled', true)) {
                         converse.incrementMsgCounter();
                     }
                     if (this.shouldShowOnTextMessage()) {
@@ -666,15 +669,36 @@
                     return this;
                 },
 
+                markScrolled: _.debounce(function (ev) {
+                    /* Called when the chat content is scrolled up or down.
+                     * We want to record when the user has scrolled away from
+                     * the bottom, so that we don't automatically scroll away
+                     * from what the user is reading when new messages are
+                     * received.
+                     */
+                    // TODO: need to indicate when new messages are received
+                    // and the user is scrolled away...
+                    // Should probably take a look at incrementMsgCounter
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight;
+                    if (is_at_bottom) {
+                        this.model.set('scrolled', false);
+                    } else {
+                        // We're not at the bottom of the chat area, so we mark
+                        // that the box is in a scrolled-up state.
+                        this.model.set('scrolled', true);
+                    }
+                }, 50),
+
                 scrollDownMessageHeight: function ($message) {
-                    if (this.$content.is(':visible')) {
+                    if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content.scrollTop() + $message[0].scrollHeight);
                     }
                     return this;
                 },
 
                 scrollDown: function () {
-                    if (this.$content.is(':visible')) {
+                    if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
                     }
                     return this;

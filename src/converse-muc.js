@@ -839,21 +839,15 @@
                         resource = Strophe.getResourceFromJid(jid),
                         sender = resource && Strophe.unescapeNode(resource) || '',
                         subject = $message.children('subject').text(),
-                        text = $message.find('body').text(),
-                        collision = msgid && this.model.messages.findWhere({'msgid': msgid});
-                    if (collision) {
-                        // We already have a message with this id stored.
-                        // It might therefore be a duplicate, but we cannot yet be
-                        // 100% sure. Some bots (like HAL in the prosody
-                        // chatroom) respond to commands with the same ID as
-                        // the original message. We therefore also check whether
-                        // the sender is the same and then lastly whether the
-                        // message text is the same.
-                        if (collision.get('fullname') === sender) {
-                            if (this.model.messages.findWhere({'message': text})) {
-                                return true;
-                            }
-                        }
+                        dupes = msgid && this.model.messages.filter(function (msg) {
+                            // Find duplicates.
+                            // Some bots (like HAL in the prosody chatroom)
+                            // respond to commands with the same ID as the
+                            // original message. So we also check the sender.
+                            return msg.get('msgid') === msgid && msg.get('fullname') === sender;
+                        });
+                    if (dupes.length) {
+                        return true;
                     }
                     if (subject) {
                         this.$el.find('.chatroom-topic').text(subject).attr('title', subject);

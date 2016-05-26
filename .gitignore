@@ -1,7 +1,7 @@
 *~
 *.mo
 *.kpf
-*.swp
+.*.sw?
 .*.cfg
 .hg/
 .bzr/

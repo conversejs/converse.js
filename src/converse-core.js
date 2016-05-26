@@ -237,7 +237,7 @@
             moment.locale = moment.lang;
         }
         moment.locale(this.detectLocale(this.isMomentLocale));
-        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)];
+        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)] || {};
 
         // Translation machinery
         // ---------------------

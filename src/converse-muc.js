@@ -778,7 +778,9 @@
                     for (i=0; i<reasons.length; i++) {
                         this.showStatusNotification(__('The reason given is: "'+reasons[i]+'"'), true);
                     }
-                    this.scrollDown();
+                    if (disconnect_msgs.length || msgs.length || reasons.length) {
+                        this.scrollDown();
+                    }
                     return el;
                 },
 
@@ -830,6 +832,17 @@
                     this.occupantsview.updateOccupantsOnPresence(pres);
                 },
 
+                setChatRoomSubject: function (sender, subject) {
+                    this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
+                    // For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
+                    // Example: Topic set by JC Brand to: Hello World!
+                    this.$content.append(
+                        converse.templates.info({
+                            'message': __('Topic set by %1$s to: %2$s', sender, subject)
+                        }));
+                    this.scrollDown();
+                },
+
                 onChatRoomMessage: function (message) {
                     var $message = $(message),
                         $forwarded = $message.find('forwarded'),
@@ -854,13 +867,7 @@
                         return true;
                     }
                     if (subject) {
-                        this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
-                        // For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
-                        // Example: Topic set by JC Brand to: Hello World!
-                        this.$content.append(
-                            converse.templates.info({
-                                'message': __('Topic set by %1$s to: %2$s', sender, subject)
-                            }));
+                        this.setChatRoomSubject(sender, subject);
                     }
                     if (sender === '') {
                         return true;

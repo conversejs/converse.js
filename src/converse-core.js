@@ -204,7 +204,7 @@
                 }
             }
         };
-		
+
         this.detectLocale = function (library_check) {
             /* Determine which locale is supported by the user's system as well
              * as by the relevant library (e.g. converse.js or moment.js).
@@ -232,7 +232,7 @@
             }
             return locale || 'en';
         };
-		
+
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
         }
@@ -442,8 +442,7 @@
         }, 1000);
 
         this.onDisconnected = function (condition) {
-            if (!converse.auto_reconnect) { return 'disconnected'; }
-            if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
+            if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
                 converse.reconnect(condition);
                 return 'reconnecting';
             } else {
@@ -611,7 +610,7 @@
 
 
         this.onStatusInitialized = function (deferred) {
-            this.registerIntervalHandler();				
+            this.registerIntervalHandler();
             this.roster = new this.RosterContacts();
             this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
                 b64_sha1('converse.contacts-'+this.bare_jid));

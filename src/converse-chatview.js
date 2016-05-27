@@ -329,8 +329,16 @@
 
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if ((message.get('sender') !== 'me') && (converse.windowState === 'blur') || this.model.get('scrolled', true)) {
-                        converse.incrementMsgCounter();
+                    if (message.get('sender') !== 'me') {
+                        if (converse.windowState === 'blur' || this.model.get('scrolled', true)) {
+                            converse.incrementMsgCounter();
+                        }
+                    } else {
+                        // We remove the "scrolled" flag so that the chat area
+                        // gets scrolled down. We always want to scroll down
+                        // when the user writes a message as opposed to when a
+                        // message is received.
+                        this.model.set('scrolled', false);
                     }
                     if (this.shouldShowOnTextMessage()) {
                         this.show();

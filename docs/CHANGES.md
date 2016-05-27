@@ -2,11 +2,12 @@
 
 ## 1.0.3 (Unreleased)
 
-- Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` 
+- Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false`
   [jcbrand]
 - Also indicate new day for the first day's messages. [jcbrand]
 - Chat bot messages don't appear when they have the same ids as their commands.
   [jcbrand]
+- Updated onDisconnected method to fire disconnected event even if auto_reconnect is false. [kamranzafar]
 
 ## 1.0.2 (2016-05-24)
 
@@ -318,7 +319,7 @@
 
 ## 0.7.4 (2014-03-05)
 
-**note:** 
+**note:**
 *This release contains an important security fix. Thanks to Renaud Dubourguais from [Synacktiv](http://synacktiv.com) for reporting the vulnerability.*
 
 - #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]

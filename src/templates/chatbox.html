@@ -17,6 +17,7 @@
     </div>
     <div class="chat-body">
         <div class="chat-content"></div>
+        <div class="new-msgs-indicator hidden">▼ {{ unread_msgs }} ▼</div>
         {[ if (show_textarea) { ]}
         <form class="sendXMPPMessage" action="" method="post">
             {[ if (show_toolbar) { ]}

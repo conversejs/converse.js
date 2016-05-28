@@ -1369,6 +1369,16 @@
       color: #FB5D50; }
     #conversejs .chatbox .chat-body .delayed .chat-msg-me {
       color: #7EABBB; }
+  #conversejs .chatbox .new-msgs-indicator {
+    position: absolute;
+    width: 100%;
+    cursor: pointer;
+    background-color: #F4A261;
+    color: #FCFDFD;
+    padding: 0.3em;
+    font-size: 0.9em;
+    text-align: center;
+    z-index: 20; }
   #conversejs .chatbox .chat-content {
     position: relative;
     padding: 0.5em;
@@ -1455,7 +1465,7 @@
         box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
         display: none;
         font-size: 12px;
-        margin: 0 0 1px 0;
+        margin: 0;
         position: absolute;
         right: 0; }
         #conversejs .chatbox form.sendXMPPMessage .chat-toolbar ul li {
@@ -1985,10 +1995,15 @@
         max-width: 70%;
         float: left;
         min-width: 200px; }
+        #conversejs .chatroom .box-flyout .chatroom-body .chat-area .new-msgs-indicator {
+          background-color: #E76F51;
+          max-width: 70%; }
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
           padding: 0 0.5em 0 0.5em; }
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full {
           max-width: 100%; }
+          #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator {
+            max-width: 100%; }
       #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
         font-weight: bold; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {

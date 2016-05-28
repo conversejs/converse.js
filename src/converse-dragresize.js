@@ -27,7 +27,7 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-            
+
             registerGlobalEventHandlers: function () {
                 $(document).on('mousemove', function (ev) {
                     if (!this.resizing || !this.allow_dragresize) { return true; }

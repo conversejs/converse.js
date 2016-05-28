@@ -216,6 +216,50 @@
                 expect(converse.emit.callCount, 1);
             });
 
+            it("will cause the chat area to be scrolled down only if it was at the bottom already", function () {
+                var message = 'This message is received while the chat area is scrolled up';
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'scrollDown').andCallThrough();
+                runs(function () {
+                    /* Create enough messages so that there's a
+                        * scrollbar.
+                        */
+                    for (var i=0; i<20; i++) {
+                        converse.chatboxes.onMessage(
+                            $msg({
+                                from: 'lounge@localhost/someone',
+                                to: 'dummy@localhost.com',
+                                type: 'groupchat',
+                                id: (new Date()).getTime(),
+                            }).c('body').t('Message: '+i).tree());
+                    }
+                });
+                waits(50);
+                runs(function () {
+                    view.$content.scrollTop(0);
+                });
+                waits(250);
+                runs(function () {
+                    expect(view.model.get('scrolled')).toBeTruthy();
+                    converse.chatboxes.onMessage(
+                        $msg({
+                            from: 'lounge@localhost/someone',
+                            to: 'dummy@localhost.com',
+                            type: 'groupchat',
+                            id: (new Date()).getTime(),
+                        }).c('body').t(message).tree());
+                });
+                waits(150);
+                runs(function () {
+                    // Now check that the message appears inside the chatbox in the DOM
+                    var $chat_content = view.$el.find('.chat-content');
+                    var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                    expect(msg_txt).toEqual(message);
+                    expect(view.$content.scrollTop()).toBe(0);
+                });
+            });
+
             it("shows received chatroom subject messages", function () {
                 var text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
                 var stanza = Strophe.xmlHtmlNode(
@@ -461,8 +505,8 @@
                 }.bind(converse));
             }.bind(converse));
         }.bind(converse));
-        
-        
+
+
         describe("Each chat room can take special commands", function () {
             beforeEach(function () {
                 runs(function () {

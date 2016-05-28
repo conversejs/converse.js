@@ -1577,6 +1577,9 @@
         });
 
         this.setUpXMLLogging = function () {
+            Strophe.log = function (level, msg) {
+                converse.log(msg, level);
+            };
             if (this.debug) {
                 this.connection.xmlInput = function (body) { converse.log(body.outerHTML); };
                 this.connection.xmlOutput = function (body) { converse.log(body.outerHTML); };

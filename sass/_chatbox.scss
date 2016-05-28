@@ -187,6 +187,17 @@
                 }
             }
         }
+        .new-msgs-indicator {
+            position: absolute;
+            width: 100%;
+            cursor: pointer;
+            background-color: $chat-head-color;
+            color: $light-background-color;
+            padding: 0.3em;
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 20;
+        }
         .chat-content {
             position: relative;
             padding: 0.5em;
@@ -283,7 +294,7 @@
                     box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
                     display: none;
                     font-size: 12px;
-                    margin: 0 0 1px 0;
+                    margin: 0;
                     position: absolute;
                     right: 0;
                     li {

@@ -55,7 +55,7 @@ require([
             auto_login: true,
             jid: 'dummy@localhost',
             password: 'secret',
-            debug: false
+            debug: true 
         }, function (converse) {
             window.converse = converse;
             window.crypto = {

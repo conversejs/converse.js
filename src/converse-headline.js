@@ -44,7 +44,7 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-            
+
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
@@ -93,6 +93,7 @@
                                         show_toolbar: converse.show_toolbar,
                                         show_textarea: false,
                                         title: this.model.get('fullname'),
+                                        unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this box'),
                                         info_minimize: __('Minimize this box'),
                                         label_personal_message: ''

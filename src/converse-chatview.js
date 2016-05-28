@@ -99,6 +99,7 @@
                                         show_toolbar: converse.show_toolbar,
                                         show_textarea: true,
                                         title: this.model.get('fullname'),
+                                        unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this chat box'),
                                         label_personal_message: __('Personal message')
                                     }
@@ -332,6 +333,9 @@
                     if (message.get('sender') !== 'me') {
                         if (converse.windowState === 'blur' || this.model.get('scrolled', true)) {
                             converse.incrementMsgCounter();
+                        }
+                        if (this.model.get('scrolled', true)) {
+                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
                     } else {
                         // We remove the "scrolled" flag so that the chat area
@@ -688,15 +692,16 @@
                     // and the user is scrolled away...
                     // Should probably take a look at incrementMsgCounter
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight;
+                    var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
                         this.model.set('scrolled', false);
+                        this.$el.find('.new-msgs-indicator').addClass('hidden');
                     } else {
                         // We're not at the bottom of the chat area, so we mark
                         // that the box is in a scrolled-up state.
                         this.model.set('scrolled', true);
                     }
-                }, 50),
+                }, 150),
 
                 scrollDownMessageHeight: function ($message) {
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
@@ -708,6 +713,7 @@
                 scrollDown: function () {
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
+                        this.$el.find('.new-msgs-indicator').addClass('hidden');
                     }
                     return this;
                 }

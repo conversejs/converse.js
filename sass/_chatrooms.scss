@@ -50,12 +50,19 @@
                     max-width: 70%;
                     float: left;
                     min-width: $chat-width;
+                    .new-msgs-indicator {
+                        background-color: $chatroom-head-color;
+                        max-width: 70%;
+                    }
                     .chat-content {
                         // There's an annoying Chrome box-sizing bug which prevents us from adding 0.5em padding here.
                         padding: 0 0.5em 0 0.5em;
                     }
                     &.full {
                         max-width: 100%;
+                        .new-msgs-indicator {
+                            max-width: 100%;
+                        }
                     }
                 }
                 .mentioned {

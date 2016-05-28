@@ -216,6 +216,7 @@
                         this.$('.chatroom-body').empty()
                             .append(
                                 converse.templates.chatarea({
+                                    'unread_msgs': __('You have unread messages'),
                                     'show_toolbar': converse.show_toolbar,
                                     'label_message': __('Message')
                                 }))

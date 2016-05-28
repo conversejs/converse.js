@@ -259,6 +259,7 @@
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
             expose_rid_and_sid: false,
+            filter_by_resource: false,
             forward_messages: false,
             hide_offline_users: false,
             include_offline_state: false,
@@ -1261,15 +1262,13 @@
                     to_jid = $message.attr('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
-                if (to_resource && to_resource !== converse.resource) {
+                if (converse.filter_by_resource && (to_resource && to_resource !== converse.resource)) {
                     converse.log(
                         'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
                         'info'
                     );
                     return true;
                 } else if (from_jid === converse.connection.jid) {
-                    // FIXME: Forwarded messages should be sent to specific
-                    // resources, not broadcasted
                     converse.log(
                         "onMessage: Ignoring incoming message sent from this client's JID: "+from_jid,
                         'info'

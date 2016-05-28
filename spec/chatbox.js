@@ -413,6 +413,19 @@
                     runs(function () {});
                 });
 
+
+                describe("when received from someone else", function () {
+                    it("will cause the chat area to be scrolled down only if it was at the bottom already", function () {
+                        // TODO
+                    });
+                });
+
+                describe("when sent by the current user", function () {
+                    it("will always cause the chat area to be scrolled down", function () {
+                        // TODO
+                    });
+                });
+
                 it("can be received which will open a chatbox and be displayed inside it", function () {
                     spyOn(converse, 'emit');
                     var message = 'This is a received message';
@@ -456,22 +469,50 @@
                     }.bind(converse));
                 }.bind(converse));
 
-                it("is ignored if it's intended for a different resource", function () {
+                it("is ignored if it's intended for a different resource and filter_by_resource is set to true", function () {
                     // Send a message from a different resource
+                    var message, sender_jid, msg;
                     spyOn(converse, 'log');
-                    spyOn(converse.chatboxes, 'getChatBox');
-                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var msg = $msg({
-                            from: sender_jid,
-                            to: converse.bare_jid+'/'+"some-other-resource",
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t("This message will not be shown").up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    converse.chatboxes.onMessage(msg);
-                    expect(converse.log).toHaveBeenCalledWith(
-                            "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
-                    expect(converse.chatboxes.getChatBox).not.toHaveBeenCalled();
+                    spyOn(converse.chatboxes, 'getChatBox').andCallThrough();
+                    runs(function () {
+                        converse.filter_by_resource = true;
+                        sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        msg = $msg({
+                                from: sender_jid,
+                                to: converse.bare_jid+'/'+"some-other-resource",
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').t("This message will not be shown").up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                        converse.chatboxes.onMessage(msg);
+                    });
+                    waits(50);
+                    runs(function () {
+                        expect(converse.log).toHaveBeenCalledWith(
+                                "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
+                        expect(converse.chatboxes.getChatBox).not.toHaveBeenCalled();
+                        converse.filter_by_resource = false;
+                    });
+                    waits(50);
+                    runs(function () {
+                        message = "This message sent to a different resource will be shown";
+                        msg = $msg({
+                                from: sender_jid,
+                                to: converse.bare_jid+'/'+"some-other-resource",
+                                type: 'chat',
+                                id: '134234623462346'
+                            }).c('body').t(message).up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                        converse.chatboxes.onMessage(msg);
+                    });
+                    waits(50);
+                    runs(function () {
+                        expect(converse.chatboxes.getChatBox).toHaveBeenCalled();
+                        var chatboxview = converse.chatboxviews.get(sender_jid);
+                        var $chat_content = chatboxview.$el.find('.chat-content:last');
+                        var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                        expect(msg_txt).toEqual(message);
+                    });
                 });
 
                 it("is ignored if it's a malformed headline message", function () {

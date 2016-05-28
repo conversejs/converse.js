@@ -414,6 +414,15 @@ these values.
 *Beware*: a malicious script could use these tokens to assume your identity
 and inject fake chat messages.
 
+filter_by_resource
+------------------
+
+* Default:  ``false``
+
+Before version 1.0.3 converse.js would ignore received messages if they were
+intended for a different resource then the current user had. It was decided to
+drop this restriction but leave it configurable.
+
 forward_messages
 ----------------
 

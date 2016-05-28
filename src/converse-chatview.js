@@ -68,7 +68,8 @@
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
-                    'click .toggle-call': 'toggleCall'
+                    'click .toggle-call': 'toggleCall',
+                    'click .new-msgs-indicator': 'viewUnreadMessages'
                 },
 
                 initialize: function () {
@@ -702,6 +703,12 @@
                         this.model.set('scrolled', true);
                     }
                 }, 150),
+
+
+                viewUnreadMessages: function () {
+                    this.model.set('scrolled', false);
+                    this.scrollDown();
+                },
 
                 scrollDownMessageHeight: function ($message) {
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {

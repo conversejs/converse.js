@@ -862,11 +862,6 @@
                 });
 
                 it("will have properly escaped URLs", function () {
-                    if (/PhantomJS/.test(window.navigator.userAgent)) {
-                        // Flaky under PhantomJS due to timeouts
-                        return;
-                    }
-                    // TODO: make these local urls
                     var message, msg;
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(contact_jid);
@@ -876,7 +871,7 @@
                         message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
                         test_utils.sendMessage(view, message);
                     });
-                    waits(500);
+                    waits(50);
                     runs(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
@@ -886,7 +881,7 @@
                         message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
                         test_utils.sendMessage(view, message);
                     });
-                    waits(500);
+                    waits(50);
                     runs(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
@@ -896,7 +891,7 @@
                         message = "https://en.wikipedia.org/wiki/Ender's_Game";
                         test_utils.sendMessage(view, message);
                     });
-                    waits(500);
+                    waits(50);
                     runs(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
@@ -906,7 +901,7 @@
                         message = "https://en.wikipedia.org/wiki/Ender%27s_Game";
                         test_utils.sendMessage(view, message);
                     });
-                    waits(500);
+                    waits(50);
                     runs(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');

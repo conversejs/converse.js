@@ -819,19 +819,6 @@
                     expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
                 }.bind(converse));
 
-                it("can contain hyperlinks, which will be clickable", function () {
-                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxviews.get(contact_jid);
-                    var message = 'This message contains a hyperlink: www.opkode.com';
-                    spyOn(view, 'sendMessage').andCallThrough();
-                    test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                    expect(msg.text()).toEqual(message);
-                    expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
-                }.bind(converse));
-
                 it("should display emoticons correctly", function () {
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(contact_jid);
@@ -856,40 +843,99 @@
                     }
                 }.bind(converse));
 
-                it("will have properly escaped URLs", function () {
+                it("can contain hyperlinks, which will be clickable", function () {
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(contact_jid);
-                    var view = this.chatboxviews.get(contact_jid);
+                    var view = converse.chatboxviews.get(contact_jid);
+                    var message = 'This message contains a hyperlink: www.opkode.com';
                     spyOn(view, 'sendMessage').andCallThrough();
+                    runs(function () {
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.text()).toEqual(message);
+                        expect(msg.html()).toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
+                    });
+                });
 
-                    var message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
-                    test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
-                    var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                    expect(msg.text()).toEqual(message);
-                    expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
+                it("will have properly escaped URLs", function () {
+                    if (/PhantomJS/.test(window.navigator.userAgent)) {
+                        // Flaky under PhantomJS due to timeouts
+                        return;
+                    }
+                    // TODO: make these local urls
+                    var message, msg;
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(contact_jid);
+                    var view = converse.chatboxviews.get(contact_jid);
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    runs(function () {
+                        message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.text()).toEqual(message);
+                        expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
-                    message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
-                    test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                    expect(msg.text()).toEqual(message);
-                    expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
+                        message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.text()).toEqual(message);
+                        expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
 
-                    message = "https://en.wikipedia.org/wiki/Ender's_Game";
-                    test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                    expect(msg.text()).toEqual(message);
-                    expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
+                        message = "https://en.wikipedia.org/wiki/Ender's_Game";
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.text()).toEqual(message);
+                        expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender\'s_Game</a>');
 
-                    message = "https://en.wikipedia.org/wiki/Ender%27s_Game";
-                    test_utils.sendMessage(view, message);
-                    expect(view.sendMessage).toHaveBeenCalled();
-                    msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                    expect(msg.text()).toEqual(message);
-                    expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
-                }.bind(converse));
+                        message = "https://en.wikipedia.org/wiki/Ender%27s_Game";
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.text()).toEqual(message);
+                        expect(msg.html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">https://en.wikipedia.org/wiki/Ender%27s_Game</a>');
+                    });
+                });
+
+                it("will render images from their URLs", function () {
+                    if (/PhantomJS/.test(window.navigator.userAgent)) {
+                        // Doesn't work when running tests in PhantomJS, since
+                        // the page is loaded via file:///
+                        return;
+                    }
+                    var message = document.URL.split(window.location.pathname)[0] + "/logo/conversejs.svg";
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(contact_jid);
+                    var view = converse.chatboxviews.get(contact_jid);
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    runs(function () {
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.html()).toEqual('<img src="'+message+'" class="chat-image">');
+                    });
+                });
 
             }.bind(converse));
 

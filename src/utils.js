@@ -20,6 +20,16 @@
         'list-multi': 'dropdown'
     };
 
+    var isImage = function (url) {
+        var deferred = new $.Deferred();
+        $("<img>", {
+            src: url,
+            error: deferred.reject,
+            load: deferred.resolve
+        });
+        return deferred.promise();
+    };
+
     $.expr[':'].emptyVal = function(obj){
         return obj.value === '';
     };
@@ -34,19 +44,27 @@
         return false;
     };
 
+    $.fn.throttledHTML = _.throttle($.fn.html, 500);
+
     $.fn.addHyperlinks = function () {
         if (this.length > 0) {
             this.each(function (i, obj) {
-                var x = $(obj).html();
-                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
-                if (list) {
-                    for (i=0; i<list.length; i++) {
-                        var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
-                    }
-                }
-                $(obj).html(x);
+                var $obj = $(obj);
+                var x = $obj.html();
+                _.each(x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g), function (url) {
+                    isImage(url)
+                        .then(function () {
+                            event.target.className = 'chat-image';
+                            x = x.replace(url, event.target.outerHTML);
+                            $obj.throttledHTML(x);
+                        })
+                        .fail(function () {
+                            var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
+                            var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                            x = x.replace(url, '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>' );
+                            $obj.throttledHTML(x);
+                        });
+                });
             });
         }
         return this;

@@ -1347,6 +1347,9 @@
       #conversejs .chatbox .chat-body .chat-info.chat-date {
         display: inline-block;
         margin-top: 1em; }
+    #conversejs .chatbox .chat-body .chat-image {
+      max-width: 100%;
+      max-height: 100%; }
     #conversejs .chatbox .chat-body .chat-message {
       margin: 0.3em; }
       #conversejs .chatbox .chat-body .chat-message span {

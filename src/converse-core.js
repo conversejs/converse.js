@@ -1167,7 +1167,7 @@
                 });
             },
 
-            createMessage: function ($message, $delay, original_stanza) {
+            getMessageAttributes: function ($message, $delay, original_stanza) {
                 $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
                     delayed = $delay.length > 0,
@@ -1199,7 +1199,7 @@
                 } else {
                     sender = 'them';
                 }
-                return this.messages.create({
+                return {
                     chat_state: chat_state,
                     delayed: delayed,
                     fullname: fullname,
@@ -1207,7 +1207,11 @@
                     msgid: $message.attr('id'),
                     sender: sender,
                     time: time
-                });
+                };
+            },
+
+            createMessage: function ($message, $delay, original_stanza) {
+                return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             }
         });
 

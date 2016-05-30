@@ -49,12 +49,10 @@
             },
 
             ChatBox: {
-                createMessage: function ($message, $delay, original_stanza) {
-                    var message = this._super.createMessage.apply(this, arguments);
-                    message.save({
-                        archive_id: $(original_stanza).find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id')
-                    });
-                    return message;
+                getMessageAttributes: function ($message, $delay, original_stanza) {
+                    var attrs = this._super.getMessageAttributes.apply(this, arguments);
+                    attrs.archive_id = $(original_stanza).find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id');
+                    return attrs;
                 }
             },
 

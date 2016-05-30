@@ -335,7 +335,10 @@
                         if (converse.windowState === 'blur' || this.model.get('scrolled', true)) {
                             converse.incrementMsgCounter();
                         }
-                        if (this.model.get('scrolled', true)) {
+                        if (!message.get('archive_id') && this.model.get('scrolled', true)) {
+                            // Show "new messages" indicator if we're scrolled
+                            // up, but only if the new message is not a MAM
+                            // archived one.
                             this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
                     } else {

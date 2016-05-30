@@ -149,6 +149,13 @@
             return str;
         },
 
+
+        isOTRMessage: function (message) {
+            var $body = $(message).children('body'),
+                text = ($body.length > 0 ? $body.text() : undefined);
+            return text && !!text.match(/^\?OTR/);
+        },
+
         isHeadlineMessage: function (message) {
             var $message = $(message),
                 from_jid = $message.attr('from');

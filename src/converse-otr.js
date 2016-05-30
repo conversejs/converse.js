@@ -96,12 +96,6 @@
                     }
                 },
 
-                isOTRMessage: function ($message) {
-                    var $body = $message.children('body'),
-                        text = ($body.length > 0 ? $body.text() : undefined);
-                    return !!text.match(/^\?OTR/);
-                },
-
                 shouldPlayNotification: function ($message) {
                     /* Don't play a notification if this is an OTR message but
                      * encryption is not yet set up. That would mean that the
@@ -109,7 +103,7 @@
                      * "visible" OTR messages being exchanged.
                      */
                     return this._super.shouldPlayNotification.apply(this, arguments) &&
-                        !(this.isOTRMessage($message) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
+                        !(utils.isOTRMessage($message[0]) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
                 createMessage: function ($message, $delay, original_stanza) {
@@ -296,7 +290,7 @@
 
                 createMessageStanza: function () {
                     var stanza = this._super.createMessageStanza.apply(this, arguments);
-                    if (this.model.get('otr_status') !== UNENCRYPTED) {
+                    if (this.model.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
                         // OTR messages aren't carbon copied
                         stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
                               .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()

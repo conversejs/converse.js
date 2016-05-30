@@ -10,6 +10,7 @@
 - Updated onDisconnected method to fire disconnected event even if `auto_reconnect = false`. [kamranzafar]
 - Bugfix: MAM messages weren't being fetched oldest first. [jcbrand]
 - Add processing hints to chat state notifications [jcbrand]
+- Don't use sound and desktop notifications for OTR messages (when setting up the session) [jcbrand]
 - #553 Add processing hints to OTR messages [jcbrand]
 - #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
 

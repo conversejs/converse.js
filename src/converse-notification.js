@@ -71,6 +71,9 @@
             converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
+                if (utils.isOTRMessage(message)) {
+                    return false;
+                }
                 var $message = $(message),
                     $forwarded = $message.find('forwarded');
                 if ($forwarded.length) {

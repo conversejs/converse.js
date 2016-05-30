@@ -965,8 +965,10 @@
                             expect(converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(1);
-                            expect($stanza.children().prop('tagName')).toBe('active');
+                            expect($stanza.children().length).toBe(3);
+                            expect($stanza.children().get(0).tagName).toBe('active');
+                            expect($stanza.children().get(1).tagName).toBe('no-store');
+                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                         });
                     });
 
@@ -982,8 +984,10 @@
                         expect(converse.connection.send).toHaveBeenCalled();
                         var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                         expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(1);
-                        expect($stanza.children().prop('tagName')).toBe('active');
+                        expect($stanza.children().length).toBe(3);
+                        expect($stanza.children().get(0).tagName).toBe('active');
+                        expect($stanza.children().get(1).tagName).toBe('no-store');
+                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                     }.bind(converse));
                 }.bind(converse));
 
@@ -1004,8 +1008,9 @@
                             expect(converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(1);
-                            expect($stanza.children().prop('tagName')).toBe('composing');
+                            expect($stanza.children().get(0).tagName).toBe('composing');
+                            expect($stanza.children().get(1).tagName).toBe('no-store');
+                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
 
                             // The notification is not sent again
                             view.keyPressed({
@@ -1035,7 +1040,6 @@
                         expect(chatboxview).toBeDefined();
                         // Check that the notification appears inside the chatbox in the DOM
                         var $events = chatboxview.$el.find('.chat-event');
-                        expect($events.length).toBe(1);
                         expect($events.text()).toEqual(mock.cur_names[1] + ' is typing');
                     }.bind(converse));
                 }.bind(converse));
@@ -1059,7 +1063,7 @@
                             expect(view.model.get('chat_state')).toBe('composing');
                             expect(converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
-                            expect($stanza.children().prop('tagName')).toBe('composing');
+                            expect($stanza.children().get(0).tagName).toBe('composing');
                         });
                         waits(250);
                         runs(function () {
@@ -1067,8 +1071,10 @@
                             expect(converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(converse.connection.send.argsForCall[1][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(1);
-                            expect($stanza.children().prop('tagName')).toBe('paused');
+                            expect($stanza.children().length).toBe(3);
+                            expect($stanza.children().get(0).tagName).toBe('paused');
+                            expect($stanza.children().get(1).tagName).toBe('no-store');
+                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                             // Test #359. A paused notification should not be sent
                             // out if the user simply types longer than the
                             // timeout.
@@ -1109,7 +1115,6 @@
                         expect(converse.emit).toHaveBeenCalledWith('message', msg);
                         var chatboxview = this.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
-                        expect($events.length).toBe(1);
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
                     }.bind(converse));
                 }.bind(converse));
@@ -1141,8 +1146,11 @@
                             expect(converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(1);
-                            expect($stanza.children().prop('tagName')).toBe('inactive');
+                            expect($stanza.children().length).toBe(3);
+                            expect($stanza.children().get(0).tagName).toBe('inactive');
+                            expect($stanza.children().get(1).tagName).toBe('no-store');
+                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+
                         });
                     }.bind(converse));
 
@@ -1156,8 +1164,7 @@
                         expect(converse.connection.send).toHaveBeenCalled();
                         var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                         expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(1);
-                        expect($stanza.children().prop('tagName')).toBe('inactive');
+                        expect($stanza.children().get(0).tagName).toBe('inactive');
                     }.bind(converse));
 
                     it("is sent if the user closes a chat box", function () {
@@ -1173,8 +1180,10 @@
                             expect(converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(1);
-                            expect($stanza.children().prop('tagName')).toBe('inactive');
+                            expect($stanza.children().length).toBe(3);
+                            expect($stanza.children().get(0).tagName).toBe('inactive');
+                            expect($stanza.children().get(1).tagName).toBe('no-store');
+                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                         });
                     });
 
@@ -1215,7 +1224,6 @@
                         expect(converse.emit).toHaveBeenCalledWith('message', msg);
                         var chatboxview = this.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
-                        expect($events.length).toBe(1);
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
                     }.bind(converse));
                 }.bind(converse));

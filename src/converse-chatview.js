@@ -447,7 +447,9 @@
                      */
                     converse.connection.send(
                         $msg({'to':this.model.get('jid'), 'type': 'chat'})
-                            .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES})
+                            .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
                     );
                 },
 

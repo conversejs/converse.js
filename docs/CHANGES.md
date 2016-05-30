@@ -7,8 +7,9 @@
 - Also indicate new day for the first day's messages. [jcbrand]
 - Chat bot messages don't appear when they have the same ids as their commands.
   [jcbrand]
-- Updated onDisconnected method to fire disconnected event even if auto_reconnect is false. [kamranzafar]
+- Updated onDisconnected method to fire disconnected event even if `auto_reconnect = false`. [kamranzafar]
 - #553 Add processing hints to OTR messages [jcbrand]
+- #553 Add processing hints to chat state notifications [jcbrand]
 
 ## 1.0.2 (2016-05-24)
 

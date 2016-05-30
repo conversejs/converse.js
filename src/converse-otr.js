@@ -112,7 +112,7 @@
                         !(this.isOTRMessage($message) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
-                createMessage: function ($message, $delay, archive_id) {
+                createMessage: function ($message, $delay, original_stanza) {
                     var converse = this._super.converse,
                         $body = $message.children('body'),
                         text = ($body.length > 0 ? $body.text() : undefined);

@@ -874,7 +874,7 @@
                     if (sender === '') {
                         return true;
                     }
-                    this.model.createMessage($message, $delay);
+                    this.model.createMessage($message, $delay, message);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
                         converse.emit('message', message);

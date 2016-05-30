@@ -1166,7 +1166,7 @@
                 });
             },
 
-            createMessage: function ($message, $delay) {
+            createMessage: function ($message, $delay, original_stanza) {
                 $delay = $delay || $message.find('delay');
                 var body = $message.children('body').text(),
                     delayed = $delay.length > 0,
@@ -1312,7 +1312,7 @@
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                chatbox.createMessage($message, $delay);
+                chatbox.createMessage($message, $delay, message);
                 converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;

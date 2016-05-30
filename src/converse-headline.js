@@ -30,7 +30,7 @@
                 'jid': from_jid,
                 'fullname':  from_jid,
                 'type': 'headline'
-            }).createMessage($message);
+            }).createMessage($message, undefined, message);
             converse.emit('message', message);
         }
         return true;

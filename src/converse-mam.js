@@ -48,12 +48,13 @@
                 }
             },
 
-            ChatBoxes: {
-                createMessage: function ($message, $delay) {
+            ChatBox: {
+                createMessage: function ($message, $delay, original_stanza) {
                     var message = this._super.createMessage.apply(this, arguments);
                     message.save({
-                        archive_id: $message.find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id')
+                        archive_id: $(original_stanza).find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id')
                     });
+                    return message;
                 }
             },
 

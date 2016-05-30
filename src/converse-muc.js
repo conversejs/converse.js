@@ -175,6 +175,7 @@
                     'click .toggle-clear': 'clearChatRoomMessages',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants a': 'toggleOccupants',
+                    'click .new-msgs-indicator': 'viewUnreadMessages',
                     'keypress textarea.chat-textarea': 'keyPressed'
                 },
 

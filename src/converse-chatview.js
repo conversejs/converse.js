@@ -347,6 +347,8 @@
                     }
                     if (this.shouldShowOnTextMessage()) {
                         this.show();
+                    } else {
+                        this.scrollDown();
                     }
                 },
 

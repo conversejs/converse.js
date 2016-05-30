@@ -1273,12 +1273,6 @@
                         'info'
                     );
                     return true;
-                } else if (from_jid === converse.connection.jid) {
-                    converse.log(
-                        "onMessage: Ignoring incoming message sent from this client's JID: "+from_jid,
-                        'info'
-                    );
-                    return true;
                 } else if (utils.isHeadlineMessage(message)) {
                     // XXX: Ideally we wouldn't have to check for headline
                     // messages, but Prosody sends headline messages with the

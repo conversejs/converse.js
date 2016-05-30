@@ -140,7 +140,7 @@
          *
          * These contacts are not grouped. See below.
          */
-        var names;
+        var names, jid;
         if (type === 'requesting') {
             names = mock.req_names;
             subscription = 'none';
@@ -167,13 +167,16 @@
             length = names.length;
         }
         for (i=0; i<length; i++) {
-            converse.roster.create({
-                ask: ask,
-                fullname: names[i],
-                jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                requesting: requesting,
-                subscription: subscription
-            });
+            jid = names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+            if (!converse.roster.get(jid)) {
+                converse.roster.create({
+                    'ask': ask,
+                    'fullname': names[i],
+                    'jid': jid, 
+                    'requesting': requesting,
+                    'subscription': subscription
+                });
+            }
         }
         return this;
     };

@@ -298,7 +298,10 @@
                     var stanza = this._super.createMessageStanza.apply(this, arguments);
                     if (this.model.get('otr_status') !== UNENCRYPTED) {
                         // OTR messages aren't carbon copied
-                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS});
+                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
+                              .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-copy', {'xmlns': Strophe.NS.HINTS});
                     }
                     return stanza;
                 },

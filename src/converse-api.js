@@ -25,6 +25,7 @@
         'initialize': function (settings, callback) {
             converse.initialize(settings, callback);
         },
+        'log': converse.log,
         'connection': {
             'connected': function () {
                 return converse.connection && converse.connection.connected || false;

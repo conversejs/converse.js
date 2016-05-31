@@ -1683,7 +1683,7 @@
              */
             if (this.keepalive) {
                 try {
-                    return this.connection.restore(undefined, this.onConnectStatusChanged);
+                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
                 } catch (e) {
                     this.log("Could not restore session. Error message: "+e.message);
                     this.clearSession(); // If there's a roster, we want to clear it (see #555)

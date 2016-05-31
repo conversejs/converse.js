@@ -1431,15 +1431,11 @@
             },
 
             constructPresence: function (type, status_message) {
-                if (typeof type !== 'string') {
-                    type = this.get('status') || converse.default_state;
-                }
-                if (typeof status_message !== 'string') {
-                    status_message = this.get('status_message');
-                }
                 var presence;
+                type = typeof type === 'string' ? type : (this.get('status') || converse.default_state);
+                status_message = typeof status_message === 'string' ? status_message : undefined;
                 // Most of these presence types are actually not explicitly sent,
-                // but I add all of them here fore reference and future proofing.
+                // but I add all of them here for reference and future proofing.
                 if ((type === 'unavailable') ||
                         (type === 'probe') ||
                         (type === 'error') ||
@@ -1450,18 +1446,13 @@
                     presence = $pres({'type': type});
                 } else if (type === 'offline') {
                     presence = $pres({'type': 'unavailable'});
-                    if (status_message) {
-                        presence.c('show').t(type);
-                    }
+                } else if (type === 'online') {
+                    presence = $pres();
                 } else {
-                    if (type === 'online') {
-                        presence = $pres();
-                    } else {
-                        presence = $pres().c('show').t(type).up();
-                    }
-                    if (status_message) {
-                        presence.c('status').t(status_message);
-                    }
+                    presence = $pres().c('show').t(type).up();
+                }
+                if (status_message) {
+                    presence.c('status').t(status_message);
                 }
                 return presence;
             },

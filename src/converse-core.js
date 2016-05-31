@@ -259,6 +259,7 @@
             credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
+            default_state: 'online',
             expose_rid_and_sid: false,
             filter_by_resource: false,
             forward_messages: false,
@@ -357,7 +358,7 @@
             }
             if (converse.auto_changed_status === true) {
                 converse.auto_changed_status = false;
-                converse.xmppstatus.setStatus('online');
+                converse.xmppstatus.setStatus(converse.default_state);
             }
         };
 
@@ -1431,7 +1432,7 @@
 
             constructPresence: function (type, status_message) {
                 if (typeof type !== 'string') {
-                    type = this.get('status') || 'online';
+                    type = this.get('status') || converse.default_state;
                 }
                 if (typeof status_message !== 'string') {
                     status_message = this.get('status_message');
@@ -1475,7 +1476,7 @@
             },
 
             getStatus: function () {
-                return this.get('status') || 'online';
+                return this.get('status') || converse.default_state;
             },
 
             setStatusMessage: function (status_message) {

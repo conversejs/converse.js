@@ -2,15 +2,14 @@
 
 ## 1.0.3 (Unreleased)
 
-- Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false`
-[jcbrand]
+- Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` [jcbrand]
 - Also indicate new day for the first day's messages. [jcbrand]
-- Chat bot messages don't appear when they have the same ids as their commands.
-  [jcbrand]
+- Chat bot messages don't appear when they have the same ids as their commands. [jcbrand]
 - Updated onDisconnected method to fire disconnected event even if `auto_reconnect = false`. [kamranzafar]
 - Bugfix: MAM messages weren't being fetched oldest first. [jcbrand]
 - Add processing hints to chat state notifications [jcbrand]
 - Don't use sound and desktop notifications for OTR messages (when setting up the session) [jcbrand]
+- New config option [default_state](https://conversejs.org/docs/html/configuration.html#default_state) [jcbrand]
 - #553 Add processing hints to OTR messages [jcbrand]
 - #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
 

@@ -449,6 +449,7 @@
                 converse.reconnect(condition);
                 return 'reconnecting';
             } else {
+                converse._tearDown();
                 converse.emit('disconnected');
                 return 'disconnected';
             }

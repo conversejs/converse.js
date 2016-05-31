@@ -51,7 +51,6 @@
             onDisconnected: function () {
                 var result = this._super.onDisconnected.apply(this, arguments);
                 if (result === 'disconnected') {
-                    converse._tearDown();
                     var view = converse.chatboxviews.get('controlbox');
                     view.model.set({connected:false});
                     view.$('#controlbox-tabs').empty();

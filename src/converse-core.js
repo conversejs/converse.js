@@ -358,6 +358,8 @@
             }
             if (converse.auto_changed_status === true) {
                 converse.auto_changed_status = false;
+                // XXX: we should really remember the original state here, and
+                // then set it back to that...
                 converse.xmppstatus.setStatus(converse.default_state);
             }
         };

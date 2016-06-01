@@ -294,13 +294,16 @@
                                          */
                                         converse.roster.fetchFromServer(
                                                 converse.xmppstatus.sendPresence.bind(converse.xmppstatus));
-                                    } else if (converse.send_initial_presence) {
-                                        /* We're not going to fetch the roster again because we have
-                                         * it already cached in sessionStorage, but we still need to
-                                         * send out a presence stanza because this is a new session.
-                                         * See: https://github.com/jcbrand/converse.js/issues/536
-                                         */
-                                        converse.xmppstatus.sendPresence();
+                                    } else {
+                                        converse.emit('cachedRoster', collection);
+                                        if (converse.send_initial_presence) {
+                                            /* We're not going to fetch the roster again because we have
+                                            * it already cached in sessionStorage, but we still need to
+                                            * send out a presence stanza because this is a new session.
+                                            * See: https://github.com/jcbrand/converse.js/issues/536
+                                            */
+                                            converse.xmppstatus.sendPresence();
+                                        }
                                     }
                                 }
                             });

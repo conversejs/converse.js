@@ -798,6 +798,15 @@ Event Types
 
 Here are the different events that are emitted:
 
+cachedRoster
+~~~~~~~~~~~~
+
+The contacts roster has been retrieved from the local cache (`sessionStorage`).
+
+``converse.listen.on('cachedRoster', function (event, items) { ... });``
+
+See also the `roster` event further down.
+
 callButtonClicked
 ~~~~~~~~~~~~~~~~~
 
@@ -937,9 +946,12 @@ After the user has sent out a direct invitation, to a roster contact, asking the
 roster
 ~~~~~~
 
-When the roster is updated.
+When the roster has been received from the XMPP server.
 
 ``converse.listen.on('roster', function (event, items) { ... });``
+
+See also the `cachedRoster` event further up, which gets called instead of
+`roster` if its already in `sessionStorage`.
 
 rosterPush
 ~~~~~~~~~~

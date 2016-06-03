@@ -1851,6 +1851,7 @@
                                 throw msg;
                             } else {
                                 converse.log(msg);
+                                return;
                             }
                         }
                         this._extendObject(converse[key], override);

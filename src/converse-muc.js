@@ -193,8 +193,7 @@
                     this.render().$el.hide();
                     this.occupantsview.model.fetch({add:true});
                     this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
-                    this.fetchMessages();
-                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    this.fetchMessages().insertIntoDOM();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
@@ -202,6 +201,11 @@
                     // So working around that fact here:
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
                     converse.emit('chatRoomOpened', this);
+                },
+
+                insertIntoDOM: function () {
+                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    return this;
                 },
 
                 render: function () {

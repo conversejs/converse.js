@@ -1363,6 +1363,23 @@
              */
             _.extend(converse_api, {
                 'rooms': {
+                    'close': function (jids) {
+                        if (typeof jids === "undefined") {
+                            converse.chatboxviews.each(function (view) {
+                                if (view.is_chatroom && view.model) {
+                                    view.close();
+                                }
+                            });
+                        } else if (typeof jids === "string") {
+                            var view = converse.chatboxviews.get(jids);
+                            if (view) { view.close(); }
+                        } else {
+                            _.map(jids, function (jid) {
+                                var view = converse.chatboxviews.get(jid);
+                                if (view) { view.close(); }
+                            });
+                        }
+                    },
                     'open': function (jids, nick) {
                         if (!nick) {
                             nick = Strophe.getNodeFromJid(converse.bare_jid);
@@ -1373,7 +1390,6 @@
                         var _transform = function (jid) {
                             jid = jid.toLowerCase();
                             var chatroom = converse.chatboxes.get(jid);
-                            converse.log('jid');
                             if (!chatroom) {
                                 chatroom = converse.chatboxviews.showChat({
                                     'id': jid,

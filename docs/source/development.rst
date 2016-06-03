@@ -678,6 +678,12 @@ To setup a custom nickname when joining the room, provide the optional nick argu
 
     converse.rooms.open('group@muc.example.com', 'mycustomnick')
 
+close
+~~~~~
+
+Lets you close open chat rooms. You can call this method without any arguments
+to close all open chat rooms, or you can specify a single JID or an array of
+JIDs.
 
 The "settings" grouping
 -----------------------

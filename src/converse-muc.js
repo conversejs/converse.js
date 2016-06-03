@@ -14,9 +14,7 @@
             "converse-core",
             "converse-api",
             "typeahead",
-            "converse-chatview",
-            // XXX: should we remove this dependency?
-            "converse-controlbox"
+            "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -204,7 +202,12 @@
                 },
 
                 insertIntoDOM: function () {
-                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    var $cbox = converse.chatboxviews.get("controlbox").$el;
+                    if ($cbox.length) {
+                        this.$el.insertAfter($cbox);
+                    } else {
+                        $('#conversejs').prepend(this.$el);
+                    }
                     return this;
                 },
 

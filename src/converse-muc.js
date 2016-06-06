@@ -14,7 +14,8 @@
             "converse-core",
             "converse-api",
             "typeahead",
-            "converse-chatview"
+            "converse-chatview",
+            "converse-controlbox"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";

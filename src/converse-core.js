@@ -1398,10 +1398,7 @@
                 return this.model.chatBoxMayBeShown(chatbox);
             },
 
-            showChat: function (attrs) {
-                /* Find the chat box and show it (if it may be shown).
-                 * If it doesn't exist, create it.
-                 */
+            getChatBox: function (attrs) {
                 var chatbox  = this.model.get(attrs.jid);
                 if (!chatbox) {
                     chatbox = this.model.create(attrs, {
@@ -1410,6 +1407,14 @@
                         }
                     });
                 }
+                return chatbox;
+            },
+
+            showChat: function (attrs) {
+                /* Find the chat box and show it (if it may be shown).
+                 * If it doesn't exist, create it.
+                 */
+                var chatbox = this.getChatBox(attrs);
                 if (this.chatBoxMayBeShown(chatbox)) {
                     chatbox.trigger('show', true);
                 }

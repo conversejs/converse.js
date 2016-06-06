@@ -76,8 +76,11 @@
                 },
 
                 initialize: function () {
+                    if (typeof this.setDimensions !== "undefined") {
+                        // setDimensions is defined for dragresize
+                        $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    }
                     this.disable_mam = true; // Don't do MAM queries for this box
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -101,7 +104,10 @@
                                 )
                             )
                         );
-                    this.setWidth();
+                    if (typeof this.setWidth !== "undefined") {
+                        // setWidth is defined for dragresize
+                        $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
+                    }
                     this.$content = this.$el.find('.chat-content');
                     converse.emit('chatBoxOpened', this);
                     window.setTimeout(utils.refreshWebkit, 50);

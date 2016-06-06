@@ -402,6 +402,10 @@ var requirejs, require, define;
     requirejs._defined = defined;
 
     define = function (name, deps, callback) {
+        if(name instanceof Array){
+            name = name[0];
+        }
+
         if (typeof name !== 'string') {
             throw new Error('See almond README: incorrect module build, no module name');
         }
@@ -999,9 +1003,9 @@ define('tpl!chatarea', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='<div class="chat-area">\n    <div class="chat-content"></div>\n    <form class="sendXMPPMessage" action="" method="post">\n        ';
- if (show_toolbar) { 
+ if (show_toolbar) {
 __p+='\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } 
+ }
 __p+='\n        <textarea type="text" class="chat-textarea" \n            placeholder="'+
 ((__t=(label_message))==null?'':__t)+
 '"/>\n    </form>\n</div>\n';
@@ -1016,27 +1020,27 @@ with(obj||{}){
 __p+='<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="chatbox-btn close-chatbox-button icon-close" title="'+
 ((__t=(info_close))==null?'':__t)+
 '"></a>\n        <div class="chat-title">\n            ';
- if (url) { 
+ if (url) {
 __p+='\n                <a href="'+
 ((__t=(url))==null?'':__t)+
 '" target="_blank" rel="noopener" class="user">\n            ';
- } 
+ }
 __p+='\n                    '+
 ((__t=( title ))==null?'':__t)+
 '\n            ';
- if (url) { 
+ if (url) {
 __p+='\n                </a>\n            ';
- } 
+ }
 __p+='\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        ';
- if (show_textarea) { 
+ if (show_textarea) {
 __p+='\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
- if (show_toolbar) { 
+ if (show_toolbar) {
 __p+='\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
- } 
+ }
 __p+='\n        <textarea\n            type="text"\n            class="chat-textarea"\n            placeholder="'+
 ((__t=(label_personal_message))==null?'':__t)+
 '"/>\n        </form>\n        ';
- } 
+ }
 __p+='\n    </div>\n</div>\n';
 }
 return __p;
@@ -1130,17 +1134,17 @@ __p+='<form class="pure-form set-xmpp-status" action="" method="post">\n    <spa
 '</option>\n            <option value="away">'+
 ((__t=(label_away))==null?'':__t)+
 '</option>\n            ';
- if (include_offline_state)  { 
+ if (include_offline_state)  {
 __p+='\n            <option value="offline">'+
 ((__t=(label_offline))==null?'':__t)+
 '</option>\n            ';
- } 
+ }
 __p+='\n            ';
- if (allow_logout)  { 
+ if (allow_logout)  {
 __p+='\n            <option value="logout">'+
 ((__t=(label_logout))==null?'':__t)+
 '</option>\n            ';
- } 
+ }
 __p+='\n        </select>\n    </span>\n</form>\n';
 }
 return __p;
@@ -1162,9 +1166,9 @@ define('tpl!controlbox', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        ';
- if (!sticky_controlbox) { 
+ if (!sticky_controlbox) {
 __p+='\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        ';
- } 
+ }
 __p+='\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 }
 return __p;
@@ -1188,19 +1192,19 @@ with(obj||{}){
 __p+='<field var="'+
 ((__t=(name))==null?'':__t)+
 '">';
- if (_.isArray(value)) { 
+ if (_.isArray(value)) {
 __p+='\n    ';
- _.each(value,function(arrayValue) { 
+ _.each(value,function(arrayValue) {
 __p+='<value>'+
 ((__t=(arrayValue))==null?'':__t)+
 '</value>';
- }); 
+ });
 __p+='\n';
- } else { 
+ } else {
 __p+='\n    <value>'+
 ((__t=(value))==null?'':__t)+
 '</value>\n';
- } 
+ }
 __p+='</field>\n';
 }
 return __p;
@@ -1211,11 +1215,11 @@ define('tpl!form_captcha', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (label) { 
+ if (label) {
 __p+='\n<label>\n    '+
 ((__t=(label))==null?'':__t)+
 '\n</label>\n';
- } 
+ }
 __p+='\n<img src="data:'+
 ((__t=(type))==null?'':__t)+
 ';base64,'+
@@ -1223,9 +1227,9 @@ __p+='\n<img src="data:'+
 '">\n<input name="'+
 ((__t=(name))==null?'':__t)+
 '" type="text" ';
- if (required) { 
+ if (required) {
 __p+=' class="required" ';
- } 
+ }
 __p+=' >\n\n\n';
 }
 return __p;
@@ -1253,25 +1257,25 @@ define('tpl!form_input', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (label) { 
+ if (label) {
 __p+='\n<label>\n    '+
 ((__t=(label))==null?'':__t)+
 '\n</label>\n';
- } 
+ }
 __p+='\n<input name="'+
 ((__t=(name))==null?'':__t)+
 '" type="'+
 ((__t=(type))==null?'':__t)+
 '" \n    ';
- if (value) { 
+ if (value) {
 __p+=' value="'+
 ((__t=(value))==null?'':__t)+
 '" ';
- } 
+ }
 __p+='\n    ';
- if (required) { 
+ if (required) {
 __p+=' class="required" ';
- } 
+ }
 __p+=' >\n';
 }
 return __p;
@@ -1286,9 +1290,9 @@ __p+='<label>'+
 '</label>\n<select name="'+
 ((__t=(name))==null?'':__t)+
 '"  ';
- if (multiple) { 
+ if (multiple) {
 __p+=' multiple="multiple" ';
- } 
+ }
 __p+='>'+
 ((__t=(options))==null?'':__t)+
 '</select>\n';
@@ -1316,25 +1320,25 @@ define('tpl!form_username', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (label) { 
+ if (label) {
 __p+='\n<label>\n    '+
 ((__t=(label))==null?'':__t)+
 '\n</label>\n';
- } 
+ }
 __p+='\n<div class="input-group">\n    <input name="'+
 ((__t=(name))==null?'':__t)+
 '" type="'+
 ((__t=(type))==null?'':__t)+
 '"\n        ';
- if (value) { 
+ if (value) {
 __p+=' value="'+
 ((__t=(value))==null?'':__t)+
 '" ';
- } 
+ }
 __p+='\n        ';
- if (required) { 
+ if (required) {
 __p+=' class="required" ';
- } 
+ }
 __p+=' />\n    <span title="'+
 ((__t=(domain))==null?'':__t)+
 '">'+
@@ -1375,13 +1379,13 @@ define('tpl!login_panel', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ';
- if (auto_login) { 
+ if (auto_login) {
 __p+='\n        <span class="spinner login-submit"/>\n    ';
- } 
+ }
 __p+='\n    ';
- if (!auto_login) { 
+ if (!auto_login) {
 __p+='\n        ';
- if (authentication == LOGIN) { 
+ if (authentication == LOGIN) {
 __p+='\n            <label>'+
 ((__t=(label_username))==null?'':__t)+
 '</label>\n            <input type="text" name="jid" placeholder="'+
@@ -1393,19 +1397,19 @@ __p+='\n            <label>'+
 '">\n            <input class="pure-button button-primary" type="submit" value="'+
 ((__t=(label_login))==null?'':__t)+
 '">\n            <span class="conn-feedback"></span>\n        ';
- } 
+ }
 __p+='\n        ';
- if (authentication == ANONYMOUS) { 
+ if (authentication == ANONYMOUS) {
 __p+='\n            <input type="pure-button button-primary" class="submit login-anon" value="'+
 ((__t=(label_anon_login))==null?'':__t)+
 '"/>\n        ';
- } 
+ }
 __p+='\n        ';
- if (authentication == PREBIND) { 
+ if (authentication == PREBIND) {
 __p+='\n            <p>Disconnected.</p>\n        ';
- } 
+ }
 __p+='\n    ';
- } 
+ }
 __p+='\n</form>\n';
 }
 return __p;
@@ -1465,23 +1469,23 @@ with(obj||{}){
 __p+='<li class="'+
 ((__t=(role))==null?'':__t)+
 '"\n    ';
- if (role === "moderator") { 
+ if (role === "moderator") {
 __p+='\n       title="'+
 ((__t=(desc_moderator))==null?'':__t)+
 '"\n    ';
- } 
+ }
 __p+='\n    ';
- if (role === "occupant") { 
+ if (role === "occupant") {
 __p+='\n       title="'+
 ((__t=(desc_occupant))==null?'':__t)+
 '"\n    ';
- } 
+ }
 __p+='\n    ';
- if (role === "visitor") { 
+ if (role === "visitor") {
 __p+='\n       title="'+
 ((__t=(desc_visitor))==null?'':__t)+
 '"\n    ';
- } 
+ }
 __p+='\n>'+
 ((__t=(nick))==null?'':__t)+
 '</li>\n';
@@ -1494,9 +1498,9 @@ define('tpl!pending_contact', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (allow_chat_pending_contacts)  { 
+ if (allow_chat_pending_contacts)  {
 __p+='\n<a class="open-chat"href="#">\n';
- } 
+ }
 __p+='\n<span class="pending-contact-name" title="Name: '+
 ((__t=(fullname))==null?'':__t)+
 '\nJID: '+
@@ -1504,9 +1508,9 @@ __p+='\n<span class="pending-contact-name" title="Name: '+
 '">'+
 ((__t=(fullname))==null?'':__t)+
 '</span> \n';
- if (allow_chat_pending_contacts)  { 
+ if (allow_chat_pending_contacts)  {
 __p+='\n</a>\n';
- } 
+ }
 __p+='\n<a class="remove-xmpp-contact icon-remove" title="'+
 ((__t=(desc_remove))==null?'':__t)+
 '" href="#"></a>\n';
@@ -1598,9 +1602,9 @@ define('tpl!requesting_contact', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (allow_chat_pending_contacts)  { 
+ if (allow_chat_pending_contacts)  {
 __p+='\n<a class="open-chat"href="#">\n';
- } 
+ }
 __p+='\n<span class="req-contact-name" title="Name: '+
 ((__t=(fullname))==null?'':__t)+
 '\nJID: '+
@@ -1608,9 +1612,9 @@ __p+='\n<span class="req-contact-name" title="Name: '+
 '">'+
 ((__t=(fullname))==null?'':__t)+
 '</span>\n';
- if (allow_chat_pending_contacts)  { 
+ if (allow_chat_pending_contacts)  {
 __p+='\n</a>\n';
- } 
+ }
 __p+='\n<span class="request-actions">\n    <a class="accept-xmpp-request icon-checkmark" title="'+
 ((__t=(desc_accept))==null?'':__t)+
 '" href="#"></a>\n    <a class="decline-xmpp-request icon-close" title="'+
@@ -1650,71 +1654,71 @@ __p+='<!-- FIXME: check markup in mockup -->\n<div class="room-info">\n<p class=
 '</p>\n<p class="room-info"><strong>'+
 ((__t=(label_features))==null?'':__t)+
 '</strong>\n    <ul>\n        ';
- if (passwordprotected) { 
+ if (passwordprotected) {
 __p+='\n        <li class="room-info locked">'+
 ((__t=(label_requires_auth))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (hidden) { 
+ if (hidden) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_hidden))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (membersonly) { 
+ if (membersonly) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_requires_invite))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (moderated) { 
+ if (moderated) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_moderated))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (nonanonymous) { 
+ if (nonanonymous) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_non_anon))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (open) { 
+ if (open) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_open_room))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (persistent) { 
+ if (persistent) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_permanent_room))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (publicroom) { 
+ if (publicroom) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_public))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (semianonymous) { 
+ if (semianonymous) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_semi_anon))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (temporary) { 
+ if (temporary) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_temp_room))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n        ';
- if (unmoderated) { 
+ if (unmoderated) {
 __p+='\n        <li class="room-info">'+
 ((__t=(label_unmoderated))==null?'':__t)+
 '</li>\n        ';
- } 
+ }
 __p+='\n    </ul>\n</p>\n</div>\n';
 }
 return __p;
@@ -1754,13 +1758,13 @@ __p+='<form class="pure-form pure-form-stacked converse-form add-chatroom" actio
 '"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="'+
 ((__t=(label_join))==null?'':__t)+
 '"/>\n    </fieldset>\n    <fieldset>\n        ';
- if (server_input_type != 'hidden') { 
+ if (server_input_type != 'hidden') {
 __p+='\n            <label'+
 ((__t=(server_label_global_attr))==null?'':__t)+
 '>'+
 ((__t=(label_server))==null?'':__t)+
 '</label>\n        ';
- } 
+ }
 __p+='\n        <input type="'+
 ((__t=(server_input_type))==null?'':__t)+
 '" name="server" class="new-chatroom-server" placeholder="'+
@@ -1781,67 +1785,67 @@ __p+='<form class="pure-form roster-filter-group input-button-group">\n    <inpu
 '" class="roster-filter"\n           placeholder="'+
 ((__t=(placeholder))==null?'':__t)+
 '"\n           ';
- if (filter_type === 'state') { 
+ if (filter_type === 'state') {
 __p+='  style="display: none" ';
- } 
+ }
 __p+=' >\n    <select class="state-type" ';
- if (filter_type !== 'state') { 
+ if (filter_type !== 'state') {
 __p+='  style="display: none" ';
- } 
+ }
 __p+=' >\n        <option value="">'+
 ((__t=(label_any))==null?'':__t)+
 '</option>\n        <option ';
- if (chat_state === 'online') { 
+ if (chat_state === 'online') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n            value="online">'+
 ((__t=(label_online))==null?'':__t)+
 '</option>\n        <option ';
- if (chat_state === 'chatty') { 
+ if (chat_state === 'chatty') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n            value="chatty">'+
 ((__t=(label_chatty))==null?'':__t)+
 '</option>\n        <option ';
- if (chat_state === 'dnd') { 
+ if (chat_state === 'dnd') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n            value="dnd">'+
 ((__t=(label_busy))==null?'':__t)+
 '</option>\n        <option ';
- if (chat_state === 'away') { 
+ if (chat_state === 'away') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n            value="away">'+
 ((__t=(label_away))==null?'':__t)+
 '</option>\n        <option ';
- if (chat_state === 'xa') { 
+ if (chat_state === 'xa') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n            value="xa">'+
 ((__t=(label_xa))==null?'':__t)+
 '</option>\n        <option ';
- if (chat_state === 'offline') { 
+ if (chat_state === 'offline') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n            value="offline">'+
 ((__t=(label_offline))==null?'':__t)+
 '</option>\n    </select>\n    <select class="filter-type">\n        <option ';
- if (filter_type === 'contacts') { 
+ if (filter_type === 'contacts') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n                value="contacts">'+
 ((__t=(label_contacts))==null?'':__t)+
 '</option>\n        <option ';
- if (filter_type === 'groups') { 
+ if (filter_type === 'groups') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n                value="groups">'+
 ((__t=(label_groups))==null?'':__t)+
 '</option>\n        <option ';
- if (filter_type === 'state') { 
+ if (filter_type === 'state') {
 __p+=' selected="selected" ';
- } 
+ }
 __p+='\n                value="state">'+
 ((__t=(label_state))==null?'':__t)+
 '</option>\n    </select>\n</form>\n';
@@ -1868,11 +1872,11 @@ __p+='<a class="open-chat" title="'+
 '"></span>'+
 ((__t=(fullname))==null?'':__t)+
 '</a>\n';
- if (allow_contact_removal) { 
+ if (allow_contact_removal) {
 __p+='\n<a class="remove-xmpp-contact icon-remove" title="'+
 ((__t=(desc_remove))==null?'':__t)+
 '" href="#"></a>\n';
- } 
+ }
 __p+='\n';
 }
 return __p;
@@ -1898,9 +1902,9 @@ with(obj||{}){
 __p+='<option value="'+
 ((__t=(value))==null?'':__t)+
 '" ';
- if (selected) { 
+ if (selected) {
 __p+=' selected="selected" ';
- } 
+ }
 __p+=' >'+
 ((__t=(label))==null?'':__t)+
 '</option>\n';
@@ -1934,9 +1938,9 @@ __p+=''+
 ' <span id="minimized-count">('+
 ((__t=(num_minimized))==null?'':__t)+
 ')</span>\n<span class="unread-message-count"\n    ';
- if (!num_unread) { 
+ if (!num_unread) {
 __p+=' style="display: none" ';
- } 
+ }
 __p+='\n    href="#">'+
 ((__t=(num_unread))==null?'':__t)+
 '</span>\n';
@@ -1949,29 +1953,29 @@ define('tpl!toolbar', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (show_emoticons)  { 
+ if (show_emoticons)  {
 __p+='\n    <li class="toggle-smiley icon-happy" title="'+
 ((__t=(label_insert_smiley))==null?'':__t)+
 '">\n        <ul>\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
- } 
+ }
 __p+='\n';
- if (show_call_button)  { 
+ if (show_call_button)  {
 __p+='\n<li class="toggle-call"><a class="icon-phone" title="'+
 ((__t=(label_start_call))==null?'':__t)+
 '"></a></li>\n';
- } 
+ }
 __p+='\n';
- if (show_occupants_toggle)  { 
+ if (show_occupants_toggle)  {
 __p+='\n<li class="toggle-occupants"><a class="icon-hide-users" title="'+
 ((__t=(label_hide_occupants))==null?'':__t)+
 '"></a></li>\n';
- } 
+ }
 __p+='\n';
- if (show_clear_button)  { 
+ if (show_clear_button)  {
 __p+='\n<li class="toggle-clear"><a class="icon-remove" title="'+
 ((__t=(label_clear))==null?'':__t)+
 '"></a></li>\n';
- } 
+ }
 __p+='\n';
 }
 return __p;
@@ -1982,7 +1986,7 @@ define('tpl!toolbar_otr', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='';
- if (allow_otr)  { 
+ if (allow_otr)  {
 __p+='\n    <li class="toggle-otr '+
 ((__t=(otr_status_class))==null?'':__t)+
 '" title="'+
@@ -1990,29 +1994,29 @@ __p+='\n    <li class="toggle-otr '+
 '">\n        <span class="chat-toolbar-text">'+
 ((__t=(otr_translated_status))==null?'':__t)+
 '</span>\n        ';
- if (otr_status == UNENCRYPTED) { 
+ if (otr_status == UNENCRYPTED) {
 __p+='\n            <span class="icon-unlocked"></span>\n        ';
- } 
+ }
 __p+='\n        ';
- if (otr_status == UNVERIFIED) { 
+ if (otr_status == UNVERIFIED) {
 __p+='\n            <span class="icon-lock"></span>\n        ';
- } 
+ }
 __p+='\n        ';
- if (otr_status == VERIFIED) { 
+ if (otr_status == VERIFIED) {
 __p+='\n            <span class="icon-lock"></span>\n        ';
- } 
+ }
 __p+='\n        ';
- if (otr_status == FINISHED) { 
+ if (otr_status == FINISHED) {
 __p+='\n            <span class="icon-unlocked"></span>\n        ';
- } 
+ }
 __p+='\n        <ul>\n            ';
- if (otr_status == UNENCRYPTED) { 
+ if (otr_status == UNENCRYPTED) {
 __p+='\n               <li><a class="start-otr" href="#">'+
 ((__t=(label_start_encrypted_conversation))==null?'':__t)+
 '</a></li>\n            ';
- } 
+ }
 __p+='\n            ';
- if (otr_status != UNENCRYPTED) { 
+ if (otr_status != UNENCRYPTED) {
 __p+='\n               <li><a class="start-otr" href="#">'+
 ((__t=(label_refresh_encrypted_conversation))==null?'':__t)+
 '</a></li>\n               <li><a class="end-otr" href="#">'+
@@ -2020,17 +2024,17 @@ __p+='\n               <li><a class="start-otr" href="#">'+
 '</a></li>\n               <li><a class="auth-otr" data-scheme="smp" href="#">'+
 ((__t=(label_verify_with_smp))==null?'':__t)+
 '</a></li>\n            ';
- } 
+ }
 __p+='\n            ';
- if (otr_status == UNVERIFIED) { 
+ if (otr_status == UNVERIFIED) {
 __p+='\n               <li><a class="auth-otr" data-scheme="fingerprint" href="#">'+
 ((__t=(label_verify_with_fingerprints))==null?'':__t)+
 '</a></li>\n            ';
- } 
+ }
 __p+='\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">'+
 ((__t=(label_whats_this))==null?'':__t)+
 '</a></li>\n        </ul>\n    </li>\n';
- } 
+ }
 __p+='\n';
 }
 return __p;
@@ -2041,9 +2045,9 @@ define('tpl!trimmed_chat', [],function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count" \n    ';
- if (!num_unread) { 
+ if (!num_unread) {
 __p+=' style="display: none" ';
- } 
+ }
 __p+='\n    href="#">'+
 ((__t=(num_unread))==null?'':__t)+
 '</a>\n<a href="#" class="restore-chat" title="'+
@@ -2725,7 +2729,7 @@ define("polyfill", function(){});
                 }
             }
         };
-		
+
         this.detectLocale = function (library_check) {
             /* Determine which locale is supported by the user's system as well
              * as by the relevant library (e.g. converse.js or moment.js).
@@ -2753,7 +2757,7 @@ define("polyfill", function(){});
             }
             return locale || 'en';
         };
-		
+
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
         }
@@ -3132,7 +3136,7 @@ define("polyfill", function(){});
 
 
         this.onStatusInitialized = function (deferred) {
-            this.registerIntervalHandler();				
+            this.registerIntervalHandler();
             this.roster = new this.RosterContacts();
             this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
                 b64_sha1('converse.contacts-'+this.bare_jid));
@@ -3732,7 +3736,7 @@ define("polyfill", function(){});
                 });
             }
         });
-        
+
         this.ChatBoxes = Backbone.Collection.extend({
             model: converse.ChatBox,
             comparator: 'time_opened',
@@ -5236,15 +5240,15 @@ performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: return { type : 'GROUP', expr: $$[$0-1] }; 
+case 1: return { type : 'GROUP', expr: $$[$0-1] };
 break;
-case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] }; 
+case 2:this.$ = { type: 'TERNARY', expr: $$[$0-4], truthy : $$[$0-2], falsey: $$[$0] };
 break;
 case 3:this.$ = { type: "OR", left: $$[$0-2], right: $$[$0] };
 break;
 case 4:this.$ = { type: "AND", left: $$[$0-2], right: $$[$0] };
 break;
-case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] }; 
+case 5:this.$ = { type: 'LT', left: $$[$0-2], right: $$[$0] };
 break;
 case 6:this.$ = { type: 'LTE', left: $$[$0-2], right: $$[$0] };
 break;
@@ -5258,11 +5262,11 @@ case 10:this.$ = { type: 'EQ', left: $$[$0-2], right: $$[$0] };
 break;
 case 11:this.$ = { type: 'MOD', left: $$[$0-2], right: $$[$0] };
 break;
-case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] }; 
+case 12:this.$ = { type: 'GROUP', expr: $$[$0-1] };
 break;
-case 13:this.$ = { type: 'VAR' }; 
+case 13:this.$ = { type: 'VAR' };
 break;
-case 14:this.$ = { type: 'NUM', val: Number(yytext) }; 
+case 14:this.$ = { type: 'NUM', val: Number(yytext) };
 break;
 }
 },
@@ -5548,7 +5552,7 @@ next:function () {
         if (this._input === "") {
             return this.EOF;
         } else {
-            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(), 
+            this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(),
                     {text: "", token: null, line: this.yylineno});
         }
     },
@@ -9928,7 +9932,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
- 
+
             _initialize: function () {
                 this._super._initialize.apply(this, arguments);
                 this.otr = new this.OTR();
@@ -10009,7 +10013,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                         }
                     }
                 },
-                
+
                 getSession: function (callback) {
                     var converse = this._super.converse;
                     var cipher = CryptoJS.lib.PasswordBasedCipher;
@@ -10283,7 +10287,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     ev.stopPropagation();
                     this.$el.find('.toggle-otr ul').slideToggle(200);
                 },
-                
+
                 getOTRTooltip: function () {
                     var data = this.model.toJSON();
                     if (data.otr_status === UNENCRYPTED) {
@@ -10431,7 +10435,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
         _ = converse_api.env._;
     // For translations
     var __ = utils.__.bind(converse);
-    
+
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
@@ -10934,7 +10938,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
     var Strophe = converse_api.env.Strophe;
     // Other necessary globals
     var _ = converse_api.env._;
-    
+
     converse_api.plugins.add('ping', {
 
         initialize: function () {
@@ -11810,7 +11814,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-            
+
             registerGlobalEventHandlers: function () {
                 $(document).on('mousemove', function (ev) {
                     if (!this.resizing || !this.allow_dragresize) { return true; }
@@ -12125,7 +12129,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-            
+
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
@@ -12243,7 +12247,7 @@ require.config({
         "underscore":               "components/underscore/underscore",
         "utils":                    "src/utils",
         "polyfill":                 "src/polyfill",
-        
+
         // Converse
         "converse-api":             "src/converse-api",
         "converse-chatview":        "src/converse-chatview",

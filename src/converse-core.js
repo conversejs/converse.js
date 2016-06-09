@@ -132,6 +132,7 @@
 
     converse.initialize = function (settings, callback) {
         "use strict";
+        var init_deferred = new $.Deferred();
         var converse = this;
         var unloadevent;
         if ('onpagehide' in window) {
@@ -621,7 +622,7 @@
         };
 
 
-        this.onStatusInitialized = function (deferred) {
+        this.onStatusInitialized = function () {
             this.registerIntervalHandler();
             this.roster = new this.RosterContacts();
             this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
@@ -629,20 +630,9 @@
             this.chatboxes.onConnected();
             this.giveFeedback(__('Contacts'));
             if (typeof this.callback === 'function') {
-                // A callback method may be passed in via the
-                // converse.initialize method.
-                // XXX: Can we use $.Deferred instead of this callback?
-                if (this.connection.service === 'jasmine tests') {
-                    // XXX: Call back with the internal converse object. This
-                    // object should never be exposed to production systems.
-                    // 'jasmine tests' is an invalid http bind service value,
-                    // so we're sure that this is just for tests.
-                    this.callback(this);
-                } else  {
-                    this.callback();
-                }
+                // XXX: Deprecate in favor of init_deferred
+                this.callback();
             }
-            deferred.resolve();
             converse.emit('initialized');
         };
 
@@ -650,7 +640,6 @@
             // When reconnecting, there might be some open chat boxes. We don't
             // know whether these boxes are of the same account or not, so we
             // close them now.
-            var deferred = new $.Deferred();
             // XXX: ran into an issue where a returned PubSub BOSH response was
             // not received by the browser. The solution was to flush the
             // connection early on. I don't know what the underlying cause of
@@ -670,12 +659,10 @@
             this.domain = Strophe.getDomainFromJid(this.connection.jid);
             this.features = new this.Features();
             this.enableCarbons();
-            this.initStatus().done(_.bind(this.onStatusInitialized, this, deferred));
+            this.initStatus().done(_.bind(this.onStatusInitialized, this));
             converse.emit('connected');
             converse.emit('ready'); // BBB: Will be removed.
-            return deferred.promise();
         };
-
 
         this.RosterContact = Backbone.Model.extend({
 
@@ -1796,7 +1783,13 @@
         }).then(function () {
             converse._initialize();
             converse.registerGlobalEventHandlers();
+            if (converse.connection.service === 'jasmine tests') {
+                init_deferred.resolve(converse);
+            } else {
+                init_deferred.resolve();
+            }
         });
+        return init_deferred.promise();
     };
     return converse;
 }));

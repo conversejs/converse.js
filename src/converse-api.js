@@ -23,7 +23,7 @@
     var Strophe = strophe.Strophe;
     return {
         'initialize': function (settings, callback) {
-            converse.initialize(settings, callback);
+            return converse.initialize(settings, callback);
         },
         'log': converse.log,
         'connection': {

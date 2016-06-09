@@ -56,7 +56,7 @@ require([
             jid: 'dummy@localhost',
             password: 'secret',
             debug: true 
-        }, function (converse) {
+        }).then(function (converse) {
             window.converse = converse;
             window.crypto = {
                 getRandomValues: function (buf) {
@@ -86,8 +86,6 @@ require([
                 "spec/register",
                 "spec/xmppstatus",
             ], function () {
-                // Make sure this callback is only called once.
-                delete converse.callback;
                 // Stub the trimChat method. It causes havoc when running with
                 // phantomJS.
                 converse.ChatBoxViews.prototype.trimChat = function () {};

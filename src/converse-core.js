@@ -633,6 +633,11 @@
                 // XXX: Deprecate in favor of init_deferred
                 this.callback();
             }
+            if (converse.connection.service === 'jasmine tests') {
+                init_deferred.resolve(converse);
+            } else {
+                init_deferred.resolve();
+            }
             converse.emit('initialized');
         };
 
@@ -1780,15 +1785,9 @@
         converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
             'converse': converse
-        }).then(function () {
-            converse._initialize();
-            converse.registerGlobalEventHandlers();
-            if (converse.connection.service === 'jasmine tests') {
-                init_deferred.resolve(converse);
-            } else {
-                init_deferred.resolve();
-            }
         });
+        converse._initialize();
+        converse.registerGlobalEventHandlers();
         return init_deferred.promise();
     };
     return converse;

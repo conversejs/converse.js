@@ -43,14 +43,13 @@
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
     converse_api.plugins.add('converse-muc', {
-        /* Optional dependencies are require.js dependencies which might be
-         * overridden or relied upon if they exist, but otherwise ignored.
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, if they exist, otherwise they're ignored.
          *
          * However, if the setting "strict_plugin_dependencies" is set to true,
-         * then these dependencies will be considered required.
+         * an error will be raised if the plugin is not found.
          *
-         * Optional dependencies will be available in the initialize method as
-         * a the "optional_dependencies" attribute of the plugin.
+         * NB: These plugins need to have already been loaded via require.js.
          */
         optional_dependencies: ["converse-controlbox"],
 

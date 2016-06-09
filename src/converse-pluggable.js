@@ -84,33 +84,23 @@
             }.bind(this));
         },
 
-        setOptionalDependencies: function (plugin, dependencies) {
-            plugin.optional_dependencies = dependencies;
-            return plugin;
-        },
-
-        loadOptionalDependencies: function (plugins) {
-            var deferred = new $.Deferred();
-            require(plugins, 
-                function () {
-                    _.each(plugins, function (name) {
-                        var plugin = this.plugins[name];
-                        if (plugin) {
-                            this.initializePlugin(plugin).then(
-                                deferred.resolve.bind(this, plugins)
-                            );
-                        }
-                    }.bind(this));
-                }.bind(this),
-                function () {
-                    if (this.plugged.strict_plugin_dependencies) {
-                        deferred.fail.apply(this, arguments);
-                        this.throwUndefinedDependencyError(arguments[0]);
-                    } else {
-                        deferred.resolve.apply(this, [plugins]);
+        loadOptionalDependencies: function (plugin) {
+            _.each(plugin.optional_dependencies, function (name) {
+                var dep = this.plugins[name];
+                if (dep) {
+                    if (_.contains(dep.optional_dependencies, plugin.__name__)) {
+                        // FIXME: circular dependency checking is only one level deep.
+                        throw "Found a circular dependency between the plugins \""+
+                              plugin.__name__+"\" and \""+name+"\"";
                     }
-                }.bind(this));
-            return deferred.promise();
+                    this.initializePlugin(dep);
+                } else {
+                    this.throwUndefinedDependencyError(
+                        "Could not find optional dependency \""+name+"\" "+
+                        "for the plugin \""+plugin.__name__+"\". "+
+                        "If it's needed, make sure it's loaded by require.js");
+                }
+            }.bind(this));
         },
 
         throwUndefinedDependencyError: function (msg) {
@@ -140,7 +130,16 @@
             }.bind(this));
         },
 
-        _initializePlugin: function (plugin) {
+        initializePlugin: function (plugin) {
+            if (_.contains(this.initialized_plugins, plugin.__name__)) {
+                // Don't initialize plugins twice, otherwise we get
+                // infinite recursion in overridden methods.
+                return;
+            }
+            _.extend(plugin, this.properties);
+            if (plugin.optional_dependencies) {
+                this.loadOptionalDependencies(plugin);
+            }
             this.applyOverrides(plugin);
             if (typeof plugin.initialize === "function") {
                 plugin.initialize.bind(plugin)(this);
@@ -148,55 +147,15 @@
             this.initialized_plugins.push(plugin.__name__);
         },
 
-        asyncInitializePlugin: function (plugin) {
-            var deferred = new $.Deferred();
-            this.loadOptionalDependencies(plugin.optional_dependencies).then(
-                _.compose(
-                    deferred.resolve,
-                    this._initializePlugin.bind(this),
-                    _.partial(this.setOptionalDependencies, plugin)
-                ));
-            return deferred.promise();
-        },
-
-        initializePlugin: function (plugin) {
-            var deferred = new $.Deferred();
-            if (_.contains(this.initialized_plugins, plugin.__name__)) {
-                // Don't initialize plugins twice, otherwise we get
-                // infinite recursion in overridden methods.
-                return deferred.resolve().promise();
-            }
-            _.extend(plugin, this.properties);
-            if (plugin.optional_dependencies) {
-                this.asyncInitializePlugin(plugin).then(deferred.resolve);
-            } else {
-                this._initializePlugin(plugin);
-                deferred.resolve();
-            }
-            return deferred.promise();
-        },
-
-        initNextPlugin: function (remaining, deferred) {
-            if (remaining.length === 0) {
-                deferred.resolve();
-                return;
-            }
-            var plugin = remaining.pop();
-            this.initializePlugin(plugin).then(
-                this.initNextPlugin.bind(this, remaining, deferred));
-        },
-
         initializePlugins: function (properties) {
             /* The properties variable is an object of attributes and methods
              * which will be attached to the plugins.
              */
-            var deferred = new $.Deferred();
             if (!_.size(this.plugins)) {
-                return deferred.promise();
+                return;
             }
             this.properties = properties;
-            this.initNextPlugin(_.values(this.plugins).reverse(), deferred);
-            return deferred;
+            _.each(_.values(this.plugins), this.initializePlugin.bind(this));
         }
     });
     return {

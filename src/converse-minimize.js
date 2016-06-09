@@ -218,7 +218,14 @@
 
                 getShownChats: function () {
                     return this.filter(function (view) {
-                        return (!view.model.get('minimized') && view.$el.is(':visible'));
+                        // The controlbox can take a while to close,
+                        // so we need to check its state. That's why we checked
+                        // the 'closed' state.
+                        return (
+                            !view.model.get('minimized') &&
+                            !view.model.get('closed') &&
+                            view.$el.is(':visible')
+                        );
                     });
                 },
 

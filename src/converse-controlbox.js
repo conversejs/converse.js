@@ -668,6 +668,7 @@
 
                 initialize: function () {
                     this.render();
+					this.updateOnlineCount(); 
                     converse.on('initialized', function () {
                         converse.roster.on("add", this.updateOnlineCount, this);
                         converse.roster.on('change', this.updateOnlineCount, this);

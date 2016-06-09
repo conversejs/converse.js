@@ -27,7 +27,7 @@
         moment = converse_api.env.moment;
 
 
-    converse_api.plugins.add('controlbox', {
+    converse_api.plugins.add('converse-controlbox', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

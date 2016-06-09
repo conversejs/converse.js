@@ -17,6 +17,12 @@
     // https://xmpp.org/rfcs/rfc3921.html
 
     describe("The Protocol", $.proxy(function (mock, test_utils) {
+        beforeEach(function () {
+            test_utils.removeControlBox();
+            converse.roster.browserStorage._clear();
+            test_utils.initConverse();
+        });
+
         describe("Integration of Roster Items and Presence Subscriptions", $.proxy(function (mock, test_utils) {
             /* Some level of integration between roster items and presence
             * subscriptions is normally expected by an instant messaging user
@@ -48,9 +54,6 @@
             */
             beforeEach(function () {
                 test_utils.closeAllChatBoxes();
-                test_utils.removeControlBox();
-                converse.roster.browserStorage._clear();
-                test_utils.initConverse();
                 test_utils.openControlBox();
                 test_utils.openContactsPanel();
             });

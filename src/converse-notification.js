@@ -21,7 +21,7 @@
     var supports_html5_notification = "Notification" in window;
 
 
-    converse_api.plugins.add('notification', {
+    converse_api.plugins.add('converse-notification', {
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is

@@ -20,7 +20,7 @@
                 var connection = converse.connection;
                 delete converse.bosh_service_url;
                 delete converse.connection;
-                expect(converse.initConnection.bind({})).toThrow(
+                expect(converse.initConnection.bind(converse)).toThrow(
                     new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
                 converse.bosh_service_url = url;
                 converse.connection = connection;

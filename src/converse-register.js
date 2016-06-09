@@ -40,7 +40,7 @@
     Strophe.Status.CONFLICT        = i + 3;
     Strophe.Status.NOTACCEPTABLE   = i + 5;
 
-    converse_api.plugins.add('register', {
+    converse_api.plugins.add('converse-register', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

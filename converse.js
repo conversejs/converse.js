@@ -56,6 +56,7 @@ require.config({
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
+        "converse-pluggable":       "src/converse-pluggable",
         "converse-register":        "src/converse-register",
         "converse-rosterview":      "src/converse-rosterview",
         "converse-templates":       "src/converse-templates",
@@ -235,11 +236,11 @@ if (typeof define !== 'undefined') {
                                 // translations that you care about.
 
         "converse-chatview",    // Renders standalone chat boxes for single user chat
+        "converse-controlbox",  // The control box
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
         "converse-vcard",       // XEP-0054 VCard-temp
         "converse-otr",         // Off-the-record encryption for one-on-one messages
-        "converse-controlbox",  // The control box
         "converse-register",    // XEP-0077 In-band registration
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications

@@ -149,7 +149,6 @@
             return str;
         },
 
-
         isOTRMessage: function (message) {
             var $body = $(message).children('body'),
                 text = ($body.length > 0 ? $body.text() : undefined);

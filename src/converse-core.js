@@ -23,11 +23,12 @@
         "moment_with_locales",
         "strophe",
         "converse-templates",
+        "converse-pluggable",
         "strophe.disco",
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function ($, _, dummy, utils, moment, Strophe, templates) {
+}(this, function ($, _, dummy, utils, moment, Strophe, templates, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -58,25 +59,30 @@
     var event_context = {};
 
     var converse = {
-        plugins: {},
-        initialized_plugins: [],
         templates: templates,
+
         emit: function (evt, data) {
             $(event_context).trigger(evt, data);
         },
+
         once: function (evt, handler) {
             $(event_context).one(evt, handler);
         },
+
         on: function (evt, handler) {
             if (_.contains(['ready', 'initialized'], evt)) {
                 converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
             }
             $(event_context).bind(evt, handler);
         },
+
         off: function (evt, handler) {
             $(event_context).unbind(evt, handler);
         }
     };
+
+    // Make converse pluggable
+    pluggable.enable(converse);
 
     // Module-level constants
     converse.STATUS_WEIGHTS = {
@@ -1770,117 +1776,27 @@
             return this;
         };
 
-        this.wrappedOverride = function (key, value, super_method) {
-            // We create a partially applied wrapper function, that
-            // makes sure to set the proper super method when the
-            // overriding method is called. This is done to enable
-            // chaining of plugin methods, all the way up to the
-            // original method.
-            this._super[key] = super_method;
-            return value.apply(this, _.rest(arguments, 3));
-        };
-
-        this._overrideAttribute = function (key, plugin) {
-            // See converse.plugins.override
-            var value = plugin.overrides[key];
-            if (typeof value === "function") {
-                var wrapped_function = _.partial(
-                    converse.wrappedOverride.bind(converse),
-                        key, value, converse[key].bind(converse)
-                );
-                converse[key] = wrapped_function;
-            } else {
-                converse[key] = value;
-            }
-        };
-
-        this._extendObject = function (obj, attributes) {
-            // See converse.plugins.extend
-            if (!obj.prototype._super) {
-                obj.prototype._super = {'converse': converse};
-            }
-            _.each(attributes, function (value, key) {
-                if (key === 'events') {
-                    obj.prototype[key] = _.extend(value, obj.prototype[key]);
-                } else if (typeof value === 'function') {
-                    // We create a partially applied wrapper function, that
-                    // makes sure to set the proper super method when the
-                    // overriding method is called. This is done to enable
-                    // chaining of plugin methods, all the way up to the
-                    // original method.
-                    var wrapped_function = _.partial(
-                        converse.wrappedOverride,
-                            key, value, obj.prototype[key]
-                    );
-                    obj.prototype[key] = wrapped_function;
-                } else {
-                    obj.prototype[key] = value;
-                }
-            });
-        };
-
-        this.initializePlugins = function () {
-            if (typeof converse._super === 'undefined') {
-                converse._super = { 'converse': converse };
-            }
-
-            var updateSettings = function (settings) {
-                /* Helper method which gets put on the plugin and allows it to
-                 * add more user-facing config settings to converse.js.
-                 */
-                _.extend(converse.default_settings, settings);
-                _.extend(converse, settings);
-                _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
-            };
-
-            _.each(_.keys(this.plugins), function (name) {
-                var plugin = this.plugins[name];
-                plugin.updateSettings = updateSettings;
-
-                if (_.contains(this.initialized_plugins, name)) {
-                    // Don't initialize plugins twice, otherwise we get
-                    // infinite recursion in overridden methods.
-                    return;
-                }
-                plugin.converse = converse;
-                _.each(Object.keys(plugin.overrides || {}), function (key) {
-                    /* We automatically override all methods and Backbone views and
-                     * models that are in the "overrides" namespace.
-                     */
-                    var msg,
-                        override = plugin.overrides[key];
-                    if (typeof override === "object") {
-                        if (typeof converse[key] === 'undefined') {
-                            msg = "Error: Plugin tried to override "+key+" but it's not found.";
-                            if (converse.strict_plugin_dependencies) {
-                                throw msg;
-                            } else {
-                                converse.log(msg);
-                                return;
-                            }
-                        }
-                        this._extendObject(converse[key], override);
-                    } else {
-                        this._overrideAttribute(key, plugin);
-                    }
-                }.bind(this));
-
-                if (typeof plugin.initialize === "function") {
-                    plugin.initialize.bind(plugin)(this);
-                }
-                this.initialized_plugins.push(name);
-            }.bind(this));
-        };
-
         // Initialization
         // --------------
         // This is the end of the initialize method.
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        this.initializePlugins();
-        this._initialize();
-        this.registerGlobalEventHandlers();
+        var updateSettings = function (settings) {
+            /* Helper method which gets put on the plugin and allows it to
+             * add more user-facing config settings to converse.js.
+             */
+            _.extend(converse.default_settings, settings);
+            _.extend(converse, settings);
+            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+        };
+        converse.pluggable.initializePlugins({
+            'updateSettings': updateSettings,
+            'converse': converse
+        }).then(function () {
+            converse._initialize();
+            converse.registerGlobalEventHandlers();
+        });
     };
     return converse;
 }));

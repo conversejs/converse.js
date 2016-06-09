@@ -23,7 +23,7 @@
         utils = converse_api.env.utils,
         __ = utils.__.bind(converse);
 
-    converse_api.plugins.add('minimize', {
+    converse_api.plugins.add('converse-minimize', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

@@ -14,8 +14,7 @@
             "converse-core",
             "converse-api",
             "typeahead",
-            "converse-chatview",
-            "converse-controlbox"
+            "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -43,7 +42,17 @@
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
-    converse_api.plugins.add('muc', {
+    converse_api.plugins.add('converse-muc', {
+        /* Optional dependencies are require.js dependencies which might be
+         * overridden or relied upon if they exist, but otherwise ignored.
+         *
+         * However, if the setting "strict_plugin_dependencies" is set to true,
+         * then these dependencies will be considered required.
+         *
+         * Optional dependencies will be available in the initialize method as
+         * a the "optional_dependencies" attribute of the plugin.
+         */
+        optional_dependencies: ["converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

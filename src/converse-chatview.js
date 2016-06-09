@@ -24,7 +24,7 @@
     };
 
 
-    converse_api.plugins.add('chatview', {
+    converse_api.plugins.add('converse-chatview', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

@@ -36,7 +36,7 @@
         return true;
     };
 
-    converse_api.plugins.add('headline', {
+    converse_api.plugins.add('converse-headline', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

@@ -22,7 +22,7 @@
     // Other necessary globals
     var _ = converse_api.env._;
     
-    converse_api.plugins.add('ping', {
+    converse_api.plugins.add('converse-ping', {
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is

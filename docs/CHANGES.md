@@ -1,7 +1,6 @@
 # Changelog
 
 ## 1.0.3 (Unreleased)
-
 - Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` [jcbrand]
 - Also indicate new day for the first day's messages. [jcbrand]
 - Chat bot messages don't appear when they have the same ids as their commands. [jcbrand]
@@ -13,6 +12,8 @@
 - New API method `converse.rooms.close()`
 - #553 Add processing hints to OTR messages [jcbrand]
 - #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
+- #656 online users count in minimized chat window on initialization corrected 
+
 
 ## 1.0.2 (2016-05-24)
 

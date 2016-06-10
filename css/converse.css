@@ -2004,9 +2004,9 @@
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
           padding: 0 0.5em 0 0.5em; }
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full {
-          max-width: 100%; }
+          min-width: 100%; }
           #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator {
-            max-width: 100%; }
+            min-width: 100%; }
       #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
         font-weight: bold; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {

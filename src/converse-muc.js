@@ -263,16 +263,15 @@
                         // Bit of a hack, to make sure that the sidebar's state doesn't change
                         this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
                     }
-                    var $el = this.$('.icon-hide-users');
                     if (!this.model.get('hidden_occupants')) {
                         this.model.save({hidden_occupants: true});
-                        $el.removeClass('icon-hide-users').addClass('icon-show-users');
+                        this.$('.icon-hide-users').removeClass('icon-hide-users').addClass('icon-show-users');
                         this.$('.occupants').addClass('hidden');
                         this.$('.chat-area').addClass('full');
                         this.scrollDown();
                     } else {
                         this.model.save({hidden_occupants: false});
-                        $el.removeClass('icon-show-users').addClass('icon-hide-users');
+                        this.$('.icon-show-users').removeClass('icon-show-users').addClass('icon-hide-users');
                         this.$('.chat-area').removeClass('full');
                         this.$('div.occupants').removeClass('hidden');
                         this.scrollDown();

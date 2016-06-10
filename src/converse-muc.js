@@ -74,9 +74,11 @@
             Features: {
                 addClientFeatures: function () {
                     this._super.addClientFeatures.apply(this, arguments);
-                    converse.connection.disco.addFeature('jabber:x:conference'); // Invites
-                    if (this.allow_muc) {
-                        this.connection.disco.addFeature(Strophe.NS.MUC);
+                    if (converse.allow_muc_invitations) {
+                        converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+                    }
+                    if (converse.allow_muc) {
+                        converse.connection.disco.addFeature(Strophe.NS.MUC);
                     }
                 }
             },
@@ -155,6 +157,7 @@
             var converse = this.converse;
             // Configuration values for this plugin
             this.updateSettings({
+                allow_muc_invitations: true,
                 allow_muc: true,
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
                 auto_join_rooms: [], // List of maps {'jid': 'room@example.org', 'nick': 'WizardKing69' },
@@ -966,11 +969,15 @@
                 render: function () {
                     this.$el.html(
                         converse.templates.chatroom_sidebar({
+                            'allow_muc_invitations': converse.allow_muc_invitations,
                             'label_invitation': __('Invite'),
                             'label_occupants': __('Occupants')
                         })
                     );
-                    return this.initInviteWidget();
+                    if (converse.allow_muc_invitations) {
+                        return this.initInviteWidget();
+                    }
+                    return this;
                 },
 
                 onOccupantAdded: function (item) {
@@ -1362,15 +1369,17 @@
             };
             converse.on('chatBoxesFetched', autoJoinRooms);
 
-            var onConnected = function () {
-                converse.connection.addHandler(
-                    function (message) {
-                        converse.onDirectMUCInvitation(message);
-                        return true;
-                    }, 'jabber:x:conference', 'message');
-            };
-            converse.on('connected', onConnected);
-            converse.on('reconnected', onConnected);
+            if (converse.allow_muc_invitations) {
+                var onConnected = function () {
+                    converse.connection.addHandler(
+                        function (message) {
+                            converse.onDirectMUCInvitation(message);
+                            return true;
+                        }, 'jabber:x:conference', 'message');
+                };
+                converse.on('connected', onConnected);
+                converse.on('reconnected', onConnected);
+            }
             /* ------------------------------------------------------------ */
 
 

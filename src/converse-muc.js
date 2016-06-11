@@ -1413,18 +1413,14 @@
                         }
                         var _transform = function (jid) {
                             jid = jid.toLowerCase();
-                            var chatroom = converse.chatboxes.get(jid);
-                            if (!chatroom) {
-                                chatroom = converse.chatboxviews.showChat({
-                                    'id': jid,
-                                    'jid': jid,
-                                    'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                                    'nick': nick,
-                                    'type': 'chatroom',
-                                    'box_id': b64_sha1(jid)
-                                });
-                            }
-                            return converse.wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
+                            return converse.wrappedChatBox(converse.chatboxviews.showChat({
+                                'id': jid,
+                                'jid': jid,
+                                'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                                'nick': nick,
+                                'type': 'chatroom',
+                                'box_id': b64_sha1(jid)
+                            }));
                         };
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');

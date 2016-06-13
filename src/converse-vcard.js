@@ -20,7 +20,7 @@
         moment = converse_api.env.moment;
 
 
-    converse_api.plugins.add('vcard', {
+    converse_api.plugins.add('converse-vcard', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

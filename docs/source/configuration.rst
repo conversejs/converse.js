@@ -141,6 +141,15 @@ allow_muc
 Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
 the ``Chatrooms`` tab from the control box.
 
+allow_muc_invitations
+---------------------
+
+* Default:  ``true``
+
+Allows users to be invited to join MUC chat rooms. An "Invite" widget will
+appear in the sidebar of the chat room where you can type in the JID of a user
+to invite into the chat room.
+
 allow_otr
 ---------
 

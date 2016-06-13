@@ -406,11 +406,13 @@
             describe("A Chat Message", function () {
 
                 beforeEach(function () {
-                    runs(function () {
-                        test_utils.closeAllChatBoxes();
-                    });
-                    waits(250);
-                    runs(function () {});
+                    test_utils.closeAllChatBoxes();
+                    test_utils.removeControlBox();
+                    converse.roster.browserStorage._clear();
+                    test_utils.initConverse();
+                    test_utils.createContacts('current');
+                    test_utils.openControlBox();
+                    test_utils.openContactsPanel();
                 });
 
                 describe("when received from someone else", function () {

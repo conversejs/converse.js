@@ -23,7 +23,7 @@
     var Strophe = strophe.Strophe;
     return {
         'initialize': function (settings, callback) {
-            converse.initialize(settings, callback);
+            return converse.initialize(settings, callback);
         },
         'log': converse.log,
         'connection': {
@@ -133,7 +133,13 @@
                 } else if (typeof jids === "string") {
                     return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                 }
-                return _.map(jids, _.partial(_.compose(converse.wrappedChatBox, converse.chatboxes.getChatBox.bind(converse.chatboxes)), _, true));
+                return _.map(jids,
+                    _.partial(
+                        _.compose(
+                            converse.wrappedChatBox.bind(converse), converse.chatboxes.getChatBox.bind(converse.chatboxes)
+                        ), _, true
+                    )
+                );
             }
         },
         'tokens': {
@@ -181,7 +187,8 @@
         },
         'plugins': {
             'add': function (name, plugin) {
-                converse.plugins[name] = plugin;
+                plugin.__name__ = name;
+                converse.pluggable.plugins[name] = plugin;
             },
             'remove': function (name) {
                 delete converse.plugins[name];

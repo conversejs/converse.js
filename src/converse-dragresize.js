@@ -19,7 +19,7 @@
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._;
 
-    converse_api.plugins.add('dragresize', {
+    converse_api.plugins.add('converse-dragresize', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

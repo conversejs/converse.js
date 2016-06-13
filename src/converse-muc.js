@@ -14,8 +14,7 @@
             "converse-core",
             "converse-api",
             "typeahead",
-            "converse-chatview",
-            "converse-controlbox"
+            "converse-chatview"
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
@@ -43,7 +42,16 @@
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
-    converse_api.plugins.add('muc', {
+    converse_api.plugins.add('converse-muc', {
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, if they exist, otherwise they're ignored.
+         *
+         * However, if the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-controlbox"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -66,9 +74,11 @@
             Features: {
                 addClientFeatures: function () {
                     this._super.addClientFeatures.apply(this, arguments);
-                    converse.connection.disco.addFeature('jabber:x:conference'); // Invites
-                    if (this.allow_muc) {
-                        this.connection.disco.addFeature(Strophe.NS.MUC);
+                    if (converse.allow_muc_invitations) {
+                        converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+                    }
+                    if (converse.allow_muc) {
+                        converse.connection.disco.addFeature(Strophe.NS.MUC);
                     }
                 }
             },
@@ -147,6 +157,7 @@
             var converse = this.converse;
             // Configuration values for this plugin
             this.updateSettings({
+                allow_muc_invitations: true,
                 allow_muc: true,
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
                 auto_join_rooms: [], // List of maps {'jid': 'room@example.org', 'nick': 'WizardKing69' },
@@ -252,16 +263,15 @@
                         // Bit of a hack, to make sure that the sidebar's state doesn't change
                         this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
                     }
-                    var $el = this.$('.icon-hide-users');
                     if (!this.model.get('hidden_occupants')) {
                         this.model.save({hidden_occupants: true});
-                        $el.removeClass('icon-hide-users').addClass('icon-show-users');
+                        this.$('.icon-hide-users').removeClass('icon-hide-users').addClass('icon-show-users');
                         this.$('.occupants').addClass('hidden');
                         this.$('.chat-area').addClass('full');
                         this.scrollDown();
                     } else {
                         this.model.save({hidden_occupants: false});
-                        $el.removeClass('icon-show-users').addClass('icon-hide-users');
+                        this.$('.icon-show-users').removeClass('icon-show-users').addClass('icon-hide-users');
                         this.$('.chat-area').removeClass('full');
                         this.$('div.occupants').removeClass('hidden');
                         this.scrollDown();
@@ -958,11 +968,15 @@
                 render: function () {
                     this.$el.html(
                         converse.templates.chatroom_sidebar({
+                            'allow_muc_invitations': converse.allow_muc_invitations,
                             'label_invitation': __('Invite'),
                             'label_occupants': __('Occupants')
                         })
                     );
-                    return this.initInviteWidget();
+                    if (converse.allow_muc_invitations) {
+                        return this.initInviteWidget();
+                    }
+                    return this;
                 },
 
                 onOccupantAdded: function (item) {
@@ -1354,15 +1368,17 @@
             };
             converse.on('chatBoxesFetched', autoJoinRooms);
 
-            var onConnected = function () {
-                converse.connection.addHandler(
-                    function (message) {
-                        converse.onDirectMUCInvitation(message);
-                        return true;
-                    }, 'jabber:x:conference', 'message');
-            };
-            converse.on('connected', onConnected);
-            converse.on('reconnected', onConnected);
+            if (converse.allow_muc_invitations) {
+                var onConnected = function () {
+                    converse.connection.addHandler(
+                        function (message) {
+                            converse.onDirectMUCInvitation(message);
+                            return true;
+                        }, 'jabber:x:conference', 'message');
+                };
+                converse.on('connected', onConnected);
+                converse.on('reconnected', onConnected);
+            }
             /* ------------------------------------------------------------ */
 
 
@@ -1397,18 +1413,14 @@
                         }
                         var _transform = function (jid) {
                             jid = jid.toLowerCase();
-                            var chatroom = converse.chatboxes.get(jid);
-                            if (!chatroom) {
-                                chatroom = converse.chatboxviews.showChat({
-                                    'id': jid,
-                                    'jid': jid,
-                                    'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                                    'nick': nick,
-                                    'type': 'chatroom',
-                                    'box_id': b64_sha1(jid)
-                                });
-                            }
-                            return converse.wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
+                            return converse.wrappedChatBox(converse.chatboxviews.showChat({
+                                'id': jid,
+                                'jid': jid,
+                                'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                                'nick': nick,
+                                'type': 'chatroom',
+                                'box_id': b64_sha1(jid)
+                            }));
                         };
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');

@@ -23,7 +23,7 @@
         utils = converse_api.env.utils,
         __ = utils.__.bind(converse);
 
-    converse_api.plugins.add('minimize', {
+    converse_api.plugins.add('converse-minimize', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -218,7 +218,14 @@
 
                 getShownChats: function () {
                     return this.filter(function (view) {
-                        return (!view.model.get('minimized') && view.$el.is(':visible'));
+                        // The controlbox can take a while to close,
+                        // so we need to check its state. That's why we checked
+                        // the 'closed' state.
+                        return (
+                            !view.model.get('minimized') &&
+                            !view.model.get('closed') &&
+                            view.$el.is(':visible')
+                        );
                     });
                 },
 

@@ -27,7 +27,7 @@
         moment = converse_api.env.moment;
 
 
-    converse_api.plugins.add('controlbox', {
+    converse_api.plugins.add('converse-controlbox', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -668,7 +668,7 @@
 
                 initialize: function () {
                     this.render();
-					this.updateOnlineCount(); 
+                    this.updateOnlineCount();
                     converse.on('initialized', function () {
                         converse.roster.on("add", this.updateOnlineCount, this);
                         converse.roster.on('change', this.updateOnlineCount, this);

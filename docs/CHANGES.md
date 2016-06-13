@@ -1,6 +1,8 @@
 # Changelog
 
 ## 1.0.3 (Unreleased)
+
+- Update the plugin architecture to allow plugins to have optional dependencies [jcbrand]
 - Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` [jcbrand]
 - Also indicate new day for the first day's messages. [jcbrand]
 - Chat bot messages don't appear when they have the same ids as their commands. [jcbrand]
@@ -10,9 +12,10 @@
 - Don't use sound and desktop notifications for OTR messages (when setting up the session) [jcbrand]
 - New config option [default_state](https://conversejs.org/docs/html/configuration.html#default_state) [jcbrand]
 - New API method `converse.rooms.close()`
+- New configuration setting [allow_muc_invites](https://conversejs.org/docs/html/configuration.html#allow-muc-invites) [jcbrand]
 - #553 Add processing hints to OTR messages [jcbrand]
 - #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
-- #656 online users count in minimized chat window on initialization corrected 
+- #656 online users count in minimized chat window on initialization corrected
 
 
 ## 1.0.2 (2016-05-24)

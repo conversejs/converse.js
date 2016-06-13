@@ -59,9 +59,9 @@
                         padding: 0 0.5em 0 0.5em;
                     }
                     &.full {
-                        max-width: 100%;
+                        min-width: 100%;
                         .new-msgs-indicator {
-                            max-width: 100%;
+                            min-width: 100%;
                         }
                     }
                 }

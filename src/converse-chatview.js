@@ -329,18 +329,29 @@
                     return !this.$el.is(':visible');
                 },
 
-                handleTextMessage: function (message) {
-                    this.showMessage(_.clone(message.attributes));
-                    if (message.get('sender') !== 'me') {
+                updateNewMessageIndicators: function (message) {
+                    /* We have two indicators of new messages. The unread messages
+                     * counter, which shows the number of unread messages in
+                     * the document.title, and the "new messages" indicator in
+                     * a chat area, if it's scrolled up so that new messages
+                     * aren't visible.
+                     *
+                     * In both cases we ignore MAM messages.
+                     */
+                    if (!message.get('archive_id')) {
+                        if (this.model.get('scrolled', true)) {
+                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                        }
                         if (converse.windowState === 'blur' || this.model.get('scrolled', true)) {
                             converse.incrementMsgCounter();
                         }
-                        if (!message.get('archive_id') && this.model.get('scrolled', true)) {
-                            // Show "new messages" indicator if we're scrolled
-                            // up, but only if the new message is not a MAM
-                            // archived one.
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
-                        }
+                    }
+                },
+
+                handleTextMessage: function (message) {
+                    this.showMessage(_.clone(message.attributes));
+                    if (message.get('sender') !== 'me') {
+                        this.updateNewMessageIndicators(message);
                     } else {
                         // We remove the "scrolled" flag so that the chat area
                         // gets scrolled down. We always want to scroll down
@@ -696,9 +707,6 @@
                      * from what the user is reading when new messages are
                      * received.
                      */
-                    // TODO: need to indicate when new messages are received
-                    // and the user is scrolled away...
-                    // Should probably take a look at incrementMsgCounter
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {

@@ -117,7 +117,7 @@
                 if (ignore_blur) {
                     return enabled;
                 } else {
-                    return enabled && converse.windowState === 'blur';
+                    return enabled && converse.windowState === 'hidden';
                 }
             };
 

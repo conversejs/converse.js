@@ -570,13 +570,54 @@
             }
         };
 
+        var saveWindowState = function (ev, hidden) {
+            var state;
+            var v = "visible", h = "hidden",
+                event_map = {
+                    'focus': v,
+                    'focusin': v,
+                    'pageshow': v,
+                    'blur': h,
+                    'focusout': h,
+                    'pagehide': h
+                };
+            ev = ev || window.event;
+            if (ev.type in event_map) {
+                state = event_map[ev.type];
+            } else {
+                state = document[hidden] ? "hidden" : "visible";
+            }
+            if (state  === 'visible') {
+                converse.clearMsgCounter();
+            }
+            converse.windowState = state;
+
+        };
+
         this.registerGlobalEventHandlers = function () {
-            $(window).on("blur focus", function (ev) {
-                if ((converse.windowState !== ev.type) && (ev.type === 'focus')) {
-                    converse.clearMsgCounter();
-                }
-                converse.windowState = ev.type;
-            });
+            // Taken from:
+            // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
+            var hidden = "hidden";
+            // Standards:
+            if (hidden in document) {
+                document.addEventListener("visibilitychange", _.partial(saveWindowState, _, hidden));
+            } else if ((hidden = "mozHidden") in document) {
+                document.addEventListener("mozvisibilitychange", _.partial(saveWindowState, _, hidden));
+            } else if ((hidden = "webkitHidden") in document) {
+                document.addEventListener("webkitvisibilitychange", _.partial(saveWindowState, _, hidden));
+            } else if ((hidden = "msHidden") in document) {
+                document.addEventListener("msvisibilitychange", _.partial(saveWindowState, _, hidden));
+            } else if ("onfocusin" in document) {
+                // IE 9 and lower:
+                document.onfocusin = document.onfocusout = _.partial(saveWindowState, _, hidden);
+            } else {
+                // All others:
+                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(saveWindowState, _, hidden);
+            }
+            // set the initial state (but only if browser supports the Page Visibility API)
+            if( document[hidden] !== undefined ) {
+                _.partial(saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
+            }
         };
 
         this.afterReconnected = function () {

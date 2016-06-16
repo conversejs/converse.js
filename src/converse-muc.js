@@ -214,9 +214,9 @@
                 },
 
                 insertIntoDOM: function () {
-                    var $cbox = converse.chatboxviews.get("controlbox").$el;
-                    if ($cbox.length) {
-                        this.$el.insertAfter($cbox);
+                    var view = converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        this.$el.insertAfter(view.$el);
                     } else {
                         $('#conversejs').prepend(this.$el);
                     }

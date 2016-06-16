@@ -1381,6 +1381,18 @@
             }
             /* ------------------------------------------------------------ */
 
+            var _transform = function (jid, nick, fetcher) {
+                jid = jid.toLowerCase();
+                return converse.wrappedChatBox(fetcher({
+                    'id': jid,
+                    'jid': jid,
+                    'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                    'nick': nick,
+                    'type': 'chatroom',
+                    'box_id': b64_sha1(jid)
+                }));
+            };
+
 
             /* We extend the default converse.js API to add methods specific to MUC
              * chat rooms.
@@ -1405,37 +1417,31 @@
                         }
                     },
                     'open': function (jids, nick) {
+                        var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
                         if (!nick) {
                             nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof nick !== "string") {
                             throw new TypeError('rooms.open: invalid nick, must be string');
                         }
-                        var _transform = function (jid) {
-                            jid = jid.toLowerCase();
-                            return converse.wrappedChatBox(converse.chatboxviews.showChat({
-                                'id': jid,
-                                'jid': jid,
-                                'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                                'nick': nick,
-                                'type': 'chatroom',
-                                'box_id': b64_sha1(jid)
-                            }));
-                        };
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (typeof jids === "string") {
-                            return _transform(jids);
+                            return _transform(jids, nick, fetcher);
                         }
-                        return _.map(jids, _transform);
+                        return _.map(jids, _.partial(_transform, _, nick, fetcher));
                     },
-                    'get': function (jids) {
+                    'get': function (jids, nick) {
+                        var fetcher = converse.chatboxviews.getChatBox.bind(converse.chatboxviews);
+                        if (!nick) {
+                            nick = Strophe.getNodeFromJid(converse.bare_jid);
+                        }
                         if (typeof jids === "undefined") {
                             throw new TypeError("rooms.get: You need to provide at least one JID");
                         } else if (typeof jids === "string") {
-                            return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
+                            return _transform(jids, nick, fetcher);
                         }
-                        return _.map(jids, _.partial(converse.wrappedChatBox, _.bind(converse.chatboxes.getChatBox, converse.chatboxes, _, true)));
+                        return _.map(jids, _.partial(_transform, _, nick, fetcher));
                     }
                 }
             });

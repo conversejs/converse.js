@@ -912,6 +912,8 @@ Once converse.js has been initialized.
 
 ``converse.listen.on('initialized', function (event) { ... });``
 
+See also `pluginsInitialized`_.
+
 messageSend
 ~~~~~~~~~~~
 
@@ -925,6 +927,17 @@ noResumeableSession
 When keepalive=true but there aren't any stored prebind tokens.
 
 ``converse.listen.on('noResumeableSession', function (event) { ... });``
+
+pluginsInitialized
+~~~~~~~~~~~~~~~~~~
+
+Once all plugins have been initialized. This is a useful event if you want to
+register event handlers but would like your own handlers to be overridable by
+plugins. In that case, you need to first wait until all plugins have been
+initialized, so that their overrides are active. One example where this is used
+is in [converse-notifications.js](https://github.com/jcbrand/converse.js/blob/master/src/converse-notification.js).
+
+``converse.listen.on('pluginsInitialized', function (event) { ... });``
 
 reconnected
 ~~~~~~~~~~~

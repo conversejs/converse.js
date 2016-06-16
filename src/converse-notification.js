@@ -243,11 +243,16 @@
                 }
             };
 
-            converse.on('contactRequest',  converse.handleContactRequestNotification);
-            converse.on('contactStatusChanged',  converse.handleChatStateNotification);
-            converse.on('message',  converse.handleMessageNotification);
-            converse.on('feedback', converse.handleFeedback);
-            converse.on('connected', converse.requestPermission);
+            converse.on('pluginsInitialized', function () {
+                // We only register event handlers after all plugins are
+                // registered, because other plugins might override some of our
+                // handlers.
+                converse.on('contactRequest',  converse.handleContactRequestNotification);
+                converse.on('contactStatusChanged',  converse.handleChatStateNotification);
+                converse.on('message',  converse.handleMessageNotification);
+                converse.on('feedback', converse.handleFeedback);
+                converse.on('connected', converse.requestPermission);
+            });
         }
     });
 }));

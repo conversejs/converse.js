@@ -1786,6 +1786,7 @@
             'updateSettings': updateSettings,
             'converse': converse
         });
+        converse.emit('pluginsInitialized');
         converse._initialize();
         converse.registerGlobalEventHandlers();
         return init_deferred.promise();

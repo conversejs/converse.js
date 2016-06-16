@@ -57,14 +57,15 @@
                 var notify_all = converse.notify_all_room_messages,
                     jid = $message.attr('from'),
                     resource = Strophe.getResourceFromJid(jid),
+                    room_jid = Strophe.getBareJidFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '';
                 if (sender === '' || $message.find('delay').length > 0) {
                     return false;
                 }
-                var room = converse.chatboxes.get(Strophe.getBareJidFromJid(jid));
+                var room = converse.chatboxes.get(room_jid);
                 var body = $message.children('body').text();
                 var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test(body);
-                notify_all = notify_all === true || (_.isArray(notify_all) && _.contains(notify_all, jid));
+                notify_all = notify_all === true || (_.isArray(notify_all) && _.contains(notify_all, room_jid));
                 if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;
                 }

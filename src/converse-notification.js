@@ -18,8 +18,6 @@
     var __ = utils.__.bind(converse);
     var ___ = utils.___;
 
-    var supports_html5_notification = "Notification" in window;
-
 
     converse_api.plugins.add('converse-notification', {
 
@@ -28,8 +26,10 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+            converse.supports_html5_notification = "Notification" in window;
 
             this.updateSettings({
+                notify_all_room_messages: false,
                 show_desktop_notifications: true,
                 chatstate_notification_blacklist: [],
                 // ^ a list of JIDs to ignore concerning chat state notifications
@@ -54,7 +54,8 @@
             converse.shouldNotifyOfGroupMessage = function ($message) {
                 /* Is this a group message worthy of notification?
                  */
-                var jid = $message.attr('from'),
+                var notify_all = converse.notify_all_room_messages,
+                    jid = $message.attr('from'),
                     resource = Strophe.getResourceFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '';
                 if (sender === '' || $message.find('delay').length > 0) {
@@ -62,7 +63,9 @@
                 }
                 var room = converse.chatboxes.get(Strophe.getBareJidFromJid(jid));
                 var body = $message.children('body').text();
-                if (sender === room.get('nick') || !(new RegExp("\\b"+room.get('nick')+"\\b")).test(body)) {
+                var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test(body);
+                notify_all = notify_all === true || (_.isArray(notify_all) && _.contains(notify_all, jid));
+                if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;
                 }
                 return true;
@@ -107,7 +110,7 @@
             };
 
             converse.areDesktopNotificationsEnabled = function (ignore_blur) {
-                var enabled = supports_html5_notification &&
+                var enabled = converse.supports_html5_notification &&
                     converse.show_desktop_notifications &&
                     Notification.permission === "granted";
                 if (ignore_blur) {
@@ -233,7 +236,7 @@
             };
 
             converse.requestPermission = function (evt) {
-                if (supports_html5_notification &&
+                if (converse.supports_html5_notification &&
                     ! _.contains(['denied', 'granted'], Notification.permission)) {
                     // Ask user to enable HTML5 notifications
                     Notification.requestPermission();

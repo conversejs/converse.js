@@ -637,6 +637,18 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
+notify_all_room_messages
+------------------------
+
+* Default: ``false``
+
+By default, sound and desktop notifications will only be made when you are
+mentioned in a room. If you set this setting to `true`, then you will be
+notified of all messages received in a room.
+
+You can also pass an array of room JIDs to this option, to only apply it to
+certain rooms.
+
 notification_icon
 -----------------
 

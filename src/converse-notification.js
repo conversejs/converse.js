@@ -63,8 +63,11 @@
                     return false;
                 }
                 var room = converse.chatboxes.get(room_jid);
-                var body = $message.children('body').text();
-                var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test(body);
+                var $body = $message.children('body');
+                if (!$body.length) {
+                    return false;
+                }
+                var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test($body.text());
                 notify_all = notify_all === true || (_.isArray(notify_all) && _.contains(notify_all, room_jid));
                 if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;

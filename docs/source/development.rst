@@ -651,8 +651,19 @@ get
 ~~~
 
 Returns an object representing a multi user chat box (room).
+It takes 3 parameters:
 
-Similar to chats.get API
+* the room JID
+* the user's nickname (if not specified, the node part of the user's JID will be used).
+* boolean, indicating whether the room should be created if not found (default: `false`)
+
+The last two parameters are optional.
+
+.. code-block:: javascript
+
+    var nick = 'dread-pirate-roberts';
+    var create_if_not_found = true;
+    converse.rooms.open('group@muc.example.com', nick, create_if_not_found)
 
 open
 ~~~~

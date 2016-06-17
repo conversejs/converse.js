@@ -1431,8 +1431,8 @@
                         }
                         return _.map(jids, _.partial(_transform, _, nick, fetcher));
                     },
-                    'get': function (jids, nick) {
-                        var fetcher = converse.chatboxviews.getChatBox.bind(converse.chatboxviews);
+                    'get': function (jids, nick, create) {
+                        var fetcher = _.partial(converse.chatboxviews.getChatBox.bind(converse.chatboxviews), _, create);
                         if (!nick) {
                             nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }

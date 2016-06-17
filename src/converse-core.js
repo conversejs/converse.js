@@ -1437,9 +1437,9 @@
                 return this.model.chatBoxMayBeShown(chatbox);
             },
 
-            getChatBox: function (attrs) {
+            getChatBox: function (attrs, create) {
                 var chatbox  = this.model.get(attrs.jid);
-                if (!chatbox) {
+                if (!chatbox && create) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
                             converse.log(response.responseText);
@@ -1453,7 +1453,7 @@
                 /* Find the chat box and show it (if it may be shown).
                  * If it doesn't exist, create it.
                  */
-                var chatbox = this.getChatBox(attrs);
+                var chatbox = this.getChatBox(attrs, true);
                 if (this.chatBoxMayBeShown(chatbox)) {
                     chatbox.trigger('show', true);
                 }

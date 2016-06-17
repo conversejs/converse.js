@@ -342,7 +342,7 @@
                         if (this.model.get('scrolled', true)) {
                             this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
-                        if (converse.windowState === 'blur' || this.model.get('scrolled', true)) {
+                        if (converse.windowState === 'hidden' || this.model.get('scrolled', true)) {
                             converse.incrementMsgCounter();
                         }
                     }

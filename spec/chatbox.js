@@ -1276,13 +1276,20 @@
         describe("A Message Counter", function () {
             beforeEach(function () {
                 converse.clearMsgCounter();
-            }.bind(converse));
+                test_utils.closeAllChatBoxes();
+                test_utils.removeControlBox();
+                converse.roster.browserStorage._clear();
+                test_utils.initConverse();
+                test_utils.createContacts('current');
+                test_utils.openControlBox();
+                test_utils.openContactsPanel();
+            });
 
             it("is incremented when the message is received and the window is not focused", function () {
                 spyOn(converse, 'emit');
                 expect(this.msg_counter).toBe(0);
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
-                $(window).trigger('blur');
+                var previous_state = converse.windowState;
                 var message = 'This message will increment the message counter';
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({
@@ -1292,17 +1299,20 @@
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                converse.windowState = 'hidden';
                 this.chatboxes.onMessage(msg);
                 expect(converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(this.msg_counter).toBe(1);
                 expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                converse.windowSate = previous_state;
             }.bind(converse));
 
             it("is cleared when the window is focused", function () {
+                converse.windowState = 'hidden';
                 spyOn(converse, 'clearMsgCounter').andCallThrough();
                 runs(function () {
-                    $(window).triggerHandler('blur');
-                    $(window).triggerHandler('focus');
+                    converse.saveWindowState(null, 'focus');
+                    converse.saveWindowState(null, 'blur');
                 });
                 waits(50);
                 runs(function () {
@@ -1313,7 +1323,7 @@
             it("is not incremented when the message is received and the window is focused", function () {
                 expect(this.msg_counter).toBe(0);
                 spyOn(converse, 'incrementMsgCounter').andCallThrough();
-                $(window).trigger('focus');
+                converse.saveWindowState(null, 'focus');
                 var message = 'This message will not increment the message counter';
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({

@@ -110,11 +110,11 @@
                 }
             };
 
-            converse.areDesktopNotificationsEnabled = function (ignore_blur) {
+            converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
                 var enabled = converse.supports_html5_notification &&
                     converse.show_desktop_notifications &&
                     Notification.permission === "granted";
-                if (ignore_blur) {
+                if (ignore_hidden) {
                     return enabled;
                 } else {
                     return enabled && converse.windowState === 'hidden';

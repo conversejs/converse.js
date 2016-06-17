@@ -515,8 +515,6 @@
                 } else {
                     document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + this.msg_counter + ") ");
                 }
-                window.blur();
-                window.focus();
             } else if (document.title.search(/^Messages \(\d+\) /) !== -1) {
                 document.title = document.title.replace(/^Messages \(\d+\) /, "");
             }
@@ -570,7 +568,10 @@
             }
         };
 
-        var saveWindowState = function (ev, hidden) {
+        this.saveWindowState = function (ev, hidden) {
+            // XXX: eventually we should be able to just use
+            // document.visibilityState (when we drop support for older
+            // browsers).
             var state;
             var v = "visible", h = "hidden",
                 event_map = {
@@ -581,7 +582,7 @@
                     'focusout': h,
                     'pagehide': h
                 };
-            ev = ev || window.event;
+            ev = ev || document.createEvent('Events');
             if (ev.type in event_map) {
                 state = event_map[ev.type];
             } else {
@@ -600,23 +601,23 @@
             var hidden = "hidden";
             // Standards:
             if (hidden in document) {
-                document.addEventListener("visibilitychange", _.partial(saveWindowState, _, hidden));
+                document.addEventListener("visibilitychange", _.partial(converse.saveWindowState, _, hidden));
             } else if ((hidden = "mozHidden") in document) {
-                document.addEventListener("mozvisibilitychange", _.partial(saveWindowState, _, hidden));
+                document.addEventListener("mozvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
             } else if ((hidden = "webkitHidden") in document) {
-                document.addEventListener("webkitvisibilitychange", _.partial(saveWindowState, _, hidden));
+                document.addEventListener("webkitvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
             } else if ((hidden = "msHidden") in document) {
-                document.addEventListener("msvisibilitychange", _.partial(saveWindowState, _, hidden));
+                document.addEventListener("msvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
             } else if ("onfocusin" in document) {
                 // IE 9 and lower:
-                document.onfocusin = document.onfocusout = _.partial(saveWindowState, _, hidden);
+                document.onfocusin = document.onfocusout = _.partial(converse.saveWindowState, _, hidden);
             } else {
                 // All others:
-                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(saveWindowState, _, hidden);
+                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(converse.saveWindowState, _, hidden);
             }
             // set the initial state (but only if browser supports the Page Visibility API)
             if( document[hidden] !== undefined ) {
-                _.partial(saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
+                _.partial(converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
             }
         };
 

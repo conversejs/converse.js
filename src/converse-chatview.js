@@ -659,10 +659,8 @@
                 },
 
                 hide: function () {
-                    if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
-                        this.$el.hide();
-                        utils.refreshWebkit();
-                    }
+                    this.$el.hide();
+                    utils.refreshWebkit();
                     return this;
                 },
 

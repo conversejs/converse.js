@@ -1,7 +1,7 @@
 {
   "name": "converse.js",
   "description": "Web-based XMPP/Jabber chat client written in javascript",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MPL-2.0",
   "devDependencies": {
     "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
@@ -25,7 +25,7 @@
     "bootstrap": "~3.2.0",
     "fontawesome": "~4.1.0",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js",
-    "strophejs": "1.2.5",
+    "strophejs": "1.2.7",
     "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#amd",
     "bourbon": "~4.2.6"
   },

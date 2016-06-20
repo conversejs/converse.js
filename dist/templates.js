@@ -93,7 +93,9 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="chat-area">\n    <div class="chat-content"></div>\n    <form class="sendXMPPMessage" action="" method="post">\n        ';
+__p += '<div class="chat-area">\n    <div class="chat-content"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
+((__t = ( unread_msgs )) == null ? '' : __t) +
+' ▼</div>\n    <form class="sendXMPPMessage" action="" method="post">\n        ';
  if (show_toolbar) { ;
 __p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
  } ;
@@ -124,7 +126,9 @@ __p += '\n                    ' +
  if (url) { ;
 __p += '\n                </a>\n            ';
  } ;
-__p += '\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        ';
+__p += '\n        </div>\n        <p class="user-custom-message"><p/>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        <div class="new-msgs-indicator hidden">▼ ' +
+((__t = ( unread_msgs )) == null ? '' : __t) +
+' ▼</div>\n        ';
  if (show_textarea) { ;
 __p += '\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
  if (show_toolbar) { ;
@@ -192,11 +196,16 @@ return __p
 
 this["templates"]["chatroom_sidebar"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<!-- <div class="occupants"> -->\n<form class="pure-form room-invite">\n    <input class="invited-contact" placeholder="' +
+__p += '<!-- <div class="occupants"> -->\n';
+ if (allow_muc_invitations) { ;
+__p += '\n<form class="pure-form room-invite">\n    <input class="invited-contact" placeholder="' +
 ((__t = (label_invitation)) == null ? '' : __t) +
-'" type="text"/>\n</form>\n<p class="occupants-heading">' +
+'" type="text"/>\n</form>\n';
+ } ;
+__p += '\n<p class="occupants-heading">' +
 ((__t = (label_occupants)) == null ? '' : __t) +
 ':</p>\n<ul class="occupant-list"></ul>\n<!-- </div> -->\n';
 

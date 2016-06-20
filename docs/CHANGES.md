@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4 (Unreleased)
+
+- Restrict occupants sidebar to 30% chatroom width. [jcbrand]
+
 ## 1.0.3 (2016-06-20)
 
 - Update the plugin architecture to allow plugins to have optional dependencies [jcbrand]
@@ -16,7 +20,7 @@
 - Add new event [pluginsInitialized](https://conversejs.org/docs/html/development.html#pluginsInitialized)
 - #553 Add processing hints to OTR messages [jcbrand]
 - #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
-- #656 online users count in minimized chat window on initialization corrected
+- #656 online users count in minimized chat window on initialization corrected [amanzur]
 
 ## 1.0.2 (2016-05-24)
 

@@ -1992,10 +1992,14 @@
       background-color: white;
       border-top: 0;
       width: 100%; }
+      #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
+        font-weight: bold; }
+      #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
+        color: #1A9707; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         word-wrap: break-word;
         height: 100%;
-        max-width: 70%;
+        width: 70%;
         float: left;
         min-width: 200px; }
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .new-msgs-indicator {
@@ -2007,17 +2011,14 @@
           min-width: 100%; }
           #conversejs .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator {
             min-width: 100%; }
-      #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
-        font-weight: bold; }
-      #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
-        color: #1A9707; }
       #conversejs .chatroom .box-flyout .chatroom-body .occupants {
+        float: right;
         vertical-align: top;
         background-color: white;
         overflow: hidden;
         border-left: 1px solid #818479;
         border-bottom-right-radius: 4px;
-        min-width: 30%;
+        width: 30%;
         height: 100%; }
         #conversejs .chatroom .box-flyout .chatroom-body .occupants.hidden {
           display: none; }

@@ -43,11 +43,17 @@
                 background-color: white;
                 border-top: 0;
                 width: 100%;
+                .mentioned {
+                    font-weight: bold;
+                }
+                .chat-msg-room {
+                    color: $message-them-color;
+                }
 
                 .chat-area {
                     word-wrap: break-word; 
                     height: 100%;
-                    max-width: 70%;
+                    width: 70%;
                     float: left;
                     min-width: $chat-width;
                     .new-msgs-indicator {
@@ -65,19 +71,14 @@
                         }
                     }
                 }
-                .mentioned {
-                    font-weight: bold;
-                }
-                .chat-msg-room {
-                    color: $message-them-color;
-                }
                 .occupants {
+                    float: right;
                     vertical-align: top;
                     background-color: white;
                     overflow: hidden;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
-                    min-width: 30%;
+                    width: 30%;
                     height: 100%;
                     &.hidden {
                         display: none;

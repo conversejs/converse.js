@@ -33,9 +33,9 @@
     var HEADER_REQUESTING_CONTACTS = __('Contact requests');
     var HEADER_UNGROUPED = __('Ungrouped');
     var HEADER_WEIGHTS = {};
-    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
-    HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
-    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
+    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 0;
+    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 1;
+    HEADER_WEIGHTS[HEADER_UNGROUPED]           = 2;
     HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
     converse_api.plugins.add('rosterview', {
@@ -69,9 +69,9 @@
                     } else if (a_is_special && b_is_special) {
                         return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
                     } else if (!a_is_special && b_is_special) {
-                        return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
+                        return (b === HEADER_REQUESTING_CONTACTS) ? 1 : -1;
                     } else if (a_is_special && !b_is_special) {
-                        return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
+                        return (a === HEADER_REQUESTING_CONTACTS) ? -1 : 1;
                     }
                 }
             }

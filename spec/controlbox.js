@@ -320,12 +320,12 @@
                     // requesting and pending contacts are last.
                     var group_titles = $.map(this.rosterview.$el.find('dt'), function (o) { return $(o).text().trim(); });
                     expect(group_titles).toEqual([
+                        "Contact requests",
                         "colleagues",
                         "Family",
                         "friends & acquaintences",
                         "ænemies",
                         "Ungrouped",
-                        "Contact requests",
                         "Pending contacts"
                     ]);
                     // Check that usernames appear alphabetically per group

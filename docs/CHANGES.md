@@ -3,6 +3,7 @@
 ## 1.0.4 (Unreleased)
 
 - Restrict occupants sidebar to 30% chatroom width. [jcbrand]
+- Made requesting contacts more visible, by placing them at the top of the roster. [jcbrand]
 
 ## 1.0.3 (2016-06-20)
 
@@ -15,9 +16,9 @@
 - Add processing hints to chat state notifications [jcbrand]
 - Don't use sound and desktop notifications for OTR messages (when setting up the session) [jcbrand]
 - New config option [default_state](https://conversejs.org/docs/html/configuration.html#default_state) [jcbrand]
-- New API method `converse.rooms.close()`
+- New API method `converse.rooms.close()` [jcbrand]
 - New configuration setting [allow_muc_invites](https://conversejs.org/docs/html/configuration.html#allow-muc-invites) [jcbrand]
-- Add new event [pluginsInitialized](https://conversejs.org/docs/html/development.html#pluginsInitialized)
+- Add new event [pluginsInitialized](https://conversejs.org/docs/html/development.html#pluginsInitialized) [jcbrand]
 - #553 Add processing hints to OTR messages [jcbrand]
 - #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
 - #656 online users count in minimized chat window on initialization corrected [amanzur]

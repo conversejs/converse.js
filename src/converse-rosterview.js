@@ -18,6 +18,25 @@
         _ = converse_api.env._,
         __ = utils.__.bind(converse);
 
+    var STATUSES = {
+        'dnd': __('This contact is busy'),
+        'online': __('This contact is online'),
+        'offline': __('This contact is offline'),
+        'unavailable': __('This contact is unavailable'),
+        'xa': __('This contact is away for an extended period'),
+        'away': __('This contact is away')
+    };
+    var LABEL_CONTACTS = __('Contacts');
+    var LABEL_GROUPS = __('Groups');
+    var HEADER_CURRENT_CONTACTS =  __('My contacts');
+    var HEADER_PENDING_CONTACTS = __('Pending contacts');
+    var HEADER_REQUESTING_CONTACTS = __('Contact requests');
+    var HEADER_UNGROUPED = __('Ungrouped');
+    var HEADER_WEIGHTS = {};
+    HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
+    HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
+    HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
+    HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
     converse_api.plugins.add('rosterview', {
 
@@ -32,6 +51,29 @@
                 this.rosterview.registerRosterXHandler();
                 this.rosterview.registerPresenceHandler();
                 this._super.afterReconnected.apply(this, arguments);
+            },
+
+            RosterGroups: {
+                comparator: function (a, b) {
+                    /* Groups are sorted alphabetically, ignoring case.
+                     * However, Ungrouped, Requesting Contacts and Pending Contacts
+                     * appear last and in that order.
+                     */
+                    a = a.get('name');
+                    b = b.get('name');
+                    var special_groups = _.keys(HEADER_WEIGHTS);
+                    var a_is_special = _.contains(special_groups, a);
+                    var b_is_special = _.contains(special_groups, b);
+                    if (!a_is_special && !b_is_special ) {
+                        return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+                    } else if (a_is_special && b_is_special) {
+                        return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                    } else if (!a_is_special && b_is_special) {
+                        return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
+                    } else if (a_is_special && !b_is_special) {
+                        return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
+                    }
+                }
             }
         },
 
@@ -45,27 +87,6 @@
                 allow_contact_removal: true,
                 show_toolbar: true,
             });
-
-            var STATUSES = {
-                'dnd': __('This contact is busy'),
-                'online': __('This contact is online'),
-                'offline': __('This contact is offline'),
-                'unavailable': __('This contact is unavailable'),
-                'xa': __('This contact is away for an extended period'),
-                'away': __('This contact is away')
-            };
-            var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
-            var LABEL_CONTACTS = __('Contacts');
-            var LABEL_GROUPS = __('Groups');
-            var HEADER_CURRENT_CONTACTS =  __('My contacts');
-            var HEADER_PENDING_CONTACTS = __('Pending contacts');
-            var HEADER_REQUESTING_CONTACTS = __('Contact requests');
-            var HEADER_UNGROUPED = __('Ungrouped');
-            var HEADER_WEIGHTS = {};
-            HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
-            HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
-            HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
-            HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
             converse.RosterFilter = Backbone.Model.extend({
                 initialize: function () {
@@ -692,18 +713,6 @@
             });
 
 
-            converse.RosterGroup = Backbone.Model.extend({
-                initialize: function (attributes, options) {
-                    this.set(_.extend({
-                        description: DESC_GROUP_TOGGLE,
-                        state: converse.OPENED
-                    }, attributes));
-                    // Collection of contacts belonging to this group.
-                    this.contacts = new converse.RosterContacts();
-                }
-            });
-
-
             converse.RosterGroupView = Backbone.Overview.extend({
                 tagName: 'dt',
                 className: 'roster-group',
@@ -876,30 +885,6 @@
                     this.remove(contact.get('id'));
                     if (this.model.contacts.length === 0) {
                         this.$el.hide();
-                    }
-                }
-            });
-
-
-            converse.RosterGroups = Backbone.Collection.extend({
-                model: converse.RosterGroup,
-                comparator: function (a, b) {
-                    /* Groups are sorted alphabetically, ignoring case.
-                     * However, Ungrouped, Requesting Contacts and Pending Contacts
-                     * appear last and in that order. */
-                    a = a.get('name');
-                    b = b.get('name');
-                    var special_groups = _.keys(HEADER_WEIGHTS);
-                    var a_is_special = _.contains(special_groups, a);
-                    var b_is_special = _.contains(special_groups, b);
-                    if (!a_is_special && !b_is_special ) {
-                        return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
-                    } else if (a_is_special && b_is_special) {
-                        return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
-                    } else if (!a_is_special && b_is_special) {
-                        return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
-                    } else if (a_is_special && !b_is_special) {
-                        return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
                     }
                 }
             });

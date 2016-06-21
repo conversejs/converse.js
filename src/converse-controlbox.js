@@ -10,7 +10,7 @@
     define("converse-controlbox", [
             "converse-core",
             "converse-api",
-            // TODO: remove the next two dependencies
+            // TODO: The next two dependencies can be made optional
             "converse-rosterview",
             "converse-chatview"
     ], factory);

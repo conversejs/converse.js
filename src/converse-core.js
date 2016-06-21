@@ -250,6 +250,7 @@
         // Translation machinery
         // ---------------------
         var __ = utils.__.bind(this);
+        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
@@ -1175,6 +1176,23 @@
                     contact.save({'chat_status': chat_status});
                 }
             }
+        });
+
+
+        this.RosterGroup = Backbone.Model.extend({
+            initialize: function (attributes, options) {
+                this.set(_.extend({
+                    description: DESC_GROUP_TOGGLE,
+                    state: converse.OPENED
+                }, attributes));
+                // Collection of contacts belonging to this group.
+                this.contacts = new converse.RosterContacts();
+            }
+        });
+
+
+        this.RosterGroups = Backbone.Collection.extend({
+            model: converse.RosterGroup,
         });
 
 

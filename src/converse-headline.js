@@ -85,7 +85,7 @@
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
-                    this.render().fetchMessages().insertIntoPage().hide();
+                    this.render().fetchMessages().insertIntoDOM().hide();
                     converse.emit('chatBoxInitialized', this);
                 },
 

@@ -152,7 +152,7 @@
 
 
             ChatBoxView: {
-                insertIntoPage: function () {
+                insertIntoDOM: function () {
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
                     return this;
                 }

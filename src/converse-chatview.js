@@ -83,7 +83,7 @@
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoPage().hide();
+                    this.render().fetchMessages().insertIntoDOM().hide();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
@@ -127,7 +127,7 @@
                     return this;
                 },
 
-                insertIntoPage: function () {
+                insertIntoDOM: function () {
                     /* This method gets overridden in src/converse-controlbox.js if
                      * the controlbox plugin is active.
                      */

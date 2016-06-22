@@ -4,6 +4,9 @@
 
 - Restrict occupants sidebar to 30% chatroom width. [jcbrand]
 - Made requesting contacts more visible, by placing them at the top of the roster. [jcbrand]
+- `insertIntoPage` method of `ChatBoxView` has been renamed to `insertIntoDOM`,
+  to make it the same as the method of `ChatRoomView`. [jcbrand]
+
 
 ## 1.0.3 (2016-06-20)
 

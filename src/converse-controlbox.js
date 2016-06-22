@@ -18,7 +18,6 @@
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
-        b64_sha1 = converse_api.env.b64_sha1,
         utils = converse_api.env.utils;
     // Other necessary globals
     var $ = converse_api.env.jQuery,
@@ -246,10 +245,7 @@
                     /* We initialize the roster, which will appear inside the
                      * Contacts Panel.
                      */
-                    var rostergroups = new converse.RosterGroups();
-                    rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.roster.groups'+converse.bare_jid));
-                    converse.rosterview = new converse.RosterView({model: rostergroups});
+                    converse.rosterview = new converse.RosterView({model: converse.rostergroups});
                     this.contactspanel.$el.append(converse.rosterview.$el);
                     converse.rosterview.render().fetch().update();
                     return this;

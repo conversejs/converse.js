@@ -49,7 +49,6 @@
 
             afterReconnected: function () {
                 this.rosterview.registerRosterXHandler();
-                this.rosterview.registerPresenceHandler();
                 this._super.afterReconnected.apply(this, arguments);
             },
 
@@ -223,7 +222,6 @@
                 initialize: function () {
                     this.roster_handler_ref = this.registerRosterHandler();
                     this.rosterx_handler_ref = this.registerRosterXHandler();
-                    this.presence_ref = this.registerPresenceHandler();
                     converse.roster.on("add", this.onContactAdd, this);
                     converse.roster.on('change', this.onContactChange, this);
                     converse.roster.on("destroy", this.update, this);
@@ -271,8 +269,6 @@
                     delete this.roster_handler_ref;
                     converse.connection.deleteHandler(this.rosterx_handler_ref);
                     delete this.rosterx_handler_ref;
-                    converse.connection.deleteHandler(this.presence_ref);
-                    delete this.presence_ref;
                 },
 
                 update: _.debounce(function () {
@@ -391,13 +387,6 @@
                     );
                 },
 
-                registerPresenceHandler: function () {
-                    converse.connection.addHandler(
-                        function (presence) {
-                            converse.roster.presenceHandler(presence);
-                            return true;
-                        }.bind(this), null, 'presence', null);
-                },
 
                 onGroupAdd: function (group) {
                     var view = new converse.RosterGroupView({model: group});

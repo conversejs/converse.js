@@ -623,6 +623,7 @@
         };
 
         this.afterReconnected = function () {
+            this.registerPresenceHandler();
             this.chatboxes.registerMessageHandler();
             this.xmppstatus.sendPresence();
             this.giveFeedback(__('Contacts'));
@@ -664,13 +665,36 @@
             this.connection.send(carbons_iq);
         };
 
-
-        this.onStatusInitialized = function () {
-            this.registerIntervalHandler();
+        this.initRoster = function () {
             this.roster = new this.RosterContacts();
             this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
                 b64_sha1('converse.contacts-'+this.bare_jid));
+            this.rostergroups = new converse.RosterGroups();
+            this.rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                b64_sha1('converse.roster.groups'+converse.bare_jid));
+        };
+
+        this.unregisterPresenceHandler = function () {
+            if (typeof this.presence_ref !== 'undefined') {
+                this.connection.deleteHandler(this.presence_ref);
+                delete this.presence_ref;
+            }
+        };
+
+        this.registerPresenceHandler = function () {
+            this.unregisterPresenceHandler();
+            this.presence_ref = converse.connection.addHandler(
+                function (presence) {
+                    converse.roster.presenceHandler(presence);
+                    return true;
+                }, null, 'presence', null);
+        };
+
+        this.onStatusInitialized = function () {
+            this.registerIntervalHandler();
+            this.initRoster();
             this.chatboxes.onConnected();
+            this.registerPresenceHandler();
             this.giveFeedback(__('Contacts'));
             if (typeof this.callback === 'function') {
                 // XXX: Deprecate in favor of init_deferred
@@ -1806,6 +1830,7 @@
             /* Remove those views which are only allowed with a valid
              * connection.
              */
+            this.unregisterPresenceHandler();
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }

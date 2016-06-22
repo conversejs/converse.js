@@ -1255,16 +1255,22 @@
 
             getMessageAttributes: function ($message, $delay, original_stanza) {
                 $delay = $delay || $message.find('delay');
-                var body = $message.children('body').text(),
-                    delayed = $delay.length > 0,
+                var type = $message.attr('type'),
+                    body, stamp, time, sender, from;
+
+                if (type === 'error') {
+                    body = $message.find('error').children('text').text();
+                } else {
+                    body = $message.children('body').text();
+                }
+                var delayed = $delay.length > 0,
                     fullname = this.get('fullname'),
-                    is_groupchat = $message.attr('type') === 'groupchat',
+                    is_groupchat = type === 'groupchat',
                     chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
                         $message.find(converse.PAUSED).length && converse.PAUSED ||
                         $message.find(converse.INACTIVE).length && converse.INACTIVE ||
                         $message.find(converse.ACTIVE).length && converse.ACTIVE ||
-                        $message.find(converse.GONE).length && converse.GONE,
-                    stamp, time, sender, from;
+                        $message.find(converse.GONE).length && converse.GONE;
 
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
@@ -1286,13 +1292,14 @@
                     sender = 'them';
                 }
                 return {
-                    chat_state: chat_state,
-                    delayed: delayed,
-                    fullname: fullname,
-                    message: body || undefined,
-                    msgid: $message.attr('id'),
-                    sender: sender,
-                    time: time
+                    'type': type,
+                    'chat_state': chat_state,
+                    'delayed': delayed,
+                    'fullname': fullname,
+                    'message': body || undefined,
+                    'msgid': $message.attr('id'),
+                    'sender': sender,
+                    'time': time
                 };
             },
 
@@ -1306,11 +1313,8 @@
             comparator: 'time_opened',
 
             registerMessageHandler: function () {
-                converse.connection.addHandler(
-                    function (message) {
-                        this.onMessage(message);
-                        return true;
-                    }.bind(this), null, 'message', 'chat');
+                converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+                converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
             },
 
             chatBoxMayBeShown: function (chatbox) {
@@ -1339,6 +1343,24 @@
                     add: true,
                     success: this.onChatBoxesFetched.bind(this)
                 });
+            },
+
+            onErrorMessage: function (message) {
+                /* Handler method for all incoming error message stanzas
+                 */
+                // TODO: we can likely just reuse "onMessage" below
+                var $message = $(message),
+                    from_jid =  Strophe.getBareJidFromJid($message.attr('from'));
+                if (from_jid === converse.bare_jid) {
+                    return true;
+                }
+                // Get chat box, but only create a new one when the message has a body.
+                var chatbox = this.getChatBox(from_jid);
+                if (!chatbox) {
+                    return true;
+                }
+                chatbox.createMessage($message, null, message);
+                return true;
             },
 
             onMessage: function (message) {
@@ -1380,7 +1402,6 @@
                 from_resource = Strophe.getResourceFromJid(from_jid);
                 is_me = from_bare_jid === converse.bare_jid;
                 msgid = $message.attr('id');
-
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);

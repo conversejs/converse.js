@@ -366,6 +366,14 @@
                     }
                 },
 
+                handleErrorMessage: function (message) {
+                    var $message = $('[data-msgid='+message.get('msgid')+']');
+                    if ($message.length) {
+                        $message.after($('<div class="chat-error"></div>').text(message.get('message')));
+                        this.scrollDown();
+                    }
+                },
+
                 onMessageAdded: function (message) {
                     /* Handler that gets called when a new message object is created.
                      *
@@ -376,7 +384,9 @@
                         window.clearTimeout(this.clear_status_timeout);
                         delete this.clear_status_timeout;
                     }
-                    if (!message.get('message')) {
+                    if (message.get('type') === 'error') {
+                        this.handleErrorMessage(message);
+                    } else if (!message.get('message')) {
                         this.handleChatStateMessage(message);
                     } else {
                         this.handleTextMessage(message);
